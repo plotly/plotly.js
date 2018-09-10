@@ -11,8 +11,10 @@
 var Lib = require('../../lib');
 
 var subTypes = require('../scatter/subtypes');
+var handleRThetaDefaults = require('../scatterpolar/defaults').handleRThetaDefaults;
 var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
+var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var PTS_LINESONLY = require('../scatter/constants').PTS_LINESONLY;
 
@@ -23,42 +25,34 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var r = coerce('r');
-    var theta = coerce('theta');
-    var len = (r && theta) ? Math.min(r.length, theta.length) : 0;
-
+    var len = handleRThetaDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
     }
 
-    traceOut._length = len;
-
     coerce('thetaunit');
     coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
+    coerce('hovertext');
 
     if(subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('connectgaps');
     }
 
-    var dfltHoverOn = [];
-
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-        dfltHoverOn.push('points');
+    }
+
+    if(subTypes.hasText(traceOut)) {
+        handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
-
-    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
-        dfltHoverOn.push('fills');
-    }
-    coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

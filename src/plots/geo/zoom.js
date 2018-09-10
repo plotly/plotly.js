@@ -109,14 +109,19 @@ function zoomNonClipped(geo, projection) {
     var INSIDETOLORANCEPXS = 2;
 
     var mouse0, rotate0, translate0, lastRotate, zoomPoint,
-        mouse1, rotate1, point1;
+        mouse1, rotate1, point1, didZoom;
 
     function position(x) { return projection.invert(x); }
 
     function outside(x) {
-        var pt = projection(position(x));
-        return (Math.abs(pt[0] - x[0]) > INSIDETOLORANCEPXS ||
-                Math.abs(pt[1] - x[1]) > INSIDETOLORANCEPXS);
+        var pos = position(x);
+        if(!pos) return true;
+
+        var pt = projection(pos);
+        return (
+            Math.abs(pt[0] - x[0]) > INSIDETOLORANCEPXS ||
+            Math.abs(pt[1] - x[1]) > INSIDETOLORANCEPXS
+        );
     }
 
     function handleZoomstart() {
@@ -152,12 +157,13 @@ function zoomNonClipped(geo, projection) {
             lastRotate = rotate1;
         }
 
+        didZoom = true;
         geo.render();
     }
 
     function handleZoomend() {
         d3.select(this).style(zoomendStyle);
-        sync(geo, projection, syncCb);
+        if(didZoom) sync(geo, projection, syncCb);
     }
 
     function syncCb(set) {

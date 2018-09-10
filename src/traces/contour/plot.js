@@ -16,7 +16,6 @@ var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Axes = require('../../plots/cartesian/axes');
 var setConvert = require('../../plots/cartesian/set_convert');
-var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var heatmapPlot = require('../heatmap/plot');
 var makeCrossings = require('./make_crossings');
@@ -28,84 +27,59 @@ var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
 exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
-    var uidLookup = getUidsFromCalcData(cdcontours);
-
-    contourLayer.selectAll('g.contour').each(function(d) {
-        if(!uidLookup[d.trace.uid]) {
-            d3.select(this).remove();
-        }
-    });
-
-    for(var i = 0; i < cdcontours.length; i++) {
-        plotOne(gd, plotinfo, cdcontours[i], contourLayer);
-    }
-};
-
-function plotOne(gd, plotinfo, cd, contourLayer) {
-    var trace = cd[0].trace;
-    var x = cd[0].x;
-    var y = cd[0].y;
-    var contours = trace.contours;
-    var id = 'contour' + trace.uid;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
-    var pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
-    // use a heatmap to fill - draw it behind the lines
-    var heatmapColoringLayer = Lib.ensureSingle(contourLayer, 'g', 'heatmapcoloring');
-    var cdheatmaps = [];
-    if(contours.coloring === 'heatmap') {
-        if(trace.zauto && (trace.autocontour === false)) {
-            trace._input.zmin = trace.zmin =
-                contours.start - contours.size / 2;
-            trace._input.zmax = trace.zmax =
-                trace.zmin + pathinfo.length * contours.size;
+    Lib.makeTraceGroups(contourLayer, cdcontours, 'contour').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
+        var x = cd0.x;
+        var y = cd0.y;
+        var contours = trace.contours;
+        var pathinfo = emptyPathinfo(contours, plotinfo, cd0);
+
+        // use a heatmap to fill - draw it behind the lines
+        var heatmapColoringLayer = Lib.ensureSingle(plotGroup, 'g', 'heatmapcoloring');
+        var cdheatmaps = [];
+        if(contours.coloring === 'heatmap') {
+            if(trace.zauto && (trace.autocontour === false)) {
+                trace._input.zmin = trace.zmin =
+                    contours.start - contours.size / 2;
+                trace._input.zmax = trace.zmax =
+                    trace.zmin + pathinfo.length * contours.size;
+            }
+            cdheatmaps = [cd];
         }
-        cdheatmaps = [cd];
-    }
-    heatmapPlot(gd, plotinfo, cdheatmaps, heatmapColoringLayer);
+        heatmapPlot(gd, plotinfo, cdheatmaps, heatmapColoringLayer);
 
-    makeCrossings(pathinfo);
-    findAllPaths(pathinfo);
+        makeCrossings(pathinfo);
+        findAllPaths(pathinfo);
 
-    var leftedge = xa.c2p(x[0], true),
-        rightedge = xa.c2p(x[x.length - 1], true),
-        bottomedge = ya.c2p(y[0], true),
-        topedge = ya.c2p(y[y.length - 1], true),
-        perimeter = [
-            [leftedge, topedge],
-            [rightedge, topedge],
-            [rightedge, bottomedge],
-            [leftedge, bottomedge]
-        ];
+        var leftedge = xa.c2p(x[0], true),
+            rightedge = xa.c2p(x[x.length - 1], true),
+            bottomedge = ya.c2p(y[0], true),
+            topedge = ya.c2p(y[y.length - 1], true),
+            perimeter = [
+                [leftedge, topedge],
+                [rightedge, topedge],
+                [rightedge, bottomedge],
+                [leftedge, bottomedge]
+            ];
 
-    var fillPathinfo = pathinfo;
-    if(contours.type === 'constraint') {
-        fillPathinfo = convertToConstraints(pathinfo, contours._operation);
-        closeBoundaries(fillPathinfo, contours._operation, perimeter, trace);
-    }
+        var fillPathinfo = pathinfo;
+        if(contours.type === 'constraint') {
+            fillPathinfo = convertToConstraints(pathinfo, contours._operation);
+            closeBoundaries(fillPathinfo, contours._operation, perimeter, trace);
+        }
 
-    // draw everything
-    var plotGroup = exports.makeContourGroup(contourLayer, cd, id);
-    makeBackground(plotGroup, perimeter, contours);
-    makeFills(plotGroup, fillPathinfo, perimeter, contours);
-    makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
-    clipGaps(plotGroup, plotinfo, fullLayout._clips, cd[0], perimeter);
-}
-
-exports.makeContourGroup = function(layer, cd, id) {
-    var plotgroup = layer
-        .selectAll('g.contour.' + id)
-        .data(cd);
-
-    plotgroup.enter().append('g')
-        .classed('contour', true)
-        .classed(id, true);
-
-    plotgroup.exit().remove();
-
-    return plotgroup;
+        // draw everything
+        makeBackground(plotGroup, perimeter, contours);
+        makeFills(plotGroup, fillPathinfo, perimeter, contours);
+        makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours, perimeter);
+        clipGaps(plotGroup, plotinfo, fullLayout._clips, cd0, perimeter);
+    });
 };
 
 function makeBackground(plotgroup, perimeter, contours) {
@@ -408,7 +382,8 @@ exports.labelFormatter = function(contours, colorbar, fullLayout) {
             formatAxis = {
                 type: 'linear',
                 _id: 'ycontour',
-                showexponent: 'all'
+                showexponent: 'all',
+                exponentformat: 'B'
             };
 
             if(contours.type === 'constraint') {
@@ -660,8 +635,6 @@ function clipGaps(plotGroup, plotinfo, clips, cd0, perimeter) {
     else clipId = null;
 
     plotGroup.call(Drawing.setClipUrl, clipId);
-    plotinfo.plot.selectAll('.hm' + cd0.trace.uid)
-        .call(Drawing.setClipUrl, clipId);
 }
 
 function makeClipMask(cd0) {

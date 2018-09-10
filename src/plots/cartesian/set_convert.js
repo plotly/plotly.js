@@ -21,6 +21,7 @@ var ensureNumber = Lib.ensureNumber;
 var numConstants = require('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
+var LOG_CLIP = numConstants.LOG_CLIP;
 
 var constants = require('./constants');
 var axisIds = require('./axis_ids');
@@ -52,28 +53,22 @@ function fromLog(v) {
  * Creates/updates these conversion functions, and a few more utilities
  * like cleanRange, and makeCalcdata
  *
- * also clears the autorange bounds ._min and ._max
- * and the autotick constraints ._minDtick, ._forceTick0
+ * also clears the autotick constraints ._minDtick, ._forceTick0
  */
 module.exports = function setConvert(ax, fullLayout) {
     fullLayout = fullLayout || {};
 
     var axLetter = (ax._id || 'x').charAt(0);
 
-    // clipMult: how many axis lengths past the edge do we render?
-    // for panning, 1-2 would suffice, but for zooming more is nice.
-    // also, clipping can affect the direction of lines off the edge...
-    var clipMult = 10;
-
     function toLog(v, clip) {
         if(v > 0) return Math.log(v) / Math.LN10;
 
         else if(v <= 0 && clip && ax.range && ax.range.length === 2) {
-            // clip NaN (ie past negative infinity) to clipMult axis
+            // clip NaN (ie past negative infinity) to LOG_CLIP axis
             // length past the negative edge
             var r0 = ax.range[0],
                 r1 = ax.range[1];
-            return 0.5 * (r0 + r1 - 3 * clipMult * Math.abs(r0 - r1));
+            return 0.5 * (r0 + r1 - 2 * LOG_CLIP * Math.abs(r0 - r1));
         }
 
         else return BADNUM;
@@ -92,7 +87,14 @@ module.exports = function setConvert(ax, fullLayout) {
         // as (local) ms if that fails.
         var ms = dateTime2ms(v, calendar || ax.calendar);
         if(ms === BADNUM) {
-            if(isNumeric(v)) ms = dateTime2ms(new Date(+v));
+            if(isNumeric(v)) {
+                v = +v;
+                // keep track of tenths of ms, that `new Date` will drop
+                // same logic as in Lib.ms2DateTime
+                var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
+                var msRounded = Math.round(v - msecTenths / 10);
+                ms = dateTime2ms(new Date(msRounded)) + msecTenths / 10;
+            }
             else return BADNUM;
         }
         return ms;
@@ -460,15 +462,6 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     ax.clearCalc = function() {
-        // for autoranging: arrays of objects:
-        // {
-        //     val: axis value,
-        //     pad: pixel padding,
-        //     extrapad: boolean, should this val get 5% additional padding
-        // }
-        ax._min = [];
-        ax._max = [];
-
         // initialize the category list, if there is one, so we start over
         // to be filled in later by ax.d2c
         ax._categories = (ax._initialCategories || []).slice();

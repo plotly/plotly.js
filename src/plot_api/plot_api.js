@@ -191,6 +191,19 @@ exports.plot = function(gd, data, layout, config) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
+    // make the figure responsive
+    if(gd._context.responsive) {
+        if(!gd._responsiveChartHandler) {
+            // Keep a reference to the resize handler to purge it down the road
+            gd._responsiveChartHandler = function() {Plots.resize(gd);};
+
+            // Listen to window resize
+            window.addEventListener('resize', gd._responsiveChartHandler);
+        }
+    } else {
+        Lib.clearResponsive(gd);
+    }
+
     /*
      * start async-friendly code - now we're actually drawing things
      */
@@ -199,6 +212,7 @@ exports.plot = function(gd, data, layout, config) {
 
     // draw framework first so that margin-pushing
     // components can position themselves correctly
+    var drawFrameworkCalls = 0;
     function drawFramework() {
         var basePlotModules = fullLayout._basePlotModules;
 
@@ -242,6 +256,28 @@ exports.plot = function(gd, data, layout, config) {
             fullLayout._glcanvas
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
+
+            var regl = fullLayout._glcanvas.data()[0].regl;
+            if(regl) {
+                // Unfortunately, this can happen when relayouting to large
+                // width/height on some browsers.
+                if(fullLayout.width !== regl._gl.drawingBufferWidth ||
+                    fullLayout.height !== regl._gl.drawingBufferHeight
+                 ) {
+                    var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
+                    if(drawFrameworkCalls) {
+                        Lib.error(msg);
+                    } else {
+                        Lib.log(msg + ' Clearing graph and plotting again.');
+                        Plots.cleanPlot([], {}, gd._fullData, fullLayout, gd.calcdata);
+                        Plots.supplyDefaults(gd);
+                        fullLayout = gd._fullLayout;
+                        Plots.doCalcdata(gd);
+                        drawFrameworkCalls++;
+                        return drawFramework();
+                    }
+                }
+            }
         }
 
         return Plots.previousPromises(gd);
@@ -292,33 +328,6 @@ exports.plot = function(gd, data, layout, config) {
             return;
         }
 
-        var subplots = fullLayout._subplots.cartesian;
-        var modules = fullLayout._modules;
-        var setPositionsArray = [];
-
-        // position and range calculations for traces that
-        // depend on each other ie bars (stacked or grouped)
-        // and boxes (grouped) push each other out of the way
-
-        var subplotInfo, i, j;
-
-        for(j = 0; j < modules.length; j++) {
-            Lib.pushUnique(setPositionsArray, modules[j].setPositions);
-        }
-
-        if(setPositionsArray.length) {
-            for(i = 0; i < subplots.length; i++) {
-                subplotInfo = fullLayout._plots[subplots[i]];
-
-                for(j = 0; j < setPositionsArray.length; j++) {
-                    setPositionsArray[j](gd, subplotInfo);
-                }
-            }
-        }
-
-        // calc and autorange for errorbars
-        Registry.getComponentMethod('errorbars', 'calc')(gd);
-
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111
         return Lib.syncOrAsync([
@@ -351,9 +360,12 @@ exports.plot = function(gd, data, layout, config) {
         marginPushers,
         marginPushersAgain
     ];
+
     if(hasCartesian) seq.push(positionAndAutorange);
+
     seq.push(subroutines.layoutStyles);
     if(hasCartesian) seq.push(drawAxes);
+
     seq.push(
         subroutines.drawData,
         subroutines.finalDraw,
@@ -1321,7 +1333,7 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
     var flags = specs.flags;
 
     // clear calcdata and/or axis types if required so they get regenerated
-    if(flags.clearCalc) gd.calcdata = undefined;
+    if(flags.calc) gd.calcdata = undefined;
     if(flags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, {});
 
     // fill in redraw sequence
@@ -1619,21 +1631,7 @@ function _restyle(gd, aobj, traces) {
         }
     }
 
-    // do we need to force a recalc?
-    var autorangeOn = false;
-    var axList = Axes.list(gd);
-    for(i = 0; i < axList.length; i++) {
-        if(axList[i].autorange) {
-            autorangeOn = true;
-            break;
-        }
-    }
-
-    // combine a few flags together;
-    if(flags.calc || (flags.calcIfAutorange && autorangeOn)) {
-        flags.clearCalc = true;
-    }
-    if(flags.calc || flags.plot || flags.calcIfAutorange) {
+    if(flags.calc || flags.plot) {
         flags.fullReplot = true;
     }
 
@@ -1744,6 +1742,7 @@ function addAxRangeSequence(seq, rangesAltered) {
         subroutines.doTicksRelayout;
 
     seq.push(
+        subroutines.doAutoRangeAndConstraints,
         doTicks,
         subroutines.drawData,
         subroutines.finalDraw
@@ -1978,37 +1977,21 @@ function _relayout(gd, aobj) {
             var propStr = containerArrayMatch.property;
             var componentArray = Lib.nestedProperty(layout, arrayStr);
             var obji = (componentArray || [])[i] || {};
-            var objToAutorange = obji;
-
             var updateValObject = valObject || {editType: 'calc'};
-            var checkForAutorange = updateValObject.editType.indexOf('calcIfAutorange') !== -1;
 
-            if(i === '') {
-                // replacing the entire array - too many possibilities, just recalc
-                if(checkForAutorange) flags.calc = true;
-                else editTypes.update(flags, updateValObject);
-                checkForAutorange = false; // clear this, we're already doing a recalc
-            }
-            else if(propStr === '') {
+            if(propStr === '') {
                 // special handling of undoit if we're adding or removing an element
                 // ie 'annotations[2]' which can be {...} (add) or null (remove)
-                objToAutorange = vi;
                 if(manageArrays.isAddVal(vi)) {
                     undoit[ai] = null;
-                }
-                else if(manageArrays.isRemoveVal(vi)) {
+                } else if(manageArrays.isRemoveVal(vi)) {
                     undoit[ai] = obji;
-                    objToAutorange = obji;
+                } else {
+                    Lib.warn('unrecognized full object value', aobj);
                 }
-                else Lib.warn('unrecognized full object value', aobj);
             }
 
-            if(checkForAutorange && (refAutorange(gd, objToAutorange, 'x') || refAutorange(gd, objToAutorange, 'y'))) {
-                flags.calc = true;
-            }
-            else {
-                editTypes.update(flags, updateValObject);
-            }
+            editTypes.update(flags, updateValObject);
 
             // prepare the edits object we'll send to applyContainerArrayChanges
             if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
@@ -2110,25 +2093,6 @@ function updateAutosize(gd) {
     return (fullLayout.width !== oldWidth) || (fullLayout.height !== oldHeight);
 }
 
-// for editing annotations or shapes - is it on autoscaled axes?
-function refAutorange(gd, obj, axLetter) {
-    if(!Lib.isPlainObject(obj)) return false;
-    var axRef = obj[axLetter + 'ref'] || axLetter,
-        ax = Axes.getFromId(gd, axRef);
-
-    if(!ax && axRef.charAt(0) === axLetter) {
-        // fall back on the primary axis in case we've referenced a
-        // nonexistent axis (as we do above if axRef is missing).
-        // This assumes the object defaults to data referenced, which
-        // is the case for shapes and annotations but not for images.
-        // The only thing this is used for is to determine whether to
-        // do a full `recalc`, so the only ill effect of this error is
-        // to waste some time.
-        ax = Axes.getFromId(gd, axLetter);
-    }
-    return (ax || {}).autorange;
-}
-
 /**
  * update: update trace and layout attributes of an existing plot
  *
@@ -2167,7 +2131,7 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     var relayoutFlags = relayoutSpecs.flags;
 
     // clear calcdata and/or axis types if required
-    if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
+    if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
     if(restyleFlags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, layoutUpdate);
 
     // fill in redraw sequence
@@ -2411,17 +2375,14 @@ function diffData(gd, oldFullData, newFullData, immutable) {
 
     for(i = 0; i < oldFullData.length; i++) {
         trace = newFullData[i]._fullInput;
+        if(Plots.hasMakesDataTransform(trace)) trace = newFullData[i];
         if(seenUIDs[trace.uid]) continue;
         seenUIDs[trace.uid] = 1;
 
-        diffOpts.autoranged = trace.xaxis ? (
-            Axes.getFromId(gd, trace.xaxis).autorange ||
-            Axes.getFromId(gd, trace.yaxis).autorange
-        ) : false;
         getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
     }
 
-    if(flags.calc || flags.plot || flags.calcIfAutorange) {
+    if(flags.calc || flags.plot) {
         flags.fullReplot = true;
     }
 
@@ -2460,17 +2421,9 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
     var immutable = opts.immutable;
     var inArray = opts.inArray;
     var arrayIndex = opts.arrayIndex;
-    var gd = opts.gd;
-    var autoranged = opts.autoranged;
 
     function changed() {
         var editType = valObject.editType;
-        if(editType.indexOf('calcIfAutorange') !== -1 && (autoranged || (autoranged === undefined && (
-            refAutorange(gd, newContainer, 'x') || refAutorange(gd, newContainer, 'y')
-        )))) {
-            flags.calc = true;
-            return;
-        }
         if(inArray && editType.indexOf('arraydraw') !== -1) {
             Lib.pushUnique(flags.arrays[inArray], arrayIndex);
             return;
@@ -3264,9 +3217,6 @@ function makePlotFramework(gd) {
 
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
-
-    // That is initialized in drawFramework if there are `gl` traces
-    fullLayout._glcanvas = null;
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 

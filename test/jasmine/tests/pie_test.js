@@ -138,6 +138,50 @@ describe('Pie traces:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    function _checkSliceColors(colors) {
+        return function() {
+            d3.select(gd).selectAll('.slice path').each(function(d, i) {
+                expect(this.style.fill.replace(/(\s|rgb\(|\))/g, '')).toBe(colors[i], i);
+            });
+        };
+    }
+
+    it('propagates explicit colors to the same labels in earlier OR later traces', function(done) {
+        var data1 = [
+            {type: 'pie', values: [3, 2], marker: {colors: ['red', 'black']}, domain: {x: [0.5, 1]}},
+            {type: 'pie', values: [2, 5], domain: {x: [0, 0.5]}}
+        ];
+        var data2 = Lib.extendDeep([], [data1[1], data1[0]]);
+
+        Plotly.newPlot(gd, data1)
+        .then(_checkSliceColors(['255,0,0', '0,0,0', '0,0,0', '255,0,0']))
+        .then(function() {
+            return Plotly.newPlot(gd, data2);
+        })
+        .then(_checkSliceColors(['0,0,0', '255,0,0', '255,0,0', '0,0,0']))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('can use a separate pie colorway and disable extended colors', function(done) {
+        Plotly.newPlot(gd, [{type: 'pie', values: [7, 6, 5, 4, 3, 2, 1]}], {colorway: ['#777', '#F00']})
+        .then(_checkSliceColors(['119,119,119', '255,0,0', '170,170,170', '255,102,102', '68,68,68', '153,0,0', '119,119,119']))
+        .then(function() {
+            return Plotly.relayout(gd, {extendpiecolors: false});
+        })
+        .then(_checkSliceColors(['119,119,119', '255,0,0', '119,119,119', '255,0,0', '119,119,119', '255,0,0', '119,119,119']))
+        .then(function() {
+            return Plotly.relayout(gd, {piecolorway: ['#FF0', '#0F0', '#00F']});
+        })
+        .then(_checkSliceColors(['255,255,0', '0,255,0', '0,0,255', '255,255,0', '0,255,0', '0,0,255', '255,255,0']))
+        .then(function() {
+            return Plotly.relayout(gd, {extendpiecolors: null});
+        })
+        .then(_checkSliceColors(['255,255,0', '0,255,0', '0,0,255', '255,255,102', '102,255,102', '102,102,255', '153,153,0']))
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {

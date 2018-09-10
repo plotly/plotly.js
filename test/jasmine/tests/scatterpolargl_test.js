@@ -3,7 +3,7 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 
 var customAssertions = require('../assets/custom_assertions');
@@ -82,7 +82,7 @@ describe('Test scatterpolargl hover:', function() {
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(fail).then(done);
+            run(specs).catch(failTest).then(done);
         });
     });
 });

@@ -4,7 +4,7 @@ var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
 var Lib = require('@src/lib');
 
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -87,7 +87,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -109,7 +109,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -132,7 +132,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -152,7 +152,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -180,7 +180,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -215,7 +215,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -250,7 +250,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -286,7 +286,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -322,7 +322,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -367,7 +367,7 @@ describe('spikeline hover', function() {
         .then(_assertBarSpikes)
         .then(function() { _set_hovermode('closest'); })
         .then(_assertBarSpikes)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -392,7 +392,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -421,7 +421,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -437,7 +437,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -456,7 +456,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -476,7 +476,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

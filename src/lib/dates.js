@@ -13,7 +13,7 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Loggers = require('./loggers');
-var mod = require('./mod');
+var mod = require('./mod').mod;
 
 var constants = require('../constants/numerical');
 var BADNUM = constants.BADNUM;

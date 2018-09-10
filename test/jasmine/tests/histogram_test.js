@@ -206,7 +206,7 @@ describe('Test histogram', function() {
             var out = calc(gd, fullTrace);
             delete out[0].trace;
 
-            // this is dumb - but some of the `p0` values are `-0` which doesn't match `0`
+            // this is dumb - but some of the `ph0` values are `-0` which doesn't match `0`
             // even though -0 === 0
             out.forEach(function(cdi) {
                 for(var key in cdi) {
@@ -237,11 +237,11 @@ describe('Test histogram', function() {
             var d73 = Date.UTC(1973, 0, 1);
             expect(out).toEqual([
                 // full calcdata has x and y too (and t in the first one),
-                // but those come later from setPositions.
-                {i: 0, b: 0, p: d70, s: 2, pts: [0, 1], p0: d70, p1: d70},
-                {i: 1, b: 0, p: d71, s: 1, pts: [2], p0: d71, p1: d71},
-                {i: 2, b: 0, p: d72, s: 0, pts: [], p0: d72, p1: d72},
-                {i: 3, b: 0, p: d73, s: 1, pts: [3], p0: d73, p1: d73}
+                // but those come later from crossTraceCalc.
+                {i: 0, b: 0, p: d70, s: 2, pts: [0, 1], ph0: d70, ph1: d70},
+                {i: 1, b: 0, p: d71, s: 1, pts: [2], ph0: d71, ph1: d71},
+                {i: 2, b: 0, p: d72, s: 0, pts: [], ph0: d72, ph1: d72},
+                {i: 3, b: 0, p: d73, s: 1, pts: [3], ph0: d73, ph1: d73}
             ]);
 
             // All data on exact months: shift so bin center is on (31-day months)
@@ -255,10 +255,10 @@ describe('Test histogram', function() {
             var d70mar = Date.UTC(1970, 2, 2, 12);
             var d70apr = Date.UTC(1970, 3, 1);
             expect(out).toEqual([
-                {i: 0, b: 0, p: d70, s: 2, pts: [0, 1], p0: d70, p1: d70},
-                {i: 1, b: 0, p: d70feb, s: 1, pts: [2], p0: d70feb, p1: d70feb},
-                {i: 2, b: 0, p: d70mar, s: 0, pts: [], p0: d70mar, p1: d70mar},
-                {i: 3, b: 0, p: d70apr, s: 1, pts: [3], p0: d70apr, p1: d70apr}
+                {i: 0, b: 0, p: d70, s: 2, pts: [0, 1], ph0: d70, ph1: d70},
+                {i: 1, b: 0, p: d70feb, s: 1, pts: [2], ph0: d70feb, ph1: d70feb},
+                {i: 2, b: 0, p: d70mar, s: 0, pts: [], ph0: d70mar, ph1: d70mar},
+                {i: 3, b: 0, p: d70apr, s: 1, pts: [3], ph0: d70apr, ph1: d70apr}
             ]);
 
             // data on exact days: shift so each bin goes from noon to noon
@@ -272,11 +272,11 @@ describe('Test histogram', function() {
 
             expect(out).toEqual([
                 // dec 31 12:00 -> jan 31 12:00, middle is jan 16
-                {i: 0, b: 0, p: Date.UTC(1970, 0, 16), s: 2, pts: [0, 1], p0: Date.UTC(1970, 0, 1), p1: Date.UTC(1970, 0, 31)},
+                {i: 0, b: 0, p: Date.UTC(1970, 0, 16), s: 2, pts: [0, 1], ph0: Date.UTC(1970, 0, 1), ph1: Date.UTC(1970, 0, 31)},
                 // jan 31 12:00 -> feb 28 12:00, middle is feb 14 12:00
-                {i: 1, b: 0, p: Date.UTC(1970, 1, 14, 12), s: 1, pts: [2], p0: Date.UTC(1970, 1, 1), p1: Date.UTC(1970, 1, 28)},
-                {i: 2, b: 0, p: Date.UTC(1970, 2, 16), s: 0, pts: [], p0: Date.UTC(1970, 2, 1), p1: Date.UTC(1970, 2, 31)},
-                {i: 3, b: 0, p: Date.UTC(1970, 3, 15, 12), s: 1, pts: [3], p0: Date.UTC(1970, 3, 1), p1: Date.UTC(1970, 3, 30)}
+                {i: 1, b: 0, p: Date.UTC(1970, 1, 14, 12), s: 1, pts: [2], ph0: Date.UTC(1970, 1, 1), ph1: Date.UTC(1970, 1, 28)},
+                {i: 2, b: 0, p: Date.UTC(1970, 2, 16), s: 0, pts: [], ph0: Date.UTC(1970, 2, 1), ph1: Date.UTC(1970, 2, 31)},
+                {i: 3, b: 0, p: Date.UTC(1970, 3, 15, 12), s: 1, pts: [3], ph0: Date.UTC(1970, 3, 1), ph1: Date.UTC(1970, 3, 30)}
             ]);
         });
 
@@ -292,10 +292,10 @@ describe('Test histogram', function() {
                 x3 = x2 + oneDay;
 
             expect(out).toEqual([
-                {i: 0, b: 0, p: x0, s: 2, pts: [0, 1], p0: x0, p1: x0},
-                {i: 1, b: 0, p: x1, s: 1, pts: [2], p0: x1, p1: x1},
-                {i: 2, b: 0, p: x2, s: 0, pts: [], p0: x2, p1: x2},
-                {i: 3, b: 0, p: x3, s: 1, pts: [3], p0: x3, p1: x3}
+                {i: 0, b: 0, p: x0, s: 2, pts: [0, 1], ph0: x0, ph1: x0},
+                {i: 1, b: 0, p: x1, s: 1, pts: [2], ph0: x1, ph1: x1},
+                {i: 2, b: 0, p: x2, s: 0, pts: [], ph0: x2, ph1: x2},
+                {i: 3, b: 0, p: x3, s: 1, pts: [3], ph0: x3, ph1: x3}
             ]);
         });
 
@@ -319,7 +319,7 @@ describe('Test histogram', function() {
             });
 
             expect(out).toEqual([
-                {i: 0, b: 0, p: 3, s: 3, width1: 2, pts: [0, 1, 2], p0: 2, p1: 3.9}
+                {i: 0, b: 0, p: 3, s: 3, width1: 2, pts: [0, 1, 2], ph0: 2, ph1: 3.9}
             ]);
         });
 
@@ -332,7 +332,7 @@ describe('Test histogram', function() {
             });
 
             expect(out).toEqual([
-                {i: 0, b: 0, p: 1.1, s: 3, width1: 0.5, pts: [0, 1, 2], p0: 1.1, p1: 1.1}
+                {i: 0, b: 0, p: 1.1, s: 3, width1: 0.5, pts: [0, 1, 2], ph0: 1.1, ph1: 1.1}
             ]);
         });
 
@@ -345,7 +345,7 @@ describe('Test histogram', function() {
             });
 
             expect(out).toEqual([
-                {i: 0, b: 0, p: 17, s: 2, width1: 2, pts: [2, 4], p0: 17, p1: 17}
+                {i: 0, b: 0, p: 17, s: 2, width1: 2, pts: [2, 4], ph0: 17, ph1: 17}
             ]);
         });
 
@@ -358,7 +358,7 @@ describe('Test histogram', function() {
             });
 
             expect(out).toEqual([
-                {i: 0, b: 0, p: 13, s: 2, width1: 8, pts: [1, 3], p0: 13, p1: 13}
+                {i: 0, b: 0, p: 13, s: 2, width1: 8, pts: [1, 3], ph0: 13, ph1: 13}
             ]);
         });
 
@@ -372,7 +372,7 @@ describe('Test histogram', function() {
 
             var p = 1296691200000;
             expect(out).toEqual([
-                {i: 0, b: 0, p: p, s: 2, width1: 2 * 24 * 3600 * 1000, pts: [1, 3], p0: p, p1: p}
+                {i: 0, b: 0, p: p, s: 2, width1: 2 * 24 * 3600 * 1000, pts: [1, 3], ph0: p, ph1: p}
             ]);
         });
 
@@ -385,7 +385,7 @@ describe('Test histogram', function() {
             });
 
             expect(out).toEqual([
-                {i: 0, b: 0, p: 97, s: 2, width1: 1, pts: [1, 3], p0: 97, p1: 97}
+                {i: 0, b: 0, p: 97, s: 2, width1: 1, pts: [1, 3], ph0: 97, ph1: 97}
             ]);
         });
 
@@ -393,7 +393,7 @@ describe('Test histogram', function() {
             var out = _calc({x: [1, 4]}, [], {barmode: 'overlay'});
 
             expect(out).toEqual([
-                {i: 0, b: 0, p: 2, s: 2, width1: 5, pts: [0, 1], p0: 0, p1: 4}
+                {i: 0, b: 0, p: 2, s: 2, width1: 5, pts: [0, 1], ph0: 0, ph1: 4}
             ]);
 
             // real single-valued trace inherits bar width from the simply single-bin trace
@@ -404,7 +404,7 @@ describe('Test histogram', function() {
             });
 
             expect(out).toEqual([
-                {i: 0, b: 0, p: 5, s: 1, width1: 5, pts: [0], p0: 5, p1: 5}
+                {i: 0, b: 0, p: 5, s: 1, width1: 5, pts: [0], ph0: 5, ph1: 5}
             ]);
         });
 
@@ -496,14 +496,14 @@ describe('Test histogram', function() {
             it('makes the right base histogram', function() {
                 var baseOut = _calc(base);
                 expect(baseOut).toEqual([
-                    {i: 0, b: 0, p: 2, s: 1, pts: [0], p0: 0, p1: 0},
-                    {i: 1, b: 0, p: 7, s: 2, pts: [1, 4], p0: 5, p1: 5},
-                    {i: 2, b: 0, p: 12, s: 3, pts: [2, 5, 7], p0: 10, p1: 10},
-                    {i: 3, b: 0, p: 17, s: 4, pts: [3, 6, 8, 9], p0: 15, p1: 15},
+                    {i: 0, b: 0, p: 2, s: 1, pts: [0], ph0: 0, ph1: 0},
+                    {i: 1, b: 0, p: 7, s: 2, pts: [1, 4], ph0: 5, ph1: 5},
+                    {i: 2, b: 0, p: 12, s: 3, pts: [2, 5, 7], ph0: 10, ph1: 10},
+                    {i: 3, b: 0, p: 17, s: 4, pts: [3, 6, 8, 9], ph0: 15, ph1: 15},
                 ]);
             });
 
-            // p0, p1, and pts have been omitted from CDFs for now
+            // ph0, ph1, and pts have been omitted from CDFs for now
             var CDFs = [
                 {p: [2, 7, 12, 17], s: [1, 3, 6, 10]},
                 {

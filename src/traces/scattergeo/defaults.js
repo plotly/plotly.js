@@ -52,6 +52,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
 function handleLonLatLocDefaults(traceIn, traceOut, coerce) {

@@ -1,0 +1,83 @@
+{
+  "data": [
+    {
+        "y": [1, 3, 5, 7], "x": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "orientation": "h", "name": "bottom", "legendgroup": "b"
+    }, {
+        "y": [2, 5, 6], "x": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "middle", "legendgroup": "m"
+    }, {
+        "y": [3, 4 ,5], "x": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "a", "name": "top", "legendgroup": "t"
+    },
+
+    {
+        "y": [1, 3, 5, 7], "x": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "bottom", "legendgroup": "b",
+        "showlegend": false, "xaxis": "x2", "yaxis": "y2",
+        "stackgaps": "interpolate"
+    }, {
+        "y": [2, 5, 6], "x": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "orientation": "h", "name": "middle", "legendgroup": "m",
+        "showlegend": false, "xaxis": "x2", "yaxis": "y2"
+    }, {
+        "y": [3, 4 ,5], "x": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "a", "name": "top", "legendgroup": "t",
+        "showlegend": false, "xaxis": "x2", "yaxis": "y2"
+    },
+
+    {
+        "y": [1, 3, 5, 7], "x": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "b", "name": "bottom", "legendgroup": "b",
+        "showlegend": false, "xaxis": "x3", "yaxis": "y3", "mode": "lines+markers",
+        "groupnorm": "fraction"
+    }, {
+        "y": [2, 5, 6], "x": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "b", "name": "middle", "legendgroup": "m",
+        "showlegend": false, "xaxis": "x3", "yaxis": "y3", "mode": "lines+markers"
+    }, {
+        "y": [3, 4 ,5], "x": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "b", "orientation": "h", "name": "top", "legendgroup": "t",
+        "showlegend": false, "xaxis": "x3", "yaxis": "y3", "mode": "lines+markers"
+    },
+
+    {
+        "y": [1, 3, 5, 7], "x": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "orientation": "h", "name": "bottom", "legendgroup": "b",
+        "showlegend": false, "xaxis": "x4", "yaxis": "y4", "mode": "lines+markers"
+    }, {
+        "y": [2, 5, 6], "x": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "middle", "legendgroup": "m",
+        "showlegend": false, "xaxis": "x4", "yaxis": "y4", "mode": "lines+markers",
+        "stackgaps": "interpolate", "groupnorm": "fraction"
+    }, {
+        "y": [3, 4 ,5], "x": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "a", "name": "top", "legendgroup": "t",
+        "showlegend": false, "xaxis": "x4", "yaxis": "y4", "mode": "lines+markers"
+    },
+
+    {
+        "y": [1, 3, 5, 7], "x": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "bottom", "legendgroup": "b",
+        "showlegend": false, "xaxis": "x5", "yaxis": "y5"
+    }, {
+        "y": [2, 5, 6], "x": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "orientation": "h", "name": "middle", "legendgroup": "m",
+        "showlegend": false, "xaxis": "x5", "yaxis": "y5"
+    }, {
+        "y": [3, 4 ,5], "x": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "a", "name": "top", "legendgroup": "t",
+        "showlegend": false, "xaxis": "x5", "yaxis": "y5",
+        "groupnorm": "percent"
+    },
+
+    {
+        "y": [1, 3, 5, 7], "x": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "bottom", "legendgroup": "b",
+        "showlegend": false, "xaxis": "x6", "yaxis": "y6",
+        "groupnorm": "percent"
+    }, {
+        "y": [2, 5, 6], "x": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "middle", "legendgroup": "m",
+        "showlegend": false, "xaxis": "x6", "yaxis": "y6"
+    }, {
+        "y": [3, 4 ,5], "x": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "a", "orientation": "h", "name": "top", "legendgroup": "t",
+        "showlegend": false, "xaxis": "x6", "yaxis": "y6",
+        "stackgaps": "interpolate"
+    }
+  ],
+  "layout": {
+    "width": 800,
+    "height": 800,
+    "xaxis": {"title": "stackgaps: infer zero"},
+    "xaxis2": {"title": "stackgaps: interpolate"},
+    "yaxis": {"title": "groupnorm: -"},
+    "yaxis3": {"title": "groupnorm: fraction<br>mode: lines+markers"},
+    "yaxis5": {"title": "groupnorm: percent"},
+    "legend": {"traceorder": "reversed"},
+    "grid": {"columns": 2, "rows": 3, "pattern": "independent", "roworder": "bottom to top"}
+  }
+}

@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Template = require('../../plot_api/plot_template');
@@ -20,31 +19,57 @@ var handleTypeDefaults = require('./type_defaults');
 var handleAxisDefaults = require('./axis_defaults');
 var handleConstraintDefaults = require('./constraint_defaults');
 var handlePositionDefaults = require('./position_defaults');
-var axisIds = require('./axis_ids');
 
+var axisIds = require('./axis_ids');
+var id2name = axisIds.id2name;
+var name2id = axisIds.name2id;
+
+var Registry = require('../../registry');
+var traceIs = Registry.traceIs;
+var getComponentMethod = Registry.getComponentMethod;
+
+function appendList(cont, k, item) {
+    if(Array.isArray(cont[k])) cont[k].push(item);
+    else cont[k] = [item];
+}
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+    var ax2traces = {};
     var xaCheater = {};
     var xaNonCheater = {};
     var outerTicks = {};
     var noGrids = {};
-    var i;
+    var i, j;
 
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
+        if(!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d')) continue;
 
-        if(!Registry.traceIs(trace, 'cartesian') && !Registry.traceIs(trace, 'gl2d')) {
-            continue;
+        var xaName;
+        if(trace.xaxis) {
+            xaName = id2name(trace.xaxis);
+            appendList(ax2traces, xaName, trace);
+        } else if(trace.xaxes) {
+            for(j = 0; j < trace.xaxes.length; j++) {
+                appendList(ax2traces, id2name(trace.xaxes[j]), trace);
+            }
         }
 
-        var xaName = axisIds.id2name(trace.xaxis);
-        var yaName = axisIds.id2name(trace.yaxis);
+        var yaName;
+        if(trace.yaxis) {
+            yaName = id2name(trace.yaxis);
+            appendList(ax2traces, yaName, trace);
+        } else if(trace.yaxes) {
+            for(j = 0; j < trace.yaxes.length; j++) {
+                appendList(ax2traces, id2name(trace.yaxes[j]), trace);
+            }
+        }
 
         // Two things trigger axis visibility:
         // 1. is not carpet
         // 2. carpet that's not cheater
-        if(!Registry.traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
+        if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
             if(xaName) xaNonCheater[xaName] = 1;
         }
 
@@ -57,22 +82,22 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
 
         // check for default formatting tweaks
-        if(Registry.traceIs(trace, '2dMap')) {
-            outerTicks[xaName] = true;
-            outerTicks[yaName] = true;
+        if(traceIs(trace, '2dMap')) {
+            outerTicks[xaName] = 1;
+            outerTicks[yaName] = 1;
         }
 
-        if(Registry.traceIs(trace, 'oriented')) {
+        if(traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
-            noGrids[positionAxis] = true;
+            noGrids[positionAxis] = 1;
         }
     }
 
     var subplots = layoutOut._subplots;
     var xIds = subplots.xaxis;
     var yIds = subplots.yaxis;
-    var xNames = Lib.simpleMap(xIds, axisIds.id2name);
-    var yNames = Lib.simpleMap(yIds, axisIds.id2name);
+    var xNames = Lib.simpleMap(xIds, id2name);
+    var yNames = Lib.simpleMap(yIds, id2name);
     var axNames = xNames.concat(yNames);
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
@@ -108,7 +133,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             var axName2 = list[j];
 
             if(axName2 !== axName && !(layoutIn[axName2] || {}).overlaying) {
-                out.push(axisIds.name2id(axName2));
+                out.push(name2id(axName2));
             }
         }
 
@@ -127,7 +152,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = Template.newContainer(layoutOut, axName, axLetter + 'axis');
 
-        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, fullData, axName);
+        var traces = ax2traces[axName] || [];
+        axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
+        axLayoutOut._annIndices = [];
+        axLayoutOut._shapeIndices = [];
+
+        // set up some private properties
+        axLayoutOut._name = axName;
+        var id = axLayoutOut._id = name2id(axName);
 
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
@@ -136,13 +168,15 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
             showGrid: !noGrids[axName],
-            data: fullData,
+            data: traces,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
             automargin: true,
-            cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName]
+            cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName],
+            splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
         };
 
+        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
         var spikecolor = coerce2('spikecolor'),
@@ -173,8 +207,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     // quick second pass for range slider and selector defaults
-    var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults');
-    var rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
+    var rangeSliderDefaults = getComponentMethod('rangeslider', 'handleDefaults');
+    var rangeSelectorDefaults = getComponentMethod('rangeselector', 'handleDefaults');
 
     for(i = 0; i < xNames.length; i++) {
         axName = xNames[i];
@@ -201,7 +235,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        var anchoredAxis = layoutOut[axisIds.id2name(axLayoutOut.anchor)];
+        var anchoredAxis = layoutOut[id2name(axLayoutOut.anchor)];
 
         var fixedRangeDflt = (
             anchoredAxis &&

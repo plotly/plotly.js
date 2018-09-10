@@ -1,15 +1,15 @@
 /**
-* plotly.js (gl2d) v1.39.1
+* plotly.js (gl2d) v1.40.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Plotly = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Plotly = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(_dereq_,module,exports){
 'use strict';
 
-var Lib = require('../src/lib');
+var Lib = _dereq_('../src/lib');
 var rules = {
-    "X,X div": "font-family:'Open Sans', verdana, arial, sans-serif;margin:0;padding:0;",
+    "X,X div": "direction:ltr;font-family:'Open Sans', verdana, arial, sans-serif;margin:0;padding:0;",
     "X input,X button": "font-family:'Open Sans', verdana, arial, sans-serif;",
     "X input:focus,X button:focus": "outline:none;",
     "X a": "text-decoration:none;",
@@ -70,7 +70,7 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":445}],2:[function(require,module,exports){
+},{"../src/lib":442}],2:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -196,7 +196,7 @@ module.exports = {
     }
 };
 
-},{}],3:[function(require,module,exports){
+},{}],3:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -207,9 +207,9 @@ module.exports = {
 
 'use strict';
 
-module.exports = require('../src/traces/contourgl');
+module.exports = _dereq_('../src/traces/contourgl');
 
-},{"../src/traces/contourgl":557}],4:[function(require,module,exports){
+},{"../src/traces/contourgl":555}],4:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -220,9 +220,9 @@ module.exports = require('../src/traces/contourgl');
 
 'use strict';
 
-module.exports = require('../src/core');
+module.exports = _dereq_('../src/core');
 
-},{"../src/core":427}],5:[function(require,module,exports){
+},{"../src/core":424}],5:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -233,9 +233,9 @@ module.exports = require('../src/core');
 
 'use strict';
 
-module.exports = require('../src/traces/heatmapgl');
+module.exports = _dereq_('../src/traces/heatmapgl');
 
-},{"../src/traces/heatmapgl":572}],6:[function(require,module,exports){
+},{"../src/traces/heatmapgl":570}],6:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -246,20 +246,20 @@ module.exports = require('../src/traces/heatmapgl');
 
 'use strict';
 
-var Plotly = require('./core');
+var Plotly = _dereq_('./core');
 
 Plotly.register([
-    require('./scattergl'),
-    require('./splom'),
-    require('./pointcloud'),
-    require('./heatmapgl'),
-    require('./contourgl'),
-    require('./parcoords')
+    _dereq_('./scattergl'),
+    _dereq_('./splom'),
+    _dereq_('./pointcloud'),
+    _dereq_('./heatmapgl'),
+    _dereq_('./contourgl'),
+    _dereq_('./parcoords')
 ]);
 
 module.exports = Plotly;
 
-},{"./contourgl":3,"./core":4,"./heatmapgl":5,"./parcoords":7,"./pointcloud":8,"./scattergl":9,"./splom":10}],7:[function(require,module,exports){
+},{"./contourgl":3,"./core":4,"./heatmapgl":5,"./parcoords":7,"./pointcloud":8,"./scattergl":9,"./splom":10}],7:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -270,9 +270,9 @@ module.exports = Plotly;
 
 'use strict';
 
-module.exports = require('../src/traces/parcoords');
+module.exports = _dereq_('../src/traces/parcoords');
 
-},{"../src/traces/parcoords":585}],8:[function(require,module,exports){
+},{"../src/traces/parcoords":583}],8:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -283,9 +283,9 @@ module.exports = require('../src/traces/parcoords');
 
 'use strict';
 
-module.exports = require('../src/traces/pointcloud');
+module.exports = _dereq_('../src/traces/pointcloud');
 
-},{"../src/traces/pointcloud":595}],9:[function(require,module,exports){
+},{"../src/traces/pointcloud":593}],9:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -296,9 +296,9 @@ module.exports = require('../src/traces/pointcloud');
 
 'use strict';
 
-module.exports = require('../src/traces/scattergl');
+module.exports = _dereq_('../src/traces/scattergl');
 
-},{"../src/traces/scattergl":627}],10:[function(require,module,exports){
+},{"../src/traces/scattergl":625}],10:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -309,27 +309,27 @@ module.exports = require('../src/traces/scattergl');
 
 'use strict';
 
-module.exports = require('../src/traces/splom');
+module.exports = _dereq_('../src/traces/splom');
 
-},{"../src/traces/splom":631}],11:[function(require,module,exports){
+},{"../src/traces/splom":629}],11:[function(_dereq_,module,exports){
 'use strict'
 
-var Font = require('css-font')
-var pick = require('pick-by-alias')
-var createRegl = require('regl')
-var createGl = require('gl-util/context')
-var WeakMap = require('es6-weak-map')
-var rgba = require('color-normalize')
-var fontAtlas = require('font-atlas')
-var pool = require('typedarray-pool')
-var parseRect = require('parse-rect')
-var isObj = require('is-plain-obj')
-var parseUnit = require('parse-unit')
-var px = require('to-px')
-var kerning = require('detect-kerning')
-var extend = require('object-assign')
-var metrics = require('font-measure')
-var flatten = require('flatten-vertex-data')
+var Font = _dereq_('css-font')
+var pick = _dereq_('pick-by-alias')
+var createRegl = _dereq_('regl')
+var createGl = _dereq_('gl-util/context')
+var WeakMap = _dereq_('es6-weak-map')
+var rgba = _dereq_('color-normalize')
+var fontAtlas = _dereq_('font-atlas')
+var pool = _dereq_('typedarray-pool')
+var parseRect = _dereq_('parse-rect')
+var isObj = _dereq_('is-plain-obj')
+var parseUnit = _dereq_('parse-unit')
+var px = _dereq_('to-px')
+var kerning = _dereq_('detect-kerning')
+var extend = _dereq_('object-assign')
+var metrics = _dereq_('font-measure')
+var flatten = _dereq_('flatten-vertex-data')
 
 
 var shaderCache = new WeakMap
@@ -1038,287 +1038,9 @@ function isRegl (o) {
 module.exports = GlText
 
 
-},{"color-normalize":12,"css-font":74,"detect-kerning":88,"es6-weak-map":146,"flatten-vertex-data":15,"font-atlas":153,"font-measure":154,"gl-util/context":191,"is-plain-obj":211,"object-assign":223,"parse-rect":226,"parse-unit":228,"pick-by-alias":232,"regl":260,"to-px":287,"typedarray-pool":291}],12:[function(require,module,exports){
-/** @module  color-normalize */
-
-'use strict'
-
-var rgba = require('color-rgba')
-var clamp = require('clamp')
-var dtype = require('dtype')
-
-module.exports = function normalize (color, type) {
-	if (type === 'float' || !type) type = 'array'
-	if (type === 'uint') type = 'uint8'
-	if (type === 'uint_clamped') type = 'uint8_clamped'
-	var Ctor = dtype(type)
-	var output = new Ctor(4)
-
-	//same class does not change values
-	if (color instanceof Ctor) {
-		if (Array.isArray(color)) {
-			return color.slice()
-		}
-
-		output.set(color)
-
-		return output
-	}
-
-	var normalize = type !== 'uint8' && type !== 'uint8_clamped'
-
-	//consider uint8 array as 0..255 channel values
-	if (color instanceof Uint8Array || color instanceof Uint8ClampedArray) {
-		output[0] = color[0]
-		output[1] = color[1]
-		output[2] = color[2]
-		output[3] = color[3] != null ? color[3] : 255
-		if (normalize) {
-			output[0] /= 255
-			output[1] /= 255
-			output[2] /= 255
-			output[3] /= 255
-		}
-
-		return output
-	}
-
-	//attempt to parse non-array arguments
-	if (!color.length || typeof color === 'string') {
-		color = rgba(color)
-		color[0] /= 255
-		color[1] /= 255
-		color[2] /= 255
-	}
-
-	//consider every other array type as 0..1 float values
-	if (!normalize) {
-		output[0] = clamp(Math.round(color[0] * 255), 0, 255)
-		output[1] = clamp(Math.round(color[1] * 255), 0, 255)
-		output[2] = clamp(Math.round(color[2] * 255), 0, 255)
-		output[3] = color[3] == null ? 255 : clamp(Math.floor(color[3] * 255), 0, 255)
-	} else {
-		output[0] = color[0]
-		output[1] = color[1]
-		output[2] = color[2]
-		output[3] = color[3] != null ? color[3] : 1
-	}
-
-	return output
-}
-
-},{"clamp":59,"color-rgba":14,"dtype":91}],13:[function(require,module,exports){
-(function (global){
-/**
- * @module color-parse
- */
-
-'use strict'
-
-var names = require('color-name')
-var isObject = require('is-plain-obj')
-var defined = require('defined')
-
-module.exports = parse
-
-/**
- * Base hues
- * http://dev.w3.org/csswg/css-color/#typedef-named-hue
- */
-//FIXME: use external hue detector
-var baseHues = {
-	red: 0,
-	orange: 60,
-	yellow: 120,
-	green: 180,
-	blue: 240,
-	purple: 300
-}
-
-/**
- * Parse color from the string passed
- *
- * @return {Object} A space indicator `space`, an array `values` and `alpha`
- */
-function parse (cstr) {
-	var m, parts = [], alpha = 1, space
-
-	if (typeof cstr === 'string') {
-		//keyword
-		if (names[cstr]) {
-			parts = names[cstr].slice()
-			space = 'rgb'
-		}
-
-		//reserved words
-		else if (cstr === 'transparent') {
-			alpha = 0
-			space = 'rgb'
-			parts = [0,0,0]
-		}
-
-		//hex
-		else if (/^#[A-Fa-f0-9]+$/.test(cstr)) {
-			var base = cstr.slice(1)
-			var size = base.length
-			var isShort = size <= 4
-			alpha = 1
-
-			if (isShort) {
-				parts = [
-					parseInt(base[0] + base[0], 16),
-					parseInt(base[1] + base[1], 16),
-					parseInt(base[2] + base[2], 16)
-				]
-				if (size === 4) {
-					alpha = parseInt(base[3] + base[3], 16) / 255
-				}
-			}
-			else {
-				parts = [
-					parseInt(base[0] + base[1], 16),
-					parseInt(base[2] + base[3], 16),
-					parseInt(base[4] + base[5], 16)
-				]
-				if (size === 8) {
-					alpha = parseInt(base[6] + base[7], 16) / 255
-				}
-			}
-
-			if (!parts[0]) parts[0] = 0
-			if (!parts[1]) parts[1] = 0
-			if (!parts[2]) parts[2] = 0
-
-			space = 'rgb'
-		}
-
-		//color space
-		else if (m = /^((?:rgb|hs[lvb]|hwb|cmyk?|xy[zy]|gray|lab|lchu?v?|[ly]uv|lms)a?)\s*\(([^\)]*)\)/.exec(cstr)) {
-			var name = m[1]
-			var base = name.replace(/a$/, '')
-			space = base
-			var size = base === 'cmyk' ? 4 : base === 'gray' ? 1 : 3
-			parts = m[2].trim()
-				.split(/\s*,\s*/)
-				.map(function (x, i) {
-					//<percentage>
-					if (/%$/.test(x)) {
-						//alpha
-						if (i === size)	return parseFloat(x) / 100
-						//rgb
-						if (base === 'rgb') return parseFloat(x) * 255 / 100
-						return parseFloat(x)
-					}
-					//hue
-					else if (base[i] === 'h') {
-						//<deg>
-						if (/deg$/.test(x)) {
-							return parseFloat(x)
-						}
-						//<base-hue>
-						else if (baseHues[x] !== undefined) {
-							return baseHues[x]
-						}
-					}
-					return parseFloat(x)
-				})
-
-			if (name === base) parts.push(1)
-			alpha = parts[size] === undefined ? 1 : parts[size]
-			parts = parts.slice(0, size)
-		}
-
-		//named channels case
-		else if (cstr.length > 10 && /[0-9](?:\s|\/)/.test(cstr)) {
-			parts = cstr.match(/([0-9]+)/g).map(function (value) {
-				return parseFloat(value)
-			})
-
-			space = cstr.match(/([a-z])/ig).join('').toLowerCase()
-		}
-	}
-
-	//numeric case
-	else if (!isNaN(cstr)) {
-		space = 'rgb'
-		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff]
-	}
-
-	//object case - detects css cases of rgb and hsl
-	else if (isObject(cstr)) {
-		var r = defined(cstr.r, cstr.red, cstr.R, null)
-
-		if (r !== null) {
-			space = 'rgb'
-			parts = [
-				r,
-				defined(cstr.g, cstr.green, cstr.G),
-				defined(cstr.b, cstr.blue, cstr.B)
-			]
-		}
-		else {
-			space = 'hsl'
-			parts = [
-				defined(cstr.h, cstr.hue, cstr.H),
-				defined(cstr.s, cstr.saturation, cstr.S),
-				defined(cstr.l, cstr.lightness, cstr.L, cstr.b, cstr.brightness)
-			]
-		}
-
-		alpha = defined(cstr.a, cstr.alpha, cstr.opacity, 1)
-
-		if (cstr.opacity != null) alpha /= 100
-	}
-
-	//array
-	else if (Array.isArray(cstr) || global.ArrayBuffer && ArrayBuffer.isView && ArrayBuffer.isView(cstr)) {
-		parts = [cstr[0], cstr[1], cstr[2]]
-		space = 'rgb'
-		alpha = cstr.length === 4 ? cstr[3] : 1
-	}
-
-	return {
-		space: space,
-		values: parts,
-		alpha: alpha
-	}
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"color-name":63,"defined":87,"is-plain-obj":211}],14:[function(require,module,exports){
-/** @module  color-rgba */
-
-'use strict'
-
-var parse = require('color-parse')
-var hsl = require('color-space/hsl')
-var clamp = require('clamp')
-
-module.exports = function rgba (color) {
-	var values, i, l
-
-	//attempt to parse non-array arguments
-	var parsed = parse(color)
-
-	if (!parsed.space) return []
-
-	values = Array(3)
-	values[0] = clamp(parsed.values[0], 0, 255)
-	values[1] = clamp(parsed.values[1], 0, 255)
-	values[2] = clamp(parsed.values[2], 0, 255)
-
-	if (parsed.space[0] === 'h') {
-		values = hsl.rgb(values)
-	}
-
-	values.push(clamp(parsed.alpha, 0, 1))
-
-	return values
-}
-
-},{"clamp":59,"color-parse":13,"color-space/hsl":67}],15:[function(require,module,exports){
+},{"color-normalize":62,"css-font":72,"detect-kerning":86,"es6-weak-map":144,"flatten-vertex-data":12,"font-atlas":150,"font-measure":151,"gl-util/context":188,"is-plain-obj":208,"object-assign":220,"parse-rect":223,"parse-unit":225,"pick-by-alias":229,"regl":257,"to-px":284,"typedarray-pool":288}],12:[function(_dereq_,module,exports){
 /*eslint new-cap:0*/
-var dtype = require('dtype')
+var dtype = _dereq_('dtype')
 
 module.exports = flattenVertexData
 
@@ -1376,7 +1098,7 @@ function flattenVertexData (data, output, offset) {
   return output
 }
 
-},{"dtype":91}],16:[function(require,module,exports){
+},{"dtype":89}],13:[function(_dereq_,module,exports){
 
 module.exports = absolutize
 
@@ -1445,8 +1167,8 @@ function absolutize(path){
 	})
 }
 
-},{}],17:[function(require,module,exports){
-var padLeft = require('pad-left')
+},{}],14:[function(_dereq_,module,exports){
+var padLeft = _dereq_('pad-left')
 
 module.exports = addLineNumbers
 function addLineNumbers (string, start, delim) {
@@ -1463,7 +1185,7 @@ function addLineNumbers (string, start, delim) {
   }).join('\n')
 }
 
-},{"pad-left":224}],18:[function(require,module,exports){
+},{"pad-left":221}],15:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = normalize;
@@ -1491,10 +1213,10 @@ function normalize (arr, dim) {
 	return bounds;
 }
 
-},{}],19:[function(require,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 'use strict'
 
-var getBounds = require('array-bounds')
+var getBounds = _dereq_('array-bounds')
 
 module.exports = normalize;
 
@@ -1533,7 +1255,7 @@ function normalize (arr, dim, bounds) {
 	return arr;
 }
 
-},{"array-bounds":18}],20:[function(require,module,exports){
+},{"array-bounds":15}],17:[function(_dereq_,module,exports){
 
 module.exports = function newArray(start, end) {
     var n0 = typeof start === 'number',
@@ -1558,7 +1280,7 @@ module.exports = function newArray(start, end) {
         a[i] = c
     return a
 }
-},{}],21:[function(require,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 (function (global){
 'use strict';
 
@@ -1628,7 +1350,7 @@ function isBuffer(b) {
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var util = require('util/');
+var util = _dereq_('util/');
 var hasOwn = Object.prototype.hasOwnProperty;
 var pSlice = Array.prototype.slice;
 var functionsHaveNames = (function () {
@@ -2052,12 +1774,12 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"util/":298}],22:[function(require,module,exports){
+},{"util/":295}],19:[function(_dereq_,module,exports){
 module.exports = function _atob(str) {
   return atob(str)
 }
 
-},{}],23:[function(require,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -2175,10 +1897,10 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],24:[function(require,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 'use strict'
 
-var rationalize = require('./lib/rationalize')
+var rationalize = _dereq_('./lib/rationalize')
 
 module.exports = add
 
@@ -2188,7 +1910,7 @@ function add(a, b) {
     a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":34}],25:[function(require,module,exports){
+},{"./lib/rationalize":31}],22:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = cmp
@@ -2197,10 +1919,10 @@ function cmp(a, b) {
     return a[0].mul(b[1]).cmp(b[0].mul(a[1]))
 }
 
-},{}],26:[function(require,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 'use strict'
 
-var rationalize = require('./lib/rationalize')
+var rationalize = _dereq_('./lib/rationalize')
 
 module.exports = div
 
@@ -2208,15 +1930,15 @@ function div(a, b) {
   return rationalize(a[0].mul(b[1]), a[1].mul(b[0]))
 }
 
-},{"./lib/rationalize":34}],27:[function(require,module,exports){
+},{"./lib/rationalize":31}],24:[function(_dereq_,module,exports){
 'use strict'
 
-var isRat = require('./is-rat')
-var isBN = require('./lib/is-bn')
-var num2bn = require('./lib/num-to-bn')
-var str2bn = require('./lib/str-to-bn')
-var rationalize = require('./lib/rationalize')
-var div = require('./div')
+var isRat = _dereq_('./is-rat')
+var isBN = _dereq_('./lib/is-bn')
+var num2bn = _dereq_('./lib/num-to-bn')
+var str2bn = _dereq_('./lib/str-to-bn')
+var rationalize = _dereq_('./lib/rationalize')
+var div = _dereq_('./div')
 
 module.exports = makeRational
 
@@ -2270,10 +1992,10 @@ function makeRational(numer, denom) {
   return rationalize(a, b)
 }
 
-},{"./div":26,"./is-rat":28,"./lib/is-bn":32,"./lib/num-to-bn":33,"./lib/rationalize":34,"./lib/str-to-bn":35}],28:[function(require,module,exports){
+},{"./div":23,"./is-rat":25,"./lib/is-bn":29,"./lib/num-to-bn":30,"./lib/rationalize":31,"./lib/str-to-bn":32}],25:[function(_dereq_,module,exports){
 'use strict'
 
-var isBN = require('./lib/is-bn')
+var isBN = _dereq_('./lib/is-bn')
 
 module.exports = isRat
 
@@ -2281,10 +2003,10 @@ function isRat(x) {
   return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1])
 }
 
-},{"./lib/is-bn":32}],29:[function(require,module,exports){
+},{"./lib/is-bn":29}],26:[function(_dereq_,module,exports){
 'use strict'
 
-var BN = require('bn.js')
+var BN = _dereq_('bn.js')
 
 module.exports = sign
 
@@ -2292,10 +2014,10 @@ function sign (x) {
   return x.cmp(new BN(0))
 }
 
-},{"bn.js":43}],30:[function(require,module,exports){
+},{"bn.js":40}],27:[function(_dereq_,module,exports){
 'use strict'
 
-var sign = require('./bn-sign')
+var sign = _dereq_('./bn-sign')
 
 module.exports = bn2num
 
@@ -2317,11 +2039,11 @@ function bn2num(b) {
   return sign(b) * out
 }
 
-},{"./bn-sign":29}],31:[function(require,module,exports){
+},{"./bn-sign":26}],28:[function(_dereq_,module,exports){
 'use strict'
 
-var db = require('double-bits')
-var ctz = require('bit-twiddle').countTrailingZeros
+var db = _dereq_('double-bits')
+var ctz = _dereq_('bit-twiddle').countTrailingZeros
 
 module.exports = ctzNumber
 
@@ -2338,10 +2060,10 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":41,"double-bits":89}],32:[function(require,module,exports){
+},{"bit-twiddle":38,"double-bits":87}],29:[function(_dereq_,module,exports){
 'use strict'
 
-var BN = require('bn.js')
+var BN = _dereq_('bn.js')
 
 module.exports = isBN
 
@@ -2351,11 +2073,11 @@ function isBN(x) {
   return x && typeof x === 'object' && Boolean(x.words)
 }
 
-},{"bn.js":43}],33:[function(require,module,exports){
+},{"bn.js":40}],30:[function(_dereq_,module,exports){
 'use strict'
 
-var BN = require('bn.js')
-var db = require('double-bits')
+var BN = _dereq_('bn.js')
+var db = _dereq_('double-bits')
 
 module.exports = num2bn
 
@@ -2368,11 +2090,11 @@ function num2bn(x) {
   }
 }
 
-},{"bn.js":43,"double-bits":89}],34:[function(require,module,exports){
+},{"bn.js":40,"double-bits":87}],31:[function(_dereq_,module,exports){
 'use strict'
 
-var num2bn = require('./num-to-bn')
-var sign = require('./bn-sign')
+var num2bn = _dereq_('./num-to-bn')
+var sign = _dereq_('./bn-sign')
 
 module.exports = rationalize
 
@@ -2396,10 +2118,10 @@ function rationalize(numer, denom) {
   return [ numer, denom ]
 }
 
-},{"./bn-sign":29,"./num-to-bn":33}],35:[function(require,module,exports){
+},{"./bn-sign":26,"./num-to-bn":30}],32:[function(_dereq_,module,exports){
 'use strict'
 
-var BN = require('bn.js')
+var BN = _dereq_('bn.js')
 
 module.exports = str2BN
 
@@ -2407,10 +2129,10 @@ function str2BN(x) {
   return new BN(x)
 }
 
-},{"bn.js":43}],36:[function(require,module,exports){
+},{"bn.js":40}],33:[function(_dereq_,module,exports){
 'use strict'
 
-var rationalize = require('./lib/rationalize')
+var rationalize = _dereq_('./lib/rationalize')
 
 module.exports = mul
 
@@ -2418,10 +2140,10 @@ function mul(a, b) {
   return rationalize(a[0].mul(b[0]), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":34}],37:[function(require,module,exports){
+},{"./lib/rationalize":31}],34:[function(_dereq_,module,exports){
 'use strict'
 
-var bnsign = require('./lib/bn-sign')
+var bnsign = _dereq_('./lib/bn-sign')
 
 module.exports = sign
 
@@ -2429,10 +2151,10 @@ function sign(x) {
   return bnsign(x[0]) * bnsign(x[1])
 }
 
-},{"./lib/bn-sign":29}],38:[function(require,module,exports){
+},{"./lib/bn-sign":26}],35:[function(_dereq_,module,exports){
 'use strict'
 
-var rationalize = require('./lib/rationalize')
+var rationalize = _dereq_('./lib/rationalize')
 
 module.exports = sub
 
@@ -2440,11 +2162,11 @@ function sub(a, b) {
   return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":34}],39:[function(require,module,exports){
+},{"./lib/rationalize":31}],36:[function(_dereq_,module,exports){
 'use strict'
 
-var bn2num = require('./lib/bn-to-num')
-var ctz = require('./lib/ctz')
+var bn2num = _dereq_('./lib/bn-to-num')
+var ctz = _dereq_('./lib/ctz')
 
 module.exports = roundRat
 
@@ -2478,7 +2200,7 @@ function roundRat (f) {
   }
 }
 
-},{"./lib/bn-to-num":30,"./lib/ctz":31}],40:[function(require,module,exports){
+},{"./lib/bn-to-num":27,"./lib/ctz":28}],37:[function(_dereq_,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, useNdarray, earlyOut) {
@@ -2540,7 +2262,7 @@ module.exports = {
   eq: compileBoundsSearch("-", true, "EQ", true)
 }
 
-},{}],41:[function(require,module,exports){
+},{}],38:[function(_dereq_,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -2746,10 +2468,10 @@ exports.nextCombination = function(v) {
 }
 
 
-},{}],42:[function(require,module,exports){
+},{}],39:[function(_dereq_,module,exports){
 'use strict'
 
-var clamp = require('clamp')
+var clamp = _dereq_('clamp')
 
 module.exports = calcSDF
 
@@ -2884,7 +2606,7 @@ function edt1d(f, d, v, z, n) {
     }
 }
 
-},{"clamp":59}],43:[function(require,module,exports){
+},{"clamp":57}],40:[function(_dereq_,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -2937,7 +2659,7 @@ function edt1d(f, d, v, z, n) {
 
   var Buffer;
   try {
-    Buffer = require('buffer').Buffer;
+    Buffer = _dereq_('buffer').Buffer;
   } catch (e) {
   }
 
@@ -6313,14 +6035,14 @@ function edt1d(f, d, v, z, n) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":51}],44:[function(require,module,exports){
+},{"buffer":48}],41:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = boxIntersectWrapper
 
-var pool = require('typedarray-pool')
-var sweep = require('./lib/sweep')
-var boxIntersectIter = require('./lib/intersect')
+var pool = _dereq_('typedarray-pool')
+var sweep = _dereq_('./lib/sweep')
+var boxIntersectIter = _dereq_('./lib/intersect')
 
 function boxEmpty(d, box) {
   for(var j=0; j<d; ++j) {
@@ -6452,7 +6174,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":46,"./lib/sweep":50,"typedarray-pool":291}],45:[function(require,module,exports){
+},{"./lib/intersect":43,"./lib/sweep":47,"typedarray-pool":288}],42:[function(_dereq_,module,exports){
 'use strict'
 
 var DIMENSION   = 'd'
@@ -6597,19 +6319,19 @@ function bruteForcePlanner(full) {
 
 exports.partial = bruteForcePlanner(false)
 exports.full    = bruteForcePlanner(true)
-},{}],46:[function(require,module,exports){
+},{}],43:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = boxIntersectIter
 
-var pool = require('typedarray-pool')
-var bits = require('bit-twiddle')
-var bruteForce = require('./brute')
+var pool = _dereq_('typedarray-pool')
+var bits = _dereq_('bit-twiddle')
+var bruteForce = _dereq_('./brute')
 var bruteForcePartial = bruteForce.partial
 var bruteForceFull = bruteForce.full
-var sweep = require('./sweep')
-var findMedian = require('./median')
-var genPartition = require('./partition')
+var sweep = _dereq_('./sweep')
+var findMedian = _dereq_('./median')
+var genPartition = _dereq_('./partition')
 
 //Twiddle parameters
 var BRUTE_FORCE_CUTOFF    = 128       //Cut off for brute force search
@@ -7092,12 +6814,12 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":45,"./median":47,"./partition":48,"./sweep":50,"bit-twiddle":41,"typedarray-pool":291}],47:[function(require,module,exports){
+},{"./brute":42,"./median":44,"./partition":45,"./sweep":47,"bit-twiddle":38,"typedarray-pool":288}],44:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = findMedian
 
-var genPartition = require('./partition')
+var genPartition = _dereq_('./partition')
 
 var partitionStartLessThan = genPartition('lo<p0', ['p0'])
 
@@ -7235,7 +6957,7 @@ function findMedian(d, axis, start, end, boxes, ids) {
     start, mid, boxes, ids,
     boxes[elemSize*mid+axis])
 }
-},{"./partition":48}],48:[function(require,module,exports){
+},{"./partition":45}],45:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = genPartition
@@ -7256,7 +6978,7 @@ function genPartition(predicate, args) {
         .replace('$', predicate))
   return Function.apply(void 0, fargs)
 }
-},{}],49:[function(require,module,exports){
+},{}],46:[function(_dereq_,module,exports){
 'use strict';
 
 //This code is extracted from ndarray-sort
@@ -7493,7 +7215,7 @@ function quickSort(left, right, data) {
     quickSort(less, great, data);
   }
 }
-},{}],50:[function(require,module,exports){
+},{}],47:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = {
@@ -7504,9 +7226,9 @@ module.exports = {
   scanComplete:   scanComplete
 }
 
-var pool  = require('typedarray-pool')
-var bits  = require('bit-twiddle')
-var isort = require('./sort')
+var pool  = _dereq_('typedarray-pool')
+var bits  = _dereq_('bit-twiddle')
+var isort = _dereq_('./sort')
 
 //Flag for blue
 var BLUE_FLAG = (1<<28)
@@ -7928,9 +7650,534 @@ red_loop:
     }
   }
 }
-},{"./sort":49,"bit-twiddle":41,"typedarray-pool":291}],51:[function(require,module,exports){
+},{"./sort":46,"bit-twiddle":38,"typedarray-pool":288}],48:[function(_dereq_,module,exports){
 
-},{}],52:[function(require,module,exports){
+},{}],49:[function(_dereq_,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var objectCreate = Object.create || objectCreatePolyfill
+var objectKeys = Object.keys || objectKeysPolyfill
+var bind = Function.prototype.bind || functionBindPolyfill
+
+function EventEmitter() {
+  if (!this._events || !Object.prototype.hasOwnProperty.call(this, '_events')) {
+    this._events = objectCreate(null);
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+var defaultMaxListeners = 10;
+
+var hasDefineProperty;
+try {
+  var o = {};
+  if (Object.defineProperty) Object.defineProperty(o, 'x', { value: 0 });
+  hasDefineProperty = o.x === 0;
+} catch (err) { hasDefineProperty = false }
+if (hasDefineProperty) {
+  Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+    enumerable: true,
+    get: function() {
+      return defaultMaxListeners;
+    },
+    set: function(arg) {
+      // check whether the input is a positive number (whose value is zero or
+      // greater and not a NaN).
+      if (typeof arg !== 'number' || arg < 0 || arg !== arg)
+        throw new TypeError('"defaultMaxListeners" must be a positive number');
+      defaultMaxListeners = arg;
+    }
+  });
+} else {
+  EventEmitter.defaultMaxListeners = defaultMaxListeners;
+}
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+  if (typeof n !== 'number' || n < 0 || isNaN(n))
+    throw new TypeError('"n" argument must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+function $getMaxListeners(that) {
+  if (that._maxListeners === undefined)
+    return EventEmitter.defaultMaxListeners;
+  return that._maxListeners;
+}
+
+EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+  return $getMaxListeners(this);
+};
+
+// These standalone emit* functions are used to optimize calling of event
+// handlers for fast cases because emit() itself often has a variable number of
+// arguments and can be deoptimized because of that. These functions always have
+// the same number of arguments and thus do not get deoptimized, so the code
+// inside them can execute faster.
+function emitNone(handler, isFn, self) {
+  if (isFn)
+    handler.call(self);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].call(self);
+  }
+}
+function emitOne(handler, isFn, self, arg1) {
+  if (isFn)
+    handler.call(self, arg1);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].call(self, arg1);
+  }
+}
+function emitTwo(handler, isFn, self, arg1, arg2) {
+  if (isFn)
+    handler.call(self, arg1, arg2);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].call(self, arg1, arg2);
+  }
+}
+function emitThree(handler, isFn, self, arg1, arg2, arg3) {
+  if (isFn)
+    handler.call(self, arg1, arg2, arg3);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].call(self, arg1, arg2, arg3);
+  }
+}
+
+function emitMany(handler, isFn, self, args) {
+  if (isFn)
+    handler.apply(self, args);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].apply(self, args);
+  }
+}
+
+EventEmitter.prototype.emit = function emit(type) {
+  var er, handler, len, args, i, events;
+  var doError = (type === 'error');
+
+  events = this._events;
+  if (events)
+    doError = (doError && events.error == null);
+  else if (!doError)
+    return false;
+
+  // If there is no 'error' event listener then throw.
+  if (doError) {
+    if (arguments.length > 1)
+      er = arguments[1];
+    if (er instanceof Error) {
+      throw er; // Unhandled 'error' event
+    } else {
+      // At least give some kind of context to the user
+      var err = new Error('Unhandled "error" event. (' + er + ')');
+      err.context = er;
+      throw err;
+    }
+    return false;
+  }
+
+  handler = events[type];
+
+  if (!handler)
+    return false;
+
+  var isFn = typeof handler === 'function';
+  len = arguments.length;
+  switch (len) {
+      // fast cases
+    case 1:
+      emitNone(handler, isFn, this);
+      break;
+    case 2:
+      emitOne(handler, isFn, this, arguments[1]);
+      break;
+    case 3:
+      emitTwo(handler, isFn, this, arguments[1], arguments[2]);
+      break;
+    case 4:
+      emitThree(handler, isFn, this, arguments[1], arguments[2], arguments[3]);
+      break;
+      // slower
+    default:
+      args = new Array(len - 1);
+      for (i = 1; i < len; i++)
+        args[i - 1] = arguments[i];
+      emitMany(handler, isFn, this, args);
+  }
+
+  return true;
+};
+
+function _addListener(target, type, listener, prepend) {
+  var m;
+  var events;
+  var existing;
+
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
+
+  events = target._events;
+  if (!events) {
+    events = target._events = objectCreate(null);
+    target._eventsCount = 0;
+  } else {
+    // To avoid recursion in the case that type === "newListener"! Before
+    // adding it to the listeners, first emit "newListener".
+    if (events.newListener) {
+      target.emit('newListener', type,
+          listener.listener ? listener.listener : listener);
+
+      // Re-assign `events` because a newListener handler could have caused the
+      // this._events to be assigned to a new object
+      events = target._events;
+    }
+    existing = events[type];
+  }
+
+  if (!existing) {
+    // Optimize the case of one listener. Don't need the extra array object.
+    existing = events[type] = listener;
+    ++target._eventsCount;
+  } else {
+    if (typeof existing === 'function') {
+      // Adding the second element, need to change to array.
+      existing = events[type] =
+          prepend ? [listener, existing] : [existing, listener];
+    } else {
+      // If we've already got an array, just append.
+      if (prepend) {
+        existing.unshift(listener);
+      } else {
+        existing.push(listener);
+      }
+    }
+
+    // Check for listener leak
+    if (!existing.warned) {
+      m = $getMaxListeners(target);
+      if (m && m > 0 && existing.length > m) {
+        existing.warned = true;
+        var w = new Error('Possible EventEmitter memory leak detected. ' +
+            existing.length + ' "' + String(type) + '" listeners ' +
+            'added. Use emitter.setMaxListeners() to ' +
+            'increase limit.');
+        w.name = 'MaxListenersExceededWarning';
+        w.emitter = target;
+        w.type = type;
+        w.count = existing.length;
+        if (typeof console === 'object' && console.warn) {
+          console.warn('%s: %s', w.name, w.message);
+        }
+      }
+    }
+  }
+
+  return target;
+}
+
+EventEmitter.prototype.addListener = function addListener(type, listener) {
+  return _addListener(this, type, listener, false);
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.prependListener =
+    function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+
+function onceWrapper() {
+  if (!this.fired) {
+    this.target.removeListener(this.type, this.wrapFn);
+    this.fired = true;
+    switch (arguments.length) {
+      case 0:
+        return this.listener.call(this.target);
+      case 1:
+        return this.listener.call(this.target, arguments[0]);
+      case 2:
+        return this.listener.call(this.target, arguments[0], arguments[1]);
+      case 3:
+        return this.listener.call(this.target, arguments[0], arguments[1],
+            arguments[2]);
+      default:
+        var args = new Array(arguments.length);
+        for (var i = 0; i < args.length; ++i)
+          args[i] = arguments[i];
+        this.listener.apply(this.target, args);
+    }
+  }
+}
+
+function _onceWrap(target, type, listener) {
+  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
+  var wrapped = bind.call(onceWrapper, state);
+  wrapped.listener = listener;
+  state.wrapFn = wrapped;
+  return wrapped;
+}
+
+EventEmitter.prototype.once = function once(type, listener) {
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
+  this.on(type, _onceWrap(this, type, listener));
+  return this;
+};
+
+EventEmitter.prototype.prependOnceListener =
+    function prependOnceListener(type, listener) {
+      if (typeof listener !== 'function')
+        throw new TypeError('"listener" argument must be a function');
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+
+// Emits a 'removeListener' event if and only if the listener was removed.
+EventEmitter.prototype.removeListener =
+    function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+
+      if (typeof listener !== 'function')
+        throw new TypeError('"listener" argument must be a function');
+
+      events = this._events;
+      if (!events)
+        return this;
+
+      list = events[type];
+      if (!list)
+        return this;
+
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = objectCreate(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit('removeListener', type, list.listener || listener);
+        }
+      } else if (typeof list !== 'function') {
+        position = -1;
+
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+
+        if (position < 0)
+          return this;
+
+        if (position === 0)
+          list.shift();
+        else
+          spliceOne(list, position);
+
+        if (list.length === 1)
+          events[type] = list[0];
+
+        if (events.removeListener)
+          this.emit('removeListener', type, originalListener || listener);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.removeAllListeners =
+    function removeAllListeners(type) {
+      var listeners, events, i;
+
+      events = this._events;
+      if (!events)
+        return this;
+
+      // not listening for removeListener, no need to emit
+      if (!events.removeListener) {
+        if (arguments.length === 0) {
+          this._events = objectCreate(null);
+          this._eventsCount = 0;
+        } else if (events[type]) {
+          if (--this._eventsCount === 0)
+            this._events = objectCreate(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+
+      // emit removeListener for all listeners on all events
+      if (arguments.length === 0) {
+        var keys = objectKeys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === 'removeListener') continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners('removeListener');
+        this._events = objectCreate(null);
+        this._eventsCount = 0;
+        return this;
+      }
+
+      listeners = events[type];
+
+      if (typeof listeners === 'function') {
+        this.removeListener(type, listeners);
+      } else if (listeners) {
+        // LIFO order
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+
+      return this;
+    };
+
+function _listeners(target, type, unwrap) {
+  var events = target._events;
+
+  if (!events)
+    return [];
+
+  var evlistener = events[type];
+  if (!evlistener)
+    return [];
+
+  if (typeof evlistener === 'function')
+    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+  return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+}
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  return _listeners(this, type, true);
+};
+
+EventEmitter.prototype.rawListeners = function rawListeners(type) {
+  return _listeners(this, type, false);
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  if (typeof emitter.listenerCount === 'function') {
+    return emitter.listenerCount(type);
+  } else {
+    return listenerCount.call(emitter, type);
+  }
+};
+
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
+  var events = this._events;
+
+  if (events) {
+    var evlistener = events[type];
+
+    if (typeof evlistener === 'function') {
+      return 1;
+    } else if (evlistener) {
+      return evlistener.length;
+    }
+  }
+
+  return 0;
+}
+
+EventEmitter.prototype.eventNames = function eventNames() {
+  return this._eventsCount > 0 ? Reflect.ownKeys(this._events) : [];
+};
+
+// About 1.5x faster than the two-arg version of Array#splice().
+function spliceOne(list, index) {
+  for (var i = index, k = i + 1, n = list.length; k < n; i += 1, k += 1)
+    list[i] = list[k];
+  list.pop();
+}
+
+function arrayClone(arr, n) {
+  var copy = new Array(n);
+  for (var i = 0; i < n; ++i)
+    copy[i] = arr[i];
+  return copy;
+}
+
+function unwrapListeners(arr) {
+  var ret = new Array(arr.length);
+  for (var i = 0; i < ret.length; ++i) {
+    ret[i] = arr[i].listener || arr[i];
+  }
+  return ret;
+}
+
+function objectCreatePolyfill(proto) {
+  var F = function() {};
+  F.prototype = proto;
+  return new F;
+}
+function objectKeysPolyfill(obj) {
+  var keys = [];
+  for (var k in obj) if (Object.prototype.hasOwnProperty.call(obj, k)) {
+    keys.push(k);
+  }
+  return k;
+}
+function functionBindPolyfill(context) {
+  var fn = this;
+  return function () {
+    return fn.apply(context, arguments);
+  };
+}
+
+},{}],50:[function(_dereq_,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -7941,8 +8188,8 @@ red_loop:
 
 'use strict'
 
-var base64 = require('base64-js')
-var ieee754 = require('ieee754')
+var base64 = _dereq_('base64-js')
+var ieee754 = _dereq_('ieee754')
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -9668,13 +9915,13 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":23,"ieee754":203}],53:[function(require,module,exports){
+},{"base64-js":20,"ieee754":200}],51:[function(_dereq_,module,exports){
 'use strict'
 
-var monotoneTriangulate = require('./lib/monotone')
-var makeIndex = require('./lib/triangulation')
-var delaunayFlip = require('./lib/delaunay')
-var filterTriangulation = require('./lib/filter')
+var monotoneTriangulate = _dereq_('./lib/monotone')
+var makeIndex = _dereq_('./lib/triangulation')
+var delaunayFlip = _dereq_('./lib/delaunay')
+var filterTriangulation = _dereq_('./lib/filter')
 
 module.exports = cdt2d
 
@@ -9752,11 +9999,11 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":54,"./lib/filter":55,"./lib/monotone":56,"./lib/triangulation":57}],54:[function(require,module,exports){
+},{"./lib/delaunay":52,"./lib/filter":53,"./lib/monotone":54,"./lib/triangulation":55}],52:[function(_dereq_,module,exports){
 'use strict'
 
-var inCircle = require('robust-in-sphere')[4]
-var bsearch = require('binary-search-bounds')
+var inCircle = _dereq_('robust-in-sphere')[4]
+var bsearch = _dereq_('binary-search-bounds')
 
 module.exports = delaunayRefine
 
@@ -9869,10 +10116,10 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":58,"robust-in-sphere":262}],55:[function(require,module,exports){
+},{"binary-search-bounds":56,"robust-in-sphere":259}],53:[function(_dereq_,module,exports){
 'use strict'
 
-var bsearch = require('binary-search-bounds')
+var bsearch = _dereq_('binary-search-bounds')
 
 module.exports = classifyFaces
 
@@ -10051,11 +10298,11 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":58}],56:[function(require,module,exports){
+},{"binary-search-bounds":56}],54:[function(_dereq_,module,exports){
 'use strict'
 
-var bsearch = require('binary-search-bounds')
-var orient = require('robust-orientation')[3]
+var bsearch = _dereq_('binary-search-bounds')
+var orient = _dereq_('robust-orientation')[3]
 
 var EVENT_POINT = 0
 var EVENT_END   = 1
@@ -10240,10 +10487,10 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":58,"robust-orientation":263}],57:[function(require,module,exports){
+},{"binary-search-bounds":56,"robust-orientation":260}],55:[function(_dereq_,module,exports){
 'use strict'
 
-var bsearch = require('binary-search-bounds')
+var bsearch = _dereq_('binary-search-bounds')
 
 module.exports = createTriangulation
 
@@ -10346,7 +10593,7 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":58}],58:[function(require,module,exports){
+},{"binary-search-bounds":56}],56:[function(_dereq_,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, earlyOut) {
@@ -10399,7 +10646,7 @@ module.exports = {
   eq: compileBoundsSearch("-",  true,   "EQ", true)
 }
 
-},{}],59:[function(require,module,exports){
+},{}],57:[function(_dereq_,module,exports){
 module.exports = clamp
 
 function clamp(value, min, max) {
@@ -10408,21 +10655,21 @@ function clamp(value, min, max) {
     : (value < max ? max : value > min ? min : value)
 }
 
-},{}],60:[function(require,module,exports){
+},{}],58:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = cleanPSLG
 
-var UnionFind = require('union-find')
-var boxIntersect = require('box-intersect')
-var segseg = require('robust-segment-intersect')
-var rat = require('big-rat')
-var ratCmp = require('big-rat/cmp')
-var ratToFloat = require('big-rat/to-float')
-var ratVec = require('rat-vec')
-var nextafter = require('nextafter')
+var UnionFind = _dereq_('union-find')
+var boxIntersect = _dereq_('box-intersect')
+var segseg = _dereq_('robust-segment-intersect')
+var rat = _dereq_('big-rat')
+var ratCmp = _dereq_('big-rat/cmp')
+var ratToFloat = _dereq_('big-rat/to-float')
+var ratVec = _dereq_('rat-vec')
+var nextafter = _dereq_('nextafter')
 
-var solveIntersection = require('./lib/rat-seg-intersect')
+var solveIntersection = _dereq_('./lib/rat-seg-intersect')
 
 // Bounds on a rational number when rounded to a float
 function boundRat (r) {
@@ -10791,18 +11038,18 @@ function cleanPSLG (points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":61,"big-rat":27,"big-rat/cmp":25,"big-rat/to-float":39,"box-intersect":44,"nextafter":221,"rat-vec":251,"robust-segment-intersect":266,"union-find":292}],61:[function(require,module,exports){
+},{"./lib/rat-seg-intersect":59,"big-rat":24,"big-rat/cmp":22,"big-rat/to-float":36,"box-intersect":41,"nextafter":218,"rat-vec":248,"robust-segment-intersect":263,"union-find":289}],59:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = solveIntersection
 
-var ratMul = require('big-rat/mul')
-var ratDiv = require('big-rat/div')
-var ratSub = require('big-rat/sub')
-var ratSign = require('big-rat/sign')
-var rvSub = require('rat-vec/sub')
-var rvAdd = require('rat-vec/add')
-var rvMuls = require('rat-vec/muls')
+var ratMul = _dereq_('big-rat/mul')
+var ratDiv = _dereq_('big-rat/div')
+var ratSub = _dereq_('big-rat/sub')
+var ratSign = _dereq_('big-rat/sign')
+var rvSub = _dereq_('rat-vec/sub')
+var rvAdd = _dereq_('rat-vec/add')
+var rvMuls = _dereq_('rat-vec/muls')
 
 function ratPerp (a, b) {
   return ratSub(ratMul(a[0], b[1]), ratMul(a[1], b[0]))
@@ -10835,12 +11082,12 @@ function solveIntersection (a, b, c, d) {
   return r
 }
 
-},{"big-rat/div":26,"big-rat/mul":36,"big-rat/sign":37,"big-rat/sub":38,"rat-vec/add":250,"rat-vec/muls":252,"rat-vec/sub":253}],62:[function(require,module,exports){
+},{"big-rat/div":23,"big-rat/mul":33,"big-rat/sign":34,"big-rat/sub":35,"rat-vec/add":247,"rat-vec/muls":249,"rat-vec/sub":250}],60:[function(_dereq_,module,exports){
 /** @module  color-id */
 
 'use strict'
 
-var clamp = require('clamp')
+var clamp = _dereq_('clamp')
 
 module.exports = toNumber
 module.exports.to = toNumber
@@ -10884,7 +11131,7 @@ function fromNumber (n, normalized) {
 	return [r/255, g/255, b/255, a/255]
 }
 
-},{"clamp":59}],63:[function(require,module,exports){
+},{"clamp":57}],61:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = {
@@ -11038,14 +11285,14 @@ module.exports = {
 	"yellowgreen": [154, 205, 50]
 };
 
-},{}],64:[function(require,module,exports){
-/** @module  color-rgba */
+},{}],62:[function(_dereq_,module,exports){
+/** @module  color-normalize */
 
 'use strict'
 
-var rgba = require('color-rgba')
-var clamp = require('clamp')
-var dtype = require('dtype')
+var rgba = _dereq_('color-rgba')
+var clamp = _dereq_('clamp')
+var dtype = _dereq_('dtype')
 
 module.exports = function normalize (color, type) {
 	if (type === 'float' || !type) type = 'array'
@@ -11054,25 +11301,25 @@ module.exports = function normalize (color, type) {
 	var Ctor = dtype(type)
 	var output = new Ctor(4)
 
-	//same class does not change values
-	if (color instanceof Ctor) {
-		if (Array.isArray(color)) {
-			return color.slice()
-		}
-
-		output.set(color)
-
-		return output
-	}
-
 	var normalize = type !== 'uint8' && type !== 'uint8_clamped'
 
-	//consider uint8 array as 0..255 channel values
-	if (color instanceof Uint8Array || color instanceof Uint8ClampedArray) {
+	// attempt to parse non-array arguments
+	if (!color.length || typeof color === 'string') {
+		color = rgba(color)
+		color[0] /= 255
+		color[1] /= 255
+		color[2] /= 255
+	}
+
+	// 0, 1 are possible contradictory values for Arrays:
+	// [1,1,1] input gives [1,1,1] output instead of [1/255,1/255,1/255], which may be collision if input is meant to be uint.
+	// converting [1,1,1] to [1/255,1/255,1/255] in case of float input gives larger mistake since [1,1,1] float is frequent edge value, whereas [0,1,1], [1,1,1] etc. uint inputs are relatively rare
+	if (isInt(color)) {
 		output[0] = color[0]
 		output[1] = color[1]
 		output[2] = color[2]
 		output[3] = color[3] != null ? color[3] : 255
+
 		if (normalize) {
 			output[0] /= 255
 			output[1] /= 255
@@ -11083,19 +11330,10 @@ module.exports = function normalize (color, type) {
 		return output
 	}
 
-	//attempt to parse non-array arguments
-	if (!color.length || typeof color === 'string') {
-		color = rgba(color)
-		color[0] /= 255
-		color[1] /= 255
-		color[2] /= 255
-	}
-
-	//consider every other array type as 0..1 float values
 	if (!normalize) {
-		output[0] = clamp(Math.round(color[0] * 255), 0, 255)
-		output[1] = clamp(Math.round(color[1] * 255), 0, 255)
-		output[2] = clamp(Math.round(color[2] * 255), 0, 255)
+		output[0] = clamp(Math.floor(color[0] * 255), 0, 255)
+		output[1] = clamp(Math.floor(color[1] * 255), 0, 255)
+		output[2] = clamp(Math.floor(color[2] * 255), 0, 255)
 		output[3] = color[3] == null ? 255 : clamp(Math.floor(color[3] * 255), 0, 255)
 	} else {
 		output[0] = color[0]
@@ -11107,7 +11345,51 @@ module.exports = function normalize (color, type) {
 	return output
 }
 
-},{"clamp":59,"color-rgba":66,"dtype":91}],65:[function(require,module,exports){
+function isInt(color) {
+	if (color instanceof Uint8Array || color instanceof Uint8ClampedArray) return true
+
+	if (Array.isArray(color) &&
+		(color[0] > 1 || color[0] === 0) &&
+		(color[1] > 1 || color[1] === 0) &&
+		(color[2] > 1 || color[2] === 0) &&
+		(!color[3] || color[3] > 1)
+	) return true
+
+	return false
+}
+
+},{"clamp":57,"color-rgba":63,"dtype":89}],63:[function(_dereq_,module,exports){
+/** @module  color-rgba */
+
+'use strict'
+
+var parse = _dereq_('color-parse')
+var hsl = _dereq_('color-space/hsl')
+var clamp = _dereq_('clamp')
+
+module.exports = function rgba (color) {
+	var values, i, l
+
+	//attempt to parse non-array arguments
+	var parsed = parse(color)
+
+	if (!parsed.space) return []
+
+	values = Array(3)
+	values[0] = clamp(parsed.values[0], 0, 255)
+	values[1] = clamp(parsed.values[1], 0, 255)
+	values[2] = clamp(parsed.values[2], 0, 255)
+
+	if (parsed.space[0] === 'h') {
+		values = hsl.rgb(values)
+	}
+
+	values.push(clamp(parsed.alpha, 0, 1))
+
+	return values
+}
+
+},{"clamp":57,"color-parse":64,"color-space/hsl":65}],64:[function(_dereq_,module,exports){
 (function (global){
 /**
  * @module color-parse
@@ -11115,9 +11397,9 @@ module.exports = function normalize (color, type) {
 
 'use strict'
 
-var names = require('color-name')
-var isObject = require('is-plain-obj')
-var defined = require('defined')
+var names = _dereq_('color-name')
+var isObject = _dereq_('is-plain-obj')
+var defined = _dereq_('defined')
 
 module.exports = parse
 
@@ -11239,7 +11521,7 @@ function parse (cstr) {
 	}
 
 	//numeric case
-	else if (typeof cstr === 'number') {
+	else if (!isNaN(cstr)) {
 		space = 'rgb'
 		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff]
 	}
@@ -11285,46 +11567,13 @@ function parse (cstr) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"color-name":63,"defined":87,"is-plain-obj":211}],66:[function(require,module,exports){
-/** @module  color-rgba */
-
-'use strict'
-
-var parse = require('color-parse')
-var hsl = require('color-space/hsl')
-var clamp = require('clamp')
-
-module.exports = function rgba (color) {
-	var values, i, l
-
-	if (typeof color !== 'string') throw Error('Argument should be a string')
-
-	//attempt to parse non-array arguments
-	var parsed = parse(color)
-
-	if (!parsed.space) return []
-
-	values = Array(3)
-	values[0] = clamp(parsed.values[0], 0, 255)
-	values[1] = clamp(parsed.values[1], 0, 255)
-	values[2] = clamp(parsed.values[2], 0, 255)
-
-	if (parsed.space[0] === 'h') {
-		values = hsl.rgb(values)
-	}
-
-	values.push(clamp(parsed.alpha, 0, 1))
-
-	return values
-}
-
-},{"clamp":59,"color-parse":65,"color-space/hsl":67}],67:[function(require,module,exports){
+},{"color-name":61,"defined":85,"is-plain-obj":208}],65:[function(_dereq_,module,exports){
 /**
  * @module color-space/hsl
  */
 'use strict'
 
-var rgb = require('./rgb');
+var rgb = _dereq_('./rgb');
 
 module.exports = {
 	name: 'hsl',
@@ -11427,7 +11676,7 @@ rgb.hsl = function(rgb) {
 	return [h, s * 100, l * 100];
 };
 
-},{"./rgb":68}],68:[function(require,module,exports){
+},{"./rgb":66}],66:[function(_dereq_,module,exports){
 /**
  * RGB space.
  *
@@ -11443,16 +11692,16 @@ module.exports = {
 	alias: ['RGB']
 };
 
-},{}],69:[function(require,module,exports){
+},{}],67:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = compareAngle
 
-var orient = require("robust-orientation")
-var sgn = require("signum")
-var twoSum = require("two-sum")
-var robustProduct = require("robust-product")
-var robustSum = require("robust-sum")
+var orient = _dereq_("robust-orientation")
+var sgn = _dereq_("signum")
+var twoSum = _dereq_("two-sum")
+var robustProduct = _dereq_("robust-product")
+var robustSum = _dereq_("robust-sum")
 
 function testInterior(a, b, c) {
   var x0 = twoSum(a[0], -b[0])
@@ -11529,7 +11778,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":263,"robust-product":264,"robust-sum":268,"signum":269,"two-sum":290}],70:[function(require,module,exports){
+},{"robust-orientation":260,"robust-product":261,"robust-sum":265,"signum":266,"two-sum":287}],68:[function(_dereq_,module,exports){
 module.exports=[
 	"xx-small",
 	"x-small",
@@ -11542,7 +11791,7 @@ module.exports=[
 	"smaller"
 ]
 
-},{}],71:[function(require,module,exports){
+},{}],69:[function(_dereq_,module,exports){
 module.exports=[
 	"normal",
 	"condensed",
@@ -11555,14 +11804,14 @@ module.exports=[
 	"ultra-expanded"
 ]
 
-},{}],72:[function(require,module,exports){
+},{}],70:[function(_dereq_,module,exports){
 module.exports=[
 	"normal",
 	"italic",
 	"oblique"
 ]
 
-},{}],73:[function(require,module,exports){
+},{}],71:[function(_dereq_,module,exports){
 module.exports=[
 	"normal",
 	"bold",
@@ -11579,18 +11828,18 @@ module.exports=[
 	"900"
 ]
 
-},{}],74:[function(require,module,exports){
+},{}],72:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = {
-	parse: require('./parse'),
-	stringify: require('./stringify')
+	parse: _dereq_('./parse'),
+	stringify: _dereq_('./stringify')
 }
 
-},{"./parse":76,"./stringify":77}],75:[function(require,module,exports){
+},{"./parse":74,"./stringify":75}],73:[function(_dereq_,module,exports){
 'use strict'
 
-var sizes = require('css-font-size-keywords')
+var sizes = _dereq_('css-font-size-keywords')
 
 module.exports = {
 	isSize: function isSize(value) {
@@ -11600,17 +11849,17 @@ module.exports = {
 	}
 }
 
-},{"css-font-size-keywords":70}],76:[function(require,module,exports){
+},{"css-font-size-keywords":68}],74:[function(_dereq_,module,exports){
 'use strict'
 
-var unquote = require('unquote')
-var globalKeywords = require('css-global-keywords')
-var systemFontKeywords = require('css-system-font-keywords')
-var fontWeightKeywords = require('css-font-weight-keywords')
-var fontStyleKeywords = require('css-font-style-keywords')
-var fontStretchKeywords = require('css-font-stretch-keywords')
-var splitBy = require('string-split-by')
-var isSize = require('./lib/util').isSize
+var unquote = _dereq_('unquote')
+var globalKeywords = _dereq_('css-global-keywords')
+var systemFontKeywords = _dereq_('css-system-font-keywords')
+var fontWeightKeywords = _dereq_('css-font-weight-keywords')
+var fontStyleKeywords = _dereq_('css-font-style-keywords')
+var fontStretchKeywords = _dereq_('css-font-stretch-keywords')
+var splitBy = _dereq_('string-split-by')
+var isSize = _dereq_('./lib/util').isSize
 
 
 module.exports = parseFont
@@ -11709,17 +11958,17 @@ function parseLineHeight(value) {
 	return value
 }
 
-},{"./lib/util":75,"css-font-stretch-keywords":71,"css-font-style-keywords":72,"css-font-weight-keywords":73,"css-global-keywords":78,"css-system-font-keywords":79,"string-split-by":277,"unquote":294}],77:[function(require,module,exports){
+},{"./lib/util":73,"css-font-stretch-keywords":69,"css-font-style-keywords":70,"css-font-weight-keywords":71,"css-global-keywords":76,"css-system-font-keywords":77,"string-split-by":274,"unquote":291}],75:[function(_dereq_,module,exports){
 'use strict'
 
-var pick = require('pick-by-alias')
-var isSize = require('./lib/util').isSize
+var pick = _dereq_('pick-by-alias')
+var isSize = _dereq_('./lib/util').isSize
 
-var globals = a2o(require('css-global-keywords'))
-var systems = a2o(require('css-system-font-keywords'))
-var weights = a2o(require('css-font-weight-keywords'))
-var styles = a2o(require('css-font-style-keywords'))
-var stretches = a2o(require('css-font-stretch-keywords'))
+var globals = a2o(_dereq_('css-global-keywords'))
+var systems = a2o(_dereq_('css-system-font-keywords'))
+var weights = a2o(_dereq_('css-font-weight-keywords'))
+var styles = a2o(_dereq_('css-font-style-keywords'))
+var stretches = a2o(_dereq_('css-font-stretch-keywords'))
 
 var variants = {'normal': 1, 'small-caps': 1}
 var fams = {
@@ -11813,14 +12062,14 @@ function a2o (a) {
 	return o
 }
 
-},{"./lib/util":75,"css-font-stretch-keywords":71,"css-font-style-keywords":72,"css-font-weight-keywords":73,"css-global-keywords":78,"css-system-font-keywords":79,"pick-by-alias":232}],78:[function(require,module,exports){
+},{"./lib/util":73,"css-font-stretch-keywords":69,"css-font-style-keywords":70,"css-font-weight-keywords":71,"css-global-keywords":76,"css-system-font-keywords":77,"pick-by-alias":229}],76:[function(_dereq_,module,exports){
 module.exports=[
 	"inherit",
 	"initial",
 	"unset"
 ]
 
-},{}],79:[function(require,module,exports){
+},{}],77:[function(_dereq_,module,exports){
 module.exports=[
 	"caption",
 	"icon",
@@ -11830,10 +12079,10 @@ module.exports=[
 	"status-bar"
 ]
 
-},{}],80:[function(require,module,exports){
+},{}],78:[function(_dereq_,module,exports){
 "use strict"
 
-var createThunk = require("./lib/thunk.js")
+var createThunk = _dereq_("./lib/thunk.js")
 
 function Procedure() {
   this.argTypes = []
@@ -11941,10 +12190,10 @@ function compileCwise(user_args) {
 
 module.exports = compileCwise
 
-},{"./lib/thunk.js":82}],81:[function(require,module,exports){
+},{"./lib/thunk.js":80}],79:[function(_dereq_,module,exports){
 "use strict"
 
-var uniq = require("uniq")
+var uniq = _dereq_("uniq")
 
 // This function generates very simple loops analogous to how you typically traverse arrays (the outermost loop corresponds to the slowest changing index, the innermost loop to the fastest changing index)
 // TODO: If two arrays have the same strides (and offsets) there is potential for decreasing the number of "pointers" and related variables. The drawback is that the type signature would become more specific and that there would thus be less potential for caching, but it might still be worth it, especially when dealing with large numbers of arguments.
@@ -12301,7 +12550,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":293}],82:[function(require,module,exports){
+},{"uniq":290}],80:[function(_dereq_,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -12327,7 +12576,7 @@ module.exports = generateCWiseOp
 //   return thunk(compile.bind1(proc))
 // }
 
-var compile = require("./compile.js")
+var compile = _dereq_("./compile.js")
 
 function createThunk(proc) {
   var code = ["'use strict'", "var CACHED={}"]
@@ -12389,17 +12638,17 @@ function createThunk(proc) {
 
 module.exports = createThunk
 
-},{"./compile.js":81}],83:[function(require,module,exports){
-module.exports = require("cwise-compiler")
-},{"cwise-compiler":80}],84:[function(require,module,exports){
+},{"./compile.js":79}],81:[function(_dereq_,module,exports){
+module.exports = _dereq_("cwise-compiler")
+},{"cwise-compiler":78}],82:[function(_dereq_,module,exports){
 'use strict';
 
-var copy             = require('es5-ext/object/copy')
-  , normalizeOptions = require('es5-ext/object/normalize-options')
-  , ensureCallable   = require('es5-ext/object/valid-callable')
-  , map              = require('es5-ext/object/map')
-  , callable         = require('es5-ext/object/valid-callable')
-  , validValue       = require('es5-ext/object/valid-value')
+var copy             = _dereq_('es5-ext/object/copy')
+  , normalizeOptions = _dereq_('es5-ext/object/normalize-options')
+  , ensureCallable   = _dereq_('es5-ext/object/valid-callable')
+  , map              = _dereq_('es5-ext/object/map')
+  , callable         = _dereq_('es5-ext/object/valid-callable')
+  , validValue       = _dereq_('es5-ext/object/valid-value')
 
   , bind = Function.prototype.bind, defineProperty = Object.defineProperty
   , hasOwnProperty = Object.prototype.hasOwnProperty
@@ -12425,13 +12674,13 @@ module.exports = function (props/*, options*/) {
 	return map(props, function (desc, name) { return define(name, desc, options); });
 };
 
-},{"es5-ext/object/copy":111,"es5-ext/object/map":120,"es5-ext/object/normalize-options":121,"es5-ext/object/valid-callable":125,"es5-ext/object/valid-value":127}],85:[function(require,module,exports){
+},{"es5-ext/object/copy":109,"es5-ext/object/map":118,"es5-ext/object/normalize-options":119,"es5-ext/object/valid-callable":123,"es5-ext/object/valid-value":125}],83:[function(_dereq_,module,exports){
 'use strict';
 
-var assign        = require('es5-ext/object/assign')
-  , normalizeOpts = require('es5-ext/object/normalize-options')
-  , isCallable    = require('es5-ext/object/is-callable')
-  , contains      = require('es5-ext/string/#/contains')
+var assign        = _dereq_('es5-ext/object/assign')
+  , normalizeOpts = _dereq_('es5-ext/object/normalize-options')
+  , isCallable    = _dereq_('es5-ext/object/is-callable')
+  , contains      = _dereq_('es5-ext/string/#/contains')
 
   , d;
 
@@ -12490,7 +12739,7 @@ d.gs = function (dscr, get, set/*, options*/) {
 	return !options ? desc : assign(normalizeOpts(options), desc);
 };
 
-},{"es5-ext/object/assign":108,"es5-ext/object/is-callable":114,"es5-ext/object/normalize-options":121,"es5-ext/string/#/contains":128}],86:[function(require,module,exports){
+},{"es5-ext/object/assign":106,"es5-ext/object/is-callable":112,"es5-ext/object/normalize-options":119,"es5-ext/string/#/contains":126}],84:[function(_dereq_,module,exports){
 !function() {
   var d3 = {
     version: "3.5.17"
@@ -22045,14 +22294,14 @@ d.gs = function (dscr, get, set/*, options*/) {
   });
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
 }();
-},{}],87:[function(require,module,exports){
+},{}],85:[function(_dereq_,module,exports){
 module.exports = function () {
     for (var i = 0; i < arguments.length; i++) {
         if (arguments[i] !== undefined) return arguments[i];
     }
 };
 
-},{}],88:[function(require,module,exports){
+},{}],86:[function(_dereq_,module,exports){
 'use strict'
 
 
@@ -22122,7 +22371,7 @@ function createPairs (range) {
 	return pairs
 }
 
-},{}],89:[function(require,module,exports){
+},{}],87:[function(_dereq_,module,exports){
 (function (Buffer){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -22225,10 +22474,10 @@ module.exports.denormalized = function(n) {
   var hi = module.exports.hi(n)
   return !(hi & 0x7ff00000)
 }
-}).call(this,require("buffer").Buffer)
-},{"buffer":52}],90:[function(require,module,exports){
-var abs = require('abs-svg-path')
-var normalize = require('normalize-svg-path')
+}).call(this,_dereq_("buffer").Buffer)
+},{"buffer":50}],88:[function(_dereq_,module,exports){
+var abs = _dereq_('abs-svg-path')
+var normalize = _dereq_('normalize-svg-path')
 
 var methods = {
   'M': 'moveTo',
@@ -22252,7 +22501,7 @@ module.exports = function(context, segments) {
   context.closePath()
 }
 
-},{"abs-svg-path":16,"normalize-svg-path":222}],91:[function(require,module,exports){
+},{"abs-svg-path":13,"normalize-svg-path":219}],89:[function(_dereq_,module,exports){
 module.exports = function(dtype) {
   switch (dtype) {
     case 'int8':
@@ -22278,7 +22527,7 @@ module.exports = function(dtype) {
   }
 }
 
-},{}],92:[function(require,module,exports){
+},{}],90:[function(_dereq_,module,exports){
 "use strict"
 
 function dupe_array(count, value, i) {
@@ -22328,7 +22577,7 @@ function dupe(count, value) {
 }
 
 module.exports = dupe
-},{}],93:[function(require,module,exports){
+},{}],91:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -22980,12 +23229,12 @@ earcut.flatten = function (data) {
     return result;
 };
 
-},{}],94:[function(require,module,exports){
+},{}],92:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = edgeToAdjacency
 
-var uniq = require("uniq")
+var uniq = _dereq_("uniq")
 
 function edgeToAdjacency(edges, numVertices) {
   var numEdges = edges.length
@@ -23014,28 +23263,28 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":293}],95:[function(require,module,exports){
+},{"uniq":290}],93:[function(_dereq_,module,exports){
 // Inspired by Google Closure:
 // http://closure-library.googlecode.com/svn/docs/
 // closure_goog_array_array.js.html#goog.array.clear
 
 "use strict";
 
-var value = require("../../object/valid-value");
+var value = _dereq_("../../object/valid-value");
 
 module.exports = function () {
 	value(this).length = 0;
 	return this;
 };
 
-},{"../../object/valid-value":127}],96:[function(require,module,exports){
+},{"../../object/valid-value":125}],94:[function(_dereq_,module,exports){
 "use strict";
 
-module.exports = require("./is-implemented")()
+module.exports = _dereq_("./is-implemented")()
 	? Array.from
-	: require("./shim");
+	: _dereq_("./shim");
 
-},{"./is-implemented":97,"./shim":98}],97:[function(require,module,exports){
+},{"./is-implemented":95,"./shim":96}],95:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -23046,17 +23295,17 @@ module.exports = function () {
 	return Boolean(result && (result !== arr) && (result[1] === "dwa"));
 };
 
-},{}],98:[function(require,module,exports){
+},{}],96:[function(_dereq_,module,exports){
 "use strict";
 
-var iteratorSymbol = require("es6-symbol").iterator
-  , isArguments    = require("../../function/is-arguments")
-  , isFunction     = require("../../function/is-function")
-  , toPosInt       = require("../../number/to-pos-integer")
-  , callable       = require("../../object/valid-callable")
-  , validValue     = require("../../object/valid-value")
-  , isValue        = require("../../object/is-value")
-  , isString       = require("../../string/is-string")
+var iteratorSymbol = _dereq_("es6-symbol").iterator
+  , isArguments    = _dereq_("../../function/is-arguments")
+  , isFunction     = _dereq_("../../function/is-function")
+  , toPosInt       = _dereq_("../../number/to-pos-integer")
+  , callable       = _dereq_("../../object/valid-callable")
+  , validValue     = _dereq_("../../object/valid-value")
+  , isValue        = _dereq_("../../object/is-value")
+  , isString       = _dereq_("../../string/is-string")
   , isArray        = Array.isArray
   , call           = Function.prototype.call
   , desc           = { configurable: true, enumerable: true, writable: true, value: null }
@@ -23167,7 +23416,7 @@ module.exports = function (arrayLike /*, mapFn, thisArg*/) {
 	return arr;
 };
 
-},{"../../function/is-arguments":99,"../../function/is-function":100,"../../number/to-pos-integer":106,"../../object/is-value":116,"../../object/valid-callable":125,"../../object/valid-value":127,"../../string/is-string":131,"es6-symbol":141}],99:[function(require,module,exports){
+},{"../../function/is-arguments":97,"../../function/is-function":98,"../../number/to-pos-integer":104,"../../object/is-value":114,"../../object/valid-callable":123,"../../object/valid-value":125,"../../string/is-string":129,"es6-symbol":139}],97:[function(_dereq_,module,exports){
 "use strict";
 
 var objToString = Object.prototype.toString
@@ -23181,29 +23430,29 @@ module.exports = function (value) {
 	return objToString.call(value) === id;
 };
 
-},{}],100:[function(require,module,exports){
+},{}],98:[function(_dereq_,module,exports){
 "use strict";
 
-var objToString = Object.prototype.toString, id = objToString.call(require("./noop"));
+var objToString = Object.prototype.toString, id = objToString.call(_dereq_("./noop"));
 
 module.exports = function (value) {
 	return typeof value === "function" && objToString.call(value) === id;
 };
 
-},{"./noop":101}],101:[function(require,module,exports){
+},{"./noop":99}],99:[function(_dereq_,module,exports){
 "use strict";
 
 // eslint-disable-next-line no-empty-function
 module.exports = function () {};
 
-},{}],102:[function(require,module,exports){
+},{}],100:[function(_dereq_,module,exports){
 "use strict";
 
-module.exports = require("./is-implemented")()
+module.exports = _dereq_("./is-implemented")()
 	? Math.sign
-	: require("./shim");
+	: _dereq_("./shim");
 
-},{"./is-implemented":103,"./shim":104}],103:[function(require,module,exports){
+},{"./is-implemented":101,"./shim":102}],101:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -23212,7 +23461,7 @@ module.exports = function () {
 	return (sign(10) === 1) && (sign(-20) === -1);
 };
 
-},{}],104:[function(require,module,exports){
+},{}],102:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function (value) {
@@ -23221,10 +23470,10 @@ module.exports = function (value) {
 	return value > 0 ? 1 : -1;
 };
 
-},{}],105:[function(require,module,exports){
+},{}],103:[function(_dereq_,module,exports){
 "use strict";
 
-var sign = require("../math/sign")
+var sign = _dereq_("../math/sign")
 
   , abs = Math.abs, floor = Math.floor;
 
@@ -23235,10 +23484,10 @@ module.exports = function (value) {
 	return sign(value) * floor(abs(value));
 };
 
-},{"../math/sign":102}],106:[function(require,module,exports){
+},{"../math/sign":100}],104:[function(_dereq_,module,exports){
 "use strict";
 
-var toInteger = require("./to-integer")
+var toInteger = _dereq_("./to-integer")
 
   , max = Math.max;
 
@@ -23246,15 +23495,15 @@ module.exports = function (value) {
  return max(0, toInteger(value));
 };
 
-},{"./to-integer":105}],107:[function(require,module,exports){
+},{"./to-integer":103}],105:[function(_dereq_,module,exports){
 // Internal method, used by iteration functions.
 // Calls a function for each key-value pair found in object
 // Optionally takes compareFn to iterate object in specific order
 
 "use strict";
 
-var callable                = require("./valid-callable")
-  , value                   = require("./valid-value")
+var callable                = _dereq_("./valid-callable")
+  , value                   = _dereq_("./valid-value")
   , bind                    = Function.prototype.bind
   , call                    = Function.prototype.call
   , keys                    = Object.keys
@@ -23278,14 +23527,14 @@ module.exports = function (method, defVal) {
 	};
 };
 
-},{"./valid-callable":125,"./valid-value":127}],108:[function(require,module,exports){
+},{"./valid-callable":123,"./valid-value":125}],106:[function(_dereq_,module,exports){
 "use strict";
 
-module.exports = require("./is-implemented")()
+module.exports = _dereq_("./is-implemented")()
 	? Object.assign
-	: require("./shim");
+	: _dereq_("./shim");
 
-},{"./is-implemented":109,"./shim":110}],109:[function(require,module,exports){
+},{"./is-implemented":107,"./shim":108}],107:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -23296,11 +23545,11 @@ module.exports = function () {
 	return (obj.foo + obj.bar + obj.trzy) === "razdwatrzy";
 };
 
-},{}],110:[function(require,module,exports){
+},{}],108:[function(_dereq_,module,exports){
 "use strict";
 
-var keys  = require("../keys")
-  , value = require("../valid-value")
+var keys  = _dereq_("../keys")
+  , value = _dereq_("../valid-value")
   , max   = Math.max;
 
 module.exports = function (dest, src /*, …srcn*/) {
@@ -23321,12 +23570,12 @@ module.exports = function (dest, src /*, …srcn*/) {
 	return dest;
 };
 
-},{"../keys":117,"../valid-value":127}],111:[function(require,module,exports){
+},{"../keys":115,"../valid-value":125}],109:[function(_dereq_,module,exports){
 "use strict";
 
-var aFrom  = require("../array/from")
-  , assign = require("./assign")
-  , value  = require("./valid-value");
+var aFrom  = _dereq_("../array/from")
+  , assign = _dereq_("./assign")
+  , value  = _dereq_("./valid-value");
 
 module.exports = function (obj/*, propertyNames, options*/) {
 	var copy = Object(value(obj)), propertyNames = arguments[1], options = Object(arguments[2]);
@@ -23342,15 +23591,15 @@ module.exports = function (obj/*, propertyNames, options*/) {
 	return result;
 };
 
-},{"../array/from":96,"./assign":108,"./valid-value":127}],112:[function(require,module,exports){
+},{"../array/from":94,"./assign":106,"./valid-value":125}],110:[function(_dereq_,module,exports){
 // Workaround for http://code.google.com/p/v8/issues/detail?id=2804
 
 "use strict";
 
 var create = Object.create, shim;
 
-if (!require("./set-prototype-of/is-implemented")()) {
-	shim = require("./set-prototype-of/shim");
+if (!_dereq_("./set-prototype-of/is-implemented")()) {
+	shim = _dereq_("./set-prototype-of/shim");
 }
 
 module.exports = (function () {
@@ -23392,12 +23641,12 @@ module.exports = (function () {
 	};
 }());
 
-},{"./set-prototype-of/is-implemented":123,"./set-prototype-of/shim":124}],113:[function(require,module,exports){
+},{"./set-prototype-of/is-implemented":121,"./set-prototype-of/shim":122}],111:[function(_dereq_,module,exports){
 "use strict";
 
-module.exports = require("./_iterate")("forEach");
+module.exports = _dereq_("./_iterate")("forEach");
 
-},{"./_iterate":107}],114:[function(require,module,exports){
+},{"./_iterate":105}],112:[function(_dereq_,module,exports){
 // Deprecated
 
 "use strict";
@@ -23406,10 +23655,10 @@ module.exports = function (obj) {
  return typeof obj === "function";
 };
 
-},{}],115:[function(require,module,exports){
+},{}],113:[function(_dereq_,module,exports){
 "use strict";
 
-var isValue = require("./is-value");
+var isValue = _dereq_("./is-value");
 
 var map = { function: true, object: true };
 
@@ -23417,23 +23666,23 @@ module.exports = function (value) {
 	return (isValue(value) && map[typeof value]) || false;
 };
 
-},{"./is-value":116}],116:[function(require,module,exports){
+},{"./is-value":114}],114:[function(_dereq_,module,exports){
 "use strict";
 
-var _undefined = require("../function/noop")(); // Support ES3 engines
+var _undefined = _dereq_("../function/noop")(); // Support ES3 engines
 
 module.exports = function (val) {
  return (val !== _undefined) && (val !== null);
 };
 
-},{"../function/noop":101}],117:[function(require,module,exports){
+},{"../function/noop":99}],115:[function(_dereq_,module,exports){
 "use strict";
 
-module.exports = require("./is-implemented")()
+module.exports = _dereq_("./is-implemented")()
 	? Object.keys
-	: require("./shim");
+	: _dereq_("./shim");
 
-},{"./is-implemented":118,"./shim":119}],118:[function(require,module,exports){
+},{"./is-implemented":116,"./shim":117}],116:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -23445,10 +23694,10 @@ module.exports = function () {
 }
 };
 
-},{}],119:[function(require,module,exports){
+},{}],117:[function(_dereq_,module,exports){
 "use strict";
 
-var isValue = require("../is-value");
+var isValue = _dereq_("../is-value");
 
 var keys = Object.keys;
 
@@ -23456,11 +23705,11 @@ module.exports = function (object) {
 	return keys(isValue(object) ? Object(object) : object);
 };
 
-},{"../is-value":116}],120:[function(require,module,exports){
+},{"../is-value":114}],118:[function(_dereq_,module,exports){
 "use strict";
 
-var callable = require("./valid-callable")
-  , forEach  = require("./for-each")
+var callable = _dereq_("./valid-callable")
+  , forEach  = _dereq_("./for-each")
   , call     = Function.prototype.call;
 
 module.exports = function (obj, cb /*, thisArg*/) {
@@ -23472,10 +23721,10 @@ module.exports = function (obj, cb /*, thisArg*/) {
 	return result;
 };
 
-},{"./for-each":113,"./valid-callable":125}],121:[function(require,module,exports){
+},{"./for-each":111,"./valid-callable":123}],119:[function(_dereq_,module,exports){
 "use strict";
 
-var isValue = require("./is-value");
+var isValue = _dereq_("./is-value");
 
 var forEach = Array.prototype.forEach, create = Object.create;
 
@@ -23494,14 +23743,14 @@ module.exports = function (opts1 /*, …options*/) {
 	return result;
 };
 
-},{"./is-value":116}],122:[function(require,module,exports){
+},{"./is-value":114}],120:[function(_dereq_,module,exports){
 "use strict";
 
-module.exports = require("./is-implemented")()
+module.exports = _dereq_("./is-implemented")()
 	? Object.setPrototypeOf
-	: require("./shim");
+	: _dereq_("./shim");
 
-},{"./is-implemented":123,"./shim":124}],123:[function(require,module,exports){
+},{"./is-implemented":121,"./shim":122}],121:[function(_dereq_,module,exports){
 "use strict";
 
 var create = Object.create, getPrototypeOf = Object.getPrototypeOf, plainObject = {};
@@ -23512,7 +23761,7 @@ module.exports = function (/* CustomCreate*/) {
 	return getPrototypeOf(setPrototypeOf(customCreate(null), plainObject)) === plainObject;
 };
 
-},{}],124:[function(require,module,exports){
+},{}],122:[function(_dereq_,module,exports){
 /* eslint no-proto: "off" */
 
 // Big thanks to @WebReflection for sorting this out
@@ -23520,8 +23769,8 @@ module.exports = function (/* CustomCreate*/) {
 
 "use strict";
 
-var isObject        = require("../is-object")
-  , value           = require("../valid-value")
+var isObject        = _dereq_("../is-object")
+  , value           = _dereq_("../valid-value")
   , objIsPrototypeOf = Object.prototype.isPrototypeOf
   , defineProperty  = Object.defineProperty
   , nullDesc        = {
@@ -23598,9 +23847,9 @@ module.exports = (function (status) {
 	})()
 ));
 
-require("../create");
+_dereq_("../create");
 
-},{"../create":112,"../is-object":115,"../valid-value":127}],125:[function(require,module,exports){
+},{"../create":110,"../is-object":113,"../valid-value":125}],123:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function (fn) {
@@ -23608,34 +23857,34 @@ module.exports = function (fn) {
 	return fn;
 };
 
-},{}],126:[function(require,module,exports){
+},{}],124:[function(_dereq_,module,exports){
 "use strict";
 
-var isObject = require("./is-object");
+var isObject = _dereq_("./is-object");
 
 module.exports = function (value) {
 	if (!isObject(value)) throw new TypeError(value + " is not an Object");
 	return value;
 };
 
-},{"./is-object":115}],127:[function(require,module,exports){
+},{"./is-object":113}],125:[function(_dereq_,module,exports){
 "use strict";
 
-var isValue = require("./is-value");
+var isValue = _dereq_("./is-value");
 
 module.exports = function (value) {
 	if (!isValue(value)) throw new TypeError("Cannot use null or undefined");
 	return value;
 };
 
-},{"./is-value":116}],128:[function(require,module,exports){
+},{"./is-value":114}],126:[function(_dereq_,module,exports){
 "use strict";
 
-module.exports = require("./is-implemented")()
+module.exports = _dereq_("./is-implemented")()
 	? String.prototype.contains
-	: require("./shim");
+	: _dereq_("./shim");
 
-},{"./is-implemented":129,"./shim":130}],129:[function(require,module,exports){
+},{"./is-implemented":127,"./shim":128}],127:[function(_dereq_,module,exports){
 "use strict";
 
 var str = "razdwatrzy";
@@ -23645,7 +23894,7 @@ module.exports = function () {
 	return (str.contains("dwa") === true) && (str.contains("foo") === false);
 };
 
-},{}],130:[function(require,module,exports){
+},{}],128:[function(_dereq_,module,exports){
 "use strict";
 
 var indexOf = String.prototype.indexOf;
@@ -23654,7 +23903,7 @@ module.exports = function (searchString/*, position*/) {
 	return indexOf.call(this, searchString, arguments[1]) > -1;
 };
 
-},{}],131:[function(require,module,exports){
+},{}],129:[function(_dereq_,module,exports){
 "use strict";
 
 var objToString = Object.prototype.toString, id = objToString.call("");
@@ -23669,7 +23918,7 @@ module.exports = function (value) {
 	);
 };
 
-},{}],132:[function(require,module,exports){
+},{}],130:[function(_dereq_,module,exports){
 "use strict";
 
 var generated = Object.create(null), random = Math.random;
@@ -23684,14 +23933,14 @@ module.exports = function () {
 	return str;
 };
 
-},{}],133:[function(require,module,exports){
+},{}],131:[function(_dereq_,module,exports){
 "use strict";
 
-var setPrototypeOf = require("es5-ext/object/set-prototype-of")
-  , contains       = require("es5-ext/string/#/contains")
-  , d              = require("d")
-  , Symbol         = require("es6-symbol")
-  , Iterator       = require("./");
+var setPrototypeOf = _dereq_("es5-ext/object/set-prototype-of")
+  , contains       = _dereq_("es5-ext/string/#/contains")
+  , d              = _dereq_("d")
+  , Symbol         = _dereq_("es6-symbol")
+  , Iterator       = _dereq_("./");
 
 var defineProperty = Object.defineProperty, ArrayIterator;
 
@@ -23718,13 +23967,13 @@ ArrayIterator.prototype = Object.create(Iterator.prototype, {
 });
 defineProperty(ArrayIterator.prototype, Symbol.toStringTag, d("c", "Array Iterator"));
 
-},{"./":136,"d":85,"es5-ext/object/set-prototype-of":122,"es5-ext/string/#/contains":128,"es6-symbol":141}],134:[function(require,module,exports){
+},{"./":134,"d":83,"es5-ext/object/set-prototype-of":120,"es5-ext/string/#/contains":126,"es6-symbol":139}],132:[function(_dereq_,module,exports){
 "use strict";
 
-var isArguments = require("es5-ext/function/is-arguments")
-  , callable    = require("es5-ext/object/valid-callable")
-  , isString    = require("es5-ext/string/is-string")
-  , get         = require("./get");
+var isArguments = _dereq_("es5-ext/function/is-arguments")
+  , callable    = _dereq_("es5-ext/object/valid-callable")
+  , isString    = _dereq_("es5-ext/string/is-string")
+  , get         = _dereq_("./get");
 
 var isArray = Array.isArray, call = Function.prototype.call, some = Array.prototype.some;
 
@@ -23767,15 +24016,15 @@ module.exports = function (iterable, cb /*, thisArg*/) {
 	}
 };
 
-},{"./get":135,"es5-ext/function/is-arguments":99,"es5-ext/object/valid-callable":125,"es5-ext/string/is-string":131}],135:[function(require,module,exports){
+},{"./get":133,"es5-ext/function/is-arguments":97,"es5-ext/object/valid-callable":123,"es5-ext/string/is-string":129}],133:[function(_dereq_,module,exports){
 "use strict";
 
-var isArguments    = require("es5-ext/function/is-arguments")
-  , isString       = require("es5-ext/string/is-string")
-  , ArrayIterator  = require("./array")
-  , StringIterator = require("./string")
-  , iterable       = require("./valid-iterable")
-  , iteratorSymbol = require("es6-symbol").iterator;
+var isArguments    = _dereq_("es5-ext/function/is-arguments")
+  , isString       = _dereq_("es5-ext/string/is-string")
+  , ArrayIterator  = _dereq_("./array")
+  , StringIterator = _dereq_("./string")
+  , iterable       = _dereq_("./valid-iterable")
+  , iteratorSymbol = _dereq_("es6-symbol").iterator;
 
 module.exports = function (obj) {
 	if (typeof iterable(obj)[iteratorSymbol] === "function") return obj[iteratorSymbol]();
@@ -23784,16 +24033,16 @@ module.exports = function (obj) {
 	return new ArrayIterator(obj);
 };
 
-},{"./array":133,"./string":138,"./valid-iterable":139,"es5-ext/function/is-arguments":99,"es5-ext/string/is-string":131,"es6-symbol":141}],136:[function(require,module,exports){
+},{"./array":131,"./string":136,"./valid-iterable":137,"es5-ext/function/is-arguments":97,"es5-ext/string/is-string":129,"es6-symbol":139}],134:[function(_dereq_,module,exports){
 "use strict";
 
-var clear    = require("es5-ext/array/#/clear")
-  , assign   = require("es5-ext/object/assign")
-  , callable = require("es5-ext/object/valid-callable")
-  , value    = require("es5-ext/object/valid-value")
-  , d        = require("d")
-  , autoBind = require("d/auto-bind")
-  , Symbol   = require("es6-symbol");
+var clear    = _dereq_("es5-ext/array/#/clear")
+  , assign   = _dereq_("es5-ext/object/assign")
+  , callable = _dereq_("es5-ext/object/valid-callable")
+  , value    = _dereq_("es5-ext/object/valid-value")
+  , d        = _dereq_("d")
+  , autoBind = _dereq_("d/auto-bind")
+  , Symbol   = _dereq_("es6-symbol");
 
 var defineProperty = Object.defineProperty, defineProperties = Object.defineProperties, Iterator;
 
@@ -23892,14 +24141,14 @@ defineProperty(
 	})
 );
 
-},{"d":85,"d/auto-bind":84,"es5-ext/array/#/clear":95,"es5-ext/object/assign":108,"es5-ext/object/valid-callable":125,"es5-ext/object/valid-value":127,"es6-symbol":141}],137:[function(require,module,exports){
+},{"d":83,"d/auto-bind":82,"es5-ext/array/#/clear":93,"es5-ext/object/assign":106,"es5-ext/object/valid-callable":123,"es5-ext/object/valid-value":125,"es6-symbol":139}],135:[function(_dereq_,module,exports){
 "use strict";
 
-var isArguments = require("es5-ext/function/is-arguments")
-  , isValue     = require("es5-ext/object/is-value")
-  , isString    = require("es5-ext/string/is-string");
+var isArguments = _dereq_("es5-ext/function/is-arguments")
+  , isValue     = _dereq_("es5-ext/object/is-value")
+  , isString    = _dereq_("es5-ext/string/is-string");
 
-var iteratorSymbol = require("es6-symbol").iterator
+var iteratorSymbol = _dereq_("es6-symbol").iterator
   , isArray        = Array.isArray;
 
 module.exports = function (value) {
@@ -23910,16 +24159,16 @@ module.exports = function (value) {
 	return typeof value[iteratorSymbol] === "function";
 };
 
-},{"es5-ext/function/is-arguments":99,"es5-ext/object/is-value":116,"es5-ext/string/is-string":131,"es6-symbol":141}],138:[function(require,module,exports){
+},{"es5-ext/function/is-arguments":97,"es5-ext/object/is-value":114,"es5-ext/string/is-string":129,"es6-symbol":139}],136:[function(_dereq_,module,exports){
 // Thanks @mathiasbynens
 // http://mathiasbynens.be/notes/javascript-unicode#iterating-over-symbols
 
 "use strict";
 
-var setPrototypeOf = require("es5-ext/object/set-prototype-of")
-  , d              = require("d")
-  , Symbol         = require("es6-symbol")
-  , Iterator       = require("./");
+var setPrototypeOf = _dereq_("es5-ext/object/set-prototype-of")
+  , d              = _dereq_("d")
+  , Symbol         = _dereq_("es6-symbol")
+  , Iterator       = _dereq_("./");
 
 var defineProperty = Object.defineProperty, StringIterator;
 
@@ -23951,17 +24200,17 @@ StringIterator.prototype = Object.create(Iterator.prototype, {
 });
 defineProperty(StringIterator.prototype, Symbol.toStringTag, d("c", "String Iterator"));
 
-},{"./":136,"d":85,"es5-ext/object/set-prototype-of":122,"es6-symbol":141}],139:[function(require,module,exports){
+},{"./":134,"d":83,"es5-ext/object/set-prototype-of":120,"es6-symbol":139}],137:[function(_dereq_,module,exports){
 "use strict";
 
-var isIterable = require("./is-iterable");
+var isIterable = _dereq_("./is-iterable");
 
 module.exports = function (value) {
 	if (!isIterable(value)) throw new TypeError(value + " is not iterable");
 	return value;
 };
 
-},{"./is-iterable":137}],140:[function(require,module,exports){
+},{"./is-iterable":135}],138:[function(_dereq_,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -24094,7 +24343,7 @@ function flush() {
 
 function attemptVertx() {
   try {
-    var r = require;
+    var r = _dereq_;
     var vertx = r('vertx');
     vertxNext = vertx.runOnLoop || vertx.runOnContext;
     return useVertxTimer();
@@ -24111,7 +24360,7 @@ if (isNode) {
   scheduleFlush = useMutationObserver();
 } else if (isWorker) {
   scheduleFlush = useMessageChannel();
-} else if (browserWindow === undefined && typeof require === 'function') {
+} else if (browserWindow === undefined && typeof _dereq_ === 'function') {
   scheduleFlush = attemptVertx();
 } else {
   scheduleFlush = useSetTimeout();
@@ -25117,13 +25366,13 @@ return Promise;
 
 })));
 
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":248}],141:[function(require,module,exports){
+}).call(this,_dereq_('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":245}],139:[function(_dereq_,module,exports){
 'use strict';
 
-module.exports = require('./is-implemented')() ? Symbol : require('./polyfill');
+module.exports = _dereq_('./is-implemented')() ? Symbol : _dereq_('./polyfill');
 
-},{"./is-implemented":142,"./polyfill":144}],142:[function(require,module,exports){
+},{"./is-implemented":140,"./polyfill":142}],140:[function(_dereq_,module,exports){
 'use strict';
 
 var validTypes = { object: true, symbol: true };
@@ -25142,7 +25391,7 @@ module.exports = function () {
 	return true;
 };
 
-},{}],143:[function(require,module,exports){
+},{}],141:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function (x) {
@@ -25153,13 +25402,13 @@ module.exports = function (x) {
 	return (x[x.constructor.toStringTag] === 'Symbol');
 };
 
-},{}],144:[function(require,module,exports){
+},{}],142:[function(_dereq_,module,exports){
 // ES2015 Symbol polyfill for environments that do not (or partially) support it
 
 'use strict';
 
-var d              = require('d')
-  , validateSymbol = require('./validate-symbol')
+var d              = _dereq_('d')
+  , validateSymbol = _dereq_('./validate-symbol')
 
   , create = Object.create, defineProperties = Object.defineProperties
   , defineProperty = Object.defineProperty, objPrototype = Object.prototype
@@ -25273,22 +25522,22 @@ defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
 defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
 	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
 
-},{"./validate-symbol":145,"d":85}],145:[function(require,module,exports){
+},{"./validate-symbol":143,"d":83}],143:[function(_dereq_,module,exports){
 'use strict';
 
-var isSymbol = require('./is-symbol');
+var isSymbol = _dereq_('./is-symbol');
 
 module.exports = function (value) {
 	if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
 	return value;
 };
 
-},{"./is-symbol":143}],146:[function(require,module,exports){
+},{"./is-symbol":141}],144:[function(_dereq_,module,exports){
 'use strict';
 
-module.exports = require('./is-implemented')() ? WeakMap : require('./polyfill');
+module.exports = _dereq_('./is-implemented')() ? WeakMap : _dereq_('./polyfill');
 
-},{"./is-implemented":147,"./polyfill":149}],147:[function(require,module,exports){
+},{"./is-implemented":145,"./polyfill":147}],145:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -25310,7 +25559,7 @@ module.exports = function () {
 	return true;
 };
 
-},{}],148:[function(require,module,exports){
+},{}],146:[function(_dereq_,module,exports){
 // Exports true if environment provides native `WeakMap` implementation, whatever that is.
 
 'use strict';
@@ -25320,18 +25569,18 @@ module.exports = (function () {
 	return (Object.prototype.toString.call(new WeakMap()) === '[object WeakMap]');
 }());
 
-},{}],149:[function(require,module,exports){
+},{}],147:[function(_dereq_,module,exports){
 'use strict';
 
-var setPrototypeOf    = require('es5-ext/object/set-prototype-of')
-  , object            = require('es5-ext/object/valid-object')
-  , value             = require('es5-ext/object/valid-value')
-  , randomUniq        = require('es5-ext/string/random-uniq')
-  , d                 = require('d')
-  , getIterator       = require('es6-iterator/get')
-  , forOf             = require('es6-iterator/for-of')
-  , toStringTagSymbol = require('es6-symbol').toStringTag
-  , isNative          = require('./is-native-implemented')
+var setPrototypeOf    = _dereq_('es5-ext/object/set-prototype-of')
+  , object            = _dereq_('es5-ext/object/valid-object')
+  , value             = _dereq_('es5-ext/object/valid-value')
+  , randomUniq        = _dereq_('es5-ext/string/random-uniq')
+  , d                 = _dereq_('d')
+  , getIterator       = _dereq_('es6-iterator/get')
+  , forOf             = _dereq_('es6-iterator/for-of')
+  , toStringTagSymbol = _dereq_('es6-symbol').toStringTag
+  , isNative          = _dereq_('./is-native-implemented')
 
   , isArray = Array.isArray, defineProperty = Object.defineProperty
   , hasOwnProperty = Object.prototype.hasOwnProperty, getPrototypeOf = Object.getPrototypeOf
@@ -25388,311 +25637,7 @@ Object.defineProperties(WeakMapPoly.prototype, {
 });
 defineProperty(WeakMapPoly.prototype, toStringTagSymbol, d('c', 'WeakMap'));
 
-},{"./is-native-implemented":148,"d":85,"es5-ext/object/set-prototype-of":122,"es5-ext/object/valid-object":126,"es5-ext/object/valid-value":127,"es5-ext/string/random-uniq":132,"es6-iterator/for-of":134,"es6-iterator/get":135,"es6-symbol":141}],150:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        // At least give some kind of context to the user
-        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-        err.context = er;
-        throw err;
-      }
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],151:[function(require,module,exports){
+},{"./is-native-implemented":146,"d":83,"es5-ext/object/set-prototype-of":120,"es5-ext/object/valid-object":124,"es5-ext/object/valid-value":125,"es5-ext/string/random-uniq":130,"es6-iterator/for-of":132,"es6-iterator/get":133,"es6-symbol":139}],148:[function(_dereq_,module,exports){
 /**
  * inspired by is-number <https://github.com/jonschlinkert/is-number>
  * but significantly simplified and sped up by ignoring number and string constructors
@@ -25749,9 +25694,9 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{}],152:[function(require,module,exports){
+},{}],149:[function(_dereq_,module,exports){
 /*eslint new-cap:0*/
-var dtype = require('dtype')
+var dtype = _dereq_('dtype')
 module.exports = flattenVertexData
 function flattenVertexData (data, output, offset) {
   if (!data) throw new TypeError('must specify data as first parameter')
@@ -25796,10 +25741,10 @@ function flattenVertexData (data, output, offset) {
   return output
 }
 
-},{"dtype":91}],153:[function(require,module,exports){
+},{"dtype":89}],150:[function(_dereq_,module,exports){
 'use strict'
 
-var stringifyFont = require('css-font/stringify')
+var stringifyFont = _dereq_('css-font/stringify')
 var defaultChars = [32, 126]
 
 module.exports = atlas
@@ -25855,7 +25800,7 @@ function atlas(options) {
   return canvas
 }
 
-},{"css-font/stringify":77}],154:[function(require,module,exports){
+},{"css-font/stringify":75}],151:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = measure
@@ -26042,7 +25987,7 @@ function firstBottom(iData) {
 	}
 }
 
-},{}],155:[function(require,module,exports){
+},{}],152:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createRBTree
@@ -27039,7 +26984,7 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],156:[function(require,module,exports){
+},{}],153:[function(_dereq_,module,exports){
 // transliterated from the python snippet here:
 // http://en.wikipedia.org/wiki/Lanczos_approximation
 
@@ -27108,7 +27053,7 @@ module.exports = function gamma (z) {
 
 module.exports.log = lngamma;
 
-},{}],157:[function(require,module,exports){
+},{}],154:[function(_dereq_,module,exports){
 module.exports = getCanvasContext
 function getCanvasContext (type, opts) {
   if (typeof type !== 'string') {
@@ -27148,12 +27093,12 @@ function getCanvasContext (type, opts) {
   return (gl || null) // ensure null on fail
 }
 
-},{}],158:[function(require,module,exports){
+},{}],155:[function(_dereq_,module,exports){
 "use strict"
 
-var pool = require("typedarray-pool")
-var ops = require("ndarray-ops")
-var ndarray = require("ndarray")
+var pool = _dereq_("typedarray-pool")
+var ops = _dereq_("ndarray-ops")
+var ndarray = _dereq_("ndarray")
 
 var SUPPORTED_TYPES = [
   "uint8",
@@ -27302,7 +27247,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":220,"ndarray-ops":219,"typedarray-pool":291}],159:[function(require,module,exports){
+},{"ndarray":217,"ndarray-ops":216,"typedarray-pool":288}],156:[function(_dereq_,module,exports){
 module.exports = {
   0: 'NONE',
   1: 'ONE',
@@ -27602,28 +27547,28 @@ module.exports = {
   37444: 'BROWSER_DEFAULT_WEBGL'
 }
 
-},{}],160:[function(require,module,exports){
-var gl10 = require('./1.0/numbers')
+},{}],157:[function(_dereq_,module,exports){
+var gl10 = _dereq_('./1.0/numbers')
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
 }
 
-},{"./1.0/numbers":159}],161:[function(require,module,exports){
+},{"./1.0/numbers":156}],158:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createContour2D
 
-var iota = require('iota-array')
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
-var ndarray = require('ndarray')
-var surfaceNets = require('surface-nets')
-var cdt2d = require('cdt2d')
-var cleanPSLG = require('clean-pslg')
-var bsearch = require('binary-search-bounds')
+var iota = _dereq_('iota-array')
+var createShader = _dereq_('gl-shader')
+var createBuffer = _dereq_('gl-buffer')
+var ndarray = _dereq_('ndarray')
+var surfaceNets = _dereq_('surface-nets')
+var cdt2d = _dereq_('cdt2d')
+var cleanPSLG = _dereq_('clean-pslg')
+var bsearch = _dereq_('binary-search-bounds')
 
-var shaders = require('./lib/shaders')
+var shaders = _dereq_('./lib/shaders')
 
 function GLContour2D (
   plot,
@@ -28032,10 +27977,10 @@ function createContour2D (plot, options) {
   return contours
 }
 
-},{"./lib/shaders":162,"binary-search-bounds":163,"cdt2d":53,"clean-pslg":60,"gl-buffer":158,"gl-shader":182,"iota-array":206,"ndarray":220,"surface-nets":279}],162:[function(require,module,exports){
+},{"./lib/shaders":159,"binary-search-bounds":160,"cdt2d":51,"clean-pslg":58,"gl-buffer":155,"gl-shader":179,"iota-array":203,"ndarray":217,"surface-nets":276}],159:[function(_dereq_,module,exports){
 'use strict'
 
-var glslify = require('glslify')
+var glslify = _dereq_('glslify')
 
 module.exports = {
   fragment: glslify(["precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n"]),
@@ -28043,12 +27988,12 @@ module.exports = {
   fillVertex: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 color;\n\nuniform mat3 viewTransform;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  fragColor = color;\n  vec3 vPosition = viewTransform * vec3(position, 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"])
 }
 
-},{"glslify":200}],163:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"dup":58}],164:[function(require,module,exports){
+},{"glslify":197}],160:[function(_dereq_,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"dup":56}],161:[function(_dereq_,module,exports){
 'use strict'
 
-var createTexture = require('gl-texture2d')
+var createTexture = _dereq_('gl-texture2d')
 
 module.exports = createFBO
 
@@ -28512,12 +28457,12 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":190}],165:[function(require,module,exports){
+},{"gl-texture2d":187}],162:[function(_dereq_,module,exports){
 
-var sprintf = require('sprintf-js').sprintf;
-var glConstants = require('gl-constants/lookup');
-var shaderName = require('glsl-shader-name');
-var addLineNumbers = require('add-line-numbers');
+var sprintf = _dereq_('sprintf-js').sprintf;
+var glConstants = _dereq_('gl-constants/lookup');
+var shaderName = _dereq_('glsl-shader-name');
+var addLineNumbers = _dereq_('add-line-numbers');
 
 module.exports = formatCompilerError;
 
@@ -28567,18 +28512,18 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":17,"gl-constants/lookup":160,"glsl-shader-name":192,"sprintf-js":276}],166:[function(require,module,exports){
+},{"add-line-numbers":14,"gl-constants/lookup":157,"glsl-shader-name":189,"sprintf-js":273}],163:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createHeatmap2D
 
-var bsearch = require('binary-search-bounds')
-var iota = require('iota-array')
-var pool = require('typedarray-pool')
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
+var bsearch = _dereq_('binary-search-bounds')
+var iota = _dereq_('iota-array')
+var pool = _dereq_('typedarray-pool')
+var createShader = _dereq_('gl-shader')
+var createBuffer = _dereq_('gl-buffer')
 
-var shaders = require('./lib/shaders')
+var shaders = _dereq_('./lib/shaders')
 
 function GLHeatmap2D (
   plot,
@@ -28885,10 +28830,10 @@ function createHeatmap2D (plot, options) {
   return heatmap
 }
 
-},{"./lib/shaders":167,"binary-search-bounds":168,"gl-buffer":158,"gl-shader":182,"iota-array":206,"typedarray-pool":291}],167:[function(require,module,exports){
+},{"./lib/shaders":164,"binary-search-bounds":165,"gl-buffer":155,"gl-shader":179,"iota-array":203,"typedarray-pool":288}],164:[function(_dereq_,module,exports){
 'use strict'
 
-var glslify = require('glslify')
+var glslify = _dereq_('glslify')
 
 module.exports = {
   fragment:     glslify(["precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n"]),
@@ -28897,9 +28842,9 @@ module.exports = {
   pickVertex:   glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\nattribute vec2 weight;\n\nuniform vec2 shape;\nuniform mat3 viewTransform;\n\nvarying vec4 fragId;\nvarying vec2 vWeight;\n\nvoid main() {\n  vWeight = weight;\n\n  fragId = pickId;\n\n  vec3 vPosition = viewTransform * vec3( position + (weight-.5)/(shape-1.) , 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"])
 }
 
-},{"glslify":200}],168:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"dup":58}],169:[function(require,module,exports){
+},{"glslify":197}],165:[function(_dereq_,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"dup":56}],166:[function(_dereq_,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -28947,15 +28892,15 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],170:[function(require,module,exports){
+},{}],167:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createBoxes
 
-var createBuffer = require('gl-buffer')
-var createShader = require('gl-shader')
+var createBuffer = _dereq_('gl-buffer')
+var createShader = _dereq_('gl-shader')
 
-var shaders = require('./shaders')
+var shaders = _dereq_('./shaders')
 
 function Boxes(plot, vbo, shader) {
   this.plot   = plot
@@ -29010,15 +28955,15 @@ function createBoxes(plot) {
   return new Boxes(plot, vbo, shader)
 }
 
-},{"./shaders":173,"gl-buffer":158,"gl-shader":182}],171:[function(require,module,exports){
+},{"./shaders":170,"gl-buffer":155,"gl-shader":179}],168:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createGrid
 
-var createBuffer  = require('gl-buffer')
-var createShader  = require('gl-shader')
-var bsearch       = require('binary-search-bounds')
-var shaders       = require('./shaders')
+var createBuffer  = _dereq_('gl-buffer')
+var createShader  = _dereq_('gl-shader')
+var bsearch       = _dereq_('binary-search-bounds')
+var shaders       = _dereq_('./shaders')
 
 function Grid(plot, vbo, shader, tickShader) {
   this.plot   = plot
@@ -29257,15 +29202,15 @@ function createGrid(plot) {
   return grid
 }
 
-},{"./shaders":173,"binary-search-bounds":175,"gl-buffer":158,"gl-shader":182}],172:[function(require,module,exports){
+},{"./shaders":170,"binary-search-bounds":172,"gl-buffer":155,"gl-shader":179}],169:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createLines
 
-var createBuffer = require('gl-buffer')
-var createShader = require('gl-shader')
+var createBuffer = _dereq_('gl-buffer')
+var createShader = _dereq_('gl-shader')
 
-var shaders = require('./shaders')
+var shaders = _dereq_('./shaders')
 
 function Lines(plot, vbo, shader) {
   this.plot   = plot
@@ -29322,10 +29267,10 @@ function createLines(plot) {
   return lines
 }
 
-},{"./shaders":173,"gl-buffer":158,"gl-shader":182}],173:[function(require,module,exports){
+},{"./shaders":170,"gl-buffer":155,"gl-shader":179}],170:[function(_dereq_,module,exports){
 'use strict'
 
-var glslify = require('glslify')
+var glslify = _dereq_('glslify')
 
 var FRAGMENT = glslify(["precision lowp float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = vec4(color.xyz * color.w, color.w);\n}\n"])
 
@@ -29340,16 +29285,16 @@ module.exports = {
   tickVert: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"])
 }
 
-},{"glslify":200}],174:[function(require,module,exports){
+},{"glslify":197}],171:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createTextElements
 
-var createBuffer = require('gl-buffer')
-var createShader = require('gl-shader')
-var getText      = require('text-cache')
-var bsearch      = require('binary-search-bounds')
-var shaders      = require('./shaders')
+var createBuffer = _dereq_('gl-buffer')
+var createShader = _dereq_('gl-shader')
+var getText      = _dereq_('text-cache')
+var bsearch      = _dereq_('binary-search-bounds')
+var shaders      = _dereq_('./shaders')
 
 function TextElements(plot, vbo, shader) {
   this.plot         = plot
@@ -29618,19 +29563,19 @@ function createTextElements(plot) {
   return text
 }
 
-},{"./shaders":173,"binary-search-bounds":175,"gl-buffer":158,"gl-shader":182,"text-cache":284}],175:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"dup":58}],176:[function(require,module,exports){
+},{"./shaders":170,"binary-search-bounds":172,"gl-buffer":155,"gl-shader":179,"text-cache":281}],172:[function(_dereq_,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"dup":56}],173:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createGLPlot2D
 
-var createPick = require('gl-select-static')
+var createPick = _dereq_('gl-select-static')
 
-var createGrid = require('./lib/grid')
-var createText = require('./lib/text')
-var createLine = require('./lib/line')
-var createBox  = require('./lib/box')
+var createGrid = _dereq_('./lib/grid')
+var createText = _dereq_('./lib/text')
+var createLine = _dereq_('./lib/line')
+var createBox  = _dereq_('./lib/box')
 
 function GLPlot2D(gl, pickBuffer) {
   this.gl               = gl
@@ -30203,23 +30148,23 @@ function createGLPlot2D(options) {
   return plot
 }
 
-},{"./lib/box":170,"./lib/grid":171,"./lib/line":172,"./lib/text":174,"gl-select-static":181}],177:[function(require,module,exports){
-var glslify = require('glslify')
+},{"./lib/box":167,"./lib/grid":168,"./lib/line":169,"./lib/text":171,"gl-select-static":178}],174:[function(_dereq_,module,exports){
+var glslify = _dereq_('glslify')
 
 exports.pointVertex       = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform float pointCloud;\n\nhighp float rand(vec2 co) {\n  highp float a = 12.9898;\n  highp float b = 78.233;\n  highp float c = 43758.5453;\n  highp float d = dot(co.xy, vec2(a, b));\n  highp float e = mod(d, 3.14);\n  return fract(sin(e) * c);\n}\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n    // if we don't jitter the point size a bit, overall point cloud\n    // saturation 'jumps' on zooming, which is disturbing and confusing\n  gl_PointSize = pointSize * ((19.5 + rand(position)) / 20.0);\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    // get the same square surface as circle would be\n    gl_PointSize *= 0.886;\n  }\n}"])
 exports.pointFragment     = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\nuniform float pointCloud;\n\nvoid main() {\n  float radius;\n  vec4 baseColor;\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    if(centerFraction == 1.0) {\n      gl_FragColor = color;\n    } else {\n      gl_FragColor = mix(borderColor, color, centerFraction);\n    }\n  } else {\n    radius = length(2.0 * gl_PointCoord.xy - 1.0);\n    if(radius > 1.0) {\n      discard;\n    }\n    baseColor = mix(borderColor, color, step(radius, centerFraction));\n    gl_FragColor = vec4(baseColor.rgb * baseColor.a, baseColor.a);\n  }\n}\n"])
 exports.pickVertex        = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"])
 exports.pickFragment      = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"])
 
-},{"glslify":200}],178:[function(require,module,exports){
+},{"glslify":197}],175:[function(_dereq_,module,exports){
 'use strict'
 
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
+var createShader = _dereq_('gl-shader')
+var createBuffer = _dereq_('gl-buffer')
 
-var pool = require('typedarray-pool')
+var pool = _dereq_('typedarray-pool')
 
-var SHADERS = require('./lib/shader')
+var SHADERS = _dereq_('./lib/shader')
 
 module.exports = createPointcloud2D
 
@@ -30431,21 +30376,21 @@ function createPointcloud2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":177,"gl-buffer":158,"gl-shader":182,"typedarray-pool":291}],179:[function(require,module,exports){
+},{"./lib/shader":174,"gl-buffer":155,"gl-shader":179,"typedarray-pool":288}],176:[function(_dereq_,module,exports){
 'use strict'
 
-var glslify = require('glslify')
+var glslify = _dereq_('glslify')
 
 exports.boxVertex = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"])
 exports.boxFragment = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"])
 
-},{"glslify":200}],180:[function(require,module,exports){
+},{"glslify":197}],177:[function(_dereq_,module,exports){
 'use strict'
 
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
+var createShader = _dereq_('gl-shader')
+var createBuffer = _dereq_('gl-buffer')
 
-var SHADERS = require('./lib/shaders')
+var SHADERS = _dereq_('./lib/shaders')
 
 module.exports = createSelectBox
 
@@ -30565,18 +30510,18 @@ function createSelectBox(plot, options) {
   return selectBox
 }
 
-},{"./lib/shaders":179,"gl-buffer":158,"gl-shader":182}],181:[function(require,module,exports){
+},{"./lib/shaders":176,"gl-buffer":155,"gl-shader":179}],178:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createSelectBuffer
 
-var createFBO = require('gl-fbo')
-var pool      = require('typedarray-pool')
-var ndarray   = require('ndarray')
+var createFBO = _dereq_('gl-fbo')
+var pool      = _dereq_('typedarray-pool')
+var ndarray   = _dereq_('ndarray')
 
-var nextPow2  = require('bit-twiddle').nextPow2
+var nextPow2  = _dereq_('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(_inline_55_arg0_<255||_inline_55_arg1_<255||_inline_55_arg2_<255||_inline_55_arg3_<255){var _inline_55_l=_inline_55_arg4_-_inline_55_arg6_[0],_inline_55_a=_inline_55_arg5_-_inline_55_arg6_[1],_inline_55_f=_inline_55_l*_inline_55_l+_inline_55_a*_inline_55_a;_inline_55_f<this_closestD2&&(this_closestD2=_inline_55_f,this_closestX=_inline_55_arg6_[0],this_closestY=_inline_55_arg6_[1])}}","args":[{"name":"_inline_55_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_55_a","_inline_55_f","_inline_55_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = _dereq_('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(_inline_55_arg0_<255||_inline_55_arg1_<255||_inline_55_arg2_<255||_inline_55_arg3_<255){var _inline_55_l=_inline_55_arg4_-_inline_55_arg6_[0],_inline_55_a=_inline_55_arg5_-_inline_55_arg6_[1],_inline_55_f=_inline_55_l*_inline_55_l+_inline_55_a*_inline_55_a;_inline_55_f<this_closestD2&&(this_closestD2=_inline_55_f,this_closestX=_inline_55_arg6_[0],this_closestY=_inline_55_arg6_[1])}}","args":[{"name":"_inline_55_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_55_a","_inline_55_f","_inline_55_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -30720,15 +30665,15 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":41,"cwise/lib/wrapper":83,"gl-fbo":164,"ndarray":220,"typedarray-pool":291}],182:[function(require,module,exports){
+},{"bit-twiddle":38,"cwise/lib/wrapper":81,"gl-fbo":161,"ndarray":217,"typedarray-pool":288}],179:[function(_dereq_,module,exports){
 'use strict'
 
-var createUniformWrapper   = require('./lib/create-uniforms')
-var createAttributeWrapper = require('./lib/create-attributes')
-var makeReflect            = require('./lib/reflect')
-var shaderCache            = require('./lib/shader-cache')
-var runtime                = require('./lib/runtime-reflect')
-var GLError                = require("./lib/GLError")
+var createUniformWrapper   = _dereq_('./lib/create-uniforms')
+var createAttributeWrapper = _dereq_('./lib/create-attributes')
+var makeReflect            = _dereq_('./lib/reflect')
+var shaderCache            = _dereq_('./lib/shader-cache')
+var runtime                = _dereq_('./lib/runtime-reflect')
+var GLError                = _dereq_("./lib/GLError")
 
 //Shader object
 function Shader(gl) {
@@ -30986,7 +30931,7 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":183,"./lib/create-attributes":184,"./lib/create-uniforms":185,"./lib/reflect":186,"./lib/runtime-reflect":187,"./lib/shader-cache":188}],183:[function(require,module,exports){
+},{"./lib/GLError":180,"./lib/create-attributes":181,"./lib/create-uniforms":182,"./lib/reflect":183,"./lib/runtime-reflect":184,"./lib/shader-cache":185}],180:[function(_dereq_,module,exports){
 function GLError (rawError, shortMessage, longMessage) {
     this.shortMessage = shortMessage || ''
     this.longMessage = longMessage || ''
@@ -31001,12 +30946,12 @@ GLError.prototype.name = 'GLError'
 GLError.prototype.constructor = GLError
 module.exports = GLError
 
-},{}],184:[function(require,module,exports){
+},{}],181:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createAttributeWrapper
 
-var GLError = require("./GLError")
+var GLError = _dereq_("./GLError")
 
 function ShaderAttribute(
     gl
@@ -31266,11 +31211,11 @@ function createAttributeWrapper(
   return obj
 }
 
-},{"./GLError":183}],185:[function(require,module,exports){
+},{"./GLError":180}],182:[function(_dereq_,module,exports){
 'use strict'
 
-var coallesceUniforms = require('./reflect')
-var GLError = require("./GLError")
+var coallesceUniforms = _dereq_('./reflect')
+var GLError = _dereq_("./GLError")
 
 module.exports = createUniformWrapper
 
@@ -31459,7 +31404,7 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
   }
 }
 
-},{"./GLError":183,"./reflect":186}],186:[function(require,module,exports){
+},{"./GLError":180,"./reflect":183}],183:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = makeReflectTypes
@@ -31517,7 +31462,7 @@ function makeReflectTypes(uniforms, useIndex) {
   }
   return obj
 }
-},{}],187:[function(require,module,exports){
+},{}],184:[function(_dereq_,module,exports){
 'use strict'
 
 exports.uniforms    = runtimeUniforms
@@ -31597,16 +31542,16 @@ function runtimeAttributes(gl, program) {
   return result
 }
 
-},{}],188:[function(require,module,exports){
+},{}],185:[function(_dereq_,module,exports){
 'use strict'
 
 exports.shader   = getShaderReference
 exports.program  = createProgram
 
-var GLError = require("./GLError")
-var formatCompilerError = require('gl-format-compiler-error');
+var GLError = _dereq_("./GLError")
+var formatCompilerError = _dereq_('gl-format-compiler-error');
 
-var weakMap = typeof WeakMap === 'undefined' ? require('weakmap-shim') : WeakMap
+var weakMap = typeof WeakMap === 'undefined' ? _dereq_('weakmap-shim') : WeakMap
 var CACHE = new weakMap()
 
 var SHADER_COUNTER = 0
@@ -31735,7 +31680,7 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"./GLError":183,"gl-format-compiler-error":165,"weakmap-shim":303}],189:[function(require,module,exports){
+},{"./GLError":180,"gl-format-compiler-error":162,"weakmap-shim":300}],186:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createSpikes2D
@@ -31823,12 +31768,12 @@ function createSpikes2D(plot, options) {
   return spikes
 }
 
-},{}],190:[function(require,module,exports){
+},{}],187:[function(_dereq_,module,exports){
 'use strict'
 
-var ndarray = require('ndarray')
-var ops     = require('ndarray-ops')
-var pool    = require('typedarray-pool')
+var ndarray = _dereq_('ndarray')
+var ops     = _dereq_('ndarray-ops')
+var pool    = _dereq_('typedarray-pool')
 
 module.exports = createTexture2D
 
@@ -32386,11 +32331,11 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":220,"ndarray-ops":219,"typedarray-pool":291}],191:[function(require,module,exports){
+},{"ndarray":217,"ndarray-ops":216,"typedarray-pool":288}],188:[function(_dereq_,module,exports){
 /** @module  gl-util/context */
 'use strict'
 
-var pick = require('pick-by-alias')
+var pick = _dereq_('pick-by-alias')
 
 module.exports = function setContext (o) {
 	if (!o) o = {}
@@ -32503,9 +32448,9 @@ function isContext (e) {
 		typeof e.drawElements === 'function'
 }
 
-},{"pick-by-alias":232}],192:[function(require,module,exports){
-var tokenize = require('glsl-tokenizer')
-var atob     = require('atob-lite')
+},{"pick-by-alias":229}],189:[function(_dereq_,module,exports){
+var tokenize = _dereq_('glsl-tokenizer')
+var atob     = _dereq_('atob-lite')
 
 module.exports = getName
 
@@ -32528,14 +32473,14 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":22,"glsl-tokenizer":199}],193:[function(require,module,exports){
+},{"atob-lite":19,"glsl-tokenizer":196}],190:[function(_dereq_,module,exports){
 module.exports = tokenize
 
-var literals100 = require('./lib/literals')
-  , operators = require('./lib/operators')
-  , builtins100 = require('./lib/builtins')
-  , literals300es = require('./lib/literals-300es')
-  , builtins300es = require('./lib/builtins-300es')
+var literals100 = _dereq_('./lib/literals')
+  , operators = _dereq_('./lib/operators')
+  , builtins100 = _dereq_('./lib/builtins')
+  , literals300es = _dereq_('./lib/literals-300es')
+  , builtins300es = _dereq_('./lib/builtins-300es')
 
 var NORMAL = 999          // <-- never emitted
   , TOKEN = 9999          // <-- never emitted
@@ -32892,9 +32837,9 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":195,"./lib/builtins-300es":194,"./lib/literals":197,"./lib/literals-300es":196,"./lib/operators":198}],194:[function(require,module,exports){
+},{"./lib/builtins":192,"./lib/builtins-300es":191,"./lib/literals":194,"./lib/literals-300es":193,"./lib/operators":195}],191:[function(_dereq_,module,exports){
 // 300es builtins/reserved words that were previously valid in v100
-var v100 = require('./builtins')
+var v100 = _dereq_('./builtins')
 
 // The texture2D|Cube functions have been removed
 // And the gl_ features are updated
@@ -32963,7 +32908,7 @@ module.exports = v100.concat([
   , 'textureProjGradOffset'
 ])
 
-},{"./builtins":195}],195:[function(require,module,exports){
+},{"./builtins":192}],192:[function(_dereq_,module,exports){
 module.exports = [
   // Keep this list sorted
   'abs'
@@ -33115,8 +33060,8 @@ module.exports = [
   , 'textureCubeGradEXT'
 ]
 
-},{}],196:[function(require,module,exports){
-var v100 = require('./literals')
+},{}],193:[function(_dereq_,module,exports){
+var v100 = _dereq_('./literals')
 
 module.exports = v100.slice().concat([
    'layout'
@@ -33205,7 +33150,7 @@ module.exports = v100.slice().concat([
   , 'usampler2DMSArray'
 ])
 
-},{"./literals":197}],197:[function(require,module,exports){
+},{"./literals":194}],194:[function(_dereq_,module,exports){
 module.exports = [
   // current
     'precision'
@@ -33300,7 +33245,7 @@ module.exports = [
   , 'using'
 ]
 
-},{}],198:[function(require,module,exports){
+},{}],195:[function(_dereq_,module,exports){
 module.exports = [
     '<<='
   , '>>='
@@ -33349,8 +33294,8 @@ module.exports = [
   , '}'
 ]
 
-},{}],199:[function(require,module,exports){
-var tokenize = require('./index')
+},{}],196:[function(_dereq_,module,exports){
+var tokenize = _dereq_('./index')
 
 module.exports = tokenizeString
 
@@ -33364,7 +33309,7 @@ function tokenizeString(str, opt) {
   return tokens
 }
 
-},{"./index":193}],200:[function(require,module,exports){
+},{"./index":190}],197:[function(_dereq_,module,exports){
 module.exports = function(strings) {
   if (typeof strings === 'string') strings = [strings]
   var exprs = [].slice.call(arguments,1)
@@ -33376,11 +33321,11 @@ module.exports = function(strings) {
   return parts.join('')
 }
 
-},{}],201:[function(require,module,exports){
+},{}],198:[function(_dereq_,module,exports){
 (function (global){
 'use strict'
 
-var isBrowser = require('is-browser')
+var isBrowser = _dereq_('is-browser')
 var hasHover
 
 if (typeof global.matchMedia === 'function') {
@@ -33393,10 +33338,10 @@ else {
 module.exports = hasHover
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"is-browser":207}],202:[function(require,module,exports){
+},{"is-browser":204}],199:[function(_dereq_,module,exports){
 'use strict'
 
-var isBrowser = require('is-browser')
+var isBrowser = _dereq_('is-browser')
 
 function detect() {
 	var supported = false
@@ -33419,7 +33364,7 @@ function detect() {
 
 module.exports = isBrowser && detect()
 
-},{"is-browser":207}],203:[function(require,module,exports){
+},{"is-browser":204}],200:[function(_dereq_,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -33505,10 +33450,10 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],204:[function(require,module,exports){
+},{}],201:[function(_dereq_,module,exports){
 "use strict"
 
-var bounds = require("binary-search-bounds")
+var bounds = _dereq_("binary-search-bounds")
 
 var NOT_FOUND = 0
 var SUCCESS = 1
@@ -33872,7 +33817,7 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":40}],205:[function(require,module,exports){
+},{"binary-search-bounds":37}],202:[function(_dereq_,module,exports){
 "use strict"
 
 function invertPermutation(pi, result) {
@@ -33884,7 +33829,7 @@ function invertPermutation(pi, result) {
 }
 
 module.exports = invertPermutation
-},{}],206:[function(require,module,exports){
+},{}],203:[function(_dereq_,module,exports){
 "use strict"
 
 function iota(n) {
@@ -33896,9 +33841,9 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],207:[function(require,module,exports){
+},{}],204:[function(_dereq_,module,exports){
 module.exports = true;
-},{}],208:[function(require,module,exports){
+},{}],205:[function(_dereq_,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -33921,19 +33866,19 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],209:[function(require,module,exports){
+},{}],206:[function(_dereq_,module,exports){
 'use strict';
 module.exports = typeof navigator !== 'undefined' &&
 	(/MSIE/.test(navigator.userAgent) || /Trident\//.test(navigator.appVersion));
 
-},{}],210:[function(require,module,exports){
+},{}],207:[function(_dereq_,module,exports){
 'use strict';
 module.exports = function (x) {
 	var type = typeof x;
 	return x !== null && (type === 'object' || type === 'function');
 };
 
-},{}],211:[function(require,module,exports){
+},{}],208:[function(_dereq_,module,exports){
 'use strict';
 var toString = Object.prototype.toString;
 
@@ -33942,7 +33887,7 @@ module.exports = function (x) {
 	return toString.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
 };
 
-},{}],212:[function(require,module,exports){
+},{}],209:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = function isPath(str) {
@@ -33956,18 +33901,18 @@ module.exports = function isPath(str) {
 	return false
 }
 
-},{}],213:[function(require,module,exports){
+},{}],210:[function(_dereq_,module,exports){
 'use strict';
 module.exports = Math.log2 || function (x) {
 	return Math.log(x) * Math.LOG2E;
 };
 
-},{}],214:[function(require,module,exports){
+},{}],211:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = mouseListen
 
-var mouse = require('mouse-event')
+var mouse = _dereq_('mouse-event')
 
 function mouseListen (element, callback) {
   if (!callback) {
@@ -34169,7 +34114,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":216}],215:[function(require,module,exports){
+},{"mouse-event":213}],212:[function(_dereq_,module,exports){
 var rootPosition = { left: 0, top: 0 }
 
 module.exports = mouseEventOffset
@@ -34196,7 +34141,7 @@ function getBoundingClientOffset (element) {
   }
 }
 
-},{}],216:[function(require,module,exports){
+},{}],213:[function(_dereq_,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -34258,10 +34203,10 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],217:[function(require,module,exports){
+},{}],214:[function(_dereq_,module,exports){
 'use strict'
 
-var toPX = require('to-px')
+var toPX = _dereq_('to-px')
 
 module.exports = mouseWheelListen
 
@@ -34300,10 +34245,10 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":287}],218:[function(require,module,exports){
+},{"to-px":284}],215:[function(_dereq_,module,exports){
 "use strict"
 
-var pool = require("typedarray-pool")
+var pool = _dereq_("typedarray-pool")
 
 module.exports = createSurfaceExtractor
 
@@ -34716,10 +34661,10 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":291}],219:[function(require,module,exports){
+},{"typedarray-pool":288}],216:[function(_dereq_,module,exports){
 "use strict"
 
-var compile = require("cwise-compiler")
+var compile = _dereq_("cwise-compiler")
 
 var EmptyProc = {
   body: "",
@@ -35179,9 +35124,9 @@ exports.equals = compile({
 
 
 
-},{"cwise-compiler":80}],220:[function(require,module,exports){
-var iota = require("iota-array")
-var isBuffer = require("is-buffer")
+},{"cwise-compiler":78}],217:[function(_dereq_,module,exports){
+var iota = _dereq_("iota-array")
+var isBuffer = _dereq_("is-buffer")
 
 var hasTypedArrays  = ((typeof Float64Array) !== "undefined")
 
@@ -35524,10 +35469,10 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":206,"is-buffer":208}],221:[function(require,module,exports){
+},{"iota-array":203,"is-buffer":205}],218:[function(_dereq_,module,exports){
 "use strict"
 
-var doubleBits = require("double-bits")
+var doubleBits = _dereq_("double-bits")
 
 var SMALLEST_DENORM = Math.pow(2, -1074)
 var UINT_MAX = (-1)>>>0
@@ -35567,7 +35512,7 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":89}],222:[function(require,module,exports){
+},{"double-bits":87}],219:[function(_dereq_,module,exports){
 
 var π = Math.PI
 var _120 = radians(120)
@@ -35769,7 +35714,7 @@ function radians(degress){
 	return degress * (π / 180)
 }
 
-},{}],223:[function(require,module,exports){
+},{}],220:[function(_dereq_,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -35861,7 +35806,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],224:[function(require,module,exports){
+},{}],221:[function(_dereq_,module,exports){
 /*!
  * pad-left <https://github.com/jonschlinkert/pad-left>
  *
@@ -35871,13 +35816,13 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 'use strict';
 
-var repeat = require('repeat-string');
+var repeat = _dereq_('repeat-string');
 
 module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
   return repeat(ch, num) + str;
 };
-},{"repeat-string":261}],225:[function(require,module,exports){
+},{"repeat-string":258}],222:[function(_dereq_,module,exports){
 'use strict'
 
 /**
@@ -36014,10 +35959,10 @@ parenthesis.stringify = stringify
 
 module.exports = parenthesis
 
-},{}],226:[function(require,module,exports){
+},{}],223:[function(_dereq_,module,exports){
 'use strict'
 
-var pick = require('pick-by-alias')
+var pick = _dereq_('pick-by-alias')
 
 module.exports = parseRect
 
@@ -36101,7 +36046,7 @@ function parseRect (arg) {
   return rect
 }
 
-},{"pick-by-alias":232}],227:[function(require,module,exports){
+},{"pick-by-alias":229}],224:[function(_dereq_,module,exports){
 
 module.exports = parse
 
@@ -36160,7 +36105,7 @@ function parseValues(args) {
 	return numbers ? numbers.map(Number) : []
 }
 
-},{}],228:[function(require,module,exports){
+},{}],225:[function(_dereq_,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -36171,7 +36116,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],229:[function(require,module,exports){
+},{}],226:[function(_dereq_,module,exports){
 (function (process){
 // Generated by CoffeeScript 1.12.2
 (function() {
@@ -36210,15 +36155,15 @@ module.exports = function parseUnit(str, out) {
 
 
 
-}).call(this,require('_process'))
-},{"_process":248}],230:[function(require,module,exports){
+}).call(this,_dereq_('_process'))
+},{"_process":245}],227:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = permutationSign
 
 var BRUTE_FORCE_CUTOFF = 32
 
-var pool = require("typedarray-pool")
+var pool = _dereq_("typedarray-pool")
 
 function permutationSign(p) {
   var n = p.length
@@ -36263,11 +36208,11 @@ function permutationSign(p) {
     return sgn
   }
 }
-},{"typedarray-pool":291}],231:[function(require,module,exports){
+},{"typedarray-pool":288}],228:[function(_dereq_,module,exports){
 "use strict"
 
-var pool = require("typedarray-pool")
-var inverse = require("invert-permutation")
+var pool = _dereq_("typedarray-pool")
+var inverse = _dereq_("invert-permutation")
 
 function rank(permutation) {
   var n = permutation.length
@@ -36350,7 +36295,7 @@ function unrank(n, r, p) {
 exports.rank = rank
 exports.unrank = unrank
 
-},{"invert-permutation":205,"typedarray-pool":291}],232:[function(require,module,exports){
+},{"invert-permutation":202,"typedarray-pool":288}],229:[function(_dereq_,module,exports){
 'use strict'
 
 
@@ -36429,12 +36374,12 @@ function toList(arg) {
 	return arg
 }
 
-},{}],233:[function(require,module,exports){
+},{}],230:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = planarDual
 
-var compareAngle = require("compare-angle")
+var compareAngle = _dereq_("compare-angle")
 
 function planarDual(cells, positions) {
 
@@ -36560,12 +36505,12 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":69}],234:[function(require,module,exports){
+},{"compare-angle":67}],231:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = trimLeaves
 
-var e2a = require('edges-to-adjacency-list')
+var e2a = _dereq_('edges-to-adjacency-list')
 
 function trimLeaves(edges, positions) {
   var adj = e2a(edges, positions.length)
@@ -36616,18 +36561,18 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":94}],235:[function(require,module,exports){
+},{"edges-to-adjacency-list":92}],232:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
 
-var e2a = require('edges-to-adjacency-list')
-var planarDual = require('planar-dual')
-var preprocessPolygon = require('point-in-big-polygon')
-var twoProduct = require('two-product')
-var robustSum = require('robust-sum')
-var uniq = require('uniq')
-var trimLeaves = require('./lib/trim-leaves')
+var e2a = _dereq_('edges-to-adjacency-list')
+var planarDual = _dereq_('planar-dual')
+var preprocessPolygon = _dereq_('point-in-big-polygon')
+var twoProduct = _dereq_('two-product')
+var robustSum = _dereq_('robust-sum')
+var uniq = _dereq_('uniq')
+var trimLeaves = _dereq_('./lib/trim-leaves')
 
 function makeArray(length, fill) {
   var result = new Array(length)
@@ -36821,13 +36766,13 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":234,"edges-to-adjacency-list":94,"planar-dual":233,"point-in-big-polygon":239,"robust-sum":268,"two-product":289,"uniq":293}],236:[function(require,module,exports){
+},{"./lib/trim-leaves":231,"edges-to-adjacency-list":92,"planar-dual":230,"point-in-big-polygon":236,"robust-sum":265,"two-product":286,"uniq":290}],233:[function(_dereq_,module,exports){
 'use strict'
 
-module.exports = require('./quad')
-},{"./quad":238}],237:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"dup":58}],238:[function(require,module,exports){
+module.exports = _dereq_('./quad')
+},{"./quad":235}],234:[function(_dereq_,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"dup":56}],235:[function(_dereq_,module,exports){
 /**
  * @module  point-cluster/quad
  *
@@ -36836,16 +36781,16 @@ arguments[4][58][0].apply(exports,arguments)
 
 'use strict'
 
-var search = require('binary-search-bounds')
-var clamp = require('clamp')
-var rect = require('parse-rect')
-var getBounds = require('array-bounds')
-var pick = require('pick-by-alias')
-var defined = require('defined')
-var flatten = require('flatten-vertex-data')
-var isObj = require('is-obj')
-var dtype = require('dtype')
-var log2 = require('math-log2')
+var search = _dereq_('binary-search-bounds')
+var clamp = _dereq_('clamp')
+var rect = _dereq_('parse-rect')
+var getBounds = _dereq_('array-bounds')
+var pick = _dereq_('pick-by-alias')
+var defined = _dereq_('defined')
+var flatten = _dereq_('flatten-vertex-data')
+var isObj = _dereq_('is-obj')
+var dtype = _dereq_('dtype')
+var log2 = _dereq_('math-log2')
 
 
 module.exports = function cluster (srcPoints, options) {
@@ -37176,13 +37121,13 @@ function normalize (pts, bounds) {
 
 	return result
 }
-},{"array-bounds":18,"binary-search-bounds":237,"clamp":59,"defined":87,"dtype":91,"flatten-vertex-data":152,"is-obj":210,"math-log2":213,"parse-rect":226,"pick-by-alias":232}],239:[function(require,module,exports){
+},{"array-bounds":15,"binary-search-bounds":234,"clamp":57,"defined":85,"dtype":89,"flatten-vertex-data":149,"is-obj":207,"math-log2":210,"parse-rect":223,"pick-by-alias":229}],236:[function(_dereq_,module,exports){
 module.exports = preprocessPolygon
 
-var orient = require('robust-orientation')[3]
-var makeSlabs = require('slab-decomposition')
-var makeIntervalTree = require('interval-tree-1d')
-var bsearch = require('binary-search-bounds')
+var orient = _dereq_('robust-orientation')[3]
+var makeSlabs = _dereq_('slab-decomposition')
+var makeIntervalTree = _dereq_('interval-tree-1d')
+var bsearch = _dereq_('binary-search-bounds')
 
 function visitInterval() {
   return true
@@ -37328,19 +37273,19 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":40,"interval-tree-1d":204,"robust-orientation":263,"slab-decomposition":275}],240:[function(require,module,exports){
+},{"binary-search-bounds":37,"interval-tree-1d":201,"robust-orientation":260,"slab-decomposition":272}],237:[function(_dereq_,module,exports){
 /*
  * @copyright 2016 Sean Connelly (@voidqk), http://syntheti.cc
  * @license MIT
  * @preserve Project Home: https://github.com/voidqk/polybooljs
  */
 
-var BuildLog = require('./lib/build-log');
-var Epsilon = require('./lib/epsilon');
-var Intersecter = require('./lib/intersecter');
-var SegmentChainer = require('./lib/segment-chainer');
-var SegmentSelector = require('./lib/segment-selector');
-var GeoJSON = require('./lib/geojson');
+var BuildLog = _dereq_('./lib/build-log');
+var Epsilon = _dereq_('./lib/epsilon');
+var Intersecter = _dereq_('./lib/intersecter');
+var SegmentChainer = _dereq_('./lib/segment-chainer');
+var SegmentSelector = _dereq_('./lib/segment-selector');
+var GeoJSON = _dereq_('./lib/geojson');
 
 var buildLog = false;
 var epsilon = Epsilon();
@@ -37456,7 +37401,7 @@ if (typeof window === 'object')
 
 module.exports = PolyBool;
 
-},{"./lib/build-log":241,"./lib/epsilon":242,"./lib/geojson":243,"./lib/intersecter":244,"./lib/segment-chainer":246,"./lib/segment-selector":247}],241:[function(require,module,exports){
+},{"./lib/build-log":238,"./lib/epsilon":239,"./lib/geojson":240,"./lib/intersecter":241,"./lib/segment-chainer":243,"./lib/segment-selector":244}],238:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -37571,7 +37516,7 @@ function BuildLog(){
 
 module.exports = BuildLog;
 
-},{}],242:[function(require,module,exports){
+},{}],239:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -37743,7 +37688,7 @@ function Epsilon(eps){
 
 module.exports = Epsilon;
 
-},{}],243:[function(require,module,exports){
+},{}],240:[function(_dereq_,module,exports){
 // (c) Copyright 2017, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -37933,7 +37878,7 @@ var GeoJSON = {
 
 module.exports = GeoJSON;
 
-},{}],244:[function(require,module,exports){
+},{}],241:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -37942,7 +37887,7 @@ module.exports = GeoJSON;
 // this is the core work-horse
 //
 
-var LinkedList = require('./linked-list');
+var LinkedList = _dereq_('./linked-list');
 
 function Intersecter(selfIntersection, eps, buildLog){
 	// selfIntersection is true/false depending on the phase of the overall algorithm
@@ -38440,7 +38385,7 @@ function Intersecter(selfIntersection, eps, buildLog){
 
 module.exports = Intersecter;
 
-},{"./linked-list":245}],245:[function(require,module,exports){
+},{"./linked-list":242}],242:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -38523,7 +38468,7 @@ var LinkedList = {
 
 module.exports = LinkedList;
 
-},{}],246:[function(require,module,exports){
+},{}],243:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -38777,7 +38722,7 @@ function SegmentChainer(segments, eps, buildLog){
 
 module.exports = SegmentChainer;
 
-},{}],247:[function(require,module,exports){
+},{}],244:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -38945,7 +38890,7 @@ var SegmentSelector = {
 
 module.exports = SegmentSelector;
 
-},{}],248:[function(require,module,exports){
+},{}],245:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -39131,9 +39076,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],249:[function(require,module,exports){
+},{}],246:[function(_dereq_,module,exports){
 (function (global){
-var now = require('performance-now')
+var now = _dereq_('performance-now')
   , root = typeof window === 'undefined' ? global : window
   , vendors = ['moz', 'webkit']
   , suffix = 'AnimationFrame'
@@ -39210,10 +39155,10 @@ module.exports.polyfill = function(object) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"performance-now":229}],250:[function(require,module,exports){
+},{"performance-now":226}],247:[function(_dereq_,module,exports){
 'use strict'
 
-var bnadd = require('big-rat/add')
+var bnadd = _dereq_('big-rat/add')
 
 module.exports = add
 
@@ -39226,12 +39171,12 @@ function add (a, b) {
   return r
 }
 
-},{"big-rat/add":24}],251:[function(require,module,exports){
+},{"big-rat/add":21}],248:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = float2rat
 
-var rat = require('big-rat')
+var rat = _dereq_('big-rat')
 
 function float2rat(v) {
   var result = new Array(v.length)
@@ -39241,11 +39186,11 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":27}],252:[function(require,module,exports){
+},{"big-rat":24}],249:[function(_dereq_,module,exports){
 'use strict'
 
-var rat = require('big-rat')
-var mul = require('big-rat/mul')
+var rat = _dereq_('big-rat')
+var mul = _dereq_('big-rat/mul')
 
 module.exports = muls
 
@@ -39259,10 +39204,10 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":27,"big-rat/mul":36}],253:[function(require,module,exports){
+},{"big-rat":24,"big-rat/mul":33}],250:[function(_dereq_,module,exports){
 'use strict'
 
-var bnsub = require('big-rat/sub')
+var bnsub = _dereq_('big-rat/sub')
 
 module.exports = sub
 
@@ -39275,16 +39220,16 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":38}],254:[function(require,module,exports){
+},{"big-rat/sub":35}],251:[function(_dereq_,module,exports){
 'use strict'
 
-var getBounds = require('array-bounds')
-var rgba = require('color-normalize')
-var updateDiff = require('update-diff')
-var pick = require('pick-by-alias')
-var extend = require('object-assign')
-var flatten = require('flatten-vertex-data')
-var ref = require('to-float32');
+var getBounds = _dereq_('array-bounds')
+var rgba = _dereq_('color-normalize')
+var updateDiff = _dereq_('update-diff')
+var pick = _dereq_('pick-by-alias')
+var extend = _dereq_('object-assign')
+var flatten = _dereq_('flatten-vertex-data')
+var ref = _dereq_('to-float32');
 var float32 = ref.float32;
 var fract32 = ref.fract32;
 
@@ -39761,23 +39706,23 @@ function Error2D (regl, options) {
 		meshBuffer.destroy()
 	}
 }
-},{"array-bounds":18,"color-normalize":64,"flatten-vertex-data":152,"object-assign":223,"pick-by-alias":232,"to-float32":286,"update-diff":295}],255:[function(require,module,exports){
+},{"array-bounds":15,"color-normalize":62,"flatten-vertex-data":149,"object-assign":220,"pick-by-alias":229,"to-float32":283,"update-diff":292}],252:[function(_dereq_,module,exports){
 'use strict'
 
 
-var rgba = require('color-normalize')
-var getBounds = require('array-bounds')
-var extend = require('object-assign')
-var glslify = require('glslify')
-var pick = require('pick-by-alias')
-var flatten = require('flatten-vertex-data')
-var triangulate = require('earcut')
-var normalize = require('array-normalize')
-var ref = require('to-float32');
+var rgba = _dereq_('color-normalize')
+var getBounds = _dereq_('array-bounds')
+var extend = _dereq_('object-assign')
+var glslify = _dereq_('glslify')
+var pick = _dereq_('pick-by-alias')
+var flatten = _dereq_('flatten-vertex-data')
+var triangulate = _dereq_('earcut')
+var normalize = _dereq_('array-normalize')
+var ref = _dereq_('to-float32');
 var float32 = ref.float32;
 var fract32 = ref.fract32;
-var WeakMap = require('es6-weak-map')
-var parseRect = require('parse-rect')
+var WeakMap = _dereq_('es6-weak-map')
+var parseRect = _dereq_('parse-rect')
 
 
 module.exports = Line2D
@@ -40484,11 +40429,11 @@ Line2D.prototype.destroy = function () {
 
 	return this
 }
-},{"array-bounds":18,"array-normalize":19,"color-normalize":64,"earcut":93,"es6-weak-map":146,"flatten-vertex-data":152,"glslify":200,"object-assign":223,"parse-rect":226,"pick-by-alias":232,"to-float32":286}],256:[function(require,module,exports){
+},{"array-bounds":15,"array-normalize":16,"color-normalize":62,"earcut":91,"es6-weak-map":144,"flatten-vertex-data":149,"glslify":197,"object-assign":220,"parse-rect":223,"pick-by-alias":229,"to-float32":283}],253:[function(_dereq_,module,exports){
 'use strict'
 
-var Scatter = require('./scatter')
-var extend = require('object-assign')
+var Scatter = _dereq_('./scatter')
+var extend = _dereq_('object-assign')
 
 module.exports = function (regl, options) {
 	var scatter = new Scatter(regl, options)
@@ -40511,23 +40456,21 @@ module.exports = function (regl, options) {
 
 	return render
 }
-},{"./scatter":257,"object-assign":223}],257:[function(require,module,exports){
+},{"./scatter":254,"object-assign":220}],254:[function(_dereq_,module,exports){
 'use strict'
 
-var rgba = require('color-normalize')
-var getBounds = require('array-bounds')
-var colorId = require('color-id')
-var cluster = require('point-cluster')
-var extend = require('object-assign')
-var glslify = require('glslify')
-var pick = require('pick-by-alias')
-var updateDiff = require('update-diff')
-var flatten = require('flatten-vertex-data')
-var ie = require('is-iexplorer')
-var ref = require('to-float32');
-var float32 = ref.float32;
-var fract32 = ref.fract32;
-var parseRect = require('parse-rect')
+var rgba = _dereq_('color-normalize')
+var getBounds = _dereq_('array-bounds')
+var colorId = _dereq_('color-id')
+var cluster = _dereq_('point-cluster')
+var extend = _dereq_('object-assign')
+var glslify = _dereq_('glslify')
+var pick = _dereq_('pick-by-alias')
+var updateDiff = _dereq_('update-diff')
+var flatten = _dereq_('flatten-vertex-data')
+var ie = _dereq_('is-iexplorer')
+var f32 = _dereq_('to-float32')
+var parseRect = _dereq_('parse-rect')
 
 
 module.exports = Scatter
@@ -40694,13 +40637,10 @@ function Scatter (regl, options) {
 
 	// draw sdf-marker
 	var markerOptions = extend({}, shaderOptions)
-	markerOptions.frag = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragWidth, fragBorderColorLevel, fragColorLevel;\n\nuniform sampler2D marker;\nuniform float pixelRatio, opacity;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float dist = texture2D(marker, gl_PointCoord).r, delta = fragWidth;\n\n  // max-distance alpha\n  if (dist < 0.003) discard;\n\n  // null-border case\n  if (fragBorderColorLevel == fragColorLevel || fragBorderColor.a == 0.) {\n    float colorAmt = smoothstep(.5 - delta, .5 + delta, dist);\n    gl_FragColor = vec4(fragColor.rgb, colorAmt * fragColor.a * opacity);\n    return;\n  }\n\n  float borderColorAmt = smoothstep(fragBorderColorLevel - delta, fragBorderColorLevel + delta, dist);\n  float colorAmt = smoothstep(fragColorLevel - delta, fragColorLevel + delta, dist);\n\n  vec4 color = fragBorderColor;\n  color.a *= borderColorAmt;\n  color = mix(color, fragColor, colorAmt);\n  color.a *= opacity;\n\n  gl_FragColor = color;\n}\n"])
+	markerOptions.frag = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragWidth, fragBorderColorLevel, fragColorLevel;\n\nuniform sampler2D marker;\nuniform float pixelRatio, opacity;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float dist = texture2D(marker, gl_PointCoord).r, delta = fragWidth;\n\n  // max-distance alpha\n  if (dist < 0.003) discard;\n\n  // null-border case\n  if (fragBorderColorLevel == fragColorLevel || fragBorderColor.a == 0.) {\n    float colorAmt = smoothstep(.5 - delta, .5 + delta, dist);\n    gl_FragColor = vec4(fragColor.rgb, colorAmt * fragColor.a * opacity);\n  }\n  else {\n    float borderColorAmt = smoothstep(fragBorderColorLevel - delta, fragBorderColorLevel + delta, dist);\n    float colorAmt = smoothstep(fragColorLevel - delta, fragColorLevel + delta, dist);\n\n    vec4 color = fragBorderColor;\n    color.a *= borderColorAmt;\n    color = mix(color, fragColor, colorAmt);\n    color.a *= opacity;\n\n    gl_FragColor = color;\n  }\n\n}\n"])
 	markerOptions.vert = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute float x, y, xFract, yFract;\nattribute float size, borderSize;\nattribute vec4 colorId, borderColorId;\nattribute float isActive;\n\nuniform vec2 scale, scaleFract, translate, translateFract, paletteSize;\nuniform float pixelRatio;\nuniform sampler2D palette;\n\nconst float maxSize = 100.;\nconst float borderLevel = .5;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragPointSize, fragBorderRadius,\n    fragWidth, fragBorderColorLevel, fragColorLevel;\n\nvec2 paletteCoord(float id) {\n  return vec2(\n    (mod(id, paletteSize.x) + .5) / paletteSize.x,\n    (floor(id / paletteSize.x) + .5) / paletteSize.y\n  );\n}\nvec2 paletteCoord(vec2 id) {\n  return vec2(\n    (id.x + .5) / paletteSize.x,\n    (id.y + .5) / paletteSize.y\n  );\n}\nvec4 getColor(vec4 id) {\n  // zero-palette means we deal with direct buffer\n  if (paletteSize.x == 0.) return id / 255.;\n  return texture2D(palette, paletteCoord(id.xy));\n}\n\nvoid main() {\n  if (isActive == 0.) return;\n\n  vec2 position = vec2(x, y);\n  vec2 positionFract = vec2(xFract, yFract);\n\n  vec4 color = getColor(colorId);\n  vec4 borderColor = getColor(borderColorId);\n\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n\n  gl_PointSize = 2. * size * pixelRatio;\n  fragPointSize = size * pixelRatio;\n\n  vec2 pos = (position + translate) * scale\n      + (positionFract + translateFract) * scale\n      + (position + translate) * scaleFract\n      + (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0, 1);\n\n  fragColor = color;\n  fragBorderColor = borderColor;\n  fragWidth = 1. / gl_PointSize;\n\n  fragBorderColorLevel = clamp(borderLevel - borderLevel * borderSize / size, 0., 1.);\n  fragColorLevel = clamp(borderLevel + (1. - borderLevel) * borderSize / size, 0., 1.);\n}\n"])
 
-	try {
-		this.drawMarker = regl(markerOptions)
-	} catch (e) {
-	}
+	this.drawMarker = regl(markerOptions)
 
 	// draw circle
 	var circleOptions = extend({}, shaderOptions)
@@ -40708,7 +40648,10 @@ function Scatter (regl, options) {
 	circleOptions.vert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute float x, y, xFract, yFract;\nattribute float size, borderSize;\nattribute vec4 colorId, borderColorId;\nattribute float isActive;\n\nuniform vec2 scale, scaleFract, translate, translateFract;\nuniform float pixelRatio;\nuniform sampler2D palette;\nuniform vec2 paletteSize;\n\nconst float maxSize = 100.;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragBorderRadius, fragWidth;\n\nvec2 paletteCoord(float id) {\n  return vec2(\n    (mod(id, paletteSize.x) + .5) / paletteSize.x,\n    (floor(id / paletteSize.x) + .5) / paletteSize.y\n  );\n}\nvec2 paletteCoord(vec2 id) {\n  return vec2(\n    (id.x + .5) / paletteSize.x,\n    (id.y + .5) / paletteSize.y\n  );\n}\n\nvec4 getColor(vec4 id) {\n  // zero-palette means we deal with direct buffer\n  if (paletteSize.x == 0.) return id / 255.;\n  return texture2D(palette, paletteCoord(id.xy));\n}\n\nvoid main() {\n  // ignore inactive points\n  if (isActive == 0.) return;\n\n  vec2 position = vec2(x, y);\n  vec2 positionFract = vec2(xFract, yFract);\n\n  vec4 color = getColor(colorId);\n  vec4 borderColor = getColor(borderColorId);\n\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n\n  gl_PointSize = (size + borderSize) * pixelRatio;\n\n  vec2 pos = (position + translate) * scale\n      + (positionFract + translateFract) * scale\n      + (position + translate) * scaleFract\n      + (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0, 1);\n\n  fragBorderRadius = 1. - 2. * borderSize / (size + borderSize);\n  fragColor = color;\n  fragBorderColor = borderColor.a == 0. || borderSize == 0. ? vec4(color.rgb, 0.) : borderColor;\n  fragWidth = 1. / gl_PointSize;\n}\n"])
 
 	// polyfill IE
-	if (ie) { circleOptions.frag = circleOptions.frag.replace('smoothstep', 'smoothStep') }
+	if (ie) {
+		circleOptions.frag = circleOptions.frag.replace('smoothstep', 'smoothStep')
+		markerOptions.frag = markerOptions.frag.replace('smoothstep', 'smoothStep')
+	}
 
 	this.drawCircle = regl(circleOptions)
 }
@@ -41113,11 +41056,11 @@ Scatter.prototype.update = function () {
 
 				// update position buffers
 				positionBuffer({
-					data: float32(positions),
+					data: f32.float(positions),
 					usage: 'dynamic'
 				})
 				positionFractBuffer({
-					data: fract32(positions),
+					data: f32.fract(positions),
 					usage: 'dynamic'
 				})
 
@@ -41190,8 +41133,8 @@ Scatter.prototype.update = function () {
 				group.scale = [1 / (range[2] - range[0]), 1 / (range[3] - range[1])]
 				group.translate = [-range[0], -range[1]]
 
-				group.scaleFract = fract32(group.scale)
-				group.translateFract = fract32(group.translate)
+				group.scaleFract = f32.fract(group.scale)
+				group.translateFract = f32.fract(group.translate)
 
 				return range
 			},
@@ -41440,17 +41383,17 @@ Scatter.prototype.destroy = function () {
 
 	return this
 }
-},{"array-bounds":18,"color-id":62,"color-normalize":64,"flatten-vertex-data":152,"glslify":200,"is-iexplorer":209,"object-assign":223,"parse-rect":226,"pick-by-alias":232,"point-cluster":236,"to-float32":286,"update-diff":295}],258:[function(require,module,exports){
+},{"array-bounds":15,"color-id":60,"color-normalize":62,"flatten-vertex-data":149,"glslify":197,"is-iexplorer":206,"object-assign":220,"parse-rect":223,"pick-by-alias":229,"point-cluster":233,"to-float32":283,"update-diff":292}],255:[function(_dereq_,module,exports){
 'use strict'
 
 
-var createScatter = require('regl-scatter2d/scatter')
-var pick = require('pick-by-alias')
-var getBounds = require('array-bounds')
-var raf = require('raf')
-var arrRange = require('array-range')
-var rect = require('parse-rect')
-var flatten = require('flatten-vertex-data')
+var createScatter = _dereq_('regl-scatter2d/scatter')
+var pick = _dereq_('pick-by-alias')
+var getBounds = _dereq_('array-bounds')
+var raf = _dereq_('raf')
+var arrRange = _dereq_('array-range')
+var rect = _dereq_('parse-rect')
+var flatten = _dereq_('flatten-vertex-data')
 
 
 module.exports = SPLOM
@@ -41865,9 +41808,9 @@ function getPad (arg) {
 		return [box.x, box.y, box.x + box.width, box.y + box.height]
 	}
 }
-},{"array-bounds":18,"array-range":20,"flatten-vertex-data":259,"parse-rect":226,"pick-by-alias":232,"raf":249,"regl-scatter2d/scatter":257}],259:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"dtype":91,"dup":15}],260:[function(require,module,exports){
+},{"array-bounds":15,"array-range":17,"flatten-vertex-data":256,"parse-rect":223,"pick-by-alias":229,"raf":246,"regl-scatter2d/scatter":254}],256:[function(_dereq_,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"dtype":89,"dup":12}],257:[function(_dereq_,module,exports){
 (function(pa,W){"object"===typeof exports&&"undefined"!==typeof module?module.exports=W():"function"===typeof define&&define.amd?define(W):pa.createREGL=W()})(this,function(){function pa(a,b){this.id=Ab++;this.type=a;this.data=b}function W(a){if(0===a.length)return[];var b=a.charAt(0),c=a.charAt(a.length-1);if(1<a.length&&b===c&&('"'===b||"'"===b))return['"'+a.substr(1,a.length-2).replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"'];if(b=/\[(false|true|null|\d+|'[^']*'|"[^"]*")\]/.exec(a))return W(a.substr(0,
 b.index)).concat(W(b[1])).concat(W(a.substr(b.index+b[0].length)));b=a.split(".");if(1===b.length)return['"'+a.replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"'];a=[];for(c=0;c<b.length;++c)a=a.concat(W(b[c]));return a}function Za(a){return"["+W(a).join("][")+"]"}function Bb(){var a={"":0},b=[""];return{id:function(c){var e=a[c];if(e)return e;e=a[c]=b.length;b.push(c);return e},str:function(a){return b[a]}}}function Cb(a,b,c){function e(){var b=window.innerWidth,e=window.innerHeight;a!==document.body&&
 (e=a.getBoundingClientRect(),b=e.right-e.left,e=e.bottom-e.top);f.width=c*b;f.height=c*e;D(f.style,{width:b+"px",height:e+"px"})}var f=document.createElement("canvas");D(f.style,{border:0,margin:0,padding:0,top:0,left:0});a.appendChild(f);a===document.body&&(f.style.position="absolute",D(a.style,{margin:0,padding:0}));window.addEventListener("resize",e,!1);e();return{canvas:f,onDestroy:function(){window.removeEventListener("resize",e);a.removeChild(f)}}}function Db(a,b){function c(c){try{return a.getContext(c,
@@ -42019,7 +41962,7 @@ a.framebuffer_reglType)for(var b=0;6>b;++b)aa(D({framebuffer:a.framebuffer.faces
 case "lost":c=U;break;case "restore":c=Y;break;case "destroy":c=W}c.push(b);return{cancel:function(){for(var a=0;a<c.length;++a)if(c[a]===b){c[a]=c[c.length-1];c.pop();break}}}},limits:Q,hasExtension:function(a){return 0<=Q.extensions.indexOf(a.toLowerCase())},read:z,destroy:function(){F.length=0;e();M&&(M.removeEventListener("webglcontextlost",f),M.removeEventListener("webglcontextrestored",d));R.clear();L.clear();A.clear();w.clear();T.clear();E.clear();x&&x.clear();W.forEach(function(a){a()})},
 _gl:l,_refresh:m,poll:function(){u();x&&x.update()},now:v,stats:t});a.onDone(null,g);return g}});
 
-},{}],261:[function(require,module,exports){
+},{}],258:[function(_dereq_,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -42091,13 +42034,13 @@ function repeat(str, num) {
   return res;
 }
 
-},{}],262:[function(require,module,exports){
+},{}],259:[function(_dereq_,module,exports){
 "use strict"
 
-var twoProduct = require("two-product")
-var robustSum = require("robust-sum")
-var robustDiff = require("robust-subtract")
-var robustScale = require("robust-scale")
+var twoProduct = _dereq_("two-product")
+var robustSum = _dereq_("robust-sum")
+var robustDiff = _dereq_("robust-subtract")
+var robustScale = _dereq_("robust-scale")
 
 var NUM_EXPAND = 6
 
@@ -42259,13 +42202,13 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":265,"robust-subtract":267,"robust-sum":268,"two-product":289}],263:[function(require,module,exports){
+},{"robust-scale":262,"robust-subtract":264,"robust-sum":265,"two-product":286}],260:[function(_dereq_,module,exports){
 "use strict"
 
-var twoProduct = require("two-product")
-var robustSum = require("robust-sum")
-var robustScale = require("robust-scale")
-var robustSubtract = require("robust-subtract")
+var twoProduct = _dereq_("two-product")
+var robustSum = _dereq_("robust-sum")
+var robustScale = _dereq_("robust-scale")
+var robustSubtract = _dereq_("robust-subtract")
 
 var NUM_EXPAND = 5
 
@@ -42450,11 +42393,11 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":265,"robust-subtract":267,"robust-sum":268,"two-product":289}],264:[function(require,module,exports){
+},{"robust-scale":262,"robust-subtract":264,"robust-sum":265,"two-product":286}],261:[function(_dereq_,module,exports){
 "use strict"
 
-var robustSum = require("robust-sum")
-var robustScale = require("robust-scale")
+var robustSum = _dereq_("robust-sum")
+var robustScale = _dereq_("robust-scale")
 
 module.exports = robustProduct
 
@@ -42480,11 +42423,11 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":265,"robust-sum":268}],265:[function(require,module,exports){
+},{"robust-scale":262,"robust-sum":265}],262:[function(_dereq_,module,exports){
 "use strict"
 
-var twoProduct = require("two-product")
-var twoSum = require("two-sum")
+var twoProduct = _dereq_("two-product")
+var twoSum = _dereq_("two-sum")
 
 module.exports = scaleLinearExpansion
 
@@ -42531,12 +42474,12 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":289,"two-sum":290}],266:[function(require,module,exports){
+},{"two-product":286,"two-sum":287}],263:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = segmentsIntersect
 
-var orient = require("robust-orientation")[3]
+var orient = _dereq_("robust-orientation")[3]
 
 function checkCollinear(a0, a1, b0, b1) {
 
@@ -42579,7 +42522,7 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":263}],267:[function(require,module,exports){
+},{"robust-orientation":260}],264:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -42736,7 +42679,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],268:[function(require,module,exports){
+},{}],265:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -42893,7 +42836,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],269:[function(require,module,exports){
+},{}],266:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -42901,13 +42844,13 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],270:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"dup":41}],271:[function(require,module,exports){
+},{}],267:[function(_dereq_,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"dup":38}],268:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
-var bits      = require("bit-twiddle")
-  , UnionFind = require("union-find")
+var bits      = _dereq_("bit-twiddle")
+  , UnionFind = _dereq_("union-find")
 
 //Returns the dimension of a cell complex
 function dimension(cells) {
@@ -43247,7 +43190,7 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":270,"union-find":272}],272:[function(require,module,exports){
+},{"bit-twiddle":267,"union-find":269}],269:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -43304,13 +43247,13 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],273:[function(require,module,exports){
+},{}],270:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
 
-var orient = require("robust-orientation")
-var sc = require("simplicial-complex")
+var orient = _dereq_("robust-orientation")
+var sc = _dereq_("simplicial-complex")
 
 function errorWeight(base, a, b) {
   var area = Math.abs(orient(base, a, b))
@@ -43576,12 +43519,12 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":263,"simplicial-complex":271}],274:[function(require,module,exports){
+},{"robust-orientation":260,"simplicial-complex":268}],271:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = orderSegments
 
-var orient = require("robust-orientation")
+var orient = _dereq_("robust-orientation")
 
 function horizontalOrder(a, b) {
   var bl, br
@@ -43672,15 +43615,15 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":263}],275:[function(require,module,exports){
+},{"robust-orientation":260}],272:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
 
-var bounds = require("binary-search-bounds")
-var createRBTree = require("functional-red-black-tree")
-var orient = require("robust-orientation")
-var orderSegments = require("./lib/order-segments")
+var bounds = _dereq_("binary-search-bounds")
+var createRBTree = _dereq_("functional-red-black-tree")
+var orient = _dereq_("robust-orientation")
+var orderSegments = _dereq_("./lib/order-segments")
 
 function SlabDecomposition(slabs, coordinates, horizontal) {
   this.slabs = slabs
@@ -43903,7 +43846,7 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":274,"binary-search-bounds":40,"functional-red-black-tree":155,"robust-orientation":263}],276:[function(require,module,exports){
+},{"./lib/order-segments":271,"binary-search-bounds":37,"functional-red-black-tree":152,"robust-orientation":260}],273:[function(_dereq_,module,exports){
 /* global window, exports, define */
 
 !function() {
@@ -44123,10 +44066,10 @@ function createSlabDecomposition(segments) {
     /* eslint-enable quote-props */
 }()
 
-},{}],277:[function(require,module,exports){
+},{}],274:[function(_dereq_,module,exports){
 'use strict'
 
-var paren = require('parenthesis')
+var paren = _dereq_('parenthesis')
 
 module.exports = function splitBy (string, separator, o) {
 	if (string == null) throw Error('First argument should be a string')
@@ -44181,7 +44124,7 @@ module.exports = function splitBy (string, separator, o) {
 	return parts
 }
 
-},{"parenthesis":225}],278:[function(require,module,exports){
+},{"parenthesis":222}],275:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = toSuperScript
@@ -44236,14 +44179,14 @@ function toSuperScript(x) {
   }).join('')
 }
 
-},{}],279:[function(require,module,exports){
+},{}],276:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = surfaceNets
 
-var generateContourExtractor = require("ndarray-extract-contour")
-var triangulateCube = require("triangulate-hypercube")
-var zeroCrossings = require("zero-crossings")
+var generateContourExtractor = _dereq_("ndarray-extract-contour")
+var triangulateCube = _dereq_("triangulate-hypercube")
+var zeroCrossings = _dereq_("zero-crossings")
 
 function buildSurfaceNets(order, dtype) {
   var dimension = order.length
@@ -44444,7 +44387,7 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":218,"triangulate-hypercube":288,"zero-crossings":306}],280:[function(require,module,exports){
+},{"ndarray-extract-contour":215,"triangulate-hypercube":285,"zero-crossings":303}],277:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44625,14 +44568,14 @@ var arcToBezier = function arcToBezier(_ref2) {
 
 exports.default = arcToBezier;
 module.exports = exports["default"];
-},{}],281:[function(require,module,exports){
+},{}],278:[function(_dereq_,module,exports){
 'use strict'
 
-var parse = require('parse-svg-path')
-var abs = require('abs-svg-path')
-var normalize = require('normalize-svg-path')
-var isSvgPath = require('is-svg-path')
-var assert = require('assert')
+var parse = _dereq_('parse-svg-path')
+var abs = _dereq_('abs-svg-path')
+var normalize = _dereq_('normalize-svg-path')
+var isSvgPath = _dereq_('is-svg-path')
+var assert = _dereq_('assert')
 
 module.exports = pathBounds
 
@@ -44670,12 +44613,12 @@ function pathBounds(path) {
   return bounds
 }
 
-},{"abs-svg-path":16,"assert":21,"is-svg-path":212,"normalize-svg-path":282,"parse-svg-path":227}],282:[function(require,module,exports){
+},{"abs-svg-path":13,"assert":18,"is-svg-path":209,"normalize-svg-path":279,"parse-svg-path":224}],279:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = normalize
 
-var arcToCurve = require('svg-arc-to-cubic-bezier')
+var arcToCurve = _dereq_('svg-arc-to-cubic-bezier')
 
 function normalize(path){
   // init state
@@ -44794,15 +44737,15 @@ function quadratic(x1, y1, cx, cy, x2, y2){
   ]
 }
 
-},{"svg-arc-to-cubic-bezier":280}],283:[function(require,module,exports){
+},{"svg-arc-to-cubic-bezier":277}],280:[function(_dereq_,module,exports){
 (function (global){
 'use strict'
 
-var pathBounds = require('svg-path-bounds')
-var parsePath = require('parse-svg-path')
-var drawPath = require('draw-svg-path')
-var isSvgPath = require('is-svg-path')
-var bitmapSdf = require('bitmap-sdf')
+var pathBounds = _dereq_('svg-path-bounds')
+var parsePath = _dereq_('parse-svg-path')
+var drawPath = _dereq_('draw-svg-path')
+var isSvgPath = _dereq_('is-svg-path')
+var bitmapSdf = _dereq_('bitmap-sdf')
 
 var canvas = document.createElement('canvas')
 var ctx = canvas.getContext('2d')
@@ -44878,13 +44821,13 @@ function pathSdf (path, options) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bitmap-sdf":42,"draw-svg-path":90,"is-svg-path":212,"parse-svg-path":227,"svg-path-bounds":281}],284:[function(require,module,exports){
+},{"bitmap-sdf":39,"draw-svg-path":88,"is-svg-path":209,"parse-svg-path":224,"svg-path-bounds":278}],281:[function(_dereq_,module,exports){
 (function (process){
 'use strict'
 
 module.exports = textGet
 
-var vectorizeText = require('vectorize-text')
+var vectorizeText = _dereq_('vectorize-text')
 
 var globals = window || process.global || {}
 var __TEXT_CACHE  = globals.__TEXT_CACHE || {}
@@ -44967,8 +44910,8 @@ function textGet(font, text, opts) {
    return mesh
 }
 
-}).call(this,require('_process'))
-},{"_process":248,"vectorize-text":299}],285:[function(require,module,exports){
+}).call(this,_dereq_('_process'))
+},{"_process":245,"vectorize-text":296}],282:[function(_dereq_,module,exports){
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -46165,7 +46108,7 @@ else {
 
 })(Math);
 
-},{}],286:[function(require,module,exports){
+},{}],283:[function(_dereq_,module,exports){
 /* @module to-float32 */
 
 'use strict'
@@ -46201,10 +46144,10 @@ function float32 (arr) {
 	return float
 }
 
-},{}],287:[function(require,module,exports){
+},{}],284:[function(_dereq_,module,exports){
 'use strict'
 
-var parseUnit = require('parse-unit')
+var parseUnit = _dereq_('parse-unit')
 
 module.exports = toPX
 
@@ -46262,14 +46205,14 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":228}],288:[function(require,module,exports){
+},{"parse-unit":225}],285:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = triangulateCube
 
-var perm = require("permutation-rank")
-var sgn = require("permutation-parity")
-var gamma = require("gamma")
+var perm = _dereq_("permutation-rank")
+var sgn = _dereq_("permutation-parity")
+var gamma = _dereq_("gamma")
 
 function triangulateCube(dimension) {
   if(dimension < 0) {
@@ -46296,7 +46239,7 @@ function triangulateCube(dimension) {
   }
   return result
 }
-},{"gamma":156,"permutation-parity":230,"permutation-rank":231}],289:[function(require,module,exports){
+},{"gamma":153,"permutation-parity":227,"permutation-rank":228}],286:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -46330,7 +46273,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],290:[function(require,module,exports){
+},{}],287:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -46348,12 +46291,12 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],291:[function(require,module,exports){
+},{}],288:[function(_dereq_,module,exports){
 (function (global,Buffer){
 'use strict'
 
-var bits = require('bit-twiddle')
-var dup = require('dup')
+var bits = _dereq_('bit-twiddle')
+var dup = _dereq_('dup')
 
 //Legacy pool support
 if(!global.__TYPEDARRAY_POOL) {
@@ -46564,8 +46507,8 @@ exports.clearCache = function clearCache() {
     BUFFER[i].length = 0
   }
 }
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bit-twiddle":41,"buffer":52,"dup":92}],292:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer)
+},{"bit-twiddle":38,"buffer":50,"dup":90}],289:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -46628,7 +46571,7 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],293:[function(require,module,exports){
+},{}],290:[function(_dereq_,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -46687,7 +46630,7 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],294:[function(require,module,exports){
+},{}],291:[function(_dereq_,module,exports){
 var reg = /[\'\"]/
 
 module.exports = function unquote(str) {
@@ -46703,7 +46646,7 @@ module.exports = function unquote(str) {
   return str
 }
 
-},{}],295:[function(require,module,exports){
+},{}],292:[function(_dereq_,module,exports){
 /**
  * @module update-diff
  */
@@ -46736,7 +46679,7 @@ module.exports = function updateDiff (obj, diff, mappers) {
 	return obj
 }
 
-},{}],296:[function(require,module,exports){
+},{}],293:[function(_dereq_,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -46761,14 +46704,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],297:[function(require,module,exports){
+},{}],294:[function(_dereq_,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],298:[function(require,module,exports){
+},{}],295:[function(_dereq_,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -47295,7 +47238,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = require('./support/isBuffer');
+exports.isBuffer = _dereq_('./support/isBuffer');
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -47339,7 +47282,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = require('inherits');
+exports.inherits = _dereq_('inherits');
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -47357,13 +47300,13 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":297,"_process":248,"inherits":296}],299:[function(require,module,exports){
+}).call(this,_dereq_('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./support/isBuffer":294,"_process":245,"inherits":293}],296:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createText
 
-var vectorizeText = require("./lib/vtext")
+var vectorizeText = _dereq_("./lib/vtext")
 var defaultCanvas = null
 var defaultContext = null
 
@@ -47385,18 +47328,18 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":300}],300:[function(require,module,exports){
+},{"./lib/vtext":297}],297:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = vectorizeText
 module.exports.processPixels = processPixels
 
-var surfaceNets = require('surface-nets')
-var ndarray = require('ndarray')
-var simplify = require('simplify-planar-graph')
-var cleanPSLG = require('clean-pslg')
-var cdt2d = require('cdt2d')
-var toPolygonCrappy = require('planar-graph-to-polyline')
+var surfaceNets = _dereq_('surface-nets')
+var ndarray = _dereq_('ndarray')
+var simplify = _dereq_('simplify-planar-graph')
+var cleanPSLG = _dereq_('clean-pslg')
+var cdt2d = _dereq_('cdt2d')
+var toPolygonCrappy = _dereq_('planar-graph-to-polyline')
 
 function transformPositions(positions, options, size) {
   var align = options.textAlign || "start"
@@ -47591,8 +47534,8 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":53,"clean-pslg":60,"ndarray":220,"planar-graph-to-polyline":235,"simplify-planar-graph":273,"surface-nets":279}],301:[function(require,module,exports){
-var hiddenStore = require('./hidden-store.js');
+},{"cdt2d":51,"clean-pslg":58,"ndarray":217,"planar-graph-to-polyline":232,"simplify-planar-graph":270,"surface-nets":276}],298:[function(_dereq_,module,exports){
+var hiddenStore = _dereq_('./hidden-store.js');
 
 module.exports = createStore;
 
@@ -47612,7 +47555,7 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":302}],302:[function(require,module,exports){
+},{"./hidden-store.js":299}],299:[function(_dereq_,module,exports){
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -47630,12 +47573,12 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],303:[function(require,module,exports){
+},{}],300:[function(_dereq_,module,exports){
 // Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
 
-var createStore = require('./create-store.js');
+var createStore = _dereq_('./create-store.js');
 
 module.exports = weakMap;
 
@@ -47661,15 +47604,15 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":301}],304:[function(require,module,exports){
-var getContext = require('get-canvas-context')
+},{"./create-store.js":298}],301:[function(_dereq_,module,exports){
+var getContext = _dereq_('get-canvas-context')
 
 module.exports = function getWebGLContext (opt) {
   return getContext('webgl', opt)
 }
 
-},{"get-canvas-context":157}],305:[function(require,module,exports){
-module.exports = require('cwise-compiler')({
+},{"get-canvas-context":154}],302:[function(_dereq_,module,exports){
+module.exports = _dereq_('cwise-compiler')({
     args: ['array', {
         offset: [1],
         array: 0
@@ -47720,12 +47663,12 @@ module.exports = require('cwise-compiler')({
     funcName: 'zeroCrossings'
 })
 
-},{"cwise-compiler":80}],306:[function(require,module,exports){
+},{"cwise-compiler":78}],303:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = findZeroCrossings
 
-var core = require("./lib/zc-core")
+var core = _dereq_("./lib/zc-core")
 
 function findZeroCrossings(array, level) {
   var cross = []
@@ -47733,7 +47676,7 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":305}],307:[function(require,module,exports){
+},{"./lib/zc-core":302}],304:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -47804,7 +47747,7 @@ module.exports = [
     }
 ];
 
-},{}],308:[function(require,module,exports){
+},{}],305:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -47815,10 +47758,10 @@ module.exports = [
 
 'use strict';
 
-var ARROWPATHS = require('./arrow_paths');
-var fontAttrs = require('../../plots/font_attributes');
-var cartesianConstants = require('../../plots/cartesian/constants');
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var ARROWPATHS = _dereq_('./arrow_paths');
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var cartesianConstants = _dereq_('../../plots/cartesian/constants');
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
 
 module.exports = templatedArray('annotation', {
@@ -47826,25 +47769,25 @@ module.exports = templatedArray('annotation', {
         valType: 'boolean',
         
         dflt: true,
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
 
     text: {
         valType: 'string',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     textangle: {
         valType: 'angle',
         dflt: 0,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     font: fontAttrs({
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         colorEditType: 'arraydraw',
         
     }),
@@ -47853,7 +47796,7 @@ module.exports = templatedArray('annotation', {
         min: 1,
         dflt: null,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     height: {
@@ -47861,7 +47804,7 @@ module.exports = templatedArray('annotation', {
         min: 1,
         dflt: null,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     opacity: {
@@ -47908,7 +47851,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 1,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     borderwidth: {
@@ -47916,7 +47859,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 1,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     // arrow
@@ -47924,7 +47867,7 @@ module.exports = templatedArray('annotation', {
         valType: 'boolean',
         dflt: true,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     arrowcolor: {
@@ -47965,7 +47908,7 @@ module.exports = templatedArray('annotation', {
         min: 0.3,
         dflt: 1,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     startarrowsize: {
@@ -47973,14 +47916,14 @@ module.exports = templatedArray('annotation', {
         min: 0.3,
         dflt: 1,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     arrowwidth: {
         valType: 'number',
         min: 0.1,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     standoff: {
@@ -47988,7 +47931,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 0,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     startstandoff: {
@@ -47996,19 +47939,19 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 0,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     ax: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     ay: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     axref: {
@@ -48047,7 +47990,7 @@ module.exports = templatedArray('annotation', {
     x: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     xanchor: {
@@ -48055,14 +47998,14 @@ module.exports = templatedArray('annotation', {
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'auto',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     xshift: {
         valType: 'number',
         dflt: 0,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     yref: {
@@ -48078,7 +48021,7 @@ module.exports = templatedArray('annotation', {
     y: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     yanchor: {
@@ -48086,14 +48029,14 @@ module.exports = templatedArray('annotation', {
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     yshift: {
         valType: 'number',
         dflt: 0,
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     clicktoshow: {
@@ -48159,7 +48102,7 @@ module.exports = templatedArray('annotation', {
     }
 });
 
-},{"../../plot_api/plot_template":482,"../../plots/cartesian/constants":497,"../../plots/font_attributes":518,"./arrow_paths":307}],309:[function(require,module,exports){
+},{"../../plot_api/plot_template":480,"../../plots/cartesian/constants":495,"../../plots/font_attributes":516,"./arrow_paths":304}],306:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -48171,32 +48114,18 @@ module.exports = templatedArray('annotation', {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
 
-var draw = require('./draw').draw;
+var draw = _dereq_('./draw').draw;
 
 
 module.exports = function calcAutorange(gd) {
-    var fullLayout = gd._fullLayout,
-        annotationList = Lib.filterVisible(fullLayout.annotations);
+    var fullLayout = gd._fullLayout;
+    var annotationList = Lib.filterVisible(fullLayout.annotations);
 
-    if(!annotationList.length || !gd._fullData.length) return;
-
-    var annotationAxes = {};
-    annotationList.forEach(function(ann) {
-        annotationAxes[ann.xref] = 1;
-        annotationAxes[ann.yref] = 1;
-    });
-
-    for(var axId in annotationAxes) {
-        var ax = Axes.getFromId(gd, axId);
-        if(ax && ax.autorange) {
-            return Lib.syncOrAsync([
-                draw,
-                annAutorange
-            ], gd);
-        }
+    if(annotationList.length && gd._fullData.length) {
+        return Lib.syncOrAsync([draw, annAutorange], gd);
     }
 };
 
@@ -48208,70 +48137,61 @@ function annAutorange(gd) {
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
     Lib.filterVisible(fullLayout.annotations).forEach(function(ann) {
-        var xa = Axes.getFromId(gd, ann.xref),
-            ya = Axes.getFromId(gd, ann.yref),
-            headSize = 3 * ann.arrowsize * ann.arrowwidth || 0,
-            startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
+        var xa = Axes.getFromId(gd, ann.xref);
+        var ya = Axes.getFromId(gd, ann.yref);
 
-        var headPlus, headMinus, startHeadPlus, startHeadMinus;
-
-        if(xa && xa.autorange) {
-            headPlus = headSize + ann.xshift;
-            headMinus = headSize - ann.xshift;
-            startHeadPlus = startHeadSize + ann.xshift;
-            startHeadMinus = startHeadSize - ann.xshift;
-
-            if(ann.axref === ann.xref) {
-                // expand for the arrowhead (padded by arrowhead)
-                Axes.expand(xa, [xa.r2c(ann.x)], {
-                    ppadplus: headPlus,
-                    ppadminus: headMinus
-                });
-                // again for the textbox (padded by textbox)
-                Axes.expand(xa, [xa.r2c(ann.ax)], {
-                    ppadplus: Math.max(ann._xpadplus, startHeadPlus),
-                    ppadminus: Math.max(ann._xpadminus, startHeadMinus)
-                });
-            }
-            else {
-                startHeadPlus = ann.ax ? startHeadPlus + ann.ax : startHeadPlus;
-                startHeadMinus = ann.ax ? startHeadMinus - ann.ax : startHeadMinus;
-                Axes.expand(xa, [xa.r2c(ann.x)], {
-                    ppadplus: Math.max(ann._xpadplus, headPlus, startHeadPlus),
-                    ppadminus: Math.max(ann._xpadminus, headMinus, startHeadMinus)
-                });
-            }
-        }
-
-        if(ya && ya.autorange) {
-            headPlus = headSize - ann.yshift;
-            headMinus = headSize + ann.yshift;
-            startHeadPlus = startHeadSize - ann.yshift;
-            startHeadMinus = startHeadSize + ann.yshift;
-
-            if(ann.ayref === ann.yref) {
-                Axes.expand(ya, [ya.r2c(ann.y)], {
-                    ppadplus: headPlus,
-                    ppadminus: headMinus
-                });
-                Axes.expand(ya, [ya.r2c(ann.ay)], {
-                    ppadplus: Math.max(ann._ypadplus, startHeadPlus),
-                    ppadminus: Math.max(ann._ypadminus, startHeadMinus)
-                });
-            }
-            else {
-                startHeadPlus = ann.ay ? startHeadPlus + ann.ay : startHeadPlus;
-                startHeadMinus = ann.ay ? startHeadMinus - ann.ay : startHeadMinus;
-                Axes.expand(ya, [ya.r2c(ann.y)], {
-                    ppadplus: Math.max(ann._ypadplus, headPlus, startHeadPlus),
-                    ppadminus: Math.max(ann._ypadminus, headMinus, startHeadMinus)
-                });
-            }
-        }
+        ann._extremes = {};
+        if(xa) calcAxisExpansion(ann, xa);
+        if(ya) calcAxisExpansion(ann, ya);
     });
 }
 
-},{"../../lib":445,"../../plots/cartesian/axes":492,"./draw":314}],310:[function(require,module,exports){
+function calcAxisExpansion(ann, ax) {
+    var axId = ax._id;
+    var letter = axId.charAt(0);
+    var pos = ann[letter];
+    var apos = ann['a' + letter];
+    var ref = ann[letter + 'ref'];
+    var aref = ann['a' + letter + 'ref'];
+    var padplus = ann['_' + letter + 'padplus'];
+    var padminus = ann['_' + letter + 'padminus'];
+    var shift = {x: 1, y: -1}[letter] * ann[letter + 'shift'];
+    var headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
+    var headPlus = headSize + shift;
+    var headMinus = headSize - shift;
+    var startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
+    var startHeadPlus = startHeadSize + shift;
+    var startHeadMinus = startHeadSize - shift;
+    var extremes;
+
+    if(aref === ref) {
+        // expand for the arrowhead (padded by arrowhead)
+        var extremeArrowHead = Axes.findExtremes(ax, [ax.r2c(pos)], {
+            ppadplus: headPlus,
+            ppadminus: headMinus
+        });
+        // again for the textbox (padded by textbox)
+        var extremeText = Axes.findExtremes(ax, [ax.r2c(apos)], {
+            ppadplus: Math.max(padplus, startHeadPlus),
+            ppadminus: Math.max(padminus, startHeadMinus)
+        });
+        extremes = {
+            min: [extremeArrowHead.min[0], extremeText.min[0]],
+            max: [extremeArrowHead.max[0], extremeText.max[0]]
+        };
+    } else {
+        startHeadPlus = apos ? startHeadPlus + apos : startHeadPlus;
+        startHeadMinus = apos ? startHeadMinus - apos : startHeadMinus;
+        extremes = Axes.findExtremes(ax, [ax.r2c(pos)], {
+            ppadplus: Math.max(padplus, headPlus, startHeadPlus),
+            ppadminus: Math.max(padminus, headMinus, startHeadMinus)
+        });
+    }
+
+    ann._extremes[axId] = extremes;
+}
+
+},{"../../lib":442,"../../plots/cartesian/axes":490,"./draw":311}],307:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -48282,9 +48202,9 @@ function annAutorange(gd) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Registry = require('../../registry');
-var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
+var Lib = _dereq_('../../lib');
+var Registry = _dereq_('../../registry');
+var arrayEditor = _dereq_('../../plot_api/plot_template').arrayEditor;
 
 module.exports = {
     hasClickToShow: hasClickToShow,
@@ -48410,7 +48330,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../lib":445,"../../plot_api/plot_template":482,"../../registry":536}],311:[function(require,module,exports){
+},{"../../lib":442,"../../plot_api/plot_template":480,"../../registry":534}],308:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -48421,8 +48341,8 @@ function clickData2r(d, ax) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Color = require('../color');
+var Lib = _dereq_('../../lib');
+var Color = _dereq_('../color');
 
 // defaults common to 'annotations' and 'annotations3d'
 module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayout, coerce) {
@@ -48490,7 +48410,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     coerce('captureevents', !!hoverText);
 };
 
-},{"../../lib":445,"../color":323}],312:[function(require,module,exports){
+},{"../../lib":442,"../color":320}],309:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -48502,8 +48422,8 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var toLogRange = require('../../lib/to_log_range');
+var isNumeric = _dereq_('fast-isnumeric');
+var toLogRange = _dereq_('../../lib/to_log_range');
 
 /*
  * convertCoords: when converting an axis between log and linear
@@ -48553,7 +48473,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":471,"fast-isnumeric":151}],313:[function(require,module,exports){
+},{"../../lib/to_log_range":469,"fast-isnumeric":148}],310:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -48565,12 +48485,12 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
 
-var handleAnnotationCommonDefaults = require('./common_defaults');
-var attributes = require('./attributes');
+var handleAnnotationCommonDefaults = _dereq_('./common_defaults');
+var attributes = _dereq_('./attributes');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
@@ -48603,6 +48523,11 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
 
         // xref, yref
         var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, '', 'paper');
+
+        if(axRef !== 'paper') {
+            var ax = Axes.getFromId(gdMock, axRef);
+            ax._annIndices.push(annOut._index);
+        }
 
         // x, y
         Axes.coercePosition(annOut, gdMock, coerce, axRef, axLetter, 0.5);
@@ -48654,7 +48579,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
     }
 }
 
-},{"../../lib":445,"../../plots/array_container_defaults":488,"../../plots/cartesian/axes":492,"./attributes":308,"./common_defaults":311}],314:[function(require,module,exports){
+},{"../../lib":442,"../../plots/array_container_defaults":486,"../../plots/cartesian/axes":490,"./attributes":305,"./common_defaults":308}],311:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -48665,21 +48590,21 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Registry = require('../../registry');
-var Plots = require('../../plots/plots');
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
-var Color = require('../color');
-var Drawing = require('../drawing');
-var Fx = require('../fx');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var setCursor = require('../../lib/setcursor');
-var dragElement = require('../dragelement');
-var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
+var Registry = _dereq_('../../registry');
+var Plots = _dereq_('../../plots/plots');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var Color = _dereq_('../color');
+var Drawing = _dereq_('../drawing');
+var Fx = _dereq_('../fx');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var setCursor = _dereq_('../../lib/setcursor');
+var dragElement = _dereq_('../dragelement');
+var arrayEditor = _dereq_('../../plot_api/plot_template').arrayEditor;
 
-var drawArrowHead = require('./draw_arrow_head');
+var drawArrowHead = _dereq_('./draw_arrow_head');
 
 // Annotations are stored in gd.layout.annotations, an array of objects
 // index can point to one item in this array,
@@ -48907,11 +48832,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         var outerWidth = Math.round(annWidth + 2 * borderfull);
         var outerHeight = Math.round(annHeight + 2 * borderfull);
 
-
-        // save size in the annotation object for use by autoscale
-        options._w = annWidth;
-        options._h = annHeight;
-
         function shiftFraction(v, anchor) {
             if(anchor === 'auto') {
                 if(v < 1 / 3) anchor = 'left';
@@ -48957,25 +48877,17 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
              * otherwise the text anchor point
              */
             if(ax) {
-                /*
-                 * hide the annotation if it's pointing outside the visible plot
-                 * as long as the axis isn't autoranged - then we need to draw it
-                 * anyway to get its bounding box. When we're dragging, an axis can
-                 * still look autoranged even though it won't be when the drag finishes.
-                 */
+                // check if annotation is off screen, to bypass DOM manipulations
                 var posFraction = ax.r2fraction(options[axLetter]);
-                if((gd._dragging || !ax.autorange) && (posFraction < 0 || posFraction > 1)) {
+                if(posFraction < 0 || posFraction > 1) {
                     if(tailRef === axRef) {
                         posFraction = ax.r2fraction(options['a' + axLetter]);
                         if(posFraction < 0 || posFraction > 1) {
                             annotationIsOffscreen = true;
                         }
-                    }
-                    else {
+                    } else {
                         annotationIsOffscreen = true;
                     }
-
-                    if(annotationIsOffscreen) continue;
                 }
                 basePx = ax._offset + ax.r2p(options[axLetter]);
                 autoAlignFraction = 0.5;
@@ -49059,7 +48971,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             options['_' + axLetter + 'shift'] = textShift;
         }
 
-        if(annotationIsOffscreen) {
+        // We have everything we need for calcAutorange at this point,
+        // we can safely exit - unless we're currently dragging the plot
+        if(!gd._dragging && annotationIsOffscreen) {
             annTextGroupInner.remove();
             return;
         }
@@ -49365,7 +49279,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     else annText.call(textLayout);
 }
 
-},{"../../lib":445,"../../lib/setcursor":465,"../../lib/svg_text_utils":469,"../../plot_api/plot_template":482,"../../plots/cartesian/axes":492,"../../plots/plots":528,"../../registry":536,"../color":323,"../dragelement":345,"../drawing":348,"../fx":365,"./draw_arrow_head":315,"d3":86}],315:[function(require,module,exports){
+},{"../../lib":442,"../../lib/setcursor":463,"../../lib/svg_text_utils":467,"../../plot_api/plot_template":480,"../../plots/cartesian/axes":490,"../../plots/plots":526,"../../registry":534,"../color":320,"../dragelement":342,"../drawing":345,"../fx":362,"./draw_arrow_head":312,"d3":84}],312:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49377,11 +49291,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Color = require('../color');
+var Color = _dereq_('../color');
 
-var ARROWPATHS = require('./arrow_paths');
+var ARROWPATHS = _dereq_('./arrow_paths');
 
 /**
  * Add arrowhead(s) to a path or line element
@@ -49519,7 +49433,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if(doEnd) drawhead(headStyle, end, endRot, scale);
 };
 
-},{"../color":323,"./arrow_paths":307,"d3":86}],316:[function(require,module,exports){
+},{"../color":320,"./arrow_paths":304,"d3":84}],313:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49531,18 +49445,18 @@ module.exports = function drawArrowHead(el3, ends, options) {
 
 'use strict';
 
-var drawModule = require('./draw');
-var clickModule = require('./click');
+var drawModule = _dereq_('./draw');
+var clickModule = _dereq_('./click');
 
 module.exports = {
     moduleType: 'component',
     name: 'annotations',
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
-    includeBasePlot: require('../../plots/cartesian/include_components')('annotations'),
+    layoutAttributes: _dereq_('./attributes'),
+    supplyLayoutDefaults: _dereq_('./defaults'),
+    includeBasePlot: _dereq_('../../plots/cartesian/include_components')('annotations'),
 
-    calcAutorange: require('./calc_autorange'),
+    calcAutorange: _dereq_('./calc_autorange'),
     draw: drawModule.draw,
     drawOne: drawModule.drawOne,
     drawRaw: drawModule.drawRaw,
@@ -49550,10 +49464,10 @@ module.exports = {
     hasClickToShow: clickModule.hasClickToShow,
     onClick: clickModule.onClick,
 
-    convertCoords: require('./convert_coords')
+    convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":502,"./attributes":308,"./calc_autorange":309,"./click":310,"./convert_coords":312,"./defaults":313,"./draw":314}],317:[function(require,module,exports){
+},{"../../plots/cartesian/include_components":500,"./attributes":305,"./calc_autorange":306,"./click":307,"./convert_coords":309,"./defaults":310,"./draw":311}],314:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49565,9 +49479,9 @@ module.exports = {
 
 'use strict';
 
-var annAtts = require('../annotations/attributes');
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var annAtts = _dereq_('../annotations/attributes');
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
 module.exports = overrideAll(templatedArray('annotation', {
     visible: annAtts.visible,
@@ -49641,7 +49555,7 @@ module.exports = overrideAll(templatedArray('annotation', {
     // zref: 'z'
 }), 'calc', 'from-root');
 
-},{"../../plot_api/edit_types":475,"../../plot_api/plot_template":482,"../annotations/attributes":308}],318:[function(require,module,exports){
+},{"../../plot_api/edit_types":473,"../../plot_api/plot_template":480,"../annotations/attributes":305}],315:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49652,8 +49566,8 @@ module.exports = overrideAll(templatedArray('annotation', {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
 
 module.exports = function convert(scene) {
     var fullSceneLayout = scene.fullSceneLayout;
@@ -49706,7 +49620,7 @@ function mockAnnAxes(ann, scene) {
     };
 }
 
-},{"../../lib":445,"../../plots/cartesian/axes":492}],319:[function(require,module,exports){
+},{"../../lib":442,"../../plots/cartesian/axes":490}],316:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49717,11 +49631,11 @@ function mockAnnAxes(ann, scene) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
-var handleAnnotationCommonDefaults = require('../annotations/common_defaults');
-var attributes = require('./attributes');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
+var handleAnnotationCommonDefaults = _dereq_('../annotations/common_defaults');
+var attributes = _dereq_('./attributes');
 
 module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
     handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
@@ -49782,7 +49696,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
     }
 }
 
-},{"../../lib":445,"../../plots/array_container_defaults":488,"../../plots/cartesian/axes":492,"../annotations/common_defaults":311,"./attributes":317}],320:[function(require,module,exports){
+},{"../../lib":442,"../../plots/array_container_defaults":486,"../../plots/cartesian/axes":490,"../annotations/common_defaults":308,"./attributes":314}],317:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49793,8 +49707,8 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
 
 'use strict';
 
-var drawRaw = require('../annotations/draw').drawRaw;
-var project = require('../../plots/gl3d/project');
+var drawRaw = _dereq_('../annotations/draw').drawRaw;
+var project = _dereq_('../../plots/gl3d/project');
 var axLetters = ['x', 'y', 'z'];
 
 module.exports = function draw(scene) {
@@ -49834,7 +49748,7 @@ module.exports = function draw(scene) {
     }
 };
 
-},{"../../plots/gl3d/project":525,"../annotations/draw":314}],321:[function(require,module,exports){
+},{"../../plots/gl3d/project":523,"../annotations/draw":311}],318:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49845,8 +49759,8 @@ module.exports = function draw(scene) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
 
 module.exports = {
     moduleType: 'component',
@@ -49854,16 +49768,16 @@ module.exports = {
 
     schema: {
         subplots: {
-            scene: {annotations: require('./attributes')}
+            scene: {annotations: _dereq_('./attributes')}
         }
     },
 
-    layoutAttributes: require('./attributes'),
-    handleDefaults: require('./defaults'),
+    layoutAttributes: _dereq_('./attributes'),
+    handleDefaults: _dereq_('./defaults'),
     includeBasePlot: includeGL3D,
 
-    convert: require('./convert'),
-    draw: require('./draw')
+    convert: _dereq_('./convert'),
+    draw: _dereq_('./draw')
 };
 
 function includeGL3D(layoutIn, layoutOut) {
@@ -49882,7 +49796,7 @@ function includeGL3D(layoutIn, layoutOut) {
     }
 }
 
-},{"../../lib":445,"../../registry":536,"./attributes":317,"./convert":318,"./defaults":319,"./draw":320}],322:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534,"./attributes":314,"./convert":315,"./defaults":316,"./draw":317}],319:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49922,7 +49836,7 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],323:[function(require,module,exports){
+},{}],320:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -49934,12 +49848,12 @@ exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
 'use strict';
 
-var tinycolor = require('tinycolor2');
-var isNumeric = require('fast-isnumeric');
+var tinycolor = _dereq_('tinycolor2');
+var isNumeric = _dereq_('fast-isnumeric');
 
 var color = module.exports = {};
 
-var colorAttrs = require('./attributes');
+var colorAttrs = _dereq_('./attributes');
 color.defaults = colorAttrs.defaults;
 var defaultLine = color.defaultLine = colorAttrs.defaultLine;
 color.lightLine = colorAttrs.lightLine;
@@ -50093,7 +50007,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":322,"fast-isnumeric":151,"tinycolor2":285}],324:[function(require,module,exports){
+},{"./attributes":319,"fast-isnumeric":148,"tinycolor2":282}],321:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50104,10 +50018,10 @@ function cleanOne(val) {
 
 'use strict';
 
-var axesAttrs = require('../../plots/cartesian/layout_attributes');
-var fontAttrs = require('../../plots/font_attributes');
-var extendFlat = require('../../lib/extend').extendFlat;
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var axesAttrs = _dereq_('../../plots/cartesian/layout_attributes');
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 
 
 module.exports = overrideAll({
@@ -50252,7 +50166,7 @@ module.exports = overrideAll({
     }
 }, 'colorbars', 'from-root');
 
-},{"../../lib/extend":436,"../../plot_api/edit_types":475,"../../plots/cartesian/layout_attributes":504,"../../plots/font_attributes":518}],325:[function(require,module,exports){
+},{"../../lib/extend":433,"../../plot_api/edit_types":473,"../../plots/cartesian/layout_attributes":502,"../../plots/font_attributes":516}],322:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50264,8 +50178,7 @@ module.exports = overrideAll({
 
 'use strict';
 
-var Colorscale = require('../colorscale');
-var drawColorbar = require('./draw');
+var drawColorbar = _dereq_('./draw');
 
 /**
  * connectColorbar: create a colorbar from a trace, using its module to
@@ -50303,25 +50216,14 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
     if(!container || !container.showscale) return;
 
-    var zmin = container[moduleOpts.min];
-    var zmax = container[moduleOpts.max];
-
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
-    var sclFunc = Colorscale.makeColorScaleFunc(
-        Colorscale.extractScale(
-            container.colorscale,
-            zmin,
-            zmax
-        ),
-        { noNumericCheck: true }
-    );
 
-    cb.fillcolor(sclFunc)
-        .filllevels({start: zmin, end: zmax, size: (zmax - zmin) / 254})
+    cb.fillgradient(container.colorscale)
+        .zrange([container[moduleOpts.min], container[moduleOpts.max]])
         .options(container.colorbar)();
 };
 
-},{"../colorscale":338,"./draw":328}],326:[function(require,module,exports){
+},{"./draw":325}],323:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50349,7 +50251,7 @@ module.exports = {
     }
 };
 
-},{}],327:[function(require,module,exports){
+},{}],324:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50361,14 +50263,14 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Template = require('../../plot_api/plot_template');
+var Lib = _dereq_('../../lib');
+var Template = _dereq_('../../plot_api/plot_template');
 
-var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
-var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
-var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
+var handleTickValueDefaults = _dereq_('../../plots/cartesian/tick_value_defaults');
+var handleTickMarkDefaults = _dereq_('../../plots/cartesian/tick_mark_defaults');
+var handleTickLabelDefaults = _dereq_('../../plots/cartesian/tick_label_defaults');
 
-var attributes = require('./attributes');
+var attributes = _dereq_('./attributes');
 
 
 module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
@@ -50416,7 +50318,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('titleside');
 };
 
-},{"../../lib":445,"../../plot_api/plot_template":482,"../../plots/cartesian/tick_label_defaults":511,"../../plots/cartesian/tick_mark_defaults":512,"../../plots/cartesian/tick_value_defaults":513,"./attributes":324}],328:[function(require,module,exports){
+},{"../../lib":442,"../../plot_api/plot_template":480,"../../plots/cartesian/tick_label_defaults":509,"../../plots/cartesian/tick_mark_defaults":510,"../../plots/cartesian/tick_value_defaults":511,"./attributes":321}],325:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50428,39 +50330,39 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
 
 'use strict';
 
-var d3 = require('d3');
-var tinycolor = require('tinycolor2');
+var d3 = _dereq_('d3');
+var tinycolor = _dereq_('tinycolor2');
 
-var Plots = require('../../plots/plots');
-var Registry = require('../../registry');
-var Axes = require('../../plots/cartesian/axes');
-var dragElement = require('../dragelement');
-var Lib = require('../../lib');
-var extendFlat = require('../../lib/extend').extendFlat;
-var setCursor = require('../../lib/setcursor');
-var Drawing = require('../drawing');
-var Color = require('../color');
-var Titles = require('../titles');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var alignmentConstants = require('../../constants/alignment');
+var Plots = _dereq_('../../plots/plots');
+var Registry = _dereq_('../../registry');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var dragElement = _dereq_('../dragelement');
+var Lib = _dereq_('../../lib');
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var setCursor = _dereq_('../../lib/setcursor');
+var Drawing = _dereq_('../drawing');
+var Color = _dereq_('../color');
+var Titles = _dereq_('../titles');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var alignmentConstants = _dereq_('../../constants/alignment');
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
 
-var handleAxisDefaults = require('../../plots/cartesian/axis_defaults');
-var handleAxisPositionDefaults = require('../../plots/cartesian/position_defaults');
-var axisLayoutAttrs = require('../../plots/cartesian/layout_attributes');
+var handleAxisDefaults = _dereq_('../../plots/cartesian/axis_defaults');
+var handleAxisPositionDefaults = _dereq_('../../plots/cartesian/position_defaults');
+var axisLayoutAttrs = _dereq_('../../plots/cartesian/layout_attributes');
 
-var attributes = require('./attributes');
-var cn = require('./constants').cn;
+var attributes = _dereq_('./attributes');
+var cn = _dereq_('./constants').cn;
 
 module.exports = function draw(gd, id) {
     // opts: options object, containing everything from attributes
     // plus a few others that are the equivalent of the colorbar "data"
     var opts = {};
-    Object.keys(attributes).forEach(function(k) {
+    for(var k in attributes) {
         opts[k] = null;
-    });
+    }
     // fillcolor can be a d3 scale, domain is z values, range is colors
     // or leave it out for no fill,
     // or set to a string constant for single-color fill
@@ -50476,17 +50378,23 @@ module.exports = function draw(gd, id) {
     // contour map) if this is omitted, fillcolors will be
     // evaluated halfway between levels
     opts.filllevels = null;
+    // for continuous colorscales: fill with a gradient instead of explicit levels
+    // value should be the colorscale [[0, c0], [v1, c1], ..., [1, cEnd]]
+    opts.fillgradient = null;
+    // when using a gradient, we need the data range specified separately
+    opts.zrange = null;
 
     function component() {
         var fullLayout = gd._fullLayout,
             gs = fullLayout._size;
         if((typeof opts.fillcolor !== 'function') &&
-                (typeof opts.line.color !== 'function')) {
+                (typeof opts.line.color !== 'function') &&
+                !opts.fillgradient) {
             fullLayout._infolayer.selectAll('g.' + id).remove();
             return;
         }
-        var zrange = d3.extent(((typeof opts.fillcolor === 'function') ?
-            opts.fillcolor : opts.line.color).domain());
+        var zrange = opts.zrange || (d3.extent(((typeof opts.fillcolor === 'function') ?
+            opts.fillcolor : opts.line.color).domain()));
         var linelevels = [];
         var filllevels = [];
         var linecolormap = typeof opts.line.color === 'function' ?
@@ -50506,7 +50414,10 @@ module.exports = function draw(gd, id) {
             if(l > zr0 && l < zr1) linelevels.push(l);
         }
 
-        if(typeof opts.fillcolor === 'function') {
+        if(opts.fillgradient) {
+            filllevels = [0];
+        }
+        else if(typeof opts.fillcolor === 'function') {
             if(opts.filllevels) {
                 l0 = opts.filllevels.end + opts.filllevels.size / 100;
                 ls = opts.filllevels.size;
@@ -50777,6 +50688,12 @@ module.exports = function draw(gd, id) {
                 .classed(cn.cbfill, true)
                 .style('stroke', 'none');
             fills.exit().remove();
+
+            var zBounds = zrange
+                .map(cbAxisOut.c2p)
+                .map(Math.round)
+                .sort(function(a, b) { return a - b; });
+
             fills.each(function(d, i) {
                 var z = [
                     (i === 0) ? zrange[0] :
@@ -50789,25 +50706,27 @@ module.exports = function draw(gd, id) {
 
                 // offset the side adjoining the next rectangle so they
                 // overlap, to prevent antialiasing gaps
-                if(i !== filllevels.length - 1) {
-                    z[1] += (z[1] > z[0]) ? 1 : -1;
-                }
-
-
-                // Tinycolor can't handle exponents and
-                // at this scale, removing it makes no difference.
-                var colorString = fillcolormap(d).replace('e-', ''),
-                    opaqueColor = tinycolor(colorString).toHexString();
+                z[1] = Lib.constrain(z[1] + (z[1] > z[0]) ? 1 : -1, zBounds[0], zBounds[1]);
 
                 // Colorbar cannot currently support opacities so we
                 // use an opaque fill even when alpha channels present
-                d3.select(this).attr({
+                var fillEl = d3.select(this).attr({
                     x: xLeft,
                     width: Math.max(thickPx, 2),
                     y: d3.min(z),
                     height: Math.max(d3.max(z) - d3.min(z), 2),
-                    fill: opaqueColor
                 });
+
+                if(opts.fillgradient) {
+                    Drawing.gradient(fillEl, gd, id, 'vertical',
+                        opts.fillgradient, 'fill');
+                }
+                else {
+                    // Tinycolor can't handle exponents and
+                    // at this scale, removing it makes no difference.
+                    var colorString = fillcolormap(d).replace('e-', '');
+                    fillEl.attr('fill', tinycolor(colorString).toHexString());
+                }
             });
 
             var lines = container.select('.cblines')
@@ -51069,13 +50988,13 @@ module.exports = function draw(gd, id) {
 
     // or use .options to set multiple options at once via a dictionary
     component.options = function(o) {
-        Object.keys(o).forEach(function(name) {
+        for(var name in o) {
             // in case something random comes through
             // that's not an option, ignore it
             if(typeof component[name] === 'function') {
                 component[name](o[name]);
             }
-        });
+        }
         return component;
     };
 
@@ -51084,7 +51003,7 @@ module.exports = function draw(gd, id) {
     return component;
 };
 
-},{"../../constants/alignment":421,"../../lib":445,"../../lib/extend":436,"../../lib/setcursor":465,"../../lib/svg_text_utils":469,"../../plots/cartesian/axes":492,"../../plots/cartesian/axis_defaults":494,"../../plots/cartesian/layout_attributes":504,"../../plots/cartesian/position_defaults":507,"../../plots/plots":528,"../../registry":536,"../color":323,"../dragelement":345,"../drawing":348,"../titles":414,"./attributes":324,"./constants":326,"d3":86,"tinycolor2":285}],329:[function(require,module,exports){
+},{"../../constants/alignment":418,"../../lib":442,"../../lib/extend":433,"../../lib/setcursor":463,"../../lib/svg_text_utils":467,"../../plots/cartesian/axes":490,"../../plots/cartesian/axis_defaults":492,"../../plots/cartesian/layout_attributes":502,"../../plots/cartesian/position_defaults":505,"../../plots/plots":526,"../../registry":534,"../color":320,"../dragelement":342,"../drawing":345,"../titles":411,"./attributes":321,"./constants":323,"d3":84,"tinycolor2":282}],326:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51096,14 +51015,14 @@ module.exports = function draw(gd, id) {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 
 module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":445}],330:[function(require,module,exports){
+},{"../../lib":442}],327:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51114,7 +51033,7 @@ module.exports = function hasColorbar(container) {
 
 'use strict';
 
-var palettes = require('./scales.js');
+var palettes = _dereq_('./scales.js');
 var paletteStr = Object.keys(palettes);
 
 function code(s) {
@@ -51278,7 +51197,7 @@ module.exports = function colorScaleAttrs(context, opts) {
     return attrs;
 };
 
-},{"./scales.js":342}],331:[function(require,module,exports){
+},{"./scales.js":339}],328:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51290,10 +51209,10 @@ module.exports = function colorScaleAttrs(context, opts) {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
-var scales = require('./scales');
-var flipScale = require('./flip_scale');
+var scales = _dereq_('./scales');
+var flipScale = _dereq_('./flip_scale');
 
 
 module.exports = function calc(trace, vals, containerStr, cLetter) {
@@ -51382,7 +51301,7 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     }
 };
 
-},{"../../lib":445,"./flip_scale":335,"./scales":342}],332:[function(require,module,exports){
+},{"../../lib":442,"./flip_scale":332,"./scales":339}],329:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51393,12 +51312,12 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
 
 'use strict';
 
-var scales = require('./scales');
+var scales = _dereq_('./scales');
 
 
 module.exports = scales.RdBu;
 
-},{"./scales":342}],333:[function(require,module,exports){
+},{"./scales":339}],330:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51410,14 +51329,14 @@ module.exports = scales.RdBu;
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
-var hasColorbar = require('../colorbar/has_colorbar');
-var colorbarDefaults = require('../colorbar/defaults');
-var isValidScale = require('./is_valid_scale');
-var flipScale = require('./flip_scale');
+var hasColorbar = _dereq_('../colorbar/has_colorbar');
+var colorbarDefaults = _dereq_('../colorbar/defaults');
+var isValidScale = _dereq_('./is_valid_scale');
+var flipScale = _dereq_('./flip_scale');
 
 
 module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, opts) {
@@ -51441,9 +51360,9 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
 
     // handles both the trace case (autocolorscale is false by default) and
     // the marker and marker.line case (autocolorscale is true by default)
-    var autoColorscaleDftl;
-    if(sclIn !== undefined) autoColorscaleDftl = !isValidScale(sclIn);
-    coerce(prefix + 'autocolorscale', autoColorscaleDftl);
+    var autoColorscaleDflt;
+    if(sclIn !== undefined) autoColorscaleDflt = !isValidScale(sclIn);
+    coerce(prefix + 'autocolorscale', autoColorscaleDflt);
     var sclOut = coerce(prefix + 'colorscale');
 
     // reversescale is handled at the containerOut level
@@ -51453,16 +51372,18 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     // ... until Scatter.colorbar can handle marker line colorbars
     if(prefix === 'marker.line.') return;
 
-    // handle both the trace case where the dflt is listed in attributes and
-    // the marker case where the dflt is determined by hasColorbar
-    var showScaleDftl;
-    if(prefix) showScaleDftl = hasColorbar(containerIn);
-    var showScale = coerce(prefix + 'showscale', showScaleDftl);
+    if(!opts.noScale) {
+        // handles both the trace case where the dflt is listed in attributes and
+        // the marker case where the dflt is determined by hasColorbar
+        var showScaleDflt;
+        if(prefix) showScaleDflt = hasColorbar(containerIn);
 
-    if(showScale) colorbarDefaults(containerIn, containerOut, layout);
+        var showScale = coerce(prefix + 'showscale', showScaleDflt);
+        if(showScale) colorbarDefaults(containerIn, containerOut, layout);
+    }
 };
 
-},{"../../lib":445,"../colorbar/defaults":327,"../colorbar/has_colorbar":329,"./flip_scale":335,"./is_valid_scale":339,"fast-isnumeric":151}],334:[function(require,module,exports){
+},{"../../lib":442,"../colorbar/defaults":324,"../colorbar/has_colorbar":326,"./flip_scale":332,"./is_valid_scale":336,"fast-isnumeric":148}],331:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51499,7 +51420,7 @@ module.exports = function extractScale(scl, cmin, cmax) {
     };
 };
 
-},{}],335:[function(require,module,exports){
+},{}],332:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51524,7 +51445,7 @@ module.exports = function flipScale(scl) {
     return sclNew;
 };
 
-},{}],336:[function(require,module,exports){
+},{}],333:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51536,9 +51457,9 @@ module.exports = function flipScale(scl) {
 
 'use strict';
 
-var scales = require('./scales');
-var defaultScale = require('./default_scale');
-var isValidScaleArray = require('./is_valid_scale_array');
+var scales = _dereq_('./scales');
+var defaultScale = _dereq_('./default_scale');
+var isValidScaleArray = _dereq_('./is_valid_scale_array');
 
 
 module.exports = function getScale(scl, dflt) {
@@ -51564,7 +51485,7 @@ module.exports = function getScale(scl, dflt) {
     return scl;
 };
 
-},{"./default_scale":332,"./is_valid_scale_array":340,"./scales":342}],337:[function(require,module,exports){
+},{"./default_scale":329,"./is_valid_scale_array":337,"./scales":339}],334:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51575,9 +51496,9 @@ module.exports = function getScale(scl, dflt) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var Lib = require('../../lib');
-var isValidScale = require('./is_valid_scale');
+var isNumeric = _dereq_('fast-isnumeric');
+var Lib = _dereq_('../../lib');
+var isValidScale = _dereq_('./is_valid_scale');
 
 module.exports = function hasColorscale(trace, containerStr) {
     var container = containerStr ?
@@ -51606,7 +51527,7 @@ module.exports = function hasColorscale(trace, containerStr) {
     );
 };
 
-},{"../../lib":445,"./is_valid_scale":339,"fast-isnumeric":151}],338:[function(require,module,exports){
+},{"../../lib":442,"./is_valid_scale":336,"fast-isnumeric":148}],335:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51618,29 +51539,29 @@ module.exports = function hasColorscale(trace, containerStr) {
 
 'use strict';
 
-exports.scales = require('./scales');
+exports.scales = _dereq_('./scales');
 
-exports.defaultScale = require('./default_scale');
+exports.defaultScale = _dereq_('./default_scale');
 
-exports.attributes = require('./attributes');
+exports.attributes = _dereq_('./attributes');
 
-exports.handleDefaults = require('./defaults');
+exports.handleDefaults = _dereq_('./defaults');
 
-exports.calc = require('./calc');
+exports.calc = _dereq_('./calc');
 
-exports.hasColorscale = require('./has_colorscale');
+exports.hasColorscale = _dereq_('./has_colorscale');
 
-exports.isValidScale = require('./is_valid_scale');
+exports.isValidScale = _dereq_('./is_valid_scale');
 
-exports.getScale = require('./get_scale');
+exports.getScale = _dereq_('./get_scale');
 
-exports.flipScale = require('./flip_scale');
+exports.flipScale = _dereq_('./flip_scale');
 
-exports.extractScale = require('./extract_scale');
+exports.extractScale = _dereq_('./extract_scale');
 
-exports.makeColorScaleFunc = require('./make_color_scale_func');
+exports.makeColorScaleFunc = _dereq_('./make_color_scale_func');
 
-},{"./attributes":330,"./calc":331,"./default_scale":332,"./defaults":333,"./extract_scale":334,"./flip_scale":335,"./get_scale":336,"./has_colorscale":337,"./is_valid_scale":339,"./make_color_scale_func":341,"./scales":342}],339:[function(require,module,exports){
+},{"./attributes":327,"./calc":328,"./default_scale":329,"./defaults":330,"./extract_scale":331,"./flip_scale":332,"./get_scale":333,"./has_colorscale":334,"./is_valid_scale":336,"./make_color_scale_func":338,"./scales":339}],336:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51652,8 +51573,8 @@ exports.makeColorScaleFunc = require('./make_color_scale_func');
 
 'use strict';
 
-var scales = require('./scales');
-var isValidScaleArray = require('./is_valid_scale_array');
+var scales = _dereq_('./scales');
+var isValidScaleArray = _dereq_('./is_valid_scale_array');
 
 
 module.exports = function isValidScale(scl) {
@@ -51661,7 +51582,7 @@ module.exports = function isValidScale(scl) {
     else return isValidScaleArray(scl);
 };
 
-},{"./is_valid_scale_array":340,"./scales":342}],340:[function(require,module,exports){
+},{"./is_valid_scale_array":337,"./scales":339}],337:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51673,7 +51594,7 @@ module.exports = function isValidScale(scl) {
 
 'use strict';
 
-var tinycolor = require('tinycolor2');
+var tinycolor = _dereq_('tinycolor2');
 
 
 module.exports = function isValidScaleArray(scl) {
@@ -51698,7 +51619,7 @@ module.exports = function isValidScaleArray(scl) {
     return true;
 };
 
-},{"tinycolor2":285}],341:[function(require,module,exports){
+},{"tinycolor2":282}],338:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51710,11 +51631,11 @@ module.exports = function isValidScaleArray(scl) {
 
 'use strict';
 
-var d3 = require('d3');
-var tinycolor = require('tinycolor2');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var tinycolor = _dereq_('tinycolor2');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Color = require('../color');
+var Color = _dereq_('../color');
 
 /**
  * General colorscale function generator.
@@ -51794,7 +51715,7 @@ function colorArray2rbga(colorArray) {
     return tinycolor(colorObj).toRgbString();
 }
 
-},{"../color":323,"d3":86,"fast-isnumeric":151,"tinycolor2":285}],342:[function(require,module,exports){
+},{"../color":320,"d3":84,"fast-isnumeric":148,"tinycolor2":282}],339:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51937,7 +51858,7 @@ module.exports = {
     ]
 };
 
-},{}],343:[function(require,module,exports){
+},{}],340:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51970,7 +51891,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],344:[function(require,module,exports){
+},{}],341:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51982,7 +51903,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 
 // set cursors pointing toward the closest corner/side,
@@ -52008,7 +51929,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":445}],345:[function(require,module,exports){
+},{"../../lib":442}],342:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52020,22 +51941,22 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
 
 'use strict';
 
-var mouseOffset = require('mouse-event-offset');
-var hasHover = require('has-hover');
-var supportsPassive = require('has-passive-events');
+var mouseOffset = _dereq_('mouse-event-offset');
+var hasHover = _dereq_('has-hover');
+var supportsPassive = _dereq_('has-passive-events');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
 
-var constants = require('../../plots/cartesian/constants');
-var interactConstants = require('../../constants/interactions');
+var constants = _dereq_('../../plots/cartesian/constants');
+var interactConstants = _dereq_('../../constants/interactions');
 
 var dragElement = module.exports = {};
 
-dragElement.align = require('./align');
-dragElement.getCursor = require('./cursor');
+dragElement.align = _dereq_('./align');
+dragElement.getCursor = _dereq_('./cursor');
 
-var unhover = require('./unhover');
+var unhover = _dereq_('./unhover');
 dragElement.unhover = unhover.wrapped;
 dragElement.unhoverRaw = unhover.raw;
 
@@ -52299,7 +52220,7 @@ function pointerOffset(e) {
     );
 }
 
-},{"../../constants/interactions":423,"../../lib":445,"../../plots/cartesian/constants":497,"../../registry":536,"./align":343,"./cursor":344,"./unhover":346,"has-hover":201,"has-passive-events":202,"mouse-event-offset":215}],346:[function(require,module,exports){
+},{"../../constants/interactions":420,"../../lib":442,"../../plots/cartesian/constants":495,"../../registry":534,"./align":340,"./cursor":341,"./unhover":343,"has-hover":198,"has-passive-events":199,"mouse-event-offset":212}],343:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52312,11 +52233,11 @@ function pointerOffset(e) {
 'use strict';
 
 
-var Events = require('../../lib/events');
-var throttle = require('../../lib/throttle');
-var getGraphDiv = require('../../lib/get_graph_div');
+var Events = _dereq_('../../lib/events');
+var throttle = _dereq_('../../lib/throttle');
+var getGraphDiv = _dereq_('../../lib/get_graph_div');
 
-var hoverConstants = require('../fx/constants');
+var hoverConstants = _dereq_('../fx/constants');
 
 var unhover = module.exports = {};
 
@@ -52357,7 +52278,7 @@ unhover.raw = function unhoverRaw(gd, evt) {
     }
 };
 
-},{"../../lib/events":435,"../../lib/get_graph_div":440,"../../lib/throttle":470,"../fx/constants":360}],347:[function(require,module,exports){
+},{"../../lib/events":432,"../../lib/get_graph_div":437,"../../lib/throttle":468,"../fx/constants":357}],344:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52382,7 +52303,7 @@ exports.dash = {
     
 };
 
-},{}],348:[function(require,module,exports){
+},{}],345:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52394,23 +52315,23 @@ exports.dash = {
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
+var tinycolor = _dereq_('tinycolor2');
 
-var Registry = require('../../registry');
-var Color = require('../color');
-var Colorscale = require('../colorscale');
-var Lib = require('../../lib');
-var svgTextUtils = require('../../lib/svg_text_utils');
+var Registry = _dereq_('../../registry');
+var Color = _dereq_('../color');
+var Colorscale = _dereq_('../colorscale');
+var Lib = _dereq_('../../lib');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
 
-var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var alignment = require('../../constants/alignment');
+var xmlnsNamespaces = _dereq_('../../constants/xmlns_namespaces');
+var alignment = _dereq_('../../constants/alignment');
 var LINE_SPACING = alignment.LINE_SPACING;
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
+var DESELECTDIM = _dereq_('../../constants/interactions').DESELECTDIM;
 
-var subTypes = require('../../traces/scatter/subtypes');
-var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
+var subTypes = _dereq_('../../traces/scatter/subtypes');
+var makeBubbleSizeFn = _dereq_('../../traces/scatter/make_bubble_size_func');
 
 var drawing = module.exports = {};
 
@@ -52593,7 +52514,7 @@ drawing.fillGroupStyle = function(s) {
     });
 };
 
-var SYMBOLDEFS = require('./symbol_defs');
+var SYMBOLDEFS = _dereq_('./symbol_defs');
 
 drawing.symbolNames = [];
 drawing.symbolFuncs = [];
@@ -52651,43 +52572,76 @@ function makePointPath(symbolNumber, r) {
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
 var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
+var stopFormatter = d3.format('~.1f');
+var gradientInfo = {
+    radial: {node: 'radialGradient'},
+    radialreversed: {node: 'radialGradient', reversed: true},
+    horizontal: {node: 'linearGradient', attrs: HORZGRADIENT},
+    horizontalreversed: {node: 'linearGradient', attrs: HORZGRADIENT, reversed: true},
+    vertical: {node: 'linearGradient', attrs: VERTGRADIENT},
+    verticalreversed: {node: 'linearGradient', attrs: VERTGRADIENT, reversed: true}
+};
 
-drawing.gradient = function(sel, gd, gradientID, type, color1, color2) {
+/**
+ * gradient: create and apply a gradient fill
+ *
+ * @param {object} sel: d3 selection to apply this gradient to
+ *     You can use `selection.call(Drawing.gradient, ...)`
+ * @param {DOM element} gd: the graph div `sel` is part of
+ * @param {string} gradientID: a unique (within this plot) identifier
+ *     for this gradient, so that we don't create unnecessary definitions
+ * @param {string} type: 'radial', 'horizontal', or 'vertical', optionally with
+ *     'reversed' at the end. Normally radial goes center to edge,
+ *     horizontal goes right to left, and vertical goes bottom to top
+ * @param {array} colorscale: as in attribute values, [[fraction, color], ...]
+ * @param {string} prop: the property to apply to, 'fill' or 'stroke'
+ */
+drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
+    var len = colorscale.length;
+    var info = gradientInfo[type];
+    var colorStops = new Array(len);
+    for(var i = 0; i < len; i++) {
+        if(info.reversed) {
+            colorStops[len - 1 - i] = [stopFormatter((1 - colorscale[i][0]) * 100), colorscale[i][1]];
+        }
+        else {
+            colorStops[i] = [stopFormatter(colorscale[i][0] * 100), colorscale[i][1]];
+        }
+    }
+
+    var fullID = 'g' + gd._fullLayout._uid + '-' + gradientID;
+
     var gradient = gd._fullLayout._defs.select('.gradients')
-        .selectAll('#' + gradientID)
-        .data([type + color1 + color2], Lib.identity);
+        .selectAll('#' + fullID)
+        .data([type + colorStops.join(';')], Lib.identity);
 
     gradient.exit().remove();
 
     gradient.enter()
-        .append(type === 'radial' ? 'radialGradient' : 'linearGradient')
+        .append(info.node)
         .each(function() {
             var el = d3.select(this);
-            if(type === 'horizontal') el.attr(HORZGRADIENT);
-            else if(type === 'vertical') el.attr(VERTGRADIENT);
+            if(info.attrs) el.attr(info.attrs);
 
-            el.attr('id', gradientID);
+            el.attr('id', fullID);
 
-            var tc1 = tinycolor(color1);
-            var tc2 = tinycolor(color2);
+            var stops = el.selectAll('stop')
+                .data(colorStops);
+            stops.exit().remove();
+            stops.enter().append('stop');
 
-            el.append('stop').attr({
-                offset: '0%',
-                'stop-color': Color.tinyRGB(tc2),
-                'stop-opacity': tc2.getAlpha()
-            });
-
-            el.append('stop').attr({
-                offset: '100%',
-                'stop-color': Color.tinyRGB(tc1),
-                'stop-opacity': tc1.getAlpha()
+            stops.each(function(d) {
+                var tc = tinycolor(d[1]);
+                d3.select(this).attr({
+                    offset: d[0] + '%',
+                    'stop-color': Color.tinyRGB(tc),
+                    'stop-opacity': tc.getAlpha()
+                });
             });
         });
 
-    sel.style({
-        fill: 'url(#' + gradientID + ')',
-        'fill-opacity': null
-    });
+    sel.style(prop, 'url(#' + fullID + ')')
+        .style(prop + '-opacity', null);
 };
 
 /*
@@ -52805,21 +52759,29 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         if(gradientType) perPointGradient = true;
         else gradientType = markerGradient && markerGradient.type;
 
+        // for legend - arrays will propagate through here, but we don't need
+        // to treat it as per-point.
+        if(Array.isArray(gradientType)) {
+            gradientType = gradientType[0];
+            if(!gradientInfo[gradientType]) gradientType = 0;
+        }
+
         if(gradientType && gradientType !== 'none') {
             var gradientColor = d.mgc;
             if(gradientColor) perPointGradient = true;
             else gradientColor = markerGradient.color;
 
-            var gradientID = 'g' + gd._fullLayout._uid + '-' + trace.uid;
+            var gradientID = trace.uid;
             if(perPointGradient) gradientID += '-' + d.i;
 
-            sel.call(drawing.gradient, gd, gradientID, gradientType, fillColor, gradientColor);
+            drawing.gradient(sel, gd, gradientID, gradientType,
+                [[0, gradientColor], [1, fillColor]], 'fill');
         } else {
-            sel.call(Color.fill, fillColor);
+            Color.fill(sel, fillColor);
         }
 
         if(lineWidth) {
-            sel.call(Color.stroke, lineColor);
+            Color.stroke(sel, lineColor);
         }
     }
 };
@@ -53507,7 +53469,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
-},{"../../constants/alignment":421,"../../constants/interactions":423,"../../constants/xmlns_namespaces":426,"../../lib":445,"../../lib/svg_text_utils":469,"../../registry":536,"../../traces/scatter/make_bubble_size_func":613,"../../traces/scatter/subtypes":619,"../color":323,"../colorscale":338,"./symbol_defs":349,"d3":86,"fast-isnumeric":151,"tinycolor2":285}],349:[function(require,module,exports){
+},{"../../constants/alignment":418,"../../constants/interactions":420,"../../constants/xmlns_namespaces":423,"../../lib":442,"../../lib/svg_text_utils":467,"../../registry":534,"../../traces/scatter/make_bubble_size_func":611,"../../traces/scatter/subtypes":617,"../color":320,"../colorscale":335,"./symbol_defs":346,"d3":84,"fast-isnumeric":148,"tinycolor2":282}],346:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53519,7 +53481,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
 /** Marker symbol definitions
  * users can specify markers either by number or name
@@ -53995,7 +53957,7 @@ module.exports = {
     }
 };
 
-},{"d3":86}],350:[function(require,module,exports){
+},{"d3":84}],347:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54110,7 +54072,7 @@ module.exports = {
     }
 };
 
-},{}],351:[function(require,module,exports){
+},{}],348:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54122,28 +54084,27 @@ module.exports = {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Registry = require('../../registry');
-var Axes = require('../../plots/cartesian/axes');
+var Registry = _dereq_('../../registry');
+var Axes = _dereq_('../../plots/cartesian/axes');
 
-var makeComputeError = require('./compute_error');
+var makeComputeError = _dereq_('./compute_error');
 
 
 module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
 
     for(var i = 0; i < calcdata.length; i++) {
-        var calcTrace = calcdata[i],
-            trace = calcTrace[0].trace;
+        var calcTrace = calcdata[i];
+        var trace = calcTrace[0].trace;
 
-        if(!Registry.traceIs(trace, 'errorBarsOK')) continue;
-
-        var xa = Axes.getFromId(gd, trace.xaxis),
-            ya = Axes.getFromId(gd, trace.yaxis);
-
-        calcOneAxis(calcTrace, trace, xa, 'x');
-        calcOneAxis(calcTrace, trace, ya, 'y');
+        if(trace.visible === true && Registry.traceIs(trace, 'errorBarsOK')) {
+            var xa = Axes.getFromId(gd, trace.xaxis);
+            var ya = Axes.getFromId(gd, trace.yaxis);
+            calcOneAxis(calcTrace, trace, xa, 'x');
+            calcOneAxis(calcTrace, trace, ya, 'y');
+        }
     }
 };
 
@@ -54170,10 +54131,13 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
         }
     }
 
-    Axes.expand(axis, vals, {padded: true});
+    var extremes = Axes.findExtremes(axis, vals, {padded: true});
+    var axId = axis._id;
+    trace._extremes[axId].min = trace._extremes[axId].min.concat(extremes.min);
+    trace._extremes[axId].max = trace._extremes[axId].max.concat(extremes.max);
 }
 
-},{"../../plots/cartesian/axes":492,"../../registry":536,"./compute_error":352,"fast-isnumeric":151}],352:[function(require,module,exports){
+},{"../../plots/cartesian/axes":490,"../../registry":534,"./compute_error":349,"fast-isnumeric":148}],349:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54277,7 +54241,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],353:[function(require,module,exports){
+},{}],350:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54288,13 +54252,13 @@ function makeComputeErrorValue(type, value) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Template = require('../../plot_api/plot_template');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Template = _dereq_('../../plot_api/plot_template');
 
-var attributes = require('./attributes');
+var attributes = _dereq_('./attributes');
 
 
 module.exports = function(traceIn, traceOut, defaultColor, opts) {
@@ -54353,7 +54317,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":445,"../../plot_api/plot_template":482,"../../registry":536,"./attributes":350,"fast-isnumeric":151}],354:[function(require,module,exports){
+},{"../../lib":442,"../../plot_api/plot_template":480,"../../registry":534,"./attributes":347,"fast-isnumeric":148}],351:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54364,10 +54328,10 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var Lib = _dereq_('../../lib');
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 
-var attributes = require('./attributes');
+var attributes = _dereq_('./attributes');
 
 var xyAttrs = {
     error_x: Lib.extendFlat({}, attributes),
@@ -54401,13 +54365,13 @@ module.exports = {
         }
     },
 
-    supplyDefaults: require('./defaults'),
+    supplyDefaults: _dereq_('./defaults'),
 
-    calc: require('./calc'),
-    makeComputeError: require('./compute_error'),
+    calc: _dereq_('./calc'),
+    makeComputeError: _dereq_('./compute_error'),
 
-    plot: require('./plot'),
-    style: require('./style'),
+    plot: _dereq_('./plot'),
+    style: _dereq_('./style'),
     hoverInfo: hoverInfo
 };
 
@@ -54422,7 +54386,7 @@ function hoverInfo(calcPoint, trace, hoverPoint) {
     }
 }
 
-},{"../../lib":445,"../../plot_api/edit_types":475,"./attributes":350,"./calc":351,"./compute_error":352,"./defaults":353,"./plot":355,"./style":356}],355:[function(require,module,exports){
+},{"../../lib":442,"../../plot_api/edit_types":473,"./attributes":347,"./calc":348,"./compute_error":349,"./defaults":350,"./plot":352,"./style":353}],352:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54434,11 +54398,11 @@ function hoverInfo(calcPoint, trace, hoverPoint) {
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Drawing = require('../drawing');
-var subTypes = require('../../traces/scatter/subtypes');
+var Drawing = _dereq_('../drawing');
+var subTypes = _dereq_('../../traces/scatter/subtypes');
 
 module.exports = function plot(traces, plotinfo, transitionOpts) {
     var isNew;
@@ -54596,7 +54560,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":619,"../drawing":348,"d3":86,"fast-isnumeric":151}],356:[function(require,module,exports){
+},{"../../traces/scatter/subtypes":617,"../drawing":345,"d3":84,"fast-isnumeric":148}],353:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54608,9 +54572,9 @@ function errorCoords(d, xa, ya) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Color = require('../color');
+var Color = _dereq_('../color');
 
 
 module.exports = function style(traces) {
@@ -54633,7 +54597,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":323,"d3":86}],357:[function(require,module,exports){
+},{"../color":320,"d3":84}],354:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54644,7 +54608,7 @@ module.exports = function style(traces) {
 
 'use strict';
 
-var fontAttrs = require('../../plots/font_attributes');
+var fontAttrs = _dereq_('../../plots/font_attributes');
 
 module.exports = {
     hoverlabel: {
@@ -54679,7 +54643,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":518}],358:[function(require,module,exports){
+},{"../../plots/font_attributes":516}],355:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54690,8 +54654,8 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Registry = require('../../registry');
+var Lib = _dereq_('../../lib');
+var Registry = _dereq_('../../registry');
 
 module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
@@ -54735,7 +54699,7 @@ function paste(traceAttr, cd, cdAttr, fn) {
     }
 }
 
-},{"../../lib":445,"../../registry":536}],359:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534}],356:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54746,8 +54710,8 @@ function paste(traceAttr, cd, cdAttr, fn) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var hover = require('./hover').hover;
+var Registry = _dereq_('../../registry');
+var hover = _dereq_('./hover').hover;
 
 module.exports = function click(gd, evt, subplot) {
     var annotationsDone = Registry.getComponentMethod('annotations', 'onClick')(gd, gd._hoverdata);
@@ -54773,7 +54737,7 @@ module.exports = function click(gd, evt, subplot) {
     }
 };
 
-},{"../../registry":536,"./hover":363}],360:[function(require,module,exports){
+},{"../../registry":534,"./hover":360}],357:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54805,7 +54769,7 @@ module.exports = {
     HOVERID: '-hover'
 };
 
-},{}],361:[function(require,module,exports){
+},{}],358:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54816,9 +54780,9 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var attributes = require('./attributes');
-var handleHoverLabelDefaults = require('./hoverlabel_defaults');
+var Lib = _dereq_('../../lib');
+var attributes = _dereq_('./attributes');
+var handleHoverLabelDefaults = _dereq_('./hoverlabel_defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -54828,7 +54792,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(traceIn, traceOut, coerce, layout.hoverlabel);
 };
 
-},{"../../lib":445,"./attributes":357,"./hoverlabel_defaults":364}],362:[function(require,module,exports){
+},{"../../lib":442,"./attributes":354,"./hoverlabel_defaults":361}],359:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54839,7 +54803,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 // look for either subplot or xaxis and yaxis attributes
 // does not handle splom case
@@ -55071,7 +55035,7 @@ function getPointData(val, pointNumber) {
     }
 }
 
-},{"../../lib":445}],363:[function(require,module,exports){
+},{"../../lib":442}],360:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -55082,22 +55046,22 @@ function getPointData(val, pointNumber) {
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
+var tinycolor = _dereq_('tinycolor2');
 
-var Lib = require('../../lib');
-var Events = require('../../lib/events');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var overrideCursor = require('../../lib/override_cursor');
-var Drawing = require('../drawing');
-var Color = require('../color');
-var dragElement = require('../dragelement');
-var Axes = require('../../plots/cartesian/axes');
-var Registry = require('../../registry');
+var Lib = _dereq_('../../lib');
+var Events = _dereq_('../../lib/events');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var overrideCursor = _dereq_('../../lib/override_cursor');
+var Drawing = _dereq_('../drawing');
+var Color = _dereq_('../color');
+var dragElement = _dereq_('../dragelement');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var Registry = _dereq_('../../registry');
 
-var helpers = require('./helpers');
-var constants = require('./constants');
+var helpers = _dereq_('./helpers');
+var constants = _dereq_('./constants');
 
 // hover labels for multiple horizontal bars get tilted by some angle,
 // then need to be offset differently if they overlap
@@ -56531,7 +56495,7 @@ function spikesChanged(gd, oldspikepoints) {
     return false;
 }
 
-},{"../../lib":445,"../../lib/events":435,"../../lib/override_cursor":456,"../../lib/svg_text_utils":469,"../../plots/cartesian/axes":492,"../../registry":536,"../color":323,"../dragelement":345,"../drawing":348,"./constants":360,"./helpers":362,"d3":86,"fast-isnumeric":151,"tinycolor2":285}],364:[function(require,module,exports){
+},{"../../lib":442,"../../lib/events":432,"../../lib/override_cursor":454,"../../lib/svg_text_utils":467,"../../plots/cartesian/axes":490,"../../registry":534,"../color":320,"../dragelement":342,"../drawing":345,"./constants":357,"./helpers":359,"d3":84,"fast-isnumeric":148,"tinycolor2":282}],361:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56542,7 +56506,7 @@ function spikesChanged(gd, oldspikepoints) {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
@@ -56553,7 +56517,7 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     Lib.coerceFont(coerce, 'hoverlabel.font', opts.font);
 };
 
-},{"../../lib":445}],365:[function(require,module,exports){
+},{"../../lib":442}],362:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56564,29 +56528,29 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
 
 'use strict';
 
-var d3 = require('d3');
-var Lib = require('../../lib');
-var dragElement = require('../dragelement');
-var helpers = require('./helpers');
-var layoutAttributes = require('./layout_attributes');
+var d3 = _dereq_('d3');
+var Lib = _dereq_('../../lib');
+var dragElement = _dereq_('../dragelement');
+var helpers = _dereq_('./helpers');
+var layoutAttributes = _dereq_('./layout_attributes');
 
 module.exports = {
     moduleType: 'component',
     name: 'fx',
 
-    constants: require('./constants'),
+    constants: _dereq_('./constants'),
     schema: {
         layout: layoutAttributes
     },
 
-    attributes: require('./attributes'),
+    attributes: _dereq_('./attributes'),
     layoutAttributes: layoutAttributes,
 
-    supplyLayoutGlobalDefaults: require('./layout_global_defaults'),
-    supplyDefaults: require('./defaults'),
-    supplyLayoutDefaults: require('./layout_defaults'),
+    supplyLayoutGlobalDefaults: _dereq_('./layout_global_defaults'),
+    supplyDefaults: _dereq_('./defaults'),
+    supplyLayoutDefaults: _dereq_('./layout_defaults'),
 
-    calc: require('./calc'),
+    calc: _dereq_('./calc'),
 
     getDistanceFunction: helpers.getDistanceFunction,
     getClosest: helpers.getClosest,
@@ -56597,13 +56561,13 @@ module.exports = {
     castHoverOption: castHoverOption,
     castHoverinfo: castHoverinfo,
 
-    hover: require('./hover').hover,
+    hover: _dereq_('./hover').hover,
     unhover: dragElement.unhover,
 
-    loneHover: require('./hover').loneHover,
+    loneHover: _dereq_('./hover').loneHover,
     loneUnhover: loneUnhover,
 
-    click: require('./click')
+    click: _dereq_('./click')
 };
 
 function loneUnhover(containerOrSelection) {
@@ -56631,7 +56595,7 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
     return Lib.castOption(trace, ptNumber, 'hoverinfo', _coerce);
 }
 
-},{"../../lib":445,"../dragelement":345,"./attributes":357,"./calc":358,"./click":359,"./constants":360,"./defaults":361,"./helpers":362,"./hover":363,"./layout_attributes":366,"./layout_defaults":367,"./layout_global_defaults":368,"d3":86}],366:[function(require,module,exports){
+},{"../../lib":442,"../dragelement":342,"./attributes":354,"./calc":355,"./click":356,"./constants":357,"./defaults":358,"./helpers":359,"./hover":360,"./layout_attributes":363,"./layout_defaults":364,"./layout_global_defaults":365,"d3":84}],363:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56642,9 +56606,9 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
 
 'use strict';
 
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 
-var fontAttrs = require('../../plots/font_attributes')({
+var fontAttrs = _dereq_('../../plots/font_attributes')({
     editType: 'none',
     
 });
@@ -56717,7 +56681,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":518,"./constants":360}],367:[function(require,module,exports){
+},{"../../plots/font_attributes":516,"./constants":357}],364:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56728,8 +56692,8 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var layoutAttributes = require('./layout_attributes');
+var Lib = _dereq_('../../lib');
+var layoutAttributes = _dereq_('./layout_attributes');
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
@@ -56784,7 +56748,7 @@ function isHoriz(fullData) {
     return out;
 }
 
-},{"../../lib":445,"./layout_attributes":366}],368:[function(require,module,exports){
+},{"../../lib":442,"./layout_attributes":363}],365:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56795,9 +56759,9 @@ function isHoriz(fullData) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var handleHoverLabelDefaults = require('./hoverlabel_defaults');
-var layoutAttributes = require('./layout_attributes');
+var Lib = _dereq_('../../lib');
+var handleHoverLabelDefaults = _dereq_('./hoverlabel_defaults');
+var layoutAttributes = _dereq_('./layout_attributes');
 
 module.exports = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
@@ -56807,7 +56771,7 @@ module.exports = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
 
-},{"../../lib":445,"./hoverlabel_defaults":364,"./layout_attributes":366}],369:[function(require,module,exports){
+},{"../../lib":442,"./hoverlabel_defaults":361,"./layout_attributes":363}],366:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56818,11 +56782,11 @@ module.exports = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var counterRegex = require('../../lib/regex').counter;
-var domainAttrs = require('../../plots/domain').attributes;
-var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
-var Template = require('../../plot_api/plot_template');
+var Lib = _dereq_('../../lib');
+var counterRegex = _dereq_('../../lib/regex').counter;
+var domainAttrs = _dereq_('../../plots/domain').attributes;
+var cartesianIdRegex = _dereq_('../../plots/cartesian/constants').idRegex;
+var Template = _dereq_('../../plot_api/plot_template');
 
 var gridAttrs = {
     rows: {
@@ -57192,7 +57156,7 @@ module.exports = {
     contentDefaults: contentDefaults
 };
 
-},{"../../lib":445,"../../lib/regex":461,"../../plot_api/plot_template":482,"../../plots/cartesian/constants":497,"../../plots/domain":517}],370:[function(require,module,exports){
+},{"../../lib":442,"../../lib/regex":459,"../../plot_api/plot_template":480,"../../plots/cartesian/constants":495,"../../plots/domain":515}],367:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57203,8 +57167,8 @@ module.exports = {
 
 'use strict';
 
-var cartesianConstants = require('../../plots/cartesian/constants');
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var cartesianConstants = _dereq_('../../plots/cartesian/constants');
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
 
 module.exports = templatedArray('image', {
@@ -57327,7 +57291,7 @@ module.exports = templatedArray('image', {
     editType: 'arraydraw'
 });
 
-},{"../../plot_api/plot_template":482,"../../plots/cartesian/constants":497}],371:[function(require,module,exports){
+},{"../../plot_api/plot_template":480,"../../plots/cartesian/constants":495}],368:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57339,8 +57303,8 @@ module.exports = templatedArray('image', {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var toLogRange = require('../../lib/to_log_range');
+var isNumeric = _dereq_('fast-isnumeric');
+var toLogRange = _dereq_('../../lib/to_log_range');
 
 /*
  * convertCoords: when converting an axis between log and linear
@@ -57410,7 +57374,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":471,"fast-isnumeric":151}],372:[function(require,module,exports){
+},{"../../lib/to_log_range":469,"fast-isnumeric":148}],369:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57421,11 +57385,11 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
 
-var attributes = require('./attributes');
+var attributes = _dereq_('./attributes');
 var name = 'images';
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
@@ -57471,7 +57435,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":445,"../../plots/array_container_defaults":488,"../../plots/cartesian/axes":492,"./attributes":370}],373:[function(require,module,exports){
+},{"../../lib":442,"../../plots/array_container_defaults":486,"../../plots/cartesian/axes":490,"./attributes":367}],370:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57482,10 +57446,10 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
 
 'use strict';
 
-var d3 = require('d3');
-var Drawing = require('../drawing');
-var Axes = require('../../plots/cartesian/axes');
-var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var d3 = _dereq_('d3');
+var Drawing = _dereq_('../drawing');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var xmlnsNamespaces = _dereq_('../../constants/xmlns_namespaces');
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -57692,7 +57656,7 @@ module.exports = function draw(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":426,"../../plots/cartesian/axes":492,"../drawing":348,"d3":86}],374:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":423,"../../plots/cartesian/axes":490,"../drawing":345,"d3":84}],371:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57707,16 +57671,16 @@ module.exports = {
     moduleType: 'component',
     name: 'images',
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
-    includeBasePlot: require('../../plots/cartesian/include_components')('images'),
+    layoutAttributes: _dereq_('./attributes'),
+    supplyLayoutDefaults: _dereq_('./defaults'),
+    includeBasePlot: _dereq_('../../plots/cartesian/include_components')('images'),
 
-    draw: require('./draw'),
+    draw: _dereq_('./draw'),
 
-    convertCoords: require('./convert_coords')
+    convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":502,"./attributes":370,"./convert_coords":371,"./defaults":372,"./draw":373}],375:[function(require,module,exports){
+},{"../../plots/cartesian/include_components":500,"./attributes":367,"./convert_coords":368,"./defaults":369,"./draw":370}],372:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57765,7 +57729,7 @@ exports.isMiddleAnchor = function isMiddleAnchor(opts) {
     );
 };
 
-},{}],376:[function(require,module,exports){
+},{}],373:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57776,8 +57740,8 @@ exports.isMiddleAnchor = function isMiddleAnchor(opts) {
 
 'use strict';
 
-var fontAttrs = require('../../plots/font_attributes');
-var colorAttrs = require('../color/attributes');
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var colorAttrs = _dereq_('../color/attributes');
 
 
 module.exports = {
@@ -57867,7 +57831,7 @@ module.exports = {
     editType: 'legend'
 };
 
-},{"../../plots/font_attributes":518,"../color/attributes":322}],377:[function(require,module,exports){
+},{"../../plots/font_attributes":516,"../color/attributes":319}],374:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57885,7 +57849,7 @@ module.exports = {
     scrollBarMargin: 4
 };
 
-},{}],378:[function(require,module,exports){
+},{}],375:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57897,19 +57861,20 @@ module.exports = {
 
 'use strict';
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Template = require('../../plot_api/plot_template');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Template = _dereq_('../../plot_api/plot_template');
 
-var attributes = require('./attributes');
-var basePlotLayoutAttributes = require('../../plots/layout_attributes');
-var helpers = require('./helpers');
+var attributes = _dereq_('./attributes');
+var basePlotLayoutAttributes = _dereq_('../../plots/layout_attributes');
+var helpers = _dereq_('./helpers');
 
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var containerIn = layoutIn.legend || {};
 
-    var visibleTraces = 0;
+    var legendTraceCount = 0;
+    var legendReallyHasATrace = false;
     var defaultOrder = 'normal';
 
     var defaultX, defaultY, defaultXAnchor, defaultYAnchor;
@@ -57917,10 +57882,24 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
 
-        if(helpers.legendGetsTrace(trace)) {
-            visibleTraces++;
-            // always show the legend by default if there's a pie
-            if(Registry.traceIs(trace, 'pie')) visibleTraces++;
+        if(!trace.visible) continue;
+
+        // Note that we explicitly count any trace that is either shown or
+        // *would* be shown by default, toward the two traces you need to
+        // ensure the legend is shown by default, because this can still help
+        // disambiguate.
+        if(trace.showlegend || trace._dfltShowLegend) {
+            legendTraceCount++;
+            if(trace.showlegend) {
+                legendReallyHasATrace = true;
+                // Always show the legend by default if there's a pie,
+                // or if there's only one trace but it's explicitly shown
+                if(Registry.traceIs(trace, 'pie') ||
+                    trace._input.showlegend === true
+                ) {
+                    legendTraceCount++;
+                }
+            }
         }
 
         if((Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
@@ -57936,7 +57915,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     }
 
     var showLegend = Lib.coerce(layoutIn, layoutOut,
-        basePlotLayoutAttributes, 'showlegend', visibleTraces > 1);
+        basePlotLayoutAttributes, 'showlegend',
+        legendReallyHasATrace && legendTraceCount > 1);
 
     if(showLegend === false) return;
 
@@ -57978,7 +57958,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };
 
-},{"../../lib":445,"../../plot_api/plot_template":482,"../../plots/layout_attributes":526,"../../registry":536,"./attributes":376,"./helpers":382}],379:[function(require,module,exports){
+},{"../../lib":442,"../../plot_api/plot_template":480,"../../plots/layout_attributes":524,"../../registry":534,"./attributes":373,"./helpers":379}],376:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57989,29 +57969,29 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
-var Registry = require('../../registry');
-var Events = require('../../lib/events');
-var dragElement = require('../dragelement');
-var Drawing = require('../drawing');
-var Color = require('../color');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var handleClick = require('./handle_click');
+var Lib = _dereq_('../../lib');
+var Plots = _dereq_('../../plots/plots');
+var Registry = _dereq_('../../registry');
+var Events = _dereq_('../../lib/events');
+var dragElement = _dereq_('../dragelement');
+var Drawing = _dereq_('../drawing');
+var Color = _dereq_('../color');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var handleClick = _dereq_('./handle_click');
 
-var constants = require('./constants');
-var interactConstants = require('../../constants/interactions');
-var alignmentConstants = require('../../constants/alignment');
+var constants = _dereq_('./constants');
+var interactConstants = _dereq_('../../constants/interactions');
+var alignmentConstants = _dereq_('../../constants/alignment');
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
 
-var getLegendData = require('./get_legend_data');
-var style = require('./style');
-var helpers = require('./helpers');
-var anchorUtils = require('./anchor_utils');
+var getLegendData = _dereq_('./get_legend_data');
+var style = _dereq_('./style');
+var helpers = _dereq_('./helpers');
+var anchorUtils = _dereq_('./anchor_utils');
 
 var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 
@@ -58322,12 +58302,13 @@ module.exports = function draw(gd) {
                 }
             },
             clickFn: function(numClicks, e) {
-                var clickedTrace =
-                    fullLayout._infolayer.selectAll('g.traces').filter(function() {
-                        var bbox = this.getBoundingClientRect();
-                        return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
-                            e.clientY >= bbox.top && e.clientY <= bbox.bottom);
-                    });
+                var clickedTrace = fullLayout._infolayer.selectAll('g.traces').filter(function() {
+                    var bbox = this.getBoundingClientRect();
+                    return (
+                        e.clientX >= bbox.left && e.clientX <= bbox.right &&
+                        e.clientY >= bbox.top && e.clientY <= bbox.bottom
+                    );
+                });
                 if(clickedTrace.size() > 0) {
                     clickOrDoubleClick(gd, legend, clickedTrace, numClicks, e);
                 }
@@ -58653,14 +58634,19 @@ function computeLegendDimensions(gd, groups, traces) {
     opts._width = Math.ceil(opts._width);
     opts._height = Math.ceil(opts._height);
 
+    var isEditable = (
+        gd._context.edits.legendText ||
+        gd._context.edits.legendPosition
+    );
+
     traces.each(function(d) {
-        var legendItem = d[0],
-            bg = d3.select(this).select('.legendtoggle');
+        var legendItem = d[0];
+        var bg = d3.select(this).select('.legendtoggle');
 
         Drawing.setRect(bg,
             0,
             -legendItem.height / 2,
-            (gd._context.edits.legendText ? 0 : opts._width) + extraWidth,
+            (isEditable ? 0 : opts._width) + extraWidth,
             legendItem.height
         );
     });
@@ -58720,7 +58706,7 @@ function expandHorizontalMargin(gd) {
     });
 }
 
-},{"../../constants/alignment":421,"../../constants/interactions":423,"../../lib":445,"../../lib/events":435,"../../lib/svg_text_utils":469,"../../plots/plots":528,"../../registry":536,"../color":323,"../dragelement":345,"../drawing":348,"./anchor_utils":375,"./constants":377,"./get_legend_data":380,"./handle_click":381,"./helpers":382,"./style":384,"d3":86}],380:[function(require,module,exports){
+},{"../../constants/alignment":418,"../../constants/interactions":420,"../../lib":442,"../../lib/events":432,"../../lib/svg_text_utils":467,"../../plots/plots":526,"../../registry":534,"../color":320,"../dragelement":342,"../drawing":345,"./anchor_utils":372,"./constants":374,"./get_legend_data":377,"./handle_click":378,"./helpers":379,"./style":381,"d3":84}],377:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58732,8 +58718,8 @@ function expandHorizontalMargin(gd) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var helpers = require('./helpers');
+var Registry = _dereq_('../../registry');
+var helpers = _dereq_('./helpers');
 
 
 module.exports = function getLegendData(calcdata, opts) {
@@ -58764,12 +58750,12 @@ module.exports = function getLegendData(calcdata, opts) {
 
     // build an { legendgroup: [cd0, cd0], ... } object
     for(i = 0; i < calcdata.length; i++) {
-        var cd = calcdata[i],
-            cd0 = cd[0],
-            trace = cd0.trace,
-            lgroup = trace.legendgroup;
+        var cd = calcdata[i];
+        var cd0 = cd[0];
+        var trace = cd0.trace;
+        var lgroup = trace.legendgroup;
 
-        if(!helpers.legendGetsTrace(trace) || !trace.showlegend) continue;
+        if(!trace.visible || !trace.showlegend) continue;
 
         if(Registry.traceIs(trace, 'pie')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
@@ -58825,7 +58811,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":536,"./helpers":382}],381:[function(require,module,exports){
+},{"../../registry":534,"./helpers":379}],378:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58836,8 +58822,8 @@ module.exports = function getLegendData(calcdata, opts) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Registry = require('../../registry');
+var Lib = _dereq_('../../lib');
+var Registry = _dereq_('../../registry');
 
 var SHOWISOLATETIP = true;
 
@@ -59049,7 +59035,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 };
 
-},{"../../lib":445,"../../registry":536}],382:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534}],379:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59060,16 +59046,6 @@ module.exports = function handleClick(g, gd, numClicks) {
 
 
 'use strict';
-
-exports.legendGetsTrace = function legendGetsTrace(trace) {
-    // traceIs(trace, 'showLegend') is not sufficient anymore, due to contour(carpet)?
-    // which are legend-eligible only if type: constraint. Otherwise, showlegend gets deleted.
-
-    // Note that we explicitly include showlegend: false, so a trace that *could* be
-    // in the legend but is not shown still counts toward the two traces you need to
-    // ensure the legend is shown by default, because this can still help disambiguate.
-    return trace.visible && (trace.showlegend !== undefined);
-};
 
 exports.isGrouped = function isGrouped(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('grouped') !== -1;
@@ -59083,7 +59059,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{}],383:[function(require,module,exports){
+},{}],380:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59100,14 +59076,14 @@ module.exports = {
     moduleType: 'component',
     name: 'legend',
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
+    layoutAttributes: _dereq_('./attributes'),
+    supplyLayoutDefaults: _dereq_('./defaults'),
 
-    draw: require('./draw'),
-    style: require('./style')
+    draw: _dereq_('./draw'),
+    style: _dereq_('./style')
 };
 
-},{"./attributes":376,"./defaults":378,"./draw":379,"./style":384}],384:[function(require,module,exports){
+},{"./attributes":373,"./defaults":375,"./draw":376,"./style":381}],381:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59118,15 +59094,15 @@ module.exports = {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Drawing = require('../drawing');
-var Color = require('../color');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Drawing = _dereq_('../drawing');
+var Color = _dereq_('../color');
 
-var subTypes = require('../../traces/scatter/subtypes');
-var stylePie = require('../../traces/pie/style_one');
+var subTypes = _dereq_('../../traces/scatter/subtypes');
+var stylePie = _dereq_('../../traces/pie/style_one');
 
 module.exports = function style(s, gd) {
     s.each(function(d) {
@@ -59171,43 +59147,96 @@ module.exports = function style(s, gd) {
         var showFill = trace.visible && trace.fill && trace.fill !== 'none';
         var showLine = subTypes.hasLines(trace);
         var contours = trace.contours;
+        var showGradientLine = false;
+        var showGradientFill = false;
 
-        if(contours && contours.type === 'constraint') {
-            showLine = contours.showlines;
-            showFill = contours._operation !== '=';
+        if(contours) {
+            var coloring = contours.coloring;
+
+            if(coloring === 'lines') {
+                showGradientLine = true;
+            }
+            else {
+                showLine = coloring === 'none' || coloring === 'heatmap' ||
+                    contours.showlines;
+            }
+
+            if(contours.type === 'constraint') {
+                showFill = contours._operation !== '=';
+            }
+            else if(coloring === 'fill' || coloring === 'heatmap') {
+                showGradientFill = true;
+            }
         }
 
-        var fill = d3.select(this).select('.legendfill').selectAll('path')
-            .data(showFill ? [d] : []);
+        // with fill and no markers or text, move the line and fill up a bit
+        // so it's more centered
+        var markersOrText = subTypes.hasMarkers(trace) || subTypes.hasText(trace);
+        var anyFill = showFill || showGradientFill;
+        var anyLine = showLine || showGradientLine;
+        var pathStart = (markersOrText || !anyFill) ? 'M5,0' :
+            // with a line leave it slightly below center, to leave room for the
+            // line thickness and because the line is usually more prominent
+            anyLine ? 'M5,-2' : 'M5,-3';
+
+        var this3 = d3.select(this);
+
+        var fill = this3.select('.legendfill').selectAll('path')
+            .data(showFill || showGradientFill ? [d] : []);
         fill.enter().append('path').classed('js-fill', true);
         fill.exit().remove();
-        fill.attr('d', 'M5,0h30v6h-30z')
-            .call(Drawing.fillGroupStyle);
+        fill.attr('d', pathStart + 'h30v6h-30z')
+            .call(showFill ? Drawing.fillGroupStyle : fillGradient);
 
-        var line = d3.select(this).select('.legendlines').selectAll('path')
-            .data(showLine ? [d] : []);
-        line.enter().append('path').classed('js-line', true)
-            .attr('d', 'M5,0h30');
+        var line = this3.select('.legendlines').selectAll('path')
+            .data(showLine || showGradientLine ? [d] : []);
+        line.enter().append('path').classed('js-line', true);
         line.exit().remove();
-        line.call(Drawing.lineGroupStyle);
+
+        // this is ugly... but you can't apply a gradient to a perfectly
+        // horizontal or vertical line. Presumably because then
+        // the system doesn't know how to scale vertical variation, even
+        // though there *is* no vertical variation in this case.
+        // so add an invisibly small angle to the line
+        // This issue (and workaround) exist across (Mac) Chrome, FF, and Safari
+        line.attr('d', pathStart + (showGradientLine ? 'l30,0.0001' : 'h30'))
+            .call(showLine ? Drawing.lineGroupStyle : lineGradient);
+
+        function fillGradient(s) {
+            if(s.size()) {
+                var gradientID = 'legendfill-' + trace.uid;
+                Drawing.gradient(s, gd, gradientID, 'horizontalreversed',
+                    trace.colorscale, 'fill');
+            }
+        }
+
+        function lineGradient(s) {
+            if(s.size()) {
+                var gradientID = 'legendline-' + trace.uid;
+                Drawing.lineGroupStyle(s);
+                Drawing.gradient(s, gd, gradientID, 'horizontalreversed',
+                    trace.colorscale, 'stroke');
+            }
+        }
+
     }
 
     function stylePoints(d) {
-        var d0 = d[0],
-            trace = d0.trace,
-            showMarkers = subTypes.hasMarkers(trace),
-            showText = subTypes.hasText(trace),
-            showLines = subTypes.hasLines(trace);
-
+        var d0 = d[0];
+        var trace = d0.trace;
+        var showMarkers = subTypes.hasMarkers(trace);
+        var showText = subTypes.hasText(trace);
+        var showLines = subTypes.hasLines(trace);
         var dMod, tMod;
 
-        // 'scatter3d' and 'scattergeo' don't use gd.calcdata yet;
+        // 'scatter3d' don't use gd.calcdata,
         // use d0.trace to infer arrayOk attributes
 
         function boundVal(attrIn, arrayToValFn, bounds) {
-            var valIn = Lib.nestedProperty(trace, attrIn).get(),
-                valToBound = (Array.isArray(valIn) && arrayToValFn) ?
-                    arrayToValFn(valIn) : valIn;
+            var valIn = Lib.nestedProperty(trace, attrIn).get();
+            var valToBound = (Array.isArray(valIn) && arrayToValFn) ?
+                arrayToValFn(valIn) :
+                valIn;
 
             if(bounds) {
                 if(valToBound < bounds[0]) return bounds[0];
@@ -59225,8 +59254,8 @@ module.exports = function style(s, gd) {
 
             if(showMarkers) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
+                dEdit.mx = boundVal('marker.symbol', pickFirst);
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
-                dEdit.ms = boundVal('marker.size', Lib.mean, [2, 16]);
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
                 dEdit.mlw = boundVal('marker.line.width', Lib.mean, [0, 5]);
                 tEdit.marker = {
@@ -59234,6 +59263,10 @@ module.exports = function style(s, gd) {
                     sizemin: 1,
                     sizemode: 'diameter'
                 };
+
+                var ms = boundVal('marker.size', Lib.mean, [2, 16]);
+                dEdit.ms = ms;
+                tEdit.marker.size = ms;
             }
 
             if(showLines) {
@@ -59395,7 +59428,7 @@ module.exports = function style(s, gd) {
     }
 };
 
-},{"../../lib":445,"../../registry":536,"../../traces/pie/style_one":591,"../../traces/scatter/subtypes":619,"../color":323,"../drawing":348,"d3":86}],385:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534,"../../traces/pie/style_one":589,"../../traces/scatter/subtypes":617,"../color":320,"../drawing":345,"d3":84}],382:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59407,11 +59440,11 @@ module.exports = function style(s, gd) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var Plots = require('../../plots/plots');
-var axisIds = require('../../plots/cartesian/axis_ids');
-var Lib = require('../../lib');
-var Icons = require('../../../build/ploticon');
+var Registry = _dereq_('../../registry');
+var Plots = _dereq_('../../plots/plots');
+var axisIds = _dereq_('../../plots/cartesian/axis_ids');
+var Lib = _dereq_('../../lib');
+var Icons = _dereq_('../../../build/ploticon');
 
 var _ = Lib._;
 
@@ -60015,7 +60048,7 @@ function resetView(gd, subplotType) {
     Registry.call('relayout', gd, aObj);
 }
 
-},{"../../../build/ploticon":2,"../../lib":445,"../../plots/cartesian/axis_ids":495,"../../plots/plots":528,"../../registry":536}],386:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":442,"../../plots/cartesian/axis_ids":493,"../../plots/plots":526,"../../registry":534}],383:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60027,9 +60060,9 @@ function resetView(gd, subplotType) {
 
 'use strict';
 
-exports.manage = require('./manage');
+exports.manage = _dereq_('./manage');
 
-},{"./manage":387}],387:[function(require,module,exports){
+},{"./manage":384}],384:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60041,12 +60074,12 @@ exports.manage = require('./manage');
 
 'use strict';
 
-var axisIds = require('../../plots/cartesian/axis_ids');
-var scatterSubTypes = require('../../traces/scatter/subtypes');
-var Registry = require('../../registry');
+var axisIds = _dereq_('../../plots/cartesian/axis_ids');
+var scatterSubTypes = _dereq_('../../traces/scatter/subtypes');
+var Registry = _dereq_('../../registry');
 
-var createModeBar = require('./modebar');
-var modeBarButtons = require('./buttons');
+var createModeBar = _dereq_('./modebar');
+var modeBarButtons = _dereq_('./buttons');
 
 /**
  * ModeBar wrapper around 'create' and 'update',
@@ -60284,7 +60317,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axis_ids":495,"../../registry":536,"../../traces/scatter/subtypes":619,"./buttons":385,"./modebar":388}],388:[function(require,module,exports){
+},{"../../plots/cartesian/axis_ids":493,"../../registry":534,"../../traces/scatter/subtypes":617,"./buttons":382,"./modebar":385}],385:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60296,11 +60329,11 @@ function fillCustomButton(customButtons) {
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Lib = require('../../lib');
-var Icons = require('../../../build/ploticon');
+var Lib = _dereq_('../../lib');
+var Icons = _dereq_('../../../build/ploticon');
 
 
 /**
@@ -60597,7 +60630,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../lib":445,"d3":86,"fast-isnumeric":151}],389:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":442,"d3":84,"fast-isnumeric":148}],386:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60608,9 +60641,9 @@ module.exports = createModeBar;
 
 'use strict';
 
-var fontAttrs = require('../../plots/font_attributes');
-var colorAttrs = require('../color/attributes');
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var colorAttrs = _dereq_('../color/attributes');
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
 var buttonAttrs = templatedArray('button', {
     visible: {
@@ -60733,7 +60766,7 @@ module.exports = {
     editType: 'plot'
 };
 
-},{"../../plot_api/plot_template":482,"../../plots/font_attributes":518,"../color/attributes":322}],390:[function(require,module,exports){
+},{"../../plot_api/plot_template":480,"../../plots/font_attributes":516,"../color/attributes":319}],387:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60762,7 +60795,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],391:[function(require,module,exports){
+},{}],388:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60773,13 +60806,13 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Color = require('../color');
-var Template = require('../../plot_api/plot_template');
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Lib = _dereq_('../../lib');
+var Color = _dereq_('../color');
+var Template = _dereq_('../../plot_api/plot_template');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
 
-var attributes = require('./attributes');
-var constants = require('./constants');
+var attributes = _dereq_('./attributes');
+var constants = _dereq_('./constants');
 
 
 module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes, calendar) {
@@ -60855,7 +60888,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":445,"../../plot_api/plot_template":482,"../../plots/array_container_defaults":488,"../color":323,"./attributes":389,"./constants":390}],392:[function(require,module,exports){
+},{"../../lib":442,"../../plot_api/plot_template":480,"../../plots/array_container_defaults":486,"../color":320,"./attributes":386,"./constants":387}],389:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60866,24 +60899,24 @@ function getPosDflt(containerOut, layout, counterAxes) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Registry = require('../../registry');
-var Plots = require('../../plots/plots');
-var Color = require('../color');
-var Drawing = require('../drawing');
-var Lib = require('../../lib');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var axisIds = require('../../plots/cartesian/axis_ids');
-var anchorUtils = require('../legend/anchor_utils');
+var Registry = _dereq_('../../registry');
+var Plots = _dereq_('../../plots/plots');
+var Color = _dereq_('../color');
+var Drawing = _dereq_('../drawing');
+var Lib = _dereq_('../../lib');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var axisIds = _dereq_('../../plots/cartesian/axis_ids');
+var anchorUtils = _dereq_('../legend/anchor_utils');
 
-var alignmentConstants = require('../../constants/alignment');
+var alignmentConstants = _dereq_('../../constants/alignment');
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
 
-var constants = require('./constants');
-var getUpdateObject = require('./get_update_object');
+var constants = _dereq_('./constants');
+var getUpdateObject = _dereq_('./get_update_object');
 
 
 module.exports = function draw(gd) {
@@ -61112,7 +61145,7 @@ function reposition(gd, buttons, opts, axName, selector) {
     selector.attr('transform', 'translate(' + lx + ',' + ly + ')');
 }
 
-},{"../../constants/alignment":421,"../../lib":445,"../../lib/svg_text_utils":469,"../../plots/cartesian/axis_ids":495,"../../plots/plots":528,"../../registry":536,"../color":323,"../drawing":348,"../legend/anchor_utils":375,"./constants":390,"./get_update_object":393,"d3":86}],393:[function(require,module,exports){
+},{"../../constants/alignment":418,"../../lib":442,"../../lib/svg_text_utils":467,"../../plots/cartesian/axis_ids":493,"../../plots/plots":526,"../../registry":534,"../color":320,"../drawing":345,"../legend/anchor_utils":372,"./constants":387,"./get_update_object":390,"d3":84}],390:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61124,7 +61157,7 @@ function reposition(gd, buttons, opts, axName, selector) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
 module.exports = function getUpdateObject(axisLayout, buttonLayout) {
     var axName = axisLayout._name;
@@ -61169,7 +61202,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"d3":86}],394:[function(require,module,exports){
+},{"d3":84}],391:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61186,17 +61219,17 @@ module.exports = {
 
     schema: {
         subplots: {
-            xaxis: {rangeselector: require('./attributes')}
+            xaxis: {rangeselector: _dereq_('./attributes')}
         }
     },
 
-    layoutAttributes: require('./attributes'),
-    handleDefaults: require('./defaults'),
+    layoutAttributes: _dereq_('./attributes'),
+    handleDefaults: _dereq_('./defaults'),
 
-    draw: require('./draw')
+    draw: _dereq_('./draw')
 };
 
-},{"./attributes":389,"./defaults":391,"./draw":392}],395:[function(require,module,exports){
+},{"./attributes":386,"./defaults":388,"./draw":389}],392:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61207,7 +61240,7 @@ module.exports = {
 
 'use strict';
 
-var colorAttributes = require('../color/attributes');
+var colorAttributes = _dereq_('../color/attributes');
 
 module.exports = {
     bgcolor: {
@@ -61270,7 +61303,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{"../color/attributes":322}],396:[function(require,module,exports){
+},{"../color/attributes":319}],393:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61281,9 +61314,9 @@ module.exports = {
 
 'use strict';
 
-var listAxes = require('../../plots/cartesian/axis_ids').list;
-var getAutoRange = require('../../plots/cartesian/autorange').getAutoRange;
-var constants = require('./constants');
+var listAxes = _dereq_('../../plots/cartesian/axis_ids').list;
+var getAutoRange = _dereq_('../../plots/cartesian/autorange').getAutoRange;
+var constants = _dereq_('./constants');
 
 module.exports = function calcAutorange(gd) {
     var axes = listAxes(gd, 'x', true);
@@ -61294,20 +61327,17 @@ module.exports = function calcAutorange(gd) {
     // this step in subsequent draw calls.
 
     for(var i = 0; i < axes.length; i++) {
-        var ax = axes[i],
-            opts = ax[constants.name];
+        var ax = axes[i];
+        var opts = ax[constants.name];
 
-        // Don't try calling getAutoRange if _min and _max are filled in.
-        // This happens on updates where the calc step is skipped.
-
-        if(opts && opts.visible && opts.autorange && ax._min.length && ax._max.length) {
+        if(opts && opts.visible && opts.autorange) {
             opts._input.autorange = true;
-            opts._input.range = opts.range = getAutoRange(ax);
+            opts._input.range = opts.range = getAutoRange(gd, ax);
         }
     }
 };
 
-},{"../../plots/cartesian/autorange":491,"../../plots/cartesian/axis_ids":495,"./constants":397}],397:[function(require,module,exports){
+},{"../../plots/cartesian/autorange":489,"../../plots/cartesian/axis_ids":493,"./constants":394}],394:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61363,7 +61393,7 @@ module.exports = {
     extraPad: 15
 };
 
-},{}],398:[function(require,module,exports){
+},{}],395:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61374,12 +61404,12 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Template = require('../../plot_api/plot_template');
-var axisIds = require('../../plots/cartesian/axis_ids');
+var Lib = _dereq_('../../lib');
+var Template = _dereq_('../../plot_api/plot_template');
+var axisIds = _dereq_('../../plots/cartesian/axis_ids');
 
-var attributes = require('./attributes');
-var oppAxisAttrs = require('./oppaxis_attributes');
+var attributes = _dereq_('./attributes');
+var oppAxisAttrs = _dereq_('./oppaxis_attributes');
 
 module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     var axIn = layoutIn[axName];
@@ -61412,7 +61442,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('borderwidth');
     coerce('thickness');
 
-    axOut._rangesliderAutorange = coerce('autorange', !axOut.isValidRange(containerIn.range));
+    coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
 
     var subplots = layoutOut._subplots;
@@ -61442,7 +61472,6 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
             if(rangeMode !== 'match') {
                 coerceRange('range', yAxOut.range.slice());
             }
-            yAxOut._rangesliderAutorange = (rangeMode === 'auto');
         }
     }
 
@@ -61450,7 +61479,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     containerOut._input = containerIn;
 };
 
-},{"../../lib":445,"../../plot_api/plot_template":482,"../../plots/cartesian/axis_ids":495,"./attributes":395,"./oppaxis_attributes":401}],399:[function(require,module,exports){
+},{"../../lib":442,"../../plot_api/plot_template":480,"../../plots/cartesian/axis_ids":493,"./attributes":392,"./oppaxis_attributes":398}],396:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61461,23 +61490,23 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Registry = require('../../registry');
-var Plots = require('../../plots/plots');
+var Registry = _dereq_('../../registry');
+var Plots = _dereq_('../../plots/plots');
 
-var Lib = require('../../lib');
-var Drawing = require('../drawing');
-var Color = require('../color');
-var Titles = require('../titles');
+var Lib = _dereq_('../../lib');
+var Drawing = _dereq_('../drawing');
+var Color = _dereq_('../color');
+var Titles = _dereq_('../titles');
 
-var Cartesian = require('../../plots/cartesian');
-var Axes = require('../../plots/cartesian/axes');
+var Cartesian = _dereq_('../../plots/cartesian');
+var Axes = _dereq_('../../plots/cartesian/axes');
 
-var dragElement = require('../dragelement');
-var setCursor = require('../../lib/setcursor');
+var dragElement = _dereq_('../dragelement');
+var setCursor = _dereq_('../../lib/setcursor');
 
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 
 module.exports = function(gd) {
     var fullLayout = gd._fullLayout,
@@ -62050,7 +62079,7 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     grabAreaMax.attr('height', opts._height);
 }
 
-},{"../../lib":445,"../../lib/setcursor":465,"../../plots/cartesian":503,"../../plots/cartesian/axes":492,"../../plots/plots":528,"../../registry":536,"../color":323,"../dragelement":345,"../drawing":348,"../titles":414,"./constants":397,"d3":86}],400:[function(require,module,exports){
+},{"../../lib":442,"../../lib/setcursor":463,"../../plots/cartesian":501,"../../plots/cartesian/axes":490,"../../plots/plots":526,"../../registry":534,"../color":320,"../dragelement":342,"../drawing":345,"../titles":411,"./constants":394,"d3":84}],397:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62061,9 +62090,9 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var attrs = require('./attributes');
-var oppAxisAttrs = require('./oppaxis_attributes');
+var Lib = _dereq_('../../lib');
+var attrs = _dereq_('./attributes');
+var oppAxisAttrs = _dereq_('./oppaxis_attributes');
 
 module.exports = {
     moduleType: 'component',
@@ -62079,13 +62108,13 @@ module.exports = {
         }
     },
 
-    layoutAttributes: require('./attributes'),
-    handleDefaults: require('./defaults'),
-    calcAutorange: require('./calc_autorange'),
-    draw: require('./draw')
+    layoutAttributes: _dereq_('./attributes'),
+    handleDefaults: _dereq_('./defaults'),
+    calcAutorange: _dereq_('./calc_autorange'),
+    draw: _dereq_('./draw')
 };
 
-},{"../../lib":445,"./attributes":395,"./calc_autorange":396,"./defaults":398,"./draw":399,"./oppaxis_attributes":401}],401:[function(require,module,exports){
+},{"../../lib":442,"./attributes":392,"./calc_autorange":393,"./defaults":395,"./draw":396,"./oppaxis_attributes":398}],398:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62123,7 +62152,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{}],402:[function(require,module,exports){
+},{}],399:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62134,18 +62163,18 @@ module.exports = {
 
 'use strict';
 
-var annAttrs = require('../annotations/attributes');
-var scatterLineAttrs = require('../../traces/scatter/attributes').line;
-var dash = require('../drawing/attributes').dash;
-var extendFlat = require('../../lib/extend').extendFlat;
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var annAttrs = _dereq_('../annotations/attributes');
+var scatterLineAttrs = _dereq_('../../traces/scatter/attributes').line;
+var dash = _dereq_('../drawing/attributes').dash;
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
 module.exports = templatedArray('shape', {
     visible: {
         valType: 'boolean',
         
         dflt: true,
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
 
@@ -62153,7 +62182,7 @@ module.exports = templatedArray('shape', {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
 
@@ -62174,25 +62203,25 @@ module.exports = templatedArray('shape', {
         values: ['scaled', 'pixel'],
         dflt: 'scaled',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     xanchor: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     x0: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     x1: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
 
@@ -62204,32 +62233,32 @@ module.exports = templatedArray('shape', {
         values: ['scaled', 'pixel'],
         dflt: 'scaled',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     yanchor: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     y0: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
     y1: {
         valType: 'any',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
 
     path: {
         valType: 'string',
         
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         
     },
 
@@ -62244,10 +62273,10 @@ module.exports = templatedArray('shape', {
     },
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {editType: 'arraydraw'}),
-        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calcIfAutorange+arraydraw'}),
+        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calc+arraydraw'}),
         dash: extendFlat({}, dash, {editType: 'arraydraw'}),
         
-        editType: 'calcIfAutorange+arraydraw'
+        editType: 'calc+arraydraw'
     },
     fillcolor: {
         valType: 'color',
@@ -62259,7 +62288,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../lib/extend":436,"../../plot_api/plot_template":482,"../../traces/scatter/attributes":597,"../annotations/attributes":308,"../drawing/attributes":347}],403:[function(require,module,exports){
+},{"../../lib/extend":433,"../../plot_api/plot_template":480,"../../traces/scatter/attributes":595,"../annotations/attributes":305,"../drawing/attributes":344}],400:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62271,11 +62300,11 @@ module.exports = templatedArray('shape', {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
 
-var constants = require('./constants');
-var helpers = require('./helpers');
+var constants = _dereq_('./constants');
+var helpers = _dereq_('./helpers');
 
 
 module.exports = function calcAutorange(gd) {
@@ -62286,6 +62315,7 @@ module.exports = function calcAutorange(gd) {
 
     for(var i = 0; i < shapeList.length; i++) {
         var shape = shapeList[i];
+        shape._extremes = {};
 
         var ax, bounds;
 
@@ -62295,8 +62325,9 @@ module.exports = function calcAutorange(gd) {
             ax = Axes.getFromId(gd, shape.xref);
 
             bounds = shapeBounds(ax, vx0, vx1, shape.path, constants.paramIsX);
-
-            if(bounds) Axes.expand(ax, bounds, calcXPaddingOptions(shape));
+            if(bounds) {
+                shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcXPaddingOptions(shape));
+            }
         }
 
         if(shape.yref !== 'paper') {
@@ -62305,7 +62336,9 @@ module.exports = function calcAutorange(gd) {
             ax = Axes.getFromId(gd, shape.yref);
 
             bounds = shapeBounds(ax, vy0, vy1, shape.path, constants.paramIsY);
-            if(bounds) Axes.expand(ax, bounds, calcYPaddingOptions(shape));
+            if(bounds) {
+                shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcYPaddingOptions(shape));
+            }
         }
     }
 };
@@ -62373,7 +62406,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../lib":445,"../../plots/cartesian/axes":492,"./constants":404,"./helpers":407}],404:[function(require,module,exports){
+},{"../../lib":442,"../../plots/cartesian/axes":490,"./constants":401,"./helpers":404}],401:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62437,7 +62470,7 @@ module.exports = {
     }
 };
 
-},{}],405:[function(require,module,exports){
+},{}],402:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62449,12 +62482,12 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
 
-var attributes = require('./attributes');
-var helpers = require('./helpers');
+var attributes = _dereq_('./attributes');
+var helpers = _dereq_('./helpers');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
@@ -62501,6 +62534,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
         if(axRef !== 'paper') {
             ax = Axes.getFromId(gdMock, axRef);
+            ax._shapeIndices.push(shapeOut._index);
             r2pos = helpers.rangeToShapePosition(ax);
             pos2r = helpers.shapePositionToRange(ax);
         }
@@ -62561,7 +62595,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     }
 }
 
-},{"../../lib":445,"../../plots/array_container_defaults":488,"../../plots/cartesian/axes":492,"./attributes":402,"./helpers":407}],406:[function(require,module,exports){
+},{"../../lib":442,"../../plots/array_container_defaults":486,"../../plots/cartesian/axes":490,"./attributes":399,"./helpers":404}],403:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62573,18 +62607,18 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
-var Color = require('../color');
-var Drawing = require('../drawing');
-var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var Color = _dereq_('../color');
+var Drawing = _dereq_('../drawing');
+var arrayEditor = _dereq_('../../plot_api/plot_template').arrayEditor;
 
-var dragElement = require('../dragelement');
-var setCursor = require('../../lib/setcursor');
+var dragElement = _dereq_('../dragelement');
+var setCursor = _dereq_('../../lib/setcursor');
 
-var constants = require('./constants');
-var helpers = require('./helpers');
+var constants = _dereq_('./constants');
+var helpers = _dereq_('./helpers');
 
 
 // Shapes are stored in gd.layout.shapes, an array of objects
@@ -63191,7 +63225,7 @@ function movePath(pathIn, moveX, moveY) {
     });
 }
 
-},{"../../lib":445,"../../lib/setcursor":465,"../../plot_api/plot_template":482,"../../plots/cartesian/axes":492,"../../registry":536,"../color":323,"../dragelement":345,"../drawing":348,"./constants":404,"./helpers":407}],407:[function(require,module,exports){
+},{"../../lib":442,"../../lib/setcursor":463,"../../plot_api/plot_template":480,"../../plots/cartesian/axes":490,"../../registry":534,"../color":320,"../dragelement":342,"../drawing":345,"./constants":401,"./helpers":404}],404:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63203,9 +63237,9 @@ function movePath(pathIn, moveX, moveY) {
 
 'use strict';
 
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 // special position conversion functions... category axis positions can't be
 // specified by their data values, because they don't make a continuous mapping.
@@ -63316,7 +63350,7 @@ exports.roundPositionForSharpStrokeRendering = function(pos, strokeWidth) {
     return strokeWidthIsOdd ? posValAsInt + 0.5 : posValAsInt;
 };
 
-},{"../../lib":445,"./constants":404}],408:[function(require,module,exports){
+},{"../../lib":442,"./constants":401}],405:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63328,22 +63362,22 @@ exports.roundPositionForSharpStrokeRendering = function(pos, strokeWidth) {
 
 'use strict';
 
-var drawModule = require('./draw');
+var drawModule = _dereq_('./draw');
 
 module.exports = {
     moduleType: 'component',
     name: 'shapes',
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
-    includeBasePlot: require('../../plots/cartesian/include_components')('shapes'),
+    layoutAttributes: _dereq_('./attributes'),
+    supplyLayoutDefaults: _dereq_('./defaults'),
+    includeBasePlot: _dereq_('../../plots/cartesian/include_components')('shapes'),
 
-    calcAutorange: require('./calc_autorange'),
+    calcAutorange: _dereq_('./calc_autorange'),
     draw: drawModule.draw,
     drawOne: drawModule.drawOne
 };
 
-},{"../../plots/cartesian/include_components":502,"./attributes":402,"./calc_autorange":403,"./defaults":405,"./draw":406}],409:[function(require,module,exports){
+},{"../../plots/cartesian/include_components":500,"./attributes":399,"./calc_autorange":400,"./defaults":402,"./draw":403}],406:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63354,13 +63388,13 @@ module.exports = {
 
 'use strict';
 
-var fontAttrs = require('../../plots/font_attributes');
-var padAttrs = require('../../plots/pad_attributes');
-var extendDeepAll = require('../../lib/extend').extendDeepAll;
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var animationAttrs = require('../../plots/animation_attributes');
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
-var constants = require('./constants');
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var padAttrs = _dereq_('../../plots/pad_attributes');
+var extendDeepAll = _dereq_('../../lib/extend').extendDeepAll;
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
+var animationAttrs = _dereq_('../../plots/animation_attributes');
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
+var constants = _dereq_('./constants');
 
 var stepsAttrs = templatedArray('step', {
     visible: {
@@ -63586,7 +63620,7 @@ module.exports = overrideAll(templatedArray('slider', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":436,"../../plot_api/edit_types":475,"../../plot_api/plot_template":482,"../../plots/animation_attributes":487,"../../plots/font_attributes":518,"../../plots/pad_attributes":527,"./constants":410}],410:[function(require,module,exports){
+},{"../../lib/extend":433,"../../plot_api/edit_types":473,"../../plot_api/plot_template":480,"../../plots/animation_attributes":485,"../../plots/font_attributes":516,"../../plots/pad_attributes":525,"./constants":407}],407:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63680,7 +63714,7 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],411:[function(require,module,exports){
+},{}],408:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63691,11 +63725,11 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Lib = _dereq_('../../lib');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
 
-var attributes = require('./attributes');
-var constants = require('./constants');
+var attributes = _dereq_('./attributes');
+var constants = _dereq_('./constants');
 
 var name = constants.name;
 var stepAttrs = attributes.steps;
@@ -63797,7 +63831,7 @@ function stepDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../lib":445,"../../plots/array_container_defaults":488,"./attributes":409,"./constants":410}],412:[function(require,module,exports){
+},{"../../lib":442,"../../plots/array_container_defaults":486,"./attributes":406,"./constants":407}],409:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63808,18 +63842,18 @@ function stepDefaults(valueIn, valueOut) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Plots = require('../../plots/plots');
-var Color = require('../color');
-var Drawing = require('../drawing');
-var Lib = require('../../lib');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var anchorUtils = require('../legend/anchor_utils');
-var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
+var Plots = _dereq_('../../plots/plots');
+var Color = _dereq_('../color');
+var Drawing = _dereq_('../drawing');
+var Lib = _dereq_('../../lib');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var anchorUtils = _dereq_('../legend/anchor_utils');
+var arrayEditor = _dereq_('../../plot_api/plot_template').arrayEditor;
 
-var constants = require('./constants');
-var alignmentConstants = require('../../constants/alignment');
+var constants = _dereq_('./constants');
+var alignmentConstants = _dereq_('../../constants/alignment');
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
@@ -64428,7 +64462,7 @@ function drawRail(sliderGroup, sliderOpts) {
     );
 }
 
-},{"../../constants/alignment":421,"../../lib":445,"../../lib/svg_text_utils":469,"../../plot_api/plot_template":482,"../../plots/plots":528,"../color":323,"../drawing":348,"../legend/anchor_utils":375,"./constants":410,"d3":86}],413:[function(require,module,exports){
+},{"../../constants/alignment":418,"../../lib":442,"../../lib/svg_text_utils":467,"../../plot_api/plot_template":480,"../../plots/plots":526,"../color":320,"../drawing":345,"../legend/anchor_utils":372,"./constants":407,"d3":84}],410:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64439,19 +64473,19 @@ function drawRail(sliderGroup, sliderOpts) {
 
 'use strict';
 
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 
 module.exports = {
     moduleType: 'component',
     name: constants.name,
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
+    layoutAttributes: _dereq_('./attributes'),
+    supplyLayoutDefaults: _dereq_('./defaults'),
 
-    draw: require('./draw')
+    draw: _dereq_('./draw')
 };
 
-},{"./attributes":409,"./constants":410,"./defaults":411,"./draw":412}],414:[function(require,module,exports){
+},{"./attributes":406,"./constants":407,"./defaults":408,"./draw":409}],411:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64463,16 +64497,16 @@ module.exports = {
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Plots = require('../../plots/plots');
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Drawing = require('../drawing');
-var Color = require('../color');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var interactConstants = require('../../constants/interactions');
+var Plots = _dereq_('../../plots/plots');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Drawing = _dereq_('../drawing');
+var Color = _dereq_('../color');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var interactConstants = _dereq_('../../constants/interactions');
 
 module.exports = {
     draw: draw
@@ -64710,7 +64744,7 @@ function draw(gd, titleClass, options) {
     return group;
 }
 
-},{"../../constants/interactions":423,"../../lib":445,"../../lib/svg_text_utils":469,"../../plots/plots":528,"../../registry":536,"../color":323,"../drawing":348,"d3":86,"fast-isnumeric":151}],415:[function(require,module,exports){
+},{"../../constants/interactions":420,"../../lib":442,"../../lib/svg_text_utils":467,"../../plots/plots":526,"../../registry":534,"../color":320,"../drawing":345,"d3":84,"fast-isnumeric":148}],412:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64721,12 +64755,12 @@ function draw(gd, titleClass, options) {
 
 'use strict';
 
-var fontAttrs = require('../../plots/font_attributes');
-var colorAttrs = require('../color/attributes');
-var extendFlat = require('../../lib/extend').extendFlat;
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var padAttrs = require('../../plots/pad_attributes');
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var colorAttrs = _dereq_('../color/attributes');
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
+var padAttrs = _dereq_('../../plots/pad_attributes');
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
 var buttonsAttrs = templatedArray('button', {
     visible: {
@@ -64868,7 +64902,7 @@ module.exports = overrideAll(templatedArray('updatemenu', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":436,"../../plot_api/edit_types":475,"../../plot_api/plot_template":482,"../../plots/font_attributes":518,"../../plots/pad_attributes":527,"../color/attributes":322}],416:[function(require,module,exports){
+},{"../../lib/extend":433,"../../plot_api/edit_types":473,"../../plot_api/plot_template":480,"../../plots/font_attributes":516,"../../plots/pad_attributes":525,"../color/attributes":319}],413:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64949,7 +64983,7 @@ module.exports = {
     }
 };
 
-},{}],417:[function(require,module,exports){
+},{}],414:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64960,11 +64994,11 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Lib = _dereq_('../../lib');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
 
-var attributes = require('./attributes');
-var constants = require('./constants');
+var attributes = _dereq_('./attributes');
+var constants = _dereq_('./constants');
 
 var name = constants.name;
 var buttonAttrs = attributes.buttons;
@@ -65032,7 +65066,7 @@ function buttonDefaults(buttonIn, buttonOut) {
     }
 }
 
-},{"../../lib":445,"../../plots/array_container_defaults":488,"./attributes":415,"./constants":416}],418:[function(require,module,exports){
+},{"../../lib":442,"../../plots/array_container_defaults":486,"./attributes":412,"./constants":413}],415:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65044,20 +65078,20 @@ function buttonDefaults(buttonIn, buttonOut) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Plots = require('../../plots/plots');
-var Color = require('../color');
-var Drawing = require('../drawing');
-var Lib = require('../../lib');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var anchorUtils = require('../legend/anchor_utils');
-var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
+var Plots = _dereq_('../../plots/plots');
+var Color = _dereq_('../color');
+var Drawing = _dereq_('../drawing');
+var Lib = _dereq_('../../lib');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var anchorUtils = _dereq_('../legend/anchor_utils');
+var arrayEditor = _dereq_('../../plot_api/plot_template').arrayEditor;
 
-var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+var LINE_SPACING = _dereq_('../../constants/alignment').LINE_SPACING;
 
-var constants = require('./constants');
-var ScrollBox = require('./scrollbox');
+var constants = _dereq_('./constants');
+var ScrollBox = _dereq_('./scrollbox');
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -65682,9 +65716,9 @@ function removeAllButtons(gButton, newMenuIndexAttr) {
         .selectAll('g.' + constants.dropdownButtonClassName).remove();
 }
 
-},{"../../constants/alignment":421,"../../lib":445,"../../lib/svg_text_utils":469,"../../plot_api/plot_template":482,"../../plots/plots":528,"../color":323,"../drawing":348,"../legend/anchor_utils":375,"./constants":416,"./scrollbox":420,"d3":86}],419:[function(require,module,exports){
-arguments[4][413][0].apply(exports,arguments)
-},{"./attributes":415,"./constants":416,"./defaults":417,"./draw":418,"dup":413}],420:[function(require,module,exports){
+},{"../../constants/alignment":418,"../../lib":442,"../../lib/svg_text_utils":467,"../../plot_api/plot_template":480,"../../plots/plots":526,"../color":320,"../drawing":345,"../legend/anchor_utils":372,"./constants":413,"./scrollbox":417,"d3":84}],416:[function(_dereq_,module,exports){
+arguments[4][410][0].apply(exports,arguments)
+},{"./attributes":412,"./constants":413,"./defaults":414,"./draw":415,"dup":410}],417:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65697,12 +65731,12 @@ arguments[4][413][0].apply(exports,arguments)
 
 module.exports = ScrollBox;
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Color = require('../color');
-var Drawing = require('../drawing');
+var Color = _dereq_('../color');
+var Drawing = _dereq_('../drawing');
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 /**
  * Helper class to setup a scroll box
@@ -66155,7 +66189,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     }
 };
 
-},{"../../lib":445,"../color":323,"../drawing":348,"d3":86}],421:[function(require,module,exports){
+},{"../../lib":442,"../color":320,"../drawing":345,"d3":84}],418:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66215,7 +66249,7 @@ module.exports = {
     }
 };
 
-},{}],422:[function(require,module,exports){
+},{}],419:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66253,7 +66287,7 @@ module.exports = {
     }
 };
 
-},{}],423:[function(require,module,exports){
+},{}],420:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66280,7 +66314,7 @@ module.exports = {
     DESELECTDIM: 0.2
 };
 
-},{}],424:[function(require,module,exports){
+},{}],421:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66339,7 +66373,7 @@ module.exports = {
     MINUS_SIGN: '\u2212'
 };
 
-},{}],425:[function(require,module,exports){
+},{}],422:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66382,7 +66416,7 @@ module.exports = {
     }
 };
 
-},{}],426:[function(require,module,exports){
+},{}],423:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66406,7 +66440,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],427:[function(require,module,exports){
+},{}],424:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66418,23 +66452,23 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.39.1';
+exports.version = '1.40.1';
 
 // inject promise polyfill
-require('es6-promise').polyfill();
+_dereq_('es6-promise').polyfill();
 
 // inject plot css
-require('../build/plotcss');
+_dereq_('../build/plotcss');
 
 // inject default MathJax config
-require('./fonts/mathjax_config');
+_dereq_('./fonts/mathjax_config');
 
 // include registry module and expose register method
-var Registry = require('./registry');
+var Registry = _dereq_('./registry');
 var register = exports.register = Registry.register;
 
 // expose plot api methods
-var plotApi = require('./plot_api');
+var plotApi = _dereq_('./plot_api');
 var methodNames = Object.keys(plotApi);
 for(var i = 0; i < methodNames.length; i++) {
     var name = methodNames[i];
@@ -66447,44 +66481,44 @@ for(var i = 0; i < methodNames.length; i++) {
 }
 
 // scatter is the only trace included by default
-register(require('./traces/scatter'));
+register(_dereq_('./traces/scatter'));
 
 // register all registrable components modules
 register([
-    require('./components/fx'),
-    require('./components/legend'),
-    require('./components/annotations'),
-    require('./components/annotations3d'),
-    require('./components/shapes'),
-    require('./components/images'),
-    require('./components/updatemenus'),
-    require('./components/sliders'),
-    require('./components/rangeslider'),
-    require('./components/rangeselector'),
-    require('./components/grid'),
-    require('./components/errorbars')
+    _dereq_('./components/fx'),
+    _dereq_('./components/legend'),
+    _dereq_('./components/annotations'),
+    _dereq_('./components/annotations3d'),
+    _dereq_('./components/shapes'),
+    _dereq_('./components/images'),
+    _dereq_('./components/updatemenus'),
+    _dereq_('./components/sliders'),
+    _dereq_('./components/rangeslider'),
+    _dereq_('./components/rangeselector'),
+    _dereq_('./components/grid'),
+    _dereq_('./components/errorbars')
 ]);
 
 // locales en and en-US are required for default behavior
 register([
-    require('./locale-en'),
-    require('./locale-en-us')
+    _dereq_('./locale-en'),
+    _dereq_('./locale-en-us')
 ]);
 
 // plot icons
-exports.Icons = require('../build/ploticon');
+exports.Icons = _dereq_('../build/ploticon');
 
 // unofficial 'beta' plot methods, use at your own risk
-exports.Plots = require('./plots/plots');
-exports.Fx = require('./components/fx');
-exports.Snapshot = require('./snapshot');
-exports.PlotSchema = require('./plot_api/plot_schema');
-exports.Queue = require('./lib/queue');
+exports.Plots = _dereq_('./plots/plots');
+exports.Fx = _dereq_('./components/fx');
+exports.Snapshot = _dereq_('./snapshot');
+exports.PlotSchema = _dereq_('./plot_api/plot_schema');
+exports.Queue = _dereq_('./lib/queue');
 
 // export d3 used in the bundle
-exports.d3 = require('d3');
+exports.d3 = _dereq_('d3');
 
-},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":316,"./components/annotations3d":321,"./components/errorbars":354,"./components/fx":365,"./components/grid":369,"./components/images":374,"./components/legend":383,"./components/rangeselector":394,"./components/rangeslider":400,"./components/shapes":408,"./components/sliders":413,"./components/updatemenus":419,"./fonts/mathjax_config":428,"./lib/queue":460,"./locale-en":473,"./locale-en-us":472,"./plot_api":477,"./plot_api/plot_schema":481,"./plots/plots":528,"./registry":536,"./snapshot":541,"./traces/scatter":608,"d3":86,"es6-promise":140}],428:[function(require,module,exports){
+},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":313,"./components/annotations3d":318,"./components/errorbars":351,"./components/fx":362,"./components/grid":366,"./components/images":371,"./components/legend":380,"./components/rangeselector":391,"./components/rangeslider":397,"./components/shapes":405,"./components/sliders":410,"./components/updatemenus":416,"./fonts/mathjax_config":425,"./lib/queue":458,"./locale-en":471,"./locale-en-us":470,"./plot_api":475,"./plot_api/plot_schema":479,"./plots/plots":526,"./registry":534,"./snapshot":539,"./traces/scatter":606,"d3":84,"es6-promise":138}],425:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66517,7 +66551,7 @@ if(typeof MathJax !== 'undefined') {
     exports.MathJax = false;
 }
 
-},{}],429:[function(require,module,exports){
+},{}],426:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66548,7 +66582,12 @@ exports.wrap180 = function(deg) {
     return deg;
 };
 
-},{}],430:[function(require,module,exports){
+exports.isFullCircle = function(sector) {
+    var arc = Math.abs(sector[1] - sector[0]);
+    return arc === 360;
+};
+
+},{}],427:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66560,9 +66599,9 @@ exports.wrap180 = function(deg) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var BADNUM = require('../constants/numerical').BADNUM;
+var BADNUM = _dereq_('../constants/numerical').BADNUM;
 
 // precompile for speed
 var JUNK = /^['"%,$#\s']+|[, ]|['"%,$#\s']+$/g;
@@ -66581,7 +66620,7 @@ module.exports = function cleanNumber(v) {
     return BADNUM;
 };
 
-},{"../constants/numerical":424,"fast-isnumeric":151}],431:[function(require,module,exports){
+},{"../constants/numerical":421,"fast-isnumeric":148}],428:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66609,7 +66648,7 @@ module.exports = function clearGlCanvases(gd) {
     }
 };
 
-},{}],432:[function(require,module,exports){
+},{}],429:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66621,17 +66660,17 @@ module.exports = function clearGlCanvases(gd) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
+var isNumeric = _dereq_('fast-isnumeric');
+var tinycolor = _dereq_('tinycolor2');
 
-var baseTraceAttrs = require('../plots/attributes');
-var getColorscale = require('../components/colorscale/get_scale');
-var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
-var nestedProperty = require('./nested_property');
-var counterRegex = require('./regex').counter;
-var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
-var wrap180 = require('./angles').wrap180;
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var baseTraceAttrs = _dereq_('../plots/attributes');
+var getColorscale = _dereq_('../components/colorscale/get_scale');
+var colorscaleNames = Object.keys(_dereq_('../components/colorscale/scales'));
+var nestedProperty = _dereq_('./nested_property');
+var counterRegex = _dereq_('./regex').counter;
+var DESELECTDIM = _dereq_('../constants/interactions').DESELECTDIM;
+var wrap180 = _dereq_('./angles').wrap180;
+var isArrayOrTypedArray = _dereq_('./is_array').isArrayOrTypedArray;
 
 exports.valObjectMeta = {
     data_array: {
@@ -67081,7 +67120,7 @@ function validate(value, opts) {
 }
 exports.validate = validate;
 
-},{"../components/colorscale/get_scale":336,"../components/colorscale/scales":342,"../constants/interactions":423,"../plots/attributes":489,"./angles":429,"./is_array":446,"./nested_property":453,"./regex":461,"fast-isnumeric":151,"tinycolor2":285}],433:[function(require,module,exports){
+},{"../components/colorscale/get_scale":333,"../components/colorscale/scales":339,"../constants/interactions":420,"../plots/attributes":487,"./angles":426,"./is_array":443,"./nested_property":451,"./regex":459,"fast-isnumeric":148,"tinycolor2":282}],430:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67093,13 +67132,13 @@ exports.validate = validate;
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Loggers = require('./loggers');
-var mod = require('./mod');
+var Loggers = _dereq_('./loggers');
+var mod = _dereq_('./mod');
 
-var constants = require('../constants/numerical');
+var constants = _dereq_('../constants/numerical');
 var BADNUM = constants.BADNUM;
 var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
@@ -67107,7 +67146,7 @@ var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
 var EPOCHJD = constants.EPOCHJD;
 
-var Registry = require('../registry');
+var Registry = _dereq_('../registry');
 
 var utcFormat = d3.time.format.utc;
 
@@ -67682,7 +67721,7 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":424,"../registry":536,"./loggers":450,"./mod":452,"d3":86,"fast-isnumeric":151}],434:[function(require,module,exports){
+},{"../constants/numerical":421,"../registry":534,"./loggers":447,"./mod":450,"d3":84,"fast-isnumeric":148}],431:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67711,7 +67750,7 @@ module.exports = function ensureArray(out, n) {
     return out;
 };
 
-},{}],435:[function(require,module,exports){
+},{}],432:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67725,7 +67764,7 @@ module.exports = function ensureArray(out, n) {
 
 /* global jQuery:false */
 
-var EventEmitter = require('events').EventEmitter;
+var EventEmitter = _dereq_('events').EventEmitter;
 
 var Events = {
 
@@ -67885,7 +67924,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":150}],436:[function(require,module,exports){
+},{"events":49}],433:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67897,7 +67936,7 @@ module.exports = Events;
 
 'use strict';
 
-var isPlainObject = require('./is_plain_object.js');
+var isPlainObject = _dereq_('./is_plain_object.js');
 var isArray = Array.isArray;
 
 function primitivesLoopSplice(source, target) {
@@ -68001,7 +68040,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":447}],437:[function(require,module,exports){
+},{"./is_plain_object.js":444}],434:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68052,7 +68091,7 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],438:[function(require,module,exports){
+},{}],435:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68099,7 +68138,7 @@ function isCalcData(cont) {
     );
 }
 
-},{}],439:[function(require,module,exports){
+},{}],436:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68110,7 +68149,7 @@ function isCalcData(cont) {
 
 'use strict';
 
-var mod = require('./mod');
+var mod = _dereq_('./mod');
 
 /*
  * look for intersection of two line segments
@@ -68345,7 +68384,7 @@ exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     return pt;
 };
 
-},{"./mod":452}],440:[function(require,module,exports){
+},{"./mod":450}],437:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68383,7 +68422,7 @@ module.exports = function(gd) {
     return gd;  // otherwise assume that gd is a DOM element
 };
 
-},{}],441:[function(require,module,exports){
+},{}],438:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68395,13 +68434,13 @@ module.exports = function(gd) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
-var rgba = require('color-normalize');
+var isNumeric = _dereq_('fast-isnumeric');
+var tinycolor = _dereq_('tinycolor2');
+var rgba = _dereq_('color-normalize');
 
-var Colorscale = require('../components/colorscale');
-var colorDflt = require('../components/color/attributes').defaultLine;
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var Colorscale = _dereq_('../components/colorscale');
+var colorDflt = _dereq_('../components/color/attributes').defaultLine;
+var isArrayOrTypedArray = _dereq_('./is_array').isArrayOrTypedArray;
 
 var colorDfltRgba = rgba(colorDflt);
 var opacityDflt = 1;
@@ -68491,7 +68530,7 @@ module.exports = {
     parseColorScale: parseColorScale
 };
 
-},{"../components/color/attributes":322,"../components/colorscale":338,"./is_array":446,"color-normalize":64,"fast-isnumeric":151,"tinycolor2":285}],442:[function(require,module,exports){
+},{"../components/color/attributes":319,"../components/colorscale":335,"./is_array":443,"color-normalize":62,"fast-isnumeric":148,"tinycolor2":282}],439:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68502,7 +68541,7 @@ module.exports = {
 
 'use strict';
 
-var identity = require('./identity');
+var identity = _dereq_('./identity');
 
 function wrap(d) {return [d];}
 
@@ -68527,7 +68566,7 @@ module.exports = {
     unwrap: function(d) {return d[0];}
 };
 
-},{"./identity":444}],443:[function(require,module,exports){
+},{"./identity":441}],440:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68539,8 +68578,8 @@ module.exports = {
 
 'use strict';
 
-var toSuperScript = require('superscript-text');
-var stringMappings = require('../constants/string_mappings');
+var toSuperScript = _dereq_('superscript-text');
+var stringMappings = _dereq_('../constants/string_mappings');
 
 function fixSuperScript(x) {
     var idx = 0;
@@ -68596,7 +68635,7 @@ function convertHTMLToUnicode(html) {
 
 module.exports = convertHTMLToUnicode;
 
-},{"../constants/string_mappings":425,"superscript-text":278}],444:[function(require,module,exports){
+},{"../constants/string_mappings":422,"superscript-text":275}],441:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68612,7 +68651,7 @@ module.exports = convertHTMLToUnicode;
 
 module.exports = function identity(d) { return d; };
 
-},{}],445:[function(require,module,exports){
+},{}],442:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68624,30 +68663,30 @@ module.exports = function identity(d) { return d; };
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var numConstants = require('../constants/numerical');
+var numConstants = _dereq_('../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {};
 
-lib.nestedProperty = require('./nested_property');
-lib.keyedContainer = require('./keyed_container');
-lib.relativeAttr = require('./relative_attr');
-lib.isPlainObject = require('./is_plain_object');
-lib.mod = require('./mod');
-lib.toLogRange = require('./to_log_range');
-lib.relinkPrivateKeys = require('./relink_private');
-lib.ensureArray = require('./ensure_array');
+lib.nestedProperty = _dereq_('./nested_property');
+lib.keyedContainer = _dereq_('./keyed_container');
+lib.relativeAttr = _dereq_('./relative_attr');
+lib.isPlainObject = _dereq_('./is_plain_object');
+lib.mod = _dereq_('./mod');
+lib.toLogRange = _dereq_('./to_log_range');
+lib.relinkPrivateKeys = _dereq_('./relink_private');
+lib.ensureArray = _dereq_('./ensure_array');
 
-var isArrayModule = require('./is_array');
+var isArrayModule = _dereq_('./is_array');
 lib.isTypedArray = isArrayModule.isTypedArray;
 lib.isArrayOrTypedArray = isArrayModule.isArrayOrTypedArray;
 lib.isArray1D = isArrayModule.isArray1D;
 
-var coerceModule = require('./coerce');
+var coerceModule = _dereq_('./coerce');
 lib.valObjectMeta = coerceModule.valObjectMeta;
 lib.coerce = coerceModule.coerce;
 lib.coerce2 = coerceModule.coerce2;
@@ -68656,7 +68695,7 @@ lib.coerceHoverinfo = coerceModule.coerceHoverinfo;
 lib.coerceSelectionMarkerOpacity = coerceModule.coerceSelectionMarkerOpacity;
 lib.validate = coerceModule.validate;
 
-var datesModule = require('./dates');
+var datesModule = _dereq_('./dates');
 lib.dateTime2ms = datesModule.dateTime2ms;
 lib.isDateTime = datesModule.isDateTime;
 lib.ms2DateTime = datesModule.ms2DateTime;
@@ -68671,14 +68710,14 @@ lib.findExactDates = datesModule.findExactDates;
 lib.MIN_MS = datesModule.MIN_MS;
 lib.MAX_MS = datesModule.MAX_MS;
 
-var searchModule = require('./search');
+var searchModule = _dereq_('./search');
 lib.findBin = searchModule.findBin;
 lib.sorterAsc = searchModule.sorterAsc;
 lib.sorterDes = searchModule.sorterDes;
 lib.distinctVals = searchModule.distinctVals;
 lib.roundUp = searchModule.roundUp;
 
-var statsModule = require('./stats');
+var statsModule = _dereq_('./stats');
 lib.aggNums = statsModule.aggNums;
 lib.len = statsModule.len;
 lib.mean = statsModule.mean;
@@ -68687,7 +68726,7 @@ lib.variance = statsModule.variance;
 lib.stdev = statsModule.stdev;
 lib.interp = statsModule.interp;
 
-var matrixModule = require('./matrix');
+var matrixModule = _dereq_('./matrix');
 lib.init2dArray = matrixModule.init2dArray;
 lib.transposeRagged = matrixModule.transposeRagged;
 lib.dot = matrixModule.dot;
@@ -68697,13 +68736,14 @@ lib.rotationXYMatrix = matrixModule.rotationXYMatrix;
 lib.apply2DTransform = matrixModule.apply2DTransform;
 lib.apply2DTransform2 = matrixModule.apply2DTransform2;
 
-var anglesModule = require('./angles');
+var anglesModule = _dereq_('./angles');
 lib.deg2rad = anglesModule.deg2rad;
 lib.rad2deg = anglesModule.rad2deg;
 lib.wrap360 = anglesModule.wrap360;
 lib.wrap180 = anglesModule.wrap180;
+lib.isFullCircle = anglesModule.isFullCircle;
 
-var geom2dModule = require('./geometry2d');
+var geom2dModule = _dereq_('./geometry2d');
 lib.segmentsIntersect = geom2dModule.segmentsIntersect;
 lib.segmentDistance = geom2dModule.segmentDistance;
 lib.getTextLocation = geom2dModule.getTextLocation;
@@ -68711,36 +68751,38 @@ lib.clearLocationCache = geom2dModule.clearLocationCache;
 lib.getVisibleSegment = geom2dModule.getVisibleSegment;
 lib.findPointOnPath = geom2dModule.findPointOnPath;
 
-var extendModule = require('./extend');
+var extendModule = _dereq_('./extend');
 lib.extendFlat = extendModule.extendFlat;
 lib.extendDeep = extendModule.extendDeep;
 lib.extendDeepAll = extendModule.extendDeepAll;
 lib.extendDeepNoArrays = extendModule.extendDeepNoArrays;
 
-var loggersModule = require('./loggers');
+var loggersModule = _dereq_('./loggers');
 lib.log = loggersModule.log;
 lib.warn = loggersModule.warn;
 lib.error = loggersModule.error;
 
-var regexModule = require('./regex');
+var regexModule = _dereq_('./regex');
 lib.counterRegex = regexModule.counter;
 
-var throttleModule = require('./throttle');
+var throttleModule = _dereq_('./throttle');
 lib.throttle = throttleModule.throttle;
 lib.throttleDone = throttleModule.done;
 lib.clearThrottle = throttleModule.clear;
 
-lib.getGraphDiv = require('./get_graph_div');
+lib.getGraphDiv = _dereq_('./get_graph_div');
 
-lib._ = require('./localize');
+lib.makeTraceGroups = _dereq_('./make_trace_groups');
 
-lib.notifier = require('./notifier');
+lib._ = _dereq_('./localize');
 
-lib.filterUnique = require('./filter_unique');
-lib.filterVisible = require('./filter_visible');
-lib.pushUnique = require('./push_unique');
+lib.notifier = _dereq_('./notifier');
 
-lib.cleanNumber = require('./clean_number');
+lib.filterUnique = _dereq_('./filter_unique');
+lib.filterVisible = _dereq_('./filter_visible');
+lib.pushUnique = _dereq_('./push_unique');
+
+lib.cleanNumber = _dereq_('./clean_number');
 
 lib.ensureNumber = function num(v) {
     if(!isNumeric(v)) return BADNUM;
@@ -68762,8 +68804,23 @@ lib.isIndex = function(v, len) {
     return isNumeric(v) && (v >= 0) && (v % 1 === 0);
 };
 
-lib.noop = require('./noop');
-lib.identity = require('./identity');
+lib.noop = _dereq_('./noop');
+lib.identity = _dereq_('./identity');
+
+/**
+ * create an array of length 'cnt' filled with 'v' at all indices
+ *
+ * @param {any} v
+ * @param {number} cnt
+ * @return {array}
+ */
+lib.repeat = function(v, cnt) {
+    var out = new Array(cnt);
+    for(var i = 0; i < cnt; i++) {
+        out[i] = v;
+    }
+    return out;
+};
 
 /**
  * swap x and y of the same attribute in container cont
@@ -69615,7 +69672,7 @@ lib.pseudoRandom = function() {
     return randSeed / 4294967296;
 };
 
-},{"../constants/numerical":424,"./angles":429,"./clean_number":430,"./coerce":432,"./dates":433,"./ensure_array":434,"./extend":436,"./filter_unique":437,"./filter_visible":438,"./geometry2d":439,"./get_graph_div":440,"./identity":444,"./is_array":446,"./is_plain_object":447,"./keyed_container":448,"./localize":449,"./loggers":450,"./matrix":451,"./mod":452,"./nested_property":453,"./noop":454,"./notifier":455,"./push_unique":459,"./regex":461,"./relative_attr":462,"./relink_private":463,"./search":464,"./stats":467,"./throttle":470,"./to_log_range":471,"d3":86,"fast-isnumeric":151}],446:[function(require,module,exports){
+},{"../constants/numerical":421,"./angles":426,"./clean_number":427,"./coerce":429,"./dates":430,"./ensure_array":431,"./extend":433,"./filter_unique":434,"./filter_visible":435,"./geometry2d":436,"./get_graph_div":437,"./identity":441,"./is_array":443,"./is_plain_object":444,"./keyed_container":445,"./localize":446,"./loggers":447,"./make_trace_groups":448,"./matrix":449,"./mod":450,"./nested_property":451,"./noop":452,"./notifier":453,"./push_unique":457,"./regex":459,"./relative_attr":460,"./relink_private":461,"./search":462,"./stats":465,"./throttle":468,"./to_log_range":469,"d3":84,"fast-isnumeric":148}],443:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69662,7 +69719,7 @@ module.exports = {
     isArray1D: isArray1D
 };
 
-},{}],447:[function(require,module,exports){
+},{}],444:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69691,7 +69748,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],448:[function(require,module,exports){
+},{}],445:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69702,7 +69759,7 @@ module.exports = function isPlainObject(obj) {
 
 'use strict';
 
-var nestedProperty = require('./nested_property');
+var nestedProperty = _dereq_('./nested_property');
 
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
@@ -69884,7 +69941,7 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
     return obj;
 };
 
-},{"./nested_property":453}],449:[function(require,module,exports){
+},{"./nested_property":451}],446:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69896,7 +69953,7 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
 
 'use strict';
 
-var Registry = require('../registry');
+var Registry = _dereq_('../registry');
 
 /**
  * localize: translate a string for the current locale
@@ -69940,7 +69997,7 @@ module.exports = function localize(gd, s) {
     return s;
 };
 
-},{"../registry":536}],450:[function(require,module,exports){
+},{"../registry":534}],447:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69953,7 +70010,7 @@ module.exports = function localize(gd, s) {
 
 /* eslint-disable no-console */
 
-var config = require('../plot_api/plot_config');
+var config = _dereq_('../plot_api/plot_config');
 
 var loggers = module.exports = {};
 
@@ -70014,7 +70071,44 @@ function apply(f, args) {
     }
 }
 
-},{"../plot_api/plot_config":480}],451:[function(require,module,exports){
+},{"../plot_api/plot_config":478}],448:[function(_dereq_,module,exports){
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+/**
+ * General helper to manage trace groups based on calcdata
+ *
+ * @param {d3.selection} traceLayer: a selection containing a single group
+ *     to draw these traces into
+ * @param {array} cdModule: array of calcdata items for this
+ *     module and subplot combination. Assumes the calcdata item for each
+ *     trace is an array with the fullData trace attached to the first item.
+ * @param {string} cls: the class attribute to give each trace group
+ *     so you can give multiple classes separated by spaces
+ */
+module.exports = function makeTraceGroups(traceLayer, cdModule, cls) {
+    var traces = traceLayer.selectAll('g.' + cls.replace(/\s/g, '.'))
+        .data(cdModule, function(cd) { return cd[0].trace.uid; });
+
+    traces.exit().remove();
+
+    traces.enter().append('g')
+        .attr('class', cls);
+
+    traces.order();
+
+    return traces;
+};
+
+},{}],449:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70124,7 +70218,7 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],452:[function(require,module,exports){
+},{}],450:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70144,7 +70238,7 @@ module.exports = function mod(v, d) {
     return out < 0 ? out + d : out;
 };
 
-},{}],453:[function(require,module,exports){
+},{}],451:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70156,8 +70250,8 @@ module.exports = function mod(v, d) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var isNumeric = _dereq_('fast-isnumeric');
+var isArrayOrTypedArray = _dereq_('./is_array').isArrayOrTypedArray;
 
 /**
  * convert a string s (such as 'xaxis.range[0]')
@@ -70391,7 +70485,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"./is_array":446,"fast-isnumeric":151}],454:[function(require,module,exports){
+},{"./is_array":443,"fast-isnumeric":148}],452:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70407,7 +70501,7 @@ function badContainer(container, propStr, propParts) {
 
 module.exports = function noop() {};
 
-},{}],455:[function(require,module,exports){
+},{}],453:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70419,8 +70513,8 @@ module.exports = function noop() {};
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
 
 var NOTEDATA = [];
 
@@ -70489,7 +70583,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":86,"fast-isnumeric":151}],456:[function(require,module,exports){
+},{"d3":84,"fast-isnumeric":148}],454:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70501,7 +70595,7 @@ module.exports = function(text, displayLength) {
 
 'use strict';
 
-var setCursor = require('./setcursor');
+var setCursor = _dereq_('./setcursor');
 
 var STASHATTR = 'data-savedcursor';
 var NO_CURSOR = '!!';
@@ -70538,7 +70632,7 @@ module.exports = function overrideCursor(el3, csr) {
     }
 };
 
-},{"./setcursor":465}],457:[function(require,module,exports){
+},{"./setcursor":463}],455:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70550,8 +70644,8 @@ module.exports = function overrideCursor(el3, csr) {
 
 'use strict';
 
-var dot = require('./matrix').dot;
-var BADNUM = require('../constants/numerical').BADNUM;
+var dot = _dereq_('./matrix').dot;
+var BADNUM = _dereq_('../constants/numerical').BADNUM;
 
 var polygon = module.exports = {};
 
@@ -70837,7 +70931,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"../constants/numerical":424,"./matrix":451}],458:[function(require,module,exports){
+},{"../constants/numerical":421,"./matrix":449}],456:[function(_dereq_,module,exports){
 (function (global){
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -70849,13 +70943,13 @@ polygon.filter = function filter(pts, tolerance) {
 
 'use strict';
 
-var showNoWebGlMsg = require('./show_no_webgl_msg');
+var showNoWebGlMsg = _dereq_('./show_no_webgl_msg');
 
 // Note that this module should be ONLY required into
 // files corresponding to regl trace modules
 // so that bundles with non-regl only don't include
 // regl and all its bytes.
-var createRegl = require('regl');
+var createRegl = _dereq_('regl');
 
 /**
  * Idempotent version of createRegl. Create regl instances
@@ -70898,7 +70992,7 @@ module.exports = function prepareRegl(gd, extensions) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./show_no_webgl_msg":466,"regl":260}],459:[function(require,module,exports){
+},{"./show_no_webgl_msg":464,"regl":257}],457:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70938,7 +71032,7 @@ module.exports = function pushUnique(array, item) {
     return array;
 };
 
-},{}],460:[function(require,module,exports){
+},{}],458:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70950,8 +71044,8 @@ module.exports = function pushUnique(array, item) {
 
 'use strict';
 
-var Lib = require('../lib');
-var config = require('../plot_api/plot_config');
+var Lib = _dereq_('../lib');
+var config = _dereq_('../plot_api/plot_config');
 
 
 /**
@@ -71149,7 +71243,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":445,"../plot_api/plot_config":480}],461:[function(require,module,exports){
+},{"../lib":442,"../plot_api/plot_config":478}],459:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71177,7 +71271,7 @@ exports.counter = function(head, tail, openEnded) {
     return new RegExp('^' + head + '([2-9]|[1-9][0-9]+)?' + fullTail);
 };
 
-},{}],462:[function(require,module,exports){
+},{}],460:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71230,7 +71324,7 @@ module.exports = function(baseAttr, relativeAttr) {
     return baseAttr + relativeAttr;
 };
 
-},{}],463:[function(require,module,exports){
+},{}],461:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71242,8 +71336,8 @@ module.exports = function(baseAttr, relativeAttr) {
 
 'use strict';
 
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
-var isPlainObject = require('./is_plain_object');
+var isArrayOrTypedArray = _dereq_('./is_array').isArrayOrTypedArray;
+var isPlainObject = _dereq_('./is_plain_object');
 
 /**
  * Relink private _keys and keys with a function value from one container
@@ -71293,7 +71387,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
     }
 };
 
-},{"./is_array":446,"./is_plain_object":447}],464:[function(require,module,exports){
+},{"./is_array":443,"./is_plain_object":444}],462:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71305,8 +71399,8 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var loggers = require('./loggers');
+var isNumeric = _dereq_('fast-isnumeric');
+var loggers = _dereq_('./loggers');
 
 // don't trust floating point equality - fraction of bin size to call
 // "on the line" and ensure that they go the right way specified by
@@ -71410,7 +71504,7 @@ exports.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-},{"./loggers":450,"fast-isnumeric":151}],465:[function(require,module,exports){
+},{"./loggers":447,"fast-isnumeric":148}],463:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71433,7 +71527,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],466:[function(require,module,exports){
+},{}],464:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71445,7 +71539,7 @@ module.exports = function setCursor(el3, csr) {
 
 'use strict';
 
-var Color = require('../components/color');
+var Color = _dereq_('../components/color');
 
 var noop = function() {};
 
@@ -71497,7 +71591,7 @@ module.exports = function showNoWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":323}],467:[function(require,module,exports){
+},{"../components/color":320}],465:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71509,8 +71603,8 @@ module.exports = function showNoWebGlMsg(scene) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var isNumeric = _dereq_('fast-isnumeric');
+var isArrayOrTypedArray = _dereq_('./is_array').isArrayOrTypedArray;
 
 /**
  * aggNums() returns the result of an aggregate function applied to an array of
@@ -71598,7 +71692,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"./is_array":446,"fast-isnumeric":151}],468:[function(require,module,exports){
+},{"./is_array":443,"fast-isnumeric":148}],466:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71610,7 +71704,7 @@ exports.interp = function(arr, n) {
 
 'use strict';
 
-var rgba = require('color-normalize');
+var rgba = _dereq_('color-normalize');
 
 function str2RgbaArray(color) {
     if(!color) return [0, 0, 0, 1];
@@ -71619,7 +71713,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"color-normalize":64}],469:[function(require,module,exports){
+},{"color-normalize":62}],467:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71633,12 +71727,12 @@ module.exports = str2RgbaArray;
 
 /* global MathJax:false */
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Lib = require('../lib');
-var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-var stringMappings = require('../constants/string_mappings');
-var LINE_SPACING = require('../constants/alignment').LINE_SPACING;
+var Lib = _dereq_('../lib');
+var xmlnsNamespaces = _dereq_('../constants/xmlns_namespaces');
+var stringMappings = _dereq_('../constants/string_mappings');
+var LINE_SPACING = _dereq_('../constants/alignment').LINE_SPACING;
 
 // text converter
 
@@ -72299,7 +72393,7 @@ exports.makeEditable = function(context, options) {
     return d3.rebind(context, dispatch, 'on');
 };
 
-},{"../constants/alignment":421,"../constants/string_mappings":425,"../constants/xmlns_namespaces":426,"../lib":445,"d3":86}],470:[function(require,module,exports){
+},{"../constants/alignment":418,"../constants/string_mappings":422,"../constants/xmlns_namespaces":423,"../lib":442,"d3":84}],468:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72403,7 +72497,7 @@ function _clearTimeout(cache) {
     }
 }
 
-},{}],471:[function(require,module,exports){
+},{}],469:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72414,7 +72508,7 @@ function _clearTimeout(cache) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
 /**
  * convert a linear value into a logged value, folding negative numbers into
@@ -72431,7 +72525,7 @@ module.exports = function toLogRange(val, range) {
     return newVal;
 };
 
-},{"fast-isnumeric":151}],472:[function(require,module,exports){
+},{"fast-isnumeric":148}],470:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72453,7 +72547,7 @@ module.exports = {
     }
 };
 
-},{}],473:[function(require,module,exports){
+},{}],471:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72496,7 +72590,7 @@ module.exports = {
     }
 };
 
-},{}],474:[function(require,module,exports){
+},{}],472:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72508,7 +72602,7 @@ module.exports = {
 
 'use strict';
 
-var Registry = require('../registry');
+var Registry = _dereq_('../registry');
 
 /*
  * containerArrayMatch: does this attribute string point into a
@@ -72554,7 +72648,7 @@ module.exports = function containerArrayMatch(astr) {
     return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
-},{"../registry":536}],475:[function(require,module,exports){
+},{"../registry":534}],473:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72565,14 +72659,14 @@ module.exports = function containerArrayMatch(astr) {
 
 'use strict';
 
-var Lib = require('../lib');
+var Lib = _dereq_('../lib');
 var extendFlat = Lib.extendFlat;
 var isPlainObject = Lib.isPlainObject;
 
 var traceOpts = {
     valType: 'flaglist',
     extras: ['none'],
-    flags: ['calc', 'calcIfAutorange', 'clearAxisTypes', 'plot', 'style', 'colorbars'],
+    flags: ['calc', 'clearAxisTypes', 'plot', 'style', 'colorbars'],
     
 };
 
@@ -72580,7 +72674,7 @@ var layoutOpts = {
     valType: 'flaglist',
     extras: ['none'],
     flags: [
-        'calc', 'calcIfAutorange', 'plot', 'legend', 'ticks', 'axrange',
+        'calc', 'plot', 'legend', 'ticks', 'axrange',
         'layoutstyle', 'modebar', 'camera', 'arraydraw'
     ],
     
@@ -72590,7 +72684,7 @@ var layoutOpts = {
 // that shouldn't be used in attributes, to deal with certain
 // combinations and conditionals efficiently
 var traceEditTypeFlags = traceOpts.flags.slice()
-    .concat(['clearCalc', 'fullReplot']);
+    .concat(['fullReplot']);
 
 var layoutEditTypeFlags = layoutOpts.flags.slice()
     .concat('layoutReplot');
@@ -72680,7 +72774,7 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
     }
 }
 
-},{"../lib":445}],476:[function(require,module,exports){
+},{"../lib":442}],474:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72692,16 +72786,16 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var m4FromQuat = require('gl-mat4/fromQuat');
+var isNumeric = _dereq_('fast-isnumeric');
+var m4FromQuat = _dereq_('gl-mat4/fromQuat');
 
-var Registry = require('../registry');
-var Lib = require('../lib');
-var Plots = require('../plots/plots');
-var AxisIds = require('../plots/cartesian/axis_ids');
+var Registry = _dereq_('../registry');
+var Lib = _dereq_('../lib');
+var Plots = _dereq_('../plots/plots');
+var AxisIds = _dereq_('../plots/cartesian/axis_ids');
 var cleanId = AxisIds.cleanId;
 var getFromTrace = AxisIds.getFromTrace;
-var Color = require('../components/color');
+var Color = _dereq_('../components/color');
 
 
 // clear the promise queue if one of them got rejected
@@ -73278,7 +73372,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     }
 };
 
-},{"../components/color":323,"../lib":445,"../plots/cartesian/axis_ids":495,"../plots/plots":528,"../registry":536,"fast-isnumeric":151,"gl-mat4/fromQuat":169}],477:[function(require,module,exports){
+},{"../components/color":320,"../lib":442,"../plots/cartesian/axis_ids":493,"../plots/plots":526,"../registry":534,"fast-isnumeric":148,"gl-mat4/fromQuat":166}],475:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73289,7 +73383,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
 
 'use strict';
 
-var main = require('./plot_api');
+var main = _dereq_('./plot_api');
 
 exports.plot = main.plot;
 exports.newPlot = main.newPlot;
@@ -73309,15 +73403,15 @@ exports.deleteFrames = main.deleteFrames;
 exports.animate = main.animate;
 exports.setPlotConfig = main.setPlotConfig;
 
-exports.toImage = require('./to_image');
-exports.validate = require('./validate');
-exports.downloadImage = require('../snapshot/download');
+exports.toImage = _dereq_('./to_image');
+exports.validate = _dereq_('./validate');
+exports.downloadImage = _dereq_('../snapshot/download');
 
-var templateApi = require('./template_api');
+var templateApi = _dereq_('./template_api');
 exports.makeTemplate = templateApi.makeTemplate;
 exports.validateTemplate = templateApi.validateTemplate;
 
-},{"../snapshot/download":538,"./plot_api":479,"./template_api":484,"./to_image":485,"./validate":486}],478:[function(require,module,exports){
+},{"../snapshot/download":536,"./plot_api":477,"./template_api":482,"./to_image":483,"./validate":484}],476:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73329,15 +73423,15 @@ exports.validateTemplate = templateApi.validateTemplate;
 
 'use strict';
 
-var nestedProperty = require('../lib/nested_property');
-var isPlainObject = require('../lib/is_plain_object');
-var noop = require('../lib/noop');
-var Loggers = require('../lib/loggers');
-var sorterAsc = require('../lib/search').sorterAsc;
-var Registry = require('../registry');
+var nestedProperty = _dereq_('../lib/nested_property');
+var isPlainObject = _dereq_('../lib/is_plain_object');
+var noop = _dereq_('../lib/noop');
+var Loggers = _dereq_('../lib/loggers');
+var sorterAsc = _dereq_('../lib/search').sorterAsc;
+var Registry = _dereq_('../registry');
 
 
-exports.containerArrayMatch = require('./container_array_match');
+exports.containerArrayMatch = _dereq_('./container_array_match');
 
 var isAddVal = exports.isAddVal = function isAddVal(val) {
     return val === 'add' || isPlainObject(val);
@@ -73531,7 +73625,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
     return true;
 };
 
-},{"../lib/is_plain_object":447,"../lib/loggers":450,"../lib/nested_property":453,"../lib/noop":454,"../lib/search":464,"../registry":536,"./container_array_match":474}],479:[function(require,module,exports){
+},{"../lib/is_plain_object":444,"../lib/loggers":447,"../lib/nested_property":451,"../lib/noop":452,"../lib/search":462,"../registry":534,"./container_array_match":472}],477:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73544,34 +73638,34 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
 'use strict';
 
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
-var hasHover = require('has-hover');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
+var hasHover = _dereq_('has-hover');
 
-var Lib = require('../lib');
-var Events = require('../lib/events');
-var Queue = require('../lib/queue');
+var Lib = _dereq_('../lib');
+var Events = _dereq_('../lib/events');
+var Queue = _dereq_('../lib/queue');
 
-var Registry = require('../registry');
-var PlotSchema = require('./plot_schema');
-var Plots = require('../plots/plots');
-var Polar = require('../plots/polar/legacy');
+var Registry = _dereq_('../registry');
+var PlotSchema = _dereq_('./plot_schema');
+var Plots = _dereq_('../plots/plots');
+var Polar = _dereq_('../plots/polar/legacy');
 
-var Axes = require('../plots/cartesian/axes');
-var Drawing = require('../components/drawing');
-var Color = require('../components/color');
-var connectColorbar = require('../components/colorbar/connect');
-var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
-var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-var svgTextUtils = require('../lib/svg_text_utils');
+var Axes = _dereq_('../plots/cartesian/axes');
+var Drawing = _dereq_('../components/drawing');
+var Color = _dereq_('../components/color');
+var connectColorbar = _dereq_('../components/colorbar/connect');
+var initInteractions = _dereq_('../plots/cartesian/graph_interact').initInteractions;
+var xmlnsNamespaces = _dereq_('../constants/xmlns_namespaces');
+var svgTextUtils = _dereq_('../lib/svg_text_utils');
 
-var defaultConfig = require('./plot_config');
-var manageArrays = require('./manage_arrays');
-var helpers = require('./helpers');
-var subroutines = require('./subroutines');
-var editTypes = require('./edit_types');
+var defaultConfig = _dereq_('./plot_config');
+var manageArrays = _dereq_('./manage_arrays');
+var helpers = _dereq_('./helpers');
+var subroutines = _dereq_('./subroutines');
+var editTypes = _dereq_('./edit_types');
 
-var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
+var AX_NAME_PATTERN = _dereq_('../plots/cartesian/constants').AX_NAME_PATTERN;
 
 var numericNameWarningCount = 0;
 var numericNameWarningCountLimit = 5;
@@ -73733,6 +73827,7 @@ exports.plot = function(gd, data, layout, config) {
 
     // draw framework first so that margin-pushing
     // components can position themselves correctly
+    var drawFrameworkCalls = 0;
     function drawFramework() {
         var basePlotModules = fullLayout._basePlotModules;
 
@@ -73776,6 +73871,28 @@ exports.plot = function(gd, data, layout, config) {
             fullLayout._glcanvas
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
+
+            var regl = fullLayout._glcanvas.data()[0].regl;
+            if(regl) {
+                // Unfortunately, this can happen when relayouting to large
+                // width/height on some browsers.
+                if(fullLayout.width !== regl._gl.drawingBufferWidth ||
+                    fullLayout.height !== regl._gl.drawingBufferHeight
+                 ) {
+                    var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
+                    if(drawFrameworkCalls) {
+                        Lib.error(msg);
+                    } else {
+                        Lib.log(msg + ' Clearing graph and plotting again.');
+                        Plots.cleanPlot([], {}, gd._fullData, fullLayout, gd.calcdata);
+                        Plots.supplyDefaults(gd);
+                        fullLayout = gd._fullLayout;
+                        Plots.doCalcdata(gd);
+                        drawFrameworkCalls++;
+                        return drawFramework();
+                    }
+                }
+            }
         }
 
         return Plots.previousPromises(gd);
@@ -73826,33 +73943,6 @@ exports.plot = function(gd, data, layout, config) {
             return;
         }
 
-        var subplots = fullLayout._subplots.cartesian;
-        var modules = fullLayout._modules;
-        var setPositionsArray = [];
-
-        // position and range calculations for traces that
-        // depend on each other ie bars (stacked or grouped)
-        // and boxes (grouped) push each other out of the way
-
-        var subplotInfo, i, j;
-
-        for(j = 0; j < modules.length; j++) {
-            Lib.pushUnique(setPositionsArray, modules[j].setPositions);
-        }
-
-        if(setPositionsArray.length) {
-            for(i = 0; i < subplots.length; i++) {
-                subplotInfo = fullLayout._plots[subplots[i]];
-
-                for(j = 0; j < setPositionsArray.length; j++) {
-                    setPositionsArray[j](gd, subplotInfo);
-                }
-            }
-        }
-
-        // calc and autorange for errorbars
-        Registry.getComponentMethod('errorbars', 'calc')(gd);
-
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111
         return Lib.syncOrAsync([
@@ -73885,9 +73975,12 @@ exports.plot = function(gd, data, layout, config) {
         marginPushers,
         marginPushersAgain
     ];
+
     if(hasCartesian) seq.push(positionAndAutorange);
+
     seq.push(subroutines.layoutStyles);
     if(hasCartesian) seq.push(drawAxes);
+
     seq.push(
         subroutines.drawData,
         subroutines.finalDraw,
@@ -74855,7 +74948,7 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
     var flags = specs.flags;
 
     // clear calcdata and/or axis types if required so they get regenerated
-    if(flags.clearCalc) gd.calcdata = undefined;
+    if(flags.calc) gd.calcdata = undefined;
     if(flags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, {});
 
     // fill in redraw sequence
@@ -75153,21 +75246,7 @@ function _restyle(gd, aobj, traces) {
         }
     }
 
-    // do we need to force a recalc?
-    var autorangeOn = false;
-    var axList = Axes.list(gd);
-    for(i = 0; i < axList.length; i++) {
-        if(axList[i].autorange) {
-            autorangeOn = true;
-            break;
-        }
-    }
-
-    // combine a few flags together;
-    if(flags.calc || (flags.calcIfAutorange && autorangeOn)) {
-        flags.clearCalc = true;
-    }
-    if(flags.calc || flags.plot || flags.calcIfAutorange) {
+    if(flags.calc || flags.plot) {
         flags.fullReplot = true;
     }
 
@@ -75278,6 +75357,7 @@ function addAxRangeSequence(seq, rangesAltered) {
         subroutines.doTicksRelayout;
 
     seq.push(
+        subroutines.doAutoRangeAndConstraints,
         doTicks,
         subroutines.drawData,
         subroutines.finalDraw
@@ -75512,37 +75592,21 @@ function _relayout(gd, aobj) {
             var propStr = containerArrayMatch.property;
             var componentArray = Lib.nestedProperty(layout, arrayStr);
             var obji = (componentArray || [])[i] || {};
-            var objToAutorange = obji;
-
             var updateValObject = valObject || {editType: 'calc'};
-            var checkForAutorange = updateValObject.editType.indexOf('calcIfAutorange') !== -1;
 
-            if(i === '') {
-                // replacing the entire array - too many possibilities, just recalc
-                if(checkForAutorange) flags.calc = true;
-                else editTypes.update(flags, updateValObject);
-                checkForAutorange = false; // clear this, we're already doing a recalc
-            }
-            else if(propStr === '') {
+            if(propStr === '') {
                 // special handling of undoit if we're adding or removing an element
                 // ie 'annotations[2]' which can be {...} (add) or null (remove)
-                objToAutorange = vi;
                 if(manageArrays.isAddVal(vi)) {
                     undoit[ai] = null;
-                }
-                else if(manageArrays.isRemoveVal(vi)) {
+                } else if(manageArrays.isRemoveVal(vi)) {
                     undoit[ai] = obji;
-                    objToAutorange = obji;
+                } else {
+                    Lib.warn('unrecognized full object value', aobj);
                 }
-                else Lib.warn('unrecognized full object value', aobj);
             }
 
-            if(checkForAutorange && (refAutorange(gd, objToAutorange, 'x') || refAutorange(gd, objToAutorange, 'y'))) {
-                flags.calc = true;
-            }
-            else {
-                editTypes.update(flags, updateValObject);
-            }
+            editTypes.update(flags, updateValObject);
 
             // prepare the edits object we'll send to applyContainerArrayChanges
             if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
@@ -75644,25 +75708,6 @@ function updateAutosize(gd) {
     return (fullLayout.width !== oldWidth) || (fullLayout.height !== oldHeight);
 }
 
-// for editing annotations or shapes - is it on autoscaled axes?
-function refAutorange(gd, obj, axLetter) {
-    if(!Lib.isPlainObject(obj)) return false;
-    var axRef = obj[axLetter + 'ref'] || axLetter,
-        ax = Axes.getFromId(gd, axRef);
-
-    if(!ax && axRef.charAt(0) === axLetter) {
-        // fall back on the primary axis in case we've referenced a
-        // nonexistent axis (as we do above if axRef is missing).
-        // This assumes the object defaults to data referenced, which
-        // is the case for shapes and annotations but not for images.
-        // The only thing this is used for is to determine whether to
-        // do a full `recalc`, so the only ill effect of this error is
-        // to waste some time.
-        ax = Axes.getFromId(gd, axLetter);
-    }
-    return (ax || {}).autorange;
-}
-
 /**
  * update: update trace and layout attributes of an existing plot
  *
@@ -75701,7 +75746,7 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     var relayoutFlags = relayoutSpecs.flags;
 
     // clear calcdata and/or axis types if required
-    if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
+    if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
     if(restyleFlags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, layoutUpdate);
 
     // fill in redraw sequence
@@ -75948,14 +75993,10 @@ function diffData(gd, oldFullData, newFullData, immutable) {
         if(seenUIDs[trace.uid]) continue;
         seenUIDs[trace.uid] = 1;
 
-        diffOpts.autoranged = trace.xaxis ? (
-            Axes.getFromId(gd, trace.xaxis).autorange ||
-            Axes.getFromId(gd, trace.yaxis).autorange
-        ) : false;
         getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
     }
 
-    if(flags.calc || flags.plot || flags.calcIfAutorange) {
+    if(flags.calc || flags.plot) {
         flags.fullReplot = true;
     }
 
@@ -75994,17 +76035,9 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
     var immutable = opts.immutable;
     var inArray = opts.inArray;
     var arrayIndex = opts.arrayIndex;
-    var gd = opts.gd;
-    var autoranged = opts.autoranged;
 
     function changed() {
         var editType = valObject.editType;
-        if(editType.indexOf('calcIfAutorange') !== -1 && (autoranged || (autoranged === undefined && (
-            refAutorange(gd, newContainer, 'x') || refAutorange(gd, newContainer, 'y')
-        )))) {
-            flags.calc = true;
-            return;
-        }
         if(inArray && editType.indexOf('arraydraw') !== -1) {
             Lib.pushUnique(flags.arrays[inArray], arrayIndex);
             return;
@@ -76799,9 +76832,6 @@ function makePlotFramework(gd) {
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
 
-    // That is initialized in drawFramework if there are `gl` traces
-    fullLayout._glcanvas = null;
-
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
     fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
@@ -76891,7 +76921,7 @@ function makePlotFramework(gd) {
     gd.emit('plotly_framework');
 }
 
-},{"../components/color":323,"../components/colorbar/connect":325,"../components/drawing":348,"../constants/xmlns_namespaces":426,"../lib":445,"../lib/events":435,"../lib/queue":460,"../lib/svg_text_utils":469,"../plots/cartesian/axes":492,"../plots/cartesian/constants":497,"../plots/cartesian/graph_interact":501,"../plots/plots":528,"../plots/polar/legacy":531,"../registry":536,"./edit_types":475,"./helpers":476,"./manage_arrays":478,"./plot_config":480,"./plot_schema":481,"./subroutines":483,"d3":86,"fast-isnumeric":151,"has-hover":201}],480:[function(require,module,exports){
+},{"../components/color":320,"../components/colorbar/connect":322,"../components/drawing":345,"../constants/xmlns_namespaces":423,"../lib":442,"../lib/events":432,"../lib/queue":458,"../lib/svg_text_utils":467,"../plots/cartesian/axes":490,"../plots/cartesian/constants":495,"../plots/cartesian/graph_interact":499,"../plots/plots":526,"../plots/polar/legacy":529,"../registry":534,"./edit_types":473,"./helpers":474,"./manage_arrays":476,"./plot_config":478,"./plot_schema":479,"./subroutines":481,"d3":84,"fast-isnumeric":148,"has-hover":198}],478:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -76995,7 +77025,7 @@ module.exports = {
 
     /*
      * remove mode bar button by name
-     * (see ./components/modebar/buttons.js for the list of names)
+     * (see ../components/modebar/buttons.js for the list of names)
      */
     modeBarButtonsToRemove: [],
 
@@ -77009,13 +77039,13 @@ module.exports = {
      * fully custom mode bar buttons as nested array,
      * where the outer arrays represents button groups, and
      * the inner arrays have buttons config objects or names of default buttons
-     * (see ./components/modebar/buttons.js for more info)
+     * (see ../components/modebar/buttons.js for more info)
      */
     modeBarButtons: false,
 
     // statically override options for toImage modebar button
     // allowed keys are format, filename, width, height, scale
-    // see ./components/modebar/buttons.js
+    // see ../components/modebar/buttons.js
     toImageButtonOptions: {},
 
     // add the plotly logo on the end of the mode bar
@@ -77087,7 +77117,7 @@ module.exports = {
     locales: {}
 };
 
-},{}],481:[function(require,module,exports){
+},{}],479:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -77099,19 +77129,19 @@ module.exports = {
 
 'use strict';
 
-var Registry = require('../registry');
-var Lib = require('../lib');
+var Registry = _dereq_('../registry');
+var Lib = _dereq_('../lib');
 
-var baseAttributes = require('../plots/attributes');
-var baseLayoutAttributes = require('../plots/layout_attributes');
-var frameAttributes = require('../plots/frame_attributes');
-var animationAttributes = require('../plots/animation_attributes');
+var baseAttributes = _dereq_('../plots/attributes');
+var baseLayoutAttributes = _dereq_('../plots/layout_attributes');
+var frameAttributes = _dereq_('../plots/frame_attributes');
+var animationAttributes = _dereq_('../plots/animation_attributes');
 
 // polar attributes are not part of the Registry yet
-var polarAreaAttrs = require('../plots/polar/legacy/area_attributes');
-var polarAxisAttrs = require('../plots/polar/legacy/axis_attributes');
+var polarAreaAttrs = _dereq_('../plots/polar/legacy/area_attributes');
+var polarAxisAttrs = _dereq_('../plots/polar/legacy/axis_attributes');
 
-var editTypes = require('./edit_types');
+var editTypes = _dereq_('./edit_types');
 
 var extendFlat = Lib.extendFlat;
 var extendDeepAll = Lib.extendDeepAll;
@@ -77761,7 +77791,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
 
-},{"../lib":445,"../plots/animation_attributes":487,"../plots/attributes":489,"../plots/frame_attributes":519,"../plots/layout_attributes":526,"../plots/polar/legacy/area_attributes":529,"../plots/polar/legacy/axis_attributes":530,"../registry":536,"./edit_types":475}],482:[function(require,module,exports){
+},{"../lib":442,"../plots/animation_attributes":485,"../plots/attributes":487,"../plots/frame_attributes":517,"../plots/layout_attributes":524,"../plots/polar/legacy/area_attributes":527,"../plots/polar/legacy/axis_attributes":528,"../registry":534,"./edit_types":473}],480:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -77773,8 +77803,8 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
 
 'use strict';
 
-var Lib = require('../lib');
-var plotAttributes = require('../plots/attributes');
+var Lib = _dereq_('../lib');
+var plotAttributes = _dereq_('../plots/attributes');
 
 var TEMPLATEITEMNAME = 'templateitemname';
 
@@ -78075,7 +78105,7 @@ exports.arrayEditor = function(parentIn, containerStr, itemOut) {
     };
 };
 
-},{"../lib":445,"../plots/attributes":489}],483:[function(require,module,exports){
+},{"../lib":442,"../plots/attributes":487}],481:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -78086,24 +78116,24 @@ exports.arrayEditor = function(parentIn, containerStr, itemOut) {
 
 'use strict';
 
-var d3 = require('d3');
-var Registry = require('../registry');
-var Plots = require('../plots/plots');
+var d3 = _dereq_('d3');
+var Registry = _dereq_('../registry');
+var Plots = _dereq_('../plots/plots');
 
-var Lib = require('../lib');
-var clearGlCanvases = require('../lib/clear_gl_canvases');
+var Lib = _dereq_('../lib');
+var clearGlCanvases = _dereq_('../lib/clear_gl_canvases');
 
-var Color = require('../components/color');
-var Drawing = require('../components/drawing');
-var Titles = require('../components/titles');
-var ModeBar = require('../components/modebar');
+var Color = _dereq_('../components/color');
+var Drawing = _dereq_('../components/drawing');
+var Titles = _dereq_('../components/titles');
+var ModeBar = _dereq_('../components/modebar');
 
-var Axes = require('../plots/cartesian/axes');
-var alignmentConstants = require('../constants/alignment');
-var axisConstraints = require('../plots/cartesian/constraints');
+var Axes = _dereq_('../plots/cartesian/axes');
+var alignmentConstants = _dereq_('../constants/alignment');
+var axisConstraints = _dereq_('../plots/cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
-var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
+var doAutoRange = _dereq_('../plots/cartesian/autorange').doAutoRange;
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
@@ -78167,8 +78197,9 @@ function lsInner(gd) {
 
         // figure out the main axis line and main mirror line position.
         // it's easier to follow the logic if we handle these separately from
-        // ax._linepositions, which are really only used by mirror=allticks
-        // for the non-main-subplot ticks.
+        // ax._linepositions, which are only used by mirror=allticks
+        // for non-main-subplot ticks, and mirror=all(ticks)? for zero line
+        // hiding logic
         ax._mainLinePosition = getLinePosition(ax, counterAx, ax.side);
         ax._mainMirrorPosition = (ax.mirror && counterAx) ?
             getLinePosition(ax, counterAx,
@@ -78196,7 +78227,8 @@ function lsInner(gd) {
     // to put them
     var lowerBackgroundIDs = [];
     var lowerDomains = [];
-    subplotSelection.each(function(subplot) {
+    subplotSelection.each(function(d) {
+        var subplot = d[0];
         var plotinfo = fullLayout._plots[subplot];
 
         if(plotinfo.mainplot) {
@@ -78239,7 +78271,8 @@ function lsInner(gd) {
         fullLayout._plots[subplot].bg = d3.select(this);
     });
 
-    subplotSelection.each(function(subplot) {
+    subplotSelection.each(function(d) {
+        var subplot = d[0];
         var plotinfo = fullLayout._plots[subplot];
         var xa = plotinfo.xaxis;
         var ya = plotinfo.yaxis;
@@ -78346,7 +78379,7 @@ function lsInner(gd) {
             // each subplot that gets ticks from "allticks" gets an entry:
             //    [left or bottom, right or top]
             extraSubplot = (!xa._anchorAxis || subplot !== xa._mainSubplot);
-            if(extraSubplot && xa.ticks && xa.mirror === 'allticks') {
+            if(extraSubplot && (xa.mirror === 'allticks' || xa.mirror === 'all')) {
                 xa._linepositions[subplot] = [xLinesYBottom, xLinesYTop];
             }
 
@@ -78382,8 +78415,8 @@ function lsInner(gd) {
             yLinesXLeft = getLinePosition(ya, xa, 'left');
             yLinesXRight = getLinePosition(ya, xa, 'right');
 
-            extraSubplot = (!ya._anchorAxis || subplot !== xa._mainSubplot);
-            if(extraSubplot && ya.ticks && ya.mirror === 'allticks') {
+            extraSubplot = (!ya._anchorAxis || subplot !== ya._mainSubplot);
+            if(extraSubplot && (ya.mirror === 'allticks' || ya.mirror === 'all')) {
                 ya._linepositions[subplot] = [yLinesXLeft, yLinesXRight];
             }
 
@@ -78596,7 +78629,7 @@ exports.doModeBar = function(gd) {
 
     for(var i = 0; i < fullLayout._basePlotModules.length; i++) {
         var updateFx = fullLayout._basePlotModules[i].updateFx;
-        if(updateFx) updateFx(fullLayout);
+        if(updateFx) updateFx(gd);
     }
 
     return Plots.previousPromises(gd);
@@ -78654,7 +78687,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
         cleanAxisConstraints(gd, ax);
-        doAutoRange(ax);
+        doAutoRange(gd, ax);
     }
 
     enforceAxisConstraints(gd);
@@ -78685,7 +78718,7 @@ exports.drawMarginPushers = function(gd) {
     Registry.getComponentMethod('updatemenus', 'draw')(gd);
 };
 
-},{"../components/color":323,"../components/drawing":348,"../components/modebar":386,"../components/titles":414,"../constants/alignment":421,"../lib":445,"../lib/clear_gl_canvases":431,"../plots/cartesian/autorange":491,"../plots/cartesian/axes":492,"../plots/cartesian/constraints":499,"../plots/plots":528,"../registry":536,"d3":86}],484:[function(require,module,exports){
+},{"../components/color":320,"../components/drawing":345,"../components/modebar":383,"../components/titles":411,"../constants/alignment":418,"../lib":442,"../lib/clear_gl_canvases":428,"../plots/cartesian/autorange":489,"../plots/cartesian/axes":490,"../plots/cartesian/constraints":497,"../plots/plots":526,"../registry":534,"d3":84}],482:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -78697,13 +78730,13 @@ exports.drawMarginPushers = function(gd) {
 
 'use strict';
 
-var Lib = require('../lib');
+var Lib = _dereq_('../lib');
 var isPlainObject = Lib.isPlainObject;
-var PlotSchema = require('./plot_schema');
-var Plots = require('../plots/plots');
-var plotAttributes = require('../plots/attributes');
-var Template = require('./plot_template');
-var dfltConfig = require('./plot_config');
+var PlotSchema = _dereq_('./plot_schema');
+var Plots = _dereq_('../plots/plots');
+var plotAttributes = _dereq_('../plots/attributes');
+var Template = _dereq_('./plot_template');
+var dfltConfig = _dereq_('./plot_config');
 
 /**
  * Plotly.makeTemplate: create a template off an existing figure to reuse
@@ -79159,7 +79192,7 @@ function format(opts) {
     return opts;
 }
 
-},{"../lib":445,"../plots/attributes":489,"../plots/plots":528,"./plot_config":480,"./plot_schema":481,"./plot_template":482}],485:[function(require,module,exports){
+},{"../lib":442,"../plots/attributes":487,"../plots/plots":526,"./plot_config":478,"./plot_schema":479,"./plot_template":480}],483:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79170,12 +79203,12 @@ function format(opts) {
 
 'use strict';
 
-var plotApi = require('./plot_api');
-var Lib = require('../lib');
+var plotApi = _dereq_('./plot_api');
+var Lib = _dereq_('../lib');
 
-var helpers = require('../snapshot/helpers');
-var toSVG = require('../snapshot/tosvg');
-var svgToImg = require('../snapshot/svgtoimg');
+var helpers = _dereq_('../snapshot/helpers');
+var toSVG = _dereq_('../snapshot/tosvg');
+var svgToImg = _dereq_('../snapshot/svgtoimg');
 
 var attrs = {
     format: {
@@ -79349,7 +79382,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":445,"../snapshot/helpers":540,"../snapshot/svgtoimg":542,"../snapshot/tosvg":544,"./plot_api":479}],486:[function(require,module,exports){
+},{"../lib":442,"../snapshot/helpers":538,"../snapshot/svgtoimg":540,"../snapshot/tosvg":542,"./plot_api":477}],484:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79360,10 +79393,10 @@ module.exports = toImage;
 
 'use strict';
 
-var Lib = require('../lib');
-var Plots = require('../plots/plots');
-var PlotSchema = require('./plot_schema');
-var dfltConfig = require('./plot_config');
+var Lib = _dereq_('../lib');
+var Plots = _dereq_('../plots/plots');
+var PlotSchema = _dereq_('./plot_schema');
+var dfltConfig = _dereq_('./plot_config');
 
 var isPlainObject = Lib.isPlainObject;
 var isArray = Array.isArray;
@@ -79788,7 +79821,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":445,"../plots/plots":528,"./plot_config":480,"./plot_schema":481}],487:[function(require,module,exports){
+},{"../lib":442,"../plots/plots":526,"./plot_config":478,"./plot_schema":479}],485:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79890,7 +79923,7 @@ module.exports = {
     }
 };
 
-},{}],488:[function(require,module,exports){
+},{}],486:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79901,8 +79934,8 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../lib');
-var Template = require('../plot_api/plot_template');
+var Lib = _dereq_('../lib');
+var Template = _dereq_('../plot_api/plot_template');
 
 /** Convenience wrapper for making array container logic DRY and consistent
  *
@@ -79986,7 +80019,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     return contOut;
 };
 
-},{"../lib":445,"../plot_api/plot_template":482}],489:[function(require,module,exports){
+},{"../lib":442,"../plot_api/plot_template":480}],487:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79997,7 +80030,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
 
 'use strict';
 
-var fxAttrs = require('../components/fx/attributes');
+var fxAttrs = _dereq_('../components/fx/attributes');
 
 module.exports = {
     type: {
@@ -80111,7 +80144,7 @@ module.exports = {
     }
 };
 
-},{"../components/fx/attributes":357}],490:[function(require,module,exports){
+},{"../components/fx/attributes":354}],488:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -80140,7 +80173,7 @@ module.exports = {
     }
 };
 
-},{}],491:[function(require,module,exports){
+},{}],489:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -80149,63 +80182,80 @@ module.exports = {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Lib = require('../../lib');
-var FP_SAFE = require('../../constants/numerical').FP_SAFE;
+var Lib = _dereq_('../../lib');
+var FP_SAFE = _dereq_('../../constants/numerical').FP_SAFE;
 
 module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
-    expand: expand
+    findExtremes: findExtremes,
+    concatExtremes: concatExtremes
 };
 
-// Find the autorange for this axis
-//
-// assumes ax._min and ax._max have already been set by calling axes.expand
-// using calcdata from all traces. These are arrays of objects:
-// {
-//    val: calcdata value,
-//    pad: extra pixels beyond this value,
-//    extrapad: bool, does this point want 5% extra padding
-// }
-//
-// Returns an array of [min, max]. These are calcdata for log and category axes
-// and data for linear and date axes.
-//
-// TODO: we want to change log to data as well, but it's hard to do this
-// maintaining backward compatibility. category will always have to use calcdata
-// though, because otherwise values between categories (or outside all categories)
-// would be impossible.
-function getAutoRange(ax) {
+/**
+ * getAutoRange
+ *
+ * Collects all _extremes values corresponding to a given axis
+ * and computes its auto range.
+ *
+ * Note that getAutoRange uses return values from findExtremes.
+ *
+ * @param {object} gd:
+ *   graph div object with filled-in fullData and fullLayout, in particular
+ *   with filled-in '_extremes' containers:
+ *   {
+ *      val: calcdata value,
+ *      pad: extra pixels beyond this value,
+ *      extrapad: bool, does this point want 5% extra padding
+ *   }
+ * @param {object} ax:
+ *   full axis object, in particular with filled-in '_traceIndices'
+ *   and '_annIndices' / '_shapeIndices' if applicable
+ * @return {array}
+ *   an array of [min, max]. These are calcdata for log and category axes
+ *   and data for linear and date axes.
+ *
+ * TODO: we want to change log to data as well, but it's hard to do this
+ * maintaining backward compatibility. category will always have to use calcdata
+ * though, because otherwise values between categories (or outside all categories)
+ * would be impossible.
+ */
+function getAutoRange(gd, ax) {
+    var i, j;
     var newRange = [];
-    var minmin = ax._min[0].val;
-    var maxmax = ax._max[0].val;
-    var mbest = 0;
-    var axReverse = false;
 
     var getPad = makePadFn(ax);
+    var extremes = concatExtremes(gd, ax);
+    var minArray = extremes.min;
+    var maxArray = extremes.max;
 
-    var i, j, minpt, maxpt, minbest, maxbest, dp, dv;
+    if(minArray.length === 0 || maxArray.length === 0) {
+        return Lib.simpleMap(ax.range, ax.r2l);
+    }
 
-    for(i = 1; i < ax._min.length; i++) {
+    var minmin = minArray[0].val;
+    var maxmax = maxArray[0].val;
+
+    for(i = 1; i < minArray.length; i++) {
         if(minmin !== maxmax) break;
-        minmin = Math.min(minmin, ax._min[i].val);
+        minmin = Math.min(minmin, minArray[i].val);
     }
-    for(i = 1; i < ax._max.length; i++) {
+    for(i = 1; i < maxArray.length; i++) {
         if(minmin !== maxmax) break;
-        maxmax = Math.max(maxmax, ax._max[i].val);
+        maxmax = Math.max(maxmax, maxArray[i].val);
     }
+
+    var axReverse = false;
 
     if(ax.range) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
-
     // one-time setting to easily reverse the axis
     // when plotting from code
     if(ax.autorange === 'reversed') {
@@ -80213,10 +80263,13 @@ function getAutoRange(ax) {
         ax.autorange = true;
     }
 
-    for(i = 0; i < ax._min.length; i++) {
-        minpt = ax._min[i];
-        for(j = 0; j < ax._max.length; j++) {
-            maxpt = ax._max[j];
+    var mbest = 0;
+    var minpt, maxpt, minbest, maxbest, dp, dv;
+
+    for(i = 0; i < minArray.length; i++) {
+        minpt = minArray[i];
+        for(j = 0; j < maxArray.length; j++) {
+            maxpt = maxArray[j];
             dv = maxpt.val - minpt.val;
             dp = ax._length - getPad(minpt) - getPad(maxpt);
             if(dv > 0 && dp > 0 && dv / dp > mbest) {
@@ -80232,11 +80285,9 @@ function getAutoRange(ax) {
         var upper = minmin + 1;
         if(ax.rangemode === 'tozero') {
             newRange = minmin < 0 ? [lower, 0] : [0, upper];
-        }
-        else if(ax.rangemode === 'nonnegative') {
+        } else if(ax.rangemode === 'nonnegative') {
             newRange = [Math.max(0, lower), Math.max(0, upper)];
-        }
-        else {
+        } else {
             newRange = [lower, upper];
         }
     }
@@ -80276,11 +80327,9 @@ function getAutoRange(ax) {
         if(ax.rangemode === 'tozero') {
             if(newRange[0] < 0) {
                 newRange = [newRange[0], 0];
-            }
-            else if(newRange[0] > 0) {
+            } else if(newRange[0] > 0) {
                 newRange = [0, newRange[0]];
-            }
-            else {
+            } else {
                 newRange = [0, 1];
             }
         }
@@ -80316,15 +80365,45 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function doAutoRange(ax) {
+function concatExtremes(gd, ax) {
+    var axId = ax._id;
+    var fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
+    var minArray = [];
+    var maxArray = [];
+    var i, j, d;
+
+    function _concat(cont, indices) {
+        for(i = 0; i < indices.length; i++) {
+            var item = cont[indices[i]];
+            var extremes = (item._extremes || {})[axId];
+            if(item.visible === true && extremes) {
+                for(j = 0; j < extremes.min.length; j++) {
+                    d = extremes.min[j];
+                    collapseMinArray(minArray, d.val, d.pad, {extrapad: d.extrapad});
+                }
+                for(j = 0; j < extremes.max.length; j++) {
+                    d = extremes.max[j];
+                    collapseMaxArray(maxArray, d.val, d.pad, {extrapad: d.extrapad});
+                }
+            }
+        }
+    }
+
+    _concat(fullData, ax._traceIndices);
+    _concat(fullLayout.annotations || [], ax._annIndices || []);
+    _concat(fullLayout.shapes || [], ax._shapeIndices || []);
+
+    return {min: minArray, max: maxArray};
+}
+
+function doAutoRange(gd, ax) {
     if(!ax._length) ax.setScale();
 
-    // TODO do we really need this?
-    var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
     var axIn;
 
-    if(ax.autorange && hasDeps) {
-        ax.range = getAutoRange(ax);
+    if(ax.autorange) {
+        ax.range = getAutoRange(gd, ax);
 
         ax._r = ax.range.slice();
         ax._rl = Lib.simpleMap(ax._r, ax.r2l);
@@ -80341,11 +80420,7 @@ function doAutoRange(ax) {
         var axeRangeOpts = ax._anchorAxis.rangeslider[ax._name];
         if(axeRangeOpts) {
             if(axeRangeOpts.rangemode === 'auto') {
-                if(hasDeps) {
-                    axeRangeOpts.range = getAutoRange(ax);
-                } else {
-                    axeRangeOpts.range = ax._rangeInitial ? ax._rangeInitial.slice() : ax.range.slice();
-                }
+                axeRangeOpts.range = getAutoRange(gd, ax);
             }
         }
         axIn = ax._anchorAxis._input;
@@ -80353,22 +80428,27 @@ function doAutoRange(ax) {
     }
 }
 
-function needsAutorange(ax) {
-    return ax.autorange || ax._rangesliderAutorange;
-}
-
-/*
- * expand: if autoranging, include new data in the outer limits for this axis.
- * Note that `expand` is called during `calc`, when we don't yet know the axis
+/**
+ * findExtremes
+ *
+ * Find min/max extremes of an array of coordinates on a given axis.
+ *
+ * Note that findExtremes is called during `calc`, when we don't yet know the axis
  * length; all the inputs should be based solely on the trace data, nothing
  * about the axis layout.
+ *
  * Note that `ppad` and `vpad` as well as their asymmetric variants refer to
  * the before and after padding of the passed `data` array, not to the whole axis.
  *
- * @param {object} ax: the axis being expanded. The result will be more entries
- *      in ax._min and ax._max if necessary to include the new data
- * @param {array} data: an array of numbers (ie already run through ax.d2c)
- * @param {object} options: available keys are:
+ * @param {object} ax: full axis object
+ *   relies on
+ *   - ax.type
+ *   - ax._m (just its sign)
+ *   - ax.d2l
+ * @param {array} data:
+ *  array of numbers (i.e. already run though ax.d2c)
+ * @param {object} options:
+ *  available keys are:
  *      vpad: (number or number array) pad values (data value +-vpad)
  *      ppad: (number or number array) pad pixels (pixel location +-ppad)
  *      ppadplus, ppadminus, vpadplus, vpadminus:
@@ -80377,23 +80457,28 @@ function needsAutorange(ax) {
  *          (unless one end is overridden by tozero)
  *      tozero: (boolean) make sure to include zero if axis is linear,
  *          and make it a tight bound if possible
+ *
+ * @return {object}
+ *  - min {array of objects}
+ *  - max {array of objects}
+ *  each object item has fields:
+ *    - val {number}
+ *    - pad {number}
+ *    - extrappad {number}
  */
-function expand(ax, data, options) {
-    if(!needsAutorange(ax) || !data) return;
-
-    if(!ax._min) ax._min = [];
-    if(!ax._max) ax._max = [];
+function findExtremes(ax, data, options) {
     if(!options) options = {};
     if(!ax._m) ax.setScale();
+
+    var minArray = [];
+    var maxArray = [];
 
     var len = data.length;
     var extrapad = options.padded || false;
     var tozero = options.tozero && (ax.type === 'linear' || ax.type === '-');
-    var isLog = (ax.type === 'log');
-
-    var i, j, k, v, di, dmin, dmax, ppadiplus, ppadiminus, includeThis, vmin, vmax;
-
+    var isLog = ax.type === 'log';
     var hasArrayOption = false;
+    var i, v, di, dmin, dmax, ppadiplus, ppadiminus, vmin, vmax;
 
     function makePadAccessor(item) {
         if(Array.isArray(item)) {
@@ -80426,8 +80511,7 @@ function expand(ax, data, options) {
                 if(v < vmin && v > 0) vmin = v;
                 if(v > vmax && v < FP_SAFE) vmax = v;
             }
-        }
-        else {
+        } else {
             for(i = 0; i < len; i++) {
                 v = data[i];
                 if(v < vmin && v > -FP_SAFE) vmin = v;
@@ -80438,6 +80522,8 @@ function expand(ax, data, options) {
         data = [vmin, vmax];
         len = 2;
     }
+
+    var collapseOpts = {tozero: tozero, extrapad: extrapad};
 
     function addItem(i) {
         di = data[i];
@@ -80459,49 +80545,11 @@ function expand(ax, data, options) {
             dmin = Math.min(0, dmin);
             dmax = Math.max(0, dmax);
         }
-
-        for(k = 0; k < 2; k++) {
-            var newVal = k ? dmax : dmin;
-            if(goodNumber(newVal)) {
-                var extremes = k ? ax._max : ax._min;
-                var newPad = k ? ppadiplus : ppadiminus;
-                var atLeastAsExtreme = k ? greaterOrEqual : lessOrEqual;
-
-                includeThis = true;
-                /*
-                 * Take items v from ax._min/_max and compare them to the presently active point:
-                 * - Since we don't yet know the relationship between pixels and values
-                 *   (that's what we're trying to figure out!) AND we don't yet know how
-                 *   many pixels `extrapad` represents (it's going to be 5% of the length,
-                 *   but we don't want to have to redo _min and _max just because length changed)
-                 *   two point must satisfy three criteria simultaneously for one to supersede the other:
-                 *   - at least as extreme a `val`
-                 *   - at least as big a `pad`
-                 *   - an unpadded point cannot supersede a padded point, but any other combination can
-                 *
-                 * - If the item supersedes the new point, set includethis false
-                 * - If the new pt supersedes the item, delete it from ax._min/_max
-                 */
-                for(j = 0; j < extremes.length && includeThis; j++) {
-                    v = extremes[j];
-                    if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
-                        includeThis = false;
-                        break;
-                    }
-                    else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
-                        extremes.splice(j, 1);
-                        j--;
-                    }
-                }
-                if(includeThis) {
-                    var clipAtZero = (tozero && newVal === 0);
-                    extremes.push({
-                        val: newVal,
-                        pad: clipAtZero ? 0 : newPad,
-                        extrapad: clipAtZero ? false : extrapad
-                    });
-                }
-            }
+        if(goodNumber(dmin)) {
+            collapseMinArray(minArray, dmin, ppadiminus, collapseOpts);
+        }
+        if(goodNumber(dmax)) {
+            collapseMaxArray(maxArray, dmax, ppadiplus, collapseOpts);
         }
     }
 
@@ -80511,6 +80559,78 @@ function expand(ax, data, options) {
     var iMax = Math.min(6, len);
     for(i = 0; i < iMax; i++) addItem(i);
     for(i = len - 1; i >= iMax; i--) addItem(i);
+
+    return {min: minArray, max: maxArray};
+}
+
+function collapseMinArray(array, newVal, newPad, opts) {
+    collapseArray(array, newVal, newPad, opts, lessOrEqual);
+}
+
+function collapseMaxArray(array, newVal, newPad, opts) {
+    collapseArray(array, newVal, newPad, opts, greaterOrEqual);
+}
+
+/**
+ * collapseArray
+ *
+ * Takes items from 'array' and compares them to 'newVal', 'newPad'.
+ *
+ * @param {array} array:
+ *  current set of min or max extremes
+ * @param {number} newVal:
+ *  new value to compare against
+ * @param {number} newPad:
+ *  pad value associated with 'newVal'
+ * @param {object} opts:
+ *  - tozero {boolean}
+ *  - extrapad {number}
+ * @param {function} atLeastAsExtreme:
+ *  comparison function, use
+ *  - lessOrEqual for min 'array' and
+ *  - greaterOrEqual for max 'array'
+ *
+ * In practice, 'array' is either
+ *  - 'extremes[ax._id].min' or
+ *  - 'extremes[ax._id].max
+ *  found in traces and layout items that affect autorange.
+ *
+ * Since we don't yet know the relationship between pixels and values
+ * (that's what we're trying to figure out!) AND we don't yet know how
+ * many pixels `extrapad` represents (it's going to be 5% of the length,
+ * but we don't want to have to redo calc just because length changed)
+ * two point must satisfy three criteria simultaneously for one to supersede the other:
+ *  - at least as extreme a `val`
+ *  - at least as big a `pad`
+ *  - an unpadded point cannot supersede a padded point, but any other combination can
+ *
+ * Then:
+ * - If the item supersedes the new point, set includeThis false
+ * - If the new pt supersedes the item, delete it from 'array'
+ */
+function collapseArray(array, newVal, newPad, opts, atLeastAsExtreme) {
+    var tozero = opts.tozero;
+    var extrapad = opts.extrapad;
+    var includeThis = true;
+
+    for(var j = 0; j < array.length && includeThis; j++) {
+        var v = array[j];
+        if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
+            includeThis = false;
+            break;
+        } else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
+            array.splice(j, 1);
+            j--;
+        }
+    }
+    if(includeThis) {
+        var clipAtZero = (tozero && newVal === 0);
+        array.push({
+            val: newVal,
+            pad: clipAtZero ? 0 : newPad,
+            extrapad: clipAtZero ? false : extrapad
+        });
+    }
 }
 
 // In order to stop overflow errors, don't consider points
@@ -80522,7 +80642,7 @@ function goodNumber(v) {
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
-},{"../../constants/numerical":424,"../../lib":445,"fast-isnumeric":151}],492:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../lib":442,"fast-isnumeric":148}],490:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -80534,18 +80654,18 @@ function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
-var Plots = require('../../plots/plots');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
+var Plots = _dereq_('../../plots/plots');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var Titles = require('../../components/titles');
-var Color = require('../../components/color');
-var Drawing = require('../../components/drawing');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var Titles = _dereq_('../../components/titles');
+var Color = _dereq_('../../components/color');
+var Drawing = _dereq_('../../components/drawing');
 
-var constants = require('../../constants/numerical');
+var constants = _dereq_('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
 var ONEDAY = constants.ONEDAY;
@@ -80555,15 +80675,15 @@ var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
-var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
-var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+var MID_SHIFT = _dereq_('../../constants/alignment').MID_SHIFT;
+var LINE_SPACING = _dereq_('../../constants/alignment').LINE_SPACING;
 
 var axes = module.exports = {};
 
-axes.setConvert = require('./set_convert');
-var autoType = require('./axis_autotype');
+axes.setConvert = _dereq_('./set_convert');
+var autoType = _dereq_('./axis_autotype');
 
-var axisIds = require('./axis_ids');
+var axisIds = _dereq_('./axis_ids');
 axes.id2name = axisIds.id2name;
 axes.name2id = axisIds.name2id;
 axes.cleanId = axisIds.cleanId;
@@ -80572,9 +80692,9 @@ axes.listIds = axisIds.listIds;
 axes.getFromId = axisIds.getFromId;
 axes.getFromTrace = axisIds.getFromTrace;
 
-var autorange = require('./autorange');
-axes.expand = autorange.expand;
+var autorange = _dereq_('./autorange');
 axes.getAutoRange = autorange.getAutoRange;
+axes.findExtremes = autorange.findExtremes;
 
 /*
  * find the list of possible axes to reference with an xref or yref attribute
@@ -81028,6 +81148,10 @@ axes.prepTicks = function(ax) {
         ax.tick0 = (ax.type === 'date') ? '2000-01-01' : 0;
     }
 
+    // ensure we don't try to make ticks below our minimum precision
+    // see https://github.com/plotly/plotly.js/issues/2892
+    if(ax.type === 'date' && ax.dtick < 0.1) ax.dtick = 0.1;
+
     // now figure out rounding of tick values
     autoTickRound(ax);
 };
@@ -81079,7 +81203,7 @@ axes.calcTicks = function calcTicks(ax) {
 
     // If same angle over a full circle, the last tick vals is a duplicate.
     // TODO must do something similar for angular date axes.
-    if(ax._id === 'angular' && Math.abs(rng[1] - rng[0]) === 360) {
+    if(isAngular(ax) && Math.abs(rng[1] - rng[0]) === 360) {
         vals.pop();
     }
 
@@ -81247,7 +81371,7 @@ axes.autoTicks = function(ax, roughDTick) {
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
-    else if(ax._id === 'angular') {
+    else if(isAngular(ax)) {
         ax.tick0 = 0;
         base = 1;
         ax.dtick = roundDTick(roughDTick, base, roundAngles);
@@ -81310,6 +81434,11 @@ function autoTickRound(ax) {
             // of all possible ticks - so take the max. length of tick0 and the next one
             var tick1len = ax.l2r(tick0ms + dtick).replace(/^-/, '').length;
             ax._tickround = Math.max(tick0len, tick1len) - 20;
+
+            // We shouldn't get here... but in case there's a situation I'm
+            // not thinking of where tick0str and tick1str are identical or
+            // something, fall back on maximum precision
+            if(ax._tickround < 0) ax._tickround = 4;
         }
     }
     else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
@@ -81483,7 +81612,7 @@ axes.tickText = function(ax, x, hover) {
     if(ax.type === 'date') formatDate(ax, out, hover, extraPrecision);
     else if(ax.type === 'log') formatLog(ax, out, hover, extraPrecision, hideexp);
     else if(ax.type === 'category') formatCategory(ax, out);
-    else if(ax._id === 'angular') formatAngle(ax, out, hover, extraPrecision, hideexp);
+    else if(isAngular(ax)) formatAngle(ax, out, hover, extraPrecision, hideexp);
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
@@ -81595,9 +81724,10 @@ function formatDate(ax, out, hover, extraPrecision) {
 }
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
-    var dtick = ax.dtick,
-        x = out.x,
-        tickformat = ax.tickformat;
+    var dtick = ax.dtick;
+    var x = out.x;
+    var tickformat = ax.tickformat;
+    var dtChar0 = typeof dtick === 'string' && dtick.charAt(0);
 
     if(hideexp === 'never') {
         // If this is a hover label, then we must *never* hide the exponent
@@ -81609,21 +81739,27 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         hideexp = '';
     }
 
-    if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0) !== 'L')) dtick = 'L3';
+    if(extraPrecision && (dtChar0 !== 'L')) {
+        dtick = 'L3';
+        dtChar0 = 'L';
+    }
 
-    if(tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
+    if(tickformat || (dtChar0 === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
-    else if(isNumeric(dtick) || ((dtick.charAt(0) === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
+    else if(isNumeric(dtick) || ((dtChar0 === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
         var p = Math.round(x);
-        if(['e', 'E', 'power'].indexOf(ax.exponentformat) !== -1 ||
-                (isSIFormat(ax.exponentformat) && beyondSI(p))) {
+        var absP = Math.abs(p);
+        var exponentFormat = ax.exponentformat;
+        if(exponentFormat === 'power' || (isSIFormat(exponentFormat) && beyondSI(p))) {
             if(p === 0) out.text = 1;
             else if(p === 1) out.text = '10';
-            else if(p > 1) out.text = '10<sup>' + p + '</sup>';
-            else out.text = '10<sup>' + MINUS_SIGN + -p + '</sup>';
+            else out.text = '10<sup>' + (p > 1 ? '' : MINUS_SIGN) + absP + '</sup>';
 
             out.fontSize *= 1.25;
+        }
+        else if((exponentFormat === 'e' || exponentFormat === 'E') && absP > 2) {
+            out.text = '1' + exponentFormat + (p > 0 ? '+' : MINUS_SIGN) + absP;
         }
         else {
             out.text = numFormat(Math.pow(10, x), ax, '', 'fakehover');
@@ -81632,7 +81768,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
             }
         }
     }
-    else if(dtick.charAt(0) === 'D') {
+    else if(dtChar0 === 'D') {
         out.text = String(Math.round(Math.pow(10, Lib.mod(x, 1))));
         out.fontSize *= 0.75;
     }
@@ -81848,11 +81984,8 @@ function numFormat(v, ax, fmtoverride, hover) {
         else if(exponentFormat !== 'power') signedExponent = '+' + exponent;
         else signedExponent = String(exponent);
 
-        if(exponentFormat === 'e') {
-            v += 'e' + signedExponent;
-        }
-        else if(exponentFormat === 'E') {
-            v += 'E' + signedExponent;
+        if(exponentFormat === 'e' || exponentFormat === 'E') {
+            v += exponentFormat + signedExponent;
         }
         else if(exponentFormat === 'power') {
             v += '×10<sup>' + signedExponent + '</sup>';
@@ -82025,7 +82158,8 @@ axes.makeClipPaths = function(gd) {
     });
 };
 
-/** Main multi-axis drawing routine!
+/**
+ * Main multi-axis drawing routine!
  *
  * @param {DOM element} gd : graph div
  * @param {string or array of strings} arg : polymorphic argument
@@ -82050,8 +82184,9 @@ axes.doTicks = function(gd, arg, skipTitle) {
     var fullLayout = gd._fullLayout;
 
     if(arg === 'redraw') {
-        fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot];
+        fullLayout._paper.selectAll('g.subplot').each(function(d) {
+            var id = d[0];
+            var plotinfo = fullLayout._plots[id];
             var xa = plotinfo.xaxis;
             var ya = plotinfo.yaxis;
 
@@ -82081,14 +82216,15 @@ axes.doTicks = function(gd, arg, skipTitle) {
     }));
 };
 
-/** Per axis drawing routine!
+/**
+ * Per-axis drawing routine!
  *
  * This routine draws axis ticks and much more (... grids, labels, title etc.)
  * Supports multiple argument signatures.
  * N.B. this thing is async in general (because of MathJax rendering)
  *
  * @param {DOM element} gd : graph div
- * @param {string or array of strings} arg : polymorphic argument
+ * @param {string or object} arg : polymorphic argument
  * @param {boolean} skipTitle : optional flag to skip axis title draw/update
  * @return {promise}
  *
@@ -82168,7 +82304,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
             else return 'M' + shift + ',0h' + len;
         };
     }
-    else if(axid === 'angular') {
+    else if(isAngular(ax)) {
         sides = ['left', 'right'];
         transfn = ax._transfn;
         tickpathfn = function(shift, len) {
@@ -82204,7 +82340,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
     var valsClipped = vals.filter(clipEnds);
 
     // don't clip angular values
-    if(ax._id === 'angular') {
+    if(isAngular(ax)) {
         valsClipped = vals;
     }
 
@@ -82273,7 +82409,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
                 return axside === 'right' ? 'start' : 'end';
             };
         }
-        else if(axid === 'angular') {
+        else if(isAngular(ax)) {
             ax._labelShift = labelShift;
             ax._labelStandoff = labelStandoff;
             ax._pad = pad;
@@ -82320,7 +82456,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
             maxFontSize = Math.max(maxFontSize, d.fontSize);
         });
 
-        if(axid === 'angular') {
+        if(isAngular(ax)) {
             tickLabels.each(function(d) {
                 d3.select(this).select('text')
                     .call(svgTextUtils.positionText, labelx(d), labely(d));
@@ -82655,6 +82791,51 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         return trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter;
     }
 
+    function lineNearZero(ax2, position) {
+        if(!ax2.showline || !ax2.linewidth) return false;
+        var tolerance = Math.max((ax2.linewidth + ax.zerolinewidth) / 2, 1);
+
+        function closeEnough(pos2) {
+            return typeof pos2 === 'number' && Math.abs(pos2 - position) < tolerance;
+        }
+
+        if(closeEnough(ax2._mainLinePosition) || closeEnough(ax2._mainMirrorPosition)) {
+            return true;
+        }
+        var linePositions = ax2._linepositions || {};
+        for(var k in linePositions) {
+            if(closeEnough(linePositions[k][0]) || closeEnough(linePositions[k][1])) {
+                return true;
+            }
+        }
+    }
+
+    function anyCounterAxLineAtZero(counterAxis, rng) {
+        var mainCounterAxis = counterAxis._mainAxis;
+        if(!mainCounterAxis) return;
+
+        var zeroPosition = ax._offset + (
+            ((Math.abs(rng[0]) < Math.abs(rng[1])) === (axLetter === 'x')) ?
+            0 : ax._length
+        );
+
+        var plotinfo = fullLayout._plots[counterAxis._mainSubplot];
+        if(!(plotinfo.mainplotinfo || plotinfo).overlays.length) {
+            return lineNearZero(counterAxis, zeroPosition);
+        }
+
+        var counterLetterAxes = axes.list(gd, counterLetter);
+        for(var i = 0; i < counterLetterAxes.length; i++) {
+            var counterAxis2 = counterLetterAxes[i];
+            if(
+                counterAxis2._mainAxis === mainCounterAxis &&
+                lineNearZero(counterAxis2, zeroPosition)
+            ) {
+                return true;
+            }
+        }
+    }
+
     function drawGrid(plotinfo, counteraxis, subplot) {
         if(fullLayout._hasOnlyLargeSploms) return;
 
@@ -82691,12 +82872,19 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
                     break;
                 }
             }
-            var rng = Lib.simpleMap(ax.range, ax.r2l),
-                showZl = (rng[0] * rng[1] <= 0) && ax.zeroline &&
+            var rng = Lib.simpleMap(ax.range, ax.r2l);
+            var zlData = {x: 0, id: axid};
+
+            var showZl = (rng[0] * rng[1] <= 0) && ax.zeroline &&
                 (ax.type === 'linear' || ax.type === '-') && gridvals.length &&
-                (hasBarsOrFill || clipEnds({x: 0}) || !ax.showline);
+                (
+                    hasBarsOrFill ||
+                    clipEnds(zlData) ||
+                    !anyCounterAxLineAtZero(counteraxis, rng)
+                );
+
             var zl = zlcontainer.selectAll('path.' + zcls)
-                .data(showZl ? [{x: 0, id: axid}] : []);
+                .data(showZl ? [zlData] : []);
             zl.enter().append('path').classed(zcls, 1).classed('zl', 1)
                 .classed('crisp', 1)
                 .attr('d', gridpath)
@@ -82948,7 +83136,11 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
     }
 }
 
-},{"../../components/color":323,"../../components/drawing":348,"../../components/titles":414,"../../constants/alignment":421,"../../constants/numerical":424,"../../lib":445,"../../lib/svg_text_utils":469,"../../plots/plots":528,"../../registry":536,"./autorange":491,"./axis_autotype":493,"./axis_ids":495,"./set_convert":510,"d3":86,"fast-isnumeric":151}],493:[function(require,module,exports){
+function isAngular(ax) {
+    return ax._id === 'angularaxis';
+}
+
+},{"../../components/color":320,"../../components/drawing":345,"../../components/titles":411,"../../constants/alignment":418,"../../constants/numerical":421,"../../lib":442,"../../lib/svg_text_utils":467,"../../plots/plots":526,"../../registry":534,"./autorange":489,"./axis_autotype":491,"./axis_ids":493,"./set_convert":508,"d3":84,"fast-isnumeric":148}],491:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -82960,10 +83152,10 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Lib = require('../../lib');
-var BADNUM = require('../../constants/numerical').BADNUM;
+var Lib = _dereq_('../../lib');
+var BADNUM = _dereq_('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array, calendar) {
     if(moreDates(array, calendar)) return 'date';
@@ -83023,7 +83215,7 @@ function category(a) {
     return curvecats > curvenums * 2;
 }
 
-},{"../../constants/numerical":424,"../../lib":445,"fast-isnumeric":151}],494:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../lib":442,"fast-isnumeric":148}],492:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83034,16 +83226,16 @@ function category(a) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
 
-var layoutAttributes = require('./layout_attributes');
-var handleTickValueDefaults = require('./tick_value_defaults');
-var handleTickMarkDefaults = require('./tick_mark_defaults');
-var handleTickLabelDefaults = require('./tick_label_defaults');
-var handleCategoryOrderDefaults = require('./category_order_defaults');
-var handleLineGridDefaults = require('./line_grid_defaults');
-var setConvert = require('./set_convert');
+var layoutAttributes = _dereq_('./layout_attributes');
+var handleTickValueDefaults = _dereq_('./tick_value_defaults');
+var handleTickMarkDefaults = _dereq_('./tick_mark_defaults');
+var handleTickLabelDefaults = _dereq_('./tick_label_defaults');
+var handleCategoryOrderDefaults = _dereq_('./category_order_defaults');
+var handleLineGridDefaults = _dereq_('./line_grid_defaults');
+var setConvert = _dereq_('./set_convert');
 
 /**
  * options: object containing:
@@ -83059,8 +83251,8 @@ var setConvert = require('./set_convert');
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
-    var id = containerOut._id;
     var font = options.font || {};
+    var splomStash = options.splomStash || {};
 
     var visible = coerce('visible', !options.cheateronly);
 
@@ -83074,13 +83266,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     setConvert(containerOut, layoutOut);
 
     var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
-
-    // both x and y axes may need autorange done just for the range slider's purposes
-    // the logic is complicated to figure this out later, particularly for y axes since
-    // the settings can be spread out in the x axes... so instead we'll collect them
-    // during supplyDefaults
-    containerOut._rangesliderAutorange = false;
-
     if(autoRange) coerce('rangemode');
 
     coerce('range');
@@ -83099,7 +83284,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // template too.
     var dfltFontColor = (dfltColor !== layoutAttributes.color.dflt) ? dfltColor : font.color;
     // try to get default title from splom trace, fallback to graph-wide value
-    var dfltTitle = ((layoutOut._splomAxes || {})[letter] || {})[id] || layoutOut._dfltTitle[letter];
+    var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
     coerce('title', dfltTitle);
     Lib.coerceFont(coerce, 'titlefont', {
@@ -83125,7 +83310,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     return containerOut;
 };
 
-},{"../../lib":445,"../../registry":536,"./category_order_defaults":496,"./layout_attributes":504,"./line_grid_defaults":506,"./set_convert":510,"./tick_label_defaults":511,"./tick_mark_defaults":512,"./tick_value_defaults":513}],495:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534,"./category_order_defaults":494,"./layout_attributes":502,"./line_grid_defaults":504,"./set_convert":508,"./tick_label_defaults":509,"./tick_mark_defaults":510,"./tick_value_defaults":511}],493:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83136,9 +83321,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
 'use strict';
 
-var Registry = require('../../registry');
+var Registry = _dereq_('../../registry');
 
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 
 
 // convert between axis names (xaxis, xaxis2, etc, elements of gd.layout)
@@ -83243,7 +83428,7 @@ exports.idSort = function(id1, id2) {
     return +(id1.substr(1) || 1) - +(id2.substr(1) || 1);
 };
 
-},{"../../registry":536,"./constants":497}],496:[function(require,module,exports){
+},{"../../registry":534,"./constants":495}],494:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83337,7 +83522,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],497:[function(require,module,exports){
+},{}],495:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83347,7 +83532,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
 */
 
 'use strict';
-var counterRegex = require('../../lib/regex').counter;
+var counterRegex = _dereq_('../../lib/regex').counter;
 
 
 module.exports = {
@@ -83419,7 +83604,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/regex":461}],498:[function(require,module,exports){
+},{"../../lib/regex":459}],496:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83431,8 +83616,8 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var id2name = require('./axis_ids').id2name;
+var Lib = _dereq_('../../lib');
+var id2name = _dereq_('./axis_ids').id2name;
 
 
 module.exports = function handleConstraintDefaults(containerIn, containerOut, coerce, allAxisIds, layoutOut) {
@@ -83573,7 +83758,7 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
     thisGroup[scaleanchor] = 1;
 }
 
-},{"../../lib":445,"./axis_ids":495}],499:[function(require,module,exports){
+},{"../../lib":442,"./axis_ids":493}],497:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83585,13 +83770,14 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
 
 'use strict';
 
-var id2name = require('./axis_ids').id2name;
-var scaleZoom = require('./scale_zoom');
-var makePadFn = require('./autorange').makePadFn;
+var id2name = _dereq_('./axis_ids').id2name;
+var scaleZoom = _dereq_('./scale_zoom');
+var makePadFn = _dereq_('./autorange').makePadFn;
+var concatExtremes = _dereq_('./autorange').concatExtremes;
 
-var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
+var ALMOST_EQUAL = _dereq_('../../constants/numerical').ALMOST_EQUAL;
 
-var FROM_BL = require('../../constants/alignment').FROM_BL;
+var FROM_BL = _dereq_('../../constants/alignment').FROM_BL;
 
 
 exports.enforce = function enforceAxisConstraints(gd) {
@@ -83688,7 +83874,7 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         factor *= rangeShrunk;
                     }
 
-                    if(ax.autorange && ax._min.length && ax._max.length) {
+                    if(ax.autorange) {
                         /*
                          * range & factor may need to change because range was
                          * calculated for the larger scaling, so some pixel
@@ -83716,18 +83902,21 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         updateDomain(ax, factor);
                         ax.setScale();
                         var m = Math.abs(ax._m);
+                        var extremes = concatExtremes(gd, ax);
+                        var minArray = extremes.min;
+                        var maxArray = extremes.max;
                         var newVal;
                         var k;
 
-                        for(k = 0; k < ax._min.length; k++) {
-                            newVal = ax._min[k].val - getPad(ax._min[k]) / m;
+                        for(k = 0; k < minArray.length; k++) {
+                            newVal = minArray[k].val - getPad(minArray[k]) / m;
                             if(newVal > outerMin && newVal < rangeMin) {
                                 rangeMin = newVal;
                             }
                         }
 
-                        for(k = 0; k < ax._max.length; k++) {
-                            newVal = ax._max[k].val + getPad(ax._max[k]) / m;
+                        for(k = 0; k < maxArray.length; k++) {
+                            newVal = maxArray[k].val + getPad(maxArray[k]) / m;
                             if(newVal < outerMax && newVal > rangeMax) {
                                 rangeMax = newVal;
                             }
@@ -83780,7 +83969,7 @@ function updateDomain(ax, factor) {
     ];
 }
 
-},{"../../constants/alignment":421,"../../constants/numerical":424,"./autorange":491,"./axis_ids":495,"./scale_zoom":508}],500:[function(require,module,exports){
+},{"../../constants/alignment":418,"../../constants/numerical":421,"./autorange":489,"./axis_ids":493,"./scale_zoom":506}],498:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83792,30 +83981,30 @@ function updateDomain(ax, factor) {
 
 'use strict';
 
-var d3 = require('d3');
-var tinycolor = require('tinycolor2');
-var supportsPassive = require('has-passive-events');
+var d3 = _dereq_('d3');
+var tinycolor = _dereq_('tinycolor2');
+var supportsPassive = _dereq_('has-passive-events');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var clearGlCanvases = require('../../lib/clear_gl_canvases');
-var Color = require('../../components/color');
-var Drawing = require('../../components/drawing');
-var Fx = require('../../components/fx');
-var setCursor = require('../../lib/setcursor');
-var dragElement = require('../../components/dragelement');
-var FROM_TL = require('../../constants/alignment').FROM_TL;
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var svgTextUtils = _dereq_('../../lib/svg_text_utils');
+var clearGlCanvases = _dereq_('../../lib/clear_gl_canvases');
+var Color = _dereq_('../../components/color');
+var Drawing = _dereq_('../../components/drawing');
+var Fx = _dereq_('../../components/fx');
+var setCursor = _dereq_('../../lib/setcursor');
+var dragElement = _dereq_('../../components/dragelement');
+var FROM_TL = _dereq_('../../constants/alignment').FROM_TL;
 
-var Plots = require('../plots');
+var Plots = _dereq_('../plots');
 
-var doTicksSingle = require('./axes').doTicksSingle;
-var getFromId = require('./axis_ids').getFromId;
-var prepSelect = require('./select').prepSelect;
-var clearSelect = require('./select').clearSelect;
-var scaleZoom = require('./scale_zoom');
+var doTicksSingle = _dereq_('./axes').doTicksSingle;
+var getFromId = _dereq_('./axis_ids').getFromId;
+var prepSelect = _dereq_('./select').prepSelect;
+var clearSelect = _dereq_('./select').clearSelect;
+var scaleZoom = _dereq_('./scale_zoom');
 
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 var MINDRAG = constants.MINDRAG;
 var MINZOOM = constants.MINZOOM;
 
@@ -84944,7 +85133,7 @@ module.exports = {
     attachWheelEventHandler: attachWheelEventHandler
 };
 
-},{"../../components/color":323,"../../components/dragelement":345,"../../components/drawing":348,"../../components/fx":365,"../../constants/alignment":421,"../../lib":445,"../../lib/clear_gl_canvases":431,"../../lib/setcursor":465,"../../lib/svg_text_utils":469,"../../registry":536,"../plots":528,"./axes":492,"./axis_ids":495,"./constants":497,"./scale_zoom":508,"./select":509,"d3":86,"has-passive-events":202,"tinycolor2":285}],501:[function(require,module,exports){
+},{"../../components/color":320,"../../components/dragelement":342,"../../components/drawing":345,"../../components/fx":362,"../../constants/alignment":418,"../../lib":442,"../../lib/clear_gl_canvases":428,"../../lib/setcursor":463,"../../lib/svg_text_utils":467,"../../registry":534,"../plots":526,"./axes":490,"./axis_ids":493,"./constants":495,"./scale_zoom":506,"./select":507,"d3":84,"has-passive-events":199,"tinycolor2":282}],499:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -84956,14 +85145,14 @@ module.exports = {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Fx = require('../../components/fx');
-var dragElement = require('../../components/dragelement');
-var setCursor = require('../../lib/setcursor');
+var Fx = _dereq_('../../components/fx');
+var dragElement = _dereq_('../../components/dragelement');
+var setCursor = _dereq_('../../lib/setcursor');
 
-var makeDragBox = require('./dragbox').makeDragBox;
-var DRAGGERSIZE = require('./constants').DRAGGERSIZE;
+var makeDragBox = _dereq_('./dragbox').makeDragBox;
+var DRAGGERSIZE = _dereq_('./constants').DRAGGERSIZE;
 
 exports.initInteractions = function initInteractions(gd) {
     var fullLayout = gd._fullLayout;
@@ -84974,7 +85163,7 @@ exports.initInteractions = function initInteractions(gd) {
         return;
     }
 
-    if(!fullLayout._has('cartesian') && !fullLayout._has('gl2d') && !fullLayout._has('splom')) return;
+    if(!fullLayout._has('cartesian') && !fullLayout._has('splom')) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -85098,7 +85287,7 @@ exports.initInteractions = function initInteractions(gd) {
         gd._fullLayout._lasthover.onmousedown(evt);
     };
 
-    exports.updateFx(fullLayout);
+    exports.updateFx(gd);
 };
 
 // Minimal set of update needed on 'modebar' edits.
@@ -85106,12 +85295,13 @@ exports.initInteractions = function initInteractions(gd) {
 //
 // Note that changing the axis configuration and/or the fixedrange attribute
 // should trigger a full initInteractions.
-exports.updateFx = function(fullLayout) {
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
     var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
     setCursor(fullLayout._draggers, cursor);
 };
 
-},{"../../components/dragelement":345,"../../components/fx":365,"../../lib/setcursor":465,"./constants":497,"./dragbox":500,"d3":86}],502:[function(require,module,exports){
+},{"../../components/dragelement":342,"../../components/fx":362,"../../lib/setcursor":463,"./constants":495,"./dragbox":498,"d3":84}],500:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -85123,8 +85313,8 @@ exports.updateFx = function(fullLayout) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
 
 /**
  * Factory function for checking component arrays for subplot references.
@@ -85186,7 +85376,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
     };
 };
 
-},{"../../lib":445,"../../registry":536}],503:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534}],501:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -85198,17 +85388,17 @@ module.exports = function makeIncludeComponents(containerArrayName) {
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Plots = require('../plots');
-var Drawing = require('../../components/drawing');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Plots = _dereq_('../plots');
+var Drawing = _dereq_('../../components/drawing');
 
-var getModuleCalcData = require('../get_data').getModuleCalcData;
-var axisIds = require('./axis_ids');
-var constants = require('./constants');
-var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var getModuleCalcData = _dereq_('../get_data').getModuleCalcData;
+var axisIds = _dereq_('./axis_ids');
+var constants = _dereq_('./constants');
+var xmlnsNamespaces = _dereq_('../../constants/xmlns_namespaces');
 
 var ensureSingle = Lib.ensureSingle;
 
@@ -85228,13 +85418,13 @@ exports.idRegex = constants.idRegex;
 
 exports.attrRegex = constants.attrRegex;
 
-exports.attributes = require('./attributes');
+exports.attributes = _dereq_('./attributes');
 
-exports.layoutAttributes = require('./layout_attributes');
+exports.layoutAttributes = _dereq_('./layout_attributes');
 
-exports.supplyLayoutDefaults = require('./layout_defaults');
+exports.supplyLayoutDefaults = _dereq_('./layout_defaults');
 
-exports.transitionAxes = require('./transition_axes');
+exports.transitionAxes = _dereq_('./transition_axes');
 
 exports.finalizeSubplots = function(layoutIn, layoutOut) {
     var subplots = layoutOut._subplots;
@@ -85311,15 +85501,32 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
     }
 };
 
+/**
+ * Cartesian.plot
+ *
+ * @param {DOM div | object} gd
+ * @param {array | null} (optional) traces
+ *  array of traces indices to plot
+ *  if undefined, plots all cartesian traces,
+ *  if null, plots no traces
+ * @param {object} (optional) transitionOpts
+ *  transition option object
+ * @param {function} (optional) makeOnCompleteCallback
+ *  transition make callback function from Plots.transition
+ */
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var subplots = fullLayout._subplots.cartesian;
     var calcdata = gd.calcdata;
     var i;
 
-    // If traces is not provided, then it's a complete replot and missing
-    // traces are removed
-    if(!Array.isArray(traces)) {
+    if(traces === null) {
+        // this means no updates required, must return here
+        // so that plotOne doesn't remove the trace layers
+        return;
+    } else if(!Array.isArray(traces)) {
+        // If traces is not provided, then it's a complete replot and missing
+        // traces are removed
         traces = [];
         for(i = 0; i < calcdata.length; i++) traces.push(i);
     }
@@ -85388,7 +85595,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             var className = (_module.layerName || name + 'layer');
             var plotMethod = _module.plot;
 
-            // plot all traces of this type on this subplot at once
+            // plot all visible traces of this type on this subplot at once
             cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
             cdModule = cdModuleAndOthers[0];
             // don't need to search the found traces again - in fact we need to NOT
@@ -85530,37 +85737,27 @@ exports.drawFramework = function(gd) {
     var subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
-        .data(subplotData, Lib.identity);
+        .data(subplotData, String);
 
     subplotLayers.enter().append('g')
-        .attr('class', function(name) { return 'subplot ' + name; });
+        .attr('class', function(d) { return 'subplot ' + d[0]; });
 
     subplotLayers.order();
 
     subplotLayers.exit()
         .call(purgeSubplotLayers, fullLayout);
 
-    subplotLayers.each(function(name) {
-        var plotinfo = fullLayout._plots[name];
+    subplotLayers.each(function(d) {
+        var id = d[0];
+        var plotinfo = fullLayout._plots[id];
 
-        // keep ref to plot group
         plotinfo.plotgroup = d3.select(this);
-
-        // initialize list of overlay subplots
-        plotinfo.overlays = [];
-
         makeSubplotLayer(gd, plotinfo);
-
-        // fill in list of overlay subplots
-        if(plotinfo.mainplot) {
-            var mainplot = fullLayout._plots[plotinfo.mainplot];
-            mainplot.overlays.push(plotinfo);
-        }
 
         // make separate drag layers for each subplot,
         // but append them to paper rather than the plot groups,
         // so they end up on top of the rest
-        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', name);
+        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
     });
 };
 
@@ -85572,27 +85769,62 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotData = [];
+    var ids = fullLayout._subplots.cartesian;
+    var len = ids.length;
+    var i, j, id, plotinfo, xa, ya;
+
+    // split 'regular' and 'overlaying' subplots
+    var regulars = [];
     var overlays = [];
 
-    for(var k in fullLayout._plots) {
-        var plotinfo = fullLayout._plots[k];
-        var xa2 = plotinfo.xaxis._mainAxis;
-        var ya2 = plotinfo.yaxis._mainAxis;
-        var mainplot = xa2._id + ya2._id;
+    for(i = 0; i < len; i++) {
+        id = ids[i];
+        plotinfo = fullLayout._plots[id];
+        xa = plotinfo.xaxis;
+        ya = plotinfo.yaxis;
 
-        if(mainplot !== k && fullLayout._plots[mainplot]) {
+        var xa2 = xa._mainAxis;
+        var ya2 = ya._mainAxis;
+        var mainplot = xa2._id + ya2._id;
+        var mainplotinfo = fullLayout._plots[mainplot];
+        plotinfo.overlays = [];
+
+        if(mainplot !== id && mainplotinfo) {
             plotinfo.mainplot = mainplot;
-            plotinfo.mainplotinfo = fullLayout._plots[mainplot];
-            overlays.push(k);
+            plotinfo.mainplotinfo = mainplotinfo;
+            overlays.push(id);
         } else {
-            subplotData.push(k);
             plotinfo.mainplot = undefined;
+            plotinfo.mainPlotinfo = undefined;
+            regulars.push(id);
         }
     }
 
-    // main subplots before overlays
-    subplotData = subplotData.concat(overlays);
+    // fill in list of overlaying subplots in 'main plot'
+    for(i = 0; i < overlays.length; i++) {
+        id = overlays[i];
+        plotinfo = fullLayout._plots[id];
+        plotinfo.mainplotinfo.overlays.push(plotinfo);
+    }
+
+    // put 'regular' subplot data before 'overlaying'
+    var subplotIds = regulars.concat(overlays);
+    var subplotData = new Array(len);
+
+    for(i = 0; i < len; i++) {
+        id = subplotIds[i];
+        plotinfo = fullLayout._plots[id];
+        xa = plotinfo.xaxis;
+        ya = plotinfo.yaxis;
+
+        // use info about axis layer and overlaying pattern
+        // to clean what need to be cleaned up in exit selection
+        var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
+        for(j = 0; j < plotinfo.overlays.length; j++) {
+            d.push(plotinfo.overlays[j].id);
+        }
+        subplotData[i] = d;
+    }
 
     return subplotData;
 }
@@ -85689,7 +85921,9 @@ function makeSubplotLayer(gd, plotinfo) {
     if(!hasOnlyLargeSploms) {
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.gridlayer.selectAll('g').sort(axisIds.idSort);
+        plotinfo.gridlayer.selectAll('g')
+            .map(function(d) { return d[0]; })
+            .sort(axisIds.idSort);
     }
 
     plotinfo.xlines
@@ -85706,13 +85940,13 @@ function purgeSubplotLayers(layers, fullLayout) {
 
     var overlayIdsToRemove = {};
 
-    layers.each(function(subplotId) {
+    layers.each(function(d) {
+        var id = d[0];
         var plotgroup = d3.select(this);
 
         plotgroup.remove();
-        removeSubplotExtras(subplotId, fullLayout);
-
-        overlayIdsToRemove[subplotId] = true;
+        removeSubplotExtras(id, fullLayout);
+        overlayIdsToRemove[id] = true;
 
         // do not remove individual axis <clipPath>s here
         // as other subplots may need them
@@ -85764,9 +85998,9 @@ exports.toSVG = function(gd) {
     canvases.each(canvasToImage);
 };
 
-exports.updateFx = require('./graph_interact').updateFx;
+exports.updateFx = _dereq_('./graph_interact').updateFx;
 
-},{"../../components/drawing":348,"../../constants/xmlns_namespaces":426,"../../lib":445,"../../registry":536,"../get_data":520,"../plots":528,"./attributes":490,"./axis_ids":495,"./constants":497,"./graph_interact":501,"./layout_attributes":504,"./layout_defaults":505,"./transition_axes":514,"d3":86}],504:[function(require,module,exports){
+},{"../../components/drawing":345,"../../constants/xmlns_namespaces":423,"../../lib":442,"../../registry":534,"../get_data":518,"../plots":526,"./attributes":488,"./axis_ids":493,"./constants":495,"./graph_interact":499,"./layout_attributes":502,"./layout_defaults":503,"./transition_axes":512,"d3":84}],502:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -85777,13 +86011,13 @@ exports.updateFx = require('./graph_interact').updateFx;
 
 'use strict';
 
-var fontAttrs = require('../font_attributes');
-var colorAttrs = require('../../components/color/attributes');
-var dash = require('../../components/drawing/attributes').dash;
-var extendFlat = require('../../lib/extend').extendFlat;
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var fontAttrs = _dereq_('../font_attributes');
+var colorAttrs = _dereq_('../../components/color/attributes');
+var dash = _dereq_('../../components/drawing/attributes').dash;
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 
 
 module.exports = {
@@ -85831,7 +86065,7 @@ module.exports = {
         values: [true, false, 'reversed'],
         dflt: true,
         
-        editType: 'calc',
+        editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         
     },
@@ -86138,7 +86372,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         
-        editType: 'layoutstyle',
+        editType: 'ticks+layoutstyle',
         
     },
     linecolor: {
@@ -86291,7 +86525,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":322,"../../components/drawing/attributes":347,"../../lib/extend":436,"../../plot_api/plot_template":482,"../font_attributes":518,"./constants":497}],505:[function(require,module,exports){
+},{"../../components/color/attributes":319,"../../components/drawing/attributes":344,"../../lib/extend":433,"../../plot_api/plot_template":480,"../font_attributes":516,"./constants":495}],503:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86303,42 +86537,67 @@ module.exports = {
 
 'use strict';
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Color = require('../../components/color');
-var Template = require('../../plot_api/plot_template');
-var basePlotLayoutAttributes = require('../layout_attributes');
+var Lib = _dereq_('../../lib');
+var Color = _dereq_('../../components/color');
+var Template = _dereq_('../../plot_api/plot_template');
+var basePlotLayoutAttributes = _dereq_('../layout_attributes');
 
-var layoutAttributes = require('./layout_attributes');
-var handleTypeDefaults = require('./type_defaults');
-var handleAxisDefaults = require('./axis_defaults');
-var handleConstraintDefaults = require('./constraint_defaults');
-var handlePositionDefaults = require('./position_defaults');
-var axisIds = require('./axis_ids');
+var layoutAttributes = _dereq_('./layout_attributes');
+var handleTypeDefaults = _dereq_('./type_defaults');
+var handleAxisDefaults = _dereq_('./axis_defaults');
+var handleConstraintDefaults = _dereq_('./constraint_defaults');
+var handlePositionDefaults = _dereq_('./position_defaults');
 
+var axisIds = _dereq_('./axis_ids');
+var id2name = axisIds.id2name;
+var name2id = axisIds.name2id;
+
+var Registry = _dereq_('../../registry');
+var traceIs = Registry.traceIs;
+var getComponentMethod = Registry.getComponentMethod;
+
+function appendList(cont, k, item) {
+    if(Array.isArray(cont[k])) cont[k].push(item);
+    else cont[k] = [item];
+}
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+    var ax2traces = {};
     var xaCheater = {};
     var xaNonCheater = {};
     var outerTicks = {};
     var noGrids = {};
-    var i;
+    var i, j;
 
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
+        if(!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d')) continue;
 
-        if(!Registry.traceIs(trace, 'cartesian') && !Registry.traceIs(trace, 'gl2d')) {
-            continue;
+        var xaName;
+        if(trace.xaxis) {
+            xaName = id2name(trace.xaxis);
+            appendList(ax2traces, xaName, trace);
+        } else if(trace.xaxes) {
+            for(j = 0; j < trace.xaxes.length; j++) {
+                appendList(ax2traces, id2name(trace.xaxes[j]), trace);
+            }
         }
 
-        var xaName = axisIds.id2name(trace.xaxis);
-        var yaName = axisIds.id2name(trace.yaxis);
+        var yaName;
+        if(trace.yaxis) {
+            yaName = id2name(trace.yaxis);
+            appendList(ax2traces, yaName, trace);
+        } else if(trace.yaxes) {
+            for(j = 0; j < trace.yaxes.length; j++) {
+                appendList(ax2traces, id2name(trace.yaxes[j]), trace);
+            }
+        }
 
         // Two things trigger axis visibility:
         // 1. is not carpet
         // 2. carpet that's not cheater
-        if(!Registry.traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
+        if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
             if(xaName) xaNonCheater[xaName] = 1;
         }
 
@@ -86351,22 +86610,22 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
 
         // check for default formatting tweaks
-        if(Registry.traceIs(trace, '2dMap')) {
-            outerTicks[xaName] = true;
-            outerTicks[yaName] = true;
+        if(traceIs(trace, '2dMap')) {
+            outerTicks[xaName] = 1;
+            outerTicks[yaName] = 1;
         }
 
-        if(Registry.traceIs(trace, 'oriented')) {
+        if(traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
-            noGrids[positionAxis] = true;
+            noGrids[positionAxis] = 1;
         }
     }
 
     var subplots = layoutOut._subplots;
     var xIds = subplots.xaxis;
     var yIds = subplots.yaxis;
-    var xNames = Lib.simpleMap(xIds, axisIds.id2name);
-    var yNames = Lib.simpleMap(yIds, axisIds.id2name);
+    var xNames = Lib.simpleMap(xIds, id2name);
+    var yNames = Lib.simpleMap(yIds, id2name);
     var axNames = xNames.concat(yNames);
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
@@ -86402,7 +86661,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             var axName2 = list[j];
 
             if(axName2 !== axName && !(layoutIn[axName2] || {}).overlaying) {
-                out.push(axisIds.name2id(axName2));
+                out.push(name2id(axName2));
             }
         }
 
@@ -86421,7 +86680,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = Template.newContainer(layoutOut, axName, axLetter + 'axis');
 
-        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, fullData, axName);
+        var traces = ax2traces[axName] || [];
+        axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
+        axLayoutOut._annIndices = [];
+        axLayoutOut._shapeIndices = [];
+
+        // set up some private properties
+        axLayoutOut._name = axName;
+        var id = axLayoutOut._id = name2id(axName);
 
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
@@ -86430,13 +86696,15 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
             showGrid: !noGrids[axName],
-            data: fullData,
+            data: traces,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
             automargin: true,
-            cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName]
+            cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName],
+            splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
         };
 
+        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
         var spikecolor = coerce2('spikecolor'),
@@ -86467,8 +86735,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     // quick second pass for range slider and selector defaults
-    var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults');
-    var rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
+    var rangeSliderDefaults = getComponentMethod('rangeslider', 'handleDefaults');
+    var rangeSelectorDefaults = getComponentMethod('rangeselector', 'handleDefaults');
 
     for(i = 0; i < xNames.length; i++) {
         axName = xNames[i];
@@ -86495,7 +86763,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        var anchoredAxis = layoutOut[axisIds.id2name(axLayoutOut.anchor)];
+        var anchoredAxis = layoutOut[id2name(axLayoutOut.anchor)];
 
         var fixedRangeDflt = (
             anchoredAxis &&
@@ -86526,7 +86794,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../components/color":323,"../../lib":445,"../../plot_api/plot_template":482,"../../registry":536,"../layout_attributes":526,"./axis_defaults":494,"./axis_ids":495,"./constraint_defaults":498,"./layout_attributes":504,"./position_defaults":507,"./type_defaults":515}],506:[function(require,module,exports){
+},{"../../components/color":320,"../../lib":442,"../../plot_api/plot_template":480,"../../registry":534,"../layout_attributes":524,"./axis_defaults":492,"./axis_ids":493,"./constraint_defaults":496,"./layout_attributes":502,"./position_defaults":505,"./type_defaults":513}],504:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86537,9 +86805,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
 'use strict';
 
-var colorMix = require('tinycolor2').mix;
-var lightFraction = require('../../components/color/attributes').lightFraction;
-var Lib = require('../../lib');
+var colorMix = _dereq_('tinycolor2').mix;
+var lightFraction = _dereq_('../../components/color/attributes').lightFraction;
+var Lib = _dereq_('../../lib');
 
 /**
  * @param {object} opts :
@@ -86591,7 +86859,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     }
 };
 
-},{"../../components/color/attributes":322,"../../lib":445,"tinycolor2":285}],507:[function(require,module,exports){
+},{"../../components/color/attributes":319,"../../lib":442,"tinycolor2":282}],505:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86603,9 +86871,9 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 
 module.exports = function handlePositionDefaults(containerIn, containerOut, coerce, options) {
@@ -86675,7 +86943,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":445,"fast-isnumeric":151}],508:[function(require,module,exports){
+},{"../../lib":442,"fast-isnumeric":148}],506:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86687,7 +86955,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
 
 'use strict';
 
-var FROM_BL = require('../../constants/alignment').FROM_BL;
+var FROM_BL = _dereq_('../../constants/alignment').FROM_BL;
 
 module.exports = function scaleZoom(ax, factor, centerFraction) {
     if(centerFraction === undefined) {
@@ -86703,7 +86971,7 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
     ];
 };
 
-},{"../../constants/alignment":421}],509:[function(require,module,exports){
+},{"../../constants/alignment":418}],507:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86715,19 +86983,19 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
 
 'use strict';
 
-var polybool = require('polybooljs');
+var polybool = _dereq_('polybooljs');
 
-var Registry = require('../../registry');
-var Color = require('../../components/color');
-var Fx = require('../../components/fx');
+var Registry = _dereq_('../../registry');
+var Color = _dereq_('../../components/color');
+var Fx = _dereq_('../../components/fx');
 
-var polygon = require('../../lib/polygon');
-var throttle = require('../../lib/throttle');
-var makeEventData = require('../../components/fx/helpers').makeEventData;
-var getFromId = require('./axis_ids').getFromId;
-var sortModules = require('../sort_modules').sortModules;
+var polygon = _dereq_('../../lib/polygon');
+var throttle = _dereq_('../../lib/throttle');
+var makeEventData = _dereq_('../../components/fx/helpers').makeEventData;
+var getFromId = _dereq_('./axis_ids').getFromId;
+var sortModules = _dereq_('../sort_modules').sortModules;
 
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 var MINSELECT = constants.MINSELECT;
 
 var filteredPolygon = polygon.filter;
@@ -87180,7 +87448,7 @@ module.exports = {
     clearSelect: clearSelect
 };
 
-},{"../../components/color":323,"../../components/fx":365,"../../components/fx/helpers":362,"../../lib/polygon":457,"../../lib/throttle":470,"../../registry":536,"../sort_modules":535,"./axis_ids":495,"./constants":497,"polybooljs":240}],510:[function(require,module,exports){
+},{"../../components/color":320,"../../components/fx":362,"../../components/fx/helpers":359,"../../lib/polygon":455,"../../lib/throttle":468,"../../registry":534,"../sort_modules":533,"./axis_ids":493,"./constants":495,"polybooljs":237}],508:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87192,21 +87460,21 @@ module.exports = {
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
 var ensureNumber = Lib.ensureNumber;
 
-var numConstants = require('../../constants/numerical');
+var numConstants = _dereq_('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
 
-var constants = require('./constants');
-var axisIds = require('./axis_ids');
+var constants = _dereq_('./constants');
+var axisIds = _dereq_('./axis_ids');
 
 function fromLog(v) {
     return Math.pow(10, v);
@@ -87235,8 +87503,7 @@ function fromLog(v) {
  * Creates/updates these conversion functions, and a few more utilities
  * like cleanRange, and makeCalcdata
  *
- * also clears the autorange bounds ._min and ._max
- * and the autotick constraints ._minDtick, ._forceTick0
+ * also clears the autotick constraints ._minDtick, ._forceTick0
  */
 module.exports = function setConvert(ax, fullLayout) {
     fullLayout = fullLayout || {};
@@ -87275,7 +87542,14 @@ module.exports = function setConvert(ax, fullLayout) {
         // as (local) ms if that fails.
         var ms = dateTime2ms(v, calendar || ax.calendar);
         if(ms === BADNUM) {
-            if(isNumeric(v)) ms = dateTime2ms(new Date(+v));
+            if(isNumeric(v)) {
+                v = +v;
+                // keep track of tenths of ms, that `new Date` will drop
+                // same logic as in Lib.ms2DateTime
+                var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
+                var msRounded = Math.round(v - msecTenths / 10);
+                ms = dateTime2ms(new Date(msRounded)) + msecTenths / 10;
+            }
             else return BADNUM;
         }
         return ms;
@@ -87643,15 +87917,6 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     ax.clearCalc = function() {
-        // for autoranging: arrays of objects:
-        // {
-        //     val: axis value,
-        //     pad: pixel padding,
-        //     extrapad: boolean, should this val get 5% additional padding
-        // }
-        ax._min = [];
-        ax._max = [];
-
         // initialize the category list, if there is one, so we start over
         // to be filled in later by ax.d2c
         ax._categories = (ax._initialCategories || []).slice();
@@ -87683,7 +87948,7 @@ module.exports = function setConvert(ax, fullLayout) {
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":424,"../../lib":445,"./axis_ids":495,"./constants":497,"d3":86,"fast-isnumeric":151}],511:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../lib":442,"./axis_ids":493,"./constants":495,"d3":84,"fast-isnumeric":148}],509:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87695,9 +87960,9 @@ module.exports = function setConvert(ax, fullLayout) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var layoutAttributes = require('./layout_attributes');
-var handleArrayContainerDefaults = require('../array_container_defaults');
+var Lib = _dereq_('../../lib');
+var layoutAttributes = _dereq_('./layout_attributes');
+var handleArrayContainerDefaults = _dereq_('../array_container_defaults');
 
 module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
     var showAttrDflt = getShowAttrDflt(containerIn);
@@ -87783,7 +88048,7 @@ function tickformatstopDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../lib":445,"../array_container_defaults":488,"./layout_attributes":504}],512:[function(require,module,exports){
+},{"../../lib":442,"../array_container_defaults":486,"./layout_attributes":502}],510:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87795,9 +88060,9 @@ function tickformatstopDefaults(valueIn, valueOut) {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
-var layoutAttributes = require('./layout_attributes');
+var layoutAttributes = _dereq_('./layout_attributes');
 
 
 /**
@@ -87816,7 +88081,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
     }
 };
 
-},{"../../lib":445,"./layout_attributes":504}],513:[function(require,module,exports){
+},{"../../lib":442,"./layout_attributes":502}],511:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87828,9 +88093,9 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var Lib = require('../../lib');
-var ONEDAY = require('../../constants/numerical').ONEDAY;
+var isNumeric = _dereq_('fast-isnumeric');
+var Lib = _dereq_('../../lib');
+var ONEDAY = _dereq_('../../constants/numerical').ONEDAY;
 
 
 module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
@@ -87901,7 +88166,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"../../constants/numerical":424,"../../lib":445,"fast-isnumeric":151}],514:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../lib":442,"fast-isnumeric":148}],512:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87912,12 +88177,12 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Registry = require('../../registry');
-var Drawing = require('../../components/drawing');
-var Axes = require('./axes');
-var axisRegex = require('./constants').attrRegex;
+var Registry = _dereq_('../../registry');
+var Drawing = _dereq_('../../components/drawing');
+var Axes = _dereq_('./axes');
+var axisRegex = _dereq_('./constants').attrRegex;
 
 module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
@@ -88229,7 +88494,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     return Promise.resolve();
 };
 
-},{"../../components/drawing":348,"../../registry":536,"./axes":492,"./constants":497,"d3":86}],515:[function(require,module,exports){
+},{"../../components/drawing":345,"../../registry":534,"./axes":490,"./constants":495,"d3":84}],513:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -88238,32 +88503,24 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Registry = require('../../registry');
-var autoType = require('./axis_autotype');
-var name2id = require('./axis_ids').name2id;
+var Registry = _dereq_('../../registry');
+var autoType = _dereq_('./axis_autotype');
 
 /*
  *  data: the plot data to use in choosing auto type
  *  name: axis object name (ie 'xaxis') if one should be stored
  */
-module.exports = function handleTypeDefaults(containerIn, containerOut, coerce, data, name) {
-    // set up some private properties
-    if(name) {
-        containerOut._name = name;
-        containerOut._id = name2id(name);
-    }
+module.exports = function handleTypeDefaults(containerIn, containerOut, coerce, options) {
+    var axType = coerce('type', (options.splomStash || {}).type);
 
-    var axType = coerce('type');
     if(axType === '-') {
-        setAutoType(containerOut, data);
+        setAutoType(containerOut, options.data);
 
         if(containerOut.type === '-') {
             containerOut.type = 'linear';
-        }
-        else {
+        } else {
             // copy autoType back to input axis
             // note that if this object didn't exist
             // in the input layout, we have to put it in
@@ -88321,9 +88578,10 @@ function setAutoType(ax, data) {
     }
     else if(d0.type === 'splom') {
         var dimensions = d0.dimensions;
+        var diag = d0._diag;
         for(i = 0; i < dimensions.length; i++) {
             var dim = dimensions[i];
-            if(dim.visible) {
+            if(dim.visible && (diag[i][0] === id || diag[i][1] === id)) {
                 ax.type = autoType(dim.values, calendar);
                 break;
             }
@@ -88340,7 +88598,7 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
 
         if(trace.type === 'splom' &&
                 trace._length > 0 &&
-                trace['_' + axLetter + 'axes'][id]
+                (trace['_' + axLetter + 'axes'] || {})[id]
         ) {
             return trace;
         }
@@ -88374,7 +88632,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     );
 }
 
-},{"../../registry":536,"./axis_autotype":493,"./axis_ids":495}],516:[function(require,module,exports){
+},{"../../registry":534,"./axis_autotype":491}],514:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -88385,8 +88643,8 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
 
 'use strict';
 
-var Registry = require('../registry');
-var Lib = require('../lib');
+var Registry = _dereq_('../registry');
+var Lib = _dereq_('../lib');
 
 /*
  * Create or update an observer. This function is designed to be
@@ -88798,7 +89056,7 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":445,"../registry":536}],517:[function(require,module,exports){
+},{"../lib":442,"../registry":534}],515:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -88809,7 +89067,7 @@ function crawl(attrs, callback, path, depth) {
 
 'use strict';
 
-var extendFlat = require('../lib/extend').extendFlat;
+var extendFlat = _dereq_('../lib/extend').extendFlat;
 
 /**
  * Make a xy domain attribute group
@@ -88906,7 +89164,7 @@ exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
     coerce('domain.y', dfltY);
 };
 
-},{"../lib/extend":436}],518:[function(require,module,exports){
+},{"../lib/extend":433}],516:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -88971,7 +89229,7 @@ module.exports = function(opts) {
     return attrs;
 };
 
-},{}],519:[function(require,module,exports){
+},{}],517:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89017,7 +89275,7 @@ module.exports = {
     }
 };
 
-},{}],520:[function(require,module,exports){
+},{}],518:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89028,8 +89286,8 @@ module.exports = {
 
 'use strict';
 
-var Registry = require('../registry');
-var SUBPLOT_PATTERN = require('./cartesian/constants').SUBPLOT_PATTERN;
+var Registry = _dereq_('../registry');
+var SUBPLOT_PATTERN = _dereq_('./cartesian/constants').SUBPLOT_PATTERN;
 
 /**
  * Get calcdata trace(s) associated with a given subplot
@@ -89089,6 +89347,7 @@ exports.getModuleCalcData = function(calcdata, arg1) {
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
+        // N.B. 'legendonly' traces do not make it past here
         if(trace.visible !== true) continue;
 
         // group calcdata trace not by 'module' (as the name of this function
@@ -89144,24 +89403,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-/**
- * Get a lookup object of trace uids corresponding in a given calcdata array.
- *
- * @param {array} calcdata: as in gd.calcdata (or a subset)
- * @return {object} lookup object of uids (`uid: 1`)
- */
-exports.getUidsFromCalcData = function(calcdata) {
-    var out = {};
-
-    for(var i = 0; i < calcdata.length; i++) {
-        var trace = calcdata[i][0].trace;
-        out[trace.uid] = 1;
-    }
-
-    return out;
-};
-
-},{"../registry":536,"./cartesian/constants":497}],521:[function(require,module,exports){
+},{"../registry":534,"./cartesian/constants":495}],519:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89173,11 +89415,11 @@ exports.getUidsFromCalcData = function(calcdata) {
 
 'use strict';
 
-var mouseChange = require('mouse-change');
-var mouseWheel = require('mouse-wheel');
-var mouseOffset = require('mouse-event-offset');
-var cartesianConstants = require('../cartesian/constants');
-var hasPassive = require('has-passive-events');
+var mouseChange = _dereq_('mouse-change');
+var mouseWheel = _dereq_('mouse-wheel');
+var mouseOffset = _dereq_('mouse-event-offset');
+var cartesianConstants = _dereq_('../cartesian/constants');
+var hasPassive = _dereq_('has-passive-events');
 
 module.exports = createCamera;
 
@@ -89463,7 +89705,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"../cartesian/constants":497,"has-passive-events":202,"mouse-change":214,"mouse-event-offset":215,"mouse-wheel":217}],522:[function(require,module,exports){
+},{"../cartesian/constants":495,"has-passive-events":199,"mouse-change":211,"mouse-event-offset":212,"mouse-wheel":214}],520:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89475,10 +89717,10 @@ function createCamera(scene) {
 
 'use strict';
 
-var Axes = require('../cartesian/axes');
+var Axes = _dereq_('../cartesian/axes');
 
-var convertHTMLToUnicode = require('../../lib/html2unicode');
-var str2RGBArray = require('../../lib/str2rgbarray');
+var convertHTMLToUnicode = _dereq_('../../lib/html2unicode');
+var str2RGBArray = _dereq_('../../lib/str2rgbarray');
 
 function Axes2DOptions(scene) {
     this.scene = scene;
@@ -89709,7 +89951,7 @@ function createAxes2D(scene) {
 
 module.exports = createAxes2D;
 
-},{"../../lib/html2unicode":443,"../../lib/str2rgbarray":468,"../cartesian/axes":492}],523:[function(require,module,exports){
+},{"../../lib/html2unicode":440,"../../lib/str2rgbarray":466,"../cartesian/axes":490}],521:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89721,15 +89963,15 @@ module.exports = createAxes2D;
 
 'use strict';
 
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 
-var Scene2D = require('./scene2d');
-var layoutGlobalAttrs = require('../layout_attributes');
-var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var constants = require('../cartesian/constants');
-var Cartesian = require('../cartesian');
-var fxAttrs = require('../../components/fx/layout_attributes');
-var getSubplotData = require('../get_data').getSubplotData;
+var Scene2D = _dereq_('./scene2d');
+var layoutGlobalAttrs = _dereq_('../layout_attributes');
+var xmlnsNamespaces = _dereq_('../../constants/xmlns_namespaces');
+var constants = _dereq_('../cartesian/constants');
+var Cartesian = _dereq_('../cartesian');
+var fxAttrs = _dereq_('../../components/fx/layout_attributes');
+var getSubplotData = _dereq_('../get_data').getSubplotData;
 
 exports.name = 'gl2d';
 
@@ -89741,7 +89983,7 @@ exports.idRegex = constants.idRegex;
 
 exports.attrRegex = constants.attrRegex;
 
-exports.attributes = require('../cartesian/attributes');
+exports.attributes = _dereq_('../cartesian/attributes');
 
 exports.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     if(!layoutOut._has('cartesian')) {
@@ -89850,7 +90092,8 @@ exports.toSVG = function(gd) {
     }
 };
 
-exports.updateFx = function(fullLayout) {
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {
@@ -89859,7 +90102,7 @@ exports.updateFx = function(fullLayout) {
     }
 };
 
-},{"../../components/fx/layout_attributes":366,"../../constants/xmlns_namespaces":426,"../../plot_api/edit_types":475,"../cartesian":503,"../cartesian/attributes":490,"../cartesian/constants":497,"../get_data":520,"../layout_attributes":526,"./scene2d":524}],524:[function(require,module,exports){
+},{"../../components/fx/layout_attributes":363,"../../constants/xmlns_namespaces":423,"../../plot_api/edit_types":473,"../cartesian":501,"../cartesian/attributes":488,"../cartesian/constants":495,"../get_data":518,"../layout_attributes":524,"./scene2d":522}],522:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89871,28 +90114,28 @@ exports.updateFx = function(fullLayout) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../components/fx');
+var Registry = _dereq_('../../registry');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var Fx = _dereq_('../../components/fx');
 
-var createPlot2D = require('gl-plot2d');
-var createSpikes = require('gl-spikes2d');
-var createSelectBox = require('gl-select-box');
-var getContext = require('webgl-context');
+var createPlot2D = _dereq_('gl-plot2d');
+var createSpikes = _dereq_('gl-spikes2d');
+var createSelectBox = _dereq_('gl-select-box');
+var getContext = _dereq_('webgl-context');
 
-var createOptions = require('./convert');
-var createCamera = require('./camera');
-var convertHTMLToUnicode = require('../../lib/html2unicode');
-var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
-var axisConstraints = require('../cartesian/constraints');
+var createOptions = _dereq_('./convert');
+var createCamera = _dereq_('./camera');
+var convertHTMLToUnicode = _dereq_('../../lib/html2unicode');
+var showNoWebGlMsg = _dereq_('../../lib/show_no_webgl_msg');
+var axisConstraints = _dereq_('../cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
-var doAutoRange = require('../cartesian/autorange').doAutoRange;
+var doAutoRange = _dereq_('../cartesian/autorange').doAutoRange;
 
 var AXES = ['xaxis', 'yaxis'];
 var STATIC_CANVAS, STATIC_CONTEXT;
 
-var SUBPLOT_PATTERN = require('../cartesian/constants').SUBPLOT_PATTERN;
+var SUBPLOT_PATTERN = _dereq_('../cartesian/constants').SUBPLOT_PATTERN;
 
 
 function Scene2D(options, fullLayout) {
@@ -90303,7 +90546,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
         ax = this[AXES[i]];
         ax._length = options.viewBox[i + 2] - options.viewBox[i];
 
-        doAutoRange(ax);
+        doAutoRange(this.graphDiv, ax);
         ax.setScale();
     }
 
@@ -90581,7 +90824,7 @@ proto.hoverFormatter = function(axisName, val) {
     return Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
 
-},{"../../components/fx":365,"../../lib/html2unicode":443,"../../lib/show_no_webgl_msg":466,"../../plots/cartesian/axes":492,"../../registry":536,"../cartesian/autorange":491,"../cartesian/constants":497,"../cartesian/constraints":499,"./camera":521,"./convert":522,"gl-plot2d":176,"gl-select-box":180,"gl-spikes2d":189,"webgl-context":304}],525:[function(require,module,exports){
+},{"../../components/fx":362,"../../lib/html2unicode":440,"../../lib/show_no_webgl_msg":464,"../../plots/cartesian/axes":490,"../../registry":534,"../cartesian/autorange":489,"../cartesian/constants":495,"../cartesian/constraints":497,"./camera":519,"./convert":520,"gl-plot2d":173,"gl-select-box":177,"gl-spikes2d":186,"webgl-context":301}],523:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -90615,7 +90858,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],526:[function(require,module,exports){
+},{}],524:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -90626,8 +90869,8 @@ module.exports = project;
 
 'use strict';
 
-var fontAttrs = require('./font_attributes');
-var colorAttrs = require('../components/color/attributes');
+var fontAttrs = _dereq_('./font_attributes');
+var colorAttrs = _dereq_('../components/color/attributes');
 
 var globalFont = fontAttrs({
     editType: 'calc',
@@ -90781,7 +91024,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":322,"./font_attributes":518}],527:[function(require,module,exports){
+},{"../components/color/attributes":319,"./font_attributes":516}],525:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -90827,7 +91070,7 @@ module.exports = {
     editType: 'arraydraw'
 };
 
-},{}],528:[function(require,module,exports){
+},{}],526:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -90839,21 +91082,21 @@ module.exports = {
 
 'use strict';
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var d3 = _dereq_('d3');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var Registry = require('../registry');
-var PlotSchema = require('../plot_api/plot_schema');
-var Template = require('../plot_api/plot_template');
-var Lib = require('../lib');
-var Color = require('../components/color');
-var BADNUM = require('../constants/numerical').BADNUM;
+var Registry = _dereq_('../registry');
+var PlotSchema = _dereq_('../plot_api/plot_schema');
+var Template = _dereq_('../plot_api/plot_template');
+var Lib = _dereq_('../lib');
+var Color = _dereq_('../components/color');
+var BADNUM = _dereq_('../constants/numerical').BADNUM;
 
-var axisIDs = require('../plots/cartesian/axis_ids');
-var sortBasePlotModules = require('./sort_modules').sortBasePlotModules;
+var axisIDs = _dereq_('../plots/cartesian/axis_ids');
+var sortBasePlotModules = _dereq_('./sort_modules').sortBasePlotModules;
 
-var animationAttrs = require('./animation_attributes');
-var frameAttrs = require('./frame_attributes');
+var animationAttrs = _dereq_('./animation_attributes');
+var frameAttrs = _dereq_('./frame_attributes');
 
 var relinkPrivateKeys = Lib.relinkPrivateKeys;
 var _ = Lib._;
@@ -90863,17 +91106,17 @@ var plots = module.exports = {};
 // Expose registry methods on Plots for backward-compatibility
 Lib.extendFlat(plots, Registry);
 
-plots.attributes = require('./attributes');
+plots.attributes = _dereq_('./attributes');
 plots.attributes.type.values = plots.allTypes;
-plots.fontAttrs = require('./font_attributes');
-plots.layoutAttributes = require('./layout_attributes');
+plots.fontAttrs = _dereq_('./font_attributes');
+plots.layoutAttributes = _dereq_('./layout_attributes');
 
 // TODO make this a plot attribute?
 plots.fontWeight = 'normal';
 
 var transformsRegistry = plots.transformsRegistry;
 
-var commandModule = require('./command');
+var commandModule = _dereq_('./command');
 plots.executeAPICommand = commandModule.executeAPICommand;
 plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
 plots.manageCommandObserver = commandModule.manageCommandObserver;
@@ -91107,6 +91350,9 @@ var extraFormatKeys = [
  * gd._fullLayout._modules
  *   is a list of all the trace modules required to draw the plot.
  *
+ * gd._fullLayout._visibleModules
+ *   subset of _modules, a list of modules corresponding to visible:true traces.
+ *
  * gd._fullLayout._basePlotModules
  *   is a list of all the plot modules required to draw the plot.
  *
@@ -91208,6 +91454,7 @@ plots.supplyDefaults = function(gd, opts) {
 
     // clear the lists of trace and baseplot modules, and subplots
     newFullLayout._modules = [];
+    newFullLayout._visibleModules = [];
     newFullLayout._basePlotModules = [];
     var subplots = newFullLayout._subplots = emptySubplotLists();
 
@@ -91250,7 +91497,7 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
 
     // special cases that introduce interactions between traces
-    var _modules = newFullLayout._modules;
+    var _modules = newFullLayout._visibleModules;
     for(i = 0; i < _modules.length; i++) {
         var _module = _modules[i];
         if(_module.cleanData) _module.cleanData(newFullData);
@@ -91526,7 +91773,7 @@ plots._hasPlotType = function(category) {
         if(basePlotModules[i].name === category) return true;
     }
 
-    // check trace modules
+    // check trace modules (including non-visible:true)
     var modules = this._modules || [];
     for(i = 0; i < modules.length; i++) {
         var name = modules[i].name;
@@ -91587,6 +91834,8 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 };
 
 plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var i, j;
+
     var oldSubplots = oldFullLayout._plots || {};
     var newSubplots = newFullLayout._plots = {};
     var newSubplotList = newFullLayout._subplots;
@@ -91598,32 +91847,22 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
 
-    var i, j, id, ax;
-
     for(i = 0; i < ids.length; i++) {
-        id = ids[i];
+        var id = ids[i];
         var oldSubplot = oldSubplots[id];
         var xaxis = axisIDs.getFromId(mockGd, id, 'x');
         var yaxis = axisIDs.getFromId(mockGd, id, 'y');
         var plotinfo;
 
+        // link or create subplot object
         if(oldSubplot) {
             plotinfo = newSubplots[id] = oldSubplot;
-
-            if(plotinfo.xaxis.layer !== xaxis.layer) {
-                plotinfo.xlines.attr('d', null);
-                plotinfo.xaxislayer.selectAll('*').remove();
-            }
-
-            if(plotinfo.yaxis.layer !== yaxis.layer) {
-                plotinfo.ylines.attr('d', null);
-                plotinfo.yaxislayer.selectAll('*').remove();
-            }
         } else {
             plotinfo = newSubplots[id] = {};
             plotinfo.id = id;
         }
 
+        // update x and y axis layout object refs
         plotinfo.xaxis = xaxis;
         plotinfo.yaxis = yaxis;
 
@@ -91651,7 +91890,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     // anchored axes to the axes they're anchored to
     var axList = axisIDs.list(mockGd, null, true);
     for(i = 0; i < axList.length; i++) {
-        ax = axList[i];
+        var ax = axList[i];
         var mainAx = null;
 
         if(ax.overlaying) {
@@ -91728,6 +91967,7 @@ plots.clearExpandedTraceDefaultColors = function(trace) {
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var modules = fullLayout._modules;
+    var visibleModules = fullLayout._visibleModules;
     var basePlotModules = fullLayout._basePlotModules;
     var cnt = 0;
     var colorCnt = 0;
@@ -91742,9 +91982,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         var _module = fullTrace._module;
         if(!_module) return;
 
-        if(fullTrace.visible === true) Lib.pushUnique(modules, _module);
+        Lib.pushUnique(modules, _module);
+        if(fullTrace.visible === true) Lib.pushUnique(visibleModules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
-
         cnt++;
 
         // TODO: do we really want color not to increment for explicitly invisible traces?
@@ -91977,8 +92217,12 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         coerce('ids');
 
         if(Registry.traceIs(traceOut, 'showLegend')) {
+            traceOut._dfltShowLegend = true;
             coerce('showlegend');
             coerce('legendgroup');
+        }
+        else {
+            traceOut._dfltShowLegend = false;
         }
 
         Registry.getComponentMethod(
@@ -92305,7 +92549,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     }
 
     // trace module layout defaults
-    var modules = layoutOut._modules;
+    var modules = layoutOut._visibleModules;
     for(i = 0; i < modules.length; i++) {
         _module = modules[i];
 
@@ -92409,7 +92653,7 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var _modules = gd._fullLayout._modules;
+    var _modules = gd._fullLayout._visibleModules;
     var styleModules = [];
     var i;
 
@@ -93032,7 +93276,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             // There's nothing to do if this module is not defined:
             if(!module) continue;
 
-            // Don't register the trace as transitioned if it doens't know what to do.
+            // Don't register the trace as transitioned if it doesn't know what to do.
             // If it *is* registered, it will receive a callback that it's responsible
             // for calling in order to register the transition as having completed.
             if(module.animatable) {
@@ -93068,10 +93312,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         delete gd.calcdata;
 
         plots.supplyDefaults(gd);
-
         plots.doCalcdata(gd);
-
-        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
     }
@@ -93095,7 +93336,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
     var aborted = false;
 
     function executeTransitions() {
-
         gd.emit('plotly_transitioning', []);
 
         return new Promise(function(resolve) {
@@ -93163,6 +93403,9 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             if(hasAxisTransition) {
                 traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
                 traceTransitionOpts.duration = 0;
+                // This means do not transition traces,
+                // this happens on layout-only (e.g. axis range) animations
+                transitionedTraces = null;
             } else {
                 traceTransitionOpts = transitionOpts;
             }
@@ -93267,8 +93510,6 @@ plots.doCalcdata = function(gd, traces) {
 
     // for sharing colors across pies (and for legend)
     fullLayout._piecolormap = {};
-    fullLayout._piecolorway = null;
-    fullLayout._piedefaultcolorcount = 0;
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
@@ -93279,10 +93520,13 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    // find array attributes in trace
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
+
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
+
+        // keep track of trace extremes (for autorange) in here
+        trace._extremes = {};
     }
 
     // add polar axes to axis list
@@ -93344,6 +93588,8 @@ plots.doCalcdata = function(gd, traces) {
 
         if(trace.visible === true) {
 
+            // clear existing ref in case it got relinked
+            delete trace._indexToPoints;
             // keep ref of index-to-points map object of the *last* enabled transform,
             // this index-to-points map object is required to determine the calcdata indices
             // that correspond to input indices (e.g. from 'selectedpoints')
@@ -93382,12 +93628,62 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);
 
+    doCrossTraceCalc(gd);
+
     Registry.getComponentMethod('fx', 'calc')(gd);
+    Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
 function clearAxesCalc(axList) {
     for(var i = 0; i < axList.length; i++) {
         axList[i].clearCalc();
+    }
+}
+
+function doCrossTraceCalc(gd) {
+    var fullLayout = gd._fullLayout;
+    var modules = fullLayout._visibleModules;
+    var hash = {};
+    var i, j, k;
+
+    // position and range calculations for traces that
+    // depend on each other ie bars (stacked or grouped)
+    // and boxes (grouped) push each other out of the way
+
+    for(j = 0; j < modules.length; j++) {
+        var _module = modules[j];
+        var fn = _module.crossTraceCalc;
+        if(fn) {
+            var spType = _module.basePlotModule.name;
+            if(hash[spType]) {
+                Lib.pushUnique(hash[spType], fn);
+            } else {
+                hash[spType] = [fn];
+            }
+        }
+    }
+
+    for(k in hash) {
+        var methods = hash[k];
+        var subplots = fullLayout._subplots[k];
+
+        if(Array.isArray(subplots)) {
+            for(i = 0; i < subplots.length; i++) {
+                var sp = subplots[i];
+                var spInfo = k === 'cartesian' ?
+                    fullLayout._plots[sp] :
+                    fullLayout[sp];
+
+                for(j = 0; j < methods.length; j++) {
+                    methods[j](gd, spInfo);
+                }
+            }
+        }
+        else {
+            for(j = 0; j < methods.length; j++) {
+                methods[j](gd);
+            }
+        }
     }
 }
 
@@ -93440,7 +93736,7 @@ plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subpl
     subplot.traceHash = traceHash;
 };
 
-},{"../components/color":323,"../constants/numerical":424,"../lib":445,"../plot_api/plot_schema":481,"../plot_api/plot_template":482,"../plots/cartesian/axis_ids":495,"../registry":536,"./animation_attributes":487,"./attributes":489,"./command":516,"./font_attributes":518,"./frame_attributes":519,"./layout_attributes":526,"./sort_modules":535,"d3":86,"fast-isnumeric":151}],529:[function(require,module,exports){
+},{"../components/color":320,"../constants/numerical":421,"../lib":442,"../plot_api/plot_schema":479,"../plot_api/plot_template":480,"../plots/cartesian/axis_ids":493,"../registry":534,"./animation_attributes":485,"./attributes":487,"./command":514,"./font_attributes":516,"./frame_attributes":517,"./layout_attributes":524,"./sort_modules":533,"d3":84,"fast-isnumeric":148}],527:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93451,7 +93747,7 @@ plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subpl
 
 'use strict';
 
-var scatterAttrs = require('../../../traces/scatter/attributes');
+var scatterAttrs = _dereq_('../../../traces/scatter/attributes');
 var scatterMarkerAttrs = scatterAttrs.marker;
 
 module.exports = {
@@ -93466,7 +93762,7 @@ module.exports = {
     }
 };
 
-},{"../../../traces/scatter/attributes":597}],530:[function(require,module,exports){
+},{"../../../traces/scatter/attributes":595}],528:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93478,9 +93774,9 @@ module.exports = {
 
 'use strict';
 
-var axesAttrs = require('../../cartesian/layout_attributes');
-var extendFlat = require('../../../lib/extend').extendFlat;
-var overrideAll = require('../../../plot_api/edit_types').overrideAll;
+var axesAttrs = _dereq_('../../cartesian/layout_attributes');
+var extendFlat = _dereq_('../../../lib/extend').extendFlat;
+var overrideAll = _dereq_('../../../plot_api/edit_types').overrideAll;
 
 var domainAttr = extendFlat({}, axesAttrs.domain, {
     
@@ -93582,7 +93878,7 @@ module.exports = overrideAll({
     }
 }, 'plot', 'nested');
 
-},{"../../../lib/extend":436,"../../../plot_api/edit_types":475,"../../cartesian/layout_attributes":504}],531:[function(require,module,exports){
+},{"../../../lib/extend":433,"../../../plot_api/edit_types":473,"../../cartesian/layout_attributes":502}],529:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93593,11 +93889,11 @@ module.exports = overrideAll({
 
 'use strict';
 
-var Polar = module.exports = require('./micropolar');
+var Polar = module.exports = _dereq_('./micropolar');
 
-Polar.manager = require('./micropolar_manager');
+Polar.manager = _dereq_('./micropolar_manager');
 
-},{"./micropolar":532,"./micropolar_manager":533}],532:[function(require,module,exports){
+},{"./micropolar":530,"./micropolar_manager":531}],530:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93606,10 +93902,10 @@ Polar.manager = require('./micropolar_manager');
 * LICENSE file in the root directory of this source tree.
 */
 
-var d3 = require('d3');
-var Lib = require('../../../lib');
+var d3 = _dereq_('d3');
+var Lib = _dereq_('../../../lib');
 var extendDeepAll = Lib.extendDeepAll;
-var MID_SHIFT = require('../../../constants/alignment').MID_SHIFT;
+var MID_SHIFT = _dereq_('../../../constants/alignment').MID_SHIFT;
 
 var µ = module.exports = { version: '0.2.2' };
 
@@ -95017,7 +95313,7 @@ var µ = module.exports = { version: '0.2.2' };
     return exports;
 };
 
-},{"../../../constants/alignment":421,"../../../lib":445,"d3":86}],533:[function(require,module,exports){
+},{"../../../constants/alignment":418,"../../../lib":442,"d3":84}],531:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95030,12 +95326,12 @@ var µ = module.exports = { version: '0.2.2' };
 
 'use strict';
 
-var d3 = require('d3');
-var Lib = require('../../../lib');
-var Color = require('../../../components/color');
+var d3 = _dereq_('d3');
+var Lib = _dereq_('../../../lib');
+var Color = _dereq_('../../../components/color');
 
-var micropolar = require('./micropolar');
-var UndoManager = require('./undo_manager');
+var micropolar = _dereq_('./micropolar');
+var UndoManager = _dereq_('./undo_manager');
 var extendDeepAll = Lib.extendDeepAll;
 
 var manager = module.exports = {};
@@ -95103,7 +95399,7 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../../components/color":323,"../../../lib":445,"./micropolar":532,"./undo_manager":534,"d3":86}],534:[function(require,module,exports){
+},{"../../../components/color":320,"../../../lib":442,"./micropolar":530,"./undo_manager":532,"d3":84}],532:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95169,7 +95465,7 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],535:[function(require,module,exports){
+},{}],533:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95196,7 +95492,7 @@ module.exports = {
     sortModules: sortModules
 };
 
-},{}],536:[function(require,module,exports){
+},{}],534:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95207,14 +95503,14 @@ module.exports = {
 
 'use strict';
 
-var Loggers = require('./lib/loggers');
-var noop = require('./lib/noop');
-var pushUnique = require('./lib/push_unique');
-var isPlainObject = require('./lib/is_plain_object');
-var ExtendModule = require('./lib/extend');
+var Loggers = _dereq_('./lib/loggers');
+var noop = _dereq_('./lib/noop');
+var pushUnique = _dereq_('./lib/push_unique');
+var isPlainObject = _dereq_('./lib/is_plain_object');
+var ExtendModule = _dereq_('./lib/extend');
 
-var basePlotAttributes = require('./plots/attributes');
-var baseLayoutAttributes = require('./plots/layout_attributes');
+var basePlotAttributes = _dereq_('./plots/attributes');
+var baseLayoutAttributes = _dereq_('./plots/layout_attributes');
 
 var extendFlat = ExtendModule.extendFlat;
 var extendDeepAll = ExtendModule.extendDeepAll;
@@ -95638,7 +95934,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib/extend":436,"./lib/is_plain_object":447,"./lib/loggers":450,"./lib/noop":454,"./lib/push_unique":459,"./plots/attributes":489,"./plots/layout_attributes":526}],537:[function(require,module,exports){
+},{"./lib/extend":433,"./lib/is_plain_object":444,"./lib/loggers":447,"./lib/noop":452,"./lib/push_unique":457,"./plots/attributes":487,"./plots/layout_attributes":524}],535:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95650,7 +95946,7 @@ function getTraceType(traceType) {
 
 'use strict';
 
-var Lib = require('../lib');
+var Lib = _dereq_('../lib');
 
 var extendFlat = Lib.extendFlat;
 var extendDeep = Lib.extendDeep;
@@ -95812,7 +96108,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":445}],538:[function(require,module,exports){
+},{"../lib":442}],536:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95824,28 +96120,30 @@ module.exports = function clonePlot(graphObj, options) {
 
 'use strict';
 
-var toImage = require('../plot_api/to_image');
-var Lib = require('../lib'); // for isIE
-var fileSaver = require('./filesaver');
+var toImage = _dereq_('../plot_api/to_image');
+var Lib = _dereq_('../lib'); // for isIE
+var fileSaver = _dereq_('./filesaver');
 
-/**
- * @param {object} gd figure Object
- * @param {object} opts option object
- * @param opts.format 'jpeg' | 'png' | 'webp' | 'svg'
- * @param opts.width width of snapshot in px
- * @param opts.height height of snapshot in px
- * @param opts.filename name of file excluding extension
+/** Plotly.downloadImage
+ *
+ * @param {object | string | HTML div} gd
+ *   can either be a data/layout/config object
+ *   or an existing graph <div>
+ *   or an id to an existing graph <div>
+ * @param {object} opts (see ../plot_api/to_image)
+ * @return {promise}
  */
 function downloadImage(gd, opts) {
+    var _gd;
+    if(!Lib.isPlainObject(gd)) _gd = Lib.getGraphDiv(gd);
 
     // check for undefined opts
     opts = opts || {};
-
     // default to png
     opts.format = opts.format || 'png';
 
     return new Promise(function(resolve, reject) {
-        if(gd._snapshotInProgress) {
+        if(_gd && _gd._snapshotInProgress) {
             reject(new Error('Snapshotting already in progress.'));
         }
 
@@ -95858,19 +96156,19 @@ function downloadImage(gd, opts) {
             reject(new Error('Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.'));
         }
 
-        gd._snapshotInProgress = true;
+        if(_gd) _gd._snapshotInProgress = true;
         var promise = toImage(gd, opts);
 
         var filename = opts.filename || gd.fn || 'newplot';
         filename += '.' + opts.format;
 
         promise.then(function(result) {
-            gd._snapshotInProgress = false;
+            if(_gd) _gd._snapshotInProgress = false;
             return fileSaver(result, filename);
         }).then(function(name) {
             resolve(name);
         }).catch(function(err) {
-            gd._snapshotInProgress = false;
+            if(_gd) _gd._snapshotInProgress = false;
             reject(err);
         });
     });
@@ -95878,7 +96176,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":445,"../plot_api/to_image":485,"./filesaver":539}],539:[function(require,module,exports){
+},{"../lib":442,"../plot_api/to_image":483,"./filesaver":537}],537:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95950,7 +96248,7 @@ var fileSaver = function(url, name) {
 
 module.exports = fileSaver;
 
-},{}],540:[function(require,module,exports){
+},{}],538:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95987,7 +96285,7 @@ exports.getRedrawFunc = function(gd) {
     };
 };
 
-},{}],541:[function(require,module,exports){
+},{}],539:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95999,21 +96297,21 @@ exports.getRedrawFunc = function(gd) {
 
 'use strict';
 
-var helpers = require('./helpers');
+var helpers = _dereq_('./helpers');
 
 var Snapshot = {
     getDelay: helpers.getDelay,
     getRedrawFunc: helpers.getRedrawFunc,
-    clone: require('./cloneplot'),
-    toSVG: require('./tosvg'),
-    svgToImg: require('./svgtoimg'),
-    toImage: require('./toimage'),
-    downloadImage: require('./download')
+    clone: _dereq_('./cloneplot'),
+    toSVG: _dereq_('./tosvg'),
+    svgToImg: _dereq_('./svgtoimg'),
+    toImage: _dereq_('./toimage'),
+    downloadImage: _dereq_('./download')
 };
 
 module.exports = Snapshot;
 
-},{"./cloneplot":537,"./download":538,"./helpers":540,"./svgtoimg":542,"./toimage":543,"./tosvg":544}],542:[function(require,module,exports){
+},{"./cloneplot":535,"./download":536,"./helpers":538,"./svgtoimg":540,"./toimage":541,"./tosvg":542}],540:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96024,8 +96322,8 @@ module.exports = Snapshot;
 
 'use strict';
 
-var Lib = require('../lib');
-var EventEmitter = require('events').EventEmitter;
+var Lib = _dereq_('../lib');
+var EventEmitter = _dereq_('events').EventEmitter;
 
 function svgToImg(opts) {
     var ev = opts.emitter || new EventEmitter();
@@ -96129,7 +96427,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":445,"events":150}],543:[function(require,module,exports){
+},{"../lib":442,"events":49}],541:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96140,15 +96438,15 @@ module.exports = svgToImg;
 
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
+var EventEmitter = _dereq_('events').EventEmitter;
 
-var Registry = require('../registry');
-var Lib = require('../lib');
+var Registry = _dereq_('../registry');
+var Lib = _dereq_('../lib');
 
-var helpers = require('./helpers');
-var clonePlot = require('./cloneplot');
-var toSVG = require('./tosvg');
-var svgToImg = require('./svgtoimg');
+var helpers = _dereq_('./helpers');
+var clonePlot = _dereq_('./cloneplot');
+var toSVG = _dereq_('./tosvg');
+var svgToImg = _dereq_('./svgtoimg');
 
 /**
  * @param {object} gd figure Object
@@ -96208,7 +96506,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":445,"../registry":536,"./cloneplot":537,"./helpers":540,"./svgtoimg":542,"./tosvg":544,"events":150}],544:[function(require,module,exports){
+},{"../lib":442,"../registry":534,"./cloneplot":535,"./helpers":538,"./svgtoimg":540,"./tosvg":542,"events":49}],542:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96220,13 +96518,13 @@ module.exports = toImage;
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Lib = require('../lib');
-var Drawing = require('../components/drawing');
-var Color = require('../components/color');
+var Lib = _dereq_('../lib');
+var Drawing = _dereq_('../components/drawing');
+var Color = _dereq_('../components/color');
 
-var xmlnsNamespaces = require('../constants/xmlns_namespaces');
+var xmlnsNamespaces = _dereq_('../constants/xmlns_namespaces');
 var DOUBLEQUOTE_REGEX = /"/g;
 var DUMMY_SUB = 'TOBESTRIPPED';
 var DUMMY_REGEX = new RegExp('("' + DUMMY_SUB + ')|(' + DUMMY_SUB + '")', 'g');
@@ -96327,14 +96625,19 @@ module.exports = function toSVG(gd, format, scale) {
             }
         });
 
-    svg.selectAll('.point,.scatterpts').each(function() {
+    svg.selectAll('.point, .scatterpts, .legendfill>path, .legendlines>path, .cbfill').each(function() {
         var pt = d3.select(this);
-        var fill = this.style.fill;
 
         // similar to font family styles above,
         // we must remove " after the SVG DOM has been serialized
+        var fill = this.style.fill;
         if(fill && fill.indexOf('url(') !== -1) {
             pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+        }
+
+        var stroke = this.style.stroke;
+        if(stroke && stroke.indexOf('url(') !== -1) {
+            pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
         }
     });
 
@@ -96385,7 +96688,7 @@ module.exports = function toSVG(gd, format, scale) {
     return s;
 };
 
-},{"../components/color":323,"../components/drawing":348,"../constants/xmlns_namespaces":426,"../lib":445,"d3":86}],545:[function(require,module,exports){
+},{"../components/color":320,"../components/drawing":345,"../constants/xmlns_namespaces":423,"../lib":442,"d3":84}],543:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96396,15 +96699,15 @@ module.exports = function toSVG(gd, format, scale) {
 
 'use strict';
 
-var heatmapAttrs = require('../heatmap/attributes');
-var scatterAttrs = require('../scatter/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
-var dash = require('../../components/drawing/attributes').dash;
-var fontAttrs = require('../../plots/font_attributes');
-var extendFlat = require('../../lib/extend').extendFlat;
+var heatmapAttrs = _dereq_('../heatmap/attributes');
+var scatterAttrs = _dereq_('../scatter/attributes');
+var colorscaleAttrs = _dereq_('../../components/colorscale/attributes');
+var colorbarAttrs = _dereq_('../../components/colorbar/attributes');
+var dash = _dereq_('../../components/drawing/attributes').dash;
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
 
-var filterOps = require('../../constants/filter_ops');
+var filterOps = _dereq_('../../constants/filter_ops');
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 var INTERVAL_OPS = filterOps.INTERVAL_OPS;
 
@@ -96564,7 +96867,7 @@ module.exports = extendFlat({
     { colorbar: colorbarAttrs }
 );
 
-},{"../../components/colorbar/attributes":324,"../../components/colorscale/attributes":330,"../../components/drawing/attributes":347,"../../constants/filter_ops":422,"../../lib/extend":436,"../../plots/font_attributes":518,"../heatmap/attributes":558,"../scatter/attributes":597}],546:[function(require,module,exports){
+},{"../../components/colorbar/attributes":321,"../../components/colorscale/attributes":327,"../../components/drawing/attributes":344,"../../constants/filter_ops":419,"../../lib/extend":433,"../../plots/font_attributes":516,"../heatmap/attributes":556,"../scatter/attributes":595}],544:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96576,8 +96879,8 @@ module.exports = extendFlat({
 
 'use strict';
 
-var heatmapCalc = require('../heatmap/calc');
-var setContours = require('./set_contours');
+var heatmapCalc = _dereq_('../heatmap/calc');
+var setContours = _dereq_('./set_contours');
 
 // most is the same as heatmap calc, then adjust it
 // though a few things inside heatmap calc still look for
@@ -96588,7 +96891,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../heatmap/calc":559,"./set_contours":554}],547:[function(require,module,exports){
+},{"../heatmap/calc":557,"./set_contours":552}],545:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96600,39 +96903,32 @@ module.exports = function calc(gd, trace) {
 
 'use strict';
 
-var drawColorbar = require('../../components/colorbar/draw');
+var drawColorbar = _dereq_('../../components/colorbar/draw');
 
-var makeColorMap = require('./make_color_map');
-var endPlus = require('./end_plus');
+var makeColorMap = _dereq_('./make_color_map');
+var endPlus = _dereq_('./end_plus');
 
 
 module.exports = function colorbar(gd, cd) {
-    var trace = cd[0].trace,
-        cbId = 'cb' + trace.uid;
+    var trace = cd[0].trace;
+    var cbId = 'cb' + trace.uid;
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
     if(!trace.showscale) return;
 
-    var cb = drawColorbar(gd, cbId);
-    cd[0].t.cb = cb;
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
 
-    var contours = trace.contours,
-        line = trace.line,
-        cs = contours.size || 1,
-        coloring = contours.coloring;
+    var contours = trace.contours;
+    var line = trace.line;
+    var cs = contours.size || 1;
+    var coloring = contours.coloring;
 
     var colorMap = makeColorMap(trace, {isColorbar: true});
 
-    if(coloring === 'heatmap') {
-        cb.filllevels({
-            start: trace.zmin,
-            end: trace.zmax,
-            size: (trace.zmax - trace.zmin) / 254
-        });
-    }
-
-    cb.fillcolor((coloring === 'fill' || coloring === 'heatmap') ? colorMap : '')
+    cb.fillgradient(coloring === 'heatmap' ? trace.colorscale : '')
+        .zrange(coloring === 'heatmap' ? [trace.zmin, trace.zmax] : '')
+        .fillcolor((coloring === 'fill') ? colorMap : '')
         .line({
             color: coloring === 'lines' ? colorMap : line.color,
             width: contours.showlines !== false ? line.width : 0,
@@ -96646,7 +96942,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":328,"./end_plus":551,"./make_color_map":553}],548:[function(require,module,exports){
+},{"../../components/colorbar/draw":325,"./end_plus":549,"./make_color_map":551}],546:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96657,15 +96953,15 @@ module.exports = function colorbar(gd, cd) {
 
 
 'use strict';
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
-var handleLabelDefaults = require('./label_defaults');
+var handleLabelDefaults = _dereq_('./label_defaults');
 
-var Color = require('../../components/color');
+var Color = _dereq_('../../components/color');
 var addOpacity = Color.addOpacity;
 var opacity = Color.opacity;
 
-var filterOps = require('../../constants/filter_ops');
+var filterOps = _dereq_('../../constants/filter_ops');
 var CONSTRAINT_REDUCTION = filterOps.CONSTRAINT_REDUCTION;
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 
@@ -96741,7 +97037,7 @@ function handleConstraintValueDefaults(coerce, contours) {
     }
 }
 
-},{"../../components/color":323,"../../constants/filter_ops":422,"./label_defaults":552,"fast-isnumeric":151}],549:[function(require,module,exports){
+},{"../../components/color":320,"../../constants/filter_ops":419,"./label_defaults":550,"fast-isnumeric":148}],547:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96770,7 +97066,7 @@ module.exports = function handleContourDefaults(traceIn, traceOut, coerce, coerc
     if(autoContour || !contourSize) coerce('ncontours');
 };
 
-},{}],550:[function(require,module,exports){
+},{}],548:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96782,13 +97078,13 @@ module.exports = function handleContourDefaults(traceIn, traceOut, coerce, coerc
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
-var handleXYZDefaults = require('../heatmap/xyz_defaults');
-var handleConstraintDefaults = require('./constraint_defaults');
-var handleContoursDefaults = require('./contours_defaults');
-var handleStyleDefaults = require('./style_defaults');
-var attributes = require('./attributes');
+var handleXYZDefaults = _dereq_('../heatmap/xyz_defaults');
+var handleConstraintDefaults = _dereq_('./constraint_defaults');
+var handleContoursDefaults = _dereq_('./contours_defaults');
+var handleStyleDefaults = _dereq_('./style_defaults');
+var attributes = _dereq_('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -96810,9 +97106,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var isConstraint = (coerce('contours.type') === 'constraint');
     coerce('connectgaps', Lib.isArray1D(traceOut.z));
 
-    // trace-level showlegend has already been set, but is only allowed if this is a constraint
-    if(!isConstraint) delete traceOut.showlegend;
-
     if(isConstraint) {
         handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor);
     }
@@ -96822,7 +97115,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../lib":445,"../heatmap/xyz_defaults":569,"./attributes":545,"./constraint_defaults":548,"./contours_defaults":549,"./style_defaults":555}],551:[function(require,module,exports){
+},{"../../lib":442,"../heatmap/xyz_defaults":567,"./attributes":543,"./constraint_defaults":546,"./contours_defaults":547,"./style_defaults":553}],549:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96842,7 +97135,7 @@ module.exports = function endPlus(contours) {
     return contours.end + contours.size / 1e6;
 };
 
-},{}],552:[function(require,module,exports){
+},{}],550:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96854,7 +97147,7 @@ module.exports = function endPlus(contours) {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 module.exports = function handleLabelDefaults(coerce, layout, lineColor, opts) {
     if(!opts) opts = {};
@@ -96872,7 +97165,7 @@ module.exports = function handleLabelDefaults(coerce, layout, lineColor, opts) {
     if(opts.hasHover !== false) coerce('zhoverformat');
 };
 
-},{"../../lib":445}],553:[function(require,module,exports){
+},{"../../lib":442}],551:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96884,9 +97177,9 @@ module.exports = function handleLabelDefaults(coerce, layout, lineColor, opts) {
 
 'use strict';
 
-var d3 = require('d3');
-var Colorscale = require('../../components/colorscale');
-var endPlus = require('./end_plus');
+var d3 = _dereq_('d3');
+var Colorscale = _dereq_('../../components/colorscale');
+var endPlus = _dereq_('./end_plus');
 
 module.exports = function makeColorMap(trace) {
     var contours = trace.contours,
@@ -96956,7 +97249,7 @@ module.exports = function makeColorMap(trace) {
     });
 };
 
-},{"../../components/colorscale":338,"./end_plus":551,"d3":86}],554:[function(require,module,exports){
+},{"../../components/colorscale":335,"./end_plus":549,"d3":84}],552:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96968,8 +97261,8 @@ module.exports = function makeColorMap(trace) {
 
 'use strict';
 
-var Axes = require('../../plots/cartesian/axes');
-var Lib = require('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var Lib = _dereq_('../../lib');
 
 
 module.exports = function setContours(trace) {
@@ -97060,7 +97353,7 @@ function autoContours(start, end, ncontours) {
     return dummyAx;
 }
 
-},{"../../lib":445,"../../plots/cartesian/axes":492}],555:[function(require,module,exports){
+},{"../../lib":442,"../../plots/cartesian/axes":490}],553:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97072,8 +97365,8 @@ function autoContours(start, end, ncontours) {
 
 'use strict';
 
-var colorscaleDefaults = require('../../components/colorscale/defaults');
-var handleLabelDefaults = require('./label_defaults');
+var colorscaleDefaults = _dereq_('../../components/colorscale/defaults');
+var handleLabelDefaults = _dereq_('./label_defaults');
 
 
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, opts) {
@@ -97090,6 +97383,11 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
     }
 
     if(coloring !== 'none') {
+        // plots/plots always coerces showlegend to true, but in this case
+        // we default to false and (by default) show a colorbar instead
+        if(traceIn.showlegend !== true) traceOut.showlegend = false;
+        traceOut._dfltShowLegend = false;
+
         colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );
@@ -97100,7 +97398,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
     handleLabelDefaults(coerce, layout, lineColor, opts);
 };
 
-},{"../../components/colorscale/defaults":333,"./label_defaults":552}],556:[function(require,module,exports){
+},{"../../components/colorscale/defaults":330,"./label_defaults":550}],554:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97112,12 +97410,12 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
 
 'use strict';
 
-var createContour2D = require('gl-contour2d');
-var createHeatmap2D = require('gl-heatmap2d');
+var createContour2D = _dereq_('gl-contour2d');
+var createHeatmap2D = _dereq_('gl-heatmap2d');
 
-var Axes = require('../../plots/cartesian/axes');
-var makeColorMap = require('../contour/make_color_map');
-var str2RGBArray = require('../../lib/str2rgbarray');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var makeColorMap = _dereq_('../contour/make_color_map');
+var str2RGBArray = _dereq_('../../lib/str2rgbarray');
 
 
 function Contour(scene, uid) {
@@ -97228,9 +97526,10 @@ proto.update = function(fullTrace, calcTrace) {
     this.contour.update(this.contourOptions);
     this.heatmap.update(this.heatmapOptions);
 
-    // expand axes
-    Axes.expand(this.scene.xaxis, calcPt.x);
-    Axes.expand(this.scene.yaxis, calcPt.y);
+    var xa = this.scene.xaxis;
+    var ya = this.scene.yaxis;
+    fullTrace._extremes[xa._id] = Axes.findExtremes(xa, calcPt.x);
+    fullTrace._extremes[ya._id] = Axes.findExtremes(ya, calcPt.y);
 };
 
 proto.dispose = function() {
@@ -97288,7 +97587,7 @@ function createContour(scene, fullTrace, calcTrace) {
 
 module.exports = createContour;
 
-},{"../../lib/str2rgbarray":468,"../../plots/cartesian/axes":492,"../contour/make_color_map":553,"gl-contour2d":161,"gl-heatmap2d":166}],557:[function(require,module,exports){
+},{"../../lib/str2rgbarray":466,"../../plots/cartesian/axes":490,"../contour/make_color_map":551,"gl-contour2d":158,"gl-heatmap2d":163}],555:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97300,20 +97599,20 @@ module.exports = createContour;
 
 'use strict';
 
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 
 var ContourGl = {};
 
-ContourGl.attributes = overrideAll(require('../contour/attributes'), 'calc', 'nested');
-ContourGl.supplyDefaults = require('../contour/defaults');
-ContourGl.colorbar = require('../contour/colorbar');
+ContourGl.attributes = overrideAll(_dereq_('../contour/attributes'), 'calc', 'nested');
+ContourGl.supplyDefaults = _dereq_('../contour/defaults');
+ContourGl.colorbar = _dereq_('../contour/colorbar');
 
-ContourGl.calc = require('../contour/calc');
-ContourGl.plot = require('./convert');
+ContourGl.calc = _dereq_('../contour/calc');
+ContourGl.plot = _dereq_('./convert');
 
 ContourGl.moduleType = 'trace';
 ContourGl.name = 'contourgl';
-ContourGl.basePlotModule = require('../../plots/gl2d');
+ContourGl.basePlotModule = _dereq_('../../plots/gl2d');
 ContourGl.categories = ['gl', 'gl2d', '2dMap'];
 ContourGl.meta = {
     
@@ -97321,7 +97620,7 @@ ContourGl.meta = {
 
 module.exports = ContourGl;
 
-},{"../../plot_api/edit_types":475,"../../plots/gl2d":523,"../contour/attributes":545,"../contour/calc":546,"../contour/colorbar":547,"../contour/defaults":550,"./convert":556}],558:[function(require,module,exports){
+},{"../../plot_api/edit_types":473,"../../plots/gl2d":521,"../contour/attributes":543,"../contour/calc":544,"../contour/colorbar":545,"../contour/defaults":548,"./convert":554}],556:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97332,11 +97631,11 @@ module.exports = ContourGl;
 
 'use strict';
 
-var scatterAttrs = require('../scatter/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var scatterAttrs = _dereq_('../scatter/attributes');
+var colorscaleAttrs = _dereq_('../../components/colorscale/attributes');
+var colorbarAttrs = _dereq_('../../components/colorbar/attributes');
 
-var extendFlat = require('../../lib/extend').extendFlat;
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
 
 module.exports = extendFlat({
     z: {
@@ -97423,7 +97722,7 @@ module.exports = extendFlat({
     { colorbar: colorbarAttrs }
 );
 
-},{"../../components/colorbar/attributes":324,"../../components/colorscale/attributes":330,"../../lib/extend":436,"../scatter/attributes":597}],559:[function(require,module,exports){
+},{"../../components/colorbar/attributes":321,"../../components/colorscale/attributes":327,"../../lib/extend":433,"../scatter/attributes":595}],557:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97435,18 +97734,18 @@ module.exports = extendFlat({
 
 'use strict';
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
 
-var histogram2dCalc = require('../histogram2d/calc');
-var colorscaleCalc = require('../../components/colorscale/calc');
-var convertColumnData = require('./convert_column_xyz');
-var maxRowLength = require('./max_row_length');
-var clean2dArray = require('./clean_2d_array');
-var interp2d = require('./interp2d');
-var findEmpties = require('./find_empties');
-var makeBoundArray = require('./make_bound_array');
+var histogram2dCalc = _dereq_('../histogram2d/calc');
+var colorscaleCalc = _dereq_('../../components/colorscale/calc');
+var convertColumnData = _dereq_('./convert_column_xyz');
+var maxRowLength = _dereq_('./max_row_length');
+var clean2dArray = _dereq_('./clean_2d_array');
+var interp2d = _dereq_('./interp2d');
+var findEmpties = _dereq_('./find_empties');
+var makeBoundArray = _dereq_('./make_bound_array');
 
 
 module.exports = function calc(gd, trace) {
@@ -97550,8 +97849,8 @@ module.exports = function calc(gd, trace) {
 
     // handled in gl2d convert step
     if(!isGL2D) {
-        Axes.expand(xa, xArray);
-        Axes.expand(ya, yArray);
+        trace._extremes[xa._id] = Axes.findExtremes(xa, xArray);
+        trace._extremes[ya._id] = Axes.findExtremes(ya, yArray);
     }
 
     var cd0 = {
@@ -97588,7 +97887,7 @@ module.exports = function calc(gd, trace) {
     return [cd0];
 };
 
-},{"../../components/colorscale/calc":331,"../../lib":445,"../../plots/cartesian/axes":492,"../../registry":536,"../histogram2d/calc":578,"./clean_2d_array":560,"./convert_column_xyz":562,"./find_empties":564,"./interp2d":565,"./make_bound_array":566,"./max_row_length":567}],560:[function(require,module,exports){
+},{"../../components/colorscale/calc":328,"../../lib":442,"../../plots/cartesian/axes":490,"../../registry":534,"../histogram2d/calc":576,"./clean_2d_array":558,"./convert_column_xyz":560,"./find_empties":562,"./interp2d":563,"./make_bound_array":564,"./max_row_length":565}],558:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97599,7 +97898,7 @@ module.exports = function calc(gd, trace) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
 module.exports = function clean2dArray(zOld, transpose) {
     var rowlen, collen, getCollen, old2new, i, j;
@@ -97633,7 +97932,7 @@ module.exports = function clean2dArray(zOld, transpose) {
     return zNew;
 };
 
-},{"fast-isnumeric":151}],561:[function(require,module,exports){
+},{"fast-isnumeric":148}],559:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97649,7 +97948,7 @@ module.exports = {
     max: 'zmax'
 };
 
-},{}],562:[function(require,module,exports){
+},{}],560:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97661,8 +97960,8 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var BADNUM = require('../../constants/numerical').BADNUM;
+var Lib = _dereq_('../../lib');
+var BADNUM = _dereq_('../../constants/numerical').BADNUM;
 
 module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name, arrayVarNames) {
     var colLen = trace._length;
@@ -97718,7 +98017,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     if(hasColumnText) trace._text = text;
 };
 
-},{"../../constants/numerical":424,"../../lib":445}],563:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../lib":442}],561:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97730,12 +98029,12 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
-var handleXYZDefaults = require('./xyz_defaults');
-var handleStyleDefaults = require('./style_defaults');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
-var attributes = require('./attributes');
+var handleXYZDefaults = _dereq_('./xyz_defaults');
+var handleStyleDefaults = _dereq_('./style_defaults');
+var colorscaleDefaults = _dereq_('../../components/colorscale/defaults');
+var attributes = _dereq_('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -97758,7 +98057,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
 
-},{"../../components/colorscale/defaults":333,"../../lib":445,"./attributes":558,"./style_defaults":568,"./xyz_defaults":569}],564:[function(require,module,exports){
+},{"../../components/colorscale/defaults":330,"../../lib":442,"./attributes":556,"./style_defaults":566,"./xyz_defaults":567}],562:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97769,7 +98068,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 'use strict';
 
-var maxRowLength = require('./max_row_length');
+var maxRowLength = _dereq_('./max_row_length');
 
 /* Return a list of empty points in 2D array z
  * each empty point z[i][j] gives an array [i, j, neighborCount]
@@ -97864,7 +98163,7 @@ module.exports = function findEmpties(z) {
     return empties.sort(function(a, b) { return b[2] - a[2]; });
 };
 
-},{"./max_row_length":567}],565:[function(require,module,exports){
+},{"./max_row_length":565}],563:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97875,7 +98174,7 @@ module.exports = function findEmpties(z) {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 var INTERPTHRESHOLD = 1e-2;
 var NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
@@ -97999,7 +98298,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../lib":445}],566:[function(require,module,exports){
+},{"../../lib":442}],564:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98010,8 +98309,8 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
 
 'use strict';
 
-var Registry = require('../../registry');
-var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+var Registry = _dereq_('../../registry');
+var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
 
 module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
@@ -98082,7 +98381,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     return arrayOut;
 };
 
-},{"../../lib":445,"../../registry":536}],567:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534}],565:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98104,7 +98403,7 @@ module.exports = function maxRowLength(z) {
     return len;
 };
 
-},{}],568:[function(require,module,exports){
+},{}],566:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98127,7 +98426,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce) {
     coerce('zhoverformat');
 };
 
-},{}],569:[function(require,module,exports){
+},{}],567:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98139,10 +98438,10 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var Lib = require('../../lib');
+var isNumeric = _dereq_('fast-isnumeric');
+var Lib = _dereq_('../../lib');
 
-var Registry = require('../../registry');
+var Registry = _dereq_('../../registry');
 
 module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, xName, yName) {
     var z = coerce('z');
@@ -98225,7 +98524,7 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
-},{"../../lib":445,"../../registry":536,"fast-isnumeric":151}],570:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534,"fast-isnumeric":148}],568:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98237,12 +98536,12 @@ function isValidZ(z) {
 'use strict';
 
 
-var heatmapAttrs = require('../heatmap/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var heatmapAttrs = _dereq_('../heatmap/attributes');
+var colorscaleAttrs = _dereq_('../../components/colorscale/attributes');
+var colorbarAttrs = _dereq_('../../components/colorbar/attributes');
 
-var extendFlat = require('../../lib/extend').extendFlat;
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 
 
 var commonList = [
@@ -98268,7 +98567,7 @@ extendFlat(
 
 module.exports = overrideAll(attrs, 'calc', 'nested');
 
-},{"../../components/colorbar/attributes":324,"../../components/colorscale/attributes":330,"../../lib/extend":436,"../../plot_api/edit_types":475,"../heatmap/attributes":558}],571:[function(require,module,exports){
+},{"../../components/colorbar/attributes":321,"../../components/colorscale/attributes":327,"../../lib/extend":433,"../../plot_api/edit_types":473,"../heatmap/attributes":556}],569:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98280,9 +98579,9 @@ module.exports = overrideAll(attrs, 'calc', 'nested');
 
 'use strict';
 
-var createHeatmap2D = require('gl-heatmap2d');
-var Axes = require('../../plots/cartesian/axes');
-var str2RGBArray = require('../../lib/str2rgbarray');
+var createHeatmap2D = _dereq_('gl-heatmap2d');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var str2RGBArray = _dereq_('../../lib/str2rgbarray');
 
 
 function Heatmap(scene, uid) {
@@ -98366,8 +98665,10 @@ proto.update = function(fullTrace, calcTrace) {
 
     this.heatmap.update(this.options);
 
-    Axes.expand(this.scene.xaxis, calcPt.x);
-    Axes.expand(this.scene.yaxis, calcPt.y);
+    var xa = this.scene.xaxis;
+    var ya = this.scene.yaxis;
+    fullTrace._extremes[xa._id] = Axes.findExtremes(xa, calcPt.x);
+    fullTrace._extremes[ya._id] = Axes.findExtremes(ya, calcPt.y);
 };
 
 proto.dispose = function() {
@@ -98408,7 +98709,7 @@ function createHeatmap(scene, fullTrace, calcTrace) {
 
 module.exports = createHeatmap;
 
-},{"../../lib/str2rgbarray":468,"../../plots/cartesian/axes":492,"gl-heatmap2d":166}],572:[function(require,module,exports){
+},{"../../lib/str2rgbarray":466,"../../plots/cartesian/axes":490,"gl-heatmap2d":163}],570:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98422,16 +98723,16 @@ module.exports = createHeatmap;
 
 var HeatmapGl = {};
 
-HeatmapGl.attributes = require('./attributes');
-HeatmapGl.supplyDefaults = require('../heatmap/defaults');
-HeatmapGl.colorbar = require('../heatmap/colorbar');
+HeatmapGl.attributes = _dereq_('./attributes');
+HeatmapGl.supplyDefaults = _dereq_('../heatmap/defaults');
+HeatmapGl.colorbar = _dereq_('../heatmap/colorbar');
 
-HeatmapGl.calc = require('../heatmap/calc');
-HeatmapGl.plot = require('./convert');
+HeatmapGl.calc = _dereq_('../heatmap/calc');
+HeatmapGl.plot = _dereq_('./convert');
 
 HeatmapGl.moduleType = 'trace';
 HeatmapGl.name = 'heatmapgl';
-HeatmapGl.basePlotModule = require('../../plots/gl2d');
+HeatmapGl.basePlotModule = _dereq_('../../plots/gl2d');
 HeatmapGl.categories = ['gl', 'gl2d', '2dMap'];
 HeatmapGl.meta = {
     
@@ -98439,7 +98740,7 @@ HeatmapGl.meta = {
 
 module.exports = HeatmapGl;
 
-},{"../../plots/gl2d":523,"../heatmap/calc":559,"../heatmap/colorbar":561,"../heatmap/defaults":563,"./attributes":570,"./convert":571}],573:[function(require,module,exports){
+},{"../../plots/gl2d":521,"../heatmap/calc":557,"../heatmap/colorbar":559,"../heatmap/defaults":561,"./attributes":568,"./convert":569}],571:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98465,7 +98766,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],574:[function(require,module,exports){
+},{}],572:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98477,7 +98778,7 @@ module.exports = function doAvg(size, counts) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
 
 module.exports = {
@@ -98541,7 +98842,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":151}],575:[function(require,module,exports){
+},{"fast-isnumeric":148}],573:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98553,14 +98854,14 @@ module.exports = {
 
 'use strict';
 
-var numConstants = require('../../constants/numerical');
+var numConstants = _dereq_('../../constants/numerical');
 var oneYear = numConstants.ONEAVGYEAR;
 var oneMonth = numConstants.ONEAVGMONTH;
 var oneDay = numConstants.ONEDAY;
 var oneHour = numConstants.ONEHOUR;
 var oneMin = numConstants.ONEMIN;
 var oneSec = numConstants.ONESEC;
-var tickIncrement = require('../../plots/cartesian/axes').tickIncrement;
+var tickIncrement = _dereq_('../../plots/cartesian/axes').tickIncrement;
 
 
 /*
@@ -98719,7 +99020,7 @@ function dateParts(v, pa, calendar) {
     return parts;
 }
 
-},{"../../constants/numerical":424,"../../plots/cartesian/axes":492}],576:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../plots/cartesian/axes":490}],574:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98730,9 +99031,9 @@ function dateParts(v, pa, calendar) {
 
 
 'use strict';
-var isNumeric = require('fast-isnumeric');
-var cleanDate = require('../../lib').cleanDate;
-var constants = require('../../constants/numerical');
+var isNumeric = _dereq_('fast-isnumeric');
+var cleanDate = _dereq_('../../lib').cleanDate;
+var constants = _dereq_('../../constants/numerical');
 var ONEDAY = constants.ONEDAY;
 var BADNUM = constants.BADNUM;
 
@@ -98799,7 +99100,7 @@ module.exports = function cleanBins(trace, ax, binDirection) {
     }
 };
 
-},{"../../constants/numerical":424,"../../lib":445,"fast-isnumeric":151}],577:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../lib":442,"fast-isnumeric":148}],575:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98834,7 +99135,7 @@ module.exports = {
     }
 };
 
-},{}],578:[function(require,module,exports){
+},{}],576:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98846,14 +99147,14 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
 
-var binFunctions = require('../histogram/bin_functions');
-var normFunctions = require('../histogram/norm_functions');
-var doAvg = require('../histogram/average');
-var cleanBins = require('../histogram/clean_bins');
-var getBinSpanLabelRound = require('../histogram/bin_label_vals');
+var binFunctions = _dereq_('../histogram/bin_functions');
+var normFunctions = _dereq_('../histogram/norm_functions');
+var doAvg = _dereq_('../histogram/average');
+var cleanBins = _dereq_('../histogram/clean_bins');
+var getBinSpanLabelRound = _dereq_('../histogram/bin_label_vals');
 
 
 module.exports = function calc(gd, trace) {
@@ -99082,7 +99383,7 @@ function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
     return out;
 }
 
-},{"../../lib":445,"../../plots/cartesian/axes":492,"../histogram/average":573,"../histogram/bin_functions":574,"../histogram/bin_label_vals":575,"../histogram/clean_bins":576,"../histogram/norm_functions":577}],579:[function(require,module,exports){
+},{"../../lib":442,"../../plots/cartesian/axes":490,"../histogram/average":571,"../histogram/bin_functions":572,"../histogram/bin_label_vals":573,"../histogram/clean_bins":574,"../histogram/norm_functions":575}],577:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99093,14 +99394,14 @@ function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
 
 'use strict';
 
-var colorAttributes = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
-var axesAttrs = require('../../plots/cartesian/layout_attributes');
-var fontAttrs = require('../../plots/font_attributes');
-var domainAttrs = require('../../plots/domain').attributes;
+var colorAttributes = _dereq_('../../components/colorscale/attributes');
+var colorbarAttrs = _dereq_('../../components/colorbar/attributes');
+var axesAttrs = _dereq_('../../plots/cartesian/layout_attributes');
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var domainAttrs = _dereq_('../../plots/domain').attributes;
 
-var extendFlat = require('../../lib/extend').extendFlat;
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
 module.exports = {
     domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
@@ -99195,7 +99496,7 @@ module.exports = {
         })
 };
 
-},{"../../components/colorbar/attributes":324,"../../components/colorscale/attributes":330,"../../lib/extend":436,"../../plot_api/plot_template":482,"../../plots/cartesian/layout_attributes":504,"../../plots/domain":517,"../../plots/font_attributes":518}],580:[function(require,module,exports){
+},{"../../components/colorbar/attributes":321,"../../components/colorscale/attributes":327,"../../lib/extend":433,"../../plot_api/plot_template":480,"../../plots/cartesian/layout_attributes":502,"../../plots/domain":515,"../../plots/font_attributes":516}],578:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99206,11 +99507,11 @@ module.exports = {
 
 'use strict';
 
-var c = require('./constants');
-var d3 = require('d3');
-var keyFun = require('../../lib/gup').keyFun;
-var repeat = require('../../lib/gup').repeat;
-var sortAsc = require('../../lib').sorterAsc;
+var c = _dereq_('./constants');
+var d3 = _dereq_('d3');
+var keyFun = _dereq_('../../lib/gup').keyFun;
+var repeat = _dereq_('../../lib/gup').repeat;
+var sortAsc = _dereq_('../../lib').sorterAsc;
 
 var snapRatio = c.bar.snapRatio;
 function snapOvershoot(v, vAdjacent) { return v * (1 - snapRatio) + vAdjacent * snapRatio; }
@@ -99727,7 +100028,7 @@ module.exports = {
     cleanRanges: cleanRanges
 };
 
-},{"../../lib":445,"../../lib/gup":442,"./constants":583,"d3":86}],581:[function(require,module,exports){
+},{"../../lib":442,"../../lib/gup":439,"./constants":581,"d3":84}],579:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99738,10 +100039,10 @@ module.exports = {
 
 'use strict';
 
-var d3 = require('d3');
-var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
-var parcoordsPlot = require('./plot');
-var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var d3 = _dereq_('d3');
+var getModuleCalcData = _dereq_('../../plots/get_data').getModuleCalcData;
+var parcoordsPlot = _dereq_('./plot');
+var xmlnsNamespaces = _dereq_('../../constants/xmlns_namespaces');
 
 var PARCOORDS = 'parcoords';
 
@@ -99796,7 +100097,7 @@ exports.toSVG = function(gd) {
     }, 60);
 };
 
-},{"../../constants/xmlns_namespaces":426,"../../plots/get_data":520,"./plot":589,"d3":86}],582:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":423,"../../plots/get_data":518,"./plot":587,"d3":84}],580:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99807,10 +100108,10 @@ exports.toSVG = function(gd) {
 
 'use strict';
 
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var calcColorscale = require('../../components/colorscale/calc');
-var Lib = require('../../lib');
-var wrap = require('../../lib/gup').wrap;
+var hasColorscale = _dereq_('../../components/colorscale/has_colorscale');
+var calcColorscale = _dereq_('../../components/colorscale/calc');
+var Lib = _dereq_('../../lib');
+var wrap = _dereq_('../../lib/gup').wrap;
 
 module.exports = function calc(gd, trace) {
     var cs = !!trace.line.colorscale && Lib.isArrayOrTypedArray(trace.line.color);
@@ -99835,7 +100136,7 @@ function constHalf(len) {
     return out;
 }
 
-},{"../../components/colorscale/calc":331,"../../components/colorscale/has_colorscale":337,"../../lib":445,"../../lib/gup":442}],583:[function(require,module,exports){
+},{"../../components/colorscale/calc":328,"../../components/colorscale/has_colorscale":334,"../../lib":442,"../../lib/gup":439}],581:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99896,7 +100197,7 @@ module.exports = {
     }
 };
 
-},{}],584:[function(require,module,exports){
+},{}],582:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99907,16 +100208,16 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
-var handleDomainDefaults = require('../../plots/domain').defaults;
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Lib = _dereq_('../../lib');
+var hasColorscale = _dereq_('../../components/colorscale/has_colorscale');
+var colorscaleDefaults = _dereq_('../../components/colorscale/defaults');
+var handleDomainDefaults = _dereq_('../../plots/domain').defaults;
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
 
-var attributes = require('./attributes');
-var axisBrush = require('./axisbrush');
-var maxDimensionCount = require('./constants').maxDimensionCount;
-var mergeLength = require('./merge_length');
+var attributes = _dereq_('./attributes');
+var axisBrush = _dereq_('./axisbrush');
+var maxDimensionCount = _dereq_('./constants').maxDimensionCount;
+var mergeLength = _dereq_('./merge_length');
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var lineColor = coerce('line.color', defaultColor);
@@ -100002,7 +100303,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceFont(coerce, 'rangefont', fontDflt);
 };
 
-},{"../../components/colorscale/defaults":333,"../../components/colorscale/has_colorscale":337,"../../lib":445,"../../plots/array_container_defaults":488,"../../plots/domain":517,"./attributes":579,"./axisbrush":580,"./constants":583,"./merge_length":587}],585:[function(require,module,exports){
+},{"../../components/colorscale/defaults":330,"../../components/colorscale/has_colorscale":334,"../../lib":442,"../../plots/array_container_defaults":486,"../../plots/domain":515,"./attributes":577,"./axisbrush":578,"./constants":581,"./merge_length":585}],583:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100015,10 +100316,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 var Parcoords = {};
 
-Parcoords.attributes = require('./attributes');
-Parcoords.supplyDefaults = require('./defaults');
-Parcoords.calc = require('./calc');
-Parcoords.plot = require('./plot');
+Parcoords.attributes = _dereq_('./attributes');
+Parcoords.supplyDefaults = _dereq_('./defaults');
+Parcoords.calc = _dereq_('./calc');
+Parcoords.plot = _dereq_('./plot');
 Parcoords.colorbar = {
     container: 'line',
     min: 'cmin',
@@ -100027,7 +100328,7 @@ Parcoords.colorbar = {
 
 Parcoords.moduleType = 'trace';
 Parcoords.name = 'parcoords';
-Parcoords.basePlotModule = require('./base_plot');
+Parcoords.basePlotModule = _dereq_('./base_plot');
 Parcoords.categories = ['gl', 'regl', 'noOpacity'];
 Parcoords.meta = {
     
@@ -100035,7 +100336,7 @@ Parcoords.meta = {
 
 module.exports = Parcoords;
 
-},{"./attributes":579,"./base_plot":581,"./calc":582,"./defaults":584,"./plot":589}],586:[function(require,module,exports){
+},{"./attributes":577,"./base_plot":579,"./calc":580,"./defaults":582,"./plot":587}],584:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100046,13 +100347,13 @@ module.exports = Parcoords;
 
 'use strict';
 
-var glslify = require('glslify');
+var glslify = _dereq_('glslify');
 var vertexShaderSource = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 p0, p1, p2, p3,\n               p4, p5, p6, p7,\n               p8, p9, pa, pb,\n               pc, pd, pe;\n\nattribute vec4 pf;\n\nuniform mat4 dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D,\n             loA, hiA, loB, hiB, loC, hiC, loD, hiD;\n\nuniform vec2 resolution,\n             viewBoxPosition,\n             viewBoxSize;\n\nuniform sampler2D palette;\nuniform sampler2D mask;\nuniform float maskHeight;\n\nuniform vec2 colorClamp;\n\nvarying vec4 fragColor;\n\nvec4 unit_1 = vec4(1, 1, 1, 1);\n\nfloat val(mat4 p, mat4 v) {\n    return dot(matrixCompMult(p, v) * unit_1, unit_1);\n}\n\nfloat axisY(\n        float x,\n        mat4 d[4],\n        mat4 dim1A, mat4 dim2A, mat4 dim1B, mat4 dim2B, mat4 dim1C, mat4 dim2C, mat4 dim1D, mat4 dim2D\n    ) {\n\n    float y1 = val(d[0], dim1A) + val(d[1], dim1B) + val(d[2], dim1C) + val(d[3], dim1D);\n    float y2 = val(d[0], dim2A) + val(d[1], dim2B) + val(d[2], dim2C) + val(d[3], dim2D);\n    return y1 * (1.0 - x) + y2 * x;\n}\n\nconst int bitsPerByte = 8;\n\nint mod2(int a) {\n    return a - 2 * (a / 2);\n}\n\nint mod8(int a) {\n    return a - 8 * (a / 8);\n}\n\nvec4 zero = vec4(0, 0, 0, 0);\nvec4 unit_0 = vec4(1, 1, 1, 1);\nvec2 xyProjection = vec2(1, 1);\n\nmat4 mclamp(mat4 m, mat4 lo, mat4 hi) {\n    return mat4(clamp(m[0], lo[0], hi[0]),\n                clamp(m[1], lo[1], hi[1]),\n                clamp(m[2], lo[2], hi[2]),\n                clamp(m[3], lo[3], hi[3]));\n}\n\nbool mshow(mat4 p, mat4 lo, mat4 hi) {\n    return mclamp(p, lo, hi) == p;\n}\n\nbool withinBoundingBox(\n        mat4 d[4],\n        mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD\n    ) {\n\n    return mshow(d[0], loA, hiA) &&\n           mshow(d[1], loB, hiB) &&\n           mshow(d[2], loC, hiC) &&\n           mshow(d[3], loD, hiD);\n}\n\nbool withinRasterMask(mat4 d[4], sampler2D mask, float height) {\n    bool result = true;\n    int bitInByteStepper;\n    float valY, valueY, scaleX;\n    int hit, bitmask, valX;\n    for(int i = 0; i < 4; i++) {\n        for(int j = 0; j < 4; j++) {\n            for(int k = 0; k < 4; k++) {\n                bitInByteStepper = mod8(j * 4 + k);\n                valX = i * 2 + j / 2;\n                valY = d[i][j][k];\n                valueY = valY * (height - 1.0) + 0.5;\n                scaleX = (float(valX) + 0.5) / 8.0;\n                hit = int(texture2D(mask, vec2(scaleX, (valueY + 0.5) / height))[3] * 255.0) / int(pow(2.0, float(bitInByteStepper)));\n                result = result && mod2(hit) == 1;\n            }\n        }\n    }\n    return result;\n}\n\nvec4 position(\n        float depth,\n        vec2 resolution, vec2 viewBoxPosition, vec2 viewBoxSize,\n        mat4 dims[4],\n        float signum,\n        mat4 dim1A, mat4 dim2A, mat4 dim1B, mat4 dim2B, mat4 dim1C, mat4 dim2C, mat4 dim1D, mat4 dim2D,\n        mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD,\n        sampler2D mask, float maskHeight\n    ) {\n\n    float x = 0.5 * signum + 0.5;\n    float y = axisY(x, dims, dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D);\n\n    float show = float(\n                            withinBoundingBox(dims, loA, hiA, loB, hiB, loC, hiC, loD, hiD)\n                         && withinRasterMask(dims, mask, maskHeight)\n                      );\n\n    vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);\n    float depthOrHide = depth + 2.0 * (1.0 - show);\n\n    return vec4(\n        xyProjection * (2.0 * viewBoxXY / resolution - 1.0),\n        depthOrHide,\n        1.0\n    );\n}\n\nvoid main() {\n\n    float prominence = abs(pf[3]);\n\n    mat4 p[4];\n    p[0] = mat4(p0, p1, p2, p3);\n    p[1] = mat4(p4, p5, p6, p7);\n    p[2] = mat4(p8, p9, pa, pb);\n    p[3] = mat4(pc, pd, pe, abs(pf));\n\n    gl_Position = position(\n        1.0 - prominence,\n        resolution, viewBoxPosition, viewBoxSize,\n        p,\n        sign(pf[3]),\n        dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D,\n        loA, hiA, loB, hiB, loC, hiC, loD, hiD,\n        mask, maskHeight\n    );\n\n    float clampedColorIndex = clamp((prominence - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0);\n    fragColor = texture2D(palette, vec2((clampedColorIndex * 255.0 + 0.5) / 256.0, 0.5));\n}\n"]);
 var contextShaderSource = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 p0, p1, p2, p3,\n               p4, p5, p6, p7,\n               p8, p9, pa, pb,\n               pc, pd, pe;\n\nattribute vec4 pf;\n\nuniform mat4 dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D;\n\nuniform vec2 resolution,\n             viewBoxPosition,\n             viewBoxSize;\n\nuniform sampler2D palette;\n\nuniform vec2 colorClamp;\n\nvarying vec4 fragColor;\n\nvec2 xyProjection = vec2(1, 1);\n\nvec4 unit = vec4(1, 1, 1, 1);\n\nfloat val(mat4 p, mat4 v) {\n    return dot(matrixCompMult(p, v) * unit, unit);\n}\n\nfloat axisY(\n        float x,\n        mat4 d[4],\n        mat4 dim1A, mat4 dim2A, mat4 dim1B, mat4 dim2B, mat4 dim1C, mat4 dim2C, mat4 dim1D, mat4 dim2D\n    ) {\n\n    float y1 = val(d[0], dim1A) + val(d[1], dim1B) + val(d[2], dim1C) + val(d[3], dim1D);\n    float y2 = val(d[0], dim2A) + val(d[1], dim2B) + val(d[2], dim2C) + val(d[3], dim2D);\n    return y1 * (1.0 - x) + y2 * x;\n}\n\nvec4 position(\n        float depth,\n        vec2 resolution, vec2 viewBoxPosition, vec2 viewBoxSize,\n        mat4 dims[4],\n        float signum,\n        mat4 dim1A, mat4 dim2A, mat4 dim1B, mat4 dim2B, mat4 dim1C, mat4 dim2C, mat4 dim1D, mat4 dim2D\n    ) {\n\n    float x = 0.5 * signum + 0.5;\n    float y = axisY(x, dims, dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D);\n\n    vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);\n\n    return vec4(\n        xyProjection * (2.0 * viewBoxXY / resolution - 1.0),\n        depth,\n        1.0\n    );\n}\n\nvoid main() {\n\n    float prominence = abs(pf[3]);\n\n    mat4 p[4];\n    p[0] = mat4(p0, p1, p2, p3);\n    p[1] = mat4(p4, p5, p6, p7);\n    p[2] = mat4(p8, p9, pa, pb);\n    p[3] = mat4(pc, pd, pe, abs(pf));\n\n    gl_Position = position(\n        1.0 - prominence,\n        resolution, viewBoxPosition, viewBoxSize,\n        p,\n        sign(pf[3]),\n        dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D\n    );\n\n    float clampedColorIndex = clamp((prominence - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0);\n    fragColor = texture2D(palette, vec2((clampedColorIndex * 255.0 + 0.5) / 256.0, 0.5));\n}\n"]);
 var pickVertexShaderSource = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 p0, p1, p2, p3,\n               p4, p5, p6, p7,\n               p8, p9, pa, pb,\n               pc, pd, pe;\n\nattribute vec4 pf;\n\nuniform mat4 dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D,\n             loA, hiA, loB, hiB, loC, hiC, loD, hiD;\n\nuniform vec2 resolution,\n             viewBoxPosition,\n             viewBoxSize;\n\nuniform sampler2D mask;\nuniform float maskHeight;\n\nuniform vec2 colorClamp;\n\nvarying vec4 fragColor;\n\nvec4 unit_1 = vec4(1, 1, 1, 1);\n\nfloat val(mat4 p, mat4 v) {\n    return dot(matrixCompMult(p, v) * unit_1, unit_1);\n}\n\nfloat axisY(\n        float x,\n        mat4 d[4],\n        mat4 dim1A, mat4 dim2A, mat4 dim1B, mat4 dim2B, mat4 dim1C, mat4 dim2C, mat4 dim1D, mat4 dim2D\n    ) {\n\n    float y1 = val(d[0], dim1A) + val(d[1], dim1B) + val(d[2], dim1C) + val(d[3], dim1D);\n    float y2 = val(d[0], dim2A) + val(d[1], dim2B) + val(d[2], dim2C) + val(d[3], dim2D);\n    return y1 * (1.0 - x) + y2 * x;\n}\n\nconst int bitsPerByte = 8;\n\nint mod2(int a) {\n    return a - 2 * (a / 2);\n}\n\nint mod8(int a) {\n    return a - 8 * (a / 8);\n}\n\nvec4 zero = vec4(0, 0, 0, 0);\nvec4 unit_0 = vec4(1, 1, 1, 1);\nvec2 xyProjection = vec2(1, 1);\n\nmat4 mclamp(mat4 m, mat4 lo, mat4 hi) {\n    return mat4(clamp(m[0], lo[0], hi[0]),\n                clamp(m[1], lo[1], hi[1]),\n                clamp(m[2], lo[2], hi[2]),\n                clamp(m[3], lo[3], hi[3]));\n}\n\nbool mshow(mat4 p, mat4 lo, mat4 hi) {\n    return mclamp(p, lo, hi) == p;\n}\n\nbool withinBoundingBox(\n        mat4 d[4],\n        mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD\n    ) {\n\n    return mshow(d[0], loA, hiA) &&\n           mshow(d[1], loB, hiB) &&\n           mshow(d[2], loC, hiC) &&\n           mshow(d[3], loD, hiD);\n}\n\nbool withinRasterMask(mat4 d[4], sampler2D mask, float height) {\n    bool result = true;\n    int bitInByteStepper;\n    float valY, valueY, scaleX;\n    int hit, bitmask, valX;\n    for(int i = 0; i < 4; i++) {\n        for(int j = 0; j < 4; j++) {\n            for(int k = 0; k < 4; k++) {\n                bitInByteStepper = mod8(j * 4 + k);\n                valX = i * 2 + j / 2;\n                valY = d[i][j][k];\n                valueY = valY * (height - 1.0) + 0.5;\n                scaleX = (float(valX) + 0.5) / 8.0;\n                hit = int(texture2D(mask, vec2(scaleX, (valueY + 0.5) / height))[3] * 255.0) / int(pow(2.0, float(bitInByteStepper)));\n                result = result && mod2(hit) == 1;\n            }\n        }\n    }\n    return result;\n}\n\nvec4 position(\n        float depth,\n        vec2 resolution, vec2 viewBoxPosition, vec2 viewBoxSize,\n        mat4 dims[4],\n        float signum,\n        mat4 dim1A, mat4 dim2A, mat4 dim1B, mat4 dim2B, mat4 dim1C, mat4 dim2C, mat4 dim1D, mat4 dim2D,\n        mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD,\n        sampler2D mask, float maskHeight\n    ) {\n\n    float x = 0.5 * signum + 0.5;\n    float y = axisY(x, dims, dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D);\n\n    float show = float(\n                            withinBoundingBox(dims, loA, hiA, loB, hiB, loC, hiC, loD, hiD)\n                         && withinRasterMask(dims, mask, maskHeight)\n                      );\n\n    vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);\n    float depthOrHide = depth + 2.0 * (1.0 - show);\n\n    return vec4(\n        xyProjection * (2.0 * viewBoxXY / resolution - 1.0),\n        depthOrHide,\n        1.0\n    );\n}\n\nvoid main() {\n\n    float prominence = abs(pf[3]);\n\n    mat4 p[4];\n    p[0] = mat4(p0, p1, p2, p3);\n    p[1] = mat4(p4, p5, p6, p7);\n    p[2] = mat4(p8, p9, pa, pb);\n    p[3] = mat4(pc, pd, pe, abs(pf));\n\n    gl_Position = position(\n        1.0 - prominence,\n        resolution, viewBoxPosition, viewBoxSize,\n        p,\n        sign(pf[3]),\n        dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D,\n        loA, hiA, loB, hiB, loC, hiC, loD, hiD,\n        mask, maskHeight\n    );\n\n    fragColor = vec4(pf.rgb, 1.0);\n}\n"]);
 var fragmentShaderSource = glslify(["precision lowp float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor;\n\nvoid main() {\n    gl_FragColor = fragColor;\n}\n"]);
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 // don't change; otherwise near/far plane lines are lost
 var depthLimitEpsilon = 1e-6;
@@ -100567,7 +100868,7 @@ module.exports = function(canvasGL, d) {
     };
 };
 
-},{"../../lib":445,"glslify":200}],587:[function(require,module,exports){
+},{"../../lib":442,"glslify":197}],585:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100605,7 +100906,7 @@ module.exports = function(traceOut, dimensions, dataAttr, len) {
     return len;
 };
 
-},{}],588:[function(require,module,exports){
+},{}],586:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100616,16 +100917,16 @@ module.exports = function(traceOut, dimensions, dataAttr, len) {
 
 'use strict';
 
-var lineLayerMaker = require('./lines');
-var c = require('./constants');
-var Lib = require('../../lib');
-var d3 = require('d3');
-var Drawing = require('../../components/drawing');
-var gup = require('../../lib/gup');
+var lineLayerMaker = _dereq_('./lines');
+var c = _dereq_('./constants');
+var Lib = _dereq_('../../lib');
+var d3 = _dereq_('d3');
+var Drawing = _dereq_('../../components/drawing');
+var gup = _dereq_('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
-var brush = require('./axisbrush');
+var brush = _dereq_('./axisbrush');
 
 function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
 
@@ -101255,7 +101556,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     brush.ensureAxisBrush(axisOverlays);
 };
 
-},{"../../components/drawing":348,"../../lib":445,"../../lib/gup":442,"./axisbrush":580,"./constants":583,"./lines":586,"d3":86}],589:[function(require,module,exports){
+},{"../../components/drawing":345,"../../lib":442,"../../lib/gup":439,"./axisbrush":578,"./constants":581,"./lines":584,"d3":84}],587:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101266,8 +101567,8 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
 
 'use strict';
 
-var parcoords = require('./parcoords');
-var prepareRegl = require('../../lib/prepare_regl');
+var parcoords = _dereq_('./parcoords');
+var prepareRegl = _dereq_('../../lib/prepare_regl');
 
 module.exports = function plot(gd, cdparcoords) {
     var fullLayout = gd._fullLayout;
@@ -101387,7 +101688,7 @@ module.exports = function plot(gd, cdparcoords) {
         });
 };
 
-},{"../../lib/prepare_regl":458,"./parcoords":588}],590:[function(require,module,exports){
+},{"../../lib/prepare_regl":456,"./parcoords":586}],588:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101398,7 +101699,7 @@ module.exports = function plot(gd, cdparcoords) {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 exports.formatPiePercent = function formatPiePercent(v, separators) {
     var vRounded = (v * 100).toPrecision(3);
@@ -101429,7 +101730,7 @@ exports.castOption = function castOption(item, indices) {
     else if(item) return item;
 };
 
-},{"../../lib":445}],591:[function(require,module,exports){
+},{"../../lib":442}],589:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101440,8 +101741,8 @@ exports.castOption = function castOption(item, indices) {
 
 'use strict';
 
-var Color = require('../../components/color');
-var castOption = require('./helpers').castOption;
+var Color = _dereq_('../../components/color');
+var castOption = _dereq_('./helpers').castOption;
 
 module.exports = function styleOne(s, pt, trace) {
     var line = trace.marker.line;
@@ -101453,7 +101754,7 @@ module.exports = function styleOne(s, pt, trace) {
         .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":323,"./helpers":590}],592:[function(require,module,exports){
+},{"../../components/color":320,"./helpers":588}],590:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101464,7 +101765,7 @@ module.exports = function styleOne(s, pt, trace) {
 
 'use strict';
 
-var scatterglAttrs = require('../scatter/attributes');
+var scatterglAttrs = _dereq_('../scatter/attributes');
 
 module.exports = {
     x: scatterglAttrs.x,
@@ -101555,7 +101856,7 @@ module.exports = {
     }
 };
 
-},{"../scatter/attributes":597}],593:[function(require,module,exports){
+},{"../scatter/attributes":595}],591:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101566,11 +101867,11 @@ module.exports = {
 
 'use strict';
 
-var createPointCloudRenderer = require('gl-pointcloud2d');
+var createPointCloudRenderer = _dereq_('gl-pointcloud2d');
 
-var str2RGBArray = require('../../lib/str2rgbarray');
-var expandAxis = require('../../plots/cartesian/autorange').expand;
-var getTraceColor = require('../scatter/get_trace_color');
+var str2RGBArray = _dereq_('../../lib/str2rgbarray');
+var findExtremes = _dereq_('../../plots/cartesian/autorange').findExtremes;
+var getTraceColor = _dereq_('../scatter/get_trace_color');
 
 function Pointcloud(scene, uid) {
     this.scene = scene;
@@ -101753,14 +102054,11 @@ proto.updateFast = function(options) {
     this.pointcloud.update(this.pointcloudOptions);
 
     // add item for autorange routine
-    this.expandAxesFast(bounds, markerSizeMax / 2); // avoid axis reexpand just because of the adaptive point size
-};
-
-proto.expandAxesFast = function(bounds, markerSize) {
-    var pad = markerSize || 0.5;
-
-    expandAxis(this.scene.xaxis, [bounds[0], bounds[2]], {ppad: pad});
-    expandAxis(this.scene.yaxis, [bounds[1], bounds[3]], {ppad: pad});
+    var xa = this.scene.xaxis;
+    var ya = this.scene.yaxis;
+    var pad = markerSizeMax / 2 || 0.5;
+    options._extremes[xa._id] = findExtremes(xa, [bounds[0], bounds[2]], {ppad: pad});
+    options._extremes[ya._id] = findExtremes(ya, [bounds[1], bounds[3]], {ppad: pad});
 };
 
 proto.dispose = function() {
@@ -101775,7 +102073,7 @@ function createPointcloud(scene, data) {
 
 module.exports = createPointcloud;
 
-},{"../../lib/str2rgbarray":468,"../../plots/cartesian/autorange":491,"../scatter/get_trace_color":606,"gl-pointcloud2d":178}],594:[function(require,module,exports){
+},{"../../lib/str2rgbarray":466,"../../plots/cartesian/autorange":489,"../scatter/get_trace_color":604,"gl-pointcloud2d":175}],592:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101787,9 +102085,9 @@ module.exports = createPointcloud;
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
-var attributes = require('./attributes');
+var attributes = _dereq_('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     function coerce(attr, dflt) {
@@ -101823,7 +102121,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     traceOut._length = null;
 };
 
-},{"../../lib":445,"./attributes":592}],595:[function(require,module,exports){
+},{"../../lib":442,"./attributes":590}],593:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101836,16 +102134,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
 
 var pointcloud = {};
 
-pointcloud.attributes = require('./attributes');
-pointcloud.supplyDefaults = require('./defaults');
+pointcloud.attributes = _dereq_('./attributes');
+pointcloud.supplyDefaults = _dereq_('./defaults');
 
 // reuse the Scatter3D 'dummy' calc step so that legends know what to do
-pointcloud.calc = require('../scatter3d/calc');
-pointcloud.plot = require('./convert');
+pointcloud.calc = _dereq_('../scatter3d/calc');
+pointcloud.plot = _dereq_('./convert');
 
 pointcloud.moduleType = 'trace';
 pointcloud.name = 'pointcloud';
-pointcloud.basePlotModule = require('../../plots/gl2d');
+pointcloud.basePlotModule = _dereq_('../../plots/gl2d');
 pointcloud.categories = ['gl', 'gl2d', 'showLegend'];
 pointcloud.meta = {
     
@@ -101853,7 +102151,7 @@ pointcloud.meta = {
 
 module.exports = pointcloud;
 
-},{"../../plots/gl2d":523,"../scatter3d/calc":622,"./attributes":592,"./convert":593,"./defaults":594}],596:[function(require,module,exports){
+},{"../../plots/gl2d":521,"../scatter3d/calc":620,"./attributes":590,"./convert":591,"./defaults":592}],594:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101865,7 +102163,7 @@ module.exports = pointcloud;
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 
 // arrayOk attributes, merge them into calcdata array
@@ -101905,7 +102203,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":445}],597:[function(require,module,exports){
+},{"../../lib":442}],595:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101916,14 +102214,14 @@ module.exports = function arraysToCalcdata(cd, trace) {
 
 'use strict';
 
-var colorAttributes = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
-var fontAttrs = require('../../plots/font_attributes');
-var dash = require('../../components/drawing/attributes').dash;
+var colorAttributes = _dereq_('../../components/colorscale/attributes');
+var colorbarAttrs = _dereq_('../../components/colorbar/attributes');
+var fontAttrs = _dereq_('../../plots/font_attributes');
+var dash = _dereq_('../../components/drawing/attributes').dash;
 
-var Drawing = require('../../components/drawing');
-var constants = require('./constants');
-var extendFlat = require('../../lib/extend').extendFlat;
+var Drawing = _dereq_('../../components/drawing');
+var constants = _dereq_('./constants');
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
 
 module.exports = {
     x: {
@@ -102092,7 +102390,7 @@ module.exports = {
             dflt: 6,
             arrayOk: true,
             
-            editType: 'calcIfAutorange',
+            editType: 'calc',
             
         },
         maxdisplayed: {
@@ -102270,7 +102568,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorbar/attributes":324,"../../components/colorscale/attributes":330,"../../components/drawing":348,"../../components/drawing/attributes":347,"../../lib/extend":436,"../../plots/font_attributes":518,"./constants":602}],598:[function(require,module,exports){
+},{"../../components/colorbar/attributes":321,"../../components/colorscale/attributes":327,"../../components/drawing":345,"../../components/drawing/attributes":344,"../../lib/extend":433,"../../plots/font_attributes":516,"./constants":600}],596:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102281,16 +102579,16 @@ module.exports = {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+var isNumeric = _dereq_('fast-isnumeric');
+var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
 
-var Axes = require('../../plots/cartesian/axes');
-var BADNUM = require('../../constants/numerical').BADNUM;
+var Axes = _dereq_('../../plots/cartesian/axes');
+var BADNUM = _dereq_('../../constants/numerical').BADNUM;
 
-var subTypes = require('./subtypes');
-var calcColorscale = require('./colorscale_calc');
-var arraysToCalcdata = require('./arrays_to_calcdata');
-var calcSelection = require('./calc_selection');
+var subTypes = _dereq_('./subtypes');
+var calcColorscale = _dereq_('./colorscale_calc');
+var arraysToCalcdata = _dereq_('./arrays_to_calcdata');
+var calcSelection = _dereq_('./calc_selection');
 
 function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
@@ -102369,8 +102667,9 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
         yOptions.padded = false;
     }
 
-    Axes.expand(xa, x, xOptions);
-    Axes.expand(ya, y, yOptions);
+    // N.B. asymmetric splom traces call this with blank {} xa or ya
+    if(xa._id) trace._extremes[xa._id] = Axes.findExtremes(xa, x, xOptions);
+    if(ya._id) trace._extremes[ya._id] = Axes.findExtremes(ya, y, yOptions);
 }
 
 function calcMarkerSize(trace, serieslen) {
@@ -102416,7 +102715,7 @@ module.exports = {
     calcAxisExpansion: calcAxisExpansion
 };
 
-},{"../../constants/numerical":424,"../../lib":445,"../../plots/cartesian/axes":492,"./arrays_to_calcdata":596,"./calc_selection":599,"./colorscale_calc":601,"./subtypes":619,"fast-isnumeric":151}],599:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../lib":442,"../../plots/cartesian/axes":490,"./arrays_to_calcdata":594,"./calc_selection":597,"./colorscale_calc":599,"./subtypes":617,"fast-isnumeric":148}],597:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102427,7 +102726,7 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 module.exports = function calcSelection(cd, trace) {
     if(Lib.isArrayOrTypedArray(trace.selectedpoints)) {
@@ -102435,7 +102734,7 @@ module.exports = function calcSelection(cd, trace) {
     }
 };
 
-},{"../../lib":445}],600:[function(require,module,exports){
+},{"../../lib":442}],598:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102474,7 +102773,7 @@ module.exports = function cleanData(fullData) {
     }
 };
 
-},{}],601:[function(require,module,exports){
+},{}],599:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102486,10 +102785,10 @@ module.exports = function cleanData(fullData) {
 
 'use strict';
 
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var calcColorscale = require('../../components/colorscale/calc');
+var hasColorscale = _dereq_('../../components/colorscale/has_colorscale');
+var calcColorscale = _dereq_('../../components/colorscale/calc');
 
-var subTypes = require('./subtypes');
+var subTypes = _dereq_('./subtypes');
 
 
 module.exports = function calcMarkerColorscale(trace) {
@@ -102507,7 +102806,7 @@ module.exports = function calcMarkerColorscale(trace) {
     }
 };
 
-},{"../../components/colorscale/calc":331,"../../components/colorscale/has_colorscale":337,"./subtypes":619}],602:[function(require,module,exports){
+},{"../../components/colorscale/calc":328,"../../components/colorscale/has_colorscale":334,"./subtypes":617}],600:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102534,7 +102833,7 @@ module.exports = {
     maxScreensAway: 20
 };
 
-},{}],603:[function(require,module,exports){
+},{}],601:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102545,18 +102844,18 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Registry = require('../../registry');
+var Lib = _dereq_('../../lib');
+var Registry = _dereq_('../../registry');
 
-var attributes = require('./attributes');
-var constants = require('./constants');
-var subTypes = require('./subtypes');
-var handleXYDefaults = require('./xy_defaults');
-var handleMarkerDefaults = require('./marker_defaults');
-var handleLineDefaults = require('./line_defaults');
-var handleLineShapeDefaults = require('./line_shape_defaults');
-var handleTextDefaults = require('./text_defaults');
-var handleFillColorDefaults = require('./fillcolor_defaults');
+var attributes = _dereq_('./attributes');
+var constants = _dereq_('./constants');
+var subTypes = _dereq_('./subtypes');
+var handleXYDefaults = _dereq_('./xy_defaults');
+var handleMarkerDefaults = _dereq_('./marker_defaults');
+var handleLineDefaults = _dereq_('./line_defaults');
+var handleLineShapeDefaults = _dereq_('./line_shape_defaults');
+var handleTextDefaults = _dereq_('./text_defaults');
+var handleFillColorDefaults = _dereq_('./fillcolor_defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -102616,7 +102915,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":445,"../../registry":536,"./attributes":597,"./constants":602,"./fillcolor_defaults":605,"./line_defaults":609,"./line_shape_defaults":611,"./marker_defaults":615,"./subtypes":619,"./text_defaults":620,"./xy_defaults":621}],604:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534,"./attributes":595,"./constants":600,"./fillcolor_defaults":603,"./line_defaults":607,"./line_shape_defaults":609,"./marker_defaults":613,"./subtypes":617,"./text_defaults":618,"./xy_defaults":619}],602:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102627,7 +102926,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 /** Fill hover 'pointData' container with 'correct' hover text value
  *
@@ -102659,7 +102958,7 @@ function isValid(v) {
     return v || v === 0;
 }
 
-},{"../../lib":445}],605:[function(require,module,exports){
+},{"../../lib":442}],603:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102671,8 +102970,8 @@ function isValid(v) {
 
 'use strict';
 
-var Color = require('../../components/color');
-var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+var Color = _dereq_('../../components/color');
+var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
 
 module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce) {
     var inheritColorFromMarker = false;
@@ -102697,7 +102996,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":323,"../../lib":445}],606:[function(require,module,exports){
+},{"../../components/color":320,"../../lib":442}],604:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102709,8 +103008,8 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
 
 'use strict';
 
-var Color = require('../../components/color');
-var subtypes = require('./subtypes');
+var Color = _dereq_('../../components/color');
+var subtypes = _dereq_('./subtypes');
 
 
 module.exports = function getTraceColor(trace, di) {
@@ -102750,7 +103049,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":323,"./subtypes":619}],607:[function(require,module,exports){
+},{"../../components/color":320,"./subtypes":617}],605:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102761,12 +103060,12 @@ module.exports = function getTraceColor(trace, di) {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Fx = require('../../components/fx');
-var Registry = require('../../registry');
-var getTraceColor = require('./get_trace_color');
-var Color = require('../../components/color');
-var fillHoverText = require('./fill_hover_text');
+var Lib = _dereq_('../../lib');
+var Fx = _dereq_('../../components/fx');
+var Registry = _dereq_('../../registry');
+var getTraceColor = _dereq_('./get_trace_color');
+var Color = _dereq_('../../components/color');
+var fillHoverText = _dereq_('./fill_hover_text');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -102931,7 +103230,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":323,"../../components/fx":365,"../../lib":445,"../../registry":536,"./fill_hover_text":604,"./get_trace_color":606}],608:[function(require,module,exports){
+},{"../../components/color":320,"../../components/fx":362,"../../lib":442,"../../registry":534,"./fill_hover_text":602,"./get_trace_color":604}],606:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102945,28 +103244,28 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
 var Scatter = {};
 
-var subtypes = require('./subtypes');
+var subtypes = _dereq_('./subtypes');
 Scatter.hasLines = subtypes.hasLines;
 Scatter.hasMarkers = subtypes.hasMarkers;
 Scatter.hasText = subtypes.hasText;
 Scatter.isBubble = subtypes.isBubble;
 
-Scatter.attributes = require('./attributes');
-Scatter.supplyDefaults = require('./defaults');
-Scatter.cleanData = require('./clean_data');
-Scatter.calc = require('./calc').calc;
-Scatter.arraysToCalcdata = require('./arrays_to_calcdata');
-Scatter.plot = require('./plot');
-Scatter.colorbar = require('./marker_colorbar');
-Scatter.style = require('./style').style;
-Scatter.styleOnSelect = require('./style').styleOnSelect;
-Scatter.hoverPoints = require('./hover');
-Scatter.selectPoints = require('./select');
+Scatter.attributes = _dereq_('./attributes');
+Scatter.supplyDefaults = _dereq_('./defaults');
+Scatter.cleanData = _dereq_('./clean_data');
+Scatter.calc = _dereq_('./calc').calc;
+Scatter.arraysToCalcdata = _dereq_('./arrays_to_calcdata');
+Scatter.plot = _dereq_('./plot');
+Scatter.colorbar = _dereq_('./marker_colorbar');
+Scatter.style = _dereq_('./style').style;
+Scatter.styleOnSelect = _dereq_('./style').styleOnSelect;
+Scatter.hoverPoints = _dereq_('./hover');
+Scatter.selectPoints = _dereq_('./select');
 Scatter.animatable = true;
 
 Scatter.moduleType = 'trace';
 Scatter.name = 'scatter';
-Scatter.basePlotModule = require('../../plots/cartesian');
+Scatter.basePlotModule = _dereq_('../../plots/cartesian');
 Scatter.categories = ['cartesian', 'svg', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like', 'zoomScale'];
 Scatter.meta = {
     
@@ -102974,7 +103273,7 @@ Scatter.meta = {
 
 module.exports = Scatter;
 
-},{"../../plots/cartesian":503,"./arrays_to_calcdata":596,"./attributes":597,"./calc":598,"./clean_data":600,"./defaults":603,"./hover":607,"./marker_colorbar":614,"./plot":616,"./select":617,"./style":618,"./subtypes":619}],609:[function(require,module,exports){
+},{"../../plots/cartesian":501,"./arrays_to_calcdata":594,"./attributes":595,"./calc":596,"./clean_data":598,"./defaults":601,"./hover":605,"./marker_colorbar":612,"./plot":614,"./select":615,"./style":616,"./subtypes":617}],607:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102985,9 +103284,9 @@ module.exports = Scatter;
 
 'use strict';
 
-var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
+var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
+var hasColorscale = _dereq_('../../components/colorscale/has_colorscale');
+var colorscaleDefaults = _dereq_('../../components/colorscale/defaults');
 
 module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
     var markerColor = (traceIn.marker || {}).color;
@@ -102995,9 +103294,8 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     coerce('line.color', defaultColor);
 
     if(hasColorscale(traceIn, 'line')) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
-    }
-    else {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c', noScale: true});
+    } else {
         var lineColorDflt = (isArrayOrTypedArray(markerColor) ? false : markerColor) || defaultColor;
         coerce('line.color', lineColorDflt);
     }
@@ -103006,7 +103304,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!(opts || {}).noDash) coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":333,"../../components/colorscale/has_colorscale":337,"../../lib":445}],610:[function(require,module,exports){
+},{"../../components/colorscale/defaults":330,"../../components/colorscale/has_colorscale":334,"../../lib":442}],608:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -103018,17 +103316,16 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
 
 'use strict';
 
-var BADNUM = require('../../constants/numerical').BADNUM;
-var Lib = require('../../lib');
+var BADNUM = _dereq_('../../constants/numerical').BADNUM;
+var Lib = _dereq_('../../lib');
 var segmentsIntersect = Lib.segmentsIntersect;
 var constrain = Lib.constrain;
-var constants = require('./constants');
+var constants = _dereq_('./constants');
 
 
 module.exports = function linePoints(d, opts) {
     var xa = opts.xaxis;
     var ya = opts.yaxis;
-    var simplify = opts.simplify;
     var connectGaps = opts.connectGaps;
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
@@ -103063,17 +103360,13 @@ module.exports = function linePoints(d, opts) {
     // deviation variables are (signed) pixel distances normal to the cluster vector
     var clusterMinDeviation, clusterMaxDeviation, thisDeviation;
 
-    if(!simplify) {
-        baseTolerance = minTolerance = -1;
-    }
-
     // turn one calcdata point into pixel coordinates
     function getPt(index) {
         var di = d[index];
         if(!di) return false;
         var x = xa.c2p(di.x);
         var y = ya.c2p(di.y);
-        if(x === BADNUM || y === BADNUM) return di.intoCenter || false;
+        if(x === BADNUM || y === BADNUM) return false;
         return [x, y];
     }
 
@@ -103366,7 +103659,7 @@ module.exports = function linePoints(d, opts) {
             // can't decimate if nonlinear line shape
             // TODO: we *could* decimate [hv]{2,3} shapes if we restricted clusters to horz or vert again
             // but spline would be verrry awkward to decimate
-            if(!linear) {
+            if(!linear || !opts.simplify) {
                 addPt(clusterHighPt);
                 continue;
             }
@@ -103450,7 +103743,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":424,"../../lib":445,"./constants":602}],611:[function(require,module,exports){
+},{"../../constants/numerical":421,"../../lib":442,"./constants":600}],609:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -103469,7 +103762,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],612:[function(require,module,exports){
+},{}],610:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -103509,7 +103802,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     }
 };
 
-},{}],613:[function(require,module,exports){
+},{}],611:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -103521,7 +103814,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = _dereq_('fast-isnumeric');
 
 
 // used in the drawing step for 'scatter' and 'scattegeo' and
@@ -103551,7 +103844,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":151}],614:[function(require,module,exports){
+},{"fast-isnumeric":148}],612:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -103569,7 +103862,7 @@ module.exports = {
     max: 'cmax'
 };
 
-},{}],615:[function(require,module,exports){
+},{}],613:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -103581,11 +103874,11 @@ module.exports = {
 
 'use strict';
 
-var Color = require('../../components/color');
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
+var Color = _dereq_('../../components/color');
+var hasColorscale = _dereq_('../../components/colorscale/has_colorscale');
+var colorscaleDefaults = _dereq_('../../components/colorscale/defaults');
 
-var subTypes = require('./subtypes');
+var subTypes = _dereq_('./subtypes');
 
 /*
  * opts: object of flags to control features not all marker users support
@@ -103652,7 +103945,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":323,"../../components/colorscale/defaults":333,"../../components/colorscale/has_colorscale":337,"./subtypes":619}],616:[function(require,module,exports){
+},{"../../components/color":320,"../../components/colorscale/defaults":330,"../../components/colorscale/has_colorscale":334,"./subtypes":617}],614:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -103664,16 +103957,16 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = _dereq_('d3');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Drawing = require('../../components/drawing');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Drawing = _dereq_('../../components/drawing');
 
-var subTypes = require('./subtypes');
-var linePoints = require('./line_points');
-var linkTraces = require('./link_traces');
-var polygonTester = require('../../lib/polygon').tester;
+var subTypes = _dereq_('./subtypes');
+var linePoints = _dereq_('./line_points');
+var linkTraces = _dereq_('./link_traces');
+var polygonTester = _dereq_('../../lib/polygon').tester;
 
 module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transitionOpts, makeOnCompleteCallback) {
     var i, uids, join, onComplete;
@@ -104238,7 +104531,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":348,"../../lib":445,"../../lib/polygon":457,"../../registry":536,"./line_points":610,"./link_traces":612,"./subtypes":619,"d3":86}],617:[function(require,module,exports){
+},{"../../components/drawing":345,"../../lib":442,"../../lib/polygon":455,"../../registry":534,"./line_points":608,"./link_traces":610,"./subtypes":617,"d3":84}],615:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104250,7 +104543,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
 
 'use strict';
 
-var subtypes = require('./subtypes');
+var subtypes = _dereq_('./subtypes');
 
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd,
@@ -104293,7 +104586,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"./subtypes":619}],618:[function(require,module,exports){
+},{"./subtypes":617}],616:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104305,9 +104598,9 @@ module.exports = function selectPoints(searchInfo, polygon) {
 
 'use strict';
 
-var d3 = require('d3');
-var Drawing = require('../../components/drawing');
-var Registry = require('../../registry');
+var d3 = _dereq_('d3');
+var Drawing = _dereq_('../../components/drawing');
+var Registry = _dereq_('../../registry');
 
 function style(gd, cd) {
     var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.scatter');
@@ -104354,7 +104647,7 @@ module.exports = {
     styleOnSelect: styleOnSelect
 };
 
-},{"../../components/drawing":348,"../../registry":536,"d3":86}],619:[function(require,module,exports){
+},{"../../components/drawing":345,"../../registry":534,"d3":84}],617:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104366,7 +104659,7 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 module.exports = {
     hasLines: function(trace) {
@@ -104393,7 +104686,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":445}],620:[function(require,module,exports){
+},{"../../lib":442}],618:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104405,7 +104698,7 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
+var Lib = _dereq_('../../lib');
 
 /*
  * opts: object of flags to control features not all text users support
@@ -104423,7 +104716,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     }
 };
 
-},{"../../lib":445}],621:[function(require,module,exports){
+},{"../../lib":442}],619:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104435,7 +104728,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
 
 'use strict';
 
-var Registry = require('../../registry');
+var Registry = _dereq_('../../registry');
 
 
 module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
@@ -104469,7 +104762,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../registry":536}],622:[function(require,module,exports){
+},{"../../registry":534}],620:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104480,8 +104773,8 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
 
 'use strict';
 
-var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
-var calcColorscales = require('../scatter/colorscale_calc');
+var arraysToCalcdata = _dereq_('../scatter/arrays_to_calcdata');
+var calcColorscales = _dereq_('../scatter/colorscale_calc');
 
 
 /**
@@ -104498,7 +104791,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":596,"../scatter/colorscale_calc":601}],623:[function(require,module,exports){
+},{"../scatter/arrays_to_calcdata":594,"../scatter/colorscale_calc":599}],621:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104509,13 +104802,13 @@ module.exports = function calc(gd, trace) {
 
 'use strict';
 
-var plotAttrs = require('../../plots/attributes');
-var scatterAttrs = require('../scatter/attributes');
-var colorAttrs = require('../../components/colorscale/attributes');
+var plotAttrs = _dereq_('../../plots/attributes');
+var scatterAttrs = _dereq_('../scatter/attributes');
+var colorAttrs = _dereq_('../../components/colorscale/attributes');
 
-var extendFlat = require('../../lib/extend').extendFlat;
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var DASHES = require('./constants').DASHES;
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
+var DASHES = _dereq_('./constants').DASHES;
 
 var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -104571,7 +104864,7 @@ var attrs = module.exports = overrideAll({
     fill: scatterAttrs.fill,
     fillcolor: scatterAttrs.fillcolor,
 
-    hoveron: scatterAttrs.hoveron,
+    // no hoveron
 
     selected: {
         marker: scatterAttrs.selected.marker,
@@ -104588,7 +104881,7 @@ var attrs = module.exports = overrideAll({
 
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
 
-},{"../../components/colorscale/attributes":330,"../../lib/extend":436,"../../plot_api/edit_types":475,"../../plots/attributes":489,"../scatter/attributes":597,"./constants":624}],624:[function(require,module,exports){
+},{"../../components/colorscale/attributes":327,"../../lib/extend":433,"../../plot_api/edit_types":473,"../../plots/attributes":487,"../scatter/attributes":595,"./constants":622}],622:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104621,7 +104914,7 @@ module.exports = {
     }
 };
 
-},{}],625:[function(require,module,exports){
+},{}],623:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104632,22 +104925,21 @@ module.exports = {
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var svgSdf = require('svg-path-sdf');
-var rgba = require('color-normalize');
+var isNumeric = _dereq_('fast-isnumeric');
+var svgSdf = _dereq_('svg-path-sdf');
+var rgba = _dereq_('color-normalize');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Drawing = require('../../components/drawing');
-var Axes = require('../../plots/cartesian/axes');
-var AxisIDs = require('../../plots/cartesian/axis_ids');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var Drawing = _dereq_('../../components/drawing');
+var AxisIDs = _dereq_('../../plots/cartesian/axis_ids');
 
-var formatColor = require('../../lib/gl_format_color').formatColor;
-var subTypes = require('../scatter/subtypes');
-var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
+var formatColor = _dereq_('../../lib/gl_format_color').formatColor;
+var subTypes = _dereq_('../scatter/subtypes');
+var makeBubbleSizeFn = _dereq_('../scatter/make_bubble_size_func');
 
-var constants = require('./constants');
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
+var constants = _dereq_('./constants');
+var DESELECTDIM = _dereq_('../../constants/interactions').DESELECTDIM;
 
 var TEXTOFFSETSIGN = {
     start: 1, left: 1, end: -1, right: -1, middle: 0, center: 0, bottom: 1, top: -1
@@ -105135,11 +105427,10 @@ function convertErrorBarPositions(gd, trace, positions, x, y) {
                 }
             }
 
-            Axes.expand(ax, [minShoe, maxHat], {padded: true});
-
             out[axLetter] = {
                 positions: positions,
-                errors: errors
+                errors: errors,
+                _bnds: [minShoe, maxHat]
             };
         }
     }
@@ -105194,7 +105485,7 @@ module.exports = {
     textPosition: convertTextPosition
 };
 
-},{"../../components/drawing":348,"../../constants/interactions":423,"../../lib":445,"../../lib/gl_format_color":441,"../../plots/cartesian/axes":492,"../../plots/cartesian/axis_ids":495,"../../registry":536,"../scatter/make_bubble_size_func":613,"../scatter/subtypes":619,"./constants":624,"color-normalize":64,"fast-isnumeric":151,"svg-path-sdf":283}],626:[function(require,module,exports){
+},{"../../components/drawing":345,"../../constants/interactions":420,"../../lib":442,"../../lib/gl_format_color":438,"../../plots/cartesian/axis_ids":493,"../../registry":534,"../scatter/make_bubble_size_func":611,"../scatter/subtypes":617,"./constants":622,"color-normalize":62,"fast-isnumeric":148,"svg-path-sdf":280}],624:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -105205,17 +105496,17 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var Registry = require('../../registry');
+var Lib = _dereq_('../../lib');
+var Registry = _dereq_('../../registry');
 
-var attributes = require('./attributes');
-var constants = require('../scatter/constants');
-var subTypes = require('../scatter/subtypes');
-var handleXYDefaults = require('../scatter/xy_defaults');
-var handleMarkerDefaults = require('../scatter/marker_defaults');
-var handleLineDefaults = require('../scatter/line_defaults');
-var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
-var handleTextDefaults = require('../scatter/text_defaults');
+var attributes = _dereq_('./attributes');
+var constants = _dereq_('../scatter/constants');
+var subTypes = _dereq_('../scatter/subtypes');
+var handleXYDefaults = _dereq_('../scatter/xy_defaults');
+var handleMarkerDefaults = _dereq_('../scatter/marker_defaults');
+var handleLineDefaults = _dereq_('../scatter/line_defaults');
+var handleFillColorDefaults = _dereq_('../scatter/fillcolor_defaults');
+var handleTextDefaults = _dereq_('../scatter/text_defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -105241,12 +105532,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
-    var dfltHoverOn = [];
-
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
-        dfltHoverOn.push('points');
     }
 
     if(subTypes.hasText(traceOut)) {
@@ -105258,12 +105546,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
-        dfltHoverOn.push('fills');
-    }
-
-    coerce('hoveron', dfltHoverOn.join('+') || 'points');
-
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
@@ -105271,7 +105553,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":445,"../../registry":536,"../scatter/constants":602,"../scatter/fillcolor_defaults":605,"../scatter/line_defaults":609,"../scatter/marker_defaults":615,"../scatter/subtypes":619,"../scatter/text_defaults":620,"../scatter/xy_defaults":621,"./attributes":623}],627:[function(require,module,exports){
+},{"../../lib":442,"../../registry":534,"../scatter/constants":600,"../scatter/fillcolor_defaults":603,"../scatter/line_defaults":607,"../scatter/marker_defaults":613,"../scatter/subtypes":617,"../scatter/text_defaults":618,"../scatter/xy_defaults":619,"./attributes":621}],625:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -105282,31 +105564,32 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 'use strict';
 
-var createScatter = require('regl-scatter2d');
-var createLine = require('regl-line2d');
-var createError = require('regl-error2d');
-var cluster = require('point-cluster');
-var arrayRange = require('array-range');
-var Text = require('@etpinard/gl-text');
+var createScatter = _dereq_('regl-scatter2d');
+var createLine = _dereq_('regl-line2d');
+var createError = _dereq_('regl-error2d');
+var cluster = _dereq_('point-cluster');
+var arrayRange = _dereq_('array-range');
+var Text = _dereq_('@etpinard/gl-text');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var prepareRegl = require('../../lib/prepare_regl');
-var AxisIDs = require('../../plots/cartesian/axis_ids');
-var Color = require('../../components/color');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var prepareRegl = _dereq_('../../lib/prepare_regl');
+var AxisIDs = _dereq_('../../plots/cartesian/axis_ids');
+var findExtremes = _dereq_('../../plots/cartesian/autorange').findExtremes;
+var Color = _dereq_('../../components/color');
 
-var subTypes = require('../scatter/subtypes');
-var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
-var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
-var calcColorscales = require('../scatter/colorscale_calc');
-var linkTraces = require('../scatter/link_traces');
-var getTraceColor = require('../scatter/get_trace_color');
-var fillHoverText = require('../scatter/fill_hover_text');
-var convert = require('./convert');
+var subTypes = _dereq_('../scatter/subtypes');
+var calcMarkerSize = _dereq_('../scatter/calc').calcMarkerSize;
+var calcAxisExpansion = _dereq_('../scatter/calc').calcAxisExpansion;
+var calcColorscales = _dereq_('../scatter/colorscale_calc');
+var linkTraces = _dereq_('../scatter/link_traces');
+var getTraceColor = _dereq_('../scatter/get_trace_color');
+var fillHoverText = _dereq_('../scatter/fill_hover_text');
+var convert = _dereq_('./convert');
 
-var BADNUM = require('../../constants/numerical').BADNUM;
-var TOO_MANY_POINTS = require('./constants').TOO_MANY_POINTS;
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
+var BADNUM = _dereq_('../../constants/numerical').BADNUM;
+var TOO_MANY_POINTS = _dereq_('./constants').TOO_MANY_POINTS;
+var DESELECTDIM = _dereq_('../../constants/interactions').DESELECTDIM;
 
 function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
@@ -105359,11 +105642,9 @@ function calc(gd, trace) {
     var opts = sceneOptions(gd, subplot, trace, positions, x, y);
     var scene = sceneUpdate(gd, subplot);
 
-    // Re-use SVG scatter axis expansion routine except
-    // for graph with very large number of points where it
-    // performs poorly.
-    // In big data case, fake Axes.expand outputs with data bounds,
-    // and an average size for array marker.size inputs.
+    // Reuse SVG scatter axis expansion routine.
+    // For graphs with very large number of points and array marker.size,
+    // use average marker size instead to speed things up.
     var ppad;
     if(count < TOO_MANY_POINTS) {
         ppad = calcMarkerSize(trace, count);
@@ -105371,6 +105652,8 @@ function calc(gd, trace) {
         ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
     }
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
+    if(opts.errorX) expandForErrorBars(trace, xa, opts.errorX);
+    if(opts.errorY) expandForErrorBars(trace, ya, opts.errorY);
 
     // set flags to create scene renderers
     if(opts.fill && !scene.fill2d) scene.fill2d = true;
@@ -105396,20 +105679,27 @@ function calc(gd, trace) {
     scene.textOptions.push(opts.text);
     scene.textSelectedOptions.push(opts.textSel);
     scene.textUnselectedOptions.push(opts.textUnsel);
-    scene.count++;
 
     // stash scene ref
     stash._scene = scene;
-    stash.index = scene.count - 1;
+    stash.index = scene.count;
     stash.x = x;
     stash.y = y;
     stash.positions = positions;
     stash.count = count;
 
+    scene.count++;
+
     gd.firstscatter = false;
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
+function expandForErrorBars(trace, ax, opts) {
+    var extremes = trace._extremes[ax._id];
+    var errExt = findExtremes(ax, opts._bnds, {padded: true});
+    extremes.min = extremes.min.concat(errExt.min);
+    extremes.max = extremes.max.concat(errExt.max);
+}
 
 // create scene options
 function sceneOptions(gd, subplot, trace, positions, x, y) {
@@ -105462,7 +105752,6 @@ function sceneOptions(gd, subplot, trace, positions, x, y) {
 // make sure scene exists on subplot, return it
 function sceneUpdate(gd, subplot) {
     var scene = subplot._scene;
-    var fullLayout = gd._fullLayout;
 
     var resetOpts = {
         // number of traces in subplot, since scene:subplot → 1:1
@@ -105505,19 +105794,16 @@ function sceneUpdate(gd, subplot) {
 
         // apply new option to all regl components (used on drag)
         scene.update = function update(opt) {
-            var i;
-            var opts = new Array(scene.count);
-            for(i = 0; i < scene.count; i++) {
-                opts[i] = opt;
-            }
+            var opts = Lib.repeat(opt, scene.count);
+
             if(scene.fill2d) scene.fill2d.update(opts);
             if(scene.scatter2d) scene.scatter2d.update(opts);
             if(scene.line2d) scene.line2d.update(opts);
             if(scene.error2d) scene.error2d.update(opts.concat(opts));
             if(scene.select2d) scene.select2d.update(opts);
             if(scene.glText) {
-                for(i = 0; i < scene.count; i++) {
-                    scene.glText[i].update(opts[i]);
+                for(var i = 0; i < scene.count; i++) {
+                    scene.glText[i].update(opt);
                 }
             }
 
@@ -105564,28 +105850,16 @@ function sceneUpdate(gd, subplot) {
             scene.dirty = false;
         };
 
-        // make sure canvas is clear
         scene.clear = function clear() {
-            var vpSize = fullLayout._size;
-            var width = fullLayout.width;
-            var height = fullLayout.height;
-            var xaxis = subplot.xaxis;
-            var yaxis = subplot.yaxis;
-            var vp = [
-                vpSize.l + xaxis.domain[0] * vpSize.w,
-                vpSize.b + yaxis.domain[0] * vpSize.h,
-                (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
-                (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
-            ];
+            var vp = getViewport(gd._fullLayout, subplot.xaxis, subplot.yaxis);
 
             if(scene.select2d) {
                 clearViewport(scene.select2d, vp);
             }
-            if(scene.scatter2d) {
-                clearViewport(scene.scatter2d, vp);
-            } else if(scene.glText) {
-                clearViewport(scene.glText[0], vp);
-            }
+
+            var anyComponent = scene.scatter2d || scene.line2d ||
+                (scene.glText || [])[0] || scene.fill2d || scene.error2d;
+            if(anyComponent) clearViewport(anyComponent, vp);
         };
 
         // remove scene resources
@@ -105627,6 +105901,18 @@ function sceneUpdate(gd, subplot) {
     return scene;
 }
 
+function getViewport(fullLayout, xaxis, yaxis) {
+    var gs = fullLayout._size;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    return [
+        gs.l + xaxis.domain[0] * gs.w,
+        gs.b + yaxis.domain[0] * gs.h,
+        (width - gs.r) - (1 - xaxis.domain[1]) * gs.w,
+        (height - gs.t) - (1 - yaxis.domain[1]) * gs.h
+    ];
+}
+
 function clearViewport(comp, vp) {
     var gl = comp.regl._gl;
     gl.enable(gl.SCISSOR_TEST);
@@ -105638,18 +105924,14 @@ function clearViewport(comp, vp) {
 function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
-    var i;
-
     var fullLayout = gd._fullLayout;
-    var scene = cdata[0][0].t._scene;
-    var dragmode = fullLayout.dragmode;
+    var scene = subplot._scene;
+    var xaxis = subplot.xaxis;
+    var yaxis = subplot.yaxis;
+    var i, j;
 
     // we may have more subplots than initialized data due to Axes.getSubplots method
     if(!scene) return;
-
-    var vpSize = fullLayout._size;
-    var width = fullLayout.width;
-    var height = fullLayout.height;
 
     var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
     if(!success) {
@@ -105791,37 +106073,19 @@ function plot(gd, subplot, cdata) {
         }
     }
 
-    var selectMode = dragmode === 'lasso' || dragmode === 'select';
+    // form batch arrays, and check for selected points
     scene.selectBatch = null;
     scene.unselectBatch = null;
+    var dragmode = fullLayout.dragmode;
+    var selectMode = dragmode === 'lasso' || dragmode === 'select';
 
-    // provide viewport and range
-    var vpRange = cdata.map(function(cdscatter) {
-        if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
-        var cd = cdscatter[0];
-        var trace = cd.trace;
-        var stash = cd.t;
-        var id = stash.index;
+    for(i = 0; i < cdata.length; i++) {
+        var cd0 = cdata[i][0];
+        var trace = cd0.trace;
+        var stash = cd0.t;
+        var index = stash.index;
         var x = stash.x;
         var y = stash.y;
-
-        var xaxis = subplot.xaxis || AxisIDs.getFromId(gd, trace.xaxis || 'x');
-        var yaxis = subplot.yaxis || AxisIDs.getFromId(gd, trace.yaxis || 'y');
-        var i;
-
-        var range = [
-            (xaxis._rl || xaxis.range)[0],
-            (yaxis._rl || yaxis.range)[0],
-            (xaxis._rl || xaxis.range)[1],
-            (yaxis._rl || yaxis.range)[1]
-        ];
-
-        var viewport = [
-            vpSize.l + xaxis.domain[0] * vpSize.w,
-            vpSize.b + yaxis.domain[0] * vpSize.h,
-            (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
-            (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
-        ];
 
         if(trace.selectedpoints || selectMode) {
             if(!selectMode) selectMode = true;
@@ -105833,37 +106097,35 @@ function plot(gd, subplot, cdata) {
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
-                var selPts = scene.selectBatch[id] = Lib.selIndices2selPoints(trace);
+                var selPts = scene.selectBatch[index] = Lib.selIndices2selPoints(trace);
 
                 var selDict = {};
-                for(i = 0; i < selPts.length; i++) {
-                    selDict[selPts[i]] = 1;
+                for(j = 0; j < selPts.length; j++) {
+                    selDict[selPts[j]] = 1;
                 }
                 var unselPts = [];
-                for(i = 0; i < stash.count; i++) {
-                    if(!selDict[i]) unselPts.push(i);
+                for(j = 0; j < stash.count; j++) {
+                    if(!selDict[j]) unselPts.push(j);
                 }
-                scene.unselectBatch[id] = unselPts;
+                scene.unselectBatch[index] = unselPts;
             }
 
             // precalculate px coords since we are not going to pan during select
-            var xpx = new Array(stash.count);
-            var ypx = new Array(stash.count);
-            for(i = 0; i < stash.count; i++) {
-                xpx[i] = xaxis.c2p(x[i]);
-                ypx[i] = yaxis.c2p(y[i]);
+            // TODO, could do better here e.g.
+            // - spin that in a webworker
+            // - compute selection from polygons in data coordinates
+            //   (maybe just for linear axes)
+            var xpx = stash.xpx = new Array(stash.count);
+            var ypx = stash.ypx = new Array(stash.count);
+            for(j = 0; j < stash.count; j++) {
+                xpx[j] = xaxis.c2p(x[j]);
+                ypx[j] = yaxis.c2p(y[j]);
             }
-            stash.xpx = xpx;
-            stash.ypx = ypx;
-        }
-        else {
+        } else {
             stash.xpx = stash.ypx = null;
         }
+    }
 
-        return trace.visible ?
-            {viewport: viewport, range: range} :
-            null;
-    });
 
     if(selectMode) {
         // create select2d
@@ -105891,7 +106153,26 @@ function plot(gd, subplot, cdata) {
                 }
             });
         }
+    } else {
+        if(scene.scatter2d) {
+            // reset scatter2d opts to base opts,
+            // thus unsetting markerUnselectedOptions from selection
+            scene.scatter2d.update(scene.markerOptions);
+        }
     }
+
+    // provide viewport and range
+    var vpRange0 = {
+        viewport: getViewport(fullLayout, xaxis, yaxis),
+        // TODO do we need those fallbacks?
+        range: [
+            (xaxis._rl || xaxis.range)[0],
+            (yaxis._rl || yaxis.range)[0],
+            (xaxis._rl || xaxis.range)[1],
+            (yaxis._rl || yaxis.range)[1]
+        ]
+    };
+    var vpRange = Lib.repeat(vpRange0, scene.count);
 
     // upload viewport/range data to GPU
     if(scene.fill2d) {
@@ -105910,14 +106191,10 @@ function plot(gd, subplot, cdata) {
         scene.select2d.update(vpRange);
     }
     if(scene.glText) {
-        scene.glText.forEach(function(text, i) {
-            text.update(vpRange[i]);
-        });
+        scene.glText.forEach(function(text) { text.update(vpRange0); });
     }
 
     scene.draw();
-
-    return;
 }
 
 
@@ -106223,13 +106500,13 @@ function styleTextSelection(cd) {
 module.exports = {
     moduleType: 'trace',
     name: 'scattergl',
-    basePlotModule: require('../../plots/cartesian'),
+    basePlotModule: _dereq_('../../plots/cartesian'),
     categories: ['gl', 'regl', 'cartesian', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like'],
 
-    attributes: require('./attributes'),
-    supplyDefaults: require('./defaults'),
-    cleanData: require('../scatter/clean_data'),
-    colorbar: require('../scatter/marker_colorbar'),
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    cleanData: _dereq_('../scatter/clean_data'),
+    colorbar: _dereq_('../scatter/marker_colorbar'),
     calc: calc,
     plot: plot,
     hoverPoints: hoverPoints,
@@ -106246,7 +106523,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color":323,"../../constants/interactions":423,"../../constants/numerical":424,"../../lib":445,"../../lib/prepare_regl":458,"../../plots/cartesian":503,"../../plots/cartesian/axis_ids":495,"../../registry":536,"../scatter/calc":598,"../scatter/clean_data":600,"../scatter/colorscale_calc":601,"../scatter/fill_hover_text":604,"../scatter/get_trace_color":606,"../scatter/link_traces":612,"../scatter/marker_colorbar":614,"../scatter/subtypes":619,"./attributes":623,"./constants":624,"./convert":625,"./defaults":626,"@etpinard/gl-text":11,"array-range":20,"point-cluster":236,"regl-error2d":254,"regl-line2d":255,"regl-scatter2d":256}],628:[function(require,module,exports){
+},{"../../components/color":320,"../../constants/interactions":420,"../../constants/numerical":421,"../../lib":442,"../../lib/prepare_regl":456,"../../plots/cartesian":501,"../../plots/cartesian/autorange":489,"../../plots/cartesian/axis_ids":493,"../../registry":534,"../scatter/calc":596,"../scatter/clean_data":598,"../scatter/colorscale_calc":599,"../scatter/fill_hover_text":602,"../scatter/get_trace_color":604,"../scatter/link_traces":610,"../scatter/marker_colorbar":612,"../scatter/subtypes":617,"./attributes":621,"./constants":622,"./convert":623,"./defaults":624,"@etpinard/gl-text":11,"array-range":17,"point-cluster":233,"regl-error2d":251,"regl-line2d":252,"regl-scatter2d":253}],626:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -106257,9 +106534,9 @@ module.exports = {
 
 'use strict';
 
-var scatterGlAttrs = require('../scattergl/attributes');
-var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
-var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var scatterGlAttrs = _dereq_('../scattergl/attributes');
+var cartesianIdRegex = _dereq_('../../plots/cartesian/constants').idRegex;
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
 
 function makeAxesValObject(axLetter) {
     return {
@@ -106296,6 +106573,18 @@ module.exports = {
             
             editType: 'calc+clearAxisTypes',
             
+        },
+
+        axis: {
+            type: {
+                valType: 'enumerated',
+                values: ['linear', 'log', 'date', 'category'],
+                
+                editType: 'calc+clearAxisTypes',
+                
+            },
+
+            editType: 'calc+clearAxisTypes'
         },
 
         // TODO should add an attribute to pin down x only vars and y only vars
@@ -106358,7 +106647,7 @@ module.exports = {
     opacity: scatterGlAttrs.opacity
 };
 
-},{"../../plot_api/plot_template":482,"../../plots/cartesian/constants":497,"../scattergl/attributes":623}],629:[function(require,module,exports){
+},{"../../plot_api/plot_template":480,"../../plots/cartesian/constants":495,"../scattergl/attributes":621}],627:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -106369,14 +106658,14 @@ module.exports = {
 
 'use strict';
 
-var createLine = require('regl-line2d');
+var createLine = _dereq_('regl-line2d');
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var prepareRegl = require('../../lib/prepare_regl');
-var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
-var Cartesian = require('../../plots/cartesian');
-var AxisIDs = require('../../plots/cartesian/axis_ids');
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+var prepareRegl = _dereq_('../../lib/prepare_regl');
+var getModuleCalcData = _dereq_('../../plots/get_data').getModuleCalcData;
+var Cartesian = _dereq_('../../plots/cartesian');
+var AxisIDs = _dereq_('../../plots/cartesian/axis_ids');
 
 var SPLOM = 'splom';
 
@@ -106406,36 +106695,34 @@ function drag(gd) {
     for(var i = 0; i < cd.length; i++) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
-        var scene = cd0.t._scene;
+        var stash = cd0.t;
+        var scene = stash._scene;
 
         if(trace.type === 'splom' && scene && scene.matrix) {
-            dragOne(gd, trace, scene);
+            dragOne(gd, trace, stash, scene);
         }
     }
 }
 
-function dragOne(gd, trace, scene) {
-    var dimensions = trace.dimensions;
+function dragOne(gd, trace, stash, scene) {
     var visibleLength = scene.matrixOptions.data.length;
+    var visibleDims = stash.visibleDims;
     var ranges = new Array(visibleLength);
 
-    for(var i = 0, k = 0; i < dimensions.length; i++) {
-        if(dimensions[i].visible) {
-            var rng = ranges[k] = new Array(4);
+    for(var k = 0; k < visibleDims.length; k++) {
+        var i = visibleDims[k];
+        var rng = ranges[k] = new Array(4);
 
-            var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
-            if(xa) {
-                rng[0] = xa.r2l(xa.range[0]);
-                rng[2] = xa.r2l(xa.range[1]);
-            }
+        var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+        if(xa) {
+            rng[0] = xa.r2l(xa.range[0]);
+            rng[2] = xa.r2l(xa.range[1]);
+        }
 
-            var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
-            if(ya) {
-                rng[1] = ya.r2l(ya.range[0]);
-                rng[3] = ya.r2l(ya.range[1]);
-            }
-
-            k++;
+        var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+        if(ya) {
+            rng[1] = ya.r2l(ya.range[0]);
+            rng[3] = ya.r2l(ya.range[1]);
         }
     }
 
@@ -106590,6 +106877,30 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcda
     Cartesian.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
 }
 
+function updateFx(gd) {
+    Cartesian.updateFx(gd);
+
+    var fullLayout = gd._fullLayout;
+    var dragmode = fullLayout.dragmode;
+
+    // unset selection styles when coming out of a selection mode
+    if(dragmode === 'zoom' || dragmode === 'pan') {
+        var cd = gd.calcdata;
+
+        for(var i = 0; i < cd.length; i++) {
+            var cd0 = cd[i][0];
+            var trace = cd0.trace;
+
+            if(trace.type === 'splom') {
+                var scene = cd0.t._scene;
+                if(scene.selectBatch === null) {
+                    scene.matrix.update(scene.matrixOptions, null);
+                }
+            }
+        }
+    }
+}
+
 module.exports = {
     name: SPLOM,
     attr: Cartesian.attr,
@@ -106600,11 +106911,11 @@ module.exports = {
     plot: plot,
     drag: drag,
     clean: clean,
-    updateFx: Cartesian.updateFx,
+    updateFx: updateFx,
     toSVG: Cartesian.toSVG
 };
 
-},{"../../lib":445,"../../lib/prepare_regl":458,"../../plots/cartesian":503,"../../plots/cartesian/axis_ids":495,"../../plots/get_data":520,"../../registry":536,"regl-line2d":255}],630:[function(require,module,exports){
+},{"../../lib":442,"../../lib/prepare_regl":456,"../../plots/cartesian":501,"../../plots/cartesian/axis_ids":493,"../../plots/get_data":518,"../../registry":534,"regl-line2d":252}],628:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -106615,13 +106926,13 @@ module.exports = {
 
 'use strict';
 
-var Lib = require('../../lib');
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Lib = _dereq_('../../lib');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
 
-var attributes = require('./attributes');
-var subTypes = require('../scatter/subtypes');
-var handleMarkerDefaults = require('../scatter/marker_defaults');
-var mergeLength = require('../parcoords/merge_length');
+var attributes = _dereq_('./attributes');
+var subTypes = _dereq_('../scatter/subtypes');
+var handleMarkerDefaults = _dereq_('../scatter/marker_defaults');
+var mergeLength = _dereq_('../parcoords/merge_length');
 var OPEN_RE = /-open/;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -106668,6 +106979,8 @@ function dimensionDefaults(dimIn, dimOut) {
 
     if(!(values && values.length)) dimOut.visible = false;
     else coerce('visible');
+
+    coerce('axis.type');
 }
 
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
@@ -106720,14 +107033,14 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
 
     for(i = 0; i < dimLength; i++) {
         var dim = dimensions[i];
-        var xa = xaxes[i + xShift];
-        var ya = yaxes[i + yShift];
+        var xaId = xaxes[i + xShift];
+        var yaId = yaxes[i + yShift];
 
-        fillAxisStash(layout, xa, dim);
-        fillAxisStash(layout, ya, dim);
+        fillAxisStash(layout, xaId, dim);
+        fillAxisStash(layout, yaId, dim);
 
         // note that some the entries here may be undefined
-        diag[i] = [xa, ya];
+        diag[i] = [xaId, yaId];
     }
 
     // when lower half is omitted, override grid default
@@ -106755,7 +107068,13 @@ function fillAxisStash(layout, axId, dim) {
     var stash = layout._splomAxes[axLetter];
 
     if(!(axId in stash)) {
-        stash[axId] = (dim || {}).label || '';
+        var s = stash[axId] = {};
+        if(dim) {
+            s.label = dim.label || '';
+            if(dim.visible && dim.axis) {
+                s.type = dim.axis.type;
+            }
+        }
     }
 }
 
@@ -106767,7 +107086,7 @@ function arrayToHashObject(arr) {
     return obj;
 }
 
-},{"../../lib":445,"../../plots/array_container_defaults":488,"../parcoords/merge_length":587,"../scatter/marker_defaults":615,"../scatter/subtypes":619,"./attributes":628}],631:[function(require,module,exports){
+},{"../../lib":442,"../../plots/array_container_defaults":486,"../parcoords/merge_length":585,"../scatter/marker_defaults":613,"../scatter/subtypes":617,"./attributes":626}],629:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -106778,24 +107097,24 @@ function arrayToHashObject(arr) {
 
 'use strict';
 
-var createMatrix = require('regl-splom');
-var arrayRange = require('array-range');
+var createMatrix = _dereq_('regl-splom');
+var arrayRange = _dereq_('array-range');
 
-var Registry = require('../../registry');
-var Grid = require('../../components/grid');
-var Lib = require('../../lib');
-var AxisIDs = require('../../plots/cartesian/axis_ids');
+var Registry = _dereq_('../../registry');
+var Grid = _dereq_('../../components/grid');
+var Lib = _dereq_('../../lib');
+var AxisIDs = _dereq_('../../plots/cartesian/axis_ids');
 
-var subTypes = require('../scatter/subtypes');
-var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
-var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
-var calcColorscales = require('../scatter/colorscale_calc');
-var convertMarkerSelection = require('../scattergl/convert').markerSelection;
-var convertMarkerStyle = require('../scattergl/convert').markerStyle;
-var calcHover = require('../scattergl').calcHover;
+var subTypes = _dereq_('../scatter/subtypes');
+var calcMarkerSize = _dereq_('../scatter/calc').calcMarkerSize;
+var calcAxisExpansion = _dereq_('../scatter/calc').calcAxisExpansion;
+var calcColorscales = _dereq_('../scatter/colorscale_calc');
+var convertMarkerSelection = _dereq_('../scattergl/convert').markerSelection;
+var convertMarkerStyle = _dereq_('../scattergl/convert').markerStyle;
+var calcHover = _dereq_('../scattergl').calcHover;
 
-var BADNUM = require('../../constants/numerical').BADNUM;
-var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
+var BADNUM = _dereq_('../../constants/numerical').BADNUM;
+var TOO_MANY_POINTS = _dereq_('../scattergl/constants').TOO_MANY_POINTS;
 
 function calc(gd, trace) {
     var dimensions = trace.dimensions;
@@ -106806,20 +107125,48 @@ function calc(gd, trace) {
     // only differ here for log axes, pass ldata to createMatrix as 'data'
     var cdata = opts.cdata = [];
     var ldata = opts.data = [];
-    var i, k, dim;
+    // keep track of visible dimensions
+    var visibleDims = stash.visibleDims = [];
+    var i, k, dim, xa, ya;
+
+    function makeCalcdata(ax, dim) {
+        // call makeCalcdata with fake input
+        var ccol = ax.makeCalcdata({
+            v: dim.values,
+            vcalendar: trace.calendar
+        }, 'v');
+
+        for(var j = 0; j < ccol.length; j++) {
+            ccol[j] = ccol[j] === BADNUM ? NaN : ccol[j];
+        }
+        cdata.push(ccol);
+        ldata.push(ax.type === 'log' ? Lib.simpleMap(ccol, ax.c2l) : ccol);
+    }
 
     for(i = 0; i < dimensions.length; i++) {
         dim = dimensions[i];
 
         if(dim.visible) {
-            var axId = trace._diag[i][0] || trace._diag[i][1];
-            var ax = AxisIDs.getFromId(gd, axId);
-            if(ax) {
-                var ccol = makeCalcdata(ax, trace, dim);
-                var lcol = ax.type === 'log' ? Lib.simpleMap(ccol, ax.c2l) : ccol;
-                cdata.push(ccol);
-                ldata.push(lcol);
+            xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+            ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+
+            // if corresponding x & y axes don't have matching types, skip dim
+            if(xa && ya && xa.type !== ya.type) {
+                Lib.log('Skipping splom dimension ' + i + ' with conflicting axis types');
+                continue;
             }
+
+            if(xa) {
+                makeCalcdata(xa, dim);
+                if(ya && ya.type === 'category') {
+                    ya._categories = xa._categories.slice();
+                }
+            } else {
+                // should not make it here, if both xa and ya undefined
+                makeCalcdata(ya, dim);
+            }
+
+            visibleDims.push(i);
         }
     }
 
@@ -106829,28 +107176,24 @@ function calc(gd, trace) {
     var visibleLength = cdata.length;
     var hasTooManyPoints = (visibleLength * commonLength) > TOO_MANY_POINTS;
 
-    for(i = 0, k = 0; i < dimensions.length; i++) {
+    for(k = 0; k < visibleDims.length; k++) {
+        i = visibleDims[k];
         dim = dimensions[i];
 
-        if(dim.visible) {
-            var xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
-            var ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
+        xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
+        ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
 
-            // Re-use SVG scatter axis expansion routine except
-            // for graph with very large number of points where it
-            // performs poorly.
-            // In big data case, fake Axes.expand outputs with data bounds,
-            // and an average size for array marker.size inputs.
-            var ppad;
-            if(hasTooManyPoints) {
-                ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
-            } else {
-                ppad = calcMarkerSize(trace, commonLength);
-            }
-
-            calcAxisExpansion(gd, trace, xa, ya, cdata[k], cdata[k], ppad);
-            k++;
+        // Reuse SVG scatter axis expansion routine.
+        // For graphs with very large number of points and array marker.size,
+        // use average marker size instead to speed things up.
+        var ppad;
+        if(hasTooManyPoints) {
+            ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
+        } else {
+            ppad = calcMarkerSize(trace, commonLength);
         }
+
+        calcAxisExpansion(gd, trace, xa, ya, cdata[k], cdata[k], ppad);
     }
 
     var scene = stash._scene = sceneUpdate(gd, stash);
@@ -106861,20 +107204,6 @@ function calc(gd, trace) {
     scene.unselectedOptions = convertMarkerSelection(trace, trace.unselected);
 
     return [{x: false, y: false, t: stash, trace: trace}];
-}
-
-function makeCalcdata(ax, trace, dim) {
-    // call makeCalcdata with fake input
-    var ccol = ax.makeCalcdata({
-        v: dim.values,
-        vcalendar: trace.calendar
-    }, 'v');
-
-    for(var i = 0; i < ccol.length; i++) {
-        ccol[i] = ccol[i] === BADNUM ? NaN : ccol[i];
-    }
-
-    return ccol;
 }
 
 function sceneUpdate(gd, stash) {
@@ -106898,9 +107227,7 @@ function sceneUpdate(gd, stash) {
             // draw traces in selection mode
             if(scene.matrix && scene.selectBatch) {
                 scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
-            }
-
-            else if(scene.matrix) {
+            } else if(scene.matrix) {
                 scene.matrix.draw();
             }
 
@@ -106956,34 +107283,32 @@ function plotOne(gd, cd0) {
     matrixOpts.upper = trace.showlowerhalf;
     matrixOpts.diagonal = trace.diagonal.visible;
 
-    var dimensions = trace.dimensions;
+    var visibleDims = stash.visibleDims;
     var visibleLength = cdata.length;
     var viewOpts = {};
     viewOpts.ranges = new Array(visibleLength);
     viewOpts.domains = new Array(visibleLength);
 
-    for(i = 0, k = 0; i < dimensions.length; i++) {
-        if(trace.dimensions[i].visible) {
-            var rng = viewOpts.ranges[k] = new Array(4);
-            var dmn = viewOpts.domains[k] = new Array(4);
+    for(k = 0; k < visibleDims.length; k++) {
+        i = visibleDims[k];
 
-            xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
-            if(xa) {
-                rng[0] = xa._rl[0];
-                rng[2] = xa._rl[1];
-                dmn[0] = xa.domain[0];
-                dmn[2] = xa.domain[1];
-            }
+        var rng = viewOpts.ranges[k] = new Array(4);
+        var dmn = viewOpts.domains[k] = new Array(4);
 
-            ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
-            if(ya) {
-                rng[1] = ya._rl[0];
-                rng[3] = ya._rl[1];
-                dmn[1] = ya.domain[0];
-                dmn[3] = ya.domain[1];
-            }
+        xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+        if(xa) {
+            rng[0] = xa._rl[0];
+            rng[2] = xa._rl[1];
+            dmn[0] = xa.domain[0];
+            dmn[2] = xa.domain[1];
+        }
 
-            k++;
+        ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+        if(ya) {
+            rng[1] = ya._rl[0];
+            rng[3] = ya._rl[1];
+            dmn[1] = ya.domain[0];
+            dmn[3] = ya.domain[1];
         }
     }
 
@@ -107025,25 +107350,23 @@ function plotOne(gd, cd0) {
         var xpx = stash.xpx = new Array(visibleLength);
         var ypx = stash.ypx = new Array(visibleLength);
 
-        for(i = 0, k = 0; i < dimensions.length; i++) {
-            if(trace.dimensions[i].visible) {
-                xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
-                if(xa) {
-                    xpx[k] = new Array(commonLength);
-                    for(j = 0; j < commonLength; j++) {
-                        xpx[k][j] = xa.c2p(cdata[k][j]);
-                    }
-                }
+        for(k = 0; k < visibleDims.length; k++) {
+            i = visibleDims[k];
 
-                ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
-                if(ya) {
-                    ypx[k] = new Array(commonLength);
-                    for(j = 0; j < commonLength; j++) {
-                        ypx[k][j] = ya.c2p(cdata[k][j]);
-                    }
+            xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+            if(xa) {
+                xpx[k] = new Array(commonLength);
+                for(j = 0; j < commonLength; j++) {
+                    xpx[k][j] = xa.c2p(cdata[k][j]);
                 }
+            }
 
-                k++;
+            ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+            if(ya) {
+                ypx[k] = new Array(commonLength);
+                for(j = 0; j < commonLength; j++) {
+                    ypx[k][j] = ya.c2p(cdata[k][j]);
+                }
             }
         }
 
@@ -107058,8 +107381,8 @@ function plotOne(gd, cd0) {
         }
     }
     else {
-        scene.matrix.update(matrixOpts);
-        scene.matrix.update(viewOpts);
+        scene.matrix.update(matrixOpts, null);
+        scene.matrix.update(viewOpts, null);
         stash.xpx = stash.ypx = null;
     }
 
@@ -107078,8 +107401,8 @@ function hoverPoints(pointData, xval, yval) {
     var ypx = ya.c2p(yval);
     var maxDistance = pointData.distance;
 
-    var xi = getDimIndex(trace, xa);
-    var yi = getDimIndex(trace, ya);
+    var xi = getDimIndex(trace, stash, xa);
+    var yi = getDimIndex(trace, stash, ya);
     if(xi === false || yi === false) return [pointData];
 
     var x = cdata[xi];
@@ -107128,8 +107451,8 @@ function selectPoints(searchInfo, polygon) {
     var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return selection;
 
-    var xi = getDimIndex(trace, xa);
-    var yi = getDimIndex(trace, ya);
+    var xi = getDimIndex(trace, stash, xa);
+    var yi = getDimIndex(trace, stash, ya);
     if(xi === false || yi === false) return selection;
 
     var xpx = stash.xpx[xi];
@@ -107210,17 +107533,15 @@ function style(gd, cds) {
     }
 }
 
-function getDimIndex(trace, ax) {
+function getDimIndex(trace, stash, ax) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var ind = {x: 0, y: 1}[axLetter];
-    var dimensions = trace.dimensions;
+    var visibleDims = stash.visibleDims;
 
-    for(var i = 0, k = 0; i < dimensions.length; i++) {
-        if(dimensions[i].visible) {
-            if(trace._diag[i][ind] === axId) return k;
-            k++;
-        }
+    for(var k = 0; k < visibleDims.length; k++) {
+        var i = visibleDims[k];
+        if(trace._diag[i][ind] === axId) return k;
     }
     return false;
 }
@@ -107229,12 +107550,12 @@ module.exports = {
     moduleType: 'trace',
     name: 'splom',
 
-    basePlotModule: require('./base_plot'),
+    basePlotModule: _dereq_('./base_plot'),
     categories: ['gl', 'regl', 'cartesian', 'symbols', 'showLegend', 'scatter-like'],
 
-    attributes: require('./attributes'),
-    supplyDefaults: require('./defaults'),
-    colorbar: require('../scatter/marker_colorbar'),
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    colorbar: _dereq_('../scatter/marker_colorbar'),
 
     calc: calc,
     plot: plot,
@@ -107251,5 +107572,5 @@ module.exports = {
 // register it here
 Registry.register(Grid);
 
-},{"../../components/grid":369,"../../constants/numerical":424,"../../lib":445,"../../plots/cartesian/axis_ids":495,"../../registry":536,"../scatter/calc":598,"../scatter/colorscale_calc":601,"../scatter/marker_colorbar":614,"../scatter/subtypes":619,"../scattergl":627,"../scattergl/constants":624,"../scattergl/convert":625,"./attributes":628,"./base_plot":629,"./defaults":630,"array-range":20,"regl-splom":258}]},{},[6])(6)
+},{"../../components/grid":366,"../../constants/numerical":421,"../../lib":442,"../../plots/cartesian/axis_ids":493,"../../registry":534,"../scatter/calc":596,"../scatter/colorscale_calc":599,"../scatter/marker_colorbar":612,"../scatter/subtypes":617,"../scattergl":625,"../scattergl/constants":622,"../scattergl/convert":623,"./attributes":626,"./base_plot":627,"./defaults":628,"array-range":17,"regl-splom":255}]},{},[6])(6)
 });

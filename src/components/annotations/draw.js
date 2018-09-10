@@ -250,11 +250,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         var outerWidth = Math.round(annWidth + 2 * borderfull);
         var outerHeight = Math.round(annHeight + 2 * borderfull);
 
-
-        // save size in the annotation object for use by autoscale
-        options._w = annWidth;
-        options._h = annHeight;
-
         function shiftFraction(v, anchor) {
             if(anchor === 'auto') {
                 if(v < 1 / 3) anchor = 'left';
@@ -300,25 +295,17 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
              * otherwise the text anchor point
              */
             if(ax) {
-                /*
-                 * hide the annotation if it's pointing outside the visible plot
-                 * as long as the axis isn't autoranged - then we need to draw it
-                 * anyway to get its bounding box. When we're dragging, an axis can
-                 * still look autoranged even though it won't be when the drag finishes.
-                 */
+                // check if annotation is off screen, to bypass DOM manipulations
                 var posFraction = ax.r2fraction(options[axLetter]);
-                if((gd._dragging || !ax.autorange) && (posFraction < 0 || posFraction > 1)) {
+                if(posFraction < 0 || posFraction > 1) {
                     if(tailRef === axRef) {
                         posFraction = ax.r2fraction(options['a' + axLetter]);
                         if(posFraction < 0 || posFraction > 1) {
                             annotationIsOffscreen = true;
                         }
-                    }
-                    else {
+                    } else {
                         annotationIsOffscreen = true;
                     }
-
-                    if(annotationIsOffscreen) continue;
                 }
                 basePx = ax._offset + ax.r2p(options[axLetter]);
                 autoAlignFraction = 0.5;
@@ -402,7 +389,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             options['_' + axLetter + 'shift'] = textShift;
         }
 
-        if(annotationIsOffscreen) {
+        // We have everything we need for calcAutorange at this point,
+        // we can safely exit - unless we're currently dragging the plot
+        if(!gd._dragging && annotationIsOffscreen) {
             annTextGroupInner.remove();
             return;
         }

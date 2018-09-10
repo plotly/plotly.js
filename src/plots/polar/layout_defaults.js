@@ -19,10 +19,9 @@ var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handleCategoryOrderDefaults = require('../cartesian/category_order_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
 var autoType = require('../cartesian/axis_autotype');
-var setConvert = require('../cartesian/set_convert');
 
-var setConvertAngular = require('./helpers').setConvertAngular;
 var layoutAttributes = require('./layout_attributes');
+var setConvert = require('./set_convert');
 var constants = require('./constants');
 var axisNames = constants.axisNames;
 
@@ -55,6 +54,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // propagate the template.
         var axOut = contOut[axName] = {};
         axOut._id = axOut._name = axName;
+        axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
         var dataAttr = constants.axisName2dataArray[axName];
         var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr);
@@ -65,7 +65,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         });
 
         var visible = coerceAxis('visible');
-        setConvert(axOut, layoutOut);
+        setConvert(axOut, contOut, layoutOut);
 
         var dfltColor;
         var dfltFontColor;
@@ -80,18 +80,18 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // Furthermore, angular axes don't have a set range.
         //
         // Mocked domains and ranges are set by the polar subplot instances,
-        // but Axes.expand uses the sign of _m to determine which padding value
+        // but Axes.findExtremes uses the sign of _m to determine which padding value
         // to use.
         //
-        // By setting, _m to 1 here, we make Axes.expand think that range[1] > range[0],
-        // and vice-versa for `autorange: 'reversed'` below.
+        // By setting, _m to 1 here, we make Axes.findExtremes think that
+        // range[1] > range[0], and vice-versa for `autorange: 'reversed'` below.
         axOut._m = 1;
 
         switch(axName) {
             case 'radialaxis':
                 var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
                 axIn.autorange = autoRange;
-                if(autoRange) coerceAxis('rangemode');
+                if(autoRange && (axType === 'linear' || axType === '-')) coerceAxis('rangemode');
                 if(autoRange === 'reversed') axOut._m = -1;
 
                 coerceAxis('range');
@@ -139,8 +139,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
                 var direction = coerceAxis('direction');
                 coerceAxis('rotation', {counterclockwise: 0, clockwise: 90}[direction]);
-
-                setConvertAngular(axOut);
                 break;
         }
 
@@ -200,7 +198,7 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
             }
         }
 
-        if(trace) {
+        if(trace && trace[dataAttr]) {
             axOut.type = autoType(trace[dataAttr], 'gregorian');
         }
 

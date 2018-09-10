@@ -40,9 +40,9 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
 
     // handles both the trace case (autocolorscale is false by default) and
     // the marker and marker.line case (autocolorscale is true by default)
-    var autoColorscaleDftl;
-    if(sclIn !== undefined) autoColorscaleDftl = !isValidScale(sclIn);
-    coerce(prefix + 'autocolorscale', autoColorscaleDftl);
+    var autoColorscaleDflt;
+    if(sclIn !== undefined) autoColorscaleDflt = !isValidScale(sclIn);
+    coerce(prefix + 'autocolorscale', autoColorscaleDflt);
     var sclOut = coerce(prefix + 'colorscale');
 
     // reversescale is handled at the containerOut level
@@ -52,11 +52,13 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     // ... until Scatter.colorbar can handle marker line colorbars
     if(prefix === 'marker.line.') return;
 
-    // handle both the trace case where the dflt is listed in attributes and
-    // the marker case where the dflt is determined by hasColorbar
-    var showScaleDftl;
-    if(prefix) showScaleDftl = hasColorbar(containerIn);
-    var showScale = coerce(prefix + 'showscale', showScaleDftl);
+    if(!opts.noScale) {
+        // handles both the trace case where the dflt is listed in attributes and
+        // the marker case where the dflt is determined by hasColorbar
+        var showScaleDflt;
+        if(prefix) showScaleDflt = hasColorbar(containerIn);
 
-    if(showScale) colorbarDefaults(containerIn, containerOut, layout);
+        var showScale = coerce(prefix + 'showscale', showScaleDflt);
+        if(showScale) colorbarDefaults(containerIn, containerOut, layout);
+    }
 };

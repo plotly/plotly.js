@@ -6,7 +6,7 @@ var supplyLayoutDefaults = require('@src/plots/ternary/layout/defaults');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
@@ -168,7 +168,7 @@ describe('ternary plots', function() {
                     fontFamily: 'Gravitas'
                 }, 'after hoverlabel styling restyle call');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -345,7 +345,7 @@ describe('ternary plots', function() {
         .then(function() {
             _assert(dflt);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -378,7 +378,7 @@ describe('ternary plots', function() {
         .then(function() {
             _assert('Roboto', 'rgb(255, 0, 0)', 20);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -406,7 +406,7 @@ describe('ternary plots', function() {
             expect(subplot.aaxis._offset < 0).toBe(true);
             expect(subplot.caxis._offset < 0).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 

@@ -22,10 +22,13 @@ lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
 lib.relativeAttr = require('./relative_attr');
 lib.isPlainObject = require('./is_plain_object');
-lib.mod = require('./mod');
 lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
 lib.ensureArray = require('./ensure_array');
+
+var modModule = require('./mod');
+lib.mod = modModule.mod;
+lib.modHalf = modModule.modHalf;
 
 var isArrayModule = require('./is_array');
 lib.isTypedArray = isArrayModule.isTypedArray;
@@ -62,6 +65,8 @@ lib.sorterAsc = searchModule.sorterAsc;
 lib.sorterDes = searchModule.sorterDes;
 lib.distinctVals = searchModule.distinctVals;
 lib.roundUp = searchModule.roundUp;
+lib.sort = searchModule.sort;
+lib.findIndexOfMin = searchModule.findIndexOfMin;
 
 var statsModule = require('./stats');
 lib.aggNums = statsModule.aggNums;
@@ -85,8 +90,14 @@ lib.apply2DTransform2 = matrixModule.apply2DTransform2;
 var anglesModule = require('./angles');
 lib.deg2rad = anglesModule.deg2rad;
 lib.rad2deg = anglesModule.rad2deg;
-lib.wrap360 = anglesModule.wrap360;
-lib.wrap180 = anglesModule.wrap180;
+lib.angleDelta = anglesModule.angleDelta;
+lib.angleDist = anglesModule.angleDist;
+lib.isFullCircle = anglesModule.isFullCircle;
+lib.isAngleInsideSector = anglesModule.isAngleInsideSector;
+lib.isPtInsideSector = anglesModule.isPtInsideSector;
+lib.pathArc = anglesModule.pathArc;
+lib.pathSector = anglesModule.pathSector;
+lib.pathAnnulus = anglesModule.pathAnnulus;
 
 var geom2dModule = require('./geometry2d');
 lib.segmentsIntersect = geom2dModule.segmentsIntersect;
@@ -116,6 +127,10 @@ lib.throttleDone = throttleModule.done;
 lib.clearThrottle = throttleModule.clear;
 
 lib.getGraphDiv = require('./get_graph_div');
+
+lib.clearResponsive = require('./clear_responsive');
+
+lib.makeTraceGroups = require('./make_trace_groups');
 
 lib._ = require('./localize');
 
@@ -149,6 +164,21 @@ lib.isIndex = function(v, len) {
 
 lib.noop = require('./noop');
 lib.identity = require('./identity');
+
+/**
+ * create an array of length 'cnt' filled with 'v' at all indices
+ *
+ * @param {any} v
+ * @param {number} cnt
+ * @return {array}
+ */
+lib.repeat = function(v, cnt) {
+    var out = new Array(cnt);
+    for(var i = 0; i < cnt; i++) {
+        out[i] = v;
+    }
+    return out;
+};
 
 /**
  * swap x and y of the same attribute in container cont
@@ -684,7 +714,7 @@ lib.isD3Selection = function(obj) {
  *
  * @param {d3 selection} parent : parent selection of the element in question
  * @param {string} nodeType : node type of element to append
- * @param {string} className : class name of element in question
+ * @param {string} className (optional) : class name of element in question
  * @param {fn} enterFn (optional) : optional fn applied to entering elements only
  * @return {d3 selection} selection of new layer
  *
@@ -711,7 +741,8 @@ lib.ensureSingle = function(parent, nodeType, className, enterFn) {
     var sel = parent.select(nodeType + (className ? '.' + className : ''));
     if(sel.size()) return sel;
 
-    var layer = parent.append(nodeType).classed(className, true);
+    var layer = parent.append(nodeType);
+    if(className) layer.classed(className, true);
     if(enterFn) layer.call(enterFn);
 
     return layer;

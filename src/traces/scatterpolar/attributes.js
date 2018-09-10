@@ -28,6 +28,49 @@ module.exports = {
         description: 'Sets the angular coordinates'
     },
 
+    r0: {
+        valType: 'any',
+        dflt: 0,
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: [
+            'Alternate to `r`.',
+            'Builds a linear space of r coordinates.',
+            'Use with `dr`',
+            'where `r0` is the starting coordinate and `dr` the step.'
+        ].join(' ')
+    },
+    dr: {
+        valType: 'number',
+        dflt: 1,
+        role: 'info',
+        editType: 'calc',
+        description: 'Sets the r coordinate step.'
+    },
+
+    theta0: {
+        valType: 'any',
+        dflt: 0,
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: [
+            'Alternate to `theta`.',
+            'Builds a linear space of theta coordinates.',
+            'Use with `dtheta`',
+            'where `theta0` is the starting coordinate and `dtheta` the step.'
+        ].join(' ')
+    },
+    dtheta: {
+        valType: 'number',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Sets the theta coordinate step.',
+            'By default, the `dtheta` step equals the subplot\'s period divided',
+            'by the length of the `r` coordinates.'
+        ].join(' ')
+    },
+
     thetaunit: {
         valType: 'enumerated',
         values: ['radians', 'degrees', 'gradians'],
@@ -63,6 +106,7 @@ module.exports = {
 
     fill: extendFlat({}, scatterAttrs.fill, {
         values: ['none', 'toself', 'tonext'],
+        dflt: 'none',
         description: [
             'Sets the area to fill with a solid color.',
             'Use with `fillcolor` if not *none*.',

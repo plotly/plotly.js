@@ -46,7 +46,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('borderwidth');
     coerce('thickness');
 
-    axOut._rangesliderAutorange = coerce('autorange', !axOut.isValidRange(containerIn.range));
+    coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
 
     var subplots = layoutOut._subplots;
@@ -76,7 +76,6 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
             if(rangeMode !== 'match') {
                 coerceRange('range', yAxOut.range.slice());
             }
-            yAxOut._rangesliderAutorange = (rangeMode === 'auto');
         }
     }
 

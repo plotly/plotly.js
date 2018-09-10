@@ -27,7 +27,7 @@ exports.initInteractions = function initInteractions(gd) {
         return;
     }
 
-    if(!fullLayout._has('cartesian') && !fullLayout._has('gl2d') && !fullLayout._has('splom')) return;
+    if(!fullLayout._has('cartesian') && !fullLayout._has('splom')) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -151,7 +151,7 @@ exports.initInteractions = function initInteractions(gd) {
         gd._fullLayout._lasthover.onmousedown(evt);
     };
 
-    exports.updateFx(fullLayout);
+    exports.updateFx(gd);
 };
 
 // Minimal set of update needed on 'modebar' edits.
@@ -159,7 +159,8 @@ exports.initInteractions = function initInteractions(gd) {
 //
 // Note that changing the axis configuration and/or the fixedrange attribute
 // should trigger a full initInteractions.
-exports.updateFx = function(fullLayout) {
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
     var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
     setCursor(fullLayout._draggers, cursor);
 };

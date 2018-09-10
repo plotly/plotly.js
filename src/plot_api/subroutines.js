@@ -89,8 +89,9 @@ function lsInner(gd) {
 
         // figure out the main axis line and main mirror line position.
         // it's easier to follow the logic if we handle these separately from
-        // ax._linepositions, which are really only used by mirror=allticks
-        // for the non-main-subplot ticks.
+        // ax._linepositions, which are only used by mirror=allticks
+        // for non-main-subplot ticks, and mirror=all(ticks)? for zero line
+        // hiding logic
         ax._mainLinePosition = getLinePosition(ax, counterAx, ax.side);
         ax._mainMirrorPosition = (ax.mirror && counterAx) ?
             getLinePosition(ax, counterAx,
@@ -118,7 +119,8 @@ function lsInner(gd) {
     // to put them
     var lowerBackgroundIDs = [];
     var lowerDomains = [];
-    subplotSelection.each(function(subplot) {
+    subplotSelection.each(function(d) {
+        var subplot = d[0];
         var plotinfo = fullLayout._plots[subplot];
 
         if(plotinfo.mainplot) {
@@ -161,7 +163,8 @@ function lsInner(gd) {
         fullLayout._plots[subplot].bg = d3.select(this);
     });
 
-    subplotSelection.each(function(subplot) {
+    subplotSelection.each(function(d) {
+        var subplot = d[0];
         var plotinfo = fullLayout._plots[subplot];
         var xa = plotinfo.xaxis;
         var ya = plotinfo.yaxis;
@@ -268,7 +271,7 @@ function lsInner(gd) {
             // each subplot that gets ticks from "allticks" gets an entry:
             //    [left or bottom, right or top]
             extraSubplot = (!xa._anchorAxis || subplot !== xa._mainSubplot);
-            if(extraSubplot && xa.ticks && xa.mirror === 'allticks') {
+            if(extraSubplot && (xa.mirror === 'allticks' || xa.mirror === 'all')) {
                 xa._linepositions[subplot] = [xLinesYBottom, xLinesYTop];
             }
 
@@ -304,8 +307,8 @@ function lsInner(gd) {
             yLinesXLeft = getLinePosition(ya, xa, 'left');
             yLinesXRight = getLinePosition(ya, xa, 'right');
 
-            extraSubplot = (!ya._anchorAxis || subplot !== xa._mainSubplot);
-            if(extraSubplot && ya.ticks && ya.mirror === 'allticks') {
+            extraSubplot = (!ya._anchorAxis || subplot !== ya._mainSubplot);
+            if(extraSubplot && (ya.mirror === 'allticks' || ya.mirror === 'all')) {
                 ya._linepositions[subplot] = [yLinesXLeft, yLinesXRight];
             }
 
@@ -518,7 +521,7 @@ exports.doModeBar = function(gd) {
 
     for(var i = 0; i < fullLayout._basePlotModules.length; i++) {
         var updateFx = fullLayout._basePlotModules[i].updateFx;
-        if(updateFx) updateFx(fullLayout);
+        if(updateFx) updateFx(gd);
     }
 
     return Plots.previousPromises(gd);
@@ -576,7 +579,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
         cleanAxisConstraints(gd, ax);
-        doAutoRange(ax);
+        doAutoRange(gd, ax);
     }
 
     enforceAxisConstraints(gd);

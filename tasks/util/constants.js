@@ -85,10 +85,17 @@ module.exports = {
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
     uglifyOptions: {
+        ecma: 5,
         mangle: true,
-        // the compress flag break mapbox-gl,
-        // TODO find a way to only skip compression on mapbox-gl files
-        compress: false,
+        compress: {
+            // see full list of compress option
+            // https://github.com/fabiosantoscode/terser#compress-options
+            //
+            // need to turn off 'typeofs' to make mapbox-gl work in
+            // minified bundles, for more info see:
+            // https://github.com/plotly/plotly.js/issues/2787
+            typeofs: false
+        },
         output: {
             beautify: false,
             ascii_only: true

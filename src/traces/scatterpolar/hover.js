@@ -27,7 +27,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var cdi = newPointData.cd[newPointData.index];
     var trace = newPointData.trace;
 
-    if(!subplot.isPtWithinSector(cdi)) return;
+    if(!subplot.isPtInside(cdi)) return;
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
@@ -46,23 +46,21 @@ function makeHoverPointText(cdi, trace, subplot) {
     radialAxis._hovertitle = 'r';
     angularAxis._hovertitle = 'θ';
 
-    var rad = angularAxis._c2rad(cdi.theta, trace.thetaunit);
-
-    // show theta value in unit of angular axis
-    var theta;
-    if(angularAxis.type === 'linear' && trace.thetaunit !== angularAxis.thetaunit) {
-        theta = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(rad) : rad;
-    } else {
-        theta = cdi.theta;
-    }
-
     function textPart(ax, val) {
         text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
     }
 
     if(parts.indexOf('all') !== -1) parts = ['r', 'theta'];
-    if(parts.indexOf('r') !== -1) textPart(radialAxis, radialAxis.c2r(cdi.r));
-    if(parts.indexOf('theta') !== -1) textPart(angularAxis, theta);
+    if(parts.indexOf('r') !== -1) {
+        textPart(radialAxis, radialAxis.c2l(cdi.r));
+    }
+    if(parts.indexOf('theta') !== -1) {
+        var theta = cdi.theta;
+        textPart(
+            angularAxis,
+            angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(theta) : theta
+        );
+    }
 
     return text.join('<br>');
 }

@@ -1274,4 +1274,27 @@ describe('filter transforms interactions', function() {
         .then(done);
     });
 
+    it('should clear indexToPoints on removal', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.react(gd, [{
+            y: [1, 2, 3, 1, 2, 3],
+            transforms: [{
+                type: 'filter',
+                target: 'y',
+                operation: '<',
+                value: 3
+            }]
+        }])
+        .then(function() {
+            expect(gd._fullData[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [3], 3: [4]});
+            return Plotly.react(gd, [{ y: [1, 2, 3, 1, 2, 3] }]);
+        })
+        .then(function() {
+            expect(gd._fullData[0]._indexToPoints).toBeUndefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
 });

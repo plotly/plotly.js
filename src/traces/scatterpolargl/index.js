@@ -36,13 +36,7 @@ function calc(container, trace) {
     stash.r = rArray;
     stash.theta = thetaArray;
 
-    Axes.expand(radialAxis, rArray, {tozero: true});
-
-    if(angularAxis.type !== 'linear') {
-        angularAxis.autorange = true;
-        Axes.expand(angularAxis, thetaArray);
-        delete angularAxis.autorange;
-    }
+    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {tozero: true});
 
     return [{x: false, y: false, t: stash, trace: trace}];
 }
@@ -50,10 +44,8 @@ function calc(container, trace) {
 function plot(container, subplot, cdata) {
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
-    var rRange = radialAxis.range;
 
     var scene = ScatterGl.sceneUpdate(container, subplot);
-    scene.clear();
 
     cdata.forEach(function(cdscatter, traceIndex) {
         if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
@@ -62,42 +54,38 @@ function plot(container, subplot, cdata) {
         var stash = cd.t;
         var rArray = stash.r;
         var thetaArray = stash.theta;
-        var i, r, rr, theta, rad;
+        var i;
 
         var subRArray = rArray.slice();
         var subThetaArray = thetaArray.slice();
 
         // filter out by range
         for(i = 0; i < rArray.length; i++) {
-            r = rArray[i], theta = thetaArray[i];
-            rad = angularAxis.c2rad(theta, trace.thetaunit);
-
-            if(!subplot.isPtWithinSector({r: r, rad: rad})) {
+            if(!subplot.isPtInside({r: rArray[i], theta: thetaArray[i]})) {
                 subRArray[i] = NaN;
                 subThetaArray[i] = NaN;
             }
         }
 
         var count = rArray.length;
-        var positions = new Array(count * 2), x = Array(count), y = Array(count);
-
-        function c2rad(v) {
-            return angularAxis.c2rad(v, trace.thetaunit);
-        }
+        var positions = new Array(count * 2);
+        var x = Array(count);
+        var y = Array(count);
 
         for(i = 0; i < count; i++) {
-            r = subRArray[i];
-            theta = subThetaArray[i];
+            var r = subRArray[i];
+            var xx, yy;
 
-            if(isNumeric(r) && isNumeric(theta) && r >= 0) {
-                rr = radialAxis.c2r(r) - rRange[0];
-                rad = c2rad(theta);
-
-                x[i] = positions[i * 2] = rr * Math.cos(rad);
-                y[i] = positions[i * 2 + 1] = rr * Math.sin(rad);
+            if(isNumeric(r)) {
+                var rg = radialAxis.c2g(r);
+                var thetag = angularAxis.c2g(subThetaArray[i], trace.thetaunit);
+                xx = rg * Math.cos(thetag);
+                yy = rg * Math.sin(thetag);
             } else {
-                x[i] = y[i] = positions[i * 2] = positions[i * 2 + 1] = NaN;
+                xx = yy = NaN;
             }
+            x[i] = positions[i * 2] = xx;
+            y[i] = positions[i * 2 + 1] = yy;
         }
 
         var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
@@ -107,6 +95,7 @@ function plot(container, subplot, cdata) {
         if(options.marker && !scene.scatter2d) scene.scatter2d = true;
         if(options.line && !scene.line2d) scene.line2d = true;
         if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
+        if(options.text && !scene.glText) scene.glText = true;
 
         stash.tree = cluster(positions);
 
@@ -128,6 +117,9 @@ function plot(container, subplot, cdata) {
         scene.markerOptions.push(options.marker);
         scene.markerSelectedOptions.push(options.markerSel);
         scene.markerUnselectedOptions.push(options.markerUnsel);
+        scene.textOptions.push(options.text);
+        scene.textSelectedOptions.push(options.textSel);
+        scene.textUnselectedOptions.push(options.textUnsel);
         scene.count = cdata.length;
 
         // stash scene ref
@@ -162,16 +154,14 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     }
 
     var subplot = pointData.subplot;
-    var angularAxis = subplot.angularAxis;
     var cdi = newPointData.cd[newPointData.index];
     var trace = newPointData.trace;
 
     // augment pointData with r/theta param
     cdi.r = rArray[newPointData.index];
     cdi.theta = thetaArray[newPointData.index];
-    cdi.rad = angularAxis.c2rad(cdi.theta, trace.thetaunit);
 
-    if(!subplot.isPtWithinSector(cdi)) return;
+    if(!subplot.isPtInside(cdi)) return;
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;

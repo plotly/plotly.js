@@ -27,7 +27,13 @@ describe('Test annotations', function() {
             layoutOut._has = Plots._hasPlotType.bind(layoutOut);
             layoutOut._subplots = {xaxis: ['x', 'x2'], yaxis: ['y', 'y2']};
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(axName) {
-                if(!layoutOut[axName]) layoutOut[axName] = {type: 'linear', range: [0, 1]};
+                if(!layoutOut[axName]) {
+                    layoutOut[axName] = {
+                        type: 'linear',
+                        range: [0, 1],
+                        _annIndices: []
+                    };
+                }
                 Axes.setConvert(layoutOut[axName]);
             });
 
@@ -90,7 +96,11 @@ describe('Test annotations', function() {
             };
 
             var layoutOut = {
-                xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }
+                xaxis: {
+                    type: 'date',
+                    range: ['2000-01-01', '2016-01-01'],
+                    _annIndices: []
+                }
             };
 
             _supply(layoutIn, layoutOut);
@@ -128,10 +138,10 @@ describe('Test annotations', function() {
             };
 
             var layoutOut = {
-                xaxis: {type: 'linear', range: [0, 1]},
-                yaxis: {type: 'date', range: ['2000-01-01', '2018-01-01']},
-                xaxis2: {type: 'log', range: [1, 2]},
-                yaxis2: {type: 'category', range: [0, 1]}
+                xaxis: {type: 'linear', range: [0, 1], _annIndices: []},
+                yaxis: {type: 'date', range: ['2000-01-01', '2018-01-01'], _annIndices: []},
+                xaxis2: {type: 'log', range: [1, 2], _annIndices: []},
+                yaxis2: {type: 'category', range: [0, 1], _annIndices: []}
             };
 
             _supply(layoutIn, layoutOut);
@@ -733,6 +743,43 @@ describe('annotations autorange', function() {
                 [0.88, 2.05], [0.92, 2.08],
                 [-1.38, 8.29], [-0.85, 5.14]
             );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should propagate axis autorange changes when axis ranges are set', function(done) {
+        function _assert(msg, xrng, yrng) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 1, msg + ' xrng');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 1, msg + ' yrng');
+        }
+
+        Plotly.plot(gd, [{y: [1, 2]}], {
+            xaxis: {range: [0, 2]},
+            yaxis: {range: [0, 2]},
+            annotations: [{
+                text: 'a',
+                x: 3, y: 3
+            }]
+        })
+        .then(function() {
+            _assert('set rng / small tx', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, 'annotations[0].text', 'loooooooooooooooooooooooong');
+        })
+        .then(function() {
+            _assert('set rng / big tx', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            _assert('auto rng / big tx', [-0.22, 3.59], [0.84, 3.365]);
+            return Plotly.relayout(gd, 'annotations[0].text', 'a');
+        })
+        .then(function() {
+            _assert('auto rng / small tx', [-0.18, 3.035], [0.84, 3.365]);
         })
         .catch(failTest)
         .then(done);
