@@ -108,9 +108,10 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             }
         }
 
-        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+        var componentsNeedingRedraw = Registry.getUpdateOnPanComponents();
+        componentsNeedingRedraw.forEach(function(item) {
+            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'), item.updateOnPanShortCircuit);
+        });
     }
 
     if(!affectedSubplots.length) {
@@ -142,9 +143,10 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             }
         }
 
-        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+        var componentsNeedingRedraw = Registry.getUpdateOnPanComponents();
+        componentsNeedingRedraw.forEach(function(item) {
+            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'), item.updateOnPanShortCircuit);
+        });
     }
 
     function unsetSubplotTransform(subplot) {

@@ -108,6 +108,18 @@ exports.register = function register(_modules) {
     }
 };
 
+exports.getUpdateOnPanComponents = function() {
+    var selected = [];
+    for(var componentName in exports.componentsRegistry) {
+        var component = exports.componentsRegistry[componentName];
+        if(component.updateOnPan) {
+            selected.push(component);
+        }
+    }
+
+    return selected;
+};
+
 /**
  * Get registered module using trace object or trace type
  *

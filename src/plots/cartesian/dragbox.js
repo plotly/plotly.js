@@ -613,11 +613,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         // annotations and shapes 'draw' method is slow,
-        // use the finer-grained 'drawOne' method instead
+        // use the finer-grained 'drawOne' method instead (proxied through updateOnPan)
 
-        redrawObjs(gd._fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(gd._fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(gd._fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+        var componentsNeedingRedraw = Registry.getUpdateOnPanComponents();
+        componentsNeedingRedraw.forEach(function(item) {
+            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'), item.updateOnPanShortCircuit);
+        });
     }
 
     function doubleClick() {

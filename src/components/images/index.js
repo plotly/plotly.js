@@ -8,6 +8,8 @@
 
 'use strict';
 
+var drawModule = require('./draw');
+
 module.exports = {
     moduleType: 'component',
     name: 'images',
@@ -16,7 +18,9 @@ module.exports = {
     supplyLayoutDefaults: require('./defaults'),
     includeBasePlot: require('../../plots/cartesian/include_components')('images'),
 
-    draw: require('./draw'),
+    draw: drawModule,
+    updateOnPan: drawModule,
+    updateOnPanShortCircuit: true,
 
     convertCoords: require('./convert_coords')
 };

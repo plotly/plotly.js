@@ -24,6 +24,7 @@ module.exports = {
     draw: drawModule.draw,
     drawOne: drawModule.drawOne,
     drawRaw: drawModule.drawRaw,
+    updateOnPan: drawModule.drawOne,
 
     hasClickToShow: clickModule.hasClickToShow,
     onClick: clickModule.onClick,
