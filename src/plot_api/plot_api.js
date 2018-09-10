@@ -191,6 +191,19 @@ exports.plot = function(gd, data, layout, config) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
+    // make the figure responsive
+    if(gd._context.responsive) {
+        if(!gd._responsiveChartHandler) {
+            // Keep a reference to the resize handler to purge it down the road
+            gd._responsiveChartHandler = function() {Plots.resize(gd);};
+
+            // Listen to window resize
+            window.addEventListener('resize', gd._responsiveChartHandler);
+        }
+    } else {
+        Lib.clearResponsive(gd);
+    }
+
     /*
      * start async-friendly code - now we're actually drawing things
      */

@@ -87,6 +87,13 @@ function getAutoRange(gd, ax) {
         ax.autorange = true;
     }
 
+    var rangeMode = ax.rangemode;
+    var toZero = rangeMode === 'tozero';
+    var nonNegative = rangeMode === 'nonnegative';
+    var axLen = ax._length;
+    // don't allow padding to reduce the data to < 10% of the length
+    var minSpan = axLen / 10;
+
     var mbest = 0;
     var minpt, maxpt, minbest, maxbest, dp, dv;
 
@@ -95,74 +102,81 @@ function getAutoRange(gd, ax) {
         for(j = 0; j < maxArray.length; j++) {
             maxpt = maxArray[j];
             dv = maxpt.val - minpt.val;
-            dp = ax._length - getPad(minpt) - getPad(maxpt);
-            if(dv > 0 && dp > 0 && dv / dp > mbest) {
-                minbest = minpt;
-                maxbest = maxpt;
-                mbest = dv / dp;
+            if(dv > 0) {
+                dp = axLen - getPad(minpt) - getPad(maxpt);
+                if(dp > minSpan) {
+                    if(dv / dp > mbest) {
+                        minbest = minpt;
+                        maxbest = maxpt;
+                        mbest = dv / dp;
+                    }
+                }
+                else if(dv / axLen > mbest) {
+                    // in case of padding longer than the axis
+                    // at least include the unpadded data values.
+                    minbest = {val: minpt.val, pad: 0};
+                    maxbest = {val: maxpt.val, pad: 0};
+                    mbest = dv / axLen;
+                }
             }
         }
+    }
+
+    function getMaxPad(prev, pt) {
+        return Math.max(prev, getPad(pt));
     }
 
     if(minmin === maxmax) {
         var lower = minmin - 1;
         var upper = minmin + 1;
-        if(ax.rangemode === 'tozero') {
-            newRange = minmin < 0 ? [lower, 0] : [0, upper];
-        } else if(ax.rangemode === 'nonnegative') {
-            newRange = [Math.max(0, lower), Math.max(0, upper)];
+        if(toZero) {
+            if(minmin === 0) {
+                // The only value we have on this axis is 0, and we want to
+                // autorange so zero is one end.
+                // In principle this could be [0, 1] or [-1, 0] but usually
+                // 'tozero' pins 0 to the low end, so follow that.
+                newRange = [0, 1];
+            }
+            else {
+                var maxPad = (minmin > 0 ? maxArray : minArray).reduce(getMaxPad, 0);
+                // we're pushing a single value away from the edge due to its
+                // padding, with the other end clamped at zero
+                // 0.5 means don't push it farther than the center.
+                var rangeEnd = minmin / (1 - Math.min(0.5, maxPad / axLen));
+                newRange = minmin > 0 ? [0, rangeEnd] : [rangeEnd, 0];
+            }
+        } else if(nonNegative) {
+            newRange = [Math.max(0, lower), Math.max(1, upper)];
         } else {
             newRange = [lower, upper];
         }
     }
-    else if(mbest) {
-        if(ax.type === 'linear' || ax.type === '-') {
-            if(ax.rangemode === 'tozero') {
-                if(minbest.val >= 0) {
-                    minbest = {val: 0, pad: 0};
-                }
-                if(maxbest.val <= 0) {
-                    maxbest = {val: 0, pad: 0};
-                }
+    else {
+        if(toZero) {
+            if(minbest.val >= 0) {
+                minbest = {val: 0, pad: 0};
             }
-            else if(ax.rangemode === 'nonnegative') {
-                if(minbest.val - mbest * getPad(minbest) < 0) {
-                    minbest = {val: 0, pad: 0};
-                }
-                if(maxbest.val < 0) {
-                    maxbest = {val: 1, pad: 0};
-                }
+            if(maxbest.val <= 0) {
+                maxbest = {val: 0, pad: 0};
             }
-
-            // in case it changed again...
-            mbest = (maxbest.val - minbest.val) /
-                (ax._length - getPad(minbest) - getPad(maxbest));
-
         }
+        else if(nonNegative) {
+            if(minbest.val - mbest * getPad(minbest) < 0) {
+                minbest = {val: 0, pad: 0};
+            }
+            if(maxbest.val <= 0) {
+                maxbest = {val: 1, pad: 0};
+            }
+        }
+
+        // in case it changed again...
+        mbest = (maxbest.val - minbest.val) /
+            (axLen - getPad(minbest) - getPad(maxbest));
 
         newRange = [
             minbest.val - mbest * getPad(minbest),
             maxbest.val + mbest * getPad(maxbest)
         ];
-    }
-
-    // don't let axis have zero size, while still respecting tozero and nonnegative
-    if(newRange[0] === newRange[1]) {
-        if(ax.rangemode === 'tozero') {
-            if(newRange[0] < 0) {
-                newRange = [newRange[0], 0];
-            } else if(newRange[0] > 0) {
-                newRange = [0, newRange[0]];
-            } else {
-                newRange = [0, 1];
-            }
-        }
-        else {
-            newRange = [newRange[0] - 1, newRange[0] + 1];
-            if(ax.rangemode === 'nonnegative') {
-                newRange[0] = Math.max(0, newRange[0]);
-            }
-        }
     }
 
     // maintain reversal

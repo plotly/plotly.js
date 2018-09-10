@@ -25,6 +25,7 @@ var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select').prepSelect;
+var selectOnClick = require('../cartesian/select').selectOnClick;
 var clearSelect = require('../cartesian/select').clearSelect;
 var setCursor = require('../../lib/setcursor');
 
@@ -648,6 +649,7 @@ proto.updateMainDrag = function(fullLayout) {
         gd: gd,
         subplot: _this.id,
         plotinfo: {
+            id: _this.id,
             xaxis: _this.xaxis,
             yaxis: _this.yaxis
         },
@@ -851,6 +853,31 @@ proto.updateMainDrag = function(fullLayout) {
         Registry.call('relayout', gd, _this.id + '.radialaxis.range', newRng);
     }
 
+    function zoomClick(numClicks, evt) {
+        var clickMode = gd._fullLayout.clickmode;
+
+        dragBox.removeZoombox(gd);
+
+        // TODO double once vs twice logic (autorange vs fixed range)
+        if(numClicks === 2) {
+            var updateObj = {};
+            for(var k in _this.viewInitial) {
+                updateObj[_this.id + '.' + k] = _this.viewInitial[k];
+            }
+
+            gd.emit('plotly_doubleclick', null);
+            Registry.call('relayout', gd, updateObj);
+        }
+
+        if(clickMode.indexOf('select') > -1 && numClicks === 1) {
+            selectOnClick(evt, gd, [_this.xaxis], [_this.yaxis], _this.id, dragOpts);
+        }
+
+        if(clickMode.indexOf('event') > -1) {
+            Fx.click(gd, evt, _this.id);
+        }
+    }
+
     dragOpts.prepFn = function(evt, startX, startY) {
         var dragModeNow = gd._fullLayout.dragmode;
 
@@ -873,6 +900,7 @@ proto.updateMainDrag = function(fullLayout) {
                 } else {
                     dragOpts.moveFn = zoomMove;
                 }
+                dragOpts.clickFn = zoomClick;
                 dragOpts.doneFn = zoomDone;
                 zoomPrep(evt, startX, startY);
                 break;
@@ -881,23 +909,6 @@ proto.updateMainDrag = function(fullLayout) {
                 prepSelect(evt, startX, startY, dragOpts, dragModeNow);
                 break;
         }
-    };
-
-    dragOpts.clickFn = function(numClicks, evt) {
-        dragBox.removeZoombox(gd);
-
-        // TODO double once vs twice logic (autorange vs fixed range)
-        if(numClicks === 2) {
-            var updateObj = {};
-            for(var k in _this.viewInitial) {
-                updateObj[_this.id + '.' + k] = _this.viewInitial[k];
-            }
-
-            gd.emit('plotly_doubleclick', null);
-            Registry.call('relayout', gd, updateObj);
-        }
-
-        Fx.click(gd, evt, _this.id);
     };
 
     mainDrag.onmousemove = function(evt) {

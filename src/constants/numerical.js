@@ -50,6 +50,12 @@ module.exports = {
     ALMOST_EQUAL: 1 - 1e-6,
 
     /*
+     * If we're asked to clip a non-positive log value, how far off-screen
+     * do we put it?
+     */
+    LOG_CLIP: 10,
+
+    /*
      * not a number, but for displaying numbers: the "minus sign" symbol is
      * wider than the regular ascii dash "-"
      */

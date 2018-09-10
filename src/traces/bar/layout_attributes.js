@@ -36,9 +36,9 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the normalization for bar traces on the graph.',
-            'With *fraction*, the value of each bar is divide by the sum of the',
-            'values at the location coordinate.',
-            'With *percent*, the results form *fraction* are presented in percents.'
+            'With *fraction*, the value of each bar is divided by the sum of all',
+            'values at that location coordinate.',
+            '*percent* is the same but multiplied by 100 to show percentages.'
         ].join(' ')
     },
     bargap: {

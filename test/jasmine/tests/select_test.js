@@ -2,7 +2,9 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
+var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -52,7 +54,7 @@ function assertSelectionNodes(cornerCnt, outlineCnt, _msg) {
 }
 
 var selectingCnt, selectingData, selectedCnt, selectedData, deselectCnt, doubleClickData;
-var selectedPromise, deselectPromise;
+var selectedPromise, deselectPromise, clickedPromise;
 
 function resetEvents(gd) {
     selectingCnt = 0;
@@ -75,7 +77,13 @@ function resetEvents(gd) {
         });
 
         gd.on('plotly_selected', function(data) {
-            assertSelectionNodes(0, 2);
+            // With click-to-select supported, selection nodes are only
+            // in the DOM in certain circumstances.
+            if(data &&
+              gd._fullLayout.dragmode.indexOf('select') > -1 &&
+              gd._fullLayout.dragmode.indexOf('lasso') > -1) {
+                assertSelectionNodes(0, 2);
+            }
             selectedCnt++;
             selectedData = data;
             resolve();
@@ -87,6 +95,12 @@ function resetEvents(gd) {
             assertSelectionNodes(0, 0);
             deselectCnt++;
             doubleClickData = data;
+            resolve();
+        });
+    });
+
+    clickedPromise = new Promise(function(resolve) {
+        gd.on('plotly_click', function() {
             resolve();
         });
     });
@@ -108,6 +122,659 @@ var NOEVENTS = [0, 0, 0];
 var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
+
+var SELECT_PATH = [[93, 193], [143, 193]];
+var LASSO_PATH = [[316, 171], [318, 239], [335, 243], [328, 169]];
+
+describe('Click-to-select', function() {
+    var mock14Pts = {
+        '1': { x: 134, y: 116 },
+        '7': { x: 270, y: 160 },
+        '10': { x: 324, y: 198 },
+        '35': { x: 685, y: 341 }
+    };
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function plotMock14(layoutOpts) {
+        var mock = require('@mocks/14.json');
+        var defaultLayoutOpts = {
+            layout: {
+                clickmode: 'event+select',
+                dragmode: 'select',
+                hovermode: 'closest'
+            }
+        };
+        var mockCopy = Lib.extendDeep(
+          {},
+          mock,
+          defaultLayoutOpts,
+          { layout: layoutOpts });
+
+        return Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+    }
+
+    /**
+     * Executes a click and before resets selection event handlers.
+     * By default, click is executed with a delay to prevent unwanted double clicks.
+     * Returns the `selectedPromise` promise for convenience.
+     */
+    function _click(x, y, clickOpts, immediate) {
+        resetEvents(gd);
+
+        // Too fast subsequent calls of `click` would
+        // produce an unwanted double click, thus we need
+        // to delay the click.
+        if(immediate) {
+            click(x, y, clickOpts);
+        } else {
+            setTimeout(function() {
+                click(x, y, clickOpts);
+            }, DBLCLICKDELAY * 1.01);
+        }
+
+        return selectedPromise;
+    }
+
+    function _clickPt(coords, clickOpts, immediate) {
+        expect(coords).toBeDefined('coords needs to be defined');
+        expect(coords.x).toBeDefined('coords.x needs to be defined');
+        expect(coords.y).toBeDefined('coords.y needs to be defined');
+
+        return _click(coords.x, coords.y, clickOpts, immediate);
+    }
+
+    /**
+     * Convenient helper to execute a click immediately.
+     */
+    function _immediateClickPt(coords, clickOpts) {
+        return _clickPt(coords, clickOpts, true);
+    }
+
+    /**
+     * Asserting selected points.
+     *
+     * @param expected can be a point number, an array
+     * of point numbers (for a single trace) or an array of point number
+     * arrays in case of multiple traces. undefined in an array of arrays
+     * is also allowed, e.g. useful when not all traces support selection.
+     */
+    function assertSelectedPoints(expected) {
+        var expectedPtsPerTrace = toArrayOfArrays(expected);
+        var expectedPts, traceNum;
+
+        for(traceNum = 0; traceNum < expectedPtsPerTrace.length; traceNum++) {
+            expectedPts = expectedPtsPerTrace[traceNum];
+            expect(gd._fullData[traceNum].selectedpoints).toEqual(expectedPts);
+            expect(gd.data[traceNum].selectedpoints).toEqual(expectedPts);
+        }
+
+        function toArrayOfArrays(expected) {
+            var isArrayInArray, i;
+
+            if(Array.isArray(expected)) {
+                isArrayInArray = false;
+                for(i = 0; i < expected.length; i++) {
+                    if(Array.isArray(expected[i])) {
+                        isArrayInArray = true;
+                        break;
+                    }
+                }
+
+                return isArrayInArray ? expected : [expected];
+            } else {
+                return [[expected]];
+            }
+        }
+    }
+
+    function assertSelectionCleared() {
+        gd._fullData.forEach(function(fullDataItem) {
+            expect(fullDataItem.selectedpoints).toBeUndefined();
+        });
+    }
+
+    it('selects a single data point when being clicked', function(done) {
+        plotMock14()
+          .then(function() { return _immediateClickPt(mock14Pts[7]); })
+          .then(function() { assertSelectedPoints(7); })
+          .catch(failTest)
+          .then(done);
+    });
+
+    describe('clears entire selection when the last selected data point', function() {
+        [{
+            desc: 'is clicked',
+            clickOpts: {}
+        }, {
+            desc: 'is clicked while add/subtract modifier keys are active',
+            clickOpts: { shiftKey: true }
+        }].forEach(function(testData) {
+            it('@flaky ' + testData.desc, function(done) {
+                plotMock14()
+                  .then(function() { return _immediateClickPt(mock14Pts[7]); })
+                  .then(function() {
+                      assertSelectedPoints(7);
+                      _clickPt(mock14Pts[7], testData.clickOpts);
+                      return deselectPromise;
+                  })
+                  .then(function() {
+                      assertSelectionCleared();
+                      return _clickPt(mock14Pts[35], testData.clickOpts);
+                  })
+                  .then(function() {
+                      assertSelectedPoints(35);
+                  })
+                  .catch(failTest)
+                  .then(done);
+            });
+        });
+    });
+
+    it('@flaky cleanly clears and starts selections although add/subtract mode on', function(done) {
+        plotMock14()
+          .then(function() {
+              return _immediateClickPt(mock14Pts[7]);
+          })
+          .then(function() {
+              assertSelectedPoints(7);
+              _clickPt(mock14Pts[7], { shiftKey: true });
+              return deselectPromise;
+          })
+          .then(function() {
+              assertSelectionCleared();
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('@flaky supports adding to an existing selection', function(done) {
+        plotMock14()
+          .then(function() { return _immediateClickPt(mock14Pts[7]); })
+          .then(function() {
+              assertSelectedPoints(7);
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() { assertSelectedPoints([7, 35]); })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('@flaky supports subtracting from an existing selection', function(done) {
+        plotMock14()
+          .then(function() { return _immediateClickPt(mock14Pts[7]); })
+          .then(function() {
+              assertSelectedPoints(7);
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([7, 35]);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() { assertSelectedPoints(35); })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('@flaky can be used interchangeably with lasso/box select', function(done) {
+        plotMock14()
+          .then(function() {
+              return _immediateClickPt(mock14Pts[35]);
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              drag(SELECT_PATH, { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 1, 35]);
+              return _immediateClickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 1, 7, 35]);
+              return _clickPt(mock14Pts[1], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 35]);
+              return Plotly.relayout(gd, 'dragmode', 'lasso');
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 35]);
+              drag(LASSO_PATH, { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 10, 35]);
+              return _clickPt(mock14Pts[10], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 35]);
+              drag([[670, 330], [695, 330], [695, 350], [670, 350]],
+                { shiftKey: true, altKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7]);
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 35]);
+              return _clickPt(mock14Pts[7]);
+          })
+          .then(function() {
+              assertSelectedPoints([7]);
+              return doubleClick(650, 100);
+          })
+          .then(function() {
+              assertSelectionCleared();
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('@gl works in a multi-trace plot', function(done) {
+        Plotly.plot(gd, [
+            {
+                x: [1, 3, 5, 4, 10, 12, 12, 7],
+                y: [2, 7, 6, 1, 0, 13, 6, 12],
+                type: 'scatter',
+                mode: 'markers',
+                marker: { size: 20 }
+            }, {
+                x: [1, 7, 6, 2],
+                y: [2, 3, 5, 4],
+                type: 'bar'
+            }, {
+                x: [7, 8, 9, 10],
+                y: [7, 9, 13, 21],
+                type: 'scattergl',
+                mode: 'markers',
+                marker: { size: 20 }
+            }
+        ], {
+            width: 400,
+            height: 600,
+            hovermode: 'closest',
+            dragmode: 'select',
+            clickmode: 'event+select'
+        })
+          .then(function() {
+              return _click(136, 369, {}, true); })
+          .then(function() {
+              assertSelectedPoints([[1], [], []]);
+              return _click(245, 136, { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([[1], [], [3]]);
+              return _click(183, 470, { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([[1], [2], [3]]);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('@flaky is supported in pan/zoom mode', function(done) {
+        plotMock14({ dragmode: 'zoom' })
+          .then(function() {
+              return _immediateClickPt(mock14Pts[35]);
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([7, 35]);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              drag(LASSO_PATH);
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              _clickPt(mock14Pts[35], { shiftKey: true });
+              return deselectPromise;
+          })
+          .then(function() {
+              assertSelectionCleared();
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('@flaky retains selected points when switching between pan and zoom mode', function(done) {
+        plotMock14({ dragmode: 'zoom' })
+          .then(function() {
+              return _immediateClickPt(mock14Pts[35]);
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              return Plotly.relayout(gd, 'dragmode', 'pan');
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([7, 35]);
+              return Plotly.relayout(gd, 'dragmode', 'zoom');
+          })
+          .then(function() {
+              assertSelectedPoints([7, 35]);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('@gl is supported by scattergl in pan/zoom mode', function(done) {
+        Plotly.plot(gd, [
+            {
+                x: [7, 8, 9, 10],
+                y: [7, 9, 13, 21],
+                type: 'scattergl',
+                mode: 'markers',
+                marker: { size: 20 }
+            }
+        ], {
+            width: 400,
+            height: 600,
+            hovermode: 'closest',
+            dragmode: 'zoom',
+            clickmode: 'event+select'
+        })
+          .then(function() {
+              return _click(230, 340, {}, true);
+          })
+          .then(function() {
+              assertSelectedPoints(2);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('@flaky deals correctly with histogram\'s binning in the persistent selection case', function(done) {
+        var mock = require('@mocks/histogram_colorscale.json');
+        var firstBinPts = [0];
+        var secondBinPts = [1, 2];
+        var thirdBinPts = [3, 4, 5];
+
+        mock.layout.clickmode = 'event+select';
+        Plotly.plot(gd, mock.data, mock.layout)
+          .then(function() {
+              return clickFirstBinImmediately();
+          })
+          .then(function() {
+              assertSelectedPoints(firstBinPts);
+              return shiftClickSecondBin();
+          })
+          .then(function() {
+              assertSelectedPoints([].concat(firstBinPts, secondBinPts));
+              return shiftClickThirdBin();
+          })
+          .then(function() {
+              assertSelectedPoints([].concat(firstBinPts, secondBinPts, thirdBinPts));
+              return clickFirstBin();
+          })
+          .then(function() {
+              assertSelectedPoints([].concat(firstBinPts));
+              clickFirstBin();
+              return deselectPromise;
+          })
+          .then(function() {
+              assertSelectionCleared();
+          })
+          .catch(failTest)
+          .then(done);
+
+        function clickFirstBinImmediately() { return _immediateClickPt({ x: 141, y: 358 }); }
+        function clickFirstBin() { return _click(141, 358); }
+        function shiftClickSecondBin() { return _click(239, 330, { shiftKey: true }); }
+        function shiftClickThirdBin() { return _click(351, 347, { shiftKey: true }); }
+    });
+
+    it('@flaky ignores clicks on boxes in a box trace type', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/box_grouped_horz.json'));
+
+        mock.layout.clickmode = 'event+select';
+        mock.layout.width = 1100;
+        mock.layout.height = 450;
+
+        Plotly.plot(gd, mock.data, mock.layout)
+          .then(function() {
+              return clickPtImmediately();
+          })
+          .then(function() {
+              assertSelectedPoints(2);
+              clickPt();
+              return deselectPromise;
+          })
+          .then(function() {
+              assertSelectionCleared();
+              clickBox();
+              return clickedPromise;
+          })
+          .then(function() {
+              assertSelectionCleared();
+          })
+          .catch(failTest)
+          .then(done);
+
+        function clickPtImmediately() { return _immediateClickPt({ x: 610, y: 342 }); }
+        function clickPt() { return _clickPt({ x: 610, y: 342 }); }
+        function clickBox() { return _clickPt({ x: 565, y: 329 }); }
+    });
+
+    describe('is disabled when clickmode does not include \'select\'', function() {
+        ['select', 'lasso']
+          .forEach(function(dragmode) {
+              it('@flaky and dragmode is ' + dragmode, function(done) {
+                  plotMock14({ clickmode: 'event', dragmode: dragmode })
+                    .then(function() {
+                        // Still, the plotly_selected event should be thrown,
+                        // so return promise here
+                        return _immediateClickPt(mock14Pts[1]);
+                    })
+                    .then(function() {
+                        assertSelectionCleared();
+                    })
+                    .catch(failTest)
+                    .then(done);
+              });
+          });
+    });
+
+    describe('is disabled when clickmode does not include \'select\'', function() {
+        ['pan', 'zoom']
+          .forEach(function(dragmode) {
+              it('@flaky and dragmode is ' + dragmode, function(done) {
+                  plotMock14({ clickmode: 'event', dragmode: dragmode })
+                    .then(function() {
+                        _immediateClickPt(mock14Pts[1]);
+                        return clickedPromise;
+                    })
+                    .then(function() {
+                        assertSelectionCleared();
+                    })
+                    .catch(failTest)
+                    .then(done);
+              });
+          });
+    });
+
+    describe('is supported by', function() {
+        // On loading mocks:
+        // - Note, that `require` function calls are resolved at compile time
+        //   and thus dynamically concatenated mock paths won't work.
+        // - Some mocks don't specify a width and height, so this needs
+        //   to be set explicitly to ensure click coordinates fit.
+
+        // The non-gl traces: use @flaky CI annotation
+        [
+            testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5]),
+            testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [[2], [], []],
+              { width: 1100, height: 450 }),
+            testCase('violin', require('@mocks/violin_grouped.json'), 166, 187, [[3], [], []],
+              { width: 1100, height: 450 }),
+            testCase('ohlc', require('@mocks/ohlc_first.json'), 669, 165, [9]),
+            testCase('candlestick', require('@mocks/finance_style.json'), 331, 162, [[], [5]]),
+            testCase('choropleth', require('@mocks/geo_choropleth-text.json'), 440, 163, [6]),
+            testCase('scattergeo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('scatterternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
+
+            // Note that first trace (carpet) in mock doesn't support selection,
+            // thus undefined is expected
+            testCase('scattercarpet', require('@mocks/scattercarpet.json'), 532, 178,
+              [undefined, [], [], [], [], [], [2]], { width: 1100, height: 450 }),
+
+            // scatterpolar and scatterpolargl do not support pan (the default),
+            // so set dragmode to zoom
+            testCase('scatterpolar', require('@mocks/polar_scatter.json'), 130, 290,
+              [[], [], [], [19], [], []], { dragmode: 'zoom' }),
+        ]
+          .forEach(function(testCase) {
+              it('@flaky trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
+              });
+          });
+
+        // The gl traces: use @gl CI annotation
+        [
+            testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
+              [[], [], [], [19], [], []], { dragmode: 'zoom' }),
+            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
+        ]
+          .forEach(function(testCase) {
+              it('@gl trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
+              });
+          });
+
+        // The mapbox traces: use @noCI annotation cause they are usually too resource-intensive
+        [
+            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+        ]
+          .forEach(function(testCase) {
+              it('@noCI trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
+              });
+          });
+
+        function _run(testCase, doneFn) {
+            Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
+              .then(function() {
+                  return _immediateClickPt(testCase);
+              })
+              .then(function() {
+                  assertSelectedPoints(testCase.expectedPts);
+                  return Plotly.relayout(gd, 'dragmode', 'lasso');
+              })
+              .then(function() {
+                  _clickPt(testCase);
+                  return deselectPromise;
+              })
+              .then(function() {
+                  assertSelectionCleared();
+                  return _clickPt(testCase);
+              })
+              .then(function() {
+                  assertSelectedPoints(testCase.expectedPts);
+              })
+              .catch(failTest)
+              .then(doneFn);
+        }
+    });
+
+    describe('triggers \'plotly_selected\' before \'plotly_click\'', function() {
+        [
+            testCase('cartesian', require('@mocks/14.json'), 270, 160, [7]),
+            testCase('geo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('ternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
+            testCase('polar', require('@mocks/polar_scatter.json'), 130, 290,
+              [[], [], [], [19], [], []], { dragmode: 'zoom' })
+        ].forEach(function(testCase) {
+            it('@flaky for base plot ' + testCase.label, function(done) {
+                _run(testCase, done);
+            });
+        });
+
+        // The mapbox traces: use @noCI annotation cause they are usually too resource-intensive
+        [
+            testCase('mapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+        ].forEach(function(testCase) {
+            it('@noCI for base plot ' + testCase.label, function(done) {
+                _run(testCase, done);
+            });
+        });
+
+        function _run(testCase, doneFn) {
+            Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
+              .then(function() {
+                  var clickHandlerCalled = false;
+                  var selectedHandlerCalled = false;
+
+                  gd.on('plotly_selected', function() {
+                      expect(clickHandlerCalled).toBe(false);
+                      selectedHandlerCalled = true;
+                  });
+                  gd.on('plotly_click', function() {
+                      clickHandlerCalled = true;
+                      expect(selectedHandlerCalled).toBe(true);
+                      doneFn();
+                  });
+
+                  return click(testCase.x, testCase.y);
+              })
+              .catch(failTest)
+              .then(doneFn);
+        }
+    });
+
+    function testCase(label, mock, x, y, expectedPts, layoutOptions, configOptions) {
+        var defaultLayoutOpts = {
+            layout: {
+                clickmode: 'event+select',
+                dragmode: 'pan',
+                hovermode: 'closest'
+            }
+        };
+        var customLayoutOptions = {
+            layout: layoutOptions
+        };
+        var customConfigOptions = {
+            config: configOptions
+        };
+        var mockCopy = Lib.extendDeep(
+          {},
+          mock,
+          defaultLayoutOpts,
+          customLayoutOptions,
+          customConfigOptions);
+
+        return {
+            label: label,
+            mock: mockCopy,
+            layoutOptions: layoutOptions,
+            x: x,
+            y: y,
+            expectedPts: expectedPts,
+            configOptions: configOptions
+        };
+    }
+});
 
 describe('Test select box and lasso in general:', function() {
     var mock = require('@mocks/14.json');
@@ -143,6 +810,7 @@ describe('Test select box and lasso in general:', function() {
     describe('select events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
+        mockCopy.layout.hovermode = 'closest';
         mockCopy.data[0].ids = mockCopy.data[0].x
             .map(function(v) { return 'id-' + v; });
         mockCopy.data[0].customdata = mockCopy.data[0].y
@@ -293,6 +961,7 @@ describe('Test select box and lasso in general:', function() {
     describe('lasso events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'lasso';
+        mockCopy.layout.hovermode = 'closest';
         addInvisible(mockCopy);
 
         var gd;
@@ -627,6 +1296,43 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
+    it('should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/0.json'));
+
+        fig.layout.dragmode = 'select';
+        Plotly.plot(gd, fig)
+          .then(function() {
+              return drag([[350, 100], [400, 400]]);
+          })
+          .then(function() {
+              _assertSelectedPoints([49, 50, 51, 52, 53, 54, 55, 56, 57]);
+
+              // Note: although Shift has no behavioral effect on clearing a selection
+              // with a double click, users might hold the Shift key by accident.
+              // This test ensures selection is cleared as expected although
+              // the Shift key is held and no selection state is retained in any way.
+              return doubleClick(500, 200, { shiftKey: true });
+          })
+          .then(function() {
+              _assertSelectedPoints(null);
+              return drag([[450, 100], [500, 400]], { shiftKey: true });
+          })
+          .then(function() {
+              _assertSelectedPoints([67, 68, 69, 70, 71, 72, 73, 74]);
+          })
+          .catch(failTest)
+          .then(done);
+
+        function _assertSelectedPoints(selPts) {
+            if(selPts) {
+                expect(gd.data[0].selectedpoints).toEqual(selPts);
+            } else {
+                expect('selectedpoints' in gd.data[0]).toBe(false);
+            }
+        }
+    });
+
     it('@flaky should clear selected points on double click only on pan/lasso modes', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/0.json'));
@@ -635,6 +1341,7 @@ describe('Test select box and lasso in general:', function() {
         fig.layout.xaxis.range = [2, 8];
         fig.layout.yaxis.autorange = false;
         fig.layout.yaxis.range = [0, 3];
+        fig.layout.hovermode = 'closest';
 
         function _assert(msg, exp) {
             expect(gd.layout.xaxis.range)
@@ -1394,7 +2101,7 @@ describe('Test select box and lasso per trace:', function() {
         })
         .then(function() {
             return _run(
-                [[370, 120], [500, 200]], null, [280, 190], NOEVENTS, 'choropleth pan'
+                [[370, 120], [500, 200]], null, [200, 180], NOEVENTS, 'choropleth pan'
             );
         })
         .catch(failTest)
@@ -1857,6 +2564,7 @@ describe('Test select box and lasso per trace:', function() {
             textposition: 'outside'
         }], {
             dragmode: 'select',
+            hovermode: 'closest',
             showlegend: false,
             width: 400,
             height: 400,
@@ -1869,7 +2577,7 @@ describe('Test select box and lasso per trace:', function() {
                     assertSelectedPoints({0: [0], 1: [0]});
                     assertFillOpacity([1, 0.2, 0.2, 1, 0.2, 0.2]);
                 },
-                null, BOXEVENTS, 'selecting first scatter/bar text nodes'
+                [10, 10], BOXEVENTS, 'selecting first scatter/bar text nodes'
             );
         })
         .then(function() {
