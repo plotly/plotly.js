@@ -1,6 +1,18 @@
 var Plotly = require('@lib/index');
 var b64 = require('base64-arraybuffer');
-var mock1 = require('@mocks/typed_array_repr_scatter.json');
+var encodedFigure = {
+    'data': [{
+        'type': 'scatter',
+        'x': {'dtype': 'float64', 'value': [3, 2, 1]},
+        'y': {'dtype': 'float32', 'value': 'AABAQAAAAEAAAIA/'},
+        'marker': {
+            'color': {
+                'dtype': 'uint16',
+                'value': 'AwACAAEA',
+            },
+        }
+    }]
+};
 
 var typedArraySpecs = [
     ['int8', new Int8Array([-128, -34, 1, 127])],
@@ -112,27 +124,28 @@ describe('Test TypedArray representations', function() {
         });
     });
 
-    describe('mock', function() {
-        it('should decode representation as base 64 and Array in Mock', function() {
+    describe('encoded figure', function() {
+        it('should decode representation as base 64 and Array in encoded figure', function() {
 
-            var gd = Plotly.decode(mock1);
+            var gd = Plotly.decode(encodedFigure);
+
             // Check x
             // data_array property
-            expect(mock1.data[0].x).toEqual({
+            expect(encodedFigure.data[0].x).toEqual({
                 'dtype': 'float64',
                 'value': [3, 2, 1]});
             expect(gd.data[0].x).toEqual(new Float64Array([3, 2, 1]));
 
             // Check y
             // data_array property
-            expect(mock1.data[0].y).toEqual({
+            expect(encodedFigure.data[0].y).toEqual({
                 'dtype': 'float32',
                 'value': 'AABAQAAAAEAAAIA/'});
             expect(gd.data[0].y).toEqual(new Float32Array([3, 2, 1]));
 
             // Check marker.color
             // This is an arrayOk property not a data_array property
-            expect(mock1.data[0].marker.color).toEqual({
+            expect(encodedFigure.data[0].marker.color).toEqual({
                 'dtype': 'uint16',
                 'value': 'AwACAAEA'});
             expect(gd.data[0].marker.color).toEqual(new Uint16Array([3, 2, 1]));
