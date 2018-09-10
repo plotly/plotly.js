@@ -610,8 +610,8 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 proto.updateFx = function(fullLayout, polarLayout) {
     if(!this.gd._context.staticPlot) {
         this.updateAngularDrag(fullLayout);
+        this.updateRadialDrag(fullLayout, polarLayout, 0);
         this.updateRadialDrag(fullLayout, polarLayout, 1);
-        if(this.innerRadius) this.updateRadialDrag(fullLayout, polarLayout, 0);
         this.updateMainDrag(fullLayout);
     }
 };
@@ -934,6 +934,8 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
     var cx = _this.cx;
     var cy = _this.cy;
     var radialAxis = _this.radialAxis;
+    var bl = constants.radialDragBoxSize;
+    var bl2 = bl / 2;
 
     if(!radialAxis.visible) return;
 
@@ -944,20 +946,23 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
     var rbase = rl[rngIndex];
     var m = 0.75 * (rl[1] - rl[0]) / (1 - polarLayout.hole) / radius;
 
-    var bl = constants.radialDragBoxSize;
-    var bl2 = bl / 2;
-    var className = 'radialdrag' + (rngIndex ? '' : '-inner');
-    var radialDrag = dragBox.makeRectDragger(layers, className, 'crosshair', -bl2, -bl2, bl, bl);
-    var dragOpts = {element: radialDrag, gd: gd};
-
-    var tx, ty;
+    var tx, ty, className;
     if(rngIndex) {
         tx = cx + (radius + bl2) * Math.cos(angle0);
         ty = cy - (radius + bl2) * Math.sin(angle0);
+        className = 'radialdrag';
     } else {
+        // the 'inner' box can get called:
+        // - when polar.hole>0
+        // - when polar.sector isn't a full circle
+        // otherwise it is hidden behind the main drag.
         tx = cx + (innerRadius - bl2) * Math.cos(angle0);
         ty = cy - (innerRadius - bl2) * Math.sin(angle0);
+        className = 'radialdrag-inner';
     }
+
+    var radialDrag = dragBox.makeRectDragger(layers, className, 'crosshair', -bl2, -bl2, bl, bl);
+    var dragOpts = {element: radialDrag, gd: gd};
     d3.select(radialDrag).attr('transform', strTranslate(tx, ty));
 
     // move function (either rotate or re-range flavor)
