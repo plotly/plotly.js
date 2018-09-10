@@ -34,6 +34,12 @@ function Ternary(options, fullLayout) {
     this.graphDiv = options.graphDiv;
     this.init(fullLayout);
     this.makeFramework(fullLayout);
+
+    // unfortunately, we have to keep track of some axis tick settings
+    // as ternary subplots do not implement the 'ticks' editType
+    this.aTickLayout = null;
+    this.bTickLayout = null;
+    this.cTickLayout = null;
 }
 
 module.exports = Ternary;
@@ -375,12 +381,33 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 };
 
 proto.drawAxes = function(doTitles) {
-    var _this = this,
-        gd = _this.graphDiv,
-        titlesuffix = _this.id.substr(7) + 'title',
-        aaxis = _this.aaxis,
-        baxis = _this.baxis,
-        caxis = _this.caxis;
+    var _this = this;
+    var gd = _this.graphDiv;
+    var titlesuffix = _this.id.substr(7) + 'title';
+    var layers = _this.layers;
+    var aaxis = _this.aaxis;
+    var baxis = _this.baxis;
+    var caxis = _this.caxis;
+    var newTickLayout;
+
+    newTickLayout = strTickLayout(aaxis);
+    if(_this.aTickLayout !== newTickLayout) {
+        layers.aaxis.selectAll('.ytick').remove();
+        _this.aTickLayout = newTickLayout;
+    }
+
+    newTickLayout = strTickLayout(baxis);
+    if(_this.bTickLayout !== newTickLayout) {
+        layers.baxis.selectAll('.xtick').remove();
+        _this.bTickLayout = newTickLayout;
+    }
+
+    newTickLayout = strTickLayout(caxis);
+    if(_this.cTickLayout !== newTickLayout) {
+        layers.caxis.selectAll('.ytick').remove();
+        _this.cTickLayout = newTickLayout;
+    }
+
     // 3rd arg true below skips titles, so we can configure them
     // correctly later on.
     Axes.doTicksSingle(gd, aaxis, true);
@@ -429,6 +456,11 @@ proto.drawAxes = function(doTitles) {
         });
     }
 };
+
+function strTickLayout(axLayout) {
+    return axLayout.ticks + String(axLayout.ticklen) + String(axLayout.showticklabels);
+}
+
 
 // hard coded paths for zoom corners
 // uses the same sizing as cartesian, length is MINZOOM/2, width is 3px
