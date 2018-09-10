@@ -14,6 +14,7 @@ var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var tinycolor = require('tinycolor2');
+var svgTextUtils = require('../../lib/svg_text_utils');
 
 function performPlot(parcatsModels, graphDiv, layout, svg) {
 
@@ -269,6 +270,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
             /** @param {CategoryViewModel} catModel*/
             function(catModel) {
                 Drawing.font(d3.select(this), catModel.parcatsViewModel.categorylabelfont);
+                svgTextUtils.convertToTspans(d3.select(this), graphDiv);
             });
 
     // Initialize dimension label
@@ -1370,7 +1372,25 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
                     // Place label to the left of category
                     return -5;
                 }
-            });
+            })
+        .each(function(d) {
+            // Update attriubutes of <tspan> elements
+            var newX;
+            var newAnchor;
+            if(catInRightDim(d)) {
+                // Place label to the right of category
+                newX = d.width + 5;
+                newAnchor = 'start'
+            } else {
+                // Place label to the left of category
+                newX = -5;
+                newAnchor = 'end'
+            }
+            d3.select(this)
+                .selectAll('tspan')
+                .attr('x', newX)
+                .attr('text-anchor', newAnchor);
+        });
 
     // Update bands
     // Initialize color band rects
