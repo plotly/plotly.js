@@ -51,10 +51,12 @@ module.exports = function prepareRegl(gd, extensions) {
 
         if(success) {
             this.addEventListener('webglcontextlost', function(event) {
-                gd.emit('plotly_webglcontextlost', {
-                    event: event,
-                    layer: d.key
-                });
+                if(gd && gd.emit) {
+                    gd.emit('plotly_webglcontextlost', {
+                        event: event,
+                        layer: d.key
+                    });
+                }
             }, false);
         }
     });
