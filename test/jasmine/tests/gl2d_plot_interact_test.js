@@ -220,7 +220,7 @@ describe('Test gl plot side effects', function() {
 
         Plotly.plot(gd, _mock).then(function() {
             return new Promise(function(resolve, reject) {
-                gd.on('plotly_webglcontextlost', resolve);
+                gd.once('plotly_webglcontextlost', resolve);
                 setTimeout(reject, 10);
 
                 var ev = new window.WebGLContextEvent('webglcontextlost');
@@ -231,6 +231,20 @@ describe('Test gl plot side effects', function() {
         .then(function(eventData) {
             expect((eventData || {}).event).toBeDefined();
             expect((eventData || {}).layer).toBe('contextLayer');
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_webglcontextlost', resolve);
+                setTimeout(reject, 10);
+
+                var ev = new window.WebGLContextEvent('webglcontextlost');
+                var canvas = gd.querySelector('.gl-canvas-focus');
+                canvas.dispatchEvent(ev);
+            });
+        })
+        .then(function(eventData) {
+            expect((eventData || {}).event).toBeDefined();
+            expect((eventData || {}).layer).toBe('focusLayer');
         })
         .catch(failTest)
         .then(done);
