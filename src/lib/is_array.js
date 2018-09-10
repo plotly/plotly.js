@@ -40,7 +40,7 @@ function isArray1D(a) {
     return !isArrayOrTypedArray(a[0]);
 }
 
-function isPrimitiveTypedArrayRepr(a) {
+function isTypedArrayEncoding(a) {
     return (Lib.isPlainObject(a) &&
         a.hasOwnProperty('dtype') && a.hasOwnProperty('value'));
 }
@@ -49,5 +49,5 @@ module.exports = {
     isTypedArray: isTypedArray,
     isArrayOrTypedArray: isArrayOrTypedArray,
     isArray1D: isArray1D,
-    isPrimitiveTypedArrayRepr: isPrimitiveTypedArrayRepr
+    isTypedArrayEncoding: isTypedArrayEncoding
 };

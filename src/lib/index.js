@@ -31,7 +31,7 @@ var isArrayModule = require('./is_array');
 lib.isTypedArray = isArrayModule.isTypedArray;
 lib.isArrayOrTypedArray = isArrayModule.isArrayOrTypedArray;
 lib.isArray1D = isArrayModule.isArray1D;
-lib.isPrimitiveTypedArrayRepr = isArrayModule.isPrimitiveTypedArrayRepr;
+lib.isTypedArrayEncoding = isArrayModule.isTypedArrayEncoding;
 
 var coerceModule = require('./coerce');
 lib.valObjectMeta = coerceModule.valObjectMeta;

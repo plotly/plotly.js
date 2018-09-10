@@ -2157,57 +2157,82 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     });
 };
 
+
 /**
- * Convert a primitive TypedArray representation object into a TypedArray
- * @param {object} v: Object with `dtype` and `data` properties that
- * represens a TypedArray.
+ * Create a mapping from dtype values to TypedArray types. A mapping is only
+ * added for TypedArray types supported by the current browser
+ */
+var dtypeStringToTypedarrayType = {};
+if(typeof Int8Array !== 'undefined') {
+    dtypeStringToTypedarrayType.int8 = Int8Array;
+}
+if(typeof Uint8Array !== 'undefined') {
+    dtypeStringToTypedarrayType.uint8 = Uint8Array;
+}
+if(typeof Uint8ClampedArray !== 'undefined') {
+    dtypeStringToTypedarrayType.uint8_clamped = Uint8ClampedArray;
+}
+if(typeof Int16Array !== 'undefined') {
+    dtypeStringToTypedarrayType.int16 = Int16Array;
+}
+if(typeof Uint16Array !== 'undefined') {
+    dtypeStringToTypedarrayType.uint16 = Uint16Array;
+}
+if(typeof Int32Array !== 'undefined') {
+    dtypeStringToTypedarrayType.int32 = Int32Array;
+}
+if(typeof Uint32Array !== 'undefined') {
+    dtypeStringToTypedarrayType.uint32 = Uint32Array;
+}
+if(typeof Float32Array !== 'undefined') {
+    dtypeStringToTypedarrayType.float32 = Float32Array;
+}
+if(typeof Float64Array !== 'undefined') {
+    dtypeStringToTypedarrayType.float64 = Float64Array;
+}
+
+/**
+ * Convert a TypedArray encoding object into a TypedArray
+ * @param {object} v: Object with `dtype` and `value` properties that
+ * represents a TypedArray.
  *
  * @returns {TypedArray}
  */
-var dtypeStringToTypedarrayType = {
-    int8: Int8Array,
-    int16: Int16Array,
-    int32: Int32Array,
-    uint8: Uint8Array,
-    uint8_clamped: Uint8ClampedArray,
-    uint16: Uint16Array,
-    uint32: Uint32Array,
-    float32: Float32Array,
-    float64: Float64Array
-};
+function decodeTypedArray(v) {
 
-function primitiveTypedArrayReprToTypedArray(v) {
-    // v has dtype and data properties
-
-    // Get TypedArray constructor type
-    var TypeArrayType = dtypeStringToTypedarrayType[v.dtype];
-
-    // Process data
     var coercedV;
     var value = v.value;
-    if(value instanceof ArrayBuffer) {
-        // value is an ArrayBuffer
-        coercedV = new TypeArrayType(value);
-    } else if(value.constructor === DataView) {
-        // value has a buffer property, where the buffer is an ArrayBuffer
-        coercedV = new TypeArrayType(value.buffer);
-    } else if(Array.isArray(value)) {
-        // value is a primitive array
-        coercedV = new TypeArrayType(value);
-    } else if(typeof value === 'string' ||
-        value instanceof String) {
-        // value is a base64 encoded string
-        var buffer = b64.decode(value);
-        coercedV = new TypeArrayType(buffer);
+    var TypeArrayType = dtypeStringToTypedarrayType[v.dtype];
+
+    if(TypeArrayType) {
+        if(value instanceof ArrayBuffer) {
+            // value is an ArrayBuffer
+            coercedV = new TypeArrayType(value);
+        } else if(value.constructor === DataView) {
+            // value has a buffer property, where the buffer is an ArrayBuffer
+            coercedV = new TypeArrayType(value.buffer);
+        } else if(Array.isArray(value)) {
+            // value is a primitive array
+            coercedV = new TypeArrayType(value);
+        } else if(typeof value === 'string' ||
+            value instanceof String) {
+            // value is a base64 encoded string
+            var buffer = b64.decode(value);
+            coercedV = new TypeArrayType(buffer);
+        }
+    } else {
+        // Either v.dtype was an invalid array type, or this browser doesn't
+        // support this typed array type.
     }
     return coercedV;
 }
 
+/**
+ * Recursive helper function to perform decoding
+ */
 function performDecode(v) {
-    if(Lib.isPrimitiveTypedArrayRepr(v)) {
-        return primitiveTypedArrayReprToTypedArray(v);
-    } else if(Lib.isTypedArray(v)) {
-        return v;
+    if(Lib.isTypedArrayEncoding(v)) {
+        return decodeTypedArray(v);
     } else if(Array.isArray(v)) {
         return v.map(performDecode);
     } else if(Lib.isPlainObject(v)) {
@@ -2225,7 +2250,8 @@ function performDecode(v) {
 
 /**
  * Plotly.decode:
- * Import an object or array into... TODO
+ * Recursively decode an object or array into a form supported by Plotly.js.
+ *
  * @param v
  * @returns {object}
  */
