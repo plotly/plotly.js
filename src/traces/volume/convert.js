@@ -21,8 +21,8 @@
     for (var z=0; z<depth; z++)
     for (var y=0; y<height; y++)
     for (var x=0; x<width; x++) {
-        xs.push(x/width);
-        ys.push(y/height);
+        xs.push(2*x/width);
+        ys.push(3*y/height);
         zs.push(z/depth);
         var value = Math.pow(Math.abs((10000 + (0.5+Math.random())*500 * (
             Math.sin(2 * 2*Math.PI*(z/depth-0.5)) +
@@ -54,14 +54,9 @@
 
       opacity: 0.05,
 
-      colorscale: 'Portland', opacityscale: opacityscale
-    }], {
-      scene: {
-        xaxis: {range: [0, 1]},
-        yaxis: {range: [0, 1]},
-        zaxis: {range: [0, 1]}
-      }
-    })
+      colorscale: 'Portland',
+      opacityscale: opacityscale
+    }])
 */
 'use strict';
 
@@ -80,6 +75,9 @@ function Volume(scene, uid) {
 var proto = Volume.prototype;
 
 proto.handlePick = function(selection) {
+    // TODO
+    // Raymarch into the object volume to find a voxel with intensity higher than a user-definable limit.
+    //
     if(selection.object === this.mesh) {
         var selectIndex = selection.index = selection.data.index;
 
@@ -91,10 +89,12 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.text;
+        selection.textLabel = "value: " + selection.data.intensity.toPrecision(3);
+
         if(Array.isArray(text) && text[selectIndex] !== undefined) {
-            selection.textLabel = text[selectIndex];
+            selection.textLabel = "<br>" + text[selectIndex];
         } else if(text) {
-            selection.textLabel = text;
+            selection.textLabel = "<br>" + text;
         }
 
         return true;
