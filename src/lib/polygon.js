@@ -31,12 +31,6 @@ var polygon = module.exports = {};
  *          returns boolean: is pt inside the polygon (including on its edges)
  */
 polygon.tester = function tester(ptsIn) {
-
-    // Throw an error if any code tries to pass this no
-    // longer supported argument shape. The local multitester became
-    // obsolete when introducing click-to-select in PR #2944.
-    if(Array.isArray(ptsIn[0][0])) throw new Error('multitester called!');
-
     var pts = ptsIn.slice(),
         xmin = pts[0][0],
         xmax = xmin,
