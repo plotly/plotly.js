@@ -10,7 +10,7 @@
 
 var Registry = require('../../registry');
 
-function calculateAxisErrors(data, params, scaleFactor) {
+function calculateAxisErrors(data, params, scaleFactor, axis, calendar) {
     if(!params || !params.visible) return null;
 
     var computeError = Registry.getComponentMethod('errorbars', 'makeComputeError')(params);
@@ -19,9 +19,10 @@ function calculateAxisErrors(data, params, scaleFactor) {
     for(var i = 0; i < data.length; i++) {
         var errors = computeError(+data[i], i);
 
+        var point = axis.d2l(data[i], 0, calendar) * scaleFactor; // A bit wasteful
         result[i] = [
-            -errors[0] * scaleFactor,
-            errors[1] * scaleFactor
+            (axis.d2l(data[i] - errors[0], 0, calendar) * scaleFactor) - point || -point,
+            (axis.d2l(data[i] + errors[1], 0, calendar) * scaleFactor) - point || -point
         ];
     }
 
@@ -35,11 +36,11 @@ function dataLength(array) {
     return 0;
 }
 
-function calculateErrors(data, scaleFactor) {
+function calculateErrors(data, scaleFactor, sceneLayout) {
     var errors = [
-        calculateAxisErrors(data.x, data.error_x, scaleFactor[0]),
-        calculateAxisErrors(data.y, data.error_y, scaleFactor[1]),
-        calculateAxisErrors(data.z, data.error_z, scaleFactor[2])
+        calculateAxisErrors(data.x, data.error_x, scaleFactor[0], sceneLayout.xaxis, data.xcalendar),
+        calculateAxisErrors(data.y, data.error_y, scaleFactor[1], sceneLayout.yaxis, data.ycalendar),
+        calculateAxisErrors(data.z, data.error_z, scaleFactor[2], sceneLayout.zaxis, data.zcalendar)
     ];
 
     var n = dataLength(errors);
