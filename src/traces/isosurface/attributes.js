@@ -21,7 +21,7 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the x coordinates of the isosurface'
+            'Sets the x coordinates of the volume data'
         ].join(' ')
     },
     y: {
@@ -29,7 +29,7 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the y coordinates of the isosurface'
+            'Sets the y coordinates of the volume data'
         ].join(' ')
     },
     z: {
@@ -37,7 +37,7 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the z coordinates of the isosurface'
+            'Sets the z coordinates of the volume data'
         ].join(' ')
     },
 
@@ -45,73 +45,77 @@ var attrs = {
         valType: 'data_array',
         role: 'info',
         editType: 'calc',
-        description: 'Sets the intensity values of the isosurface.'
+        description: 'Sets the intensity values of the volume data.'
     },
 
     isomin: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
-        description: 'Sets the minimum iso bound of the isosurface.'
+        description: 'Sets the minimum intensity bound of the isosurface.'
     },
 
     isomax: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
-        description: 'Sets the maximum iso bound of the isosurface.'
+        description: 'Sets the maximum intensity bound of the isosurface.'
     },
 
     xmin: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the minimum x bound of the isosurface.'
     },
 
     xmax: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the maximum x bound of the isosurface.'
     },
 
     ymin: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the minimum y bound of the isosurface.'
     },
 
     ymax: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the maximum y bound of the isosurface.'
     },
 
     zmin: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the minimum z bound of the isosurface.'
     },
 
     zmax: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the maximum z bound of the isosurface.'
     },
 
     smoothnormals: {
         valType: 'boolean',
+        role: 'info',
         editType: 'calc',
-        description: ''
-    },
-
-    singlemesh: {
-        valType: 'boolean',
-        editType: 'calc',
-        description: ''
+        description: 'Smooth normals of the isosurface (default: true)'
     },
 
     isocaps: {
         valType: 'boolean',
+        role: 'info',
         editType: 'calc',
-        description: ''
+        description: 'Whether to generate isocaps for the isosurface (default: true)'
     },
 
     text: {
