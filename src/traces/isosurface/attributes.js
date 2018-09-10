@@ -108,14 +108,25 @@ var attrs = {
         valType: 'boolean',
         role: 'info',
         editType: 'calc',
-        description: 'Smooth normals of the isosurface (default: true)'
+        description: 'Smooth normals of the isosurface. By default this is set to true.'
     },
 
     isocaps: {
         valType: 'boolean',
         role: 'info',
         editType: 'calc',
-        description: 'Whether to generate isocaps for the isosurface (default: true)'
+        description: 'Whether to generate isocaps for the isosurface. By default this is set to true.'
+    },
+
+    color: {
+        valType: 'color',
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Sets the color of the isosurface.',
+            'By default the isosurface color is computed from the colorscale.',
+            'Isocaps still use the colorscale colors even with this set.'
+        ].join(" ")
     },
 
     text: {

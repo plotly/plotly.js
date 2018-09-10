@@ -33,11 +33,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
+    coerce('color');
+
     coerce('isomin');
     coerce('isomax');
     coerce('smoothnormals');
     coerce('isocaps');
-    // coerce('singlemesh');
 
     coerce('xmin');
     coerce('ymin');

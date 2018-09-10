@@ -46,10 +46,8 @@
       cmin: 1500,
       cmax: 2000,
 
-      smoothnormals:  true,
+      smoothnormals: true,
       isocaps: true,
-
-      singlemesh: true,
 
       colorscale: 'Portland'
     }])
@@ -61,6 +59,7 @@ var isosurfacePlot = require('gl-isosurface3d');
 
 var simpleMap = require('../../lib').simpleMap;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
+var str2RgbaArray = require('../../lib/str2rgbarray');
 
 function Isosurface(scene, uid) {
     this.scene = scene;
@@ -164,13 +163,24 @@ function convert(scene, trace) {
 
     isosurfaceOpts.values = trace.value;
 
-    isosurfaceOpts.colormap = parseColorScale(trace.colorscale);
-    // isosurfaceOpts.capsColormap = parseColorScale(trace.capscolorscale);
+    if (trace.colorscale) {
+        isosurfaceOpts.colormap = parseColorScale(trace.colorscale);
+    }
+    if (trace.color) {
+        isosurfaceOpts.capsColormap = isosurfaceOpts.colormap;
+        var color = str2RgbaArray(trace.color).map(function(c) { return c * 255; });
+        isosurfaceOpts.colormap = [{index: 0, rgb: color}, {index: 1, rgb: color}];
+        if (!isosurfaceOpts.capsColormap) {
+            isosurfaceOpts.capsColormap = isosurfaceOpts.colormap;
+        }
+    }
     isosurfaceOpts.vertexIntensityBounds = [trace.cmin, trace.cmax];
     isosurfaceOpts.isoBounds = [trace.isomin, trace.isomax];
 
     isosurfaceOpts.isoCaps = trace.isocaps;
-    isosurfaceOpts.singleMesh = trace.singlemesh === undefined ? true : trace.singlemesh;
+    isosurfaceOpts.singleMesh = false; //trace.singlemesh === undefined ? true : trace.singlemesh;
+
+    isosurfaceOpts.smoothNormals = trace.smoothnormals === undefined ? true : trace.smoothnormals;
 
     var bounds = [[0, 0, 0], isosurfaceOpts.dimensions.slice()];
 
@@ -225,6 +235,7 @@ function createIsosurfaceTrace(scene, data) {
 
     var meshData = convert(scene, data);
     var mesh = isosurfacePlot.createTriMesh(gl, meshData);
+    var capMesh = isosurfacePlot.createTriMesh(gl, meshData.caps);
     var trace = data;
     var xbnds = toDataCoords(scene, trace._xbnds, 'xaxis');
     var ybnds = toDataCoords(scene, trace._ybnds, 'yaxis');
@@ -240,7 +251,16 @@ function createIsosurfaceTrace(scene, data) {
     isosurface.meshData = meshData;
     mesh._trace = isosurface;
 
+    var caps = new Isosurface(scene, data.uid);
+    caps.mesh = capMesh;
+    caps.data = data;
+    caps.meshData = meshData;
+    capMesh._trace = caps;
+
+    isosurface.caps = caps;
+
     scene.glplot.add(mesh);
+    scene.glplot.add(capMesh);
 
     return isosurface;
 }
