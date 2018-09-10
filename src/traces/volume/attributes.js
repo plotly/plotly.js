@@ -50,36 +50,42 @@ var attrs = {
 
     opacityscale: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the opacity scale of the volume, which opacity to use for which intensity. Array of 256 values in 0..1 range.'
     },
 
     imin: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the minimum intensity bound of the volume.'
     },
 
     imax: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the maximum intensity bound of the volume.'
     },
 
     opacity: {
         valType: 'number',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the opacity of the volume.'
     },
 
     boundmin: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc',
         description: ''
     },
 
     boundmax: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc',
         description: ''
     },
