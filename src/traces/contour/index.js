@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,7 +14,7 @@ var Contour = {};
 Contour.attributes = require('./attributes');
 Contour.supplyDefaults = require('./defaults');
 Contour.calc = require('./calc');
-Contour.plot = require('./plot');
+Contour.plot = require('./plot').plot;
 Contour.style = require('./style');
 Contour.colorbar = require('./colorbar');
 Contour.hoverPoints = require('./hover');
@@ -22,7 +22,7 @@ Contour.hoverPoints = require('./hover');
 Contour.moduleType = 'trace';
 Contour.name = 'contour';
 Contour.basePlotModule = require('../../plots/cartesian');
-Contour.categories = ['cartesian', '2dMap', 'contour'];
+Contour.categories = ['cartesian', 'svg', '2dMap', 'contour', 'showLegend'];
 Contour.meta = {
     description: [
         'The data from which contour lines are computed is set in `z`.',

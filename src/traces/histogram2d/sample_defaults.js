@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,8 +14,8 @@ var handleBinDefaults = require('../histogram/bin_defaults');
 
 
 module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
-    var x = coerce('x'),
-        y = coerce('y');
+    var x = coerce('x');
+    var y = coerce('y');
 
     // we could try to accept x0 and dx, etc...
     // but that's a pretty weird use case.
@@ -24,6 +24,8 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout
         traceOut.visible = false;
         return;
     }
+
+    traceOut._length = Math.min(x.length, y.length);
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);

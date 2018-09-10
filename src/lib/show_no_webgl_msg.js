@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -21,7 +21,7 @@ var noop = function() {};
  * Expects 'scene' to have property 'container'
  *
  */
-module.exports = function showWebGlMsg(scene) {
+module.exports = function showNoWebGlMsg(scene) {
     for(var prop in scene) {
         if(typeof scene[prop] === 'function') scene[prop] = noop;
     }
@@ -31,15 +31,30 @@ module.exports = function showWebGlMsg(scene) {
     };
 
     var div = document.createElement('div');
-    div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
+    div.className = 'no-webgl';
     div.style.cursor = 'pointer';
     div.style.fontSize = '24px';
     div.style.color = Color.defaults[0];
+    div.style.position = 'absolute';
+    div.style.left = div.style.top = '0px';
+    div.style.width = div.style.height = '100%';
+    div.style['background-color'] = Color.lightLine;
+    div.style['z-index'] = 30;
 
+    var p = document.createElement('p');
+    p.textContent = 'WebGL is not supported by your browser - visit https://get.webgl.org for more info';
+    p.style.position = 'relative';
+    p.style.top = '50%';
+    p.style.left = '50%';
+    p.style.height = '30%';
+    p.style.width = '50%';
+    p.style.margin = '-15% 0 0 -25%';
+
+    div.appendChild(p);
     scene.container.appendChild(div);
     scene.container.style.background = '#FFFFFF';
     scene.container.onclick = function() {
-        window.open('http://get.webgl.org');
+        window.open('https://get.webgl.org');
     };
 
     // return before setting up camera and onrender methods

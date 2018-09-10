@@ -20,6 +20,11 @@
         ],
         "visible": true
       },
+      "error_x": {
+        "type": "data",
+        "symmetric": false,
+        "visible": true
+      },
       "type": "scatter"
     }
   ]

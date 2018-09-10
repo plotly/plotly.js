@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,8 +16,11 @@ Choropleth.supplyDefaults = require('./defaults');
 Choropleth.colorbar = require('../heatmap/colorbar');
 Choropleth.calc = require('./calc');
 Choropleth.plot = require('./plot');
+Choropleth.style = require('./style').style;
+Choropleth.styleOnSelect = require('./style').styleOnSelect;
 Choropleth.hoverPoints = require('./hover');
 Choropleth.eventData = require('./event_data');
+Choropleth.selectPoints = require('./select');
 
 Choropleth.moduleType = 'trace';
 Choropleth.name = 'choropleth';

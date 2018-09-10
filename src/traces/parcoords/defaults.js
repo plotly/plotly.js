@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,92 +9,96 @@
 'use strict';
 
 var Lib = require('../../lib');
-var attributes = require('./attributes');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
+var handleDomainDefaults = require('../../plots/domain').defaults;
+var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+
+var attributes = require('./attributes');
+var axisBrush = require('./axisbrush');
 var maxDimensionCount = require('./constants').maxDimensionCount;
+var mergeLength = require('./merge_length');
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
+    var lineColor = coerce('line.color', defaultColor);
 
-    coerce('line.color', defaultColor);
-
-    if(hasColorscale(traceIn, 'line') && Lib.isArray(traceIn.line.color)) {
-        coerce('line.colorscale');
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
+    if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
+        if(lineColor.length) {
+            coerce('line.colorscale');
+            colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
+            // TODO: I think it would be better to keep showing lines beyond the last line color
+            // but I'm not sure what color to give these lines - probably black or white
+            // depending on the background color?
+            return lineColor.length;
+        }
+        else {
+            traceOut.line.color = defaultColor;
+        }
     }
-    else {
-        coerce('line.color', defaultColor);
-    }
+    return Infinity;
 }
 
-function dimensionsDefaults(traceIn, traceOut) {
-    var dimensionsIn = traceIn.dimensions || [],
-        dimensionsOut = traceOut.dimensions = [];
-
-    var dimensionIn, dimensionOut, i;
-    var commonLength = Infinity;
-
-    if(dimensionsIn.length > maxDimensionCount) {
-        Lib.log('parcoords traces support up to ' + maxDimensionCount + ' dimensions at the moment');
-        dimensionsIn.splice(maxDimensionCount);
-    }
-
+function dimensionDefaults(dimensionIn, dimensionOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
 
-    for(i = 0; i < dimensionsIn.length; i++) {
-        dimensionIn = dimensionsIn[i];
-        dimensionOut = {};
-
-        if(!Lib.isPlainObject(dimensionIn)) {
-            continue;
-        }
-
-        var values = coerce('values');
-        var visible = coerce('visible', values.length > 0);
-
-        if(visible) {
-            coerce('label');
-            coerce('tickvals');
-            coerce('ticktext');
-            coerce('tickformat');
-            coerce('range');
-            coerce('constraintrange');
-
-            commonLength = Math.min(commonLength, dimensionOut.values.length);
-        }
-
-        dimensionOut._index = i;
-        dimensionsOut.push(dimensionOut);
+    var values = coerce('values');
+    var visible = coerce('visible');
+    if(!(values && values.length)) {
+        visible = dimensionOut.visible = false;
     }
 
-    if(isFinite(commonLength)) {
-        for(i = 0; i < dimensionsOut.length; i++) {
-            dimensionOut = dimensionsOut[i];
-            if(dimensionOut.visible && dimensionOut.values.length > commonLength) {
-                dimensionOut.values = dimensionOut.values.slice(0, commonLength);
-            }
+    if(visible) {
+        coerce('label');
+        coerce('tickvals');
+        coerce('ticktext');
+        coerce('tickformat');
+        coerce('range');
+
+        coerce('multiselect');
+        var constraintRange = coerce('constraintrange');
+        if(constraintRange) {
+            dimensionOut.constraintrange = axisBrush.cleanRanges(constraintRange, dimensionOut);
         }
     }
-
-    return dimensionsOut;
 }
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var dimensions = dimensionsDefaults(traceIn, traceOut);
+    var dimensionsIn = traceIn.dimensions;
+    if(Array.isArray(dimensionsIn) && dimensionsIn.length > maxDimensionCount) {
+        Lib.log('parcoords traces support up to ' + maxDimensionCount + ' dimensions at the moment');
+        dimensionsIn.splice(maxDimensionCount);
+    }
 
-    handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
+        name: 'dimensions',
+        handleItemDefaults: dimensionDefaults
+    });
 
-    coerce('domain.x');
-    coerce('domain.y');
+    var len = handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+
+    handleDomainDefaults(traceOut, layout, coerce);
 
     if(!Array.isArray(dimensions) || !dimensions.length) {
         traceOut.visible = false;
     }
+
+    mergeLength(traceOut, dimensions, 'values', len);
+
+    // make default font size 10px (default is 12),
+    // scale linearly with global font size
+    var fontDflt = {
+        family: layout.font.family,
+        size: Math.round(layout.font.size / 1.2),
+        color: layout.font.color
+    };
+
+    Lib.coerceFont(coerce, 'labelfont', fontDflt);
+    Lib.coerceFont(coerce, 'tickfont', fontDflt);
+    Lib.coerceFont(coerce, 'rangefont', fontDflt);
 };

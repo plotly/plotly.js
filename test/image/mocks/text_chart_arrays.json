@@ -45,8 +45,7 @@
                 "Hover text\rB",
                 "Hover text\r\nC"
             ],
-            "type": "scatter",
-            "uid": "459c77"
+            "type": "scatter"
         },
         {
             "x": [
@@ -93,8 +92,7 @@
                 "Hover text H",
                 "Hover text I"
             ],
-            "type": "scatter",
-            "uid": "f8361c"
+            "type": "scatter"
         },
         {
             "x": [

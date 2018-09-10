@@ -56,6 +56,9 @@ header span{
   color: #fff;
   background-color: #4983EC;
 }
+.search-result__selected{
+  background-color: #DDDDEE;
+}
 #plots{
   overflow: scroll;
 }

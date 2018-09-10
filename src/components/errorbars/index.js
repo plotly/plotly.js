@@ -1,51 +1,61 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var errorBars = module.exports = {};
+var Lib = require('../../lib');
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-errorBars.attributes = require('./attributes');
+var attributes = require('./attributes');
 
-errorBars.supplyDefaults = require('./defaults');
+var xyAttrs = {
+    error_x: Lib.extendFlat({}, attributes),
+    error_y: Lib.extendFlat({}, attributes)
+};
+delete xyAttrs.error_x.copy_zstyle;
+delete xyAttrs.error_y.copy_zstyle;
+delete xyAttrs.error_y.copy_ystyle;
 
-errorBars.calc = require('./calc');
+var xyzAttrs = {
+    error_x: Lib.extendFlat({}, attributes),
+    error_y: Lib.extendFlat({}, attributes),
+    error_z: Lib.extendFlat({}, attributes)
+};
+delete xyzAttrs.error_x.copy_ystyle;
+delete xyzAttrs.error_y.copy_ystyle;
+delete xyzAttrs.error_z.copy_ystyle;
+delete xyzAttrs.error_z.copy_zstyle;
 
-errorBars.calcFromTrace = function(trace, layout) {
-    var x = trace.x || [],
-        y = trace.y || [],
-        len = x.length || y.length;
+module.exports = {
+    moduleType: 'component',
+    name: 'errorbars',
 
-    var calcdataMock = new Array(len);
+    schema: {
+        traces: {
+            scatter: xyAttrs,
+            bar: xyAttrs,
+            histogram: xyAttrs,
+            scatter3d: overrideAll(xyzAttrs, 'calc', 'nested'),
+            scattergl: overrideAll(xyAttrs, 'calc', 'nested')
+        }
+    },
 
-    for(var i = 0; i < len; i++) {
-        calcdataMock[i] = {
-            x: x[i],
-            y: y[i]
-        };
-    }
+    supplyDefaults: require('./defaults'),
 
-    calcdataMock[0].trace = trace;
+    calc: require('./calc'),
+    makeComputeError: require('./compute_error'),
 
-    errorBars.calc({
-        calcdata: [calcdataMock],
-        _fullLayout: layout
-    });
-
-    return calcdataMock;
+    plot: require('./plot'),
+    style: require('./style'),
+    hoverInfo: hoverInfo
 };
 
-errorBars.plot = require('./plot');
-
-errorBars.style = require('./style');
-
-errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
+function hoverInfo(calcPoint, trace, hoverPoint) {
     if((trace.error_y || {}).visible) {
         hoverPoint.yerr = calcPoint.yh - calcPoint.y;
         if(!trace.error_y.symmetric) hoverPoint.yerrneg = calcPoint.y - calcPoint.ys;
@@ -54,4 +64,4 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
         hoverPoint.xerr = calcPoint.xh - calcPoint.x;
         if(!trace.error_x.symmetric) hoverPoint.xerrneg = calcPoint.x - calcPoint.xs;
     }
-};
+}

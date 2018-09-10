@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,6 +15,7 @@ module.exports = {
         values: ['stack', 'group', 'overlay', 'relative'],
         dflt: 'group',
         role: 'info',
+        editType: 'calc',
         description: [
             'Determines how bars at the same location coordinate',
             'are displayed on the graph.',
@@ -32,11 +33,12 @@ module.exports = {
         values: ['', 'fraction', 'percent'],
         dflt: '',
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets the normalization for bar traces on the graph.',
-            'With *fraction*, the value of each bar is divide by the sum of the',
-            'values at the location coordinate.',
-            'With *percent*, the results form *fraction* are presented in percents.'
+            'With *fraction*, the value of each bar is divided by the sum of all',
+            'values at that location coordinate.',
+            '*percent* is the same but multiplied by 100 to show percentages.'
         ].join(' ')
     },
     bargap: {
@@ -44,6 +46,7 @@ module.exports = {
         min: 0,
         max: 1,
         role: 'style',
+        editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between bars of',
             'adjacent location coordinates.'
@@ -55,6 +58,7 @@ module.exports = {
         max: 1,
         dflt: 0,
         role: 'style',
+        editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between bars of',
             'the same location coordinate.'

@@ -190,12 +190,48 @@ describe('Test colorscale:', function() {
             expect(hasColorscale(trace, 'marker')).toBe(true);
             expect(hasColorscale(trace, 'marker.line')).toBe(true);
         });
+
+        it('should return true when marker color is a typed array with at least one non-NaN', function() {
+            trace = {
+                marker: {
+                    color: new Float32Array([1, 2, 3]),
+                    line: {
+                        color: new Float32Array([2, 3, 4])
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+
+            trace = {
+                marker: {
+                    color: new Float32Array([1, NaN, 3]),
+                    line: {
+                        color: new Float32Array([2, 3, NaN])
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+
+            trace = {
+                marker: {
+                    color: new Float32Array([NaN, undefined, 'not-a-number']),
+                    line: {
+                        color: new Float32Array(['not-a-number', NaN, undefined])
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(false);
+            expect(hasColorscale(trace, 'marker.line')).toBe(false);
+        });
     });
 
     describe('handleDefaults (heatmap-like version)', function() {
         var handleDefaults = Colorscale.handleDefaults,
             layout = {
-                font: Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font,
+                _dfltTitle: {colorbar: 'cb'}
             },
             opts = {prefix: '', cLetter: 'z'};
         var traceIn, traceOut;
@@ -265,7 +301,8 @@ describe('Test colorscale:', function() {
     describe('handleDefaults (scatter-like version)', function() {
         var handleDefaults = Colorscale.handleDefaults,
             layout = {
-                font: Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font,
+                _dfltTitle: {colorbar: 'cb'}
             },
             opts = {prefix: 'marker.', cLetter: 'c'};
         var traceIn, traceOut;
@@ -327,11 +364,24 @@ describe('Test colorscale:', function() {
                 type: 'heatmap',
                 z: [[0, -1.5], [-2, -10]],
                 autocolorscale: true,
-                _input: {}
+                _input: {autocolorscale: true}
             };
             z = [[0, -1.5], [-2, -10]];
             calcColorscale(trace, z, '', 'z');
             expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
+        });
+
+        it('should set autocolorscale to false if it wasn\'t explicitly set true in input', function() {
+            trace = {
+                type: 'heatmap',
+                z: [[0, -1.5], [-2, -10]],
+                autocolorscale: true,
+                _input: {}
+            };
+            z = [[0, -1.5], [-2, -10]];
+            calcColorscale(trace, z, '', 'z');
+            expect(trace.autocolorscale).toBe(false);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
         });
 
@@ -340,7 +390,7 @@ describe('Test colorscale:', function() {
                 type: 'heatmap',
                 z: [['a', 'b'], [-0.5, 'd']],
                 autocolorscale: true,
-                _input: {}
+                _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [-0.5, undefined]];
             calcColorscale(trace, z, '', 'z');
@@ -353,7 +403,7 @@ describe('Test colorscale:', function() {
                 type: 'heatmap',
                 z: [['a', 'b'], [0.5, 'd']],
                 autocolorscale: true,
-                _input: {}
+                _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [0.5, undefined]];
             calcColorscale(trace, z, '', 'z');
@@ -367,7 +417,7 @@ describe('Test colorscale:', function() {
                 z: [['a', 'b'], [0.5, 'd']],
                 autocolorscale: true,
                 reversescale: true,
-                _input: {}
+                _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [0.5, undefined]];
             calcColorscale(trace, z, '', 'z');

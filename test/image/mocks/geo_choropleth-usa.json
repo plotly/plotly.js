@@ -3,7 +3,6 @@
         {
             "autocolorscale": false,
             "zmax": 16472.88,
-            "uid": "dc8e03",
             "colorscale": [
                 [
                     0,
@@ -30,7 +29,6 @@
                     "rgb(84,39,143)"
                 ]
             ],
-            "zsrc": "etpinard:4827:a49755",
             "text": [
                 "Alabama<br>--<br>Beef: 34.4<br>Pork: 10.6<br>Poultry: 481.0<br>Dairy: 4.06<br>--<br>Fruits: 25.11<br>Veggies: 14.33<br>--<br>Wheat: 70.0<br>Corn: 34.9<br>Cotton: 317.61",
                 "Alaska<br>--<br>Beef: 0.2<br>Pork: 0.1<br>Poultry: 0.0<br>Dairy: 0.19<br>--<br>Fruits: 0.0<br>Veggies: 1.56<br>--<br>Wheat: 0.0<br>Corn: 0.0<br>Cotton: 0.0",
@@ -136,7 +134,6 @@
                 "WI",
                 "WY"
             ],
-            "textsrc": "etpinard:4827:dac8a8",
             "colorbar": {
                 "title": "Millions USD"
             },

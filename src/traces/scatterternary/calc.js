@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,45 +11,44 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Axes = require('../../plots/cartesian/axes');
-
-var subTypes = require('../scatter/subtypes');
 var calcColorscale = require('../scatter/colorscale_calc');
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
+var calcSelection = require('../scatter/calc_selection');
+var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 
 var dataArrays = ['a', 'b', 'c'];
 var arraysToFill = {a: ['b', 'c'], b: ['a', 'c'], c: ['a', 'b']};
 
-
 module.exports = function calc(gd, trace) {
-    var ternary = gd._fullLayout[trace.subplot],
-        displaySum = ternary.sum,
-        normSum = trace.sum || displaySum;
+    var ternary = gd._fullLayout[trace.subplot];
+    var displaySum = ternary.sum;
+    var normSum = trace.sum || displaySum;
+    var arrays = {a: trace.a, b: trace.b, c: trace.c};
 
     var i, j, dataArray, newArray, fillArray1, fillArray2;
 
     // fill in one missing component
     for(i = 0; i < dataArrays.length; i++) {
         dataArray = dataArrays[i];
-        if(trace[dataArray]) continue;
+        if(arrays[dataArray]) continue;
 
-        fillArray1 = trace[arraysToFill[dataArray][0]];
-        fillArray2 = trace[arraysToFill[dataArray][1]];
+        fillArray1 = arrays[arraysToFill[dataArray][0]];
+        fillArray2 = arrays[arraysToFill[dataArray][1]];
         newArray = new Array(fillArray1.length);
         for(j = 0; j < fillArray1.length; j++) {
             newArray[j] = normSum - fillArray1[j] - fillArray2[j];
         }
-        trace[dataArray] = newArray;
+        arrays[dataArray] = newArray;
     }
 
     // make the calcdata array
-    var serieslen = trace.a.length;
+    var serieslen = trace._length;
     var cd = new Array(serieslen);
     var a, b, c, norm, x, y;
     for(i = 0; i < serieslen; i++) {
-        a = trace.a[i];
-        b = trace.b[i];
-        c = trace.c[i];
+        a = arrays.a[i];
+        b = arrays.b[i];
+        c = arrays.c[i];
         if(isNumeric(a) && isNumeric(b) && isNumeric(c)) {
             a = +a;
             b = +b;
@@ -72,24 +71,10 @@ module.exports = function calc(gd, trace) {
         else cd[i] = {x: false, y: false};
     }
 
-    // fill in some extras
-    var marker, s;
-    if(subTypes.hasMarkers(trace)) {
-        // Treat size like x or y arrays --- Run d2c
-        // this needs to go before ppad computation
-        marker = trace.marker;
-        s = marker.size;
-
-        if(Array.isArray(s)) {
-            var ax = {type: 'linear'};
-            Axes.setConvert(ax);
-            s = ax.makeCalcdata(trace.marker, 'size');
-            if(s.length > serieslen) s.splice(serieslen, s.length - serieslen);
-        }
-    }
-
+    calcMarkerSize(trace, serieslen);
     calcColorscale(trace);
     arraysToCalcdata(cd, trace);
+    calcSelection(cd, trace);
 
     return cd;
 };

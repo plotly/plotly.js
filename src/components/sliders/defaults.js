@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,12 +19,10 @@ var stepAttrs = attributes.steps;
 
 
 module.exports = function slidersDefaults(layoutIn, layoutOut) {
-    var opts = {
+    handleArrayContainerDefaults(layoutIn, layoutOut, {
         name: name,
         handleItemDefaults: sliderDefaults
-    };
-
-    handleArrayContainerDefaults(layoutIn, layoutOut, opts);
+    });
 };
 
 function sliderDefaults(sliderIn, sliderOut, layoutOut) {
@@ -33,12 +31,27 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
         return Lib.coerce(sliderIn, sliderOut, attributes, attr, dflt);
     }
 
-    var steps = stepsDefaults(sliderIn, sliderOut);
+    var steps = handleArrayContainerDefaults(sliderIn, sliderOut, {
+        name: 'steps',
+        handleItemDefaults: stepDefaults
+    });
 
-    var visible = coerce('visible', steps.length > 0);
+    var stepCount = 0;
+    for(var i = 0; i < steps.length; i++) {
+        if(steps[i].visible) stepCount++;
+    }
+
+    var visible;
+    // If it has fewer than two options, it's not really a slider
+    if(stepCount < 2) visible = sliderOut.visible = false;
+    else visible = coerce('visible');
     if(!visible) return;
 
-    coerce('active');
+    sliderOut._stepCount = stepCount;
+    var visSteps = sliderOut._visibleSteps = Lib.filterVisible(steps);
+
+    var active = coerce('active');
+    if(!(steps[active] || {}).visible) sliderOut.active = visSteps[0]._index;
 
     coerce('x');
     coerce('y');
@@ -81,31 +94,22 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('minorticklen');
 }
 
-function stepsDefaults(sliderIn, sliderOut) {
-    var valuesIn = sliderIn.steps || [],
-        valuesOut = sliderOut.steps = [];
-
-    var valueIn, valueOut;
-
+function stepDefaults(valueIn, valueOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(valueIn, valueOut, stepAttrs, attr, dflt);
     }
 
-    for(var i = 0; i < valuesIn.length; i++) {
-        valueIn = valuesIn[i];
-        valueOut = {};
+    var visible;
+    if(valueIn.method !== 'skip' && !Array.isArray(valueIn.args)) {
+        visible = valueOut.visible = false;
+    }
+    else visible = coerce('visible');
 
-        if(!Lib.isPlainObject(valueIn) || !Array.isArray(valueIn.args)) {
-            continue;
-        }
-
+    if(visible) {
         coerce('method');
         coerce('args');
-        coerce('label', 'step-' + i);
-        coerce('value', valueOut.label);
-
-        valuesOut.push(valueOut);
+        var label = coerce('label', 'step-' + valueOut._index);
+        coerce('value', label);
+        coerce('execute');
     }
-
-    return valuesOut;
 }

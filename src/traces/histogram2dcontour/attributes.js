@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,7 +15,7 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat({
     x: histogram2dAttrs.x,
     y: histogram2dAttrs.y,
     z: histogram2dAttrs.z,
@@ -33,8 +33,12 @@ module.exports = extendFlat({}, {
     autocontour: contourAttrs.autocontour,
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
-    line: contourAttrs.line
+    line: contourAttrs.line,
+    zhoverformat: histogram2dAttrs.zhoverformat
 },
-    colorscaleAttrs,
+    colorscaleAttrs('', {
+        cLetter: 'z',
+        editTypeOverride: 'calc'
+    }),
     { colorbar: colorbarAttrs }
 );

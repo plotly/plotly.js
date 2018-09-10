@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,13 +8,21 @@
 
 'use strict';
 
+var Lib = require('../../lib');
+var attrs = require('./attributes');
+var oppAxisAttrs = require('./oppaxis_attributes');
+
 module.exports = {
     moduleType: 'component',
     name: 'rangeslider',
 
     schema: {
-        layout: {
-            'xaxis.rangeslider': require('./attributes')
+        subplots: {
+            xaxis: {
+                rangeslider: Lib.extendFlat({}, attrs, {
+                    yaxis: oppAxisAttrs
+                })
+            }
         }
     },
 

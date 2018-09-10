@@ -1,21 +1,19 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Registry = require('../../registry');
 var Drawing = require('../../components/drawing');
 var Axes = require('./axes');
-var axisRegex = /((x|y)([2-9]|[1-9][0-9]+)?)axis$/;
+var axisRegex = require('./constants').attrRegex;
 
 module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
@@ -29,8 +27,8 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             attrList = ai.split('.');
             match = attrList[0].match(axisRegex);
             if(match) {
-                var axisLetter = match[1];
-                var axisName = axisLetter + 'axis';
+                var axisLetter = ai.charAt(0);
+                var axisName = attrList[0];
                 axis = fullLayout[axisName];
                 update = {};
 
@@ -100,7 +98,23 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     var updatedAxisIds = Object.keys(updates);
     var affectedSubplots = computeAffectedSubplots(fullLayout, updatedAxisIds, updates);
 
+    function updateLayoutObjs() {
+        function redrawObjs(objArray, method, shortCircuit) {
+            for(var i = 0; i < objArray.length; i++) {
+                method(gd, i);
+
+                // once is enough for images (which doesn't use the `i` arg anyway)
+                if(shortCircuit) return;
+            }
+        }
+
+        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
+        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
+        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+    }
+
     if(!affectedSubplots.length) {
+        updateLayoutObjs();
         return false;
     }
 
@@ -111,10 +125,10 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         activeAxIds = [xa._id, ya._id];
 
         for(i = 0; i < activeAxIds.length; i++) {
-            Axes.doTicks(gd, activeAxIds[i], true);
+            Axes.doTicksSingle(gd, activeAxIds[i], true);
         }
 
-        function redrawObjs(objArray, method) {
+        function redrawObjs(objArray, method, shortCircuit) {
             for(i = 0; i < objArray.length; i++) {
                 var obji = objArray[i];
 
@@ -122,35 +136,40 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
                     (activeAxIds.indexOf(obji.yref) !== -1)) {
                     method(gd, i);
                 }
+
+                // once is enough for images (which doesn't use the `i` arg anyway)
+                if(shortCircuit) return;
             }
         }
 
-        // annotations and shapes 'draw' method is slow,
-        // use the finer-grained 'drawOne' method instead
-
         redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
         redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'));
+        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
     }
 
     function unsetSubplotTransform(subplot) {
         var xa2 = subplot.xaxis;
         var ya2 = subplot.yaxis;
 
-        fullLayout._defs.selectAll('#' + subplot.clipId)
+        fullLayout._defs.select('#' + subplot.clipId + '> rect')
             .call(Drawing.setTranslate, 0, 0)
             .call(Drawing.setScale, 1, 1);
 
         subplot.plot
             .call(Drawing.setTranslate, xa2._offset, ya2._offset)
-            .call(Drawing.setScale, 1, 1)
+            .call(Drawing.setScale, 1, 1);
 
-            // This is specifically directed at scatter traces, applying an inverse
-            // scale to individual points to counteract the scale of the trace
-            // as a whole:
-            .selectAll('.points').selectAll('.point')
-                .call(Drawing.setPointGroupScale, 1, 1);
+        var traceGroups = subplot.plot.selectAll('.scatterlayer .trace');
 
+        // This is specifically directed at scatter traces, applying an inverse
+        // scale to individual points to counteract the scale of the trace
+        // as a whole:
+        traceGroups.selectAll('.point')
+            .call(Drawing.setPointGroupScale, 1, 1);
+        traceGroups.selectAll('.textpoint')
+            .call(Drawing.setTextPointsScale, 1, 1);
+        traceGroups
+            .call(Drawing.hideOutsideRangePoints, subplot);
     }
 
     function updateSubplot(subplot, progress) {
@@ -196,7 +215,6 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 
         ticksAndAnnotations(subplot.xaxis, subplot.yaxis);
 
-
         var xa2 = subplot.xaxis;
         var ya2 = subplot.yaxis;
 
@@ -215,20 +233,18 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         var plotDx = xa2._offset - fracDx,
             plotDy = ya2._offset - fracDy;
 
-        fullLayout._defs.selectAll('#' + subplot.clipId)
+        subplot.clipRect
             .call(Drawing.setTranslate, clipDx, clipDy)
             .call(Drawing.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
         subplot.plot
             .call(Drawing.setTranslate, plotDx, plotDy)
-            .call(Drawing.setScale, xScaleFactor, yScaleFactor)
+            .call(Drawing.setScale, xScaleFactor, yScaleFactor);
 
-            // This is specifically directed at scatter traces, applying an inverse
-            // scale to individual points to counteract the scale of the trace
-            // as a whole:
-            .selectAll('.points').selectAll('.point')
-                .call(Drawing.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
-
+        // apply an inverse scale to individual points to counteract
+        // the scale of the trace group.
+        Drawing.setPointGroupScale(subplot.zoomScalePts, 1 / xScaleFactor, 1 / yScaleFactor);
+        Drawing.setTextPointsScale(subplot.zoomScaleTxt, 1 / xScaleFactor, 1 / yScaleFactor);
     }
 
     var onComplete;
@@ -252,7 +268,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         // Signal that this transition has completed:
         onComplete && onComplete();
 
-        return Plotly.relayout(gd, aobj).then(function() {
+        return Registry.call('relayout', gd, aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }
@@ -269,7 +285,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             axi.range = axi._r.slice();
         }
 
-        return Plotly.relayout(gd, aobj).then(function() {
+        return Registry.call('relayout', gd, aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }

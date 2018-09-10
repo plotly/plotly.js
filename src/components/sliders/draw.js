@@ -1,11 +1,10 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -14,15 +13,20 @@ var d3 = require('d3');
 var Plots = require('../../plots/plots');
 var Color = require('../color');
 var Drawing = require('../drawing');
+var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
+var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 var constants = require('./constants');
-
+var alignmentConstants = require('../../constants/alignment');
+var LINE_SPACING = alignmentConstants.LINE_SPACING;
+var FROM_TL = alignmentConstants.FROM_TL;
+var FROM_BR = alignmentConstants.FROM_BR;
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
-        sliderData = makeSliderData(fullLayout);
+        sliderData = makeSliderData(fullLayout, gd);
 
     // draw a container for *all* sliders:
     var sliders = fullLayout._infolayer
@@ -33,10 +37,23 @@ module.exports = function draw(gd) {
         .classed(constants.containerClassName, true)
         .style('cursor', 'ew-resize');
 
-    sliders.exit().remove();
+    function clearSlider(sliderOpts) {
+        if(sliderOpts._commandObserver) {
+            sliderOpts._commandObserver.remove();
+            delete sliderOpts._commandObserver;
+        }
 
-    // If no more sliders, clear the margisn:
-    if(sliders.exit().size()) clearPushMargins(gd);
+        // Most components don't need to explicitly remove autoMargin, because
+        // marginPushers does this - but slider updates don't go through
+        // a full replot so we need to explicitly remove it.
+        Plots.autoMargin(gd, autoMarginId(sliderOpts));
+    }
+
+    sliders.exit().each(function() {
+        d3.select(this).selectAll('g.' + constants.groupClassName)
+            .each(clearSlider);
+    })
+    .remove();
 
     // Return early if no menus visible:
     if(sliderData.length === 0) return;
@@ -47,14 +64,9 @@ module.exports = function draw(gd) {
     sliderGroups.enter().append('g')
         .classed(constants.groupClassName, true);
 
-    sliderGroups.exit().each(function(sliderOpts) {
-        d3.select(this).remove();
-
-        sliderOpts._commandObserver.remove();
-        delete sliderOpts._commandObserver;
-
-        Plots.autoMargin(gd, constants.autoMarginIdRoot + sliderOpts._index);
-    });
+    sliderGroups.exit()
+        .each(clearSlider)
+        .remove();
 
     // Find the dimensions of the sliders:
     for(var i = 0; i < sliderData.length; i++) {
@@ -63,14 +75,11 @@ module.exports = function draw(gd) {
     }
 
     sliderGroups.each(function(sliderOpts) {
-        // If it has fewer than two options, it's not really a slider:
-        if(sliderOpts.steps.length < 2) return;
-
         var gSlider = d3.select(this);
 
         computeLabelSteps(sliderOpts);
 
-        Plots.manageCommandObserver(gd, sliderOpts, sliderOpts.steps, function(data) {
+        Plots.manageCommandObserver(gd, sliderOpts, sliderOpts._visibleSteps, function(data) {
             // NB: Same as below. This is *not* always the same as sliderOpts since
             // if a new set of steps comes in, the reference in this callback would
             // be invalid. We need to refetch it from the slider group, which is
@@ -86,24 +95,22 @@ module.exports = function draw(gd) {
         });
 
         drawSlider(gd, d3.select(this), sliderOpts);
-
-        // makeInputProxy(gd, d3.select(this), sliderOpts);
     });
 };
 
-/* function makeInputProxy(gd, sliderGroup, sliderOpts) {
-    sliderOpts.inputProxy = gd._fullLayout._paperdiv.selectAll('input.' + constants.inputProxyClass)
-        .data([0]);
-}*/
+function autoMarginId(sliderOpts) {
+    return constants.autoMarginIdRoot + sliderOpts._index;
+}
 
 // This really only just filters by visibility:
-function makeSliderData(fullLayout) {
+function makeSliderData(fullLayout, gd) {
     var contOpts = fullLayout[constants.name],
         sliderData = [];
 
     for(var i = 0; i < contOpts.length; i++) {
         var item = contOpts[i];
-        if(!item.visible || !item.steps.length) continue;
+        if(!item.visible) continue;
+        item._gd = gd;
         sliderData.push(item);
     }
 
@@ -117,8 +124,8 @@ function keyFunction(opts) {
 
 // Compute the dimensions (mutates sliderOpts):
 function findDimensions(gd, sliderOpts) {
-    var sliderLabels = gd._tester.selectAll('g.' + constants.labelGroupClass)
-        .data(sliderOpts.steps);
+    var sliderLabels = Drawing.tester.selectAll('g.' + constants.labelGroupClass)
+        .data(sliderOpts._visibleSteps);
 
     sliderLabels.enter().append('g')
         .classed(constants.labelGroupClass, true);
@@ -131,104 +138,118 @@ function findDimensions(gd, sliderOpts) {
 
         var text = drawLabel(labelGroup, {step: stepOpts}, sliderOpts);
 
-        var tWidth = (text.node() && Drawing.bBox(text.node()).width) || 0;
-
-        // This just overwrites with the last. Which is fine as long as
-        // the bounding box (probably incorrectly) measures the text *on
-        // a single line*:
-        labelHeight = (text.node() && Drawing.bBox(text.node()).height) || 0;
-
-        maxLabelWidth = Math.max(maxLabelWidth, tWidth);
+        var textNode = text.node();
+        if(textNode) {
+            var bBox = Drawing.bBox(textNode);
+            labelHeight = Math.max(labelHeight, bBox.height);
+            maxLabelWidth = Math.max(maxLabelWidth, bBox.width);
+        }
     });
 
     sliderLabels.remove();
 
-    sliderOpts.inputAreaWidth = Math.max(
+    var dims = sliderOpts._dims = {};
+
+    dims.inputAreaWidth = Math.max(
         constants.railWidth,
         constants.gripHeight
     );
 
-    sliderOpts.currentValueMaxWidth = 0;
-    sliderOpts.currentValueHeight = 0;
-    sliderOpts.currentValueTotalHeight = 0;
+    // calculate some overall dimensions - some of these are needed for
+    // calculating the currentValue dimensions
+    var graphSize = gd._fullLayout._size;
+    dims.lx = graphSize.l + graphSize.w * sliderOpts.x;
+    dims.ly = graphSize.t + graphSize.h * (1 - sliderOpts.y);
+
+    if(sliderOpts.lenmode === 'fraction') {
+        // fraction:
+        dims.outerLength = Math.round(graphSize.w * sliderOpts.len);
+    } else {
+        // pixels:
+        dims.outerLength = sliderOpts.len;
+    }
+
+    // The length of the rail, *excluding* padding on either end:
+    dims.inputAreaStart = 0;
+    dims.inputAreaLength = Math.round(dims.outerLength - sliderOpts.pad.l - sliderOpts.pad.r);
+
+    var textableInputLength = dims.inputAreaLength - 2 * constants.stepInset;
+    var availableSpacePerLabel = textableInputLength / (sliderOpts._stepCount - 1);
+    var computedSpacePerLabel = maxLabelWidth + constants.labelPadding;
+    dims.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
+    dims.labelHeight = labelHeight;
+
+    // loop over all possible values for currentValue to find the
+    // area we need for it
+    dims.currentValueMaxWidth = 0;
+    dims.currentValueHeight = 0;
+    dims.currentValueTotalHeight = 0;
+    dims.currentValueMaxLines = 1;
 
     if(sliderOpts.currentvalue.visible) {
         // Get the dimensions of the current value label:
-        var dummyGroup = gd._tester.append('g');
+        var dummyGroup = Drawing.tester.append('g');
 
         sliderLabels.each(function(stepOpts) {
             var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
             var curValSize = (curValPrefix.node() && Drawing.bBox(curValPrefix.node())) || {width: 0, height: 0};
-            sliderOpts.currentValueMaxWidth = Math.max(sliderOpts.currentValueMaxWidth, Math.ceil(curValSize.width));
-            sliderOpts.currentValueHeight = Math.max(sliderOpts.currentValueHeight, Math.ceil(curValSize.height));
+            var lines = svgTextUtils.lineCount(curValPrefix);
+            dims.currentValueMaxWidth = Math.max(dims.currentValueMaxWidth, Math.ceil(curValSize.width));
+            dims.currentValueHeight = Math.max(dims.currentValueHeight, Math.ceil(curValSize.height));
+            dims.currentValueMaxLines = Math.max(dims.currentValueMaxLines, lines);
         });
 
-        sliderOpts.currentValueTotalHeight = sliderOpts.currentValueHeight + sliderOpts.currentvalue.offset;
+        dims.currentValueTotalHeight = dims.currentValueHeight + sliderOpts.currentvalue.offset;
 
         dummyGroup.remove();
     }
 
-    var graphSize = gd._fullLayout._size;
-    sliderOpts.lx = graphSize.l + graphSize.w * sliderOpts.x;
-    sliderOpts.ly = graphSize.t + graphSize.h * (1 - sliderOpts.y);
-
-    if(sliderOpts.lenmode === 'fraction') {
-        // fraction:
-        sliderOpts.outerLength = Math.round(graphSize.w * sliderOpts.len);
-    } else {
-        // pixels:
-        sliderOpts.outerLength = sliderOpts.len;
-    }
-
-    // Set the length-wise padding so that the grip ends up *on* the end of
-    // the bar when at either extreme
-    sliderOpts.lenPad = Math.round(constants.gripWidth * 0.5);
-
-    // The length of the rail, *excluding* padding on either end:
-    sliderOpts.inputAreaStart = 0;
-    sliderOpts.inputAreaLength = Math.round(sliderOpts.outerLength - sliderOpts.pad.l - sliderOpts.pad.r);
-
-    var textableInputLength = sliderOpts.inputAreaLength - 2 * constants.stepInset;
-    var availableSpacePerLabel = textableInputLength / (sliderOpts.steps.length - 1);
-    var computedSpacePerLabel = maxLabelWidth + constants.labelPadding;
-    sliderOpts.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
-    sliderOpts.labelHeight = labelHeight;
-
-    sliderOpts.height = sliderOpts.currentValueTotalHeight + constants.tickOffset + sliderOpts.ticklen + constants.labelOffset + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
+    dims.height = dims.currentValueTotalHeight + constants.tickOffset + sliderOpts.ticklen + constants.labelOffset + dims.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(sliderOpts)) {
-        sliderOpts.lx -= sliderOpts.outerLength;
+        dims.lx -= dims.outerLength;
         xanchor = 'right';
     }
     if(anchorUtils.isCenterAnchor(sliderOpts)) {
-        sliderOpts.lx -= sliderOpts.outerLength / 2;
+        dims.lx -= dims.outerLength / 2;
         xanchor = 'center';
     }
 
     var yanchor = 'top';
     if(anchorUtils.isBottomAnchor(sliderOpts)) {
-        sliderOpts.ly -= sliderOpts.height;
+        dims.ly -= dims.height;
         yanchor = 'bottom';
     }
     if(anchorUtils.isMiddleAnchor(sliderOpts)) {
-        sliderOpts.ly -= sliderOpts.height / 2;
+        dims.ly -= dims.height / 2;
         yanchor = 'middle';
     }
 
-    sliderOpts.outerLength = Math.ceil(sliderOpts.outerLength);
-    sliderOpts.height = Math.ceil(sliderOpts.height);
-    sliderOpts.lx = Math.round(sliderOpts.lx);
-    sliderOpts.ly = Math.round(sliderOpts.ly);
+    dims.outerLength = Math.ceil(dims.outerLength);
+    dims.height = Math.ceil(dims.height);
+    dims.lx = Math.round(dims.lx);
+    dims.ly = Math.round(dims.ly);
 
-    Plots.autoMargin(gd, constants.autoMarginIdRoot + sliderOpts._index, {
-        x: sliderOpts.x,
+    var marginOpts = {
         y: sliderOpts.y,
-        l: sliderOpts.outerLength * ({right: 1, center: 0.5}[xanchor] || 0),
-        r: sliderOpts.outerLength * ({left: 1, center: 0.5}[xanchor] || 0),
-        b: sliderOpts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
-        t: sliderOpts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
-    });
+        b: dims.height * FROM_BR[yanchor],
+        t: dims.height * FROM_TL[yanchor]
+    };
+
+    if(sliderOpts.lenmode === 'fraction') {
+        marginOpts.l = 0;
+        marginOpts.xl = sliderOpts.x - sliderOpts.len * FROM_TL[xanchor];
+        marginOpts.r = 0;
+        marginOpts.xr = sliderOpts.x + sliderOpts.len * FROM_BR[xanchor];
+    }
+    else {
+        marginOpts.x = sliderOpts.x;
+        marginOpts.l = dims.outerLength * FROM_TL[xanchor];
+        marginOpts.r = dims.outerLength * FROM_BR[xanchor];
+    }
+
+    Plots.autoMargin(gd, autoMarginId(sliderOpts), marginOpts);
 }
 
 function drawSlider(gd, sliderGroup, sliderOpts) {
@@ -237,8 +258,8 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     // the *current* slider step is removed. The drawing functions will error out
     // when they fail to find it, so the fix for now is that it will just draw the
     // slider in the first position but will not execute the command.
-    if(sliderOpts.active >= sliderOpts.steps.length) {
-        sliderOpts.active = 0;
+    if(!((sliderOpts.steps[sliderOpts.active] || {}).visible)) {
+        sliderOpts.active = sliderOpts._visibleSteps[0]._index;
     }
 
     // These are carefully ordered for proper z-ordering:
@@ -250,10 +271,12 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
         .call(drawTouchRect, gd, sliderOpts)
         .call(drawGrip, gd, sliderOpts);
 
-    // Position the rectangle:
-    Drawing.setTranslate(sliderGroup, sliderOpts.lx + sliderOpts.pad.l, sliderOpts.ly + sliderOpts.pad.t);
+    var dims = sliderOpts._dims;
 
-    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), false);
+    // Position the rectangle:
+    Drawing.setTranslate(sliderGroup, dims.lx + sliderOpts.pad.l, dims.ly + sliderOpts.pad.t);
+
+    sliderGroup.call(setGripPosition, sliderOpts, false);
     sliderGroup.call(drawCurrentValue, sliderOpts);
 
 }
@@ -261,20 +284,19 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     if(!sliderOpts.currentvalue.visible) return;
 
+    var dims = sliderOpts._dims;
     var x0, textAnchor;
-    var text = sliderGroup.selectAll('text')
-        .data([0]);
 
     switch(sliderOpts.currentvalue.xanchor) {
         case 'right':
             // This is anchored left and adjusted by the width of the longest label
             // so that the prefix doesn't move. The goal of this is to emphasize
             // what's actually changing and make the update less distracting.
-            x0 = sliderOpts.inputAreaLength - constants.currentValueInset - sliderOpts.currentValueMaxWidth;
+            x0 = dims.inputAreaLength - constants.currentValueInset - dims.currentValueMaxWidth;
             textAnchor = 'left';
             break;
         case 'center':
-            x0 = sliderOpts.inputAreaLength * 0.5;
+            x0 = dims.inputAreaLength * 0.5;
             textAnchor = 'middle';
             break;
         default:
@@ -282,10 +304,13 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
             textAnchor = 'left';
     }
 
-    text.enter().append('text')
-        .classed(constants.labelClass, true)
-        .classed('user-select-none', true)
-        .attr('text-anchor', textAnchor);
+    var text = Lib.ensureSingle(sliderGroup, 'text', constants.labelClass, function(s) {
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': textAnchor,
+                'data-notex': 1
+            });
+    });
 
     var str = sliderOpts.currentvalue.prefix ? sliderOpts.currentvalue.prefix : '';
 
@@ -302,21 +327,23 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
 
     text.call(Drawing.font, sliderOpts.currentvalue.font)
         .text(str)
-        .call(svgTextUtils.convertToTspans);
+        .call(svgTextUtils.convertToTspans, sliderOpts._gd);
 
-    Drawing.setTranslate(text, x0, sliderOpts.currentValueHeight);
+    var lines = svgTextUtils.lineCount(text);
+
+    var y0 = (dims.currentValueMaxLines + 1 - lines) *
+        sliderOpts.currentvalue.font.size * LINE_SPACING;
+
+    svgTextUtils.positionText(text, x0, y0);
 
     return text;
 }
 
 function drawGrip(sliderGroup, gd, sliderOpts) {
-    var grip = sliderGroup.selectAll('rect.' + constants.gripRectClass)
-        .data([0]);
-
-    grip.enter().append('rect')
-        .classed(constants.gripRectClass, true)
-        .call(attachGripEvents, gd, sliderGroup, sliderOpts)
-        .style('pointer-events', 'all');
+    var grip = Lib.ensureSingle(sliderGroup, 'rect', constants.gripRectClass, function(s) {
+        s.call(attachGripEvents, gd, sliderGroup, sliderOpts)
+            .style('pointer-events', 'all');
+    });
 
     grip.attr({
         width: constants.gripWidth,
@@ -324,36 +351,33 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
         rx: constants.gripRadius,
         ry: constants.gripRadius,
     })
-        .call(Color.stroke, sliderOpts.bordercolor)
-        .call(Color.fill, sliderOpts.bgcolor)
-        .style('stroke-width', sliderOpts.borderwidth + 'px');
+    .call(Color.stroke, sliderOpts.bordercolor)
+    .call(Color.fill, sliderOpts.bgcolor)
+    .style('stroke-width', sliderOpts.borderwidth + 'px');
 }
 
 function drawLabel(item, data, sliderOpts) {
-    var text = item.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed(constants.labelClass, true)
-        .classed('user-select-none', true)
-        .attr('text-anchor', 'middle');
+    var text = Lib.ensureSingle(item, 'text', constants.labelClass, function(s) {
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': 'middle',
+                'data-notex': 1
+            });
+    });
 
     text.call(Drawing.font, sliderOpts.font)
         .text(data.step.label)
-        .call(svgTextUtils.convertToTspans);
+        .call(svgTextUtils.convertToTspans, sliderOpts._gd);
 
     return text;
 }
 
 function drawLabelGroup(sliderGroup, sliderOpts) {
-    var labels = sliderGroup.selectAll('g.' + constants.labelsClass)
-        .data([0]);
-
-    labels.enter().append('g')
-        .classed(constants.labelsClass, true);
+    var labels = Lib.ensureSingle(sliderGroup, 'g', constants.labelsClass);
+    var dims = sliderOpts._dims;
 
     var labelItems = labels.selectAll('g.' + constants.labelGroupClass)
-        .data(sliderOpts.labelSteps);
+        .data(dims.labelSteps);
 
     labelItems.enter().append('g')
         .classed(constants.labelGroupClass, true);
@@ -367,27 +391,38 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
 
         Drawing.setTranslate(item,
             normalizedValueToPosition(sliderOpts, d.fraction),
-            constants.tickOffset + sliderOpts.ticklen + sliderOpts.labelHeight + constants.labelOffset + sliderOpts.currentValueTotalHeight
+            constants.tickOffset +
+                sliderOpts.ticklen +
+                // position is the baseline of the top line of text only, even
+                // if the label spans multiple lines
+                sliderOpts.font.size * LINE_SPACING +
+                constants.labelOffset +
+                dims.currentValueTotalHeight
         );
     });
 
 }
 
 function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransition) {
-    var quantizedPosition = Math.round(normalizedPosition * (sliderOpts.steps.length - 1));
+    var quantizedPosition = Math.round(normalizedPosition * (sliderOpts._stepCount - 1));
+    var quantizedIndex = sliderOpts._visibleSteps[quantizedPosition]._index;
 
-    if(quantizedPosition !== sliderOpts.active) {
-        setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true, doTransition);
+    if(quantizedIndex !== sliderOpts.active) {
+        setActive(gd, sliderGroup, sliderOpts, quantizedIndex, true, doTransition);
     }
 }
 
 function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition) {
     var previousActive = sliderOpts.active;
-    sliderOpts._input.active = sliderOpts.active = index;
+    sliderOpts.active = index;
+
+    // due to templating, it's possible this slider doesn't even exist yet
+    arrayEditor(gd.layout, constants.name, sliderOpts)
+        .applyUpdate('active', index);
 
     var step = sliderOpts.steps[sliderOpts.active];
 
-    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), doTransition);
+    sliderGroup.call(setGripPosition, sliderOpts, doTransition);
     sliderGroup.call(drawCurrentValue, sliderOpts);
 
     gd.emit('plotly_sliderchange', {
@@ -409,7 +444,9 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
                 var _step = sliderGroup._nextMethod.step;
                 if(!_step.method) return;
 
-                Plots.executeAPICommand(gd, _step.method, _step.args);
+                if(_step.execute) {
+                    Plots.executeAPICommand(gd, _step.method, _step.args);
+                }
 
                 sliderGroup._nextMethod = null;
                 sliderGroup._nextMethodRaf = null;
@@ -468,7 +505,8 @@ function attachGripEvents(item, gd, sliderGroup) {
 
 function drawTicks(sliderGroup, sliderOpts) {
     var tick = sliderGroup.selectAll('rect.' + constants.tickRectClass)
-        .data(sliderOpts.steps);
+        .data(sliderOpts._visibleSteps);
+    var dims = sliderOpts._dims;
 
     tick.enter().append('rect')
         .classed(constants.tickRectClass, true);
@@ -481,7 +519,7 @@ function drawTicks(sliderGroup, sliderOpts) {
     });
 
     tick.each(function(d, i) {
-        var isMajor = i % sliderOpts.labelStride === 0;
+        var isMajor = i % dims.labelStride === 0;
         var item = d3.select(this);
 
         item
@@ -489,30 +527,38 @@ function drawTicks(sliderGroup, sliderOpts) {
             .call(Color.fill, isMajor ? sliderOpts.tickcolor : sliderOpts.tickcolor);
 
         Drawing.setTranslate(item,
-            normalizedValueToPosition(sliderOpts, i / (sliderOpts.steps.length - 1)) - 0.5 * sliderOpts.tickwidth,
-            (isMajor ? constants.tickOffset : constants.minorTickOffset) + sliderOpts.currentValueTotalHeight
+            normalizedValueToPosition(sliderOpts, i / (sliderOpts._stepCount - 1)) - 0.5 * sliderOpts.tickwidth,
+            (isMajor ? constants.tickOffset : constants.minorTickOffset) + dims.currentValueTotalHeight
         );
     });
 
 }
 
 function computeLabelSteps(sliderOpts) {
-    sliderOpts.labelSteps = [];
-    var i0 = 0;
-    var nsteps = sliderOpts.steps.length;
+    var dims = sliderOpts._dims;
+    dims.labelSteps = [];
+    var nsteps = sliderOpts._stepCount;
 
-    for(var i = i0; i < nsteps; i += sliderOpts.labelStride) {
-        sliderOpts.labelSteps.push({
+    for(var i = 0; i < nsteps; i += dims.labelStride) {
+        dims.labelSteps.push({
             fraction: i / (nsteps - 1),
-            step: sliderOpts.steps[i]
+            step: sliderOpts._visibleSteps[i]
         });
     }
 }
 
-function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
+function setGripPosition(sliderGroup, sliderOpts, doTransition) {
     var grip = sliderGroup.select('rect.' + constants.gripRectClass);
 
-    var x = normalizedValueToPosition(sliderOpts, position);
+    var quantizedIndex = 0;
+    for(var i = 0; i < sliderOpts._stepCount; i++) {
+        if(sliderOpts._visibleSteps[i]._index === sliderOpts.active) {
+            quantizedIndex = i;
+            break;
+        }
+    }
+
+    var x = normalizedValueToPosition(sliderOpts, quantizedIndex / (sliderOpts._stepCount - 1));
 
     // If this is true, then *this component* is already invoking its own command
     // and has triggered its own animation.
@@ -527,47 +573,43 @@ function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
 
     // Drawing.setTranslate doesn't work here becasue of the transition duck-typing.
     // It's also not necessary because there are no other transitions to preserve.
-    el.attr('transform', 'translate(' + (x - constants.gripWidth * 0.5) + ',' + (sliderOpts.currentValueTotalHeight) + ')');
+    el.attr('transform', 'translate(' + (x - constants.gripWidth * 0.5) + ',' + (sliderOpts._dims.currentValueTotalHeight) + ')');
 }
 
 // Convert a number from [0-1] to a pixel position relative to the slider group container:
 function normalizedValueToPosition(sliderOpts, normalizedPosition) {
-    return sliderOpts.inputAreaStart + constants.stepInset +
-        (sliderOpts.inputAreaLength - 2 * constants.stepInset) * Math.min(1, Math.max(0, normalizedPosition));
+    var dims = sliderOpts._dims;
+    return dims.inputAreaStart + constants.stepInset +
+        (dims.inputAreaLength - 2 * constants.stepInset) * Math.min(1, Math.max(0, normalizedPosition));
 }
 
 // Convert a position relative to the slider group to a nubmer in [0, 1]
 function positionToNormalizedValue(sliderOpts, position) {
-    return Math.min(1, Math.max(0, (position - constants.stepInset - sliderOpts.inputAreaStart) / (sliderOpts.inputAreaLength - 2 * constants.stepInset - 2 * sliderOpts.inputAreaStart)));
+    var dims = sliderOpts._dims;
+    return Math.min(1, Math.max(0, (position - constants.stepInset - dims.inputAreaStart) / (dims.inputAreaLength - 2 * constants.stepInset - 2 * dims.inputAreaStart)));
 }
 
 function drawTouchRect(sliderGroup, gd, sliderOpts) {
-    var rect = sliderGroup.selectAll('rect.' + constants.railTouchRectClass)
-        .data([0]);
-
-    rect.enter().append('rect')
-        .classed(constants.railTouchRectClass, true)
-        .call(attachGripEvents, gd, sliderGroup, sliderOpts)
-        .style('pointer-events', 'all');
+    var dims = sliderOpts._dims;
+    var rect = Lib.ensureSingle(sliderGroup, 'rect', constants.railTouchRectClass, function(s) {
+        s.call(attachGripEvents, gd, sliderGroup, sliderOpts)
+            .style('pointer-events', 'all');
+    });
 
     rect.attr({
-        width: sliderOpts.inputAreaLength,
-        height: Math.max(sliderOpts.inputAreaWidth, constants.tickOffset + sliderOpts.ticklen + sliderOpts.labelHeight)
+        width: dims.inputAreaLength,
+        height: Math.max(dims.inputAreaWidth, constants.tickOffset + sliderOpts.ticklen + dims.labelHeight)
     })
         .call(Color.fill, sliderOpts.bgcolor)
         .attr('opacity', 0);
 
-    Drawing.setTranslate(rect, 0, sliderOpts.currentValueTotalHeight);
+    Drawing.setTranslate(rect, 0, dims.currentValueTotalHeight);
 }
 
 function drawRail(sliderGroup, sliderOpts) {
-    var rect = sliderGroup.selectAll('rect.' + constants.railRectClass)
-        .data([0]);
-
-    rect.enter().append('rect')
-        .classed(constants.railRectClass, true);
-
-    var computedLength = sliderOpts.inputAreaLength - constants.railInset * 2;
+    var dims = sliderOpts._dims;
+    var computedLength = dims.inputAreaLength - constants.railInset * 2;
+    var rect = Lib.ensureSingle(sliderGroup, 'rect', constants.railRectClass);
 
     rect.attr({
         width: computedLength,
@@ -576,25 +618,12 @@ function drawRail(sliderGroup, sliderOpts) {
         ry: constants.railRadius,
         'shape-rendering': 'crispEdges'
     })
-        .call(Color.stroke, sliderOpts.bordercolor)
-        .call(Color.fill, sliderOpts.bgcolor)
-        .style('stroke-width', sliderOpts.borderwidth + 'px');
+    .call(Color.stroke, sliderOpts.bordercolor)
+    .call(Color.fill, sliderOpts.bgcolor)
+    .style('stroke-width', sliderOpts.borderwidth + 'px');
 
     Drawing.setTranslate(rect,
         constants.railInset,
-        (sliderOpts.inputAreaWidth - constants.railWidth) * 0.5 + sliderOpts.currentValueTotalHeight
+        (dims.inputAreaWidth - constants.railWidth) * 0.5 + dims.currentValueTotalHeight
     );
-}
-
-function clearPushMargins(gd) {
-    var pushMargins = gd._fullLayout._pushmargin || {},
-        keys = Object.keys(pushMargins);
-
-    for(var i = 0; i < keys.length; i++) {
-        var k = keys[i];
-
-        if(k.indexOf(constants.autoMarginIdRoot) !== -1) {
-            Plots.autoMargin(gd, k);
-        }
-    }
 }

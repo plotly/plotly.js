@@ -10,6 +10,18 @@
       "k":[2]
     }],
   "layout": {
-    "title": "Triangle mesh"
+    "title": "Triangle mesh",
+    "scene": {
+      "annotations": [{
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "ax": -50,
+        "ay": -300,
+        "text": "<span style=\"color:red;\">IMPORTANT</span>"
+      }]
+    },
+    "width": 600,
+    "height": 500
   }
 }

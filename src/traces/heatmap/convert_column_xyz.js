@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,49 +12,56 @@
 var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
+module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name, arrayVarNames) {
+    var colLen = trace._length;
+    var col1 = trace[var1Name].slice(0, colLen);
+    var col2 = trace[var2Name].slice(0, colLen);
+    var textCol = trace.text;
+    var hasColumnText = (textCol !== undefined && Lib.isArray1D(textCol));
+    var col1Calendar = trace[var1Name + 'calendar'];
+    var col2Calendar = trace[var2Name + 'calendar'];
 
-module.exports = function convertColumnXYZ(trace, xa, ya) {
-    var xCol = trace.x.slice(),
-        yCol = trace.y.slice(),
-        zCol = trace.z,
-        textCol = trace.text,
-        colLen = Math.min(xCol.length, yCol.length, zCol.length),
-        hasColumnText = (textCol !== undefined && !Array.isArray(textCol[0])),
-        xcalendar = trace.xcalendar,
-        ycalendar = trace.ycalendar;
-
-    var i;
-
-    if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
-    if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
+    var i, j, arrayVar, newArray, arrayVarName;
 
     for(i = 0; i < colLen; i++) {
-        xCol[i] = xa.d2c(xCol[i], 0, xcalendar);
-        yCol[i] = ya.d2c(yCol[i], 0, ycalendar);
+        col1[i] = ax1.d2c(col1[i], 0, col1Calendar);
+        col2[i] = ax2.d2c(col2[i], 0, col2Calendar);
     }
 
-    var xColdv = Lib.distinctVals(xCol),
-        x = xColdv.vals,
-        yColdv = Lib.distinctVals(yCol),
-        y = yColdv.vals,
-        z = Lib.init2dArray(y.length, x.length);
+    var col1dv = Lib.distinctVals(col1),
+        col1vals = col1dv.vals,
+        col2dv = Lib.distinctVals(col2),
+        col2vals = col2dv.vals,
+        newArrays = [];
 
-    var text;
+    for(i = 0; i < arrayVarNames.length; i++) {
+        newArrays[i] = Lib.init2dArray(col2vals.length, col1vals.length);
+    }
 
-    if(hasColumnText) text = Lib.init2dArray(y.length, x.length);
+    var i1, i2, text;
+
+    if(hasColumnText) text = Lib.init2dArray(col2vals.length, col1vals.length);
 
     for(i = 0; i < colLen; i++) {
-        if(xCol[i] !== BADNUM && yCol[i] !== BADNUM) {
-            var ix = Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
-            var iy = Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
+        if(col1[i] !== BADNUM && col2[i] !== BADNUM) {
+            i1 = Lib.findBin(col1[i] + col1dv.minDiff / 2, col1vals);
+            i2 = Lib.findBin(col2[i] + col2dv.minDiff / 2, col2vals);
 
-            z[iy][ix] = zCol[i];
-            if(hasColumnText) text[iy][ix] = textCol[i];
+            for(j = 0; j < arrayVarNames.length; j++) {
+                arrayVarName = arrayVarNames[j];
+                arrayVar = trace[arrayVarName];
+                newArray = newArrays[j];
+                newArray[i2][i1] = arrayVar[i];
+            }
+
+            if(hasColumnText) text[i2][i1] = textCol[i];
         }
     }
 
-    trace.x = x;
-    trace.y = y;
-    trace.z = z;
-    if(hasColumnText) trace.text = text;
+    trace['_' + var1Name] = col1vals;
+    trace['_' + var2Name] = col2vals;
+    for(j = 0; j < arrayVarNames.length; j++) {
+        trace['_' + arrayVarNames[j]] = newArrays[j];
+    }
+    if(hasColumnText) trace._text = text;
 };

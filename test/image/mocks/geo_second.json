@@ -33,8 +33,7 @@
             "textfont": {
                 "size": 20
             },
-            "textposition": "top right",
-            "uid": "365ffb"
+            "textposition": "top right"
         },
         {
             "type": "scattergeo",
@@ -53,8 +52,7 @@
                 "color": "green",
                 "width": 5,
                 "dash": "dot"
-            },
-            "uid": "91bf87"
+            }
         },
         {
             "type": "choropleth",
@@ -77,14 +75,16 @@
                     ],
                     "width": 2
                 }
-            },
-            "uid": "17bd35"
+            }
         }
     ],
     "layout": {
         "geo": {
             "projection": {
                 "type": "conic equal area"
+            },
+            "center": {
+                "lat": 35
             },
             "showframe": false,
             "showrivers": true,

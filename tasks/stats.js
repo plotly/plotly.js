@@ -1,8 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var spawn = require('child_process').spawn;
 
-var falafel = require('falafel');
 var gzipSize = require('gzip-size');
 var prettySize = require('prettysize');
 
@@ -11,26 +9,14 @@ var constants = require('./util/constants');
 var pkg = require('../package.json');
 
 var pathDistREADME = path.join(constants.pathToDist, 'README.md');
-var pathDistNpmLs = path.join(constants.pathToDist, 'npm-ls.json');
 var cdnRoot = 'https://cdn.plot.ly/plotly-';
-var coreModules = ['scatter'];
 
 var ENC = 'utf-8';
 var JS = '.js';
 var MINJS = '.min.js';
 
 // main
-writeNpmLs();
 common.writeFile(pathDistREADME, getReadMeContent());
-
-function writeNpmLs() {
-    if(common.doesFileExist(pathDistNpmLs)) fs.unlinkSync(pathDistNpmLs);
-
-    var ws = fs.createWriteStream(pathDistNpmLs, { flags: 'a' });
-    var proc = spawn('npm', ['ls', '--json', '--only', 'prod']);
-
-    proc.stdout.pipe(ws);
-}
 
 function getReadMeContent() {
     return []
@@ -51,31 +37,55 @@ function getInfoContent() {
         'Import plotly.js as:',
         '',
         '```html',
-        '<script type="text/javascript" src="plotly.min.js"></script>',
+        '<script src="plotly.min.js"></script>',
         '```',
         '',
         'or the un-minified version as:',
         '',
         '```html',
-        '<script type="text/javascript" src="plotly.js" charset="utf-8"></script>',
+        '<script src="plotly.js" charset="utf-8"></script>',
         '```',
         '',
-        'To support IE9, put:',
+        '### To support IE9',
+        '',
+        '*Before* the plotly.js script tag, add:',
         '',
         '```html',
         '<script>if(typeof window.Int16Array !== \'function\')document.write("<scri"+"pt src=\'extras/typedarray.min.js\'></scr"+"ipt>");</script>',
         '<script>document.write("<scri"+"pt src=\'extras/request_animation_frame.js\'></scr"+"ipt>");</script>',
         '```',
         '',
-        'before the plotly.js script tag.',
+        '### To support MathJax',
         '',
-        'To add MathJax, put',
+        '*Before* the plotly.js script tag, add:',
         '',
         '```html',
-        '<script type="text/javascript" src="mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>',
+        '<script src="mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>',
         '```',
         '',
-        'before the plotly.js script tag. You can grab the relevant MathJax files in `./dist/extras/mathjax/`.',
+        'You can grab the relevant MathJax files in `./dist/extras/mathjax/`.',
+        '',
+        '### To include localization',
+        '',
+        'Plotly.js defaults to US English (en-US) and includes British English (en) in the standard bundle.',
+        'Many other localizations are available - here is an example using Swiss-German (de-CH),',
+        'see the contents of this directory for the full list.',
+        'They are also available on our CDN as ' + cdnRoot + 'locale-de-ch-latest.js OR ' + cdnRoot + 'locale-de-ch-' + pkg.version + '.js',
+        'Note that the file names are all lowercase, even though the region is uppercase when you apply a locale.',
+        '',
+        '*After* the plotly.js script tag, add:',
+        '',
+        '```html',
+        '<script src="plotly-locale-de-ch.js"></script>',
+        '<script>Plotly.setPlotConfig({locale: \'de-CH\'})</script>',
+        '```',
+        '',
+        'The first line loads and registers the locale definition with plotly.js, the second sets it as the default for all Plotly plots.',
+        'You can also include multiple locale definitions and apply them to each plot separately as a `config` parameter:',
+        '',
+        '```js',
+        'Plotly.newPlot(graphDiv, data, layout, {locale: \'de-CH\'})',
+        '```',
         ''
     ];
 }
@@ -98,6 +108,7 @@ function getMainBundleInfo() {
         '- using CDN URL ' + cdnRoot + 'latest' + MINJS + ' OR ' + cdnRoot + pkg.version + MINJS,
         '',
         'or as raw javascript:',
+        '- using the `plotly.js-dist` npm package (starting in `v1.39.0`)',
         '- using dist file `dist/plotly.js`',
         '- using CDN URL ' + cdnRoot + 'latest' + JS + ' OR ' + cdnRoot + pkg.version + JS,
         '- using CommonJS with `require(\'plotly.js\')`',
@@ -117,7 +128,8 @@ function getMainBundleInfo() {
         'Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles:',
         '',
         constants.partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
-        ''
+        '',
+        'Starting in `v1.39.0`, each plotly.js partial bundle has a corresponding npm package with no dependencies.'
     ];
 }
 
@@ -144,26 +156,55 @@ function makeBundleHeaderInfo(pathObj) {
 function makeBundleInfo(pathObj) {
     var name = pathObj.name;
     var sizes = findSizes(pathObj);
-    var moduleList = coreModules.concat(scrapeContent(pathObj));
+    var moduleList = common.findModuleList(pathObj.index);
+    var pkgName = 'plotly.js-' + name + '-dist';
 
     return [
         '### plotly.js ' + name,
         '',
-        formatBundleInfo(name, moduleList),
+        'The `' + name + '` partial bundle contains trace modules ' + common.formatEnumeration(moduleList) + '.',
         '',
-        '| Way to import | Location |',
-        '|---------------|----------|',
-        '| dist bundle | ' + '`dist/plotly-' + name + JS + '` |',
-        '| dist bundle (minified) | ' + '`dist/plotly-' + name + MINJS + '` |',
-        '| CDN URL (latest) | ' + cdnRoot + name + '-latest' + JS + ' |',
-        '| CDN URL (latest minified) | ' + cdnRoot + name + '-latest' + MINJS + ' |',
-        '| CDN URL (tagged) | ' + cdnRoot + name + '-' + pkg.version + JS + ' |',
-        '| CDN URL (tagged minified) | ' + cdnRoot + name + '-' + pkg.version + MINJS + ' |',
-        '| CommonJS | ' + '`require(\'plotly.js/lib/' + 'index-' + name + '\')`' + ' |',
+        '#### Stats',
         '',
         '| Raw size | Minified size | Minified + gzip size |',
         '|------|-----------------|------------------------|',
         '| ' + sizes.raw + ' | ' + sizes.minified + ' | ' + sizes.gzipped + ' |',
+        '',
+        '#### CDN links',
+        '',
+        '| Flavor | URL |',
+        '| ------ | --- |',
+        '| Latest | ' + cdnRoot + name + '-latest' + JS + ' |',
+        '| Latest minified | ' + cdnRoot + name + '-latest' + MINJS + ' |',
+        '| Tagged | ' + cdnRoot + name + '-' + pkg.version + JS + ' |',
+        '| Tagged minified | ' + cdnRoot + name + '-' + pkg.version + MINJS + ' |',
+        '',
+        '#### npm package (starting in `v1.39.0`)',
+        '',
+        'Install [`' + pkgName + '`](https://www.npmjs.com/package/' + pkgName + ') with',
+        '```',
+        'npm install ' + pkgName,
+        '```',
+        '',
+        'ES6 module usage:',
+        '```js',
+        'import Plotly from \'' + pkgName + '\'',
+        '```',
+        '',
+        'CommonJS usage:',
+        '```js',
+        'var Plotly = require(\'' + pkgName + '\');',
+        '```',
+        '',
+        '#### Other plotly.js entry points',
+        '',
+        '| Flavor | Location |',
+        '|---------------|----------|',
+        '| dist bundle | ' + '`dist/plotly-' + name + JS + '` |',
+        '| dist bundle (minified) | ' + '`dist/plotly-' + name + MINJS + '` |',
+        '| ES6 module | ' + '`import Plotly from \'plotly.js/lib/' + 'index-' + name + '\'`' + ' |',
+        '| CommonJS | ' + '`require(\'plotly.js/lib/' + 'index-' + name + '\')`' + ' |',
+        '',
         ''
     ].join('\n');
 }
@@ -184,51 +225,4 @@ function findSizes(pathObj) {
     }
 
     return sizes;
-}
-
-function scrapeContent(pathObj) {
-    var code = fs.readFileSync(pathObj.index, ENC);
-    var moduleList = [];
-
-    falafel(code, function(node) {
-        if(isModuleNode(node)) {
-            var moduleName = node.value.replace('./', '');
-            moduleList.push(moduleName);
-        }
-    });
-
-    return moduleList;
-}
-
-function isModuleNode(node) {
-    return (
-        node.type === 'Literal' &&
-        node.parent &&
-        node.parent.type === 'CallExpression' &&
-        node.parent.callee &&
-        node.parent.callee.type === 'Identifier' &&
-        node.parent.callee.name === 'require' &&
-        node.parent.parent &&
-        node.parent.parent.type === 'ArrayExpression'
-    );
-}
-
-function formatBundleInfo(bundleName, moduleList) {
-    var enumeration = moduleList.map(function(moduleName, i) {
-        var len = moduleList.length,
-            ending;
-
-        if(i === len - 2) ending = ' and';
-        else if(i < len - 1) ending = ',';
-        else ending = '';
-
-        return '`' + moduleName + '`' + ending;
-    });
-
-    return [
-        'The', '`' + bundleName + '`',
-        'partial bundle contains the',
-        enumeration.join(' '),
-        'trace modules.'
-    ].join(' ');
 }

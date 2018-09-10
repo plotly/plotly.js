@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,15 +10,17 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var scatterMarkerAttrs = scatterAttrs.marker,
     scatterLineAttrs = scatterAttrs.line,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-module.exports = {
+module.exports = overrideAll({
     lon: {
         valType: 'data_array',
         description: 'Sets the longitude coordinates (in degrees East).'
@@ -79,23 +81,24 @@ module.exports = {
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash
+        dash: dash
     },
     connectgaps: scatterAttrs.connectgaps,
 
-    marker: extendFlat({}, {
+    marker: extendFlat({
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
-        line: extendFlat({},
-            {width: scatterMarkerLineAttrs.width},
+        line: extendFlat({
+            width: scatterMarkerLineAttrs.width
+        },
             colorAttributes('marker.line')
-        )
+        ),
+        gradient: scatterMarkerAttrs.gradient
     },
         colorAttributes('marker')
     ),
@@ -114,7 +117,10 @@ module.exports = {
     },
     fillcolor: scatterAttrs.fillcolor,
 
+    selected: scatterAttrs.selected,
+    unselected: scatterAttrs.unselected,
+
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
     })
-};
+}, 'calc', 'nested');

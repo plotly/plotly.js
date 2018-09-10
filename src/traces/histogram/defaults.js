@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,17 +15,15 @@ var Color = require('../../components/color');
 
 var handleBinDefaults = require('./bin_defaults');
 var handleStyleDefaults = require('../bar/style_defaults');
-var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 var attributes = require('./attributes');
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var x = coerce('x'),
-        y = coerce('y');
+    var x = coerce('x');
+    var y = coerce('y');
 
     var cumulative = coerce('cumulative.enabled');
     if(cumulative) {
@@ -35,26 +33,33 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
 
-    var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
-        sample = traceOut[orientation === 'v' ? 'x' : 'y'];
+    var orientation = coerce('orientation', (y && !x) ? 'h' : 'v');
+    var sampleLetter = orientation === 'v' ? 'x' : 'y';
+    var aggLetter = orientation === 'v' ? 'y' : 'x';
 
-    if(!(sample && sample.length)) {
+    var len = (x && y) ? Math.min(x.length && y.length) : (traceOut[sampleLetter] || []).length;
+
+    if(!len) {
         traceOut.visible = false;
         return;
     }
 
+    traceOut._length = len;
+
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
-    var hasAggregationData = traceOut[orientation === 'h' ? 'x' : 'y'];
+    var hasAggregationData = traceOut[aggLetter];
     if(hasAggregationData) coerce('histfunc');
 
-    var binDirections = (orientation === 'h') ? ['y'] : ['x'];
-    handleBinDefaults(traceIn, traceOut, coerce, binDirections);
+    handleBinDefaults(traceIn, traceOut, coerce, [sampleLetter]);
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
     // override defaultColor for error bars with defaultLine
+    var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

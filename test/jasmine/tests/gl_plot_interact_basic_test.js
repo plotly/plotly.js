@@ -38,7 +38,7 @@ function verifyInteractionEffects(tuple) {
     expect(tuple.relayoutCallback).toHaveBeenCalledTimes(1);
 
     // Check structure of event callback value contents
-    expect(tuple.relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({scene: cameraStructure}));
+    expect(tuple.relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({'scene.camera': cameraStructure}));
 
     // Check camera contents on the DIV layout
     var divCamera = tuple.graphDiv.layout.scene.camera;
@@ -68,13 +68,13 @@ describe('gl3d plots', function() {
         destroyGraphDiv();
     });
 
-    it('should respond to drag interactions with mock of unset camera', function(done) {
+    it('@gl should respond to drag interactions with mock of unset camera', function(done) {
         testEvents(makePlot(gd, require('@mocks/gl3d_scatter3d-connectgaps.json')))
             .catch(failTest)
             .then(done);
     });
 
-    it('should respond to drag interactions with mock of partially set camera', function(done) {
+    it('@gl should respond to drag interactions with mock of partially set camera', function(done) {
         testEvents(makePlot(gd, require('@mocks/gl3d_errorbars_zx.json')))
             .catch(failTest)
             .then(done);

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,6 +15,7 @@ module.exports = {
         values: ['group', 'overlay'],
         dflt: 'overlay',
         role: 'info',
+        editType: 'calc',
         description: [
             'Determines how boxes at the same location coordinate',
             'are displayed on the graph.',
@@ -30,6 +31,7 @@ module.exports = {
         max: 1,
         dflt: 0.3,
         role: 'style',
+        editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
             'adjacent location coordinates.'
@@ -41,6 +43,7 @@ module.exports = {
         max: 1,
         dflt: 0.3,
         role: 'style',
+        editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
             'the same location coordinate.'

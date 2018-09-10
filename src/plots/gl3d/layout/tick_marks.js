@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50,6 +50,7 @@ function computeTickMarks(scene) {
         if(Math.abs(axes._length) === Infinity) {
             ticks[i] = [];
         } else {
+            axes._input_range = axes.range.slice();
             axes.range[0] = (glRange[i].lo) / scene.dataScale[i];
             axes.range[1] = (glRange[i].hi) / scene.dataScale[i];
             axes._m = 1.0 / (scene.dataScale[i] * glRange[i].pixelsPerDataUnit);

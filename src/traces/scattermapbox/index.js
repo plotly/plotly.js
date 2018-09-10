@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,16 +13,24 @@ var ScatterMapbox = {};
 
 ScatterMapbox.attributes = require('./attributes');
 ScatterMapbox.supplyDefaults = require('./defaults');
-ScatterMapbox.colorbar = require('../scatter/colorbar');
+ScatterMapbox.colorbar = require('../scatter/marker_colorbar');
 ScatterMapbox.calc = require('../scattergeo/calc');
+ScatterMapbox.plot = require('./plot');
 ScatterMapbox.hoverPoints = require('./hover');
 ScatterMapbox.eventData = require('./event_data');
-ScatterMapbox.plot = require('./plot');
+ScatterMapbox.selectPoints = require('./select');
+
+ScatterMapbox.style = function(_, cd) {
+    if(cd) {
+        var trace = cd[0].trace;
+        trace._glTrace.update(cd);
+    }
+};
 
 ScatterMapbox.moduleType = 'trace';
 ScatterMapbox.name = 'scattermapbox';
 ScatterMapbox.basePlotModule = require('../../plots/mapbox');
-ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'showLegend', 'scatterlike'];
 ScatterMapbox.meta = {
     hrName: 'scatter_mapbox',
     description: [

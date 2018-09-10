@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,25 +10,34 @@
 'use strict';
 
 var colorscaleDefaults = require('../../components/colorscale/defaults');
+var handleLabelDefaults = require('./label_defaults');
 
 
-module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout) {
+module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, opts) {
     var coloring = coerce('contours.coloring');
 
     var showLines;
+    var lineColor = '';
     if(coloring === 'fill') showLines = coerce('contours.showlines');
 
     if(showLines !== false) {
-        if(coloring !== 'lines') coerce('line.color', '#000');
+        if(coloring !== 'lines') lineColor = coerce('line.color', '#000');
         coerce('line.width', 0.5);
         coerce('line.dash');
     }
 
-    coerce('line.smoothing');
+    if(coloring !== 'none') {
+        // plots/plots always coerces showlegend to true, but in this case
+        // we default to false and (by default) show a colorbar instead
+        if(traceIn.showlegend !== true) traceOut.showlegend = false;
+        traceOut._dfltShowLegend = false;
 
-    if((traceOut.contours || {}).coloring !== 'none') {
         colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );
     }
+
+    coerce('line.smoothing');
+
+    handleLabelDefaults(coerce, layout, lineColor, opts);
 };

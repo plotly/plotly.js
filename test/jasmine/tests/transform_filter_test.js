@@ -6,13 +6,19 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var assertDims = require('../assets/assert_dims');
-var assertStyle = require('../assets/assert_style');
-var customMatchers = require('../assets/custom_matchers');
+var customAssertions = require('../assets/custom_assertions');
+var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
+
+var assertDims = customAssertions.assertDims;
+var assertStyle = customAssertions.assertStyle;
 
 describe('filter transforms defaults:', function() {
 
-    var fullLayout = { _transformModules: [] };
+    var fullLayout = {
+        _transformModules: [],
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
+    };
 
     var traceIn, traceOut;
 
@@ -25,11 +31,12 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
             enabled: true,
+            preservegaps: false,
             operation: '=',
             value: 0,
             target: 'x',
@@ -47,7 +54,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -60,7 +67,7 @@ describe('filter transforms defaults:', function() {
         traceIn = {
             x: [1, 2, 3],
             transforms: [{
-                type: 'filter',
+                type: 'filter'
             }, {
                 type: 'filter',
                 target: 0
@@ -73,7 +80,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms[0].target).toEqual('x');
         expect(traceOut.transforms[1].target).toEqual('x');
@@ -95,7 +102,7 @@ describe('filter transforms calc:', function() {
             layout: layout || {}
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         Plots.doCalcdata(gd);
 
         return gd.calcdata.map(calcDatatoTrace);
@@ -141,6 +148,7 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([0, 1]);
         expect(out[0].y).toEqual([1, 2]);
         expect(out[0].z).toEqual(['2016-10-21', '2016-12-02']);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({0: [3], 1: [4]});
     });
 
     it('should use the calendar from the target attribute if target is a string', function() {
@@ -259,6 +267,26 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([-2, 2, 3]);
         expect(out[0].y).toEqual([3, 3, 1]);
         expect(out[0].marker.color).toEqual([0.3, 0.3, 0.4]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({0: [2], 1: [5], 2: [6]});
+    });
+
+    it('filters should handle array on base trace attributes', function() {
+        var out = _transform([Lib.extendDeep({}, base, {
+            hoverinfo: ['x', 'y', 'text', 'name', 'none', 'skip', 'all'],
+            hoverlabel: {
+                bgcolor: ['red', 'green', 'blue', 'black', 'yellow', 'cyan', 'pink']
+            },
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: 0
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([1, 2, 3]);
+        expect(out[0].y).toEqual([2, 3, 1]);
+        expect(out[0].hoverinfo).toEqual(['none', 'skip', 'all']);
+        expect(out[0].hoverlabel.bgcolor).toEqual(['yellow', 'cyan', 'pink']);
     });
 
     it('filters should skip if *enabled* is false', function() {
@@ -293,6 +321,8 @@ describe('filter transforms calc:', function() {
 
         expect(out[0].x).toEqual([1, 2]);
         expect(out[0].y).toEqual([2, 3]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({0: [4], 1: [5], 2: [6]});
+        expect(out[0].transforms[1]._indexToPoints).toEqual({0: [4], 1: [5]});
     });
 
     it('filters should chain as AND (case 2)', function() {
@@ -318,6 +348,134 @@ describe('filter transforms calc:', function() {
 
         expect(out[0].x).toEqual([3]);
         expect(out[0].y).toEqual([1]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({0: [4], 1: [5], 2: [6]});
+        expect(out[0].transforms[2]._indexToPoints).toEqual({0: [6]});
+    });
+
+    it('should preserve gaps in data when `preservegaps` is turned on', function() {
+        var out = _transform([Lib.extendDeep({}, base, {
+            transforms: [{
+                type: 'filter',
+                preservegaps: true,
+                operation: '>',
+                value: 0,
+                target: 'x'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([undefined, undefined, undefined, undefined, 1, 2, 3]);
+        expect(out[0].y).toEqual([undefined, undefined, undefined, undefined, 2, 3, 1]);
+        expect(out[0].marker.color).toEqual([undefined, undefined, undefined, undefined, 0.2, 0.3, 0.4]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({4: [4], 5: [5], 6: [6]});
+    });
+
+    it('two filter transforms with `preservegaps: true` should commute', function() {
+        var transform0 = {
+            type: 'filter',
+            preservegaps: true,
+            operation: '>',
+            value: -1,
+            target: 'x'
+        };
+
+        var transform1 = {
+            type: 'filter',
+            preservegaps: true,
+            operation: '<',
+            value: 2,
+            target: 'x'
+        };
+
+        var out0 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform0, transform1]
+        })]);
+
+        var out1 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform1, transform0]
+        })]);
+        // _indexToPoints differs in the first transform but matches in the second
+        expect(out0[0].transforms[0]._indexToPoints).toEqual({3: [3], 4: [4], 5: [5], 6: [6]});
+        expect(out1[0].transforms[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [2], 3: [3], 4: [4]});
+        expect(out0[0].transforms[1]._indexToPoints).toEqual({3: [3], 4: [4]});
+        expect(out1[0].transforms[1]._indexToPoints).toEqual({3: [3], 4: [4]});
+
+        ['x', 'y', 'ids', 'marker.color', 'marker.size'].forEach(function(k) {
+            var v0 = Lib.nestedProperty(out0[0], k).get();
+            var v1 = Lib.nestedProperty(out1[0], k).get();
+            expect(v0).toEqual(v1);
+        });
+    });
+
+    it('two filter transforms with `preservegaps: false` should commute', function() {
+        var transform0 = {
+            type: 'filter',
+            preservegaps: false,
+            operation: '>',
+            value: -1,
+            target: 'x'
+        };
+
+        var transform1 = {
+            type: 'filter',
+            preservegaps: false,
+            operation: '<',
+            value: 2,
+            target: 'x'
+        };
+
+        var out0 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform0, transform1]
+        })]);
+
+        var out1 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform1, transform0]
+        })]);
+
+        // _indexToPoints differs in the first transform but matches in the second
+        expect(out0[0].transforms[0]._indexToPoints).toEqual({0: [3], 1: [4], 2: [5], 3: [6]});
+        expect(out1[0].transforms[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [2], 3: [3], 4: [4]});
+        expect(out0[0].transforms[1]._indexToPoints).toEqual({0: [3], 1: [4]});
+        expect(out1[0].transforms[1]._indexToPoints).toEqual({0: [3], 1: [4]});
+
+        ['x', 'y', 'ids', 'marker.color', 'marker.size'].forEach(function(k) {
+            var v0 = Lib.nestedProperty(out0[0], k).get();
+            var v1 = Lib.nestedProperty(out1[0], k).get();
+            expect(v0).toEqual(v1);
+        });
+    });
+
+    it('two filter transforms with different `preservegaps` values should not necessarily commute', function() {
+        var transform0 = {
+            type: 'filter',
+            preservegaps: true,
+            operation: '>',
+            value: -1,
+            target: 'x'
+        };
+
+        var transform1 = {
+            type: 'filter',
+            preservegaps: false,
+            operation: '<',
+            value: 2,
+            target: 'x'
+        };
+
+        var out0 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform0, transform1]
+        })]);
+
+        expect(out0[0].x).toEqual([0, 1]);
+        expect(out0[0].y).toEqual([1, 2]);
+        expect(out0[0].marker.color).toEqual([0.1, 0.2]);
+
+        var out1 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform1, transform0]
+        })]);
+
+        expect(out1[0].x).toEqual([undefined, undefined, undefined, 0, 1]);
+        expect(out1[0].y).toEqual([undefined, undefined, undefined, 1, 2]);
+        expect(out1[0].marker.color).toEqual([undefined, undefined, undefined, 0.1, 0.2]);
     });
 
     describe('filters should handle numeric values', function() {
@@ -595,6 +753,23 @@ describe('filter transforms calc:', function() {
             _assert(out, ['2015-07-20'], [1], [0.1]);
         });
 
+        it('with operation *!=*', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: '!=',
+                    value: '2015-07-20',
+                    target: 'x'
+                }]
+            })]);
+
+            _assert(
+                out,
+                ['2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                [2, 3, 1, 5],
+                [0.2, 0.3, 0.1, 0.2]
+            );
+        });
+
         it('with operation *<*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
@@ -699,6 +874,36 @@ describe('filter transforms calc:', function() {
 
         it('with numeric items', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: [1, 1, 0, 0, 1, 0, 1],
+                    operation: '{}',
+                    value: 0
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
+        });
+
+        it('with ragged items - longer target', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: [1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                    operation: '{}',
+                    value: 0
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
+        });
+
+        it('with ragged items - longer data', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                x: _base.x.concat(_base.x),
+                y: _base.y.concat(_base.y),
+                ids: _base.ids.concat(['a1', 'a2', 'a3', 'a4']),
+                marker: {color: _base.marker.color.concat(_base.marker.color)},
                 transforms: [{
                     target: [1, 1, 0, 0, 1, 0, 1],
                     operation: '{}',
@@ -845,10 +1050,6 @@ describe('filter transforms calc:', function() {
 describe('filter transforms interactions', function() {
     'use strict';
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     var mockData0 = [{
         x: [-2, -1, -2, 0, 1, 2, 3],
         y: [1, 2, 3, 1, 2, 3, 1],
@@ -878,11 +1079,11 @@ describe('filter transforms interactions', function() {
         Plotly.plot(createGraphDiv(), data).then(function(gd) {
             assertDims([3]);
 
-            var uid = data[0].uid;
+            var uid = gd._fullData[0]._fullInput.uid;
             expect(gd._fullData[0].uid).toEqual(uid + '0');
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.restyle should work', function(done) {
@@ -895,11 +1096,11 @@ describe('filter transforms interactions', function() {
         var uid;
         function assertUid(gd) {
             expect(gd._fullData[0].uid)
-                .toEqual(uid + '0', 'should preserve uid on restyle');
+                .toBe(uid + '0', 'should preserve uid on restyle');
         }
 
         Plotly.plot(gd, data).then(function() {
-            uid = gd.data[0].uid;
+            uid = gd._fullData[0]._fullInput.uid;
 
             expect(gd._fullData[0].marker.color).toEqual('red');
             assertUid(gd);
@@ -927,9 +1128,9 @@ describe('filter transforms interactions', function() {
 
             expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4]);
             expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0, 2]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -952,9 +1153,9 @@ describe('filter transforms interactions', function() {
             expect(gd._fullData[0].x.length).toEqual(5);
 
             assertDims([5]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.deleteTraces should work', function(done) {
@@ -972,9 +1173,9 @@ describe('filter transforms interactions', function() {
             return Plotly.deleteTraces(gd, [0]);
         }).then(function() {
             assertDims([]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
 
     });
 
@@ -997,9 +1198,9 @@ describe('filter transforms interactions', function() {
             return Plotly.restyle(gd, 'visible', [true, true], [0, 1]);
         }).then(function() {
             assertDims([3, 4]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('zooming in/out should not change filtered data', function(done) {
@@ -1025,6 +1226,7 @@ describe('filter transforms interactions', function() {
             expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
             expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -1068,6 +1270,30 @@ describe('filter transforms interactions', function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['i']);
             expect(gd._fullLayout.yaxis._categories).toEqual([]);
         })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should clear indexToPoints on removal', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.react(gd, [{
+            y: [1, 2, 3, 1, 2, 3],
+            transforms: [{
+                type: 'filter',
+                target: 'y',
+                operation: '<',
+                value: 3
+            }]
+        }])
+        .then(function() {
+            expect(gd._fullData[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [3], 3: [4]});
+            return Plotly.react(gd, [{ y: [1, 2, 3, 1, 2, 3] }]);
+        })
+        .then(function() {
+            expect(gd._fullData[0]._indexToPoints).toBeUndefined();
+        })
+        .catch(failTest)
         .then(done);
     });
 

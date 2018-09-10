@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,7 +14,11 @@ Pie.attributes = require('./attributes');
 Pie.supplyDefaults = require('./defaults');
 Pie.supplyLayoutDefaults = require('./layout_defaults');
 Pie.layoutAttributes = require('./layout_attributes');
-Pie.calc = require('./calc');
+
+var calcModule = require('./calc');
+Pie.calc = calcModule.calc;
+Pie.crossTraceCalc = calcModule.crossTraceCalc;
+
 Pie.plot = require('./plot');
 Pie.style = require('./style');
 Pie.styleOne = require('./style_one');

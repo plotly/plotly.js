@@ -32,8 +32,7 @@
             "type": "box",
             "marker": {
                 "outliercolor": "green"
-            },
-            "uid": "511258"
+            }
         }
     ],
     "layout": {

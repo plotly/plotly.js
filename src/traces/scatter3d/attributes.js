@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,15 +9,31 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
-var errorBarAttrs = require('../../components/errorbars/attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
+var baseAttrs = require('../../plots/attributes');
+var DASHES = require('../../constants/gl3d_dashes');
 
-var MARKER_SYMBOLS = require('../../constants/gl_markers');
+var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-var scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterLineAttrs = scatterAttrs.line;
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+
+var lineAttrs = extendFlat({
+    width: scatterLineAttrs.width,
+    dash: {
+        valType: 'enumerated',
+        values: Object.keys(DASHES),
+        dflt: 'solid',
+        role: 'style',
+        description: 'Sets the dash style of the lines.'
+    }
+}, colorAttributes('line'));
+// not yet implemented
+delete lineAttrs.showscale;
+delete lineAttrs.colorbar;
 
 function makeProjectionAttr(axLetter) {
     return {
@@ -52,15 +68,9 @@ function makeProjectionAttr(axLetter) {
     };
 }
 
-module.exports = {
-    x: {
-        valType: 'data_array',
-        description: 'Sets the x coordinates.'
-    },
-    y: {
-        valType: 'data_array',
-        description: 'Sets the y coordinates.'
-    },
+var attrs = module.exports = overrideAll({
+    x: scatterAttrs.x,
+    y: scatterAttrs.y,
     z: {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
@@ -111,23 +121,11 @@ module.exports = {
         y: makeProjectionAttr('y'),
         z: makeProjectionAttr('z')
     },
+
     connectgaps: scatterAttrs.connectgaps,
-    line: extendFlat({}, {
-        width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
-        showscale: {
-            valType: 'boolean',
-            role: 'info',
-            dflt: false,
-            description: [
-                'Has an effect only if `line.color` is set to a numerical array.',
-                'Determines whether or not a colorbar is displayed.'
-            ].join(' ')
-        }
-    },
-        colorAttributes('line')
-    ),
-    marker: extendFlat({}, {  // Parity with scatter.js?
+    line: lineAttrs,
+
+    marker: extendFlat({  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
             values: Object.keys(MARKER_SYMBOLS),
@@ -151,21 +149,25 @@ module.exports = {
                 'to an rgba color and use its alpha channel.'
             ].join(' ')
         }),
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
 
-        line: extendFlat({},
-            {width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false})},
+        line: extendFlat({
+            width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false})
+        },
             colorAttributes('marker.line')
         )
     },
         colorAttributes('marker')
     ),
 
-    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
-    textfont: scatterAttrs.textfont,
+    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center', arrayOk: false}),
+    textfont: {
+        color: scatterAttrs.textfont.color,
+        size: scatterAttrs.textfont.size,
+        family: extendFlat({}, scatterAttrs.textfont.family, {arrayOk: false})
+    },
 
-    error_x: errorBarAttrs,
-    error_y: errorBarAttrs,
-    error_z: errorBarAttrs,
-};
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
+}, 'calc', 'nested');
+
+attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

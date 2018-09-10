@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,7 +11,9 @@
 
 var mouseChange = require('mouse-change');
 var mouseWheel = require('mouse-wheel');
+var mouseOffset = require('mouse-event-offset');
 var cartesianConstants = require('../cartesian/constants');
+var hasPassive = require('has-passive-events');
 
 module.exports = createCamera;
 
@@ -55,7 +57,30 @@ function createCamera(scene) {
         return false;
     }
 
-    result.mouseListener = mouseChange(element, function(buttons, x, y) {
+    result.mouseListener = mouseChange(element, handleInteraction);
+
+    // enable simple touch interactions
+    element.addEventListener('touchstart', function(ev) {
+        var xy = mouseOffset(ev.changedTouches[0], element);
+        handleInteraction(0, xy[0], xy[1]);
+        handleInteraction(1, xy[0], xy[1]);
+
+        ev.preventDefault();
+    }, hasPassive ? {passive: false} : false);
+    element.addEventListener('touchmove', function(ev) {
+        ev.preventDefault();
+        var xy = mouseOffset(ev.changedTouches[0], element);
+        handleInteraction(1, xy[0], xy[1]);
+
+        ev.preventDefault();
+    }, hasPassive ? {passive: false} : false);
+    element.addEventListener('touchend', function(ev) {
+        handleInteraction(0, result.lastPos[0], result.lastPos[1]);
+
+        ev.preventDefault();
+    }, hasPassive ? {passive: false} : false);
+
+    function handleInteraction(buttons, x, y) {
         var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
 
@@ -110,7 +135,7 @@ function createCamera(scene) {
                     result.boxEnd[1] = dataY;
 
                     // we need to mark the box as initialized right away
-                    // so that we can tell the start and end pionts apart
+                    // so that we can tell the start and end points apart
                     result.boxInited = true;
 
                     // but don't actually enable the box until the cursor moves
@@ -131,7 +156,7 @@ function createCamera(scene) {
 
                         if(Math.abs(dx * dydx) > Math.abs(dy)) {
                             result.boxEnd[1] = result.boxStart[1] +
-                                Math.abs(dx) * dydx * (Math.sign(dy) || 1);
+                                Math.abs(dx) * dydx * (dy >= 0 ? 1 : -1);
 
                             // gl-select-box clips to the plot area bounds,
                             // which breaks the axis constraint, so don't allow
@@ -149,7 +174,7 @@ function createCamera(scene) {
                         }
                         else {
                             result.boxEnd[0] = result.boxStart[0] +
-                                Math.abs(dy) / dydx * (Math.sign(dx) || 1);
+                                Math.abs(dy) / dydx * (dx >= 0 ? 1 : -1);
 
                             if(result.boxEnd[0] < dataBox[0]) {
                                 result.boxEnd[0] = dataBox[0];
@@ -187,6 +212,10 @@ function createCamera(scene) {
                         scene.glplot.setDirty();
                     }
                     result.boxEnabled = false;
+                    result.boxInited = false;
+                }
+                // if box was inited but button released then - reset the box
+                else if(result.boxInited) {
                     result.boxInited = false;
                 }
                 break;
@@ -231,46 +260,41 @@ function createCamera(scene) {
 
         result.lastPos[0] = x;
         result.lastPos[1] = y;
-    });
+    }
 
     result.wheelListener = mouseWheel(element, function(dx, dy) {
+        if(!scene.scrollZoom) return false;
+
         var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
 
         var lastX = result.lastPos[0],
             lastY = result.lastPos[1];
 
-        switch(scene.fullLayout.dragmode) {
-            case 'zoom':
-                break;
+        var scale = Math.exp(5.0 * dy / (viewBox[3] - viewBox[1]));
 
-            case 'pan':
-                var scale = Math.exp(0.1 * dy / (viewBox[3] - viewBox[1]));
+        var cx = lastX /
+                (viewBox[2] - viewBox[0]) * (dataBox[2] - dataBox[0]) +
+            dataBox[0];
+        var cy = lastY /
+                (viewBox[3] - viewBox[1]) * (dataBox[3] - dataBox[1]) +
+            dataBox[1];
 
-                var cx = lastX /
-                        (viewBox[2] - viewBox[0]) * (dataBox[2] - dataBox[0]) +
-                    dataBox[0];
-                var cy = lastY /
-                        (viewBox[3] - viewBox[1]) * (dataBox[3] - dataBox[1]) +
-                    dataBox[1];
+        dataBox[0] = (dataBox[0] - cx) * scale + cx;
+        dataBox[2] = (dataBox[2] - cx) * scale + cx;
+        dataBox[1] = (dataBox[1] - cy) * scale + cy;
+        dataBox[3] = (dataBox[3] - cy) * scale + cy;
 
-                dataBox[0] = (dataBox[0] - cx) * scale + cx;
-                dataBox[2] = (dataBox[2] - cx) * scale + cx;
-                dataBox[1] = (dataBox[1] - cy) * scale + cy;
-                dataBox[3] = (dataBox[3] - cy) * scale + cy;
+        scene.setRanges(dataBox);
 
-                scene.setRanges(dataBox);
-
-                result.lastInputTime = Date.now();
-                unSetAutoRange();
-                scene.cameraChanged();
-                scene.handleAnnotations();
-                scene.relayoutCallback();
-                break;
-        }
+        result.lastInputTime = Date.now();
+        unSetAutoRange();
+        scene.cameraChanged();
+        scene.handleAnnotations();
+        scene.relayoutCallback();
 
         return true;
-    });
+    }, true);
 
     return result;
 }

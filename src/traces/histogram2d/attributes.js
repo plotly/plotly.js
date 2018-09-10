@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,20 +15,23 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({},
+module.exports = extendFlat(
     {
         x: histogramAttrs.x,
         y: histogramAttrs.y,
 
         z: {
             valType: 'data_array',
+            editType: 'calc',
             description: 'Sets the aggregation data.'
         },
         marker: {
             color: {
                 valType: 'data_array',
+                editType: 'calc',
                 description: 'Sets the aggregation data.'
-            }
+            },
+            editType: 'calc'
         },
 
         histnorm: histogramAttrs.histnorm,
@@ -42,9 +45,12 @@ module.exports = extendFlat({},
 
         xgap: heatmapAttrs.xgap,
         ygap: heatmapAttrs.ygap,
-        zsmooth: heatmapAttrs.zsmooth
+        zsmooth: heatmapAttrs.zsmooth,
+        zhoverformat: heatmapAttrs.zhoverformat
     },
-    colorscaleAttrs,
-    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+    colorscaleAttrs('', {
+        cLetter: 'z',
+        autoColorDflt: false
+    }),
     { colorbar: colorbarAttrs }
 );

@@ -43,8 +43,7 @@
                     38.8
                 ]
             },
-            "type": "scattergeo",
-            "uid": "918e2e"
+            "type": "scattergeo"
         },
         {
             "name": "Aug",
@@ -87,8 +86,7 @@
                     24.32
                 ]
             },
-            "type": "scattergeo",
-            "uid": "36b913"
+            "type": "scattergeo"
         },
         {
             "name": "July",
@@ -127,8 +125,7 @@
                     10.66
                 ]
             },
-            "type": "scattergeo",
-            "uid": "d13611"
+            "type": "scattergeo"
         },
         {
             "name": "June",
@@ -167,8 +164,7 @@
                     4.78
                 ]
             },
-            "type": "scattergeo",
-            "uid": "899c06"
+            "type": "scattergeo"
         },
         {
             "autocolorscale": false,
@@ -204,7 +200,6 @@
                 1940
             ],
             "locationmode": "country names",
-            "uid": "5c567c",
             "zmin": 3,
             "zmax": 3362
         },
@@ -221,8 +216,7 @@
             "lat": [
                 7.1881
             ],
-            "type": "scattergeo",
-            "uid": "5a4310"
+            "type": "scattergeo"
         }
     ],
     "layout": {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,21 +12,30 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
-    }
-
-    var hasBoxes;
+function _supply(layoutIn, layoutOut, fullData, coerce, traceType) {
+    var hasTraceType;
+    var category = traceType + 'Layout';
     for(var i = 0; i < fullData.length; i++) {
-        if(Registry.traceIs(fullData[i], 'box')) {
-            hasBoxes = true;
+        if(Registry.traceIs(fullData[i], category)) {
+            hasTraceType = true;
             break;
         }
     }
-    if(!hasBoxes) return;
+    if(!hasTraceType) return;
 
-    coerce('boxmode');
-    coerce('boxgap');
-    coerce('boxgroupgap');
+    coerce(traceType + 'mode');
+    coerce(traceType + 'gap');
+    coerce(traceType + 'groupgap');
+}
+
+function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
+    }
+    _supply(layoutIn, layoutOut, fullData, coerce, 'box');
+}
+
+module.exports = {
+    supplyLayoutDefaults: supplyLayoutDefaults,
+    _supply: _supply
 };

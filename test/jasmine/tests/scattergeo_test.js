@@ -1,5 +1,4 @@
 var Plotly = require('@lib');
-var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var BADNUM = require('@src/constants/numerical').BADNUM;
 
@@ -8,8 +7,13 @@ var ScatterGeo = require('@src/traces/scattergeo');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var mouseEvent = require('../assets/mouse_event');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var failTest = require('../assets/fail_test');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Test scattergeo defaults', function() {
     var traceIn,
@@ -22,18 +26,21 @@ describe('Test scattergeo defaults', function() {
         traceOut = {};
     });
 
-    it('should slice lat if it it longer than lon', function() {
+    it('should not slice lat if it it longer than lon', function() {
+        // this is handled at the calc step now via _length.
         traceIn = {
             lon: [-75],
             lat: [45, 45, 45]
         };
 
         ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-        expect(traceOut.lat).toEqual([45]);
+        expect(traceOut.lat).toEqual([45, 45, 45]);
         expect(traceOut.lon).toEqual([-75]);
+        expect(traceOut._length).toBe(1);
     });
 
     it('should slice lon if it it longer than lat', function() {
+        // this is handled at the calc step now via _length.
         traceIn = {
             lon: [-75, -75, -75],
             lat: [45]
@@ -41,7 +48,8 @@ describe('Test scattergeo defaults', function() {
 
         ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.lat).toEqual([45]);
-        expect(traceOut.lon).toEqual([-75]);
+        expect(traceOut.lon).toEqual([-75, -75, -75]);
+        expect(traceOut._length).toBe(1);
     });
 
     it('should not coerce lat and lon if locations is valid', function() {
@@ -86,10 +94,14 @@ describe('Test scattergeo calc', function() {
         var trace = Lib.extendFlat({}, base, opts);
         var gd = { data: [trace] };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         var fullTrace = gd._fullData[0];
-        return ScatterGeo.calc(gd, fullTrace);
+        return ScatterGeo.calc(gd, fullTrace).map(function(obj) {
+            delete obj.i;
+            delete obj.t;
+            return obj;
+        });
     }
 
     it('should place lon/lat data in lonlat pairs', function() {
@@ -231,14 +243,6 @@ describe('Test scattergeo calc', function() {
 describe('Test scattergeo hover', function() {
     var gd;
 
-    // we can't mock ScatterGeo.hoverPoints
-    // because geo hover relies on mouse event
-    // to set the c2p conversion functions
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function(done) {
         gd = createGraphDiv();
 
@@ -248,45 +252,143 @@ describe('Test scattergeo hover', function() {
             lat: [10, 20, 30],
             text: ['A', 'B', 'C']
         }])
+        .catch(failTest)
         .then(done);
     });
 
     afterEach(destroyGraphDiv);
 
-    function assertHoverLabels(expected) {
-        var hoverText = d3.selectAll('g.hovertext').selectAll('tspan');
+    function check(pos, content, style) {
+        mouseEvent('mousemove', pos[0], pos[1]);
 
-        hoverText.each(function(_, i) {
-            expect(this.innerHTML).toEqual(expected[i]);
+        style = style || {
+            bgcolor: 'rgb(31, 119, 180)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontColor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial'
+        };
+
+        assertHoverLabelContent({
+            nums: content[0],
+            name: content[1]
         });
+        assertHoverLabelStyle(
+            d3.select('g.hovertext'),
+            style
+        );
     }
 
     it('should generate hover label info (base case)', function() {
-        mouseEvent('mousemove', 381, 221);
-        assertHoverLabels(['(10°, 10°)', 'A']);
+        check([381, 221], ['(10°, 10°)\nA', null]);
+    });
+
+    it('should generate hover label info (with trace name)', function(done) {
+        Plotly.restyle(gd, 'hoverinfo', 'lon+lat+text+name').then(function() {
+            check([381, 221], ['(10°, 10°)\nA', 'trace 0']);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should generate hover label info (\'text\' single value case)', function(done) {
         Plotly.restyle(gd, 'text', 'text').then(function() {
-            mouseEvent('mousemove', 381, 221);
-            assertHoverLabels(['(10°, 10°)', 'text']);
+            check([381, 221], ['(10°, 10°)\ntext', null]);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('should generate hover label info (\'hovertext\' single value case)', function(done) {
         Plotly.restyle(gd, 'hovertext', 'hovertext').then(function() {
-            mouseEvent('mousemove', 381, 221);
-            assertHoverLabels(['(10°, 10°)', 'hovertext']);
+            check([381, 221], ['(10°, 10°)\nhovertext', null]);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('should generate hover label info (\'hovertext\' array case)', function(done) {
         Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
-            mouseEvent('mousemove', 381, 221);
-            assertHoverLabels(['(10°, 10°)', 'Apple']);
+            check([381, 221], ['(10°, 10°)\nApple', null]);
         })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should generate hover label with custom styling', function(done) {
+        Plotly.restyle(gd, {
+            'hoverlabel.bgcolor': 'red',
+            'hoverlabel.bordercolor': [['blue', 'black', 'green']]
+        })
+        .then(function() {
+            check([381, 221], ['(10°, 10°)\nA', null], {
+                bgcolor: 'rgb(255, 0, 0)',
+                bordercolor: 'rgb(0, 0, 255)',
+                fontColor: 'rgb(0, 0, 255)',
+                fontSize: 13,
+                fontFamily: 'Arial'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
+        Plotly.restyle(gd, 'hoverinfo', [['lon', null, 'lat+name']]).then(function() {
+            check([381, 221], ['lon: 10°', null]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('scattergeo drawing', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should not throw an error with bad locations', function(done) {
+        spyOn(Lib, 'log');
+        Plotly.newPlot(gd, [{
+            locations: ['canada', 0, null, '', 'utopia'],
+            locationmode: 'country names',
+            type: 'scattergeo'
+        }])
+        .then(function() {
+            // only utopia logs - others are silently ignored
+            expect(Lib.log).toHaveBeenCalledTimes(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves order after hide/show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.scattergeo').each(function(d) { out.push(d[0].trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [
+            {type: 'scattergeo', lon: [10, 20], lat: [10, 20]},
+            {type: 'scattergeo', lon: [10, 20], lat: [10, 20]}
+        ])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+        })
+        .catch(failTest)
         .then(done);
     });
 });

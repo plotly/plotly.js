@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -31,9 +31,13 @@ module.exports = {
     grabAreaMaxClassName: 'rangeslider-grabarea-max',
     handleMaxClassName: 'rangeslider-handle-max',
 
+    maskMinOppAxisClassName: 'rangeslider-mask-min-opp-axis',
+    maskMaxOppAxisClassName: 'rangeslider-mask-max-opp-axis',
+
     // style constants
 
     maskColor: 'rgba(0,0,0,0.4)',
+    maskOppAxisColor: 'rgba(0,0,0,0.2)',
 
     slideBoxFill: 'transparent',
     slideBoxCursor: 'ew-resize',

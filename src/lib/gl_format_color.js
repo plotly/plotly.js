@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,10 +10,12 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var rgba = require('color-rgba');
+var tinycolor = require('tinycolor2');
+var rgba = require('color-normalize');
 
 var Colorscale = require('../components/colorscale');
 var colorDflt = require('../components/color/attributes').defaultLine;
+var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
 
 var colorDfltRgba = rgba(colorDflt);
 var opacityDflt = 1;
@@ -37,10 +39,10 @@ function validateOpacity(opacityIn) {
 }
 
 function formatColor(containerIn, opacityIn, len) {
-    var colorIn = containerIn.color,
-        isArrayColorIn = Array.isArray(colorIn),
-        isArrayOpacityIn = Array.isArray(opacityIn),
-        colorOut = [];
+    var colorIn = containerIn.color;
+    var isArrayColorIn = isArrayOrTypedArray(colorIn);
+    var isArrayOpacityIn = isArrayOrTypedArray(opacityIn);
+    var colorOut = [];
 
     var sclFunc, getColor, getOpacity, colori, opacityi;
 
@@ -59,6 +61,7 @@ function formatColor(containerIn, opacityIn, len) {
 
     if(isArrayColorIn) {
         getColor = function(c, i) {
+            // FIXME: there is double work, considering that sclFunc does the opposite
             return c[i] === undefined ? colorDfltRgba : rgba(sclFunc(c[i]));
         };
     }
@@ -83,4 +86,21 @@ function formatColor(containerIn, opacityIn, len) {
     return colorOut;
 }
 
-module.exports = formatColor;
+function parseColorScale(colorscale, alpha) {
+    if(alpha === undefined) alpha = 1;
+
+    return colorscale.map(function(elem) {
+        var index = elem[0];
+        var color = tinycolor(elem[1]);
+        var rgb = color.toRgb();
+        return {
+            index: index,
+            rgb: [rgb.r, rgb.g, rgb.b, alpha]
+        };
+    });
+}
+
+module.exports = {
+    formatColor: formatColor,
+    parseColorScale: parseColorScale
+};

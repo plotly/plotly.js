@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -33,7 +33,10 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
         return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
     }
 
-    var buttons = buttonsDefaults(menuIn, menuOut);
+    var buttons = handleArrayContainerDefaults(menuIn, menuOut, {
+        name: 'buttons',
+        handleItemDefaults: buttonDefaults
+    });
 
     var visible = coerce('visible', buttons.length > 0);
     if(!visible) return;
@@ -62,31 +65,17 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     coerce('borderwidth');
 }
 
-function buttonsDefaults(menuIn, menuOut) {
-    var buttonsIn = menuIn.buttons || [],
-        buttonsOut = menuOut.buttons = [];
-
-    var buttonIn, buttonOut;
-
+function buttonDefaults(buttonIn, buttonOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
     }
 
-    for(var i = 0; i < buttonsIn.length; i++) {
-        buttonIn = buttonsIn[i];
-        buttonOut = {};
-
-        if(!Lib.isPlainObject(buttonIn) || !Array.isArray(buttonIn.args)) {
-            continue;
-        }
-
+    var visible = coerce('visible',
+        (buttonIn.method === 'skip' || Array.isArray(buttonIn.args)));
+    if(visible) {
         coerce('method');
         coerce('args');
         coerce('label');
-
-        buttonOut._index = i;
-        buttonsOut.push(buttonOut);
+        coerce('execute');
     }
-
-    return buttonsOut;
 }

@@ -1,7 +1,12 @@
+var Plotly = require('@lib/index');
 var Gl3d = require('@src/plots/gl3d');
 
 var tinycolor = require('tinycolor2');
 var Color = require('@src/components/color');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 
 
 describe('Test Gl3d layout defaults', function() {
@@ -13,7 +18,11 @@ describe('Test Gl3d layout defaults', function() {
         var supplyLayoutDefaults = Gl3d.supplyLayoutDefaults;
 
         beforeEach(function() {
-            layoutOut = { _basePlotModules: ['gl3d'] };
+            layoutOut = {
+                _basePlotModules: ['gl3d'],
+                _dfltTitle: {x: 'xxx', y: 'yyy', colorbar: 'cbbb'},
+                _subplots: {gl3d: ['scene']}
+            };
 
             // needs a scene-ref in a trace in order to be detected
             fullData = [ { type: 'scatter3d', scene: 'scene' }];
@@ -227,12 +236,14 @@ describe('Test Gl3d layout defaults', function() {
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutIn.scene).toEqual({
-                aspectratio: { x: 1, y: 1, z: 1 }
+                aspectratio: { x: 1, y: 1, z: 1 },
+                aspectmode: 'auto'
             });
         });
 
         it('should add scene data-only scenes into layoutIn (converse)', function() {
             layoutIn = {};
+            layoutOut._subplots.gl3d = [];
             fullData = [{ type: 'scatter' }];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -261,4 +272,36 @@ describe('Test Gl3d layout defaults', function() {
                 .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
         });
     });
+});
+
+describe('Gl3d layout edge cases', function() {
+    var gd;
+
+    beforeEach(function() {gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+
+    it('should handle auto aspect ratio correctly on data changes', function(done) {
+        Plotly.plot(gd, [{x: [1, 2], y: [1, 3], z: [1, 4], type: 'scatter3d'}])
+        .then(function() {
+            var aspect = gd.layout.scene.aspectratio;
+            expect(aspect.x).toBeCloseTo(0.5503);
+            expect(aspect.y).toBeCloseTo(1.1006);
+            expect(aspect.z).toBeCloseTo(1.6510);
+
+            return Plotly.restyle(gd, 'x', [[1, 6]]);
+        })
+        .then(function() {
+            /*
+             * Check that now it's the same as if you had just made the plot with
+             * x: [1, 6] in the first place
+             */
+            var aspect = gd.layout.scene.aspectratio;
+            expect(aspect.x).toBeCloseTo(1.6091);
+            expect(aspect.y).toBeCloseTo(0.6437);
+            expect(aspect.z).toBeCloseTo(0.9655);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
 });

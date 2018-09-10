@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,31 +15,11 @@ var m4FromQuat = require('gl-mat4/fromQuat');
 var Registry = require('../registry');
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
-var Axes = require('../plots/cartesian/axes');
+var AxisIds = require('../plots/cartesian/axis_ids');
+var cleanId = AxisIds.cleanId;
+var getFromTrace = AxisIds.getFromTrace;
 var Color = require('../components/color');
 
-
-// Get the container div: we store all variables for this plot as
-// properties of this div
-// some callers send this in by DOM element, others by id (string)
-exports.getGraphDiv = function(gd) {
-    var gdElement;
-
-    if(typeof gd === 'string') {
-        gdElement = document.getElementById(gd);
-
-        if(gdElement === null) {
-            throw new Error('No DOM element with id \'' + gd + '\' exists on the page.');
-        }
-
-        return gdElement;
-    }
-    else if(gd === null || gd === undefined) {
-        throw new Error('DOM element provided is null or undefined');
-    }
-
-    return gd;  // otherwise assume that gd is a DOM element
-};
 
 // clear the promise queue if one of them got rejected
 exports.clearPromiseQueue = function(gd) {
@@ -67,38 +47,78 @@ exports.cleanLayout = function(layout) {
         if(!layout.yaxis) layout.yaxis = layout.yaxis1;
         delete layout.yaxis1;
     }
+    if(layout.scene1) {
+        if(!layout.scene) layout.scene = layout.scene1;
+        delete layout.scene1;
+    }
 
-    var axList = Axes.list({_fullLayout: layout});
-    for(i = 0; i < axList.length; i++) {
-        var ax = axList[i];
-        if(ax.anchor && ax.anchor !== 'free') {
-            ax.anchor = Axes.cleanId(ax.anchor);
-        }
-        if(ax.overlaying) ax.overlaying = Axes.cleanId(ax.overlaying);
+    var axisAttrRegex = (Plots.subplotsRegistry.cartesian || {}).attrRegex;
+    var sceneAttrRegex = (Plots.subplotsRegistry.gl3d || {}).attrRegex;
 
-        // old method of axis type - isdate and islog (before category existed)
-        if(!ax.type) {
-            if(ax.isdate) ax.type = 'date';
-            else if(ax.islog) ax.type = 'log';
-            else if(ax.isdate === false && ax.islog === false) ax.type = 'linear';
-        }
-        if(ax.autorange === 'withzero' || ax.autorange === 'tozero') {
-            ax.autorange = true;
-            ax.rangemode = 'tozero';
-        }
-        delete ax.islog;
-        delete ax.isdate;
-        delete ax.categories; // replaced by _categories
+    var keys = Object.keys(layout);
+    for(i = 0; i < keys.length; i++) {
+        var key = keys[i];
 
-        // prune empty domain arrays made before the new nestedProperty
-        if(emptyContainer(ax, 'domain')) delete ax.domain;
-
-        // autotick -> tickmode
-        if(ax.autotick !== undefined) {
-            if(ax.tickmode === undefined) {
-                ax.tickmode = ax.autotick ? 'auto' : 'linear';
+        // modifications to cartesian axes
+        if(axisAttrRegex && axisAttrRegex.test(key)) {
+            var ax = layout[key];
+            if(ax.anchor && ax.anchor !== 'free') {
+                ax.anchor = cleanId(ax.anchor);
             }
-            delete ax.autotick;
+            if(ax.overlaying) ax.overlaying = cleanId(ax.overlaying);
+
+            // old method of axis type - isdate and islog (before category existed)
+            if(!ax.type) {
+                if(ax.isdate) ax.type = 'date';
+                else if(ax.islog) ax.type = 'log';
+                else if(ax.isdate === false && ax.islog === false) ax.type = 'linear';
+            }
+            if(ax.autorange === 'withzero' || ax.autorange === 'tozero') {
+                ax.autorange = true;
+                ax.rangemode = 'tozero';
+            }
+            delete ax.islog;
+            delete ax.isdate;
+            delete ax.categories; // replaced by _categories
+
+            // prune empty domain arrays made before the new nestedProperty
+            if(emptyContainer(ax, 'domain')) delete ax.domain;
+
+            // autotick -> tickmode
+            if(ax.autotick !== undefined) {
+                if(ax.tickmode === undefined) {
+                    ax.tickmode = ax.autotick ? 'auto' : 'linear';
+                }
+                delete ax.autotick;
+            }
+        }
+
+        // modifications for 3D scenes
+        else if(sceneAttrRegex && sceneAttrRegex.test(key)) {
+            var scene = layout[key];
+
+            // clean old Camera coords
+            var cameraposition = scene.cameraposition;
+
+            if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
+                var rotation = cameraposition[0],
+                    center = cameraposition[1],
+                    radius = cameraposition[2],
+                    mat = m4FromQuat([], rotation),
+                    eye = [];
+
+                for(j = 0; j < 3; ++j) {
+                    eye[j] = center[j] + radius * mat[2 + 4 * j];
+                }
+
+                scene.camera = {
+                    eye: {x: eye[0], y: eye[1], z: eye[2]},
+                    center: {x: center[0], y: center[1], z: center[2]},
+                    up: {x: mat[1], y: mat[5], z: mat[9]}
+                };
+
+                delete scene.cameraposition;
+            }
         }
     }
 
@@ -161,42 +181,6 @@ exports.cleanLayout = function(layout) {
      */
     if(layout.dragmode === 'rotate') layout.dragmode = 'orbit';
 
-    // cannot have scene1, numbering goes scene, scene2, scene3...
-    if(layout.scene1) {
-        if(!layout.scene) layout.scene = layout.scene1;
-        delete layout.scene1;
-    }
-
-    /*
-     * Clean up Scene layouts
-     */
-    var sceneIds = Plots.getSubplotIds(layout, 'gl3d');
-    for(i = 0; i < sceneIds.length; i++) {
-        var scene = layout[sceneIds[i]];
-
-        // clean old Camera coords
-        var cameraposition = scene.cameraposition;
-        if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-            var rotation = cameraposition[0],
-                center = cameraposition[1],
-                radius = cameraposition[2],
-                mat = m4FromQuat([], rotation),
-                eye = [];
-
-            for(j = 0; j < 3; ++j) {
-                eye[j] = center[i] + radius * mat[2 + 4 * j];
-            }
-
-            scene.camera = {
-                eye: {x: eye[0], y: eye[1], z: eye[2]},
-                center: {x: center[0], y: center[1], z: center[2]},
-                up: {x: mat[1], y: mat[5], z: mat[9]}
-            };
-
-            delete scene.cameraposition;
-        }
-    }
-
     // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
     // supported, but new tinycolor does not because they're not valid css
     Color.clean(layout);
@@ -208,41 +192,21 @@ function cleanAxRef(container, attr) {
     var valIn = container[attr],
         axLetter = attr.charAt(0);
     if(valIn && valIn !== 'paper') {
-        container[attr] = Axes.cleanId(valIn, axLetter);
+        container[attr] = cleanId(valIn, axLetter);
     }
 }
 
-// Make a few changes to the data right away
-// before it gets used for anything
-exports.cleanData = function(data, existingData) {
-
-    // Enforce unique IDs
-    var suids = [], // seen uids --- so we can weed out incoming repeats
-        uids = data.concat(Array.isArray(existingData) ? existingData : [])
-               .filter(function(trace) { return 'uid' in trace; })
-               .map(function(trace) { return trace.uid; });
-
+/*
+ * cleanData: Make a few changes to the data for backward compatibility
+ * before it gets used for anything. Modifies the data traces users provide.
+ *
+ * Important: if you're going to add something here that modifies a data array,
+ * update it in place so the new array === the old one.
+ */
+exports.cleanData = function(data) {
     for(var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
         var i;
-
-        // assign uids to each trace and detect collisions.
-        if(!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
-            var newUid;
-
-            for(i = 0; i < 100; i++) {
-                newUid = Lib.randstr(uids);
-                if(suids.indexOf(newUid) === -1) break;
-            }
-            trace.uid = Lib.randstr(uids);
-            uids.push(trace.uid);
-        }
-        // keep track of already seen uids, so that if there are
-        // doubles we force the trace with a repeat uid to
-        // acquire a new one
-        suids.push(trace.uid);
-
-        // BACKWARD COMPATIBILITY FIXES
 
         // use xbins to bin data in x, and ybins to bin data in y
         if(trace.type === 'histogramy' && 'xbins' in trace && !('ybins' in trace)) {
@@ -290,8 +254,8 @@ exports.cleanData = function(data, existingData) {
         }
 
         // axis ids x1 -> x, y1-> y
-        if(trace.xaxis) trace.xaxis = Axes.cleanId(trace.xaxis, 'x');
-        if(trace.yaxis) trace.yaxis = Axes.cleanId(trace.yaxis, 'y');
+        if(trace.xaxis) trace.xaxis = cleanId(trace.xaxis, 'x');
+        if(trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
         if(Registry.traceIs(trace, 'gl3d') && trace.scene) {
@@ -300,7 +264,9 @@ exports.cleanData = function(data, existingData) {
 
         if(!Registry.traceIs(trace, 'pie') && !Registry.traceIs(trace, 'bar')) {
             if(Array.isArray(trace.textposition)) {
-                trace.textposition = trace.textposition.map(cleanTextPosition);
+                for(i = 0; i < trace.textposition.length; i++) {
+                    trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
+                }
             }
             else if(trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
@@ -308,14 +274,14 @@ exports.cleanData = function(data, existingData) {
         }
 
         // fix typo in colorscale definition
-        if(Registry.traceIs(trace, '2dMap')) {
-            if(trace.colorscale === 'YIGnBu') trace.colorscale = 'YlGnBu';
-            if(trace.colorscale === 'YIOrRd') trace.colorscale = 'YlOrRd';
-        }
-        if(Registry.traceIs(trace, 'markerColorscale') && trace.marker) {
-            var cont = trace.marker;
-            if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
-            if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
+        var _module = Registry.getModule(trace);
+        if(_module && _module.colorbar) {
+            var containerName = _module.colorbar.container;
+            var container = containerName ? trace[containerName] : trace;
+            if(container && container.colorscale) {
+                if(container.colorscale === 'YIGnBu') container.colorscale = 'YlGnBu';
+                if(container.colorscale === 'YIOrRd') container.colorscale = 'YlOrRd';
+            }
         }
 
         // fix typo in surface 'highlight*' definitions
@@ -339,6 +305,32 @@ exports.cleanData = function(data, existingData) {
             }
         }
 
+        // fixes from converting finance from transforms to real trace types
+        if(trace.type === 'candlestick' || trace.type === 'ohlc') {
+            var increasingShowlegend = (trace.increasing || {}).showlegend !== false;
+            var decreasingShowlegend = (trace.decreasing || {}).showlegend !== false;
+            var increasingName = cleanFinanceDir(trace.increasing);
+            var decreasingName = cleanFinanceDir(trace.decreasing);
+
+            // now figure out something smart to do with the separate direction
+            // names we removed
+            if((increasingName !== false) && (decreasingName !== false)) {
+                // both sub-names existed: base name previously had no effect
+                // so ignore it and try to find a shared part of the sub-names
+
+                var newName = commonPrefix(
+                    increasingName, decreasingName,
+                    increasingShowlegend, decreasingShowlegend
+                );
+                // if no common part, leave whatever name was (or wasn't) there
+                if(newName) trace.name = newName;
+            }
+            else if((increasingName || decreasingName) && !trace.name) {
+                // one sub-name existed but not the base name - just use the sub-name
+                trace.name = increasingName || decreasingName;
+            }
+        }
+
         // transforms backward compatibility fixes
         if(Array.isArray(trace.transforms)) {
             var transforms = trace.transforms;
@@ -348,18 +340,38 @@ exports.cleanData = function(data, existingData) {
 
                 if(!Lib.isPlainObject(transform)) continue;
 
-                if(transform.type === 'filter') {
-                    if(transform.filtersrc) {
-                        transform.target = transform.filtersrc;
-                        delete transform.filtersrc;
-                    }
-
-                    if(transform.calendar) {
-                        if(!transform.valuecalendar) {
-                            transform.valuecalendar = transform.calendar;
+                switch(transform.type) {
+                    case 'filter':
+                        if(transform.filtersrc) {
+                            transform.target = transform.filtersrc;
+                            delete transform.filtersrc;
                         }
-                        delete transform.calendar;
-                    }
+
+                        if(transform.calendar) {
+                            if(!transform.valuecalendar) {
+                                transform.valuecalendar = transform.calendar;
+                            }
+                            delete transform.calendar;
+                        }
+                        break;
+
+                    case 'groupby':
+                        // Name has changed from `style` to `styles`, so use `style` but prefer `styles`:
+                        transform.styles = transform.styles || transform.style;
+
+                        if(transform.styles && !Array.isArray(transform.styles)) {
+                            var prevStyles = transform.styles;
+                            var styleKeys = Object.keys(prevStyles);
+
+                            transform.styles = [];
+                            for(var j = 0; j < styleKeys.length; j++) {
+                                transform.styles.push({
+                                    target: styleKeys[j],
+                                    value: prevStyles[styleKeys[j]]
+                                });
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -376,6 +388,38 @@ exports.cleanData = function(data, existingData) {
         Color.clean(trace);
     }
 };
+
+function cleanFinanceDir(dirContainer) {
+    if(!Lib.isPlainObject(dirContainer)) return false;
+
+    var dirName = dirContainer.name;
+
+    delete dirContainer.name;
+    delete dirContainer.showlegend;
+
+    return (typeof dirName === 'string' || typeof dirName === 'number') && String(dirName);
+}
+
+function commonPrefix(name1, name2, show1, show2) {
+    // if only one is shown in the legend, use that
+    if(show1 && !show2) return name1;
+    if(show2 && !show1) return name2;
+
+    // if both or neither are in the legend, check if one is blank (or whitespace)
+    // and use the other one
+    // note that hover labels can still use the name even if the legend doesn't
+    if(!name1.trim()) return name2;
+    if(!name2.trim()) return name1;
+
+    var minLen = Math.min(name1.length, name2.length);
+    var i;
+    for(i = 0; i < minLen; i++) {
+        if(name1.charAt(i) !== name2.charAt(i)) break;
+    }
+
+    var out = name1.substr(0, i);
+    return out.trim();
+}
 
 // textposition - support partial attributes (ie just 'top')
 // and incorrect use of middle / center etc.
@@ -415,7 +459,7 @@ exports.swapXYData = function(trace) {
             Lib.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
         }
     }
-    if(trace.hoverinfo) {
+    if(typeof trace.hoverinfo === 'string') {
         var hoverInfoParts = trace.hoverinfo.split('+');
         for(i = 0; i < hoverInfoParts.length; i++) {
             if(hoverInfoParts[i] === 'x') hoverInfoParts[i] = 'y';
@@ -516,4 +560,37 @@ exports.hasParent = function(aobj, attr) {
         attrParent = getParent(attrParent);
     }
     return false;
+};
+
+/**
+ * Empty out types for all axes containing these traces so we auto-set them again
+ *
+ * @param {object} gd
+ * @param {[integer]} traces: trace indices to search for axes to clear the types of
+ * @param {object} layoutUpdate: any update being done concurrently to the layout,
+ *   which may supercede clearing the axis types
+ */
+var axLetters = ['x', 'y', 'z'];
+exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
+    for(var i = 0; i < traces.length; i++) {
+        var trace = gd._fullData[i];
+        for(var j = 0; j < 3; j++) {
+            var ax = getFromTrace(gd, trace, axLetters[j]);
+
+            // do not clear log type - that's never an auto result so must have been intentional
+            if(ax && ax.type !== 'log') {
+                var axAttr = ax._name;
+                var sceneName = ax._id.substr(1);
+                if(sceneName.substr(0, 5) === 'scene') {
+                    if(layoutUpdate[sceneName] !== undefined) continue;
+                    axAttr = sceneName + '.' + axAttr;
+                }
+                var typeAttr = axAttr + '.type';
+
+                if(layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
+                    Lib.nestedProperty(gd.layout, typeAttr).set(null);
+                }
+            }
+        }
+    }
 };

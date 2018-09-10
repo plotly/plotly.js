@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -64,6 +64,8 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
         length = inputs.length;
 
     var input, key, src, copy, copyIsArray, clone, allPrimitives;
+
+    // TODO does this do the right thing for typed arrays?
 
     if(length === 2 && isArray(target) && isArray(inputs[1]) && target.length === 0) {
 

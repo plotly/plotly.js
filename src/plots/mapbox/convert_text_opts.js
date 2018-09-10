@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,6 @@
 'use strict';
 
 var Lib = require('../../lib');
-
 
 /**
  * Convert plotly.js 'textposition' to mapbox-gl 'anchor' and 'offset'
@@ -29,7 +28,7 @@ module.exports = function convertTextOpts(textposition, iconSize) {
         hPos = parts[1];
 
     // ballpack values
-    var factor = Array.isArray(iconSize) ? Lib.mean(iconSize) : iconSize,
+    var factor = Lib.isArrayOrTypedArray(iconSize) ? Lib.mean(iconSize) : iconSize,
         xInc = 0.5 + (factor / 100),
         yInc = 1.5 + (factor / 100);
 

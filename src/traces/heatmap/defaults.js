@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,8 +11,8 @@
 
 var Lib = require('../../lib');
 
-var hasColumns = require('./has_columns');
 var handleXYZDefaults = require('./xyz_defaults');
+var handleStyleDefaults = require('./style_defaults');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
 
@@ -22,22 +22,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
-    if(!len) {
+    var validData = handleXYZDefaults(traceIn, traceOut, coerce, layout);
+    if(!validData) {
         traceOut.visible = false;
         return;
     }
 
     coerce('text');
 
-    var zsmooth = coerce('zsmooth');
-    if(zsmooth === false) {
-        // ensure that xgap and ygap are coerced only when zsmooth allows them to have an effect.
-        coerce('xgap');
-        coerce('ygap');
-    }
+    handleStyleDefaults(traceIn, traceOut, coerce, layout);
 
-    coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
+    coerce('connectgaps', Lib.isArray1D(traceOut.z) && (traceOut.zsmooth !== false));
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };

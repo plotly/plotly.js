@@ -1,0 +1,18 @@
+{
+    "data": [{
+      "name": "array error bars",
+      "type": "scattergl",
+      "y": [10, 2e4, 5e6],
+      "error_y": {"array": [5, 1e4, 4e6]}
+    }, {
+      "name": "50% percent error bars",
+      "type": "scattergl",
+      "x0": 0.2,
+      "y": [10, 2e4, 5e6],
+      "error_y": {"type": "percent", "value": 50}
+    }],
+    "layout": {
+      "yaxis": {"type": "log"},
+      "showlegend": false
+    }
+}

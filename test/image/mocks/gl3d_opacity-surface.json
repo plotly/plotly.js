@@ -7833,8 +7833,7 @@
           -2
         ]
       ],
-      "type": "surface",
-      "uid": "89c3db"
+      "type": "surface"
     }
   ],
   "layout": {
@@ -7849,7 +7848,6 @@
     "paper_bgcolor": "#fff",
     "plot_bgcolor": "#fff",
     "dragmode": "zoom",
-    "smith": false,
     "scene": {
       "domain": {
         "y": [

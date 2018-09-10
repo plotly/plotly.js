@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,18 +11,20 @@
 
 
 var Events = require('../../lib/events');
+var throttle = require('../../lib/throttle');
+var getGraphDiv = require('../../lib/get_graph_div');
 
+var hoverConstants = require('../fx/constants');
 
 var unhover = module.exports = {};
 
 
 unhover.wrapped = function(gd, evt, subplot) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+    gd = getGraphDiv(gd);
 
     // Important, clear any queued hovers
-    if(gd._hoverTimer) {
-        clearTimeout(gd._hoverTimer);
-        gd._hoverTimer = undefined;
+    if(gd._fullLayout) {
+        throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
     }
 
     unhover.raw(gd, evt, subplot);
@@ -41,6 +43,8 @@ unhover.raw = function unhoverRaw(gd, evt) {
     }
 
     fullLayout._hoverlayer.selectAll('g').remove();
+    fullLayout._hoverlayer.selectAll('line').remove();
+    fullLayout._hoverlayer.selectAll('circle').remove();
     gd._hoverdata = undefined;
 
     if(evt.target && oldhoverdata) {

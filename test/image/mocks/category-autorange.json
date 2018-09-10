@@ -1,0 +1,195 @@
+{
+    "data":[{
+        "mode": "markers",
+        "x": ["a", "b", "c"],
+        "y": ["X", "Y", "Z"],
+        "xaxis": "x",
+        "yaxis": "y"
+    }, {
+        "mode": "markers",
+        "x": ["a", "b", "c"],
+        "y": ["X", "Y", "Z"],
+        "xaxis": "x2",
+        "yaxis": "y2"
+    }, {
+        "mode": "markers",
+        "x": ["a", "b", "c"],
+        "y": ["X", "Y", "Z"],
+        "xaxis": "x3",
+        "yaxis": "y3"
+    }, {
+        "mode": "markers",
+        "x": ["a", "b", "c"],
+        "y": ["X", "Y", "Z"],
+        "xaxis": "x4",
+        "yaxis": "y4"
+    }],
+    "layout":{
+        "xaxis":{
+            "categoryarray": ["a", "b", "c", "d"],
+            "anchor": "x",
+            "domain": [0, 0.48],
+            "ticks": "outside",
+            "mirror":"allticks",
+            "zeroline":false,
+            "showline":true
+        },
+        "xaxis2":{
+            "categoryarray": ["a", "b", "c", "d"],
+            "anchor": "y2",
+            "domain": [0.52, 1],
+            "ticks": "outside",
+            "mirror":"allticks",
+            "zeroline":false,
+            "showline":true,
+            "range": [-0.5, 2.5]
+        },
+        "xaxis3":{
+            "categoryarray": ["a", "b", "c", "d"],
+            "side": "top",
+            "anchor": "y3",
+            "domain": [0, 0.48],
+            "ticks": "outside",
+            "mirror":"allticks",
+            "zeroline":false,
+            "showline":true
+        },
+        "xaxis4":{
+            "categoryarray": ["a", "b", "c", "d"],
+            "side": "top",
+            "anchor": "y4",
+            "domain": [0.52, 1],
+            "ticks": "outside",
+            "mirror":"allticks",
+            "zeroline":false,
+            "showline":true,
+            "range": [-0.5, 2.5]
+        },
+        "yaxis":{
+            "categoryarray": ["W", "X", "Y", "Z"],
+            "anchor": "y",
+            "title": "letter refs",
+            "domain": [0, 0.48],
+            "ticks": "outside",
+            "mirror":"allticks",
+            "zeroline":false,
+            "showline":true
+        },
+        "yaxis2":{
+            "categoryarray": ["W", "X", "Y", "Z"],
+            "domain": [0, 0.48],
+            "anchor": "x2",
+            "side": "right",
+            "ticks": "outside",
+            "mirror":"allticks",
+            "zeroline":false,
+            "showline":true,
+            "range": [-0.5, 2.5]
+        },
+        "yaxis3":{
+            "categoryarray": ["W", "X", "Y", "Z"],
+            "title": "number refs",
+            "domain": [0.52, 1],
+            "anchor": "x3",
+            "ticks": "outside",
+            "mirror":"allticks",
+            "zeroline":false,
+            "showline":true
+        },
+        "yaxis4":{
+            "categoryarray": ["W", "X", "Y", "Z"],
+            "domain": [0.52, 1],
+            "anchor": "x4",
+            "side": "right",
+            "ticks": "outside",
+            "mirror":"allticks",
+            "zeroline":false,
+            "showline":true,
+            "range": [-0.5, 2.5]
+        },
+        "height": 500,
+        "width": 500,
+        "showlegend": false,
+        "margin":{"r":40,"b":25,"l":40,"t":55},
+        "title": "left: auto range || right: set range",
+        "font": {"size": 10},
+        "annotations":[{
+            "xref": "x", "yref": "y", "axref": "x", "ayref": "y",
+            "text": "yrange bump",
+            "x": "a", "y": "X", "ax": "c", "ay": "Z",
+            "xanchor": "left", "yanchor": "bottom", "borderpad": 10
+        }, {
+            "xref": "x", "yref": "y", "showarrow": false,
+            "text": "xrange bump",
+            "x": "a", "y": "X",
+            "xanchor": "right", "borderpad": 10
+        },
+
+        {
+            "xref": "x2", "yref": "y2", "showarrow": false,
+            "text": "should not see this",
+            "x": "b", "y": "Z"
+        }, {
+            "xref": "x2", "yref": "y2", "showarrow": false,
+            "text": "should not see this",
+            "x": "d", "y": "X",
+            "xanchor": "right", "borderpad": 10
+        }, {
+            "xref": "x2", "yref": "y2", "showarrow": false,
+            "text": "invalid category coords<br>should appear in center of graph",
+            "x": "wrong", "y": "not-gonna-work"
+        },
+
+        {
+            "xref": "x3", "yref": "y3", "axref": "x3", "ayref": "y3",
+            "text": "yrange bump",
+            "x": 1, "y": 2, "ax": 2, "ay": 4.5,
+            "xanchor": "left", "yanchor": "top", "borderpad": 10
+        }, {
+            "xref": "x3", "yref": "y3", "showarrow": false,
+            "text": "xrange bump",
+            "x": -2, "y": 2,
+            "xanchor": "left", "borderpad": 10
+        },
+
+        {
+            "xref": "x4", "yref": "y4", "showarrow": false,
+            "text": "should not see this",
+            "x": -2, "y": 2
+        }, {
+            "xref": "x4", "yref": "y4", "showarrow": false,
+            "text": "should not see this",
+            "x": 2, "y": 4.5
+        }],
+        "shapes": [{
+            "type": "rectangle",
+            "line": {"color": "purple"},
+            "x0": "b", "x1": "d",
+            "y0": "W", "y1": "Z"
+        },
+
+        {
+            "xref": "x2", "yref": "y2",
+            "type": "rectangle",
+            "line": {"color": "purple"},
+            "x0": "---", "x1": "d",
+            "y0": "wrong", "y1": "Z"
+        },
+
+        {
+            "xref": "x3", "yref": "y3",
+            "type": "rectangle",
+            "line": {"color": "purple"},
+            "x0": 0.25, "x1": 6,
+            "y0": 1, "y1": 2.75
+        },
+
+        {
+            "xref": "x4", "yref": "y4",
+            "type": "rectangle",
+            "line": {"color": "purple"},
+            "x0": 0.25, "x1": 6,
+            "y0": 1, "y1": 2.75
+        }]
+    }
+}

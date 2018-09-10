@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -41,7 +41,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
     if(subTypes.hasText(traceOut)) {
@@ -53,7 +53,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    coerce('hoverinfo', (layout._dataLength === 1) ? 'lon+lat+location+text' : undefined);
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
 function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
@@ -71,9 +71,7 @@ function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
     lon = coerce('lon') || [];
     lat = coerce('lat') || [];
     len = Math.min(lon.length, lat.length);
-
-    if(len < lon.length) traceOut.lon = lon.slice(0, len);
-    if(len < lat.length) traceOut.lat = lat.slice(0, len);
+    traceOut._length = len;
 
     return len;
 }

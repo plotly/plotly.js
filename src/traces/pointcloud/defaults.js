@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -40,4 +40,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     coerce('marker.sizemax');
     coerce('marker.border.color', defaultColor);
     coerce('marker.border.arearatio');
+
+    // disable 1D transforms - that would defeat the purpose of this trace type, performance!
+    traceOut._length = null;
 };

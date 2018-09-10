@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -77,7 +77,7 @@ proto.handlePick = function(pickResult) {
         ],
         textLabel: this.textLabels[index],
         name: this.name,
-        pointIndex: [xIndex, yIndex],
+        pointIndex: [yIndex, xIndex],
         hoverinfo: this.hoverinfo
     };
 };
@@ -85,6 +85,7 @@ proto.handlePick = function(pickResult) {
 proto.update = function(fullTrace, calcTrace) {
     var calcPt = calcTrace[0];
 
+    this.index = fullTrace.index;
     this.name = fullTrace.name;
     this.hoverinfo = fullTrace.hoverinfo;
 
@@ -124,9 +125,10 @@ proto.update = function(fullTrace, calcTrace) {
     this.contour.update(this.contourOptions);
     this.heatmap.update(this.heatmapOptions);
 
-    // expand axes
-    Axes.expand(this.scene.xaxis, calcPt.x);
-    Axes.expand(this.scene.yaxis, calcPt.y);
+    var xa = this.scene.xaxis;
+    var ya = this.scene.yaxis;
+    fullTrace._extremes[xa._id] = Axes.findExtremes(xa, calcPt.x);
+    fullTrace._extremes[ya._id] = Axes.findExtremes(ya, calcPt.y);
 };
 
 proto.dispose = function() {

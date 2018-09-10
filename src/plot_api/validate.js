@@ -1,22 +1,21 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
 
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
 var PlotSchema = require('./plot_schema');
+var dfltConfig = require('./plot_config');
 
 var isPlainObject = Lib.isPlainObject;
 var isArray = Array.isArray;
-
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 
 /**
  * Validate a data array and layout object.
@@ -39,10 +38,10 @@ var isArray = Array.isArray;
  *  - {string} msg
  *      error message (shown in console in logger config argument is enable)
  */
-module.exports = function valiate(data, layout) {
-    var schema = PlotSchema.get(),
-        errorList = [],
-        gd = {};
+module.exports = function validate(data, layout) {
+    var schema = PlotSchema.get();
+    var errorList = [];
+    var gd = {_context: Lib.extendFlat({}, dfltConfig)};
 
     var dataIn, layoutIn;
 
@@ -163,9 +162,10 @@ function crawl(objIn, objOut, schema, list, base, path) {
         var valIn = objIn[k],
             valOut = objOut[k];
 
-        var nestedSchema = getNestedSchema(schema, k),
-            isInfoArray = (nestedSchema || {}).valType === 'info_array',
-            isColorscale = (nestedSchema || {}).valType === 'colorscale';
+        var nestedSchema = getNestedSchema(schema, k);
+        var isInfoArray = (nestedSchema || {}).valType === 'info_array';
+        var isColorscale = (nestedSchema || {}).valType === 'colorscale';
+        var items = (nestedSchema || {}).items;
 
         if(!isInSchema(schema, k)) {
             list.push(format('schema', base, p));
@@ -173,9 +173,54 @@ function crawl(objIn, objOut, schema, list, base, path) {
         else if(isPlainObject(valIn) && isPlainObject(valOut)) {
             crawl(valIn, valOut, nestedSchema, list, base, p);
         }
+        else if(isInfoArray && isArray(valIn)) {
+            if(valIn.length > valOut.length) {
+                list.push(format('unused', base, p.concat(valOut.length)));
+            }
+            var len = valOut.length;
+            var arrayItems = Array.isArray(items);
+            if(arrayItems) len = Math.min(len, items.length);
+            var m, n, item, valInPart, valOutPart;
+            if(nestedSchema.dimensions === 2) {
+                for(n = 0; n < len; n++) {
+                    if(isArray(valIn[n])) {
+                        if(valIn[n].length > valOut[n].length) {
+                            list.push(format('unused', base, p.concat(n, valOut[n].length)));
+                        }
+                        var len2 = valOut[n].length;
+                        for(m = 0; m < (arrayItems ? Math.min(len2, items[n].length) : len2); m++) {
+                            item = arrayItems ? items[n][m] : items;
+                            valInPart = valIn[n][m];
+                            valOutPart = valOut[n][m];
+                            if(!Lib.validate(valInPart, item)) {
+                                list.push(format('value', base, p.concat(n, m), valInPart));
+                            }
+                            else if(valOutPart !== valInPart && valOutPart !== +valInPart) {
+                                list.push(format('dynamic', base, p.concat(n, m), valInPart, valOutPart));
+                            }
+                        }
+                    }
+                    else {
+                        list.push(format('array', base, p.concat(n), valIn[n]));
+                    }
+                }
+            }
+            else {
+                for(n = 0; n < len; n++) {
+                    item = arrayItems ? items[n] : items;
+                    valInPart = valIn[n];
+                    valOutPart = valOut[n];
+                    if(!Lib.validate(valInPart, item)) {
+                        list.push(format('value', base, p.concat(n), valInPart));
+                    }
+                    else if(valOutPart !== valInPart && valOutPart !== +valInPart) {
+                        list.push(format('dynamic', base, p.concat(n), valInPart, valOutPart));
+                    }
+                }
+            }
+        }
         else if(nestedSchema.items && !isInfoArray && isArray(valIn)) {
-            var items = nestedSchema.items,
-                _nestedSchema = items[Object.keys(items)[0]],
+            var _nestedSchema = items[Object.keys(items)[0]],
                 indexList = [];
 
             var j, _p;
@@ -190,7 +235,12 @@ function crawl(objIn, objOut, schema, list, base, path) {
 
                 if(isPlainObject(valIn[_index]) && isPlainObject(valOut[j])) {
                     indexList.push(_index);
-                    crawl(valIn[_index], valOut[j], _nestedSchema, list, base, _p);
+                    var valInj = valIn[_index];
+                    var valOutj = valOut[j];
+                    if(isPlainObject(valInj) && valInj.visible !== false && valOutj.visible === false) {
+                        list.push(format('invisible', base, _p));
+                    }
+                    else crawl(valInj, valOutj, _nestedSchema, list, base, _p);
                 }
             }
 
@@ -210,7 +260,7 @@ function crawl(objIn, objOut, schema, list, base, path) {
         else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
             list.push(format('object', base, p, valIn));
         }
-        else if(!isArray(valIn) && isArray(valOut) && !isInfoArray && !isColorscale) {
+        else if(!isArrayOrTypedArray(valIn) && isArrayOrTypedArray(valOut) && !isInfoArray && !isColorscale) {
             list.push(format('array', base, p, valIn));
         }
         else if(!(k in objOut)) {
@@ -218,6 +268,11 @@ function crawl(objIn, objOut, schema, list, base, path) {
         }
         else if(!Lib.validate(valIn, nestedSchema)) {
             list.push(format('value', base, p, valIn));
+        }
+        else if(nestedSchema.valType === 'enumerated' &&
+            ((nestedSchema.coerceNumber && valIn !== +valOut) || valIn !== valOut)
+        ) {
+            list.push(format('dynamic', base, p, valIn, valOut));
         }
     }
 
@@ -267,8 +322,20 @@ var code2msgFunc = {
 
         return inBase(base) + target + ' ' + astr + ' did not get coerced';
     },
-    invisible: function(base) {
-        return 'Trace ' + base[1] + ' got defaulted to be not visible';
+    dynamic: function(base, astr, valIn, valOut) {
+        return [
+            inBase(base) + 'key',
+            astr,
+            '(set to \'' + valIn + '\')',
+            'got reset to',
+            '\'' + valOut + '\'',
+            'during defaults.'
+        ].join(' ');
+    },
+    invisible: function(base, astr) {
+        return (
+            astr ? (inBase(base) + 'item ' + astr) : ('Trace ' + base[1])
+        ) + ' got defaulted to be not visible';
     },
     value: function(base, astr, valIn) {
         return [
@@ -284,7 +351,7 @@ function inBase(base) {
     return 'In ' + base + ', ';
 }
 
-function format(code, base, path, valIn) {
+function format(code, base, path, valIn, valOut) {
     path = path || '';
 
     var container, trace;
@@ -301,8 +368,8 @@ function format(code, base, path, valIn) {
         trace = null;
     }
 
-    var astr = convertPathToAttributeString(path),
-        msg = code2msgFunc[code](base, astr, valIn);
+    var astr = convertPathToAttributeString(path);
+    var msg = code2msgFunc[code](base, astr, valIn, valOut);
 
     // log to console if logger config option is enabled
     Lib.log(msg);
@@ -330,20 +397,21 @@ function isInSchema(schema, key) {
 }
 
 function getNestedSchema(schema, key) {
+    if(key in schema) return schema[key];
+
     var parts = splitKey(key);
 
     return schema[parts.keyMinusId];
 }
 
-function splitKey(key) {
-    var idRegex = /([2-9]|[1-9][0-9]+)$/;
+var idRegex = Lib.counterRegex('([a-z]+)');
 
-    var keyMinusId = key.split(idRegex)[0],
-        id = key.substr(keyMinusId.length, key.length);
+function splitKey(key) {
+    var idMatch = key.match(idRegex);
 
     return {
-        keyMinusId: keyMinusId,
-        id: id
+        keyMinusId: idMatch && idMatch[1],
+        id: idMatch && idMatch[2]
     };
 }
 

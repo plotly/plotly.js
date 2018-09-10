@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,38 +10,43 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var Lib = require('../../lib');
 
 var Registry = require('../../registry');
-var hasColumns = require('./has_columns');
 
-
-module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
+module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, xName, yName) {
     var z = coerce('z');
+    xName = xName || 'x';
+    yName = yName || 'y';
     var x, y;
 
     if(z === undefined || !z.length) return 0;
 
-    if(hasColumns(traceIn)) {
-        x = coerce('x');
-        y = coerce('y');
+    if(Lib.isArray1D(traceIn.z)) {
+        x = coerce(xName);
+        y = coerce(yName);
 
-        // column z must be accompanied by 'x' and 'y' arrays
-        if(!x || !y) return 0;
+        // column z must be accompanied by xName and yName arrays
+        if(!(x && x.length && y && y.length)) return 0;
+
+        traceOut._length = Math.min(x.length, y.length, z.length);
     }
     else {
-        x = coordDefaults('x', coerce);
-        y = coordDefaults('y', coerce);
+        x = coordDefaults(xName, coerce);
+        y = coordDefaults(yName, coerce);
 
         // TODO put z validation elsewhere
         if(!isValidZ(z)) return 0;
 
         coerce('transpose');
+
+        traceOut._length = null;
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+    handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);
 
-    return traceOut.z.length;
+    return true;
 };
 
 function coordDefaults(coordStr, coerce) {
@@ -74,7 +79,7 @@ function isValidZ(z) {
 
     for(var i = 0; i < z.length; i++) {
         zi = z[i];
-        if(!Array.isArray(zi)) {
+        if(!Lib.isArrayOrTypedArray(zi)) {
             allRowsAreArrays = false;
             break;
         }

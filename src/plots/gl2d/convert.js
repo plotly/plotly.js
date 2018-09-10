@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 
 var convertHTMLToUnicode = require('../../lib/html2unicode');
@@ -87,7 +86,7 @@ function Axes2DOptions(scene) {
         [0, 0, 0, 1]
     ];
 
-    this.borderColor = [0, 0, 0, 0];
+    this.borderColor = false;
     this.backgroundColor = [0, 0, 0, 0];
 
     this.static = this.scene.staticPlot;
@@ -109,12 +108,13 @@ proto.merge = function(options) {
 
     for(i = 0; i < 2; ++i) {
         axisName = AXES[i];
+        var axisLetter = axisName.charAt(0);
 
         // get options relevant to this subplot,
         // '_name' is e.g. xaxis, xaxis2, yaxis, yaxis4 ...
         ax = options[this.scene[axisName]._name];
 
-        axTitle = /Click to enter .+ title/.test(ax.title) ? '' : ax.title;
+        axTitle = ax.title === this.scene.fullLayout._dfltTitle[axisLetter] ? '' : ax.title;
 
         for(j = 0; j <= 2; j += 2) {
             this.labelEnable[i + j] = false;
@@ -182,9 +182,9 @@ proto.merge = function(options) {
 
 // is an axis shared with an already-drawn subplot ?
 proto.hasSharedAxis = function(ax) {
-    var scene = this.scene,
-        subplotIds = Plots.getSubplotIds(scene.fullLayout, 'gl2d'),
-        list = Axes.findSubplotsWithAxis(subplotIds, ax);
+    var scene = this.scene;
+    var subplotIds = scene.fullLayout._subplots.gl2d;
+    var list = Axes.findSubplotsWithAxis(subplotIds, ax);
 
     // if index === 0, then the subplot is already drawn as subplots
     // are drawn in order.

@@ -1,3 +1,6 @@
+var d3 = require('d3');
+
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -5,7 +8,13 @@ var Contour = require('@src/traces/contour');
 var makeColorMap = require('@src/traces/contour/make_color_map');
 var colorScales = require('@src/components/colorscale/scales');
 
-var customMatchers = require('../assets/custom_matchers');
+var failTest = require('../assets/fail_test');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customAssertions = require('../assets/custom_assertions');
+var checkTicks = customAssertions.checkTicks;
+var assertNodeOrder = customAssertions.assertNodeOrder;
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 
 describe('contour defaults', function() {
@@ -16,7 +25,8 @@ describe('contour defaults', function() {
 
     var defaultColor = '#444',
         layout = {
-            font: Plots.layoutAttributes.font
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
         };
 
     var supplyDefaults = Contour.supplyDefaults;
@@ -60,7 +70,7 @@ describe('contour defaults', function() {
             y: [1, 2],
             z: [[1, 2], [3, 4]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -76,7 +86,7 @@ describe('contour defaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -173,17 +183,14 @@ describe('contour makeColorMap', function() {
 describe('contour calc', function() {
     'use strict';
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     function _calc(opts) {
         var base = { type: 'contour' },
             trace = Lib.extendFlat({}, base, opts),
             gd = { data: [trace] };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
+        fullTrace._extremes = {};
 
         var out = Contour.calc(gd, fullTrace)[0];
         out.trace = fullTrace;
@@ -342,5 +349,168 @@ describe('contour calc', function() {
                 });
             });
         });
+    });
+});
+
+describe('contour plotting and editing', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+    afterEach(destroyGraphDiv);
+
+    it('can restyle x/y to different types', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'contour',
+            x: [1, 2, 3],
+            y: [3, 4, 5],
+            z: [[10, 11, 12], [13, 14, 15], [17, 18, 19]]
+        }], {width: 400, height: 400})
+        .then(function() {
+            checkTicks('x', ['1', '1.5', '2', '2.5', '3'], 'linear x');
+            expect(gd._fullLayout.xaxis.type).toBe('linear');
+            checkTicks('y', ['3', '3.5', '4', '4.5', '5'], 'linear y');
+            expect(gd._fullLayout.yaxis.type).toBe('linear');
+
+            return Plotly.restyle(gd, {x: [['a', 'b', 'c']], y: [['2016-01', '2016-02', '2016-03']]});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'category x');
+            expect(gd._fullLayout.xaxis.type).toBe('category');
+            checkTicks('y', ['Jan 102016', 'Jan 24', 'Feb 7', 'Feb 21'], 'date y');
+            expect(gd._fullLayout.yaxis.type).toBe('date');
+
+            // should be a noop, but one that raises no errors!
+            return Plotly.relayout(gd, {'xaxis.type': '-', 'yaxis.type': '-'});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'category x #2');
+            expect(gd._fullLayout.xaxis.type).toBe('category');
+            checkTicks('y', ['Jan 102016', 'Jan 24', 'Feb 7', 'Feb 21'], 'date y #2');
+            expect(gd._fullLayout.yaxis.type).toBe('date');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('works and draws labels when explicitly specifying ncontours=1', function(done) {
+        Plotly.newPlot(gd, [{
+            z: [[0.20, 0.57], [0.3, 0.4]],
+            type: 'contour',
+            zmin: 0.4,
+            zmax: 0.41,
+            ncontours: 1,
+            showscale: false,
+            contours: {showlabels: true}
+        }], {
+            width: 500, height: 500
+        })
+        .then(function() {
+            expect(gd.querySelector('.contourlabels text').textContent).toBe('0.41');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should always draw heatmap coloring layer below contour lines', function(done) {
+        function _assertNoHeatmap(msg) {
+            msg = ' (' + msg + ')';
+            // all we care about here *really* is that there are contour levels
+            // *somewhere* on the plot, and there is no heatmap anywhere.
+            expect(gd.querySelector('.hm')).toBe(null, 'heatmap exists' + msg);
+            expect(gd.querySelector('.contourlevel')).not.toBe(null, 'missing contours' + msg);
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'contour',
+            z: [[1, 2, 3], [1, 3, 0]],
+            contours: {coloring: 'heatmap'}
+        }])
+        .then(function() {
+            assertNodeOrder('.hm', '.contourlevel', 'initial heatmap coloring');
+            return Plotly.restyle(gd, 'contours.coloring', 'lines');
+        })
+        .then(function() {
+            _assertNoHeatmap('line coloring');
+            return Plotly.restyle(gd, 'contours.coloring', 'heatmap');
+        })
+        .then(function() {
+            assertNodeOrder('.hm', '.contourlevel', 'back to heatmap coloring');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('can change z values with gaps', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'contour',
+            z: [[1, 2], [null, 4], [1, 2]]
+        }])
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
+            expect(gd.calcdata[0][0].zmask).toEqual([[1, 1], [0, 1], [1, 1]]);
+
+            return Plotly.react(gd, [{
+                type: 'contour',
+                z: [[6, 5], [8, 7], [null, 10]]
+            }]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[6, 5], [8, 7], [9, 10]]);
+            expect(gd.calcdata[0][0].zmask).toEqual([[1, 1], [1, 1], [0, 1]]);
+
+            return Plotly.react(gd, [{
+                type: 'contour',
+                z: [[1, 2], [null, 4], [1, 2]]
+            }]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
+            expect(gd.calcdata[0][0].zmask).toEqual([[1, 1], [0, 1], [1, 1]]);
+
+            return Plotly.react(gd, [{
+                type: 'contour',
+                // notice that this one is the same as the previous, except that
+                // a previously present value was removed...
+                z: [[1, 2], [null, 4], [1, null]]
+            }]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2.5]]);
+            expect(gd.calcdata[0][0].zmask).toEqual([[1, 1], [0, 1], [1, 0]]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('keeps the correct ordering after hide and show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'contour',
+            z: [[1, 2], [3, 4]]
+        }, {
+            type: 'contour',
+            z: [[2, 1], [4, 3]],
+            contours: {coloring: 'lines'}
+        }])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

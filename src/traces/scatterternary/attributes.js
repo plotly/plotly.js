@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,8 +10,9 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -22,6 +23,7 @@ var scatterMarkerAttrs = scatterAttrs.marker,
 module.exports = {
     a: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Sets the quantity of component `a` in each data point.',
             'If `a`, `b`, and `c` are all provided, they need not be',
@@ -32,6 +34,7 @@ module.exports = {
     },
     b: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Sets the quantity of component `a` in each data point.',
             'If `a`, `b`, and `c` are all provided, they need not be',
@@ -42,6 +45,7 @@ module.exports = {
     },
     c: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Sets the quantity of component `a` in each data point.',
             'If `a`, `b`, and `c` are all provided, they need not be',
@@ -55,6 +59,7 @@ module.exports = {
         role: 'info',
         dflt: 0,
         min: 0,
+        editType: 'calc',
         description: [
             'The number each triplet should sum to,',
             'if only two of `a`, `b`, and `c` are provided.',
@@ -88,14 +93,17 @@ module.exports = {
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
+        dash: dash,
         shape: extendFlat({}, scatterLineAttrs.shape,
             {values: ['linear', 'spline']}),
-        smoothing: scatterLineAttrs.smoothing
+        smoothing: scatterLineAttrs.smoothing,
+        editType: 'calc'
     },
     connectgaps: scatterAttrs.connectgaps,
+    cliponaxis: scatterAttrs.cliponaxis,
     fill: extendFlat({}, scatterAttrs.fill, {
         values: ['none', 'toself', 'tonext'],
+        dflt: 'none',
         description: [
             'Sets the area to fill with a solid color.',
             'Use with `fillcolor` if not *none*.',
@@ -109,7 +117,7 @@ module.exports = {
         ].join(' ')
     }),
     fillcolor: scatterAttrs.fillcolor,
-    marker: extendFlat({}, {
+    marker: extendFlat({
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
@@ -117,17 +125,24 @@ module.exports = {
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
-        line: extendFlat({},
-            {width: scatterMarkerLineAttrs.width},
-            colorAttributes('marker'.line)
-        )
+        line: extendFlat({
+            width: scatterMarkerLineAttrs.width,
+            editType: 'calc'
+        },
+            colorAttributes('marker.line')
+        ),
+        gradient: scatterMarkerAttrs.gradient,
+        editType: 'calc'
     }, colorAttributes('marker'), {
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: colorbarAttrs
     }),
 
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
+
+    selected: scatterAttrs.selected,
+    unselected: scatterAttrs.unselected,
+
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['a', 'b', 'c', 'text', 'name']
     }),

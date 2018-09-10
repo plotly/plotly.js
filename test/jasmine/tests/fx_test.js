@@ -1,73 +1,191 @@
 var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-
-var Fx = require('@src/plots/cartesian/graph_interact');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Fx defaults', function() {
     'use strict';
 
-    var layoutIn, layoutOut, fullData;
-
-    beforeEach(function() {
-        layoutIn = {};
-        layoutOut = {
-            _has: Plots._hasPlotType
+    function _supply(data, layout) {
+        var gd = {
+            data: data || [],
+            layout: layout || {}
         };
-        fullData = [{}];
-    });
+
+        supplyAllDefaults(gd);
+
+        return {
+            data: gd._fullData,
+            layout: gd._fullLayout
+        };
+    }
 
     it('should default (blank version)', function() {
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
+        var layoutOut = _supply().layout;
+        // we get a blank cartesian subplot that has no traces...
+        // so all traces are horizontal -> hovermode defaults to y
+        // we could add a special case to push this back to x, but
+        // it seems like it has no practical consequence.
+        expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
 
     it('should default (cartesian version)', function() {
-        layoutOut._basePlotModules = [{ name: 'cartesian' }];
+        var layoutOut = _supply([{
+            type: 'bar',
+            y: [1, 2, 1]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
         expect(layoutOut._isHoriz).toBe(false, 'isHoriz to false');
     });
 
     it('should default (cartesian horizontal version)', function() {
-        layoutOut._basePlotModules = [{ name: 'cartesian' }];
-        fullData[0] = { orientation: 'h' };
+        var layoutOut = _supply([{
+            type: 'bar',
+            orientation: 'h',
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
         expect(layoutOut._isHoriz).toBe(true, 'isHoriz to true');
     });
 
     it('should default (gl3d version)', function() {
-        layoutOut._basePlotModules = [{ name: 'gl3d' }];
+        var layoutOut = _supply([{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
 
     it('should default (geo version)', function() {
-        layoutOut._basePlotModules = [{ name: 'geo' }];
+        var layoutOut = _supply([{
+            type: 'scattergeo',
+            lon: [1, 2, 3],
+            lat: [1, 2, 3]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
-        expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
+        expect(layoutOut.dragmode).toBe('pan', 'dragmode to zoom');
     });
 
     it('should default (multi plot type version)', function() {
-        layoutOut._basePlotModules = [{ name: 'cartesian' }, { name: 'gl3d' }];
+        var layoutOut = _supply([{
+            type: 'bar',
+            y: [1, 2, 1]
+        }, {
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
+    });
+
+    it('should coerce trace and annotations hoverlabel using global as defaults', function() {
+        var out = _supply([{
+            type: 'bar',
+            y: [1, 2, 1],
+            hoverlabel: {
+                bgcolor: ['red', 'blue', 'black'],
+                font: { size: 40 }
+            }
+        }, {
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1],
+            hoverlabel: {
+                bordercolor: 'yellow',
+                font: { color: 'red' }
+            }
+        }], {
+            annotations: [{
+                x: 0,
+                y: 1,
+                text: '1',
+                hovertext: '1'
+            }, {
+                x: 2,
+                y: 1,
+                text: '2',
+                hovertext: '2',
+                hoverlabel: {
+                    bgcolor: 'red',
+                    font: {
+                        family: 'Gravitas'
+                    }
+                }
+            }],
+            hoverlabel: {
+                bgcolor: 'white',
+                bordercolor: 'black',
+                font: {
+                    family: 'Roboto',
+                    size: 20,
+                    color: 'pink'
+                }
+            }
+        });
+
+        expect(out.data[0].hoverlabel).toEqual({
+            bgcolor: ['red', 'blue', 'black'],
+            bordercolor: 'black',
+            font: {
+                family: 'Roboto',
+                size: 40,
+                color: 'pink'
+            },
+            namelength: 15
+        });
+
+        expect(out.data[1].hoverlabel).toEqual({
+            bgcolor: 'white',
+            bordercolor: 'yellow',
+            font: {
+                family: 'Roboto',
+                size: 20,
+                color: 'red'
+            },
+            namelength: 15
+        });
+
+        expect(out.layout.annotations[0].hoverlabel).toEqual({
+            bgcolor: 'white',
+            bordercolor: 'black',
+            font: {
+                family: 'Roboto',
+                size: 20,
+                color: 'pink'
+            }
+        });
+
+        expect(out.layout.annotations[1].hoverlabel).toEqual({
+            bgcolor: 'red',
+            bordercolor: 'black',
+            font: {
+                family: 'Gravitas',
+                size: 20,
+                color: 'pink'
+            }
+        });
     });
 });
 
@@ -83,14 +201,13 @@ describe('relayout', function() {
     afterEach(destroyGraphDiv);
 
     it('should update main drag with correct', function(done) {
-
         function assertMainDrag(cursor, isActive) {
             expect(d3.selectAll('rect.nsewdrag').size()).toEqual(1, 'number of nodes');
-            var mainDrag = d3.select('rect.nsewdrag'),
-                node = mainDrag.node();
+            var mainDrag = d3.select('rect.nsewdrag');
+            var node = mainDrag.node();
 
-            expect(mainDrag.classed('cursor-' + cursor)).toBe(true, 'cursor ' + cursor);
-            expect(mainDrag.style('pointer-events')).toEqual('all', 'pointer event');
+            expect(window.getComputedStyle(node).cursor).toBe(cursor, 'cursor ' + cursor);
+            expect(node.style.pointerEvents).toEqual('all', 'pointer event');
             expect(!!node.onmousedown).toBe(isActive, 'mousedown handler');
         }
 
@@ -113,11 +230,12 @@ describe('relayout', function() {
 
             return Plotly.relayout(gd, 'yaxis.fixedrange', true);
         }).then(function() {
-            assertMainDrag('pointer', false);
+            // still active with fixedrange because we're handling clicks here too.
+            assertMainDrag('pointer', true);
 
             return Plotly.relayout(gd, 'dragmode', 'drag');
         }).then(function() {
-            assertMainDrag('pointer', false);
+            assertMainDrag('pointer', true);
 
             return Plotly.relayout(gd, 'dragmode', 'lasso');
         }).then(function() {

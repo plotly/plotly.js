@@ -1,10 +1,13 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('@src/lib');
+var Loggers = require('@src/lib/loggers');
 var calComponent = require('@src/components/calendars');
 
 // use only the parts of world-calendars that we've imported for our tests
 var calendars = require('@src/components/calendars/calendars');
+
+var utcFormat = require('d3').time.format.utc;
 
 describe('dates', function() {
     'use strict';
@@ -20,6 +23,29 @@ describe('dates', function() {
         nowMinus70_2 = nowMinus70 % 100,
         nowPlus29 = thisYear + 29,
         nowPlus29_2 = nowPlus29 % 100;
+
+    function tweakedTZOffset(d) {
+        var tzOffset = d.getTimezoneOffset() * 60000;
+        var offsetTweak = (d.getUTCMinutes() - d.getMinutes()) * 60000 +
+            (d.getUTCSeconds() - d.getSeconds()) * 1000 +
+            (d.getUTCMilliseconds() - d.getMilliseconds());
+
+        if(offsetTweak) {
+            var comb = 3 * 60000;
+            var tzOffset2 = tzOffset - comb / 2 + Lib.mod(offsetTweak - tzOffset + comb / 2, comb);
+            // this tweak logic just copies what's in dateTime2ms to account for
+            // Chrome's new handling of dates before there were timezones, see
+            // https://github.com/plotly/plotly.js/issues/2743
+            // This logic has been validated manually using:
+            // Plotly.newPlot(gd,[{x:[new Date(1600,0,1),new Date(1600,0,1,0,1)],y:[1,2]}])
+            // here just check that it's only happening for years before 1884,
+            // and only adjusting the result less than a minute.
+            expect(d.getFullYear()).toBeLessThan(1884);
+            expect(Math.abs(tzOffset2 - tzOffset)).toBeLessThan(60000);
+            return tzOffset2;
+        }
+        return tzOffset;
+    }
 
     describe('dateTime2ms', function() {
         it('should accept valid date strings', function() {
@@ -59,9 +85,9 @@ describe('dates', function() {
             ].forEach(function(v) {
                 // just for sub-millisecond precision tests, use timezoneoffset
                 // from the previous date object
-                if(v[1].getTimezoneOffset) tzOffset = v[1].getTimezoneOffset();
+                if(v[1].getTimezoneOffset) tzOffset = tweakedTZOffset(v[1]);
 
-                var expected = +v[1] - (tzOffset * 60000);
+                var expected = +v[1] - tzOffset;
                 expect(Lib.dateTime2ms(v[0])).toBe(expected, v[0]);
 
                 // ISO-8601: all the same stuff with t or T as the separator
@@ -105,7 +131,7 @@ describe('dates', function() {
                 d1c,
                 new Date(2015, 8, 7, 23, 34, 45, 567)
             ].forEach(function(v) {
-                expect(Lib.dateTime2ms(v)).toBe(+v - v.getTimezoneOffset() * 60000);
+                expect(Lib.dateTime2ms(v)).toBe(+v - tweakedTZOffset(v), v.toString());
             });
         });
 
@@ -307,7 +333,7 @@ describe('dates', function() {
                 expect(Lib.dateTime2ms(canonicalTick[calendar], calendar)).toBeDefined(calendar);
                 var sunday = Lib.dateTime2ms(canonicalSunday[calendar], calendar);
                 // convert back implicitly with gregorian calendar
-                expect(Lib.formatDate(sunday, '%A')).toBe('Sunday', calendar);
+                expect(Lib.formatDate(sunday, '%A', null, utcFormat)).toBe('Sunday', calendar);
 
                 expect(Lib.dateTime2ms(dfltRange[calendar][0], calendar)).toBeDefined(calendar);
                 expect(Lib.dateTime2ms(dfltRange[calendar][1], calendar)).toBeDefined(calendar);
@@ -360,6 +386,11 @@ describe('dates', function() {
         });
 
         it('should fail numbers & js Dates out of range, and other bad objects', function() {
+            var errors = [];
+            spyOn(Loggers, 'error').and.callFake(function(msg) {
+                errors.push(msg);
+            });
+
             [
                 new Date(-20000, 0, 1),
                 new Date(20000, 0, 1),
@@ -372,6 +403,8 @@ describe('dates', function() {
                 if(!isNumeric(+v)) expect(Lib.cleanDate(+v)).toBeUndefined();
                 expect(Lib.cleanDate(v, '2000-01-01')).toBe('2000-01-01');
             });
+
+            expect(errors.length).toBe(16);
         });
 
         it('should not alter valid date strings, even to truncate them', function() {
@@ -472,7 +505,12 @@ describe('dates', function() {
     describe('formatDate', function() {
         function assertFormatRounds(ms, calendar, results) {
             ['y', 'm', 'd', 'M', 'S', 1, 2, 3, 4].forEach(function(tr, i) {
-                expect(Lib.formatDate(ms, '', tr, calendar))
+                expect(Lib.formatDate(ms, '', tr, utcFormat, calendar, {
+                    year: '%Y',
+                    month: '%b %Y',
+                    dayMonth: '%b %-d',
+                    dayMonthYear: '%b %-d, %Y'
+                }))
                     .toBe(results[i], calendar);
             });
         }
@@ -543,11 +581,11 @@ describe('dates', function() {
                     expectedCoptic = v[2];
 
                 // tickround is irrelevant here...
-                expect(Lib.formatDate(ms, fmt, 'y'))
+                expect(Lib.formatDate(ms, fmt, 'y', utcFormat))
                     .toBe(expectedGregorian, fmt);
-                expect(Lib.formatDate(ms, fmt, 4, 'gregorian'))
+                expect(Lib.formatDate(ms, fmt, 4, utcFormat, 'gregorian'))
                     .toBe(expectedGregorian, fmt);
-                expect(Lib.formatDate(ms, fmt, 'y', 'coptic'))
+                expect(Lib.formatDate(ms, fmt, 'y', utcFormat, 'coptic'))
                     .toBe(expectedCoptic, fmt);
             });
         });
@@ -580,25 +618,31 @@ describe('dates', function() {
             ]);
 
             // and using the custom format machinery
-            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f'))
+            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, utcFormat))
                 .toBe('1969-12-31 23:59:59.9999');
-            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, 'coptic'))
+            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, utcFormat, 'coptic'))
                 .toBe('1686-04-22 23:59:59.9999');
 
         });
 
         it('should remove extra fractional second zeros', function() {
-            expect(Lib.formatDate(0.1, '', 4)).toBe('00:00:00.0001\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 3)).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 0)).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 'S')).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 3, 'coptic'))
+            var extraFormat = {
+                year: '%Y',
+                month: '%b %Y',
+                dayMonth: '%b %-d',
+                dayMonthYear: '%b %-d, %Y'
+            };
+            expect(Lib.formatDate(0.1, '', 4, utcFormat, null, extraFormat)).toBe('00:00:00.0001\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3, utcFormat, null, extraFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 0, utcFormat, null, extraFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 'S', utcFormat, null, extraFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3, utcFormat, 'coptic', extraFormat))
                 .toBe('00:00:00\nKoi 23, 1686');
 
             // because the decimal point is explicitly part of the format
             // string here, we can't remove it OR the very first zero after it.
-            expect(Lib.formatDate(0.1, '%S.%f')).toBe('00.0001');
-            expect(Lib.formatDate(0.1, '%S.%3f')).toBe('00.0');
+            expect(Lib.formatDate(0.1, '%S.%f', null, utcFormat, null, extraFormat)).toBe('00.0001');
+            expect(Lib.formatDate(0.1, '%S.%3f', null, utcFormat, null, extraFormat)).toBe('00.0');
         });
 
     });

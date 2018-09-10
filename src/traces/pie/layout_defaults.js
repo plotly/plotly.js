@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,4 +17,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
     coerce('hiddenlabels');
+    coerce('piecolorway', layoutOut.colorway);
+    coerce('extendpiecolors');
 };

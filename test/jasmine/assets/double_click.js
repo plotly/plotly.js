@@ -1,6 +1,6 @@
 var click = require('./click');
 var getNodeCoords = require('./get_node_coords');
-var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
+var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
 
 /*
  * double click on a point.

@@ -5,11 +5,9 @@ var config = require('@src/plot_api/plot_config');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
-var PlotlyInternal = require('@src/plotly');
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var Plots = PlotlyInternal.Plots;
-var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
 
 describe('Test lib.js:', function() {
@@ -110,12 +108,12 @@ describe('Test lib.js:', function() {
     });
 
     describe('mean() should', function() {
-        it('toss out non-numerics (strings):', function() {
+        it('toss out non-numerics (strings)', function() {
             var input = [1, 2, 'apple', 'orange'],
                 res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
-        it('toss out non-numerics (NaN):', function() {
+        it('toss out non-numerics (NaN)', function() {
             var input = [1, 2, NaN],
                 res = Lib.mean(input);
             expect(res).toEqual(1.5);
@@ -124,6 +122,34 @@ describe('Test lib.js:', function() {
             var input = ['1', '2'],
                 res = Lib.mean(input);
             expect(res).toEqual(1.5);
+        });
+    });
+
+    describe('midRange() should', function() {
+        it('should calculate the arithmetic mean of the maximum and minimum value of a given array', function() {
+            var input = [1, 5.5, 6, 15, 10, 13],
+                res = Lib.midRange(input);
+            expect(res).toEqual(8);
+        });
+        it('toss out non-numerics (strings)', function() {
+            var input = [1, 2, 'apple', 'orange'],
+                res = Lib.midRange(input);
+            expect(res).toEqual(1.5);
+        });
+        it('toss out non-numerics (NaN)', function() {
+            var input = [1, 2, NaN],
+                res = Lib.midRange(input);
+            expect(res).toEqual(1.5);
+        });
+        it('should be able to deal with array of length 1', function() {
+            var input = [10],
+                res = Lib.midRange(input);
+            expect(res).toEqual(10);
+        });
+        it('should return undefined for an empty array', function() {
+            var input = [],
+                res = Lib.midRange(input);
+            expect(res).toBeUndefined();
         });
     });
 
@@ -330,7 +356,7 @@ describe('Test lib.js:', function() {
             expect(obj).toEqual({a: false, b: '', c: 0, d: NaN});
         });
 
-        it('should not remove data arrays or empty objects inside container arrays', function() {
+        it('should not remove arrays or empty objects inside container arrays', function() {
             var obj = {
                     annotations: [{a: [1, 2, 3]}],
                     c: [1, 2, 3],
@@ -353,11 +379,17 @@ describe('Test lib.js:', function() {
             propS.set(null);
 
             // 'a' and 'c' are both potentially data arrays so we need to keep them
-            expect(obj).toEqual({annotations: [{a: []}], c: []});
+            expect(obj).toEqual({
+                annotations: [{a: []}],
+                c: [],
+                domain: [],
+                range: [],
+                shapes: []
+            });
         });
 
 
-        it('should allow empty object sub-containers only in arrays', function() {
+        it('should allow empty object sub-containers', function() {
             var obj = {},
                 prop = np(obj, 'a[1].b.c'),
                 // we never set a value into a[0] so it doesn't even get {}
@@ -372,7 +404,7 @@ describe('Test lib.js:', function() {
 
             prop.set(null);
             expect(prop.get()).toBe(undefined);
-            expect(obj).toEqual({a: [undefined, {}]});
+            expect(obj).toEqual({a: [undefined, {b: {}}]});
         });
 
         it('does not prune inside `args` arrays', function() {
@@ -380,7 +412,7 @@ describe('Test lib.js:', function() {
                 args = np(obj, 'args');
 
             args.set([]);
-            expect(obj.args).toBeUndefined();
+            expect(obj.args).toEqual([]);
 
             args.set([null]);
             expect(obj.args).toEqual([null]);
@@ -471,10 +503,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('expandObjectPaths', function() {
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
-
         it('returns the original object', function() {
             var x = {};
             expect(Lib.expandObjectPaths(x)).toBe(x);
@@ -657,6 +685,24 @@ describe('Test lib.js:', function() {
             expect(cOut).toBe(outObj.b.c);
         });
 
+        describe('data_array valType', function() {
+            var attrs = {
+                d: {valType: 'data_array'}
+            };
+
+            it('should pass ref to out object (plain array case)', function() {
+                var arr = [1, 2, 3];
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+
+            it('should pass ref to out object (typed array case)', function() {
+                var arr = new Float32Array([1, 2, 3]);
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+        });
+
         describe('string valType', function() {
             var dflt = 'Jabberwock',
                 stringAttrs = {
@@ -802,6 +848,114 @@ describe('Test lib.js:', function() {
                 expect(coerce({domain: [0, 0.5, 1]}, {}, infoArrayAttrs, 'domain'))
                     .toEqual([0, 0.5]);
             });
+
+            it('supports bounded freeLength attributes', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: [
+                            {valType: 'integer', min: 0},
+                            {valType: 'integer', max: -1}
+                        ],
+                        dflt: [1, -2]
+                    },
+                };
+                expect(coerce({}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: [5]}, {}, attrs, 'x')).toEqual([5, -2]);
+                expect(coerce({x: [-5]}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: [5, -5]}, {}, attrs, 'x')).toEqual([5, -5]);
+                expect(coerce({x: [3, -3, 3]}, {}, attrs, 'x')).toEqual([3, -3]);
+            });
+
+            it('supports unbounded freeLength attributes', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: {valType: 'integer', min: 0, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [3]}, {}, attrs, 'x')).toEqual([3]);
+                expect(coerce({x: [-3]}, {}, attrs, 'x')).toEqual([1]);
+                expect(coerce({x: [-1, 4, 'hi', 5]}, {}, attrs, 'x'))
+                    .toEqual([1, 4, 1, 5]);
+            });
+
+            it('supports 2D fixed-size arrays', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        dimensions: 2,
+                        items: [
+                            [{valType: 'integer', min: 0, max: 2}, {valType: 'integer', min: 3, max: 5}],
+                            [{valType: 'integer', min: 6, max: 8}, {valType: 'integer', min: 9, max: 11}]
+                        ],
+                        dflt: [[1, 4], [7, 10]]
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
+                expect(coerce({x: [[0, 3], [8, 11]]}, {}, attrs, 'x'))
+                    .toEqual([[0, 3], [8, 11]]);
+                expect(coerce({x: [[10, 5, 10], [6], [1, 2, 3]]}, {}, attrs, 'x'))
+                    .toEqual([[1, 5], [6, 10]]);
+            });
+
+            it('supports unbounded 2D freeLength arrays', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        dimensions: 2,
+                        items: {valType: 'integer', min: 0, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [[], [0], [-1, 2], [5, 'a', 4, 6.6]]}, {}, attrs, 'x'))
+                    .toEqual([[], [0], [1, 2], [5, 1, 4, 1]]);
+            });
+
+            it('supports dimensions=\'1-2\' with 1D items array', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true, // in this case only the outer length of 2D is free
+                        dimensions: '1-2',
+                        items: [
+                            {valType: 'integer', min: 0, max: 5, dflt: 1},
+                            {valType: 'integer', min: 10, max: 15, dflt: 11}
+                        ]
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, 11]);
+                expect(coerce({x: [4, 4, 4]}, {}, attrs, 'x')).toEqual([4, 11]);
+                expect(coerce({x: [[]]}, {}, attrs, 'x')).toEqual([[1, 11]]);
+                expect(coerce({x: [[12, 12, 12]]}, {}, attrs, 'x')).toEqual([[1, 12]]);
+                expect(coerce({x: [[], 4, true]}, {}, attrs, 'x')).toEqual([[1, 11], [1, 11], [1, 11]]);
+            });
+
+            it('supports dimensions=\'1-2\' with single item', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        dimensions: '1-2',
+                        items: {valType: 'integer', min: 0, max: 5, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [-3, 3, 6, 'a']}, {}, attrs, 'x')).toEqual([1, 3, 1, 1]);
+                expect(coerce({x: [[]]}, {}, attrs, 'x')).toEqual([[]]);
+                expect(coerce({x: [[-1, 0, 10]]}, {}, attrs, 'x')).toEqual([[1, 0, 1]]);
+                expect(coerce({x: [[], 4, [3], [-1, 10]]}, {}, attrs, 'x')).toEqual([[], [], [3], [1, 1]]);
+            });
         });
 
         describe('subplotid valtype', function() {
@@ -846,7 +1000,7 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerceFont', function() {
-        var fontAttrs = Plots.fontAttrs,
+        var fontAttrs = Plots.fontAttrs({}),
             extendFlat = Lib.extendFlat,
             coerceFont = Lib.coerceFont;
 
@@ -978,6 +1132,12 @@ describe('Test lib.js:', function() {
                 arrayOk: true,
                 dflt: 'a'
             });
+
+            assert(['x', 'x2'], ['xx', 'x0', undefined], {
+                valType: 'enumerated',
+                values: ['/^x([2-9]|[1-9][0-9]+)?$/'],
+                dflt: 'x'
+            });
         });
 
         it('should work for valType \'boolean\' where', function() {
@@ -1069,6 +1229,15 @@ describe('Test lib.js:', function() {
 
             assert(shouldPass, shouldFail, {
                 valType: 'color'
+            });
+        });
+
+        it('should work for valType \'colorlist\' where', function() {
+            var shouldPass = [['red'], ['#ffffff'], ['rgba(0,0,0,1)'], ['red', 'green', 'blue']],
+                shouldFail = [1, null, undefined, {}, [], 'red', ['red', null]];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'colorlist'
             });
         });
 
@@ -1282,14 +1451,11 @@ describe('Test lib.js:', function() {
             expect(this.array).toBe(out);
         });
 
-        it('should ignore falsy items', function() {
+        it('should ignore falsy items except 0', function() {
             Lib.pushUnique(this.array, false);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
             Lib.pushUnique(this.array, undefined);
-            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
-
-            Lib.pushUnique(this.array, 0);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
             Lib.pushUnique(this.array, null);
@@ -1297,6 +1463,9 @@ describe('Test lib.js:', function() {
 
             Lib.pushUnique(this.array, '');
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.pushUnique(this.array, 0);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, 0]);
         });
 
         it('should ignore item already in array', function() {
@@ -1599,6 +1768,687 @@ describe('Test lib.js:', function() {
             expect(c.MESSAGES).toEqual([]);
         });
     });
+
+    describe('keyedContainer', function() {
+        describe('with no existing container', function() {
+            it('creates a named container only when setting a value', function() {
+                var container = {};
+                var kCont = Lib.keyedContainer(container, 'styles');
+
+                expect(kCont.get('name1')).toBeUndefined();
+                expect(container).toEqual({});
+
+                kCont.set('name1', null);
+                expect(container).toEqual({});
+
+                kCont.set('name1', 'value1');
+                expect(container).toEqual({
+                    styles: [{name: 'name1', value: 'value1'}]
+                });
+                expect(kCont.get('name1')).toBe('value1');
+                expect(kCont.get('name2')).toBeUndefined();
+            });
+        });
+
+        describe('with no path', function() {
+            it('adds elements just like when there is a path', function() {
+                var arr = [];
+                var kCont = Lib.keyedContainer(arr);
+
+                expect(kCont.get('name1')).toBeUndefined();
+                expect(arr).toEqual([]);
+
+                kCont.set('name1', null);
+                expect(arr).toEqual([]);
+
+                kCont.set('name1', 'value1');
+                expect(arr).toEqual([{name: 'name1', value: 'value1'}]);
+                expect(kCont.get('name1')).toBe('value1');
+                expect(kCont.get('name2')).toBeUndefined();
+            });
+
+            it('does not barf if the array is missing', function() {
+                var kCont = Lib.keyedContainer();
+                kCont.set('name1', null);
+                kCont.set('name1', 'value1');
+                expect(kCont.get('name1')).toBeUndefined();
+            });
+        });
+
+        describe('with a filled container', function() {
+            var container, carr;
+
+            beforeEach(function() {
+                container = {
+                    styles: [
+                        {name: 'name1', value: 'value1'},
+                        {name: 'name2', value: 'value2'}
+                    ]
+                };
+
+                carr = Lib.keyedContainer(container, 'styles');
+            });
+
+            describe('modifying the object', function() {
+                it('adds and updates items', function() {
+                    carr.set('foo', 'bar');
+                    carr.set('name1', 'value3');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name1', value: 'value3'},
+                        {name: 'name2', value: 'value2'},
+                        {name: 'foo', value: 'bar'}
+                    ]});
+                });
+
+                it('removes items', function() {
+                    carr.set('foo', 'bar');
+                    carr.remove('name1');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name2', value: 'value2'},
+                        {name: 'foo', value: 'bar'}
+                    ]});
+                });
+
+                it('gets items', function() {
+                    expect(carr.get('foo')).toBe(undefined);
+                    expect(carr.get('name1')).toEqual('value1');
+
+                    carr.remove('name1');
+
+                    expect(carr.get('name1')).toBe(undefined);
+
+                    carr.rename('name2', 'name3');
+
+                    expect(carr.get('name3')).toEqual('value2');
+                });
+
+                it('renames items', function() {
+                    carr.rename('name2', 'name3');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name1', value: 'value1'},
+                        {name: 'name3', value: 'value2'}
+                    ]});
+                });
+            });
+
+            describe('constructing updates', function() {
+                it('constructs updates for addition and modification', function() {
+                    carr.set('foo', 'bar');
+                    carr.set('name1', 'value3');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[0].value': 'value3',
+                        'styles[2].name': 'foo',
+                        'styles[2].value': 'bar'
+                    });
+                });
+
+                it('constructs updates for removal', function() {
+                    carr.set('foo', 'bar');
+                    carr.remove('name1');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[0].name': 'name2',
+                        'styles[0].value': 'value2',
+                        'styles[1].name': 'foo',
+                        'styles[1].value': 'bar',
+                        'styles[2]': null
+                    });
+                });
+
+                it('constructs updates for renaming', function() {
+                    carr.rename('name2', 'name3');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[1].name': 'name3'
+                    });
+                });
+            });
+        });
+
+        describe('with custom named properties', function() {
+            it('performs all of the operations', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name2', bar: 'value2'}
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar');
+
+                // SET A VALUE
+
+                carr.set('name3', 'value3');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name2', bar: 'value2'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[2].foo': 'name3',
+                    'styles[2].bar': 'value3'
+                });
+
+                // REMOVE A VALUE
+
+                carr.remove('name2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
+                });
+
+                // RENAME A VALUE
+
+                carr.rename('name1', 'name2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name2', bar: 'value1'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].foo': 'name2',
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
+                });
+
+                // SET A VALUE
+
+                carr.set('name2', 'value2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name2', bar: 'value2'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].foo': 'name2',
+                    'styles[0].bar': 'value2',
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
+                });
+
+            });
+        });
+
+        describe('with nested valueName', function() {
+            it('gets and sets values', function() {
+                var container = {styles: []};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.set('name1', 'value1');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name1', bar: {value: 'value1'}}
+                ]});
+
+                expect(carr.get('name1')).toEqual('value1');
+            });
+
+            it('renames values', function() {
+                var container = {styles: []};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.set('name1', 'value1');
+                carr.rename('name1', 'name2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name2', bar: {value: 'value1'}}
+                ]});
+
+                expect(carr.get('name2')).toEqual('value1');
+                expect(carr.get('name1')).toBeUndefined();
+            });
+
+            it('constructs updates', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: {value: 'value1'}},
+                    {foo: 'name2', bar: {value: 'value2'}}
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.set('name3', 'value3');
+                carr.remove('name2');
+                carr.rename('name1', 'name4');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name4', bar: {value: 'value1'}},
+                    {foo: 'name2', bar: {}},
+                    {foo: 'name3', bar: {value: 'value3'}}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].foo': 'name4',
+                    'styles[1].bar.value': null,
+                    'styles[2].foo': 'name3',
+                    'styles[2].bar.value': 'value3',
+                });
+            });
+
+            it('unsets but does not remove items with extra top-level data', function() {
+                var container = {styles: [
+                    {foo: 'name', bar: {value: 'value'}, extra: 'data'}
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.remove('name');
+
+                expect(container.styles).toEqual([{foo: 'name', bar: {}, extra: 'data'}]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null,
+                });
+            });
+
+            it('unsets but does not remove items with extra value data', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: {value: 'value1', extra: 'data'}},
+                    {foo: 'name2', bar: {value: 'value2'}},
+                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                // Remove the first value:
+
+                carr.remove('name1');
+
+                expect(container.styles).toEqual([
+                    {foo: 'name1', bar: {extra: 'data'}},
+                    {foo: 'name2', bar: {value: 'value2'}},
+                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
+                ]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null
+                });
+
+                // Remove the second value:
+                carr.remove('name2');
+
+                expect(container.styles).toEqual([
+                    {foo: 'name1', bar: {extra: 'data'}},
+                    {foo: 'name2', bar: {}},
+                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
+                ]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null,
+                    'styles[1].bar.value': null
+                });
+            });
+
+            it('does not compress nested attributes *sigh*', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: {value: 'value1'}},
+                    {foo: 'name2', bar: {value: 'value2', extra: 'data2'}},
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                // Remove the first value:
+
+                carr.remove('name1');
+
+                expect(container.styles).toEqual([
+                    {foo: 'name1', bar: {}},
+                    {foo: 'name2', bar: {value: 'value2', extra: 'data2'}},
+                ]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null
+                });
+            });
+        });
+    });
+
+    describe('templateString', function() {
+        it('evaluates attributes', function() {
+            expect(Lib.templateString('foo %{bar}', {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('evaluates nested properties', function() {
+            expect(Lib.templateString('foo %{bar.baz}', {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        });
+
+        it('evaluates array nested properties', function() {
+            expect(Lib.templateString('foo %{bar[0].baz}', {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('subtitutes multiple matches', function() {
+            expect(Lib.templateString('foo %{group} %{trace}', {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        });
+
+        it('replaces missing matches with empty string', function() {
+            expect(Lib.templateString('foo %{group} %{trace}', {})).toEqual('foo  ');
+        });
+
+        it('replaces empty key with empty string', function() {
+            expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
+        });
+    });
+
+    describe('relativeAttr()', function() {
+        it('replaces the last part always', function() {
+            expect(Lib.relativeAttr('annotations[3].x', 'y')).toBe('annotations[3].y');
+            expect(Lib.relativeAttr('x', 'z')).toBe('z');
+            expect(Lib.relativeAttr('marker.line.width', 'colorbar.x')).toBe('marker.line.colorbar.x');
+        });
+
+        it('ascends with ^', function() {
+            expect(Lib.relativeAttr('annotations[3].x', '^[2].z')).toBe('annotations[2].z');
+            expect(Lib.relativeAttr('annotations[3].x', '^^margin')).toBe('margin');
+            expect(Lib.relativeAttr('annotations[3].x', '^^margin.r')).toBe('margin.r');
+            expect(Lib.relativeAttr('marker.line.width', '^colorbar.x')).toBe('marker.colorbar.x');
+        });
+
+        it('fails on ascending too far', function() {
+            expect(function() { return Lib.relativeAttr('x', '^y'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('marker.line.width', '^^^colorbar.x'); }).toThrow();
+        });
+
+        it('fails with malformed baseAttr', function() {
+            expect(function() { return Lib.relativeAttr('x[]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x.a]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x[a]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x[3].', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x.y.', 'z'); }).toThrow();
+        });
+    });
+
+    describe('subplotSort', function() {
+        it('puts xy subplots in the right order', function() {
+            var a = ['x10y', 'x10y20', 'x10y12', 'x10y2', 'xy', 'x2y12', 'xy2', 'xy15'];
+            a.sort(Lib.subplotSort);
+            expect(a).toEqual(['xy', 'xy2', 'xy15', 'x2y12', 'x10y', 'x10y2', 'x10y12', 'x10y20']);
+        });
+
+        it('puts simple subplots in the right order', function() {
+            ['scene', 'geo', 'ternary', 'mapbox'].forEach(function(v) {
+                var a = [v + '100', v + '43', v, v + '10', v + '2'];
+                a.sort(Lib.subplotSort);
+                expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);
+            });
+        });
+    });
+
+    describe('sort', function() {
+        var callCount;
+        beforeEach(function() {
+            callCount = 0;
+        });
+
+        function sortCounter(a, b) {
+            callCount++;
+            return a - b;
+        }
+
+        function sortCounterReversed(a, b) {
+            callCount++;
+            return b - a;
+        }
+
+        function ascending(n) {
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = i;
+            }
+            assertAscending(out);
+            return out;
+        }
+
+        function descending(n) {
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = n - 1 - i;
+            }
+            assertDescending(out);
+            return out;
+        }
+
+        function rand(n) {
+            Lib.seedPseudoRandom();
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = Lib.pseudoRandom();
+            }
+            return out;
+        }
+
+        function assertAscending(array) {
+            for(var i = 1; i < array.length; i++) {
+                if(array[i] < array[i - 1]) {
+                    // we already know this expect will fail,
+                    // just want to format the message nicely and then
+                    // quit so we don't get a million messages
+                    expect(array[i]).not.toBeLessThan(array[i - 1]);
+                    break;
+                }
+            }
+        }
+
+        function assertDescending(array) {
+            for(var i = 1; i < array.length; i++) {
+                if(array[i] < array[i - 1]) {
+                    expect(array[i]).not.toBeGreaterThan(array[i - 1]);
+                    break;
+                }
+            }
+        }
+
+        function _sort(array, sortFn) {
+            var arrayOut = Lib.sort(array, sortFn);
+            expect(arrayOut).toBe(array);
+            return array;
+        }
+
+        it('sorts ascending arrays ascending in N-1 calls', function() {
+            var arrayIn = _sort(ascending(100000), sortCounter);
+            expect(callCount).toBe(99999);
+            assertAscending(arrayIn);
+        });
+
+        it('sorts descending arrays ascending in N-1 calls', function() {
+            var arrayIn = _sort(descending(100000), sortCounter);
+            expect(callCount).toBe(99999);
+            assertAscending(arrayIn);
+        });
+
+        it('sorts ascending arrays descending in N-1 calls', function() {
+            var arrayIn = _sort(ascending(100000), sortCounterReversed);
+            expect(callCount).toBe(99999);
+            assertDescending(arrayIn);
+        });
+
+        it('sorts descending arrays descending in N-1 calls', function() {
+            var arrayIn = _sort(descending(100000), sortCounterReversed);
+            expect(callCount).toBe(99999);
+            assertDescending(arrayIn);
+        });
+
+        it('sorts random arrays ascending in a few more calls than bare sort', function() {
+            var arrayIn = _sort(rand(100000), sortCounter);
+            assertAscending(arrayIn);
+
+            var ourCallCount = callCount;
+            callCount = 0;
+            rand(100000).sort(sortCounter);
+            // in general this will be ~N*log_2(N)
+            expect(callCount).toBeGreaterThan(1e6);
+            // This number (2) is only repeatable because we used Lib.pseudoRandom
+            // should always be at least 2 and less than N - 1, and if
+            // the input array is really not sorted it will be close to 2. It will
+            // only be large if the array is sorted until near the end.
+            expect(ourCallCount - callCount).toBe(2);
+        });
+
+        it('sorts random arrays descending in a few more calls than bare sort', function() {
+            var arrayIn = _sort(rand(100000), sortCounterReversed);
+            assertDescending(arrayIn);
+
+            var ourCallCount = callCount;
+            callCount = 0;
+            rand(100000).sort(sortCounterReversed);
+            expect(callCount).toBeGreaterThan(1e6);
+            expect(ourCallCount - callCount).toBe(2);
+        });
+
+        it('supports short arrays', function() {
+            expect(_sort([], sortCounter)).toEqual([]);
+            expect(_sort([1], sortCounter)).toEqual([1]);
+            expect(callCount).toBe(0);
+
+            expect(_sort([1, 2], sortCounter)).toEqual([1, 2]);
+            expect(_sort([2, 3], sortCounterReversed)).toEqual([3, 2]);
+            expect(callCount).toBe(2);
+        });
+
+        function dupes() {
+            return [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 7, 8, 9];
+        }
+
+        it('still short-circuits in order with duplicates', function() {
+            expect(_sort(dupes(), sortCounter))
+                .toEqual(dupes());
+
+            expect(callCount).toEqual(18);
+
+            callCount = 0;
+            dupes().sort(sortCounter);
+            expect(callCount).toBeGreaterThan(18);
+        });
+
+        it('still short-circuits reversed with duplicates', function() {
+            expect(_sort(dupes(), sortCounterReversed))
+                .toEqual(dupes().reverse());
+
+            expect(callCount).toEqual(18);
+
+            callCount = 0;
+            dupes().sort(sortCounterReversed);
+            expect(callCount).toBeGreaterThan(18);
+        });
+    });
+
+    describe('relinkPrivateKeys', function() {
+        it('ignores customdata and ids', function() {
+            var fromContainer = {
+                customdata: [{_x: 1, _y: 2, a: 3}],
+                ids: [{_i: 4, j: 5}]
+            };
+            var toContainer = {
+                customdata: [{a: 6}],
+                ids: [{j: 7}]
+            };
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            expect(toContainer.customdata[0]._x).toBeUndefined();
+            expect(toContainer.customdata[0]._y).toBeUndefined();
+            expect(toContainer.ids[0]._i).toBeUndefined();
+        });
+
+        it('ignores any values that are ===', function() {
+            var accesses = 0;
+
+            var obj = {
+                get _x() { accesses++; return 1; },
+                set _x(v) { accesses++; }
+            };
+            var array = [obj];
+            var array2 = [obj];
+
+            var fromContainer = {
+                x: array,
+                y: array,
+                o: obj
+            };
+            var toContainer = {
+                x: array,
+                y: array2,
+                o: obj
+            };
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            expect(accesses).toBe(0);
+
+            obj._x = 2;
+            expect(obj._x).toBe(1);
+            expect(accesses).toBe(2);
+        });
+
+        it('reinserts other private keys if they\'re not already there', function() {
+            var obj1 = {a: 10, _a: 11};
+            var obj2 = {a: 12, _a: 13};
+            function f1() { return 1; }
+            function f2() { return 2; }
+
+            var fromContainer = {
+                a: 1,
+                _a: 2,
+                _b: 3,
+                _c: obj1,
+                _d: obj1,
+                f: f1, // functions are private even without _
+                g: f1,
+                array: [{a: 3, _a: 4, _b: 5, f: f1, g: f1}],
+                o: {a: 6, _a: 7, _b: 8},
+                array2: [{a: 9, _a: 10}],
+                o2: {a: 11, _a: 12}
+            };
+            fromContainer._circular = fromContainer;
+            fromContainer._circular2 = fromContainer;
+            var toContainer = {
+                a: 21,
+                _a: 22,
+                _c: obj2,
+                f: f2,
+                array: [{a: 23, _a: 24, f: f2}],
+                o: {a: 26, _a: 27},
+                x: [28],
+                _x: 29
+            };
+            toContainer._circular = toContainer;
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            var expected = {
+                a: 21,
+                _a: 22,
+                _b: 3,
+                _c: obj2,
+                _circular: toContainer,
+                _circular2: fromContainer,
+                _d: obj1,
+                f: f2,
+                g: f1,
+                array: [{a: 23, _a: 24, _b: 5, f: f2, g: f1}],
+                o: {a: 26, _a: 27, _b: 8},
+                x: [28],
+                _x: 29
+            };
+
+            expect(toContainer).toEqual(expected);
+        });
+    });
 });
 
 describe('Queue', function() {
@@ -1648,14 +2498,14 @@ describe('Queue', function() {
         })
         .then(function() {
             expect(gd.undoQueue.index).toEqual(1);
-            expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([undefined]);
+            expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([null]);
             expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
 
             return Plotly.relayout(gd, 'title', 'A title');
         })
         .then(function() {
             expect(gd.undoQueue.index).toEqual(2);
-            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(undefined);
+            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(null);
             expect(gd.undoQueue.queue[1].redo.args[0][1].title).toEqual('A title');
 
             return Plotly.restyle(gd, 'mode', 'markers');
@@ -1664,10 +2514,10 @@ describe('Queue', function() {
             expect(gd.undoQueue.index).toEqual(2);
             expect(gd.undoQueue.queue[2]).toBeUndefined();
 
-            expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([undefined]);
+            expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([null]);
             expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
 
-            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(undefined);
+            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(null);
             expect(gd.undoQueue.queue[0].redo.args[0][1].title).toEqual('A title');
 
             return Plotly.restyle(gd, 'transforms[0]', { type: 'filter' });

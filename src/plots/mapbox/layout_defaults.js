@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,7 @@
 var Lib = require('../../lib');
 
 var handleSubplotDefaults = require('../subplot_defaults');
+var handleArrayContainerDefaults = require('../array_container_defaults');
 var layoutAttributes = require('./layout_attributes');
 
 
@@ -20,12 +21,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'mapbox',
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
-        partition: 'y'
+        partition: 'y',
+        accessToken: layoutOut._mapboxAccessToken
     });
 };
 
-function handleDefaults(containerIn, containerOut, coerce) {
-    coerce('accesstoken');
+function handleDefaults(containerIn, containerOut, coerce, opts) {
+    coerce('accesstoken', opts.accessToken);
     coerce('style');
     coerce('center.lon');
     coerce('center.lat');
@@ -33,28 +35,22 @@ function handleDefaults(containerIn, containerOut, coerce) {
     coerce('bearing');
     coerce('pitch');
 
-    handleLayerDefaults(containerIn, containerOut);
+    handleArrayContainerDefaults(containerIn, containerOut, {
+        name: 'layers',
+        handleItemDefaults: handleLayerDefaults
+    });
 
     // copy ref to input container to update 'center' and 'zoom' on map move
     containerOut._input = containerIn;
 }
 
-function handleLayerDefaults(containerIn, containerOut) {
-    var layersIn = containerIn.layers || [],
-        layersOut = containerOut.layers = [];
-
-    var layerIn, layerOut;
-
+function handleLayerDefaults(layerIn, layerOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(layerIn, layerOut, layoutAttributes.layers, attr, dflt);
     }
 
-    for(var i = 0; i < layersIn.length; i++) {
-        layerIn = layersIn[i];
-        layerOut = {};
-
-        if(!Lib.isPlainObject(layerIn)) continue;
-
+    var visible = coerce('visible');
+    if(visible) {
         var sourceType = coerce('sourcetype');
         coerce('source');
 
@@ -87,8 +83,5 @@ function handleLayerDefaults(containerIn, containerOut) {
             Lib.coerceFont(coerce, 'symbol.textfont');
             coerce('symbol.textposition');
         }
-
-        layerOut._index = i;
-        layersOut.push(layerOut);
     }
 }

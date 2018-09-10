@@ -1,0 +1,63 @@
+{
+  "data": [
+    {
+        "type": "barpolar",
+        "name": "on reversed-ranged radial axis",
+        "r": [10, 12, 15]
+    },
+    {
+        "type": "barpolar",
+        "name": "on log radial axis",
+        "subplot": "polar2",
+        "r": [100, 50, 200]
+    },
+    {
+        "type": "barpolar",
+        "name": "on category radial axis",
+        "subplot": "polar3",
+        "r": ["a", "b", "c", "d", "b", "f", "a", "a"]
+    },
+    {
+        "type": "barpolar",
+        "name": "on date radial axis",
+        "subplot": "polar4",
+        "r": ["2018-08-1", "2018-09-5", "2018-10-8", "2018-09-20"]
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 600,
+    "margin": {"l": 40, "r": 40, "b": 60, "t": 20, "pad": 0},
+    "grid": {
+      "rows": 2,
+      "columns": 2,
+      "ygap": 0.2
+    },
+    "polar": {
+      "domain": {"row": 0, "column": 0},
+      "radialaxis": {"range": [20, 0]}
+    },
+    "polar2": {
+      "domain": {"row": 0, "column": 1},
+      "radialaxis": {"type": "log"},
+      "angularaxis": {"direction": "clockwise"}
+    },
+    "polar3": {
+      "domain": {"row": 1, "column": 0},
+      "radialaxis": {
+        "categoryorder": "category descending"
+      }
+    },
+    "polar4": {
+      "domain": {"row": 1, "column": 1},
+      "angularaxis": {"direction": "clockwise"},
+      "radialaxis": {"angle": 90, "side": "counterclockwise"}
+    },
+    "legend": {
+      "x": 0.5,
+      "y": -0.05,
+      "xanchor": "center",
+      "yanchor": "top"
+    }
+  }
+}

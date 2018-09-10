@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,10 +9,15 @@
 
 'use strict';
 
-var Scene2D = require('./scene2d');
-var Plots = require('../plots');
-var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
+var Scene2D = require('./scene2d');
+var layoutGlobalAttrs = require('../layout_attributes');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var constants = require('../cartesian/constants');
+var Cartesian = require('../cartesian');
+var fxAttrs = require('../../components/fx/layout_attributes');
+var getSubplotData = require('../get_data').getSubplotData;
 
 exports.name = 'gl2d';
 
@@ -20,27 +25,42 @@ exports.attr = ['xaxis', 'yaxis'];
 
 exports.idRoot = ['x', 'y'];
 
-exports.idRegex = {
-    x: /^x([2-9]|[1-9][0-9]+)?$/,
-    y: /^y([2-9]|[1-9][0-9]+)?$/
-};
+exports.idRegex = constants.idRegex;
 
-exports.attrRegex = {
-    x: /^xaxis([2-9]|[1-9][0-9]+)?$/,
-    y: /^yaxis([2-9]|[1-9][0-9]+)?$/
-};
+exports.attrRegex = constants.attrRegex;
 
 exports.attributes = require('../cartesian/attributes');
 
+exports.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+    if(!layoutOut._has('cartesian')) {
+        Cartesian.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+    }
+};
+
+// gl2d uses svg axis attributes verbatim, but overrides editType
+// this could potentially be just `layoutAttributes` but it would
+// still need special handling somewhere to give it precedence over
+// the svg version when both are in use on one plot
+exports.layoutAttrOverrides = overrideAll(Cartesian.layoutAttributes, 'plot', 'from-root');
+
+// similar overrides for base plot attributes (and those added by components)
+exports.baseLayoutAttrOverrides = overrideAll({
+    plot_bgcolor: layoutGlobalAttrs.plot_bgcolor,
+    hoverlabel: fxAttrs.hoverlabel
+    // dragmode needs calc but only when transitioning TO lasso or select
+    // so for now it's left inside _relayout
+    // dragmode: fxAttrs.dragmode
+}, 'plot', 'nested');
+
 exports.plot = function plotGl2d(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
+    var fullLayout = gd._fullLayout;
+    var fullData = gd._fullData;
+    var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {
         var subplotId = subplotIds[i],
             subplotObj = fullLayout._plots[subplotId],
-            fullSubplotData = Plots.getSubplotData(fullData, 'gl2d', subplotId);
+            fullSubplotData = getSubplotData(fullData, 'gl2d', subplotId);
 
         // ref. to corresp. Scene instance
         var scene = subplotObj._scene2d;
@@ -66,7 +86,7 @@ exports.plot = function plotGl2d(gd) {
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'gl2d');
+    var oldSceneKeys = oldFullLayout._subplots.gl2d || [];
 
     for(var i = 0; i < oldSceneKeys.length; i++) {
         var id = oldSceneKeys[i],
@@ -76,17 +96,26 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         if(!oldSubplot._scene2d) continue;
 
         // if no traces are present, delete gl2d subplot
-        var subplotData = Plots.getSubplotData(newFullData, 'gl2d', id);
+        var subplotData = getSubplotData(newFullData, 'gl2d', id);
         if(subplotData.length === 0) {
             oldSubplot._scene2d.destroy();
             delete oldFullLayout._plots[id];
         }
     }
+
+    // since we use cartesian interactions, do cartesian clean
+    Cartesian.clean.apply(this, arguments);
+};
+
+exports.drawFramework = function(gd) {
+    if(!gd._context.staticPlot) {
+        Cartesian.drawFramework(gd);
+    }
 };
 
 exports.toSVG = function(gd) {
-    var fullLayout = gd._fullLayout,
-        subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
+    var fullLayout = gd._fullLayout;
+    var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {
         var subplot = fullLayout._plots[subplotIds[i]],
@@ -106,5 +135,15 @@ exports.toSVG = function(gd) {
         });
 
         scene.destroy();
+    }
+};
+
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
+    var subplotIds = fullLayout._subplots.gl2d;
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotObj = fullLayout._plots[subplotIds[i]]._scene2d;
+        subplotObj.updateFx(fullLayout.dragmode);
     }
 };

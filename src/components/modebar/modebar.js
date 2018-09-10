@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,6 +10,7 @@
 'use strict';
 
 var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Icons = require('../../../build/ploticon');
@@ -52,10 +53,13 @@ proto.update = function(graphInfo, buttons) {
     else this.element.className = 'modebar';
 
     // if buttons or logo have changed, redraw modebar interior
-    var needsNewButtons = !this.hasButtons(buttons),
-        needsNewLogo = (this.hasLogo !== context.displaylogo);
+    var needsNewButtons = !this.hasButtons(buttons);
+    var needsNewLogo = (this.hasLogo !== context.displaylogo);
+    var needsNewLocale = (this.locale !== context.locale);
 
-    if(needsNewButtons || needsNewLogo) {
+    this.locale = context.locale;
+
+    if(needsNewButtons || needsNewLogo || needsNewLocale) {
         this.removeAllButtons();
 
         this.updateButtons(buttons);
@@ -123,6 +127,9 @@ proto.createButton = function(config) {
 
     var title = config.title;
     if(title === undefined) title = config.name;
+    // for localization: allow title to be a callable that takes gd as arg
+    else if(typeof title === 'function') title = title(this.graphInfo);
+
     if(title || title === 0) button.setAttribute('data-title', title);
 
     if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
@@ -149,7 +156,13 @@ proto.createButton = function(config) {
     button.setAttribute('data-toggle', config.toggle || false);
     if(config.toggle) d3.select(button).classed('active', true);
 
-    button.appendChild(this.createIcon(config.icon || Icons.question));
+    var icon = config.icon;
+    if(typeof icon === 'function') {
+        button.appendChild(icon());
+    }
+    else {
+        button.appendChild(this.createIcon(icon || Icons.question));
+    }
     button.setAttribute('data-gravity', config.gravity || 'n');
 
     return button;
@@ -163,7 +176,9 @@ proto.createButton = function(config) {
  * @Return {HTMLelement}
  */
 proto.createIcon = function(thisIcon) {
-    var iconHeight = thisIcon.ascent - thisIcon.descent,
+    var iconHeight = isNumeric(thisIcon.height) ?
+            Number(thisIcon.height) :
+            thisIcon.ascent - thisIcon.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
         path = document.createElementNS(svgNS, 'path');
@@ -173,7 +188,15 @@ proto.createIcon = function(thisIcon) {
     icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
 
     path.setAttribute('d', thisIcon.path);
-    path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
+
+    if(thisIcon.transform) {
+        path.setAttribute('transform', thisIcon.transform);
+    }
+    else if(thisIcon.ascent !== undefined) {
+        // Legacy icon transform calculation
+        path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
+    }
+
     icon.appendChild(path);
 
     return icon;
@@ -246,7 +269,7 @@ proto.getLogo = function() {
 
     a.href = 'https://plot.ly/';
     a.target = '_blank';
-    a.setAttribute('data-title', 'Produced with Plotly');
+    a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly'));
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
     a.appendChild(this.createIcon(Icons.plotlylogo));

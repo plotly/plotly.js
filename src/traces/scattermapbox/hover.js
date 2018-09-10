@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,20 +9,23 @@
 
 'use strict';
 
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
+var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
+var fillHoverText = require('../scatter/fill_hover_text');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
-    var cd = pointData.cd,
-        trace = cd[0].trace,
-        xa = pointData.xa,
-        ya = pointData.ya;
+    var cd = pointData.cd;
+    var trace = cd[0].trace;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var subplot = pointData.subplot;
 
     // compute winding number about [-180, 180] globe
     var winding = (xval >= 0) ?
-            Math.floor((xval + 180) / 360) :
-            Math.ceil((xval - 180) / 360);
+        Math.floor((xval + 180) / 360) :
+        Math.ceil((xval - 180) / 360);
 
     // shift longitude to [-180, 180] to determine closest point
     var lonShift = winding * 360;
@@ -30,11 +33,13 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     function distFn(d) {
         var lonlat = d.lonlat;
-
         if(lonlat[0] === BADNUM) return Infinity;
 
-        var dx = Math.abs(xa.c2p(lonlat) - xa.c2p([xval2, lonlat[1]]));
-        var dy = Math.abs(ya.c2p(lonlat) - ya.c2p([lonlat[0], yval]));
+        var lon = Lib.modHalf(lonlat[0], 360);
+        var lat = lonlat[1];
+        var pt = subplot.project([lon, lat]);
+        var dx = pt.x - xa.c2p([xval2, lat]);
+        var dy = pt.y - ya.c2p([lon, yval]);
         var rad = Math.max(3, d.mrc || 0);
 
         return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
@@ -45,14 +50,14 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index === false) return;
 
-    var di = cd[pointData.index],
-        lonlat = di.lonlat,
-        lonlatShifted = [lonlat[0] + lonShift, lonlat[1]];
+    var di = cd[pointData.index];
+    var lonlat = di.lonlat;
+    var lonlatShifted = [Lib.modHalf(lonlat[0], 360) + lonShift, lonlat[1]];
 
     // shift labels back to original winded globe
-    var xc = xa.c2p(lonlatShifted),
-        yc = ya.c2p(lonlatShifted),
-        rad = di.mrc || 1;
+    var xc = xa.c2p(lonlatShifted);
+    var yc = ya.c2p(lonlatShifted);
+    var rad = di.mrc || 1;
 
     pointData.x0 = xc - rad;
     pointData.x1 = xc + rad;
@@ -60,19 +65,19 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.y1 = yc + rad;
 
     pointData.color = getTraceColor(trace, di);
-    pointData.extraText = getExtraText(trace, di);
+    pointData.extraText = getExtraText(trace, di, cd[0].t.labels);
 
     return [pointData];
 };
 
-function getExtraText(trace, di) {
-    var hoverinfo = trace.hoverinfo.split('+'),
-        isAll = (hoverinfo.indexOf('all') !== -1),
-        hasLon = (hoverinfo.indexOf('lon') !== -1),
-        hasLat = (hoverinfo.indexOf('lat') !== -1);
-
-    var lonlat = di.lonlat,
-        text = [];
+function getExtraText(trace, di, labels) {
+    var hoverinfo = di.hi || trace.hoverinfo;
+    var parts = hoverinfo.split('+');
+    var isAll = parts.indexOf('all') !== -1;
+    var hasLon = parts.indexOf('lon') !== -1;
+    var hasLat = parts.indexOf('lat') !== -1;
+    var lonlat = di.lonlat;
+    var text = [];
 
     // TODO should we use a mock axis to format hover?
     // If so, we'll need to make precision be zoom-level dependent
@@ -82,19 +87,14 @@ function getExtraText(trace, di) {
 
     if(isAll || (hasLon && hasLat)) {
         text.push('(' + format(lonlat[0]) + ', ' + format(lonlat[1]) + ')');
+    } else if(hasLon) {
+        text.push(labels.lon + format(lonlat[0]));
+    } else if(hasLat) {
+        text.push(labels.lat + format(lonlat[1]));
     }
-    else if(hasLon) text.push('lon: ' + format(lonlat[0]));
-    else if(hasLat) text.push('lat: ' + format(lonlat[1]));
 
-    if(isAll || hoverinfo.indexOf('text') !== -1) {
-        var tx;
-
-        if(di.htx) tx = di.htx;
-        else if(trace.hovertext) tx = trace.hovertext;
-        else if(di.tx) tx = di.tx;
-        else if(trace.text) tx = trace.text;
-
-        if(!Array.isArray(tx)) text.push(tx);
+    if(isAll || parts.indexOf('text') !== -1) {
+        fillHoverText(di, trace, text);
     }
 
     return text.join('<br>');

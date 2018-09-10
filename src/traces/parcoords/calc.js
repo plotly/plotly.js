@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,19 +11,27 @@
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var calcColorscale = require('../../components/colorscale/calc');
 var Lib = require('../../lib');
-
+var wrap = require('../../lib/gup').wrap;
 
 module.exports = function calc(gd, trace) {
-    var cs = !!trace.line.colorscale && Lib.isArray(trace.line.color);
-    var color = cs ? trace.line.color : Array.apply(0, Array(trace.dimensions.reduce(function(p, n) {return Math.max(p, n.values.length);}, 0))).map(function() {return 0.5;});
+    var cs = !!trace.line.colorscale && Lib.isArrayOrTypedArray(trace.line.color);
+    var color = cs ? trace.line.color : constHalf(trace._length);
     var cscale = cs ? trace.line.colorscale : [[0, trace.line.color], [1, trace.line.color]];
 
     if(hasColorscale(trace, 'line')) {
-        calcColorscale(trace, trace.line.color, 'line', 'c');
+        calcColorscale(trace, color, 'line', 'c');
     }
 
-    return [{
+    return wrap({
         lineColor: color,
         cscale: cscale
-    }];
+    });
 };
+
+function constHalf(len) {
+    var out = new Array(len);
+    for(var i = 0; i < len; i++) {
+        out[i] = 0.5;
+    }
+    return out;
+}

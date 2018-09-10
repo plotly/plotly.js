@@ -1,11 +1,25 @@
 var Plotly = require('@lib/index');
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var assertDims = require('../assets/assert_dims');
-var assertStyle = require('../assets/assert_style');
+var customAssertions = require('../assets/custom_assertions');
+var failTest = require('../assets/fail_test');
 
+var assertDims = customAssertions.assertDims;
+var assertStyle = customAssertions.assertStyle;
+
+
+function supplyDataDefaults(dataIn, dataOut) {
+    return Plots.supplyDataDefaults(dataIn, dataOut, {}, {
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+        _modules: [],
+        _visibleModules: [],
+        _basePlotModules: [],
+        _traceUids: dataIn.map(function() { return Lib.randstr(); })
+    });
+}
 
 describe('groupby', function() {
 
@@ -19,7 +33,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -30,7 +47,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['b', 'a', 'b', 'b', 'b', 'a', 'a'],
-                style: { a: {marker: {color: 'green'}}, b: {marker: {color: 'black'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'green'}}},
+                    {target: 'b', value: {marker: {color: 'black'}}}
+                ]
             }]
         }];
 
@@ -49,13 +69,69 @@ describe('groupby', function() {
                 expect(gd._fullData.length).toEqual(2);
                 expect(gd._fullData[0].x).toEqual([1, -1, 0, 3]);
                 expect(gd._fullData[0].y).toEqual([1, 2, 1, 1]);
+                expect(gd._fullData[0].transforms[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [3], 3: [6]});
                 expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
                 expect(gd._fullData[1].y).toEqual([3, 2, 3]);
+                expect(gd._fullData[1].transforms[0]._indexToPoints).toEqual({0: [2], 1: [4], 2: [5]});
 
                 assertDims([4, 3]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
 
-                done();
-            });
+        it('Accepts deprecated object notation for styles', function(done) {
+            var oldStyleMockData = [{
+                mode: 'markers',
+                x: [1, -1, -2, 0, 1, 2, 3],
+                y: [1, 2, 3, 1, 2, 3, 1],
+                transforms: [{
+                    type: 'groupby',
+                    groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                    styles: {
+                        a: {marker: {color: 'red'}},
+                        b: {marker: {color: 'blue'}}
+                    }
+                }]
+            }];
+            var data = Lib.extendDeep([], oldStyleMockData);
+            data[0].marker = { size: 20 };
+
+            var gd = createGraphDiv();
+            var dims = [4, 3];
+
+            Plotly.plot(gd, data).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                return Plotly.restyle(gd, 'marker.opacity', 0.4);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [0.4, 0.4]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(0.4);
+                expect(gd._fullData[1].marker.opacity).toEqual(0.4);
+
+                return Plotly.restyle(gd, 'marker.opacity', 1);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(1);
+                expect(gd._fullData[1].marker.opacity).toEqual(1);
+            })
+            .catch(failTest)
+            .then(done);
+
+            // The final test for restyle updates using deprecated syntax
+            // is ommitted since old style syntax is *only* sanitized on
+            // initial plot, *not* on restyle.
         });
 
         it('Plotly.restyle should work', function(done) {
@@ -92,7 +168,10 @@ describe('groupby', function() {
                 expect(gd._fullData[1].marker.opacity).toEqual(1);
 
                 return Plotly.restyle(gd, {
-                    'transforms[0].style': { a: {marker: {color: 'green'}}, b: {marker: {color: 'red'}} },
+                    'transforms[0].styles': [[
+                        {target: 'a', value: {marker: {color: 'green'}}},
+                        {target: 'b', value: {marker: {color: 'red'}}}
+                    ]],
                     'marker.opacity': 0.4
                 });
             }).then(function() {
@@ -100,9 +179,73 @@ describe('groupby', function() {
                     ['rgb(0, 128, 0)', 'rgb(255, 0, 0)'],
                     [0.4, 0.4]
                 );
+            })
+            .catch(failTest)
+            .then(done);
+        });
 
-                done();
-            });
+        it('Plotly.react should work', function(done) {
+            var data = Lib.extendDeep([], mockData0);
+            data[0].marker = { size: 20 };
+
+            var gd = createGraphDiv();
+            var dims = [4, 3];
+
+            Plotly.plot(gd, data).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                gd.data[0].marker.opacity = 0.4;
+                // contrived test of relinkPrivateKeys
+                // we'll have to do better if we refactor it to opt-in instead of catchall
+                gd._fullData[0].marker._boo = 'here I am';
+                return Plotly.react(gd, gd.data, gd.layout);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [0.4, 0.4]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(0.4);
+                expect(gd._fullData[1].marker.opacity).toEqual(0.4);
+                expect(gd._fullData[0].marker._boo).toBe('here I am');
+
+                gd.data[0].marker.opacity = 1;
+                return Plotly.react(gd, gd.data, gd.layout);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(1);
+                expect(gd._fullData[1].marker.opacity).toEqual(1);
+
+                // edit just affects the first group
+                gd.data[0].transforms[0].styles[0].value.marker.color = 'green';
+                return Plotly.react(gd, gd.data, gd.layout);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(0, 128, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(1);
+                expect(gd._fullData[1].marker.opacity).toEqual(1);
+
+                // edit just affects the second group
+                gd.data[0].transforms[0].styles[1].value.marker.color = 'red';
+                return Plotly.react(gd, gd.data, gd.layout);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(0, 128, 0)', 'rgb(255, 0, 0)'],
+                    [1, 1]
+                );
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.extendTraces should work', function(done) {
@@ -128,9 +271,9 @@ describe('groupby', function() {
                 expect(gd._fullData[1].x.length).toEqual(5);
 
                 assertDims([5, 5]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.deleteTraces should work', function(done) {
@@ -148,9 +291,9 @@ describe('groupby', function() {
                 return Plotly.deleteTraces(gd, [0]);
             }).then(function() {
                 assertDims([]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('toggling trace visibility should work', function(done) {
@@ -172,12 +315,41 @@ describe('groupby', function() {
                 return Plotly.restyle(gd, 'visible', [true, true], [0, 1]);
             }).then(function() {
                 assertDims([4, 3, 4, 3]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
-
     });
+
+    describe('many-to-many transforms', function() {
+        it('varies the color for each expanded trace', function() {
+            var uniqueColors = {};
+            var dataOut = [];
+            var dataIn = [{
+                y: [1, 2, 3],
+                transforms: [
+                    {type: 'filter', operation: '<', value: 4},
+                    {type: 'groupby', groups: ['a', 'b', 'c']}
+                ]
+            }, {
+                y: [4, 5, 6],
+                transforms: [
+                    {type: 'filter', operation: '<', value: 4},
+                    {type: 'groupby', groups: ['a', 'b', 'b']}
+                ]
+            }];
+
+            supplyDataDefaults(dataIn, dataOut);
+
+            for(var i = 0; i < dataOut.length; i++) {
+                uniqueColors[dataOut[i].marker.color] = true;
+            }
+
+            // Confirm that five total colors exist:
+            expect(Object.keys(uniqueColors).length).toEqual(5);
+        });
+    });
+
 
     // these tests can be shortened, once the meaning of edge cases gets clarified
     describe('symmetry/degeneracy testing of one-to-many transforms on arbitrary arrays where there is no grouping (implicit 1):', function() {
@@ -192,7 +364,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -253,9 +428,9 @@ describe('groupby', function() {
                 expect(gd._fullData[1].y).toEqual([3, 2, 3]);
 
                 assertDims([4, 3]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -270,9 +445,9 @@ describe('groupby', function() {
 
                 expect(gd._fullData.length).toEqual(1);
                 assertDims([7]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -290,9 +465,9 @@ describe('groupby', function() {
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
                 assertDims([7]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -311,9 +486,9 @@ describe('groupby', function() {
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
                 assertDims([7]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -332,9 +507,9 @@ describe('groupby', function() {
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
                 assertDims([7]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -365,15 +540,16 @@ describe('groupby', function() {
                     expect(gd._fullData[0].y).toEqual([0, 1, 3, 6]);
                     expect(gd._fullData[0].marker.line.width).toEqual([4, 2, 2, 3]);
 
+
                     expect(gd._fullData[1].ids).toEqual(['r', 'y', 'u']);
                     expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
                     expect(gd._fullData[1].y).toEqual([2, 5, 4]);
                     expect(gd._fullData[1].marker.line.width).toEqual([4, 2, 3]);
 
                     assertDims([4, 3]);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             };
         }
 
@@ -387,7 +563,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -401,8 +580,9 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {
-                    a: {
+                styles: [{
+                    target: 'a',
+                    value: {
                         marker: {
                             color: 'orange',
                             size: 20,
@@ -410,8 +590,10 @@ describe('groupby', function() {
                                 color: 'red'
                             }
                         }
-                    },
-                    b: {
+                    }
+                }, {
+                    target: 'b',
+                    value: {
                         mode: 'markers+lines', // heterogeonos attributes are OK: group 'a' doesn't need to define this
                         marker: {
                             color: 'cyan',
@@ -426,7 +608,7 @@ describe('groupby', function() {
                             color: 'purple'
                         }
                     }
-                }
+                }]
             }]
         }];
 
@@ -447,11 +629,14 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {
-                    a: {marker: {size: 30}},
+                styles: [{
+                    target: 'a',
+                    value: {marker: {size: 30}}
+                }, {
                     // override general color:
-                    b: {marker: {size: 15, line: {color: 'yellow'}}, line: {color: 'purple'}}
-                }
+                    target: 'b',
+                    value: {marker: {size: 15, line: {color: 'yellow'}}, line: {color: 'purple'}}
+                }]
             }]
         }];
 
@@ -464,7 +649,7 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {/* can be empty, or of partial group id coverage */}
+                styles: [/* can be empty, or of partial group id coverage */]
             }]
         }];
 
@@ -495,8 +680,9 @@ describe('groupby', function() {
             Plotly.plot(gd, data).then(function() {
                 expect(gd._fullData[0].marker.line.color).toEqual(['orange', 'red', 'cyan', 'pink']);
                 expect(gd._fullData[1].marker.line.color).toEqual('yellow');
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('passes with no explicit styling for the individual group', test(mockData4));
@@ -533,9 +719,9 @@ describe('groupby', function() {
                     expect(gd._fullData[0].marker.line.width).toEqual([4, 2, 4, 2, 2, 3, 3]);
 
                     assertDims([7]);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             };
         }
 
@@ -548,7 +734,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 // groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -561,7 +750,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: [],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -574,13 +766,49 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: null,
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
         it('passes with no groups', test(mockData0));
         it('passes with empty groups', test(mockData1));
         it('passes with falsey groups', test(mockData2));
+    });
 
+    describe('expanded trace coloring', function() {
+        it('assigns unique colors to each group', function() {
+            var colors = [];
+            var dataOut = [];
+            var dataIn = [{
+                y: [1, 2, 3],
+                transforms: [
+                    {type: 'filter', operation: '<', value: 4},
+                    {type: 'groupby', groups: ['a', 'b', 'c']}
+                ]
+            }, {
+                y: [4, 5, 6],
+                transforms: [
+                    {type: 'filter', operation: '<', value: 4},
+                    {type: 'groupby', groups: ['a', 'b', 'b']}
+                ]
+            }];
+
+            supplyDataDefaults(dataIn, dataOut);
+
+            for(var i = 0; i < dataOut.length; i++) {
+                colors.push(dataOut[i].marker.color);
+            }
+
+            expect(colors).toEqual([
+                '#1f77b4',
+                '#ff7f0e',
+                '#2ca02c',
+                '#d62728',
+                '#9467bd'
+            ]);
+        });
     });
 });

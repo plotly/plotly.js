@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,12 +15,12 @@ var plotAttrs = require('../../plots/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
 
-
-module.exports = {
+module.exports = overrideAll({
     lon: scatterGeoAttrs.lon,
     lat: scatterGeoAttrs.lat,
 
@@ -61,10 +61,10 @@ module.exports = {
 
     line: {
         color: lineAttrs.color,
-        width: lineAttrs.width,
+        width: lineAttrs.width
 
         // TODO
-        dash: lineAttrs.dash
+        // dash: dash
     },
 
     connectgaps: scatterAttrs.connectgaps,
@@ -82,9 +82,7 @@ module.exports = {
                 'are only available for *circle* symbols.'
             ].join(' ')
         },
-        opacity: extendFlat({}, markerAttrs.opacity, {
-            arrayOk: false
-        }),
+        opacity: markerAttrs.opacity,
         size: markerAttrs.size,
         sizeref: markerAttrs.sizeref,
         sizemin: markerAttrs.sizemin,
@@ -97,7 +95,7 @@ module.exports = {
         autocolorscale: markerAttrs.autocolorscale,
         reversescale: markerAttrs.reversescale,
         showscale: markerAttrs.showscale,
-        colorbar: colorbarAttrs
+        colorbar: colorbarAttrs,
 
         // line
     },
@@ -108,7 +106,14 @@ module.exports = {
     textfont: mapboxAttrs.layers.symbol.textfont,
     textposition: mapboxAttrs.layers.symbol.textposition,
 
+    selected: {
+        marker: scatterAttrs.selected.marker
+    },
+    unselected: {
+        marker: scatterAttrs.unselected.marker
+    },
+
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']
-    }),
-};
+    })
+}, 'calc', 'nested');

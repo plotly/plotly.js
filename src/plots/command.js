@@ -1,15 +1,14 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Plotly = require('../plotly');
+var Registry = require('../registry');
 var Lib = require('../lib');
 
 /*
@@ -114,7 +113,7 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
     } else {
         // TODO: It'd be really neat to actually give a *reason* for this, but at least a warning
         // is a start
-        Lib.warn('Unable to automatically bind plot updates to API command');
+        Lib.log('Unable to automatically bind plot updates to API command');
 
         ret.lookupTable = {};
         ret.remove = function() {};
@@ -262,17 +261,17 @@ function bindingValueHasChanged(gd, binding, cache) {
  *      A list of arguments passed to the API command
  */
 exports.executeAPICommand = function(gd, method, args) {
-    var apiMethod = Plotly[method];
+    if(method === 'skip') return Promise.resolve();
 
+    var _method = Registry.apiMethodRegistry[method];
     var allArgs = [gd];
-
     if(!Array.isArray(args)) args = [];
 
     for(var i = 0; i < args.length; i++) {
         allArgs.push(args[i]);
     }
 
-    return apiMethod.apply(null, allArgs).catch(function(err) {
+    return _method.apply(null, allArgs).catch(function(err) {
         Lib.warn('API call to Plotly.' + method + ' rejected.', err);
         return Promise.reject(err);
     });

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,8 +9,8 @@
 'use strict';
 
 module.exports = {
-    scrollBarWidth: 4,
-    scrollBarHeight: 20,
+    scrollBarWidth: 6,
+    scrollBarMinHeight: 20,
     scrollBarColor: '#808BA4',
     scrollBarMargin: 4
 };

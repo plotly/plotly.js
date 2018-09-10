@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,7 +20,7 @@ pointcloud.plot = require('./convert');
 pointcloud.moduleType = 'trace';
 pointcloud.name = 'pointcloud';
 pointcloud.basePlotModule = require('../../plots/gl2d');
-pointcloud.categories = ['gl2d', 'showLegend'];
+pointcloud.categories = ['gl', 'gl2d', 'showLegend'];
 pointcloud.meta = {
     description: [
         'The data visualized as a point cloud set in `x` and `y`',

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,12 +8,9 @@
 
 'use strict';
 
-var Lib = require('../../lib');
-var attributes = require('./attributes');
-
-module.exports = function handleContourDefaults(traceIn, traceOut, coerce) {
-    var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
-    var contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');
+module.exports = function handleContourDefaults(traceIn, traceOut, coerce, coerce2) {
+    var contourStart = coerce2('contours.start');
+    var contourEnd = coerce2('contours.end');
     var missingEnd = (contourStart === false) || (contourEnd === false);
 
     // normally we only need size if autocontour is off. But contour.calc

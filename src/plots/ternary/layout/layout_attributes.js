@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,38 +9,13 @@
 'use strict';
 
 var colorAttrs = require('../../../components/color/attributes');
+var domainAttrs = require('../../domain').attributes;
 var ternaryAxesAttrs = require('./axis_attributes');
+var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
+module.exports = overrideAll({
+    domain: domainAttrs({name: 'ternary'}),
 
-module.exports = {
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the horizontal domain of this subplot',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the vertical domain of this subplot',
-                '(in plot fraction).'
-            ].join(' ')
-        }
-    },
     bgcolor: {
         valType: 'color',
         role: 'style',
@@ -60,4 +35,4 @@ module.exports = {
     aaxis: ternaryAxesAttrs,
     baxis: ternaryAxesAttrs,
     caxis: ternaryAxesAttrs
-};
+}, 'plot', 'from-root');

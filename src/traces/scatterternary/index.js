@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,17 +12,19 @@ var ScatterTernary = {};
 
 ScatterTernary.attributes = require('./attributes');
 ScatterTernary.supplyDefaults = require('./defaults');
-ScatterTernary.colorbar = require('../scatter/colorbar');
+ScatterTernary.colorbar = require('../scatter/marker_colorbar');
 ScatterTernary.calc = require('./calc');
 ScatterTernary.plot = require('./plot');
-ScatterTernary.style = require('./style');
+ScatterTernary.style = require('../scatter/style').style;
+ScatterTernary.styleOnSelect = require('../scatter/style').styleOnSelect;
 ScatterTernary.hoverPoints = require('./hover');
-ScatterTernary.selectPoints = require('./select');
+ScatterTernary.selectPoints = require('../scatter/select');
+ScatterTernary.eventData = require('./event_data');
 
 ScatterTernary.moduleType = 'trace';
 ScatterTernary.name = 'scatterternary';
 ScatterTernary.basePlotModule = require('../../plots/ternary');
-ScatterTernary.categories = ['ternary', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterTernary.categories = ['ternary', 'symbols', 'showLegend', 'scatter-like'];
 ScatterTernary.meta = {
     hrName: 'scatter_ternary',
     description: [

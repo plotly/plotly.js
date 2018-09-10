@@ -19,7 +19,6 @@
                     3
                 ]
             ],
-            "uid": "085621",
             "name": "trace 0",
             "colorbar": {
                 "title": "colorbar title",
@@ -176,7 +175,6 @@
         "hovermode": "x",
         "separators": ".,",
         "hidesources": false,
-        "smith": false,
         "showlegend": false
     }
 }

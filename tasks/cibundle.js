@@ -15,7 +15,9 @@ var _bundle = require('./util/browserify_wrapper');
 // Browserify plotly.js and plotly.min.js
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
     standalone: 'Plotly',
-    pathToMinBundle: constants.pathToPlotlyDistMin,
+    debug: true,
+    compressAttrs: true,
+    pathToMinBundle: constants.pathToPlotlyDistMin
 });
 
 // Browserify the geo assets

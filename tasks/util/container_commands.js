@@ -21,7 +21,8 @@ containerCommands.setup = [
     containerCommands.cpIndex,
     containerCommands.injectEnv,
     containerCommands.restart,
-    'sleep 1',
+    containerCommands.ping,
+    'sleep 5'
 ].join(' && ');
 
 containerCommands.dockerRun = [
@@ -34,39 +35,32 @@ containerCommands.dockerRun = [
 
 containerCommands.getRunCmd = function(isCI, commands) {
     var _commands = Array.isArray(commands) ? commands.slice() : [commands];
+    var cmd;
 
-    if(isCI) return getRunCI(_commands);
+    if(isCI) {
+        _commands = [containerCommands.ping].concat(_commands);
+        cmd = getRunCI(_commands);
+    } else {
+        _commands = [containerCommands.setup].concat(_commands);
+        cmd = getRunLocal(_commands);
+    }
 
-    // add setup commands locally
-    _commands = [containerCommands.setup].concat(_commands);
-    return getRunLocal(_commands);
+    return cmd;
 };
 
 function getRunLocal(commands) {
     commands = [containerCommands.cdHome].concat(commands);
-
-    var commandsJoined = '"' + commands.join(' && ') + '"';
-
     return [
         'docker exec -i',
         constants.testContainerName,
         '/bin/bash -c',
-        commandsJoined
+        '"' + commands.join(' && ') + '"'
     ].join(' ');
 }
 
 function getRunCI(commands) {
-    commands = ['export CIRCLECI=1', containerCommands.cdHome].concat(commands);
-
-    var commandsJoined = '"' + commands.join(' && ') + '"';
-
-    return [
-        'sudo',
-        'lxc-attach -n',
-        '$(docker inspect --format \'{{.Id}}\' ' + constants.testContainerName + ')',
-        '-- bash -c',
-        commandsJoined
-    ].join(' ');
+    commands = [containerCommands.cdHome].concat(commands);
+    return commands.join(' && ');
 }
 
 module.exports = containerCommands;

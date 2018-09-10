@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,10 +10,8 @@
 'use strict';
 
 var Lib = require('../../lib');
-
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -21,22 +19,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var locations = coerce('locations');
-
-    var len;
-    if(locations) len = locations.length;
-
-    if(!locations || !len) {
-        traceOut.visible = false;
-        return;
-    }
-
     var z = coerce('z');
-    if(!Array.isArray(z)) {
+
+    if(!(locations && locations.length && Lib.isArrayOrTypedArray(z) && z.length)) {
         traceOut.visible = false;
         return;
     }
-
-    if(z.length > len) traceOut.z = z.slice(0, len);
+    traceOut._length = Math.min(locations.length, z.length);
 
     coerce('locationmode');
 
@@ -44,10 +33,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('marker.line.color');
     coerce('marker.line.width');
+    coerce('marker.opacity');
 
     colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
 
-    coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

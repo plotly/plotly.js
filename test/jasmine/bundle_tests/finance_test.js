@@ -13,16 +13,18 @@ describe('Bundle with finance trace type', function() {
 
     var mock = require('@mocks/finance_style.json');
 
-    it('should register the correct trace modules for the generated traces', function() {
+    it('should not register transforms anymore', function() {
         var transformModules = Object.keys(Plotly.Plots.transformsRegistry);
 
-        expect(transformModules).toEqual(['ohlc', 'candlestick']);
+        expect(transformModules).toEqual([]);
     });
 
     it('should register the correct trace modules for the generated traces', function() {
         var traceModules = Object.keys(Plotly.Plots.modules);
 
-        expect(traceModules).toEqual(['scatter', 'box', 'ohlc', 'candlestick']);
+        // scatter is registered no matter what
+        // ohlc uses some parts of box by direct require but does not need to register it.
+        expect(traceModules).toEqual(['scatter', 'ohlc', 'candlestick']);
     });
 
     it('should graph ohlc and candlestick traces', function(done) {
@@ -30,8 +32,8 @@ describe('Bundle with finance trace type', function() {
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
             var gSubplot = d3.select('g.cartesianlayer');
 
-            expect(gSubplot.selectAll('g.trace.scatter').size()).toEqual(2);
-            expect(gSubplot.selectAll('g.trace.boxes').size()).toEqual(2);
+            expect(gSubplot.selectAll('g.trace.ohlc').size()).toEqual(1);
+            expect(gSubplot.selectAll('g.trace.boxes').size()).toEqual(1);
 
             destroyGraphDiv();
             done();

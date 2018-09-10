@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,12 +11,13 @@
 
 var mapboxgl = require('mapbox-gl');
 
-var Fx = require('../cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var dragElement = require('../../components/dragelement');
+var prepSelect = require('../cartesian/select').prepSelect;
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var createMapboxLayer = require('./layers');
-
 
 function Mapbox(opts) {
     this.id = opts.id;
@@ -49,9 +50,7 @@ function Mapbox(opts) {
 var proto = Mapbox.prototype;
 
 module.exports = function createMapbox(opts) {
-    var mapbox = new Mapbox(opts);
-
-    return mapbox;
+    return new Mapbox(opts);
 };
 
 proto.plot = function(calcData, fullLayout, promises) {
@@ -75,8 +74,7 @@ proto.plot = function(calcData, fullLayout, promises) {
         promise = new Promise(function(resolve, reject) {
             self.createMap(calcData, fullLayout, resolve, reject);
         });
-    }
-    else {
+    } else {
         promise = new Promise(function(resolve, reject) {
             self.updateMap(calcData, fullLayout, resolve, reject);
         });
@@ -86,9 +84,9 @@ proto.plot = function(calcData, fullLayout, promises) {
 };
 
 proto.createMap = function(calcData, fullLayout, resolve, reject) {
-    var self = this,
-        gd = self.gd,
-        opts = self.opts;
+    var self = this;
+    var gd = self.gd;
+    var opts = self.opts;
 
     // store style id and URL or object
     var styleObj = self.styleObj = getStyleObj(opts.style);
@@ -107,7 +105,10 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         pitch: opts.pitch,
 
         interactive: !self.isStatic,
-        preserveDrawingBuffer: self.isStatic
+        preserveDrawingBuffer: self.isStatic,
+
+        doubleClickZoom: false,
+        boxZoom: false
     });
 
     // clear navigation container
@@ -116,17 +117,20 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     self.div.removeChild(controlContainer);
 
     // make sure canvas does not inherit left and top css
-    map._canvas.canvas.style.left = '0px';
-    map._canvas.canvas.style.top = '0px';
+    map._canvas.style.left = '0px';
+    map._canvas.style.top = '0px';
 
     self.rejectOnError(reject);
 
     map.once('load', function() {
         self.updateData(calcData);
         self.updateLayout(fullLayout);
-
         self.resolveOnRender(resolve);
     });
+
+    if(self.isStatic) return;
+
+    var wheeling = false;
 
     // keep track of pan / zoom in user layout and emit relayout event
     map.on('moveend', function(eventData) {
@@ -147,18 +151,20 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         // mouse target (filtering out API calls) to not
         // duplicate 'plotly_relayout' events.
 
-        if(eventData.originalEvent) {
-            var update = {};
-            update[self.id] = Lib.extendFlat({}, view);
-            gd.emit('plotly_relayout', update);
+        if(eventData.originalEvent || wheeling) {
+            emitRelayoutFromView(view);
         }
+        wheeling = false;
+    });
+
+    map.on('wheel', function() {
+        wheeling = true;
     });
 
     map.on('mousemove', function(evt) {
         var bb = self.div.getBoundingClientRect();
 
         // some hackery to get Fx.hover to work
-
         evt.clientX = evt.point.x + bb.left;
         evt.clientY = evt.point.y + bb.top;
 
@@ -171,6 +177,11 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     map.on('click', function(evt) {
+        // TODO: this does not support right-click. If we want to support it, we
+        // would likely need to change mapbox to use dragElement instead of straight
+        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // right mousedown, mousemove, and mouseup handlers just for a left/right click
+        // pie would use this too.
         Fx.click(gd, evt.originalEvent);
     });
 
@@ -180,11 +191,46 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     map.on('dragstart', unhover);
     map.on('zoomstart', unhover);
+
+    map.on('dblclick', function() {
+        gd.emit('plotly_doubleclick', null);
+
+        var viewInitial = self.viewInitial;
+
+        map.setCenter(convertCenter(viewInitial.center));
+        map.setZoom(viewInitial.zoom);
+        map.setBearing(viewInitial.bearing);
+        map.setPitch(viewInitial.pitch);
+
+        var viewNow = self.getView();
+
+        opts._input.center = opts.center = viewNow.center;
+        opts._input.zoom = opts.zoom = viewNow.zoom;
+        opts._input.bearing = opts.bearing = viewNow.bearing;
+        opts._input.pitch = opts.pitch = viewNow.pitch;
+
+        emitRelayoutFromView(viewNow);
+    });
+
+    function emitRelayoutFromView(view) {
+        var id = self.id;
+        var evtData = {};
+        for(var k in view) {
+            evtData[id + '.' + k] = view[k];
+        }
+        gd.emit('plotly_relayout', evtData);
+    }
+
+    // define clear select on map creation, to keep one ref per map,
+    // so that map.on / map.off in updateFx works as expected
+    self.clearSelect = function() {
+        gd._fullLayout._zoomlayer.selectAll('.select-outline').remove();
+    };
 };
 
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {
-    var self = this,
-        map = self.map;
+    var self = this;
+    var map = self.map;
 
     self.rejectOnError(reject);
 
@@ -194,29 +240,23 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
         self.styleObj = styleObj;
         map.setStyle(styleObj.style);
 
-        map.style.once('load', function() {
-
+        map.once('styledata', function() {
             // need to rebuild trace layers on reload
             // to avoid 'lost event' errors
             self.traceHash = {};
-
             self.updateData(calcData);
             self.updateLayout(fullLayout);
-
             self.resolveOnRender(resolve);
         });
-    }
-    else {
+    } else {
         self.updateData(calcData);
         self.updateLayout(fullLayout);
-
         self.resolveOnRender(resolve);
     }
 };
 
 proto.updateData = function(calcData) {
     var traceHash = this.traceHash;
-
     var traceObj, trace, i, j;
 
     // update or create trace objects
@@ -226,8 +266,9 @@ proto.updateData = function(calcData) {
         trace = calcTrace[0].trace;
         traceObj = traceHash[trace.uid];
 
-        if(traceObj) traceObj.update(calcTrace);
-        else if(trace._module) {
+        if(traceObj) {
+            traceObj.update(calcTrace);
+        } else if(trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }
@@ -240,7 +281,6 @@ proto.updateData = function(calcData) {
 
         for(j = 0; j < calcData.length; j++) {
             trace = calcData[j][0].trace;
-
             if(id === trace.uid) continue id_loop;
         }
 
@@ -261,6 +301,7 @@ proto.updateLayout = function(fullLayout) {
 
     this.updateLayers();
     this.updateFramework(fullLayout);
+    this.updateFx(fullLayout);
     this.map.resize();
 };
 
@@ -270,7 +311,8 @@ proto.resolveOnRender = function(resolve) {
     map.on('render', function onRender() {
         if(map.loaded()) {
             map.off('render', onRender);
-            resolve();
+            // resolve at end of render loop
+            setTimeout(resolve, 0);
         }
     });
 };
@@ -293,19 +335,15 @@ proto.createFramework = function(fullLayout) {
     var self = this;
 
     var div = self.div = document.createElement('div');
-
     div.id = self.uid;
     div.style.position = 'absolute';
-
     self.container.appendChild(div);
 
     // create mock x/y axes for hover routine
-
     self.xaxis = {
         _id: 'x',
         c2p: function(v) { return self.project(v).x; }
     };
-
     self.yaxis = {
         _id: 'y',
         c2p: function(v) { return self.project(v).y; }
@@ -314,14 +352,70 @@ proto.createFramework = function(fullLayout) {
     self.updateFramework(fullLayout);
 };
 
+proto.updateFx = function(fullLayout) {
+    var self = this;
+    var map = self.map;
+    var gd = self.gd;
+
+    if(self.isStatic) return;
+
+    function invert(pxpy) {
+        var obj = self.map.unproject(pxpy);
+        return [obj.lng, obj.lat];
+    }
+
+    var dragMode = fullLayout.dragmode;
+    var fillRangeItems;
+
+    if(dragMode === 'select') {
+        fillRangeItems = function(eventData, poly) {
+            var ranges = eventData.range = {};
+            ranges[self.id] = [
+                invert([poly.xmin, poly.ymin]),
+                invert([poly.xmax, poly.ymax])
+            ];
+        };
+    } else {
+        fillRangeItems = function(eventData, poly, pts) {
+            var dataPts = eventData.lassoPoints = {};
+            dataPts[self.id] = pts.filtered.map(invert);
+        };
+    }
+
+    if(dragMode === 'select' || dragMode === 'lasso') {
+        map.dragPan.disable();
+        map.on('zoomstart', self.clearSelect);
+
+        var dragOptions = {
+            element: self.div,
+            gd: gd,
+            plotinfo: {
+                xaxis: self.xaxis,
+                yaxis: self.yaxis,
+                fillRangeItems: fillRangeItems
+            },
+            xaxes: [self.xaxis],
+            yaxes: [self.yaxis],
+            subplot: self.id
+        };
+
+        dragOptions.prepFn = function(e, startX, startY) {
+            prepSelect(e, startX, startY, dragOptions, dragMode);
+        };
+
+        dragElement.init(dragOptions);
+    } else {
+        map.dragPan.enable();
+        map.off('zoomstart', self.clearSelect);
+        self.div.onmousedown = null;
+    }
+};
+
 proto.updateFramework = function(fullLayout) {
-    var domain = fullLayout[this.id].domain,
-        size = fullLayout._size;
+    var domain = fullLayout[this.id].domain;
+    var size = fullLayout._size;
 
     var style = this.div.style;
-
-    // TODO Is this correct? It seems to get the map zoom level wrong?
-
     style.width = size.w * (domain.x[1] - domain.x[0]) + 'px';
     style.height = size.h * (domain.y[1] - domain.y[0]) + 'px';
     style.left = size.l + domain.x[0] * size.w + 'px';
@@ -335,10 +429,10 @@ proto.updateFramework = function(fullLayout) {
 };
 
 proto.updateLayers = function() {
-    var opts = this.opts,
-        layers = opts.layers,
-        layerList = this.layerList,
-        i;
+    var opts = this.opts;
+    var layers = opts.layers;
+    var layerList = this.layerList;
+    var i;
 
     // if the layer arrays don't match,
     // don't try to be smart,
@@ -354,8 +448,7 @@ proto.updateLayers = function() {
         for(i = 0; i < layers.length; i++) {
             layerList.push(createMapboxLayer(this, i, layers[i]));
         }
-    }
-    else {
+    } else {
         for(i = 0; i < layers.length; i++) {
             layerList[i].update(layers[i]);
         }
@@ -366,46 +459,20 @@ proto.destroy = function() {
     if(this.map) {
         this.map.remove();
         this.map = null;
+        this.container.removeChild(this.div);
     }
-    this.container.removeChild(this.div);
 };
 
 proto.toImage = function() {
+    this.map.stop();
     return this.map.getCanvas().toDataURL();
-};
-
-// convenience wrapper to create blank GeoJSON sources
-// and avoid 'invalid GeoJSON' errors
-proto.initSource = function(idSource) {
-    var blank = {
-        type: 'geojson',
-        data: {
-            type: 'Feature',
-            geometry: {
-                type: 'Point',
-                coordinates: []
-            }
-        }
-    };
-
-    return this.map.addSource(idSource, blank);
-};
-
-// convenience wrapper to set data of GeoJSON sources
-proto.setSourceData = function(idSource, data) {
-    this.map.getSource(idSource).setData(data);
 };
 
 // convenience wrapper to create set multiple layer
 // 'layout' or 'paint options at once.
 proto.setOptions = function(id, methodName, opts) {
-    var map = this.map,
-        keys = Object.keys(opts);
-
-    for(var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-
-        map[methodName](id, key, opts[key]);
+    for(var k in opts) {
+        this.map[methodName](id, k, opts[k]);
     }
 };
 
@@ -418,8 +485,8 @@ proto.project = function(v) {
 proto.getView = function() {
     var map = this.map;
 
-    var mapCenter = map.getCenter(),
-        center = { lon: mapCenter.lng, lat: mapCenter.lat };
+    var mapCenter = map.getCenter();
+    var center = { lon: mapCenter.lng, lat: mapCenter.lat };
 
     return {
         center: center,
@@ -430,24 +497,24 @@ proto.getView = function() {
 };
 
 function getStyleObj(val) {
-    var styleValues = layoutAttributes.style.values,
-        styleDflt = layoutAttributes.style.dflt,
-        styleObj = {};
+    var styleValues = layoutAttributes.style.values;
+    var styleDflt = layoutAttributes.style.dflt;
+    var styleObj = {};
 
     if(Lib.isPlainObject(val)) {
         styleObj.id = val.id;
         styleObj.style = val;
-    }
-    else if(typeof val === 'string') {
+    } else if(typeof val === 'string') {
         styleObj.id = val;
         styleObj.style = (styleValues.indexOf(val) !== -1) ?
              convertStyleVal(val) :
              val;
-    }
-    else {
+    } else {
         styleObj.id = styleDflt;
         styleObj.style = convertStyleVal(styleDflt);
     }
+
+    styleObj.transition = {duration: 0, delay: 0};
 
     return styleObj;
 }

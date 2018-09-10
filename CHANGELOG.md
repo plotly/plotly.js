@@ -10,6 +10,838 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.40.1] -- 2018-08-22
+
+### Changed
+- Bump `browserify` to `v16` [#2923]
+- Bump `glslify` to `v6.2.1` [#2923]
+- Use `color-normlize@1.3.0` throughout code base [#2923]
+
+### Fixed
+- Fix logic for hiding zero lines when they conflict with axis lines [#2936]
+- Fix `exponentformat` values `'e'` and `'E'` on log axes [#2921]
+- Fix dynamic layer ordering of `heatmap` and `carpet` traces [#2917]
+- Fix `Plotly.downloadImage` when using graph id or figure object
+  as first argument [#2931]
+- Fix regl-based rendering when WebGL buffer dimensions don't match canvas
+  dimensions [#2939]
+
+## [1.40.0] -- 2018-08-16
+
+### Added
+- Allow `contour`, `contourcarpet` and `histogram2dcontour` to have
+  corresponding legend items using `showlegend` [#2891, #2914]
+- Add `scatterpolar` and `scatterpolargl` attributes `r0`, `dr`, `theta0` and
+  `dtheta` [#2895]
+- Add layout attributes `piecolorway` and `extendpiecolors`
+  for more control over `pie` colors [#2870]
+- Add splom attribute `dimensions[i].axis.type` to easily override axis type
+  in splom-generated axes [#2899]
+- Add support for on-graph text in `scatterpolargl` traces [#2895]
+
+### Changed
+- Use `derequire` browserify plugin to make bundling distributed npm package
+  with browserify possible [#2905]
+- Speed up cartesian axis autorange edits (and thus double-click interactions) [#2823]
+- Do not clear WebGL context when `scattergl` graph has no `visible:true`
+  traces, which speeds up e.g. legend interactions [#2860]
+- Compute data extremes per trace, which improves performance in some cases [#2860]
+- Use `<linearGradient>` to render filled colorbars [#2910, #2914]
+- Rename trace module `setPositions` methods `crossTraceCalc` [#2868]
+- Use `regl@1.3.7` [#2863]
+
+### Fixed
+- Fix scalar `marker.size` bounds in legend items [#2840]
+- Fix positioning of legend symbols for traces with fills [#2891]
+- Fix `scattergl` select -> double-click -> pan behavior [#2815]
+- Fix `scattergl` marker for IE11 [#2863]
+- Fix inheritance of explicit `pie` colors by later traces [#2870]
+- Fix layer ordering on graphs with multiple `contour` traces with heatmap
+  coloring [#2891]
+- Fix layer ordering on `visible` toggling for `contour`-like traces [#2891]
+- Fix cases where colorbars would be drawn over its bounds [#2910]
+- Fix `tickwidth` edits on `ohlc` traces [#2823]
+- Fix labels on splom-generated axes with categorical data [#2899]
+- Fix handling of splom dimensions on axes of conflicting types [#2899]
+- Fix `splom` trace `visible` edits [#2860]
+- Fix `splom` select -> double-click -> pan behavior [#2899]
+- Fix `scatterpolargl` behavior during angular and radial drag interactions [#2888]
+- Fix handling of auto date ticks below our 100 microseconds limit [#2912]
+- Fix `scatter3d` attributes which had incorrectly labeled `textposition`
+  and `textfont.family` as `arrayOk` and contained unimplemented `line.showscale`
+  and `line.colorbar` [#2879]
+- Fix `scattergl` and `scatterpolargl` attribute declarations for `hoveron` [#2895]
+
+
+## [1.39.4] -- 2018-08-02
+
+### Fixed
+- Fix tenths of milliseconds handling in old numeric date data
+  (bug introduced in 1.21.0) [#2847]
+- Fix `yaxis` overlaying `yaxis2` layouts
+  (bug introduced in 1.39.3) [#2857]
+
+
+## [1.39.3] -- 2018-07-25
+
+### Fixed
+- Fix overlaying subplot configuration relayouts [#2831]
+- Fix trace toggling from position-editable horizontal legends [#2829]
+- Fix `[un]selected.marker.opacity` settings on `scattergeo` traces [#2827]
+- Fix selections on some Robinson projections [#2827]
+
+
+## [1.39.2] -- 2018-07-16
+
+### Fixed
+- Fix scattergl selection after resize relayouts [#2801]
+- Fix scattergl layout replot edits [#2793]
+- Fix cartesian axis range animations (bug introduced in 1.37.0) [#2788]
+- Fix contour labels that require thousands suffixes [#2806]
+- Fix 'legendonly' legend items link to array `marker.symbol` [#2816]
+- Fix handling of duplicate points under `line.simplify` [#2814]
+- Fix transform removal via `Plotly.react` [#2805]
+- Fix out-of-subplot scroll zoom on some geo projection types [#2811]
+- Fix hover label in RTL pages [#2790]
+- Reduce minified bundle back to their 1.39.0 sizes [#2792]
+
+
+## [1.39.1] -- 2018-07-09
+
+### Fixed
+- Fix mapbox subplots in our minified bundles (bug introduced in 1.39.0) [#2789]
+- Fix box and violin traces inner parts removal (bug introduced in 1.37.0) [#2785]
+
+
+## [1.39.0] -- 2018-07-05
+
+### Added
+- Add distributed npm packages for the main plotly.js bundle and all our partial
+  bundles for easy installation and bundling [#2670]
+- Add template machinery along with helpers methods `Plotly.makeTemplate` and
+  `Plotly.validateTemplate` [#2764]
+- Add 3D `streamtube` traces [#2658]
+- Add support for on-graph text in `scattergl` traces [#2737, #2783]
+- Add `gridshape` attribute to polar subplots with values `'circular'` (the
+  default) and `'linear'` (to draw polygon grids) [#2739]
+- Add `'range'` and `'change'` `aggregate` transform functions [#2764]
+- Add `visible` attribute to `rangeselector` and `updatemenu` buttons,  slider
+  steps and `mapbox` layout layers as well as `tickformatstops` items [#2761]
+- Add support for colorbar linked to `marker.color` values for `splom`,
+  `scatterpolar` and `scatterpolargl` traces [#2681]
+- Revamp icon settings in custom mode bar buttons, allowing users to specify
+  their own dimensions and SVG transforms [#2762]
+- Add `plotlyServerURL` config option [#2760]
+- Added no-WebGL warnings for graphs with `scattergl`, `scatterpolargl`, `splom`
+  and `parcoords` traces [#2697]
+
+### Changed
+- `plotly_afterplot` is now emitted after all edit types [#2773]
+- Trace `uid` is no longer mutated into user trace objects [#2681]
+- No longer add `marker.line` in `scattermapbox` fullData [#2766]
+- Use `regl@1.3.6` [#2694]
+- Use `mapbox-gl@0.45.0` [#2709]
+
+### Fixed
+- Fix `Plotly.react`'s handling of changing auto-margins [#2681]
+- Make plotting/updating WebGL-based traces fail gracefully when WebGL isn't
+  supported [#2697]
+- Fix mapbox layout layer updates [#2734]
+- Fix mapbox event inconsistencies [#2766]
+- Correctly emit `plotly_relayout` at end of scroll on mapbox subplots [#2709]
+- Fix `scatter3d` scalar `hovertext` handling [#2698]
+- Fix line decimation for segments crossing the viewport [#2705]
+- Fix `surface` trace contours when first level has length zero [#2712]
+- Fix `contour(x|y|z).highlight` partial settings [#2712]
+- Fix old date timezone precision in Chrome 67+ [#2747]
+- Fix `Plotly.validate` for attribute with trailing numbers (e.g. `x0`, `y1`) [#2761]
+- Fix x-only zoom moves when `xaxis.fixedrange: true`[#2776]
+- Fix colorbar edits for `parcoords` and `histogram` traces [#2681]
+- Fix bandwidth for single-value violins [#2775]
+- Sanitize `margin` after 'autosize' relayouts [#2758]
+- Make `Plots.resize` work when `layout` attribute is gone from graph div [#2710]
+- Fix `colorscale` attribute descriptions [#2658]
+
+
+## [1.38.3] -- 2018-06-11
+
+### Fixed
+- Fix `cone` axis padding when under `sizemode: 'absolute'` [#2715]
+- Fix `cone` scaling on irregular grids [#2715]
+- Fix `cone` `sizemode: 'absolute'` scaling and attribute description [#2715]
+- Improve `cone` hover picking [#2715]
+- Fix exception during histogram cross-trace computation [#2724]
+- Fix handling of custom transforms that make their own data arrays [#2714]
+
+
+## [1.38.2] -- 2018-06-04
+
+### Fixed
+- Fix bar text removal (bug introduced in 1.36.0) [#2689]
+- Fix handling number `0` in hover labels and on-graph text [#2682]
+
+
+## [1.38.1] -- 2018-05-29
+
+### Fixed
+- Fix transforms on `scattergl` traces [#2677]
+- Fix `marker.line.width` scaling in `scattergl` traces [#2677]
+- Fix `[un]selected.marker.size` scaling in `scattergl` traces [#2677]
+- Create two not three WebGL contexts for scattergl/splom graphs
+  (bug introduced 1.36.0) [#2656]
+- Fix `z` updates of interpolated values on heatmap and contour traces with gaps [#2657]
+- Fix select/pan double-click behavior when relayout from one another
+  (bug introduced in 1.36.0) [#2668]
+- Fix shift selection behavior after pan/scroll
+  (bug introduced in 1.36.0) [#2676]
+
+
+## [1.38.0] -- 2018-05-23
+
+### Added
+
+- Add 3D `cone` traces to visualize vector fields [#2641, #2647]
+- Add ability to interactively change length and rotate line shapes [#2594]
+- Add `toImageButtonOptions` config object to override to-image mode bar button
+  options [#2607]
+- Add Brazilian Portuguese (`pt-br`) locale [#2622]
+- Add Italian (`it`) locale [#2632]
+
+### Changed
+- Improve cartesian scroll and pan (mostly) performance for graphs with
+  many marker or/and text nodes [#2623]
+- Improve `splom` first render and axis-range relayout performance [#2628]
+- Improve multi-axis axis-range relayout performance by updating minimal set of
+  axes instead of all axes [#2628]
+- Use "grab" cursor to denote when annotations and shapes are draggable [#2594]
+- Ignore zero and negative link values in `sankey` traces [#2629]
+- Ignore unused and malformed links `sankey` traces without logging [#2629]
+
+### Fixed
+- Fix `scattergl` error bar computations when input value are numeric strings [#2620]
+- Fix `scattergl` error bar computations for `x0`/`dx` and `y0`/`dy` coordinates [#2620]
+- Fix `violin` kde span edge cases [#2650]
+- Make `sankey` traces accept numeric strings [#2629]
+- Fix axis range edits under axis constraints [#2620]
+- Fix "sloppy click" event emission during cartesian zoom [#2649]
+- Fix layout `grid` validation which lead to exceptions [#2638]
+- Fix `parcoords` rendering in old Safari version [#2612]
+- Link to https://get.webgl.org instead of http version in no WebGL message [#2617]
+
+
+## [1.37.1] -- 2018-05-02
+
+### Fixed
+- Fix `Plotly.react` when adding/removing traces (bug introduced in 1.37.0) [#2603]
+
+
+## [1.37.0] -- 2018-05-01
+
+### Added
+- Add `plotly_legendclick` and `plotly_legenddoubleclick` events [#2581]
+- Add Swahili (`sw`) locale [#2526]
+
+### Changed
+- Improve cartesian trace update and removal by using more d3-iomatic patterns.
+  This results in some performance improvements during redraws [#2574]
+- Our internal `Lib.nestedProperty` no longer prunes empty containers in
+  `gd.data`, `gd.layout`, `gd._fullData` and `gd._fulllayout`.
+  We made this change to clean up some of the `Plotly.react` internals.
+  This also lead to a slight performance boost [#2577]
+
+### Fixed
+- Fix `Plotly.react`'s handling of transformed traces [#2577]
+- Fix Safari support for `scattergl` and `splom` traces [#2593]
+- Fix `scattergl` point clustering edge cases [#2593]
+- Fix `scattergl` selection after double-click on graphs
+  with more than 1e5 points [#2593]
+- Fix artificial number of lines limit in `scattergl` traces [#2568]
+- Fix typed array support in color array in `scattergl` traces [#2596]
+- Fix typed array support for `splom` traces [#2596]
+- Make `scatter` and `scattercarpet` coexist on same subplot [#2574]
+- Fix incorrect fallback border color for axis common hover labels [#2557]
+- Fix handling of blank editable legend items [#2587]
+- Fix spikelines positioning in Firefox [#2590]
+- Fix `Plotly.react` modebar updates when the locale changes [#2592]
+- Fix `scatter` selection performance regression (dating back to 1.32.0) [#2583]
+- Fix `plotly_beforeplot` and `plotly_beforehover` event handlers when attached
+  with `gd.once` [#2581]
+
+
+## [1.36.1] -- 2018-04-18
+
+### Fixed
+- Fix `scattergl` in dist and CDN bundles
+  (due to `browser-pack-flat` discrepancy introduced in 1.36.0)
+  by removing `browser-pack-flat` from our bundling pipeline [#2572]
+
+
+## [1.36.0] -- 2018-04-17
+
+### Added
+- Add `splom` (aka scatter plot matrix) traces [#2505]
+- Add multi-selection and click-to-select on `parcoords` axes [#2415]
+- Add selection and improve legend items for `ohlc` and `candlestick` [#2561]
+- Add 'fixed size' layout shapes through new shape attributes
+  `xsizemode`, `ysizemode`, `xanchor`  and `yanchor` [#2532]
+- Add layout attribute `selectdirection` to restrict select-box direction [#2506]
+- Add support for selections on graphs with range sliders [#2561]
+- Add support for ragged `table` inputs [#2511]
+- Add Czech (`cs`) locale [#2483]
+- Add Japanese (`ja`) locale [#2558]
+
+### Changed
+- Multiple performance improvements for cartesian subplots, most noticeable
+  on graphs with many cartesian subplots [#2474, #2487, #2527]
+- Use new `gl-mesh3d` version that attempts to make lighting results less
+  hardware-dependent [#2365]
+- New and improved point-clustering algorithm for `scattergl` [#2499]
+- Improved `regl-line2d` component [#2556]
+
+### Fixed
+- Fix memory leak in `parcoords` traces [#2415]
+- Fix `scattergl` `selectedpoints` clearance under select/lasso drag modes [#2492]
+- Fix `scattergl` horizontal lines rendering [#2564]
+- Fix `scattergl` unselected marker opacity for array marker opacity traces [#2503]
+- Fix `scattergl` hover over data gaps [#2499]
+- Fix `ohlc` on category axes [#2561]
+- Fix inconsistencies in `ohlc` and `candlestick` event data [#2561]
+- Fix hover `text` for `candlestick` traces [#2561]
+- Fix `scattermapbox` selections for traces with data gaps [#2513]
+- Fix `table` border cases that got previously cut off [#2511]
+- Fix `box` traces with one jittered outlier [#2530]
+- Fix `cliponfalse: false` on reversed axes [#2533]
+- Fix buggy `plot_bgcolor` rendering when updating axis `overlaying` attribute [#2516]
+- Fix buggy `Plotly.react` behavior for `carpet`, `contourcarpet`, `scattercarpet`,
+  `table` and x/y/z column `heatmap` traces [#2525]
+- Fix buggy `Plotly.react` behavior for `ohlc` and `candlestick` traces [#2561]
+- Fix ordered categories on graphs with `visible: false` traces [#2489]
+- Fix ordered categories in multi-subplot graphs [#2489]
+- Fix inconsistencies when ordering number and numeric string categories [#2489]
+- Fix format `days` in English locale [#2490]
+- Handle HTML links with encoded URIs correctly in svg text labels [#2471]
+
+
+## [1.35.2] -- 2018-03-09
+
+### Fixed
+- Ping `mapbox-gl` to `0.44.1` so that users on fresh
+  `npm install` do not get the wrong mapbox-gl version message [#2467]
+- Fix swapping between `scatter` and `scatter3d` traces and other
+  potential problems caused by incorrect axis constraints resetting [#2465]
+
+
+## [1.35.1] -- 2018-03-08
+
+### Fixed
+- Fix `scatterpolar` in dist and CDN bundles
+  (due to `browser-pack-flat` discrepancy introduced in 1.35.0) [#2458]
+- Fix removing and adding scatter(gl) as not the first module [#2455]
+- Ensure we don't draw ticks if there are none to draw [#2454]
+
+
+## [1.35.0] -- 2018-03-07
+
+### Added
+- Add `automargin` attribute to cartesian axes which auto-expands margins
+  when ticks, tick labels and/or axis titles do not fit on the graph [#2243]
+- Add support for typed arrays as data array inputs [#2388]
+- Add layout `grids` attribute for easy subplot generation [#2399]
+- Implement `cliponaxis: false` for bar text [#2378]
+- Add opposite axis attributes for range slider to control y axis range behavior [#2364]
+- Generalize `hoverdistance` and `spikedistance` for area-like objects [#2379]
+- Bring `scattergl` auto-range logic to par with SVG `scatter` [#2404]
+- Add selected/unselected marker color size support to `scattermapbox` traces [#2361]
+
+### Changed
+- Remove all circular dependencies in our `src/` directory [#2429]
+- Build our CDN bundles with `browser-pack-flat` browserify plugin [#2447]
+- Bump `mapbox-gl` to `v0.44.0` [#2361]
+- Bump `glslify` to `v6.1.1` [#2377]
+- Stop relinking `customdata`, `ids` and any matching objects
+  in `gd._fullLayout` during `Plots.supplyDefaults` [#2375]
+
+### Fixed
+- Fix buggy auto-range / auto-margin interaction
+  leading to axis range inconsistencies on redraws
+  (this bug was mostly noticeable on graphs with legends) [#2437]
+- Bring back `scattergl` lines under select/lasso `dragmode`
+  (bug introduced in `1.33.0`) [#2377]
+- Fix `scattergl` visible toggling for graphs with multiple traces
+  with different modes (bug introduced in `1.33.0`) [#2442]
+- Bring back `spikelines` for traces other than `scatter`
+  (bug introduced in `1.33.0`) [#2379]
+- Fix `Plotly.Fx.hover` acting on multiple subplots
+  (bug introduced in `1.32.0`) [#2379]
+- Fix range slider with stacked y axes positioning
+  (bug introduced in `1.32.0`) [#2451]
+- Fix `scattergl` color clustering [#2377]
+- Fix `Plotly.restyle` for `scattergl` `fill` [#2377]
+- Fix multi-line y-axis label positioning [#2424]
+- Fix centered hover labels edge cases [#2440, #2445]
+- Fix hover labels in bar groups in compare mode [#2414]
+- Fix axes and axis lines removal [#2416]
+- Fix auto-sizing in `Plotly.react` [#2437]
+- Fix error bars for `Plotly.react` and uneven data arrays [#2360]
+- Fix edits for date-string referenced annotations [#2368]
+- Fix `z` hover labels with exponents [#2422]
+- Fix yet another histogram edge case [#2413]
+- Fix fall back for contour labels when there's only one contour [#2411]
+- Fix `scatterpolar` category angular period calculations [#2449]
+- Clear select outlines on mapbox zoomstart [#2361]
+- Fix legend click to causes legend scroll bug [#2426]
+
+
+## [1.34.0] -- 2018-02-12
+
+### Added
+- Add `Plotly.react`, a new do-it-all API method that creates and update graphs
+  using the same API signature [#2341]
+- Add constraint-type contours to `contour` traces [#2270]
+- Add `notched` and `notchwidth` attributes to `box` traces [#2305]
+- Add localization machinery to auto-formatted date axis ticks [#2261]
+- Add support for `text` in `mesh3d` traces [#2327]
+- Add support for scalar `text` in `surface` traces [#2327]
+- Make mode bar for graphs with multiple subplot types more usable [#2339]
+- Add `npm@5` package-lock file [#2323]
+
+### Changed
+- All of gl-vis dependencies now use `gl-shader@4.2.1` [#2293, #2306]
+- All our dependencies and source now use `glslify@6.1.0` [#2326]
+
+### Fixed
+- Prevent page scroll on mobile device on `gl2d` and `gl3d` subplots [#2296]
+- Fix multi-marker `scattergl` selection errors (bug introduced in `1.33.0`) [#2295]
+- Fix `Plotly.addTraces` in `scattergl` selection call backs (bug introduced in `1.33.0`) [#2298]
+- Fix trace `opacity` restyle for `scattergl` traces (bug introduced in `1.33.0`) [#2299]
+- Fix `scattergl` handling of `selectedpoints` across multiple traces [#2311]
+- Fix `scattergl` horizontal and vertical line rendering [#2340]
+- Fix restyle for scalar `hoverinfo` for `scatter3d`, `surface` and `mesh3d` traces [#2327]
+- Fix `table` when content-less cells and headers are supplied [#2314]
+- Fix `Plotly.animate` for attribute nested in `dimensions` containers [#2324]
+- Fix `hoverformat` on `visible: false` cartesian axes (bug introduced in `1.33.0`) [#2329]
+- Fix handling of double negative translate transform values [#2339]
+- Fix compare `hovermode` fallback for non-cartesian subplot types [#2339]
+- Fix animation error messages when overriding and ignoring frames updates [#2313]
+
+
+## [1.33.1] -- 2018-01-24
+
+### Fixed
+
+- Fix selection on `scattergl` plots with >20k points [#2266]
+- Update Spanish localization with new strings [#2268]
+- Fix test_dashboard overly rigid restriction so parcoods works there [#2273]
+- Make `layout.colorway` compatible with `sankey` traces [#2277]
+- Fix click events on `fixedrange` subplots [#2279]
+- Remove ghost fill when trace data is emptied out [#2280]
+- Fix resizing of new `scattergl` plots [#2283]
+- Fix positioning of carpet axis titles for `cheaterslope` edge cases [#2285]
+- Fix coloring and hover info for heatmaps and contour maps with nonuniform bins [#2288]
+
+
+## [1.33.0] -- 2018-01-18
+
+### Added
+- Completely rewritten `scattergl` trace type using `regl` [#2258]
+- Completely rewritten polar chart renderer accompanied by new
+  `scatterpolar` and `scatterpolargl` trace types [#2200]
+- Add the ability to draw layout images and layout shapes on subplot
+  with `scattergl` traces [#2258]
+- Add `fill` capabilities to `scattergl` traces [#2258]
+- Add `spikedistance`, `hoverdistance` and `skipsnap` for more customizable
+  spikes and hover behavior on cartesian subplots [#2247]
+- Add official Spanish translation (locale `es`) [#2249]
+- Add official French translation (locale `fr`) [#2252]
+- Add locale machinery to annotation _new text_ placeholder [#2257]
+
+### Changed
+- Old polar trace types (`scatter` with `(r,t)` coordinates,
+  `bar` with `(r,t)` coordinates and `area`) are now deprecated.
+
+### Fixed
+
+- Fix `gl2d` tick label on pan interaction regression [#2258]
+- Fix `candlestick` hover label regression (bug introduced in v1.32.0) [#2264]
+- Fix several `gl2d` axis related bugs with new regl-based `scattergl` [#2258]
+  See full list under the On-par gl2d milestone https://github.com/plotly/plotly.js/milestone/3
+- Fix several polar bugs with `scatterpolar` [#2200].
+  See full list under the On-par polar milestone https://github.com/plotly/plotly.js/milestone/2
+- Fix `scattergl` marker.colorscale handling [#2258]
+- Fix ternary relayout calls involving axis tick styles and titles [#2200]
+- Fix decimal and thousands settings in `de` locale [#2246]
+- Make scroll handler _passive_, removing those annoying console warnings [#2251]
+
+
+## [1.32.0] -- 2018-01-11
+
+### Added
+
+- Add localization machinery including an official German translation (locale `de`) [#2195, #2207, #2210, #2232, #2217]
+- Add `violin` trace type [#2116]
+- Add `selected` and `unselected` attribute containers to customize selection states [#2135]
+- Add support for multi-selections [#2140]
+- Add layout `colorway` to custom the trace-to-trace color sequence [#2156]
+- Add `tickformatstops` to set tick format per cartesian axis range [#1965]
+- Add hover labels and selections to box points [#2094]
+- Histogram events & bin hover label improvements [#2113]
+- Add support for aggregation in `pie` traces [#2117]
+- Add annotations `startarrowhead`, `arrowside`, `startarrowsize` and `startstandoff` attributes [#2164]
+- Add `zhoverformat` to format `z` values in `heatmap`, `contour` and 2d histogram traces [#2106, #2127]
+- Add `marker.opacity` to bar traces [#2163]
+- Add `Cividis` colorscale [#2178]
+- Implement transform inverse mapping [#2126, #2162]
+
+### Changed
+
+- Selections are now persistent [#2135]
+- Make subplot initialization and removal more robust and consistent [#2227]
+- Share WebGL context between `gl2d` and `parcoords` subplots [#2159, #2238]
+- Rename _Save and edit plot in cloud_ mode bar button _Edit in Chart Studio_ [#2183]
+- Minify bundles using `minify-stream` instead of UglifyJS2 [#2187]
+- Update header for new year 2018 [#2231]
+- Remove `type="text/javascript"` from `<script>` tags present in our docs and test utilities [#2217]
+
+### Fixed
+
+- Fix right-click handling [#2241]
+- Miscellaneous fixes for `table` traces [#2107, #2182]
+- Fix horizontal legend items alignment edge case [#2149]
+- Fix shape and updatemenu layering [#2121]
+- Fix bar with error bar with set `ids` edge case [#2169]
+- Fix `cliponaxis: false` for non linear cartesian axes [#2177]
+- Fix heatmap non-uniform brick gaps problem [#2213]
+- Fix choropleth selection when `visible: false` trace are present on graph [#2099, #2109]
+- Fix yet another contour drawing bug [#2091]
+- Clean up pie event data [#2117]
+- Fix scatter + bar hover edge cases [#2218]
+- Allow hover labels to extend to edges of graph area [#2215]
+- Harden location-to-feature against non-string country names for geo subplot [#2122]
+- Remove obsolete `smith` attribute from plot schema [#2093]
+- Fix colorbar class name [#2139]
+- Make `Plotly.Plots.resize` accept graph ids (as well as graph divs) [#2212]
+
+
+## [1.31.2] -- 2017-10-23
+
+### Fixed
+- Fix multiple `table` restyle bugs [#2107]
+- Fix selection work when `visible: false` choropleth traces are present [#2099, #2109]
+- Fix (another) contour generation bug [#2091]
+
+
+## [1.31.1] -- 2017-10-16
+
+### Fixed
+- Fix IE and Edge SVG `toImage` support [#2068]
+- Return empty set during selections of `visible: false` traces [#2081]
+- Fix scroll glitch in `table` traces [#2064]
+- Fix handling of 1D header values in `table` [#2072]
+- Fix `table` line style defaults [#2074]
+- Do not attempt to start drag on right-click [#2087]
+- Phase out `alignment-baseline` attributes in SVG text nodes [#2076]
+- Listen to document events on drag instead of relying on
+  cover-slip node [#2075]
+
+
+## [1.31.0] -- 2017-10-05
+
+### Added
+- Add `table` trace type [#2030]
+- Add `geo.center` making geo views fully reproducible using layout attributes [#2030]
+- Add lasso and select-box drag modes to `scattergeo` and `choropleth` traces
+  [#2030]
+- Add lasso and select-box drag modes to `bar` and `histogram` traces [#2045]
+- Add `scale` option to `Plotly.toImage` and `Plotly.downloadImage` [#1979]
+- Add `plot-schema.json` to `dist/`[#1999]
+
+### Changed
+- Throttle lasso and select-box events for smoother behavior [#2040]
+- Harmonize gl3d and gl2d zoom speed with cartesian behavior [#2041]
+
+### Fixed
+- Fix numerous `restyle` and `relayout` bugs [#1999]
+- Fix handling of extreme off-plot data points in scatter lines [#2060]
+- Fix `hoverinfo` array support for `scattergeo`, `choropleth`,
+  `scatterternary` and `scattermapbox` traces [#2055]
+- Fix `Plotly.plot` MathJax promise chain resolution [#1991]
+- Fix legend double-click trace isolation behavior for graphs with
+  `visible: false` traces [#2019]
+- Fix legend visibility toggling for traces with `groupby` transforms [#2019]
+- Fix single-bin histogram edge case [#2028]
+- Fix autorange for bar with base zero [#2050]
+- Fix annotations arrow rendering when graph div is off the DOM [#2046]
+- Fix hover for graphs with `scattergeo` markers outside 'usa' scope [#2030]
+- Fix handling of cross anti-meridian geo `lonaxis` ranges [#2030]
+- Fix miter limit for lines on geo subplots [#2030]
+- Fix `marker.opacity` handling for `scattergeo` bubbles [#2030]
+- Fix layout animation of secondary axes [#1999]
+- Fix `sankey` hover text placement for empty `link.label` items [#2016]
+- Fix `sankey` rendering of nodes with very small values [#2017, #2021]
+- Fix `sankey` hover label positioning on pages that style the
+  'svg-container' div node [#2027]
+- Fix aggregation transforms restyle calls [#2031]
+
+
+## [1.30.1] -- 2017-09-06
+
+### Fixed
+- Fix shapes on overlaid axes [#1975]
+- Correctly clear cartesian axis titles on full axis updates [#1981]
+- Make cartesian hover spikes work when no tick labels are present [#1980]
+
+## [1.30.0] -- 2017-08-21
+
+### Added
+- Add aggregate transform [#1924]
+- Add `constraintext` attribute for bar traces [#1931]
+- Add axis `layer` attribute to ternary axes [#1952]
+- Add cross-trace matching auto-binning logic to histogram traces [#1944]
+- Add `data/layout/config` api to `Plotly.toImage` to generate a static
+  graph without having to render an interactive graph first [#1939]
+- Add `nameformat` attribute to `groupby` transforms to set pattern by which
+  grouped traces are named [#1919]
+
+### Fixed
+- Fix hover label exponents [#1932, #1949]
+- Fix scatter fill with isolated endpoints [#1933]
+- Fix parcoords axis tick scale when `ticktext` is unordered [#1945]
+- Fix sankey with 4 multi-links or more [#1934]
+- Fix exponent labels beyond SI prefixes [#1930]
+- Fix image generation for marker gradient legend items [#1928]
+- Fix parcoords image generation when multiple parcoords graphs
+  are present on page [#1947]
+- Ignore bare closing tags in pseudo-html string inputs [#1926]
+
+
+## [1.29.3] -- 2017-07-27
+
+### Fixed
+- Fix `groupby` / `filter` interactions when filter includes `target` data
+  [#1892]
+
+
+## [1.29.2] -- 2017-07-26
+
+### Fixed
+- Add fallback for `ArrayBuffer.isView` fixing gl2d and gl3d rendering
+  in environments that don't support it (e.g. RStudio) [#1915]
+
+
+## [1.29.1] -- 2017-07-25
+
+### Fixed
+- Fix axis line rendering when `showticklabels` is false
+  (bug introduced in 1.29.0) [#1910]
+- Fix histogram auto bin restyle [#1901]
+- Fix colorbar edge case that caused infinite loops [#1906]
+
+
+## [1.29.0] -- 2017-07-19
+
+### Added
+- Add touch interactions to cartesian, gl2d and ternary subplots including for
+  select and lasso drag modes [#1804, #1890]
+- Add support for contour line labels in `contour` and `contourcarpet` traces
+  [#1815]
+- Add support for select and lasso drag modes on `scattermapbox` traces [#1836]
+- Add double click interactions to mapbox subplots [#1883]
+- Add reset view and toggle hover mode bar buttons to mapbox subplots [#1883]
+- Add support for array `marker.opacity` settings in `scattermapbox` traces
+  [#1836]
+- Add `namelength` layout and trace attribute to control the trace name's
+  visible length in hover labels [#1822]
+- Add `cliponaxis` attribute to `scatter` and `scatterternary` traces to allow
+  markers and text nodes to be displayed above their subplot's axes [#1861]
+- Add axis `layer` attribute with `'above traces'` and `'below traces'` values
+  [#1871]
+- Add granular `editable` configuration options [#1895]
+- Expanded traces generated by transforms now have unique colors [#1830]
+
+### Fixed
+- Fix axis line width, length, and positioning for coupled subplots [#1854]
+- Fix alignment of cartesian tick labels [#1854]
+- Fix rendering and updates of overlaying axis lines [#1855]
+- Fix hover for 2D traces with custom colorbar `tickvals` [#1891]
+- Fix hover and event data for `heatmapgl` and `contourgl` traces [#1884]
+- Fix event data for `pie` and `sankey` traces [#1896]
+- Fix drag mode `'pan'`in IE and Edge [#1871]
+- Fix bar, error bar and box point scaling on scroll zoom [#1897]
+- Fix shading issue in `surface` trace in iOS [#1868]
+- Fix lasso and select drag modes for `scatterternary` traces [#1831]
+- Fix cases of intersecting `contour` lines on log axes [#1856]
+- Safer construction of `popup` click handler [#1888]
+- Fix animation of annotations, shapes and images [#1315]
+- Fix histogram bin computation when more than 5000 bins are needed [#1887]
+- Fix tick label rendering when more than 1000 labels are present [#1898]
+- Fix handling of empty `transforms` item [#1829]
+
+
+## [1.28.3] -- 2017-06-26
+
+### Fixed
+- Fix deselect on double-clicking for gl2d traces [#1811]
+- Fix `Plotly.purge` for gl2d and gl3d subplots
+  (bug introduced in 1.28.0, leading to memory leaks) [#1821]
+- Fix hover labels for `ohlc` and `candlestick` traces
+  (bug introduced in 1.28.0) [#1808]
+- Fix event data for `scattergeo` traces [#1819]
+- Fix support of HTML entity number in pseudo-html inputs [#1820]
+
+
+## [1.28.2] -- 2017-06-21
+
+### Fixed
+- Fix IE rendering error (`node.children` doesn't work on SVG nodes in IE) [#1803]
+
+
+## [1.28.1] -- 2017-06-20
+
+### Fixed
+- Fix `scattergl` selected points. Points do not disappear after zoom any more
+  in fast mode [#1800]
+
+
+## [1.28.0] -- 2017-06-19
+
+### Added
+- Allow constraints by domain on cartesian axes using new axis attributes:
+  `contrain: 'domain'` and `contraintoward` [#1767]
+- Add gl3d annotations [#1638, #1786]
+- Add support for lasso and select `dragmode` on `scattergl` traces [#1657]
+- Add 48 new `scattergl` marker symbols (for total of 56) [#1781]
+- Add array support for `hoverinfo` [#1761]
+- Add animation support for `fillcolor` attribute [#1722]
+- Add `colorscale` attributes to `mesh3d` traces [#1719]
+- Add support for target and popup attributes pseudo-html text links [#1726]
+- Add per-`direction` updatemenu dropdown arrows [#1792]
+- Add `execute` attribute to sliders and updatemenus to skip method calls while
+  still triggering associated events [#1700]
+- Add `skip` value to the `method` attribute for sliders and updatemenus which
+  acts as a no-op [#1699]
+
+### Changed
+- Include values of all array attributes in hover/click/select event data
+  including `ids` and `customdata` [#1770]
+- Make gl2d axis tick labels on-par with SVG versions [#1766]
+- Build SVG text nodes directly instead of using `DOMParser` [#1783]
+- Rework transform style into array syntax [#1794]
+- Recompute hover on click to increase click robustness [#1646]
+- Miscellaneous performance improvements including improved bounding box caching
+  and adding a few short-circuit [#1772, #1792]
+
+### Fixed
+- Fix pan/zoom for layout component linked to `category` axes [#1748, #1791]
+- Fix non-`linear` gl3d axis range settings [#1730]
+- Fix `ohlc` and `candlestick` when open value equals close value [#1655]
+- Fix annotations positioning when MathJax symbols are present [#1788]
+- Fix array values in event data for transformed traces [#1717, #1727, #1737]
+- Fix relayout event data for gl3d camera interactions [#1732]
+- Fix scatter markers and text nodes linked to `ids` ordering on updates [#1709]
+- Fix `Plotly.validate` for dynamic enumerated attribute
+  (e.g. axis `anchor`, `overlaying`) [#1769]
+- Fix pseudo-html handling in sliders, updatemenus, range-sliders,
+  range-selectors and carpet traces [#1792]
+- Fix annotation bounding box and arrow heads in IE [#1782]
+- Fix svg exports in IE for graphs with multiple clip paths [#1740]
+- Fix `sankey` positioning in IE [#1723, #1731, #1729, #1735]
+- Fix relative links in IE [#1715]
+- Suppress render warning in gl3d graphs with error bars [#1718]
+
+
+## [1.27.1] -- 2017-05-17
+
+### Fixed
+- Fix text box positioning on scrolled windows (bug introduced in 1.27.0) [#1683, #1690]
+- Fix styling over links in annotation text [#1681]
+- Fix `mesh3d` with `vertexcolor` coloring [#1686]
+- Fix `sort` transform with set `categoryarray` [#1689]
+- Fix `scatter` text node data join [#1672]
+- Fix `plot` promise resolution in graphs with layout images in IE11 [#1691]
+
+## [1.27.0] -- 2017-05-10
+
+### Added
+- Sankey diagram with new trace type `sankey` [#1591, #1664]
+- Add `hoverlabel` trace and layout attributes to customize hover label colors
+  and fonts [#1582]
+- Add `marker.gradient` attributes for `scatter`, `scattergeo`, `scatterternary`
+  and `scattercarpet` traces [#1620]
+- Add `sort` transform [#1609]
+- Add `preservegaps` `filter` transform attribute [#1589]
+- Add `!=` (not equal) `filter` transform operation [#1589]
+- Add `labelfont`, `tickfont` and `rangefont` attributes for `parcoords` traces
+  [#1624]
+- Pass DOM mouse event on `plotly_clickannotations` events [#1652]
+
+### Changed
+- Performance optimization for range sliders and Drawing cache [#1585]
+
+### Fixed
+- Fix `scattergl` marker symbol positioning (bug introduced in 1.25.0) [#1633]
+- Fix gl2d zoom where two clicks would trigger a zoom box (bug introduced 1.26.0) [#1632]
+- Fix legend double click handler for `carpet` traces [#1636]
+- Fix `restyle` for `scattercarpet` for style attributes with array support [#1641]
+- Fix `restyle` for array layout components when more than 10 items are present
+  [#1639]
+- Fix select-box and lasso selections so that they don't include bad-data items
+  [#1656]
+- Fix `restyle` for contour `zmin` and `zmax` [#1653]
+- Fix `scatter` text node transitions [#1616, #1626]
+
+
+## [1.26.1] -- 2017-04-21
+
+### Fixed
+- Fix `pie` fill opacity [#1615]
+- Fix `contour.value` declaration for `contourcarpet` trace [#1612]
+
+
+## [1.26.0] -- 2017-04-18
+
+### Added
+- Carpets plots with new trace types: `carpet`, `scattercarpet` and
+  `contourcarpet` [#1595, #1596]
+- Axis constraints with new cartesian and gl2d axis attributes `scaleanchor` and
+  `scaleratio` [#1522]
+- Annotations `width`, `height`, `valign` and `xshift` and `yshift` attributes
+  [#1551, #1590]
+- Hover text over annotations with `hovertext` and `hoverlabel` attributes
+  [#1573, #1590]
+- Add `hovertext` attribute to trace types that can show `text` values on graph
+  to allow setting hover text independently [#1523]
+- Add `spikes` interactions functionality to cartesian subplots [#1461]
+- Pass mouse DOM mouse event during `plotly_click`, `plotly_hover` and
+  `plotly_unhover` [#1505]
+- Add `visible` attribute to cartesian and gl3d axes to easily make them
+  disappear [#1595, #1599]
+- Make `deleteFrames(gd)` delete all frames [#1531]
+
+### Changed
+- Lock down `gl-plot3d` and `matrix-camera-controller` dependencies to include
+  latest memory management improvements [#1570]
+- Performance improvements for `category` axes [#1544]
+- Skip overhead for `showLink` config option is false [#1557]
+- Optimize scatter trace sorting on updates [#1555]
+- Lock down `gl-scatter2d-sdf` dependency to `1.3.4` while waiting for bug fix
+  there [#1572]
+
+### Fixed
+- Fix bar sizes of traces with (x,y) `NaN` items [#1519]
+- Fix handling of `NaN` items in array-ok attributes for `scattergeo` and
+  `scattermapbox` traces [#1538, #1564]
+- Fix hover label position for `bar` traces with set `width` [#1527]
+- Fix `restyle` for attribute containers [#1536]
+- Fix `restyle` exception for `scattergl` traces with no `y` data [#1567]
+- Fix animation of text nodes that contain `<br>`s [#1602]
+- Fix `toImage` for mapbox subplots when access token is set in the config
+  options [#1598]
+- Emit `plotly_hover` on `pie` traces when `hoverinfo: 'none'` [#1505]
+- Pass trace info during `plotly_click` on `pie` traces [#1505]
+- Pass through the wheel event if the scrollbar is at the very top or bottom
+  [#1588]
+
+
 ## [1.25.2] -- 2017-03-31
 
 ### Fixed

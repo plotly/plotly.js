@@ -182,11 +182,11 @@ describe('contourgl plots', function() {
 
     // this first dataset is a special case, very forgiving to the contour renderer, as it's convex,
     // contains no inflexion points etc.
-    it('render without raising an error', function(done) {
+    it('@gl render without raising an error', function(done) {
         makePlot(gd, plotData, done);
     });
 
-    it('render without raising an error', function(done) {
+    it('@gl render without raising an error', function(done) {
         var mock = require('@mocks/simple_contour.json'),
             mockCopy = Lib.extendDeep({}, mock);
 
@@ -222,34 +222,28 @@ describe('contourgl plots', function() {
             scene2d = gd._fullLayout._plots.xy._scene2d;
 
             expect(scene2d.traces[mock.data[0].uid].type).toEqual('contourgl');
-            expect(scene2d.xaxis._min).toEqual([{ val: -1, pad: 0}]);
-            expect(scene2d.xaxis._max).toEqual([{ val: 1, pad: 0}]);
+            expect(scene2d.xaxis.range).toEqual([-1, 1]);
 
             return Plotly.relayout(gd, 'xaxis.range', [0, -10]);
         }).then(function() {
-            expect(scene2d.xaxis._min).toEqual([]);
-            expect(scene2d.xaxis._max).toEqual([]);
+            expect(scene2d.xaxis.range).toEqual([0, -10]);
 
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
-            expect(scene2d.xaxis._min).toEqual([{ val: -1, pad: 0}]);
-            expect(scene2d.xaxis._max).toEqual([{ val: 1, pad: 0}]);
+            expect(scene2d.xaxis.range).toEqual([1, -1]); // autorange keeps its reversal
 
             return Plotly.restyle(gd, 'type', 'heatmapgl');
         }).then(function() {
             expect(scene2d.traces[mock.data[0].uid].type).toEqual('heatmapgl');
-            expect(scene2d.xaxis._min).toEqual([{ val: -1, pad: 0}]);
-            expect(scene2d.xaxis._max).toEqual([{ val: 1, pad: 0}]);
+            expect(scene2d.xaxis.range).toEqual([1, -1]);
 
             return Plotly.relayout(gd, 'xaxis.range', [0, -10]);
         }).then(function() {
-            expect(scene2d.xaxis._min).toEqual([]);
-            expect(scene2d.xaxis._max).toEqual([]);
+            expect(scene2d.xaxis.range).toEqual([0, -10]);
 
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
-            expect(scene2d.xaxis._min).toEqual([{ val: -1, pad: 0}]);
-            expect(scene2d.xaxis._max).toEqual([{ val: 1, pad: 0}]);
+            expect(scene2d.xaxis.range).toEqual([1, -1]);
 
             done();
         });

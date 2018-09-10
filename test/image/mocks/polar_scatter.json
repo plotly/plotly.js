@@ -1,6 +1,7 @@
 {
   "data": [
     {
+      "type": "scatterpolar",
       "r": [
         6.80498578527,
         3.38959601061,
@@ -63,7 +64,7 @@
         7.58301557326,
         3.51320214534
       ],
-      "t": [
+      "theta": [
         -30.3529443619,
         -25.6114598545,
         -12.4252274527,
@@ -129,15 +130,15 @@
       "name": "Trial 1",
       "marker": {
         "color": "rgb(27,158,119)",
-        "size": 110,
+        "size": 15,
         "line": {
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "type": "scatter"
+      }
     },
     {
+      "type": "scatterpolar",
       "r": [
         3.48804392301,
         2.91847857636,
@@ -200,7 +201,7 @@
         6.85304926109,
         4.14035507494
       ],
-      "t": [
+      "theta": [
         14.8066257809,
         79.0063403726,
         49.0220655413,
@@ -266,15 +267,15 @@
       "name": "Trial 2",
       "marker": {
         "color": "rgb(217,95,2)",
-        "size": 110,
+        "size": 20,
         "line": {
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "type": "scatter"
+      }
     },
     {
+      "type": "scatterpolar",
       "r": [
         1.85587083503,
         5.28696206204,
@@ -337,7 +338,7 @@
         4.60247924389,
         5.67005205083
       ],
-      "t": [
+      "theta": [
         151.294255181,
         147.188025028,
         125.282157112,
@@ -403,15 +404,15 @@
       "name": "Trial 3",
       "marker": {
         "color": "rgb(117,112,179)",
-        "size": 110,
+        "size": 12,
         "line": {
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "type": "scatter"
+      }
     },
     {
+      "type": "scatterpolar",
       "r": [
         5.37247092432,
         7.09635557204,
@@ -474,7 +475,7 @@
         2.4370447709,
         6.5081863479
       ],
-      "t": [
+      "theta": [
         -140.203327641,
         -168.084245433,
         -166.285141329,
@@ -540,15 +541,15 @@
       "name": "Trial 4",
       "marker": {
         "color": "rgb(231,41,138)",
-        "size": 110,
+        "size": 22,
         "line": {
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "type": "scatter"
+      }
     },
     {
+      "type": "scatterpolar",
       "r": [
         7.93755787138,
         7.30274649152,
@@ -611,7 +612,7 @@
         4.05919058739,
         6.12833898429
       ],
-      "t": [
+      "theta": [
         -101.833785776,
         -127.478391579,
         -112.244284997,
@@ -677,15 +678,15 @@
       "name": "Trial 5",
       "marker": {
         "color": "rgb(102,166,30)",
-        "size": 110,
+        "size": 19,
         "line": {
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "type": "scatter"
+      }
     },
     {
+      "type": "scatterpolar",
       "r": [
         8.46918052789,
         5.82199756737,
@@ -748,7 +749,7 @@
         6.50065359862,
         4.74864071013
       ],
-      "t": [
+      "theta": [
         -66.5358363273,
         -84.5144226769,
         -63.3397416996,
@@ -814,13 +815,12 @@
       "name": "Trial 6",
       "marker": {
         "color": "rgb(230,171,2)",
-        "size": 110,
+        "size": 10,
         "line": {
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "type": "scatter"
+      }
     }
   ],
   "layout": {
@@ -829,9 +829,24 @@
       "size": 15
     },
     "showlegend": false,
-    "plot_bgcolor": "rgb(223, 223, 223)",
-    "angularaxis": {
-      "tickcolor": "rgb(253,253,253)"
-    }
+    "polar": {
+      "bgcolor": "rgb(223, 223, 223)",
+      "angularaxis": {
+        "tickwidth": 2,
+        "linewidth": 3,
+        "layer": "below traces"
+      },
+      "radialaxis": {
+        "side": "counterclockwise",
+        "showline": true,
+        "linewidth": 2,
+        "tickwidth": 2,
+        "gridcolor": "white",
+        "gridwidth": 2
+      }
+    },
+    "paper_bgcolor": "rgb(223, 223, 223)",
+    "width": 450,
+    "height": 450
   }
 }

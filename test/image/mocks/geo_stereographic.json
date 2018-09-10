@@ -26,8 +26,7 @@
             "colorscale": "Greens",
             "reversescale": true,
             "zmin": 0,
-            "zmax": 100,
-            "uid": "b860d8"
+            "zmax": 100
         }
     ],
     "layout": {

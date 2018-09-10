@@ -294,7 +294,10 @@
       ],
       "ncontours": 30,
       "showscale": false,
-      "type": "contour"
+      "type": "contour",
+      "contours": {
+        "showlabels": true
+      }
     },
     {
       "x": [

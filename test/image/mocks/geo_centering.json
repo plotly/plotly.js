@@ -1,0 +1,41 @@
+{
+	"data": [{
+		"type": "scattergeo",
+		"mode": "markers",
+		"marker": {
+		  "size": 9,
+		  "color": "#154360"
+		},
+		"lat": [44.065041, 42.012902],
+		"lon": [-82.649583, -82.545763]
+	}],
+	"layout": {
+		"margin": {"t": 70, "b": 40, "l": 10, "r": 10},
+	  	"geo": {
+			"projection": {
+				"type": "kavrayskiy7",
+				"rotation":{"lon": -81.6},
+				"scale": 6
+			},
+			"center": {
+				"lat": 39
+			},
+			"showcountries": true,
+			"showland": true,
+			"showsubunits": true,
+			"lataxis": {
+			  	"showgrid": true,
+			  	"tick0": 3,
+			  	"dtick": 3
+			},
+			"lonaxis": {
+			  	"showgrid": true,
+			  	"tick0": 3,
+			  	"dtick": 3
+			},
+			"landcolor": "rgb(243,243,243)",
+			"countrycolor": "rgb(204,204,204)",
+			"subunitcolor": "rgb(224,224,224)"
+	  	}
+	}
+}

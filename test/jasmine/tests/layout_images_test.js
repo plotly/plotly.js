@@ -21,7 +21,10 @@ describe('Layout images', function() {
 
         beforeEach(function() {
             layoutIn = { images: [] };
-            layoutOut = { _has: Plots._hasPlotType };
+            layoutOut = {
+                _has: Plots._hasPlotType,
+                _subplots: {xaxis: [], yaxis: []}
+            };
         });
 
         it('should reject when there is no `source`', function() {
@@ -29,11 +32,11 @@ describe('Layout images', function() {
 
             Images.supplyLayoutDefaults(layoutIn, layoutOut);
 
-            expect(layoutOut.images).toEqual([{
+            expect(layoutOut.images).toEqual([jasmine.objectContaining({
                 visible: false,
                 _index: 0,
                 _input: layoutIn.images[0]
-            }]);
+            })]);
         });
 
         it('should reject when not an array', function() {
@@ -74,7 +77,7 @@ describe('Layout images', function() {
 
             Images.supplyLayoutDefaults(layoutIn, layoutOut);
 
-            expect(layoutOut.images[0]).toEqual(expected);
+            expect(layoutOut.images[0]).toEqual(jasmine.objectContaining(expected));
         });
 
     });

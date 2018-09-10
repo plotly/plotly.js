@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,7 +12,7 @@
 /**
  * Histogram has its own attribute, defaults and calc steps,
  * but uses bar's plot to display
- * and bar's setPositions for stacking and grouping
+ * and bar's crossTraceCalc (formerly known as setPositions) for stacking and grouping
  */
 
 /**
@@ -30,16 +30,20 @@ Histogram.layoutAttributes = require('../bar/layout_attributes');
 Histogram.supplyDefaults = require('./defaults');
 Histogram.supplyLayoutDefaults = require('../bar/layout_defaults');
 Histogram.calc = require('./calc');
-Histogram.setPositions = require('../bar/set_positions');
+Histogram.crossTraceCalc = require('../bar/cross_trace_calc').crossTraceCalc;
 Histogram.plot = require('../bar/plot');
-Histogram.style = require('../bar/style');
-Histogram.colorbar = require('../scatter/colorbar');
-Histogram.hoverPoints = require('../bar/hover');
+Histogram.layerName = 'barlayer';
+Histogram.style = require('../bar/style').style;
+Histogram.styleOnSelect = require('../bar/style').styleOnSelect;
+Histogram.colorbar = require('../scatter/marker_colorbar');
+Histogram.hoverPoints = require('./hover');
+Histogram.selectPoints = require('../bar/select');
+Histogram.eventData = require('./event_data');
 
 Histogram.moduleType = 'trace';
 Histogram.name = 'histogram';
 Histogram.basePlotModule = require('../../plots/cartesian');
-Histogram.categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
+Histogram.categories = ['cartesian', 'svg', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
 Histogram.meta = {
     description: [
         'The sample data from which statistics are computed is set in `x`',

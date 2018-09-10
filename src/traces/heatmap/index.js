@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,7 +22,7 @@ Heatmap.hoverPoints = require('./hover');
 Heatmap.moduleType = 'trace';
 Heatmap.name = 'heatmap';
 Heatmap.basePlotModule = require('../../plots/cartesian');
-Heatmap.categories = ['cartesian', '2dMap'];
+Heatmap.categories = ['cartesian', 'svg', '2dMap'];
 Heatmap.meta = {
     description: [
         'The data that describes the heatmap value-to-color mapping',

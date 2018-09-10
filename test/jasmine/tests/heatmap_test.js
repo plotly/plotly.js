@@ -9,7 +9,8 @@ var Heatmap = require('@src/traces/heatmap');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
+var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 
 describe('heatmap supplyDefaults', function() {
@@ -20,7 +21,9 @@ describe('heatmap supplyDefaults', function() {
 
     var defaultColor = '#444',
         layout = {
-            font: Plots.layoutAttributes.font
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'},
+            _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
         };
 
     var supplyDefaults = Heatmap.supplyDefaults;
@@ -52,13 +55,13 @@ describe('heatmap supplyDefaults', function() {
             type: 'heatmap',
             z: [[1, 2], []]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'heatmap'}, 0, layout);
 
         traceIn = {
             type: 'heatmap',
             z: [[], [1, 2], [1, 2, 3]]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'heatmap'}, 0, layout);
         expect(traceOut.visible).toBe(true);
         expect(traceOut.visible).toBe(true);
     });
@@ -132,7 +135,7 @@ describe('heatmap supplyDefaults', function() {
             y: [1, 2],
             z: [[1, 2], [3, 4]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendDeep({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -148,7 +151,7 @@ describe('heatmap supplyDefaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendDeep({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -168,8 +171,16 @@ describe('heatmap convertColumnXYZ', function() {
         };
     }
 
-    var xa = makeMockAxis(),
-        ya = makeMockAxis();
+    var xa = makeMockAxis();
+    var ya = makeMockAxis();
+
+    function checkConverted(trace, x, y, z) {
+        trace._length = Math.min(trace.x.length, trace.y.length, trace.z.length);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
+        expect(trace._x).toEqual(x);
+        expect(trace._y).toEqual(y);
+        expect(trace._z).toEqual(z);
+    }
 
     it('should convert x/y/z columns to z(x,y)', function() {
         trace = {
@@ -178,10 +189,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, 2, 3, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.x).toEqual([1, 2]);
-        expect(trace.y).toEqual([1, 2, 3]);
-        expect(trace.z).toEqual([[1, 4], [2, 5], [3, 6]]);
+        checkConverted(trace, [1, 2], [1, 2, 3], [[1, 4], [2, 5], [3, 6]]);
     });
 
     it('should convert x/y/z columns to z(x,y) with uneven dimensions', function() {
@@ -191,10 +199,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, 2, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.x).toEqual([1, 2]);
-        expect(trace.y).toEqual([1, 2, 3]);
-        expect(trace.z).toEqual([[1, 4], [2, 5], [, 6]]);
+        checkConverted(trace, [1, 2], [1, 2, 3], [[1, 4], [2, 5], [, 6]]);
     });
 
     it('should convert x/y/z columns to z(x,y) with missing values', function() {
@@ -204,10 +209,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, null, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.x).toEqual([1, 2]);
-        expect(trace.y).toEqual([1, 2, 3]);
-        expect(trace.z).toEqual([[1, 4], [null, 5], [, 6]]);
+        checkConverted(trace, [1, 2], [1, 2, 3], [[1, 4], [null, 5], [, 6]]);
     });
 
     it('should convert x/y/z/text columns to z(x,y) and text(x,y)', function() {
@@ -215,11 +217,12 @@ describe('heatmap convertColumnXYZ', function() {
             x: [1, 1, 1, 2, 2, 2],
             y: [1, 2, 3, 1, 2, 3],
             z: [1, 2, 3, 4, 5, 6],
-            text: ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+            text: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            _length: 6
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.text).toEqual([['a', 'd'], ['b', 'e'], ['c', 'f']]);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
+        expect(trace._text).toEqual([['a', 'd'], ['b', 'e'], ['c', 'f']]);
     });
 
     it('should convert x/y/z columns to z(x,y) with out-of-order data', function() {
@@ -250,20 +253,19 @@ describe('heatmap convertColumnXYZ', function() {
             ]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.x).toEqual(
-            [-88596, -65484, -42372, -19260, 3852, 26964, 50076, 73188]);
-        expect(trace.y).toEqual(
-            [-78096.2, -52106.6, -26117, -127.4, 25862.2, 51851.8, 77841.4]);
-        expect(trace.z).toEqual([
-            [,, 4.154291, 4.404264, 4.33847, 4.270931,,, ],
-            [, 4.339848, 4.39907, 4.345006, 4.315032, 4.295618, 4.262052,, ],
-            [3.908434, 4.433257, 4.364234, 4.308714, 4.275516, 4.126979, 4.296483, 4.320471],
-            [4.032226, 4.381492, 4.328922, 4.24046, 4.349151, 4.202861, 4.256402, 4.28972],
-            [3.956225, 4.337909, 4.31226, 4.259435, 4.146854, 4.235799, 4.238752, 4.299876],
-            [, 4.210373, 4.32009, 4.246728, 4.293992, 4.316364, 4.361856,, ],
-            [,, 4.234497, 4.321701, 4.450315, 4.416136,,, ]
-        ]);
+        checkConverted(trace,
+            [-88596, -65484, -42372, -19260, 3852, 26964, 50076, 73188],
+            [-78096.2, -52106.6, -26117, -127.4, 25862.2, 51851.8, 77841.4],
+            [
+                [,, 4.154291, 4.404264, 4.33847, 4.270931,,, ],
+                [, 4.339848, 4.39907, 4.345006, 4.315032, 4.295618, 4.262052,, ],
+                [3.908434, 4.433257, 4.364234, 4.308714, 4.275516, 4.126979, 4.296483, 4.320471],
+                [4.032226, 4.381492, 4.328922, 4.24046, 4.349151, 4.202861, 4.256402, 4.28972],
+                [3.956225, 4.337909, 4.31226, 4.259435, 4.146854, 4.235799, 4.238752, 4.299876],
+                [, 4.210373, 4.32009, 4.246728, 4.293992, 4.316364, 4.361856,, ],
+                [,, 4.234497, 4.321701, 4.450315, 4.416136,,, ]
+            ]
+        );
     });
 
     it('should convert x/y/z columns with nulls to z(x,y)', function() {
@@ -279,11 +281,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [0, 50, 100, 50, null, 255, 100, 510, 1010]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-
-        expect(trace.x).toEqual([0, 5, 10]);
-        expect(trace.y).toEqual([0, 5, 10]);
-        expect(trace.z).toEqual([
+        checkConverted(trace, [0, 5, 10], [0, 5, 10], [
             [0, 50, 100],
             [50, undefined, 510],
             [100, 255, 1010]
@@ -294,19 +292,22 @@ describe('heatmap convertColumnXYZ', function() {
 describe('heatmap calc', function() {
     'use strict';
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     function _calc(opts) {
         var base = { type: 'heatmap' },
             trace = Lib.extendFlat({}, base, opts),
             gd = { data: [trace] };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
+        var fullLayout = gd._fullLayout;
 
-        return Heatmap.calc(gd, fullTrace)[0];
+        fullTrace._extremes = {};
+
+        var out = Heatmap.calc(gd, fullTrace)[0];
+        out._xcategories = fullLayout.xaxis._categories;
+        out._ycategories = fullLayout.yaxis._categories;
+
+        return out;
     }
 
     it('should fill in bricks if x/y not given', function() {
@@ -404,20 +405,94 @@ describe('heatmap calc', function() {
         expect(out.y).toBeCloseToArray([-0.5, 0.5]);
         expect(out.z).toBeCloseTo2DArray([[17, 18, 19]]);
     });
+
+    it('should handle the category x/y/z/ column case', function() {
+        var out = _calc({
+            x: ['a', 'a', 'a', 'b', 'b', 'b', 'c', 'c', 'c'],
+            y: ['A', 'B', 'C', 'A', 'B', 'C', 'A', 'B', 'C'],
+            z: [0, 50, 100, 50, 0, 255, 100, 510, 1010]
+        });
+
+        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.z).toBeCloseTo2DArray([
+            [0, 50, 100],
+            [50, 0, 510],
+            [100, 255, 1010]
+        ]);
+
+        expect(out._xcategories).toEqual(['a', 'b', 'c']);
+        expect(out._ycategories).toEqual(['A', 'B', 'C']);
+    });
+
+    it('should handle the date x/y/z/ column case', function() {
+        var out = _calc({
+            x: [
+                '2016-01-01', '2016-01-01', '2016-01-01',
+                '2017-01-01', '2017-01-01', '2017-01-01',
+                '2017-06-01', '2017-06-01', '2017-06-01'
+            ],
+            y: [0, 1, 2, 0, 1, 2, 0, 1, 2],
+            z: [0, 50, 100, 50, 0, 255, 100, 510, 1010]
+        });
+
+        expect(out.x).toBeCloseToArray([
+            1435795200000, 1467417600000, 1489752000000, 1502798400000
+        ]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.z).toBeCloseTo2DArray([
+            [0, 50, 100],
+            [50, 0, 510],
+            [100, 255, 1010]
+        ]);
+    });
+
+    it('should fill in bricks if x/y not given (typed array case)', function() {
+        var out = _calc({
+            z: [
+                new Float32Array([1, 2, 3]),
+                new Float32Array([3, 1, 2])
+            ]
+        });
+
+        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should convert x/y coordinates into bricks (typed array case)', function() {
+        var out = _calc({
+            x: new Float32Array([1, 2, 3]),
+            y: new Float32Array([2, 6]),
+            z: [
+                new Float32Array([1, 2, 3]),
+                new Float32Array([3, 1, 2])
+            ]
+        });
+
+        expect(out.x).toBeCloseToArray([0.5, 1.5, 2.5, 3.5]);
+        expect(out.y).toBeCloseToArray([0, 4, 8]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
 });
 
 describe('heatmap plot', function() {
     'use strict';
 
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
     afterEach(destroyGraphDiv);
 
     it('should not draw traces that are off-screen', function(done) {
-        var mock = require('@mocks/heatmap_multi-trace.json'),
-            mockCopy = Lib.extendDeep({}, mock),
-            gd = createGraphDiv();
+        var mock = require('@mocks/heatmap_multi-trace.json');
+        var mockCopy = Lib.extendDeep({}, mock);
 
         function assertImageCnt(cnt) {
-            var images = d3.selectAll('.hm').select('image');
+            var images = d3.selectAll('.hm image');
 
             expect(images.size()).toEqual(cnt);
         }
@@ -432,15 +507,44 @@ describe('heatmap plot', function() {
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
             assertImageCnt(5);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-            done();
-        });
+    it('keeps the correct ordering after hide and show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.hm image').each(function(d) { out.push(d.trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'heatmap',
+            z: [[1, 2], [3, 4]]
+        }, {
+            type: 'heatmap',
+            z: [[2, 1], [4, 3]],
+            contours: {coloring: 'lines'}
+        }])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should be able to restyle', function(done) {
-        var mock = require('@mocks/13.json'),
-            mockCopy = Lib.extendDeep({}, mock),
-            gd = createGraphDiv();
+        var mock = require('@mocks/13.json');
+        var mockCopy = Lib.extendDeep({}, mock);
 
         function getImageURL() {
             return d3.select('.hm > image').attr('href');
@@ -468,19 +572,18 @@ describe('heatmap plot', function() {
             imageURLs.push(getImageURL());
 
             expect(imageURLs[1]).toEqual(imageURLs[3]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('draws canvas with correct margins', function(done) {
-        var mockWithPadding = require('@mocks/heatmap_brick_padding.json'),
-            mockWithoutPadding = Lib.extendDeep({}, mockWithPadding),
-            gd = createGraphDiv(),
-            getContextStub = {
-                fillRect: jasmine.createSpy()
-            },
-            originalCreateElement = document.createElement;
+        var mockWithPadding = require('@mocks/heatmap_brick_padding.json');
+        var mockWithoutPadding = Lib.extendDeep({}, mockWithPadding);
+        var getContextStub = {
+            fillRect: jasmine.createSpy()
+        };
+        var originalCreateElement = document.createElement;
 
         mockWithoutPadding.data[0].xgap = 0;
         mockWithoutPadding.data[0].ygap = 0;
@@ -499,52 +602,53 @@ describe('heatmap plot', function() {
             argumentsWithoutPadding = getContextStub.fillRect.calls.allArgs().slice(0);
             return Plotly.plot(gd, mockWithPadding.data, mockWithPadding.layout);
         }).then(function() {
-            var centerXGap = mockWithPadding.data[0].xgap / 3;
-            var centerYGap = mockWithPadding.data[0].ygap / 3;
-            var edgeXGap = mockWithPadding.data[0].xgap * 2 / 3;
-            var edgeYGap = mockWithPadding.data[0].ygap * 2 / 3;
+            var xGap = mockWithPadding.data[0].xgap;
+            var yGap = mockWithPadding.data[0].ygap;
+            var xGapLeft = xGap / 2;
+            var yGapTop = yGap / 2;
 
-            argumentsWithPadding = getContextStub.fillRect.calls.allArgs().slice(getContextStub.fillRect.calls.allArgs().length - 9);
-            expect(argumentsWithPadding).toEqual([
-                [argumentsWithoutPadding[0][0],
-                    argumentsWithoutPadding[0][1] + edgeYGap,
-                    argumentsWithoutPadding[0][2] - edgeXGap,
-                    argumentsWithoutPadding[0][3] - edgeYGap],
-                [argumentsWithoutPadding[1][0] + centerXGap,
-                    argumentsWithoutPadding[1][1] + edgeYGap,
-                    argumentsWithoutPadding[1][2] - edgeXGap,
-                    argumentsWithoutPadding[1][3] - edgeYGap],
-                [argumentsWithoutPadding[2][0] + edgeXGap,
-                    argumentsWithoutPadding[2][1] + edgeYGap,
-                    argumentsWithoutPadding[2][2] - edgeXGap,
-                    argumentsWithoutPadding[2][3] - edgeYGap],
-                [argumentsWithoutPadding[3][0],
-                    argumentsWithoutPadding[3][1] + centerYGap,
-                    argumentsWithoutPadding[3][2] - edgeXGap,
-                    argumentsWithoutPadding[3][3] - edgeYGap],
-                [argumentsWithoutPadding[4][0] + centerXGap,
-                    argumentsWithoutPadding[4][1] + centerYGap,
-                    argumentsWithoutPadding[4][2] - edgeXGap,
-                    argumentsWithoutPadding[4][3] - edgeYGap],
-                [argumentsWithoutPadding[5][0] + edgeXGap,
-                    argumentsWithoutPadding[5][1] + centerYGap,
-                    argumentsWithoutPadding[5][2] - edgeXGap,
-                    argumentsWithoutPadding[5][3] - edgeYGap],
-                [argumentsWithoutPadding[6][0],
-                    argumentsWithoutPadding[6][1],
-                    argumentsWithoutPadding[6][2] - edgeXGap,
-                    argumentsWithoutPadding[6][3] - edgeYGap],
-                [argumentsWithoutPadding[7][0] + centerXGap,
-                    argumentsWithoutPadding[7][1],
-                    argumentsWithoutPadding[7][2] - edgeXGap,
-                    argumentsWithoutPadding[7][3] - edgeYGap],
-                [argumentsWithoutPadding[8][0] + edgeXGap,
-                    argumentsWithoutPadding[8][1],
-                    argumentsWithoutPadding[8][2] - edgeXGap,
-                    argumentsWithoutPadding[8][3] - edgeYGap
-                ]]);
-            done();
-        });
+            argumentsWithPadding = getContextStub.fillRect.calls.allArgs()
+                .slice(getContextStub.fillRect.calls.allArgs().length - 25);
+
+            expect(argumentsWithPadding.length).toBe(25);
+
+            argumentsWithPadding.forEach(function(args, i) {
+                expect(args[0]).toBe(argumentsWithoutPadding[i][0] + xGapLeft, i);
+                expect(args[1]).toBe(argumentsWithoutPadding[i][1] + yGapTop, i);
+                expect(args[2]).toBe(argumentsWithoutPadding[i][2] - xGap, i);
+                expect(args[3]).toBe(argumentsWithoutPadding[i][3] - yGap, i);
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('can change z values with connected gaps', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'heatmap', connectgaps: true,
+            z: [[1, 2], [null, 4], [1, 2]]
+        }])
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
+
+            return Plotly.react(gd, [{
+                type: 'heatmap', connectgaps: true,
+                z: [[6, 5], [8, 7], [null, 10]]
+            }]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[6, 5], [8, 7], [9, 10]]);
+
+            return Plotly.react(gd, [{
+                type: 'heatmap', connectgaps: true,
+                z: [[1, 2], [null, 4], [1, 2]]
+            }]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
@@ -552,10 +656,6 @@ describe('heatmap hover', function() {
     'use strict';
 
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function _hover(gd, xval, yval) {
         var fullLayout = gd._fullLayout,
@@ -580,10 +680,10 @@ describe('heatmap hover', function() {
     }
 
     function assertLabels(hoverPoint, xLabel, yLabel, zLabel, text) {
-        expect(hoverPoint.xLabelVal).toEqual(xLabel, 'have correct x label');
-        expect(hoverPoint.yLabelVal).toEqual(yLabel, 'have correct y label');
-        expect(hoverPoint.zLabelVal).toEqual(zLabel, 'have correct z label');
-        expect(hoverPoint.text).toEqual(text, 'have correct text label');
+        expect(hoverPoint.xLabelVal).toBe(xLabel, 'have correct x label');
+        expect(hoverPoint.yLabelVal).toBe(yLabel, 'have correct y label');
+        expect(hoverPoint.zLabelVal).toBe(zLabel, 'have correct z label');
+        expect(hoverPoint.text).toBe(text, 'have correct text label');
     }
 
     describe('for `heatmap_multi-trace`', function() {
@@ -644,6 +744,41 @@ describe('heatmap hover', function() {
                 expect(pt2.index).toEqual([0, 1], 'have correct index');
                 assertLabels(pt2, 2, 1, 4, 'b');
             })
+            .then(done);
+        });
+
+    });
+
+    describe('nonuniform bricks', function() {
+
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = require('@mocks/heatmap_contour_irregular_bricks.json');
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        afterAll(destroyGraphDiv);
+
+        function checkData() {
+            var pt = _hover(gd, -4, 6)[0];
+            assertLabels(pt, 0, 10, 1);
+
+            pt = _hover(gd, 10.5, 12.5)[0];
+            assertLabels(pt, 10, 12, 2);
+
+            pt = _hover(gd, 11.5, 4)[0];
+            assertLabels(pt, 12, 0, 3);
+        }
+
+        it('gives data positions, not brick centers', function(done) {
+            checkData();
+
+            Plotly.restyle(gd, {zsmooth: 'none'}, [0])
+            .then(checkData)
+            .catch(failTest)
             .then(done);
         });
 

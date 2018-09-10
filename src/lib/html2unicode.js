@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 'use strict';
 
 var toSuperScript = require('superscript-text');
-var stringMappings = require('../constants/string_mappings');
+var fixEntities = require('./svg_text_utils').convertEntities;
 
 function fixSuperScript(x) {
     var idx = 0;
@@ -31,28 +31,6 @@ function fixBR(x) {
 
 function stripTags(x) {
     return x.replace(/\<.*\>/g, '');
-}
-
-function fixEntities(x) {
-    var entityToUnicode = stringMappings.entityToUnicode;
-    var idx = 0;
-
-    while((idx = x.indexOf('&', idx)) >= 0) {
-        var nidx = x.indexOf(';', idx);
-        if(nidx < idx) {
-            idx += 1;
-            continue;
-        }
-
-        var entity = entityToUnicode[x.slice(idx + 1, nidx)];
-        if(entity) {
-            x = x.slice(0, idx) + entity + x.slice(nidx + 1);
-        } else {
-            x = x.slice(0, idx) + x.slice(nidx + 1);
-        }
-    }
-
-    return x;
 }
 
 function convertHTMLToUnicode(html) {

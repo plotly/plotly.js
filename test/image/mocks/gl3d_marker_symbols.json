@@ -1,0 +1,77 @@
+{
+  "data": [
+    {
+      "type": "scatter3d",
+      "x": [1, 2, 3, 4, 5, 6, 7, 8],
+      "y": [1, 1, 1, 1, 1, 1, 1, 1],
+      "z": [1, 1, 1, 1, 1, 1, 1, 1],
+      "mode": "markers",
+      "text": [
+        "marker symbol: 'circle'",
+        "marker symbol: 'circle-open'",
+        "marker symbol: 'square'",
+        "marker symbol: 'square-open'",
+        "marker symbol: 'diamond'",
+        "marker symbol: 'diamond-open'",
+        "marker symbol: 'cross'"
+      ],
+      "marker": {
+        "color": "blue",
+        "size": 8,
+        "symbol": [
+          "circle",
+          "circle-open",
+          "square",
+          "square-open",
+          "diamond",
+          "diamond-open",
+          "cross"
+        ],
+        "line": {
+          "color": "orange",
+          "width": 1.5
+        }
+      },
+      "hovertext": "text"
+    }
+  ],
+  "layout": {
+    "width": 500,
+    "height": 500,
+    "margin": {"l": 0, "r": 0, "b": 0, "t": 0},
+    "scene": {
+      "camera": {
+        "eye": {
+          "x": 0.1,
+          "y": 0.1,
+          "z": 2.1
+        }
+      },
+      "xaxis": {
+        "showgrid": false,
+        "zeroline": false,
+        "showline": false,
+        "showticklabels": false,
+        "title": "",
+        "range": [0, 10]
+      },
+      "yaxis": {
+        "showgrid": false,
+        "zeroline": false,
+        "showline": false,
+        "showticklabels": false,
+        "title": "",
+        "range": [0, 6]
+      },
+      "zaxis": {
+        "showgrid": false,
+        "zeroline": false,
+        "showline": false,
+        "showticklabels": false,
+        "title": "",
+        "range": [0, 2]
+      }
+    },
+    "hovermode": "closest"
+  }
+}

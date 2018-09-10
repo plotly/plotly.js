@@ -7,16 +7,18 @@ var constants = require('../../tasks/util/constants');
 var isCI = !!process.env.CIRCLECI;
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
-    'boolean': ['info', 'nowatch', 'verbose', 'Chrome', 'Firefox'],
+    'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox'],
     alias: {
         'Chrome': 'chrome',
         'Firefox': ['firefox', 'FF'],
         'bundleTest': ['bundletest', 'bundle_test'],
-        'nowatch': 'no-watch'
+        'nowatch': 'no-watch',
+        'failFast': 'fail-fast'
     },
     'default': {
         info: false,
         nowatch: isCI,
+        failFast: false,
         verbose: false,
         width: '1035',
         height: '617'
@@ -43,12 +45,17 @@ if(argv.info) {
         '    No need to add the `_test.js` suffix, we expand them correctly here.',
         '  - `--bundleTest` set the bundle test suite `test/jasmine/bundle_tests/ to be run.',
         '    Note that only one bundle test can be run at a time.',
+        '  - Use `--tags` to specify which `@` tags to test (if any) e.g `npm run test-jasmine -- --tags=gl`',
+        '    will run only gl tests.',
+        '  - Use `--skip-tags` to specify which `@` tags to skip (if any) e.g `npm run test-jasmine -- --skip-tags=gl`',
+        '    will skip all gl tests.',
         '',
         'Other options:',
         '  - `--info`: show this info message',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
+        '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
         '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
         '  - `--width`(dflt: 1035): set width of the browser window',
@@ -95,13 +102,16 @@ if(isFullSuite) {
 }
 
 var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
-var pathToMain = path.join(__dirname, '..', '..', 'lib', 'index.js');
+var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d3.js');
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
+var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 
+var reporters = (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'];
+if(argv.failFast) reporters.push('fail-fast');
+if(argv.verbose) reporters.push('verbose');
 
 function func(config) {
-
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     //
@@ -114,7 +124,7 @@ function func(config) {
     //
     // See https://github.com/karma-runner/karma/commit/89a7a1c#commitcomment-21009216
     func.defaultConfig.browserConsoleLogOptions = {
-        level: 'log'
+        level: 'debug'
     };
 
     config.set(func.defaultConfig);
@@ -127,12 +137,12 @@ func.defaultConfig = {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'jasmine-spec-tags', 'browserify'],
+    frameworks: ['jasmine', 'jasmine-spec-tags', 'browserify', 'viewport'],
 
     // list of files / patterns to load in the browser
     //
-    // N.B. this field is filled below
-    files: [],
+    // N.B. the rest of this field is filled below
+    files: [pathToCustomMatchers],
 
     // list of files / pattern to exclude
     exclude: [],
@@ -150,7 +160,7 @@ func.defaultConfig = {
     // See note in CONTRIBUTING.md about more verbose reporting via karma-verbose-reporter:
     // https://www.npmjs.com/package/karma-verbose-reporter ('verbose')
     //
-    reporters: (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'],
+    reporters: reporters,
 
     // web server port
     port: 9876,
@@ -182,8 +192,10 @@ func.defaultConfig = {
         _Chrome: {
             base: 'Chrome',
             flags: [
+                '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
-                isCI ? '--ignore-gpu-blacklist' : ''
+                isCI ? '--ignore-gpu-blacklist' : '',
+                (isBundleTest && basename(testFileGlob) === 'no_webgl') ? '--disable-webgl' : ''
             ]
         },
         _Firefox: {
@@ -193,15 +205,30 @@ func.defaultConfig = {
     },
 
     browserify: {
-        transform: [pathToShortcutPath],
+        transform: [pathToStrictD3, pathToShortcutPath],
         extensions: ['.js'],
         watch: !argv.nowatch,
         debug: true
     },
 
-    // unfortunately a few tests don't behave well on CI
-    // using `karma-jasmine-spec-tags`
+    // Options for `karma-jasmine-spec-tags`
+    // see https://www.npmjs.com/package/karma-jasmine-spec-tags
+    //
+    // A few tests don't behave well on CI
     // add @noCI to the spec description to skip a spec on CI
+    //
+    // Although not recommended, some tests "depend" on other
+    // tests to pass (e.g. the Plotly.react tests check that
+    // all available traces and transforms are tested). Tag these
+    // with @noCIdep, so that
+    // - $ npm run test-jasmine -- tags=noCI,noCIdep
+    // can pass.
+    //
+    // Label tests that require a WebGL-context by @gl so that
+    // they can be skipped using:
+    // - $ npm run test-jasmine -- --skip-tags=gl
+    // or run is isolation easily using:
+    // - $ npm run test-jasmine -- --tags=gl
     client: {
         tagPrefix: '@',
         skipTags: isCI ? 'noCI' : null
@@ -214,20 +241,31 @@ func.defaultConfig = {
         suppressPassed: true,
         suppressSkipped: false,
         showSpecTiming: false,
+        // use 'karma-fail-fast-reporter' to fail fast w/o conflicting
+        // with other karma plugins
         failFast: false
-    }
+    },
+
+    // e.g. when a test file does not container a given spec tags
+    failOnEmptyTestSuite: false
 };
 
-if(isFullSuite) {
-    func.defaultConfig.files.push(pathToJQuery);
-    func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
-} else if(isBundleTest) {
+func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
+
+if(isBundleTest) {
     switch(basename(testFileGlob)) {
         case 'requirejs':
+            // browserified custom_matchers doesn't work with this route
+            // so clear them out of the files and preprocessors
             func.defaultConfig.files = [
                 constants.pathToRequireJS,
                 constants.pathToRequireJSFixture
             ];
+            delete func.defaultConfig.preprocessors[pathToCustomMatchers];
+            break;
+        case 'minified_bundle':
+            func.defaultConfig.files.push(constants.pathToPlotlyDistMin);
+            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
         case 'ie9':
             // load ie9_mock.js before plotly.js+test bundle
@@ -241,16 +279,7 @@ if(isFullSuite) {
             break;
     }
 } else {
-    // Add lib/index.js to non-full-suite runs,
-    // to avoid import conflicts due to plotly.js
-    // circular dependencies.
-
-    func.defaultConfig.files.push(
-        pathToJQuery,
-        pathToMain
-    );
-
-    func.defaultConfig.preprocessors[pathToMain] = ['browserify'];
+    func.defaultConfig.files.push(pathToJQuery);
     func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 }
 
@@ -262,10 +291,5 @@ var browsers = func.defaultConfig.browsers;
 if(argv.Chrome) browsers.push('_Chrome');
 if(argv.Firefox) browsers.push('_Firefox');
 if(browsers.length === 0) browsers.push('_Chrome');
-
-// add verbose reporter if specified
-if(argv.verbose) {
-    func.defaultConfig.reporters.push('verbose');
-}
 
 module.exports = func;

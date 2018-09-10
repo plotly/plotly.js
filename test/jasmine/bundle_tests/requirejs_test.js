@@ -1,6 +1,9 @@
 describe('plotly.js + require.js', function() {
     'use strict';
 
+    // Note: this test doesn't have access to custom_matchers.js
+    // so you can only use standard jasmine matchers here.
+
     it('should preserve require.js globals', function() {
         expect(window.requirejs).toBeDefined();
         expect(window.define).toBeDefined();

@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 
+var BADNUM = require('@src/constants/numerical').BADNUM;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -18,15 +19,15 @@ describe('calculated data and points', function() {
         it('should exclude null and undefined points when false', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5]}], {});
 
-            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
-            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
+            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
         });
 
         it('should exclude null and undefined points as categories when false', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5] }], { xaxis: { type: 'category' }});
 
-            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
-            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
+            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
         });
     });
 
@@ -149,6 +150,27 @@ describe('calculated data and points', function() {
 
                 expect(gd._fullLayout.xaxis._categories).toEqual(['1']);
             });
+
+            it('should skip over visible-false traces', function() {
+                Plotly.plot(gd, [{
+                    x: [1, 2, 3],
+                    y: [7, 6, 5],
+                    visible: false
+                }, {
+                    x: [10, 9, 8],
+                    y: ['A', 'B', 'C'],
+                    yaxis: 'y2'
+                }], {
+                    yaxis2: {
+                        categoryorder: 'category descending'
+                    }
+                });
+
+                expect(gd.calcdata[1][0]).toEqual(jasmine.objectContaining({x: 10, y: 2}));
+                expect(gd.calcdata[1][1]).toEqual(jasmine.objectContaining({x: 9, y: 1}));
+                expect(gd.calcdata[1][2]).toEqual(jasmine.objectContaining({x: 8, y: 0}));
+                expect(gd._fullLayout.yaxis2._categories).toEqual(['C', 'B', 'A']);
+            });
         });
 
         describe('explicit category ordering', function() {
@@ -192,9 +214,9 @@ describe('calculated data and points', function() {
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 4, y: 15}));
-                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({x: 3, y: 12}));
-                expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+                expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
             });
 
@@ -269,7 +291,7 @@ describe('calculated data and points', function() {
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 6, y: 15}));
-                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: false, y: false}));
+                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({x: 5, y: 12}));
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                 expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 3, y: 14}));
@@ -859,6 +881,35 @@ describe('calculated data and points', function() {
                 expect(gd.calcdata[2][0]).toEqual(jasmine.objectContaining({x: 1, y: 12 + 22 + 30}));
                 expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 2, y: 10 + 21 + 31}));
                 expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 0, y: 11 + 20 + 32}));
+            });
+        });
+
+        it('should order categories per axis', function() {
+            Plotly.plot(gd, [
+                {x: ['a', 'c', 'g', 'e']},
+                {x: ['b', 'h', 'f', 'd'], xaxis: 'x2'}
+            ], {
+                xaxis: {categoryorder: 'category ascending', domain: [0, 0.4]},
+                xaxis2: {categoryorder: 'category descending', domain: [0.6, 1]}
+            });
+
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'c', 'e', 'g']);
+            expect(gd._fullLayout.xaxis2._categories).toEqual(['h', 'f', 'd', 'b']);
+        });
+
+        it('should consider number categories and their string representation to be the same', function() {
+            Plotly.plot(gd, [{
+                x: ['a', 'b', 1, '1'],
+                y: [1, 2, 3, 4]
+            }], {
+                xaxis: {type: 'category'}
+            });
+
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'b', 1]);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({
+                '1': 2,
+                'a': 0,
+                'b': 1
             });
         });
     });

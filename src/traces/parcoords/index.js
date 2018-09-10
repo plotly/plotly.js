@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,12 +14,16 @@ Parcoords.attributes = require('./attributes');
 Parcoords.supplyDefaults = require('./defaults');
 Parcoords.calc = require('./calc');
 Parcoords.plot = require('./plot');
-Parcoords.colorbar = require('./colorbar');
+Parcoords.colorbar = {
+    container: 'line',
+    min: 'cmin',
+    max: 'cmax'
+};
 
 Parcoords.moduleType = 'trace';
 Parcoords.name = 'parcoords';
 Parcoords.basePlotModule = require('./base_plot');
-Parcoords.categories = ['gl', 'noOpacity'];
+Parcoords.categories = ['gl', 'regl', 'noOpacity'];
 Parcoords.meta = {
     description: [
         'Parallel coordinates for multidimensional exploratory data analysis.',
