@@ -2195,36 +2195,30 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
 
 
 /**
- * Create a mapping from dtype values to TypedArray types. A mapping is only
- * added for TypedArray types supported by the current browser
+ * Get TypedArray type for a given dtype string
+ * @param {String} dtype: Data type string
+ * @returns {TypedArray}
  */
-var dtypeStringToTypedarrayType = {};
-if(typeof Int8Array !== 'undefined') {
-    dtypeStringToTypedarrayType.int8 = Int8Array;
-}
-if(typeof Uint8Array !== 'undefined') {
-    dtypeStringToTypedarrayType.uint8 = Uint8Array;
-}
-if(typeof Uint8ClampedArray !== 'undefined') {
-    dtypeStringToTypedarrayType.uint8_clamped = Uint8ClampedArray;
-}
-if(typeof Int16Array !== 'undefined') {
-    dtypeStringToTypedarrayType.int16 = Int16Array;
-}
-if(typeof Uint16Array !== 'undefined') {
-    dtypeStringToTypedarrayType.uint16 = Uint16Array;
-}
-if(typeof Int32Array !== 'undefined') {
-    dtypeStringToTypedarrayType.int32 = Int32Array;
-}
-if(typeof Uint32Array !== 'undefined') {
-    dtypeStringToTypedarrayType.uint32 = Uint32Array;
-}
-if(typeof Float32Array !== 'undefined') {
-    dtypeStringToTypedarrayType.float32 = Float32Array;
-}
-if(typeof Float64Array !== 'undefined') {
-    dtypeStringToTypedarrayType.float64 = Float64Array;
+function getTypedArrayTypeForDtypeString(dtype) {
+    if(dtype === 'int8' && typeof Int8Array !== 'undefined') {
+        return Int8Array;
+    } else if(dtype === 'uint8' && typeof Uint8Array !== 'undefined') {
+        return Uint8Array;
+    } else if(dtype === 'uint8_clamped' && typeof Uint8ClampedArray !== 'undefined') {
+        return Uint8ClampedArray;
+    } else if(dtype === 'int16' && typeof Int16Array !== 'undefined') {
+        return Int16Array;
+    } else if(dtype === 'uint16' && typeof Uint16Array !== 'undefined') {
+        return Uint16Array;
+    } else if(dtype === 'int32' && typeof Int32Array !== 'undefined') {
+        return Int32Array;
+    } else if(dtype === 'uint32' && typeof Uint32Array !== 'undefined') {
+        return Uint32Array;
+    } else if(dtype === 'float32' && typeof Float32Array !== 'undefined') {
+        return Float32Array;
+    } else if(dtype === 'float64' && typeof Float64Array !== 'undefined') {
+        return Float64Array;
+    }
 }
 
 /**
@@ -2238,7 +2232,7 @@ function decodeTypedArray(v) {
 
     var coercedV;
     var value = v.value;
-    var TypeArrayType = dtypeStringToTypedarrayType[v.dtype];
+    var TypeArrayType = getTypedArrayTypeForDtypeString(v.dtype);
 
     if(TypeArrayType) {
         if(value instanceof ArrayBuffer) {
@@ -2286,13 +2280,92 @@ function performDecode(v) {
 
 /**
  * Plotly.decode:
- * Recursively decode an object or array into a form supported by Plotly.js.
+ * Attempt to recursively decode an object or array into a form supported
+ * by Plotly.js.  This function is the inverse of Plotly.encode.
  *
- * @param v
- * @returns {object}
+ * @param {object} v: Value to be decoded
+ * @returns {object}: Decoded value
  */
 exports.decode = function(v) {
     return performDecode(v);
+};
+
+/**
+ * Get data type string for TypedArray
+ * @param {TypedArray} v: A TypedArray instance
+ * @returns {String}
+ */
+function getDtypeStringForTypedArray(v) {
+    if(typeof Int8Array !== 'undefined' && v instanceof Int8Array) {
+        return 'int8';
+    } else if(typeof Uint8Array !== 'undefined' && v instanceof Uint8Array) {
+        return 'uint8';
+    } else if(typeof Uint8ClampedArray !== 'undefined' && v instanceof Uint8ClampedArray) {
+        return 'uint8_clamped';
+    } else if(typeof Int16Array !== 'undefined' && v instanceof Int16Array) {
+        return 'int16';
+    } else if(typeof Uint16Array !== 'undefined' && v instanceof Uint16Array) {
+        return 'uint16';
+    } else if(typeof Int32Array !== 'undefined' && v instanceof Int32Array) {
+        return 'int32';
+    } else if(typeof Uint32Array !== 'undefined' && v instanceof Uint32Array) {
+        return 'uint32';
+    } else if(typeof Float32Array !== 'undefined' && v instanceof Float32Array) {
+        return 'float32';
+    } else if(typeof Float64Array !== 'undefined' && v instanceof Float64Array) {
+        return 'float64';
+    }
+}
+
+
+/**
+ * Convert a TypedArray instance into a JSON-serializable object that
+ * represents it.
+ *
+ * @param {TypedArray} v: A TypedArray instance
+ *
+ * @returns {object} Object with `dtype` and `value` properties that
+ * represents a TypedArray.
+ */
+function encodeTypedArray(v) {
+    var dtype = getDtypeStringForTypedArray(v);
+    var buffer = b64.encode(v.buffer);
+    return {'value': buffer, 'dtype': dtype};
+}
+
+
+/**
+ * Recursive helper function to perform encoding
+ * @param v
+ */
+function performEncode(v) {
+    if(Lib.isTypedArray(v)) {
+        return encodeTypedArray(v);
+    } else if(Array.isArray(v)) {
+        return v.map(performEncode);
+    } else if(Lib.isPlainObject(v)) {
+        var result = {};
+        for(var k in v) {
+            if(v.hasOwnProperty(k)) {
+                result[k] = performEncode(v[k]);
+            }
+        }
+        return result;
+    } else {
+        return v;
+    }
+}
+
+/**
+ * Plotly.encode
+ * Recursively encode a Plotly.js object or array into a form that is JSON
+ * serializable
+ *
+ * @param {object} v: Value to be encode
+ * @returns {object}: Encoded value
+ */
+exports.encode = function(v) {
+    return performEncode(v);
 };
 
 /**

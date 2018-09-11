@@ -3,7 +3,7 @@ var b64 = require('base64-arraybuffer');
 var encodedFigure = {
     'data': [{
         'type': 'scatter',
-        'x': {'dtype': 'float64', 'value': [3, 2, 1]},
+        'x': {'dtype': 'float64', 'value': 'AAAAAAAACEAAAAAAAAAAQAAAAAAAAPA/'},
         'y': {'dtype': 'float32', 'value': 'AABAQAAAAEAAAIA/'},
         'marker': {
             'color': {
@@ -120,6 +120,9 @@ describe('Test TypedArray representations', function() {
 
                 var gd = Plotly.decode(raw);
                 expect(gd.data[0].y).toEqual(arraySpec[1]);
+
+                // Re-encoding should produce the original encoding
+                expect(Plotly.encode(gd)).toEqual({data: [{y: repr}]});
             });
         });
     });
@@ -133,7 +136,7 @@ describe('Test TypedArray representations', function() {
             // data_array property
             expect(encodedFigure.data[0].x).toEqual({
                 'dtype': 'float64',
-                'value': [3, 2, 1]});
+                'value': 'AAAAAAAACEAAAAAAAAAAQAAAAAAAAPA/'});
             expect(gd.data[0].x).toEqual(new Float64Array([3, 2, 1]));
 
             // Check y
@@ -149,6 +152,9 @@ describe('Test TypedArray representations', function() {
                 'dtype': 'uint16',
                 'value': 'AwACAAEA'});
             expect(gd.data[0].marker.color).toEqual(new Uint16Array([3, 2, 1]));
+
+            // Re-encode to make sure we obtain the original representation
+            expect(Plotly.encode(gd)).toEqual(encodedFigure);
         });
     });
 });

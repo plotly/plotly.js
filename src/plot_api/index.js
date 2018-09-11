@@ -17,6 +17,7 @@ exports.relayout = main.relayout;
 exports.redraw = main.redraw;
 exports.update = main.update;
 exports.decode = main.decode;
+exports.encode = main.encode;
 exports.react = main.react;
 exports.extendTraces = main.extendTraces;
 exports.prependTraces = main.prependTraces;
