@@ -2540,14 +2540,14 @@ describe('Test select box and lasso per trace:', function() {
     it('@flaky should work on scatter/bar traces with text nodes', function(done) {
         var assertSelectedPoints = makeAssertSelectedPoints();
 
-        function assertFillOpacity(exp) {
+        function assertFillOpacity(exp, msg) {
             var txtPts = d3.select(gd).select('g.plot').selectAll('text');
 
-            expect(txtPts.size()).toBe(exp.length, '# of text nodes');
+            expect(txtPts.size()).toBe(exp.length, '# of text nodes: ' + msg);
 
             txtPts.each(function(_, i) {
                 var act = Number(this.style['fill-opacity']);
-                expect(act).toBe(exp[i], 'node ' + i + ' fill opacity');
+                expect(act).toBe(exp[i], 'node ' + i + ' fill opacity: ' + msg);
             });
         }
 
@@ -2575,13 +2575,13 @@ describe('Test select box and lasso per trace:', function() {
                 [[10, 10], [100, 300]],
                 function() {
                     assertSelectedPoints({0: [0], 1: [0]});
-                    assertFillOpacity([1, 0.2, 0.2, 1, 0.2, 0.2]);
+                    assertFillOpacity([1, 0.2, 0.2, 1, 0.2, 0.2], '_run');
                 },
                 [10, 10], BOXEVENTS, 'selecting first scatter/bar text nodes'
             );
         })
         .then(function() {
-            assertFillOpacity([1, 1, 1, 1, 1, 1]);
+            assertFillOpacity([1, 1, 1, 1, 1, 1], 'final');
         })
         .catch(failTest)
         .then(done);

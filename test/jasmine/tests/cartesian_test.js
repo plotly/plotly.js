@@ -7,6 +7,7 @@ var Drawing = require('@src/components/drawing');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var assertD3Data = require('../assets/custom_assertions').assertD3Data;
 
 describe('restyle', function() {
     describe('scatter traces', function() {
@@ -21,37 +22,35 @@ describe('restyle', function() {
         it('reuses SVG fills', function(done) {
             var fills, firstToZero, secondToZero, firstToNext, secondToNext;
             var mock = Lib.extendDeep({}, require('@mocks/basic_area.json'));
+            function getFills() {
+                return d3.selectAll('g.trace.scatter .fills>g');
+            }
 
             Plotly.plot(gd, mock.data, mock.layout).then(function() {
-                // Assert there are two fills:
-                fills = d3.selectAll('g.trace.scatter .js-fill')[0];
+                fills = getFills();
 
-                // First is tozero, second is tonext:
-                expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(2);
-                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
-                expect(fills[1]).toBeClassed(['js-fill', 'js-tonext']);
+                // Assert there are two fills, first is tozero, second is tonext
+                assertD3Data(fills, ['_ownFill', '_nextFill']);
 
-                firstToZero = fills[0];
-                firstToNext = fills[1];
-            }).then(function() {
+                firstToZero = fills[0][0];
+                firstToNext = fills[0][1];
+
                 return Plotly.restyle(gd, {visible: [false]}, [1]);
             }).then(function() {
+                fills = getFills();
                 // Trace 1 hidden leaves only trace zero's tozero fill:
-                expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(1);
-                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
-            }).then(function() {
+                assertD3Data(fills, ['_ownFill']);
+
                 return Plotly.restyle(gd, {visible: [true]}, [1]);
             }).then(function() {
-                // Reshow means two fills again AND order is preserved:
-                fills = d3.selectAll('g.trace.scatter .js-fill')[0];
+                fills = getFills();
 
+                // Reshow means two fills again AND order is preserved
                 // First is tozero, second is tonext:
-                expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(2);
-                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
-                expect(fills[1]).toBeClassed(['js-fill', 'js-tonext']);
+                assertD3Data(fills, ['_ownFill', '_nextFill']);
 
-                secondToZero = fills[0];
-                secondToNext = fills[1];
+                secondToZero = fills[0][0];
+                secondToNext = fills[0][1];
 
                 // The identity of the first is retained:
                 expect(firstToZero).toBe(secondToZero);
@@ -61,8 +60,7 @@ describe('restyle', function() {
 
                 return Plotly.restyle(gd, 'visible', false);
             }).then(function() {
-                expect(d3.selectAll('g.trace.scatter').size()).toEqual(0);
-
+                expect(d3.selectAll('g.trace.scatter').size()).toBe(0);
             })
             .catch(failTest)
             .then(done);
