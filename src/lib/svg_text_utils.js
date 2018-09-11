@@ -170,7 +170,19 @@ function texToSVG(_texString, _config, _callback) {
         .style({'font-size': _config.fontSize + 'px'})
         .text(cleanEscapesForTex(_texString));
 
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, tmpDiv.node()], function() {
+    var originalRenderer;
+    MathJax.Hub.Queue(function() {
+        // Get original renderer
+        originalRenderer = MathJax.Hub.config.menuSettings.renderer;
+    },
+    ['setRenderer', MathJax.Hub, 'SVG'],
+    ['Typeset', MathJax.Hub, tmpDiv.node()],
+    function() {
+        // Restore original renderer if not SVG
+        if(originalRenderer !== 'SVG') {
+            MathJax.Hub.Queue(['setRenderer', MathJax.Hub, originalRenderer]);
+        }
+
         var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
 
         if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {

@@ -22,7 +22,8 @@ if(typeof MathJax !== 'undefined') {
         displayAlign: 'left',
         tex2jax: {
             inlineMath: [['$', '$'], ['\\(', '\\)']]
-        }
+        },
+        SVG: {font: 'STIX-Web'},
     });
 
     MathJax.Hub.Configured();
