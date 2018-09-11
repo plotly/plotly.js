@@ -431,7 +431,7 @@ function plot(gd, subplot, cdata) {
         if(scene.fill2d) {
             scene.fillOptions = scene.fillOptions.map(function(fillOptions, i) {
                 var cdscatter = cdata[i];
-                if(!fillOptions || !cdscatter || !cdscatter[0] || !cdscatter[0].trace) return null;
+                if(!fillOptions || !cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
                 var cd = cdscatter[0];
                 var trace = cd.trace;
                 var stash = cd.t;

@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [100, 100, 0, 0, 0, 0],
+      "fill": "tozeroy",
+      "type": "scattergl"
+    },
+    {
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [0, 0, 0, 100, 100, 0],
+      "fill": "tozeroy",
+      "type": "scattergl",
+      "mode": "none"
+    },
+    {
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [99, 99, 99, 100, 100, 100],
+      "type": "scattergl",
+      "mode": "lines+markers"
+    },
+    {
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [0, 0, 0, null, 50, 50],
+      "fill": "tozeroy",
+      "type": "scattergl",
+      "mode": "none"
+    },
+    {
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [100, 0, 0, 0, 0, 100],
+      "type": "scattergl",
+      "mode": "lines+markers"
+    }
+  ],
+  "layout": {
+    "margin": {"l": 40, "r": 50, "b": 80, "t": 40},
+    "legend": {"orientation": "h", "x": "0.5", "xanchor": "center"}
+  }
+}
