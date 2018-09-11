@@ -54,6 +54,8 @@ var attrs = module.exports = overrideAll({
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
+        shape: scatterLineAttrs.shape,
+        smoothing: scatterLineAttrs.smoothing,
         dash: {
             valType: 'enumerated',
             values: Object.keys(DASHES),

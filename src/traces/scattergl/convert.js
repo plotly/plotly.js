@@ -393,9 +393,14 @@ function convertLinePositions(gd, trace, positions) {
         if(trace.line.shape === 'hv') {
             linePositions = [];
             for(i = 0; i < count - 1; i++) {
-                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
+                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1]) || isNaN(positions[i * 2 + 2]) || isNaN(positions[i * 2 + 3])) {
+                    if(!isNaN(positions[i * 2]) && !isNaN(positions[i * 2 + 1])) {
+                        linePositions.push(positions[i * 2]);
+                        linePositions.push(positions[i * 2 + 1]);
+                    } else {
+                        linePositions.push(NaN);
+                        linePositions.push(NaN);
+                    }
                     linePositions.push(NaN);
                     linePositions.push(NaN);
                 }
@@ -404,6 +409,58 @@ function convertLinePositions(gd, trace, positions) {
                     linePositions.push(positions[i * 2 + 1]);
                     linePositions.push(positions[i * 2 + 2]);
                     linePositions.push(positions[i * 2 + 1]);
+                }
+            }
+            linePositions.push(positions[positions.length - 2]);
+            linePositions.push(positions[positions.length - 1]);
+        } else if(trace.line.shape === 'hvh') {
+            linePositions = [];
+            for(i = 0; i < count - 1; i++) {
+                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1]) || isNaN(positions[i * 2 + 2]) || isNaN(positions[i * 2 + 3])) {
+                    if(!isNaN(positions[i * 2]) && !isNaN(positions[i * 2 + 1])) {
+                        linePositions.push(positions[i * 2]);
+                        linePositions.push(positions[i * 2 + 1]);
+                    } else {
+                        linePositions.push(NaN);
+                        linePositions.push(NaN);
+                    }
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                }
+                else {
+                    var midPtX = (positions[i * 2] + positions[i * 2 + 2]) / 2;
+                    linePositions.push(positions[i * 2]);
+                    linePositions.push(positions[i * 2 + 1]);
+                    linePositions.push(midPtX);
+                    linePositions.push(positions[i * 2 + 1]);
+                    linePositions.push(midPtX);
+                    linePositions.push(positions[i * 2 + 3]);
+                }
+            }
+            linePositions.push(positions[positions.length - 2]);
+            linePositions.push(positions[positions.length - 1]);
+        } else if(trace.line.shape === 'vhv') {
+            linePositions = [];
+            for(i = 0; i < count - 1; i++) {
+                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1]) || isNaN(positions[i * 2 + 2]) || isNaN(positions[i * 2 + 3])) {
+                    if(!isNaN(positions[i * 2]) && !isNaN(positions[i * 2 + 1])) {
+                        linePositions.push(positions[i * 2]);
+                        linePositions.push(positions[i * 2 + 1]);
+                    } else {
+                        linePositions.push(NaN);
+                        linePositions.push(NaN);
+                    }
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                }
+                else {
+                    var midPtY = (positions[i * 2 + 1] + positions[i * 2 + 3]) / 2;
+                    linePositions.push(positions[i * 2]);
+                    linePositions.push(positions[i * 2 + 1]);
+                    linePositions.push(positions[i * 2]);
+                    linePositions.push(midPtY);
+                    linePositions.push(positions[i * 2 + 2]);
+                    linePositions.push(midPtY);
                 }
             }
             linePositions.push(positions[positions.length - 2]);
