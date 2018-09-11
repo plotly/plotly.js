@@ -9,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
 var failTest = require('../assets/fail_test');
+var transitions = require('../assets/transitions');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
@@ -655,14 +656,7 @@ describe('end-to-end scatter tests', function() {
 
         // visit each case N times, in an order that covers each *transition*
         // from any case to any other case.
-        var indices = [];
-        var curIndex = 0;
-        for(i = 1; i < cases.length; i++) {
-            for(j = 0; j < cases.length; j++) {
-                indices.push(curIndex);
-                curIndex = (curIndex + i) % cases.length;
-            }
-        }
+        var indices = transitions(cases.length);
 
         var p = Plotly.plot(gd, [
             {y: [1, 2], text: 'a'},
