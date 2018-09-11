@@ -392,62 +392,46 @@ describe('ternary plots', function() {
         }
 
         function toggle(selector, astr, vals, exps) {
-            return Plotly.relayout(gd, astr, vals[0]).then(function() {
-                assertCnt(selector, exps[0], astr + ' ' + vals[0]);
-                return Plotly.relayout(gd, astr, vals[1]);
-            })
-            .then(function() {
-                assertCnt(selector, exps[1], astr + ' ' + vals[1]);
-                return Plotly.relayout(gd, astr, vals[0]);
-            })
-            .then(function() {
-                assertCnt(selector, exps[0], astr + ' ' + vals[0]);
-            });
+            return function() {
+                return Plotly.relayout(gd, astr, vals[0]).then(function() {
+                    assertCnt(selector, exps[0], astr + ' ' + vals[0]);
+                    return Plotly.relayout(gd, astr, vals[1]);
+                })
+                .then(function() {
+                    assertCnt(selector, exps[1], astr + ' ' + vals[1]);
+                    return Plotly.relayout(gd, astr, vals[0]);
+                })
+                .then(function() {
+                    assertCnt(selector, exps[0], astr + ' ' + vals[0]);
+                });
+            };
         }
 
         Plotly.plot(gd, fig)
-        .then(function() {
-            return toggle(
-                '.aaxis > .ytick > text',
-                'ternary.aaxis.showticklabels',
-                [true, false], [4, 0]
-            );
-        })
-        .then(function() {
-            return toggle(
-                '.baxis > .xtick > text',
-                'ternary.baxis.showticklabels',
-                [true, false], [5, 0]
-            );
-        })
-        .then(function() {
-            return toggle(
-                '.caxis > .ytick > text',
-                'ternary.caxis.showticklabels',
-                [true, false], [4, 0]
-            );
-        })
-        .then(function() {
-            return toggle(
-                '.aaxis > path.ytick',
-                'ternary.aaxis.ticks',
-                ['outside', ''], [4, 0]
-            );
-        })
-        .then(function() {
-            return toggle(
-                '.baxis > path.xtick',
-                'ternary.baxis.ticks',
-                ['outside', ''], [5, 0]
-            );
-        })
-        .then(function() {
-            return toggle(
-                '.caxis > path.ytick',
-                'ternary.caxis.ticks',
-                ['outside', ''], [4, 0]
-            );
-        })
+        .then(toggle(
+            '.aaxis > .ytick > text', 'ternary.aaxis.showticklabels',
+            [true, false], [4, 0]
+        ))
+        .then(toggle(
+            '.baxis > .xtick > text', 'ternary.baxis.showticklabels',
+            [true, false], [5, 0]
+        ))
+        .then(toggle(
+            '.caxis > .ytick > text', 'ternary.caxis.showticklabels',
+            [true, false], [4, 0]
+        ))
+        .then(toggle(
+            '.aaxis > path.ytick', 'ternary.aaxis.ticks',
+            ['outside', ''], [4, 0]
+        ))
+        .then(toggle(
+            '.baxis > path.xtick', 'ternary.baxis.ticks',
+            ['outside', ''], [5, 0]
+        ))
+        .then(toggle(
+            '.caxis > path.ytick', 'ternary.caxis.ticks',
+            ['outside', ''], [4, 0]
+        ))
         .catch(failTest)
         .then(done);
     });
