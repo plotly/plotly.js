@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Lib = require('../lib');
+var isPlainObject = require('./is_plain_object');
 
 // IE9 fallbacks
 
@@ -41,7 +41,7 @@ function isArray1D(a) {
 }
 
 function isTypedArrayEncoding(a) {
-    return (Lib.isPlainObject(a) &&
+    return (isPlainObject(a) &&
         a.hasOwnProperty('dtype') && a.hasOwnProperty('value'));
 }
 
