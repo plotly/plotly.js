@@ -10,7 +10,7 @@
 
 var Registry = require('../../registry');
 
-function calculateAxisErrors(data, params, scaleFactor, axis, calendar) {
+function calculateAxisErrors(data, params, scaleFactor, axis) {
     if(!params || !params.visible) return null;
 
     var computeError = Registry.getComponentMethod('errorbars', 'makeComputeError')(params);
@@ -19,11 +19,18 @@ function calculateAxisErrors(data, params, scaleFactor, axis, calendar) {
     for(var i = 0; i < data.length; i++) {
         var errors = computeError(+data[i], i);
 
-        var point = axis.d2l(data[i], 0, calendar) * scaleFactor; // A bit wasteful
-        result[i] = [
-            (axis.d2l(data[i] - errors[0], 0, calendar) * scaleFactor) - point || -point,
-            (axis.d2l(data[i] + errors[1], 0, calendar) * scaleFactor) - point || -point
-        ];
+        if(axis.type === 'log') {
+            var point = axis.c2l(data[i]);
+            result[i] = [
+                (axis.c2l(data[i] - errors[0]) - point || -point) * scaleFactor,
+                (axis.c2l(data[i] + errors[1]) - point) * scaleFactor
+            ];
+        } else {
+            result[i] = [
+                -errors[0] * scaleFactor,
+                errors[1] * scaleFactor
+            ];
+        }
     }
 
     return result;
@@ -38,9 +45,9 @@ function dataLength(array) {
 
 function calculateErrors(data, scaleFactor, sceneLayout) {
     var errors = [
-        calculateAxisErrors(data.x, data.error_x, scaleFactor[0], sceneLayout.xaxis, data.xcalendar),
-        calculateAxisErrors(data.y, data.error_y, scaleFactor[1], sceneLayout.yaxis, data.ycalendar),
-        calculateAxisErrors(data.z, data.error_z, scaleFactor[2], sceneLayout.zaxis, data.zcalendar)
+        calculateAxisErrors(data.x, data.error_x, scaleFactor[0], sceneLayout.xaxis),
+        calculateAxisErrors(data.y, data.error_y, scaleFactor[1], sceneLayout.yaxis),
+        calculateAxisErrors(data.z, data.error_z, scaleFactor[2], sceneLayout.zaxis)
     ];
 
     var n = dataLength(errors);
