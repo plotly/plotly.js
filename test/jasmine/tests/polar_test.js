@@ -381,75 +381,62 @@ describe('Test relayout on polar subplots:', function() {
         }
 
         function toggle(astr, vals, exps, selector, fn) {
-            return Plotly.relayout(gd, astr, vals[0]).then(function() {
-                fn(selector, exps[0], astr + ' ' + vals[0]);
-                return Plotly.relayout(gd, astr, vals[1]);
-            })
-            .then(function() {
-                fn(selector, exps[1], astr + ' ' + vals[1]);
-                return Plotly.relayout(gd, astr, vals[0]);
-            })
-            .then(function() {
-                fn(selector, exps[0], astr + ' ' + vals[0]);
-            });
+            return function() {
+                return Plotly.relayout(gd, astr, vals[0]).then(function() {
+                    fn(selector, exps[0], astr + ' ' + vals[0]);
+                    return Plotly.relayout(gd, astr, vals[1]);
+                })
+                .then(function() {
+                    fn(selector, exps[1], astr + ' ' + vals[1]);
+                    return Plotly.relayout(gd, astr, vals[0]);
+                })
+                .then(function() {
+                    fn(selector, exps[0], astr + ' ' + vals[0]);
+                });
+            };
         }
 
-        Plotly.plot(gd, fig).then(function() {
-            return toggle(
-                'polar.radialaxis.showline',
-                [true, false], [null, 'none'],
-                '.radial-line > line', assertDisplay
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.radialaxis.showgrid',
-                [true, false], [null, 'none'],
-                '.radial-grid', assertDisplay
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.radialaxis.showticklabels',
-                [true, false], [6, 0],
-                '.radial-axis > .xtick > text', assertCnt
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.radialaxis.ticks',
-                ['outside', ''], [6, 0],
-                '.radial-axis > path.xtick', assertCnt
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.angularaxis.showline',
-                [true, false], [null, 'none'],
-                '.angular-line > path', assertDisplay
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.angularaxis.showgrid',
-                [true, false], [8, 0],
-                '.angular-grid > .angularaxis > path', assertCnt
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.angularaxis.showticklabels',
-                [true, false], [8, 0],
-                '.angular-axis > .angularaxistick > text', assertCnt
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.angularaxis.ticks',
-                ['outside', ''], [8, 0],
-                '.angular-axis > path.angularaxistick', assertCnt
-            );
-        })
+        Plotly.plot(gd, fig)
+        .then(toggle(
+            'polar.radialaxis.showline',
+            [true, false], [null, 'none'],
+            '.radial-line > line', assertDisplay
+        ))
+        .then(toggle(
+            'polar.radialaxis.showgrid',
+            [true, false], [null, 'none'],
+            '.radial-grid', assertDisplay
+        ))
+        .then(toggle(
+            'polar.radialaxis.showticklabels',
+            [true, false], [6, 0],
+            '.radial-axis > .xtick > text', assertCnt
+        ))
+        .then(toggle(
+            'polar.radialaxis.ticks',
+            ['outside', ''], [6, 0],
+            '.radial-axis > path.xtick', assertCnt
+        ))
+        .then(toggle(
+            'polar.angularaxis.showline',
+            [true, false], [null, 'none'],
+            '.angular-line > path', assertDisplay
+        ))
+        .then(toggle(
+            'polar.angularaxis.showgrid',
+            [true, false], [8, 0],
+            '.angular-grid > .angularaxis > path', assertCnt
+        ))
+        .then(toggle(
+            'polar.angularaxis.showticklabels',
+            [true, false], [8, 0],
+            '.angular-axis > .angularaxistick > text', assertCnt
+        ))
+        .then(toggle(
+            'polar.angularaxis.ticks',
+            ['outside', ''], [8, 0],
+            '.angular-axis > path.angularaxistick', assertCnt
+        ))
         .catch(failTest)
         .then(done);
     });

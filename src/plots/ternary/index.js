@@ -17,17 +17,29 @@ var TERNARY = 'ternary';
 
 exports.name = TERNARY;
 
-exports.attr = 'subplot';
+var attr = exports.attr = 'subplot';
 
 exports.idRoot = TERNARY;
 
 exports.idRegex = exports.attrRegex = counterRegex(TERNARY);
 
-exports.attributes = require('./layout/attributes');
+var attributes = exports.attributes = {};
+attributes[attr] = {
+    valType: 'subplotid',
+    role: 'info',
+    dflt: 'ternary',
+    editType: 'calc',
+    description: [
+        'Sets a reference between this trace\'s data coordinates and',
+        'a ternary subplot.',
+        'If *ternary* (the default value), the data refer to `layout.ternary`.',
+        'If *ternary2*, the data refer to `layout.ternary2`, and so on.'
+    ].join(' ')
+};
 
-exports.layoutAttributes = require('./layout/layout_attributes');
+exports.layoutAttributes = require('./layout_attributes');
 
-exports.supplyLayoutDefaults = require('./layout/defaults');
+exports.supplyLayoutDefaults = require('./layout_defaults');
 
 exports.plot = function plotTernary(gd) {
     var fullLayout = gd._fullLayout;
