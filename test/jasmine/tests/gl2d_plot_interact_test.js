@@ -218,14 +218,17 @@ describe('Test gl plot side effects', function() {
     it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
         var _mock = Lib.extendDeep({}, require('@mocks/gl2d_12.json'));
 
+        function _trigger(name) {
+            var ev = new window.WebGLContextEvent('webglcontextlost');
+            var canvas = gd.querySelector('.gl-canvas-' + name);
+            canvas.dispatchEvent(ev);
+        }
+
         Plotly.plot(gd, _mock).then(function() {
             return new Promise(function(resolve, reject) {
                 gd.once('plotly_webglcontextlost', resolve);
                 setTimeout(reject, 10);
-
-                var ev = new window.WebGLContextEvent('webglcontextlost');
-                var canvas = gd.querySelector('.gl-canvas-context');
-                canvas.dispatchEvent(ev);
+                _trigger('context');
             });
         })
         .then(function(eventData) {
@@ -236,15 +239,24 @@ describe('Test gl plot side effects', function() {
             return new Promise(function(resolve, reject) {
                 gd.once('plotly_webglcontextlost', resolve);
                 setTimeout(reject, 10);
-
-                var ev = new window.WebGLContextEvent('webglcontextlost');
-                var canvas = gd.querySelector('.gl-canvas-focus');
-                canvas.dispatchEvent(ev);
+                _trigger('focus');
             });
         })
         .then(function(eventData) {
             expect((eventData || {}).event).toBeDefined();
             expect((eventData || {}).layer).toBe('focusLayer');
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_webglcontextlost', reject);
+                setTimeout(resolve, 10);
+                _trigger('pick');
+            });
+        })
+        .then(function(eventData) {
+            // should add event listener on pick canvas which
+            // isn't used for scattergl traces
+            expect(eventData).toBeUndefined();
         })
         .catch(failTest)
         .then(done);
