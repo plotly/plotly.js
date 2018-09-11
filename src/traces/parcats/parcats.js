@@ -1380,11 +1380,11 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
             if(catInRightDim(d)) {
                 // Place label to the right of category
                 newX = d.width + 5;
-                newAnchor = 'start'
+                newAnchor = 'start';
             } else {
                 // Place label to the left of category
                 newX = -5;
-                newAnchor = 'end'
+                newAnchor = 'end';
             }
             d3.select(this)
                 .selectAll('tspan')
