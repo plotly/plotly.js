@@ -35,30 +35,16 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
 
-    var bartraces = barLayer.selectAll('g.trace.bars')
-        .data(cdbar, function(d) { return d[0].trace.uid; });
-
-    bartraces.enter().append('g')
-        .attr('class', 'trace bars')
-        .append('g')
-        .attr('class', 'points');
-
-    bartraces.exit().remove();
-
-    bartraces.order();
-
-    bartraces.each(function(d) {
-        var cd0 = d[0];
-        var t = cd0.t;
+    var bartraces = Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
         var trace = cd0.trace;
-        var sel = d3.select(this);
 
-        if(!plotinfo.isRangePlot) cd0.node3 = sel;
+        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
-        var poffset = t.poffset;
-        var poffsetIsArray = Array.isArray(poffset);
+        var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
-        var bars = sel.select('g.points').selectAll('g.point').data(Lib.identity);
+        var bars = pointGroup.selectAll('g.point').data(Lib.identity);
 
         bars.enter().append('g')
             .classed('point', true);
@@ -72,26 +58,21 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
             // clipped xf/yf (2nd arg true): non-positive
             // log values go off-screen by plotwidth
             // so you see them continue if you drag the plot
-            var p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset),
-                p1 = p0 + di.w,
-                s0 = di.b,
-                s1 = s0 + di.s;
-
             var x0, x1, y0, y1;
             if(trace.orientation === 'h') {
-                y0 = ya.c2p(p0, true);
-                y1 = ya.c2p(p1, true);
-                x0 = xa.c2p(s0, true);
-                x1 = xa.c2p(s1, true);
+                y0 = ya.c2p(di.p0, true);
+                y1 = ya.c2p(di.p1, true);
+                x0 = xa.c2p(di.s0, true);
+                x1 = xa.c2p(di.s1, true);
 
                 // for selections
                 di.ct = [x1, (y0 + y1) / 2];
             }
             else {
-                x0 = xa.c2p(p0, true);
-                x1 = xa.c2p(p1, true);
-                y0 = ya.c2p(s0, true);
-                y1 = ya.c2p(s1, true);
+                x0 = xa.c2p(di.p0, true);
+                x1 = xa.c2p(di.p1, true);
+                y0 = ya.c2p(di.s0, true);
+                y1 = ya.c2p(di.s1, true);
 
                 // for selections
                 di.ct = [(x0 + x1) / 2, y1];
@@ -147,17 +128,17 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                     'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId);
 
-            appendBarText(gd, bar, d, i, x0, x1, y0, y1);
+            appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
 
             if(plotinfo.layerClipId) {
-                Drawing.hideOutsideRangePoint(d[i], bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
+                Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
             }
         });
 
         // lastly, clip points groups of `cliponaxis !== false` traces
         // on `plotinfo._hasClipOnAxisFalse === true` subplots
-        var hasClipOnAxisFalse = d[0].trace.cliponaxis === false;
-        Drawing.setClipUrl(sel, hasClipOnAxisFalse ? null : plotinfo.layerClipId);
+        var hasClipOnAxisFalse = cd0.trace.cliponaxis === false;
+        Drawing.setClipUrl(plotGroup, hasClipOnAxisFalse ? null : plotinfo.layerClipId);
     });
 
     // error bars are on the top

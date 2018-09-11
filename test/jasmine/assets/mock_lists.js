@@ -23,6 +23,7 @@ var svgMockList = [
     ['layout-colorway', require('@mocks/layout-colorway.json')],
     ['polar_categories', require('@mocks/polar_categories.json')],
     ['polar_direction', require('@mocks/polar_direction.json')],
+    ['polar_wind-rose', require('@mocks/polar_wind-rose.json')],
     ['range_selector_style', require('@mocks/range_selector_style.json')],
     ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
     ['sankey_energy', require('@mocks/sankey_energy.json')],

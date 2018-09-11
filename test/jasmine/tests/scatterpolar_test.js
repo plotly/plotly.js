@@ -4,7 +4,7 @@ var ScatterPolar = require('@src/traces/scatterpolar');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 
 var customAssertions = require('../assets/custom_assertions');
@@ -150,10 +150,18 @@ describe('Test scatterpolar hover:', function() {
         pos: [465, 90],
         nums: 'r: 4\nθ: d',
         name: 'angular cate...'
+    }, {
+        desc: 'on a subplot with hole>0',
+        patch: function(fig) {
+            fig.layout.polar.hole = 0.2;
+            return fig;
+        },
+        nums: 'r: 1.108937\nθ: 115.4969°',
+        name: 'Trial 3'
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(fail).then(done);
+            run(specs).catch(failTest).then(done);
         });
     });
 });

@@ -99,7 +99,8 @@ module.exports = {
             'If *tozero*`, the range extends to 0,',
             'regardless of the input data',
             'If *nonnegative*, the range is non-negative,',
-            'regardless of the input data.'
+            'regardless of the input data.',
+            'Applies only to linear axes.'
         ].join(' ')
     },
     range: {
@@ -573,7 +574,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         role: 'style',
-        editType: 'layoutstyle',
+        editType: 'ticks+layoutstyle',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
         ].join(' ')

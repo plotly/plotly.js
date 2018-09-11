@@ -167,7 +167,7 @@ function makePlot(gd, mock, done) {
         .then(done);
 }
 
-describe('@gl contourgl plots', function() {
+describe('contourgl plots', function() {
 
     var gd;
 
@@ -182,11 +182,11 @@ describe('@gl contourgl plots', function() {
 
     // this first dataset is a special case, very forgiving to the contour renderer, as it's convex,
     // contains no inflexion points etc.
-    it('render without raising an error', function(done) {
+    it('@gl render without raising an error', function(done) {
         makePlot(gd, plotData, done);
     });
 
-    it('render without raising an error', function(done) {
+    it('@gl render without raising an error', function(done) {
         var mock = require('@mocks/simple_contour.json'),
             mockCopy = Lib.extendDeep({}, mock);
 

@@ -25,6 +25,7 @@ var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select').prepSelect;
+var selectOnClick = require('../cartesian/select').selectOnClick;
 var clearSelect = require('../cartesian/select').clearSelect;
 var constants = require('../cartesian/constants');
 
@@ -452,6 +453,7 @@ proto.initInteractions = function() {
         element: dragger,
         gd: gd,
         plotinfo: {
+            id: _this.id,
             xaxis: _this.xaxis,
             yaxis: _this.yaxis
         },
@@ -462,21 +464,19 @@ proto.initInteractions = function() {
             dragOptions.xaxes = [_this.xaxis];
             dragOptions.yaxes = [_this.yaxis];
             var dragModeNow = gd._fullLayout.dragmode;
-            if(e.shiftKey) {
-                if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                else dragModeNow = 'pan';
-            }
 
             if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
             else dragOptions.minDrag = undefined;
 
             if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
+                dragOptions.clickFn = clickZoomPan;
                 dragOptions.doneFn = zoomDone;
                 zoomPrep(e, startX, startY);
             }
             else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
+                dragOptions.clickFn = clickZoomPan;
                 dragOptions.doneFn = dragDone;
                 panPrep();
                 clearSelect(zoomContainer);
@@ -484,23 +484,33 @@ proto.initInteractions = function() {
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
-        },
-        clickFn: function(numClicks, evt) {
-            removeZoombox(gd);
-
-            if(numClicks === 2) {
-                var attrs = {};
-                attrs[_this.id + '.aaxis.min'] = 0;
-                attrs[_this.id + '.baxis.min'] = 0;
-                attrs[_this.id + '.caxis.min'] = 0;
-                gd.emit('plotly_doubleclick', null);
-                Registry.call('relayout', gd, attrs);
-            }
-            Fx.click(gd, evt, _this.id);
         }
     };
 
     var x0, y0, mins0, span0, mins, lum, path0, dimmed, zb, corners;
+
+    function clickZoomPan(numClicks, evt) {
+        var clickMode = gd._fullLayout.clickmode;
+
+        removeZoombox(gd);
+
+        if(numClicks === 2) {
+            var attrs = {};
+            attrs[_this.id + '.aaxis.min'] = 0;
+            attrs[_this.id + '.baxis.min'] = 0;
+            attrs[_this.id + '.caxis.min'] = 0;
+            gd.emit('plotly_doubleclick', null);
+            Registry.call('relayout', gd, attrs);
+        }
+
+        if(clickMode.indexOf('select') > -1 && numClicks === 1) {
+            selectOnClick(evt, gd, [_this.xaxis], [_this.yaxis], _this.id, dragOptions);
+        }
+
+        if(clickMode.indexOf('event') > -1) {
+            Fx.click(gd, evt, _this.id);
+        }
+    }
 
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();

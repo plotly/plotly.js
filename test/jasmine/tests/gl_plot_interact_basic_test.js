@@ -55,7 +55,7 @@ function testEvents(plot) {
     });
 }
 
-describe('@gl gl3d plots', function() {
+describe('gl3d plots', function() {
 
     var gd;
 
@@ -68,13 +68,13 @@ describe('@gl gl3d plots', function() {
         destroyGraphDiv();
     });
 
-    it('should respond to drag interactions with mock of unset camera', function(done) {
+    it('@gl should respond to drag interactions with mock of unset camera', function(done) {
         testEvents(makePlot(gd, require('@mocks/gl3d_scatter3d-connectgaps.json')))
             .catch(failTest)
             .then(done);
     });
 
-    it('should respond to drag interactions with mock of partially set camera', function(done) {
+    it('@gl should respond to drag interactions with mock of partially set camera', function(done) {
         testEvents(makePlot(gd, require('@mocks/gl3d_errorbars_zx.json')))
             .catch(failTest)
             .then(done);

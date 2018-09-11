@@ -35,7 +35,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         var lonlat = d.lonlat;
         if(lonlat[0] === BADNUM) return Infinity;
 
-        var lon = Lib.wrap180(lonlat[0]);
+        var lon = Lib.modHalf(lonlat[0], 360);
         var lat = lonlat[1];
         var pt = subplot.project([lon, lat]);
         var dx = pt.x - xa.c2p([xval2, lat]);
@@ -52,7 +52,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     var di = cd[pointData.index];
     var lonlat = di.lonlat;
-    var lonlatShifted = [Lib.wrap180(lonlat[0]) + lonShift, lonlat[1]];
+    var lonlatShifted = [Lib.modHalf(lonlat[0], 360) + lonShift, lonlat[1]];
 
     // shift labels back to original winded globe
     var xc = xa.c2p(lonlatShifted);

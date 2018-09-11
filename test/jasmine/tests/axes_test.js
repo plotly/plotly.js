@@ -403,6 +403,24 @@ describe('Test axes', function() {
             });
         });
 
+        it('only allows rangemode with linear axes', function() {
+            layoutIn = {
+                xaxis: {type: 'log', rangemode: 'tozero'},
+                yaxis: {type: 'date', rangemode: 'tozero'},
+                xaxis2: {type: 'category', rangemode: 'tozero'},
+                yaxis2: {type: 'linear', rangemode: 'tozero'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2');
+            layoutOut._subplots.yaxis.push('x2', 'y2');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.rangemode).toBeUndefined();
+            expect(layoutOut.yaxis.rangemode).toBeUndefined();
+            expect(layoutOut.xaxis2.rangemode).toBeUndefined();
+            expect(layoutOut.yaxis2.rangemode).toBe('tozero');
+        });
+
         it('finds scaling groups and calculates relative scales', function() {
             layoutIn = {
                 // first group: linked in series, scales compound
@@ -1558,7 +1576,7 @@ describe('Test axes', function() {
             expect(getAutoRange(gd, ax)).toEqual([7.5, 0]);
         });
 
-        it('expands empty positive range to something including 0 with rangemode tozero', function() {
+        it('expands empty positive range to include 0 with rangemode tozero', function() {
             gd = mockGd([
                 {val: 5, pad: 0}
             ], [
@@ -1567,7 +1585,7 @@ describe('Test axes', function() {
             ax = mockAx();
             ax.rangemode = 'tozero';
 
-            expect(getAutoRange(gd, ax)).toEqual([0, 6]);
+            expect(getAutoRange(gd, ax)).toEqual([0, 5]);
         });
 
         it('expands empty negative range to something including 0 with rangemode tozero', function() {
@@ -1579,7 +1597,63 @@ describe('Test axes', function() {
             ax = mockAx();
             ax.rangemode = 'tozero';
 
-            expect(getAutoRange(gd, ax)).toEqual([-6, 0]);
+            expect(getAutoRange(gd, ax)).toEqual([-5, 0]);
+        });
+
+        it('pads an empty range, but not past center, with rangemode tozero', function() {
+            gd = mockGd([
+                {val: 5, pad: 50} // this min pad gets ignored
+            ], [
+                {val: 5, pad: 20}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
+
+            expect(getAutoRange(gd, ax)).toBeCloseToArray([0, 6.25], 0.01);
+
+            gd = mockGd([
+                {val: -5, pad: 80}
+            ], [
+                {val: -5, pad: 0}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
+
+            expect(getAutoRange(gd, ax)).toBeCloseToArray([-10, 0], 0.01);
+        });
+
+        it('shows the data even if it cannot show the padding', function() {
+            gd = mockGd([
+                {val: 0, pad: 44}
+            ], [
+                {val: 1, pad: 44}
+            ]);
+            ax = mockAx();
+
+            // this one is *just* on the allowed side of padding
+            // ie data span is just over 10% of the axis
+            expect(getAutoRange(gd, ax)).toBeCloseToArray([-3.67, 4.67]);
+
+            gd = mockGd([
+                {val: 0, pad: 46}
+            ], [
+                {val: 1, pad: 46}
+            ]);
+            ax = mockAx();
+
+            // this one the padded data span would be too small, so we delete
+            // the padding
+            expect(getAutoRange(gd, ax)).toEqual([0, 1]);
+
+            gd = mockGd([
+                {val: 0, pad: 400}
+            ], [
+                {val: 1, pad: 0}
+            ]);
+            ax = mockAx();
+
+            // this one the padding is simply impossible to accept!
+            expect(getAutoRange(gd, ax)).toEqual([0, 1]);
         });
 
         it('never returns a negative range when rangemode nonnegative is set with positive and negative points', function() {
@@ -1614,16 +1688,42 @@ describe('Test axes', function() {
             expect(getAutoRange(gd, ax)).toEqual([0, 1]);
         });
 
-        it('expands empty range to something nonnegative with rangemode nonnegative', function() {
+        it('never returns a negative range when rangemode nonnegative is set with only nonpositive points', function() {
             gd = mockGd([
-                {val: -5, pad: 0}
+                {val: -10, pad: 20},
+                {val: -8, pad: 0},
+                {val: -9, pad: 10}
             ], [
-                {val: -5, pad: 0}
+                {val: -5, pad: 20},
+                {val: 0, pad: 0},
+                {val: -6, pad: 10}
             ]);
             ax = mockAx();
             ax.rangemode = 'nonnegative';
 
             expect(getAutoRange(gd, ax)).toEqual([0, 1]);
+        });
+
+        it('expands empty range to something nonnegative with rangemode nonnegative', function() {
+            [
+                [-5, [0, 1]],
+                [0, [0, 1]],
+                [0.5, [0, 1.5]],
+                [1, [0, 2]],
+                [5, [4, 6]]
+            ].forEach(function(testCase) {
+                var val = testCase[0];
+                var expected = testCase[1];
+                gd = mockGd([
+                    {val: val, pad: 0}
+                ], [
+                    {val: val, pad: 0}
+                ]);
+                ax = mockAx();
+                ax.rangemode = 'nonnegative';
+
+                expect(getAutoRange(gd, ax)).toEqual(expected, val);
+            });
         });
     });
 
@@ -1941,6 +2041,35 @@ describe('Test axes', function() {
             ]);
         });
 
+        it('supports e/E format on log axes', function() {
+            ['e', 'E'].forEach(function(e) {
+                var textOut = mockCalc({
+                    type: 'log',
+                    tickmode: 'linear',
+                    exponentformat: e,
+                    showexponent: 'all',
+                    tick0: 0,
+                    dtick: 'D2',
+                    range: [-4.1, 4.1]
+                });
+
+                var oep = '1' + e + '+';
+                var oem = '1' + e + '\u2212';
+
+                expect(textOut).toEqual([
+                    oem + '4', '2', '5',
+                    oem + '3', '2', '5',
+                    '0.01', '2', '5',
+                    '0.1', '2', '5',
+                    '1', '2', '5',
+                    '10', '2', '5',
+                    '100', '2', '5',
+                    oep + '3', '2', '5',
+                    oep + '4'
+                ]);
+            });
+        });
+
         it('provides a new date suffix whenever the suffix changes', function() {
             var ax = {
                 type: 'date',
@@ -2054,6 +2183,33 @@ describe('Test axes', function() {
                 '00:00:00.0079',
                 '00:00:00.0091'
             ];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('never gives date dtick < 100 microseconds (autotick case)', function() {
+            var ax = {
+                type: 'date',
+                tickmode: 'auto',
+                nticks: '100',
+                range: ['2017-02-08 05:21:18.145', '2017-02-08 05:21:18.1451']
+            };
+
+            var textOut = mockCalc(ax);
+            var expectedText = ['05:21:18.145<br>Feb 8, 2017', '05:21:18.1451'];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('never gives date dtick < 100 microseconds (explicit tick case)', function() {
+            var ax = {
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 0.01,
+                range: ['2017-02-08 05:21:18.145', '2017-02-08 05:21:18.1451']
+            };
+
+            var textOut = mockCalc(ax);
+            var expectedText = ['05:21:18.145<br>Feb 8, 2017', '05:21:18.1451'];
             expect(textOut).toEqual(expectedText);
         });
 
@@ -2725,6 +2881,148 @@ describe('Test axes', function() {
             .catch(failTest)
             .then(done);
 
+        });
+    });
+
+    describe('zeroline visibility logic', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        function assertZeroLines(expectedIDs) {
+            var sortedIDs = expectedIDs.slice().sort();
+            var zlIDs = [];
+            d3.select(gd).selectAll('.zl').each(function() {
+                var cls = d3.select(this).attr('class');
+                var clsMatch = cls.match(/[xy]\d*(?=zl)/g)[0];
+                zlIDs.push(clsMatch);
+            });
+            zlIDs.sort();
+            expect(zlIDs).toEqual(sortedIDs);
+        }
+
+        it('works with a single subplot', function(done) {
+            Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}], {
+                xaxis: {range: [0, 4], showzeroline: true, showline: true},
+                yaxis: {range: [0, 4], showzeroline: true, showline: true},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.showline': false});
+            })
+            .then(function() {
+                assertZeroLines(['y']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': false});
+            })
+            .then(function() {
+                assertZeroLines(['x']);
+                return Plotly.relayout(gd, {'yaxis.showline': true, 'yaxis.range': [4, 0]});
+            })
+            .then(function() {
+                assertZeroLines(['y']);
+                return Plotly.relayout(gd, {'xaxis.range': [4, 0], 'xaxis.side': 'top'});
+            })
+            .then(function() {
+                assertZeroLines(['x']);
+                return Plotly.relayout(gd, {'yaxis.side': 'right', 'xaxis.anchor': 'free', 'xaxis.position': 1});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.range': [0, 4], 'yaxis.range': [0, 4]});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y']);
+                return Plotly.relayout(gd, {'xaxis.mirror': 'all', 'yaxis.mirror': true});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.range': [-0.1, 4], 'yaxis.range': [-0.1, 4]});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('works with multiple coupled subplots', function(done) {
+            Plotly.newPlot(gd, [
+                {x: [1, 2, 3], y: [1, 2, 3]},
+                {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2'},
+                {x: [1, 2, 3], y: [1, 2, 3], yaxis: 'y2'}
+            ], {
+                xaxis: {range: [0, 4], showzeroline: true, domain: [0, 0.4]},
+                yaxis: {range: [0, 4], showzeroline: true, domain: [0, 0.4]},
+                xaxis2: {range: [0, 4], showzeroline: true, domain: [0.6, 1]},
+                yaxis2: {range: [0, 4], showzeroline: true, domain: [0.6, 1]},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines(['x', 'x', 'y', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'xaxis.mirror': 'all'});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'x', 'y', 'x2']);
+                return Plotly.relayout(gd, {'yaxis.showline': true, 'yaxis.mirror': 'all'});
+            })
+            .then(function() {
+                // x axis still has a zero line on xy2, and y on x2y
+                // all the others have disappeared now
+                assertZeroLines(['x', 'y']);
+                return Plotly.relayout(gd, {'xaxis.mirror': 'allticks', 'yaxis.mirror': 'allticks'});
+            })
+            .then(function() {
+                // allticks works the same as all
+                assertZeroLines(['x', 'y']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('works with multiple overlaid subplots', function(done) {
+            Plotly.newPlot(gd, [
+                {x: [1, 2, 3], y: [1, 2, 3]},
+                {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
+            ], {
+                xaxis: {range: [0, 4], showzeroline: true},
+                yaxis: {range: [0, 4], showzeroline: true},
+                xaxis2: {range: [0, 4], showzeroline: true, side: 'top', overlaying: 'x'},
+                yaxis2: {range: [0, 4], showzeroline: true, side: 'right', overlaying: 'y'},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': true});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {
+                    'xaxis.range': [4, 0],
+                    'yaxis.range': [4, 0],
+                    'xaxis2.range': [4, 0],
+                    'yaxis2.range': [4, 0]
+                });
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {
+                    'xaxis.showline': false,
+                    'yaxis.showline': false,
+                    'xaxis2.showline': true,
+                    'yaxis2.showline': true
+                });
+            })
+            .then(function() {
+                assertZeroLines([]);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });

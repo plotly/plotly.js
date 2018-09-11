@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function selectPoints(searchInfo, polygon) {
+module.exports = function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
@@ -17,7 +17,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // for (potentially grouped) candlesticks
     var posOffset = cd[0].t.bPos || 0;
 
-    if(polygon === false) {
+    if(selectionTester === false) {
         // clear selection
         for(i = 0; i < cd.length; i++) {
             cd[i].selected = 0;
@@ -26,7 +26,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
         for(i = 0; i < cd.length; i++) {
             var di = cd[i];
 
-            if(polygon.contains([xa.c2p(di.pos + posOffset), ya.c2p(di.yc)])) {
+            if(selectionTester.contains([xa.c2p(di.pos + posOffset), ya.c2p(di.yc)], null, di.i, searchInfo)) {
                 selection.push({
                     pointNumber: di.i,
                     x: xa.c2d(di.pos),

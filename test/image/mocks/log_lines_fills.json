@@ -1,0 +1,33 @@
+{
+    "data": [{
+        "x": [-1, 1.5, 2, 0, 1, 3, 4, 5, 6, 1, -1, -1, 3, 3, 0, 7, 7, -1, -1],
+        "y": [-1, 1.5, 1, -1, -1, 1, 1, 0, 2, 2, 0, 2, 3, 4, 5, 6, -2, -2, -1],
+        "mode": "markers+lines", "fill": "toself"
+    }, {
+        "x": [-1, 1.5, 2, 0, 1, 3, 4, 5, 6, 1, -1, -1, 3, 3, 0, 7, 7, -1, -1],
+        "y": [-1, 1.5, 1, -1, -1, 1, 1, 0, 2, 2, 0, 2, 3, 4, 5, 6, -2, -2, -1],
+        "mode": "markers+lines", "fill": "toself", "xaxis": "x2"
+    }, {
+        "x": [-1, 1.5, 2, 0, 1, 3, 4, 5, 6, 1, -1, -1, 3, 3, 0, 7, 7, -1, -1],
+        "y": [-1, 1.5, 1, -1, -1, 1, 1, 0, 2, 2, 0, 2, 3, 4, 5, 6, -2, -2, -1],
+        "mode": "markers+lines", "fill": "toself", "yaxis": "y2"
+    }, {
+        "x": [-1, 1.5, 2, 0, 1, 3, 4, 5, 6, 1, -1, -1, 3, 3, 0, 7, 7, -1, -1],
+        "y": [-1, 1.5, 1, -1, -1, 1, 1, 0, 2, 2, 0, 2, 3, 4, 5, 6, -2, -2, -1],
+        "mode": "markers+lines", "fill": "toself", "xaxis": "x2", "yaxis": "y2"
+    }, {
+        "x": [0.01, 0.1], "y": [0.01, 0.1],
+        "mode": "markers", "xaxis": "x2", "yaxis": "y2"
+    }],
+    "layout": {
+        "width": 800,
+        "height": 600,
+        "xaxis": {"title": "linear"},
+        "xaxis2": {"title": "log", "type": "log"},
+        "yaxis": {"title": "linear"},
+        "yaxis2": {"title": "log", "type": "log"},
+        "grid": {"columns": 2, "rows": 2},
+        "showlegend": false,
+        "title": "<b>Lines to invalid log values</b><br>4 copies of the same self-filled trace, on all combinations of log & linear axes<br>Purple points should lie exactly on an off-to-infinity log-log line to verify that its slope is 1"
+    }
+}

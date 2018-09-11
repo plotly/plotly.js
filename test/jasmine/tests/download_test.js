@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var textchartMock = require('@mocks/text_chart_arrays.json');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 var Lib = require('@src/lib');
 
@@ -61,6 +61,24 @@ describe('Plotly.downloadImage', function() {
         downloadTest(gd, 'svg', done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('should work when passing graph div id', function(done) {
+        downloadTest('graph', 'svg', done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should work when passing a figure object', function(done) {
+        var fig = {
+            data: [{y: [1, 2, 1]}]
+        };
+        Plotly.downloadImage(fig)
+        .then(function() {
+            expect(document.createElement).toHaveBeenCalledWith('canvas');
+            expect(gd._snapshotInProgress)
+                .toBe(undefined, 'should not attach _snapshotInProgress to figure objects');
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('should produce the right SVG output in IE', function(done) {
         // mock up IE behavior
         spyOn(Lib, 'isIE').and.callFake(function() { return true; });
@@ -106,7 +124,7 @@ describe('Plotly.downloadImage', function() {
                 reader.readAsText(savedBlob);
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 });
@@ -127,7 +145,7 @@ function downloadTest(gd, format, done) {
         });
     });
 
-    Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function(gd) {
+    Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function(_gd) {
         // start observing dom
         // configuration of the observer:
         var config = { childList: true };
@@ -135,8 +153,18 @@ function downloadTest(gd, format, done) {
         // pass in the target node and observer options
         observer.observe(target, config);
 
-        return Plotly.downloadImage(gd, {format: format, height: 300, width: 300, filename: 'plotly_download'});
-    }).then(function(filename) {
+        var promise = Plotly.downloadImage(gd, {
+            format: format,
+            height: 300,
+            width: 300,
+            filename: 'plotly_download'
+        });
+
+        expect(_gd._snapshotInProgress).toBe(true, 'should attach _snapshotInProgress to graph divs');
+
+        return promise;
+    })
+    .then(function(filename) {
         // stop observing
         observer.disconnect();
         // look for an added and removed link
@@ -150,10 +178,10 @@ function downloadTest(gd, format, done) {
 
         // check that link removed
         expect(linkadded).toBe(linkdeleted);
-        done();
-    });
+    })
+    .catch(failTest)
+    .then(done);
 }
-
 
 // Only chrome supports webp at the time of writing
 function checkWebp(cb) {

@@ -4,7 +4,7 @@ var Drawing = require('@src/components/drawing');
 var svgTextUtils = require('@src/lib/svg_text_utils');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 describe('Drawing', function() {
     'use strict';
@@ -422,7 +422,7 @@ describe('Drawing', function() {
                     bottom: 4
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -546,7 +546,7 @@ describe('gradients', function() {
             // full replot and no resulting markers at all -> no gradients
             checkGradientIds([], [], [], []);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

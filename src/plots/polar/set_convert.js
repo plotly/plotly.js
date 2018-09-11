@@ -13,7 +13,6 @@ var setConvertCartesian = require('../cartesian/set_convert');
 
 var deg2rad = Lib.deg2rad;
 var rad2deg = Lib.rad2deg;
-var isFullCircle = Lib.isFullCircle;
 
 /**
  * setConvert for polar axes!
@@ -35,7 +34,7 @@ var isFullCircle = Lib.isFullCircle;
  *
  * Radial axis coordinate systems:
  * - d, c and l: same as for cartesian axes
- * - g: like calcdata but translated about `radialaxis.range[0]`
+ * - g: like calcdata but translated about `radialaxis.range[0]` & `polar.hole`
  *
  * Angular axis coordinate systems:
  * - d: data, in whatever form it's provided
@@ -53,7 +52,7 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
     switch(ax._id) {
         case 'x':
         case 'radialaxis':
-            setConvertRadial(ax);
+            setConvertRadial(ax, polarLayout);
             break;
         case 'angularaxis':
             setConvertAngular(ax, polarLayout);
@@ -61,22 +60,32 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
     }
 };
 
-function setConvertRadial(ax) {
-    ax.setGeometry = function() {
-        var rng = ax.range;
+function setConvertRadial(ax, polarLayout) {
+    var subplot = polarLayout._subplot;
 
-        var rFilter = rng[0] > rng[1] ?
+    ax.setGeometry = function() {
+        var rl0 = ax._rl[0];
+        var rl1 = ax._rl[1];
+
+        var b = subplot.innerRadius;
+        var m = (subplot.radius - b) / (rl1 - rl0);
+        var b2 = b / m;
+
+        var rFilter = rl0 > rl1 ?
             function(v) { return v <= 0; } :
             function(v) { return v >= 0; };
 
         ax.c2g = function(v) {
-            var r = ax.c2r(v) - rng[0];
-            return rFilter(r) ? r : 0;
+            var r = ax.c2l(v) - rl0;
+            return (rFilter(r) ? r : 0) + b2;
         };
 
         ax.g2c = function(v) {
-            return ax.r2c(v + rng[0]);
+            return ax.l2c(v + rl0 - b2);
         };
+
+        ax.g2p = function(v) { return v * m; };
+        ax.c2p = function(v) { return ax.g2p(ax.c2g(v)); };
     };
 }
 
@@ -138,6 +147,7 @@ function setConvertAngular(ax, polarLayout) {
     // N.B. we mock the axis 'range' here
     ax.setGeometry = function() {
         var sector = polarLayout.sector;
+        var sectorInRad = sector.map(deg2rad);
         var dir = {clockwise: -1, counterclockwise: 1}[ax.direction];
         var rot = deg2rad(ax.rotation);
 
@@ -155,9 +165,9 @@ function setConvertAngular(ax, polarLayout) {
 
                 // Set the angular range in degrees to make auto-tick computation cleaner,
                 // changing rotation/direction should not affect the angular tick value.
-                ax.range = isFullCircle(sector) ?
+                ax.range = Lib.isFullCircle(sectorInRad) ?
                     sector.slice() :
-                    sector.map(deg2rad).map(g2rad).map(rad2deg);
+                    sectorInRad.map(g2rad).map(rad2deg);
                 break;
 
             case 'category':

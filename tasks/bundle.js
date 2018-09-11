@@ -50,7 +50,6 @@ tasks.push(function(cb) {
     _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
         standalone: 'Plotly',
         debug: DEV,
-        compressAttrs: true,
         pathToMinBundle: constants.pathToPlotlyDistMin
     }, cb);
 });
@@ -62,11 +61,12 @@ tasks.push(function(cb) {
     }, cb);
 });
 
-// Browserify the plotly.js with meta
+// Browserify plotly.js with meta and output plot-schema JSON
 tasks.push(function(cb) {
     _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
         standalone: 'Plotly',
         debug: DEV,
+        noCompress: true
     }, function() {
         makeSchema(constants.pathToPlotlyDistWithMeta, constants.pathToSchema)();
         cb();
@@ -79,7 +79,6 @@ constants.partialBundlePaths.forEach(function(pathObj) {
         _bundle(pathObj.index, pathObj.dist, {
             standalone: 'Plotly',
             debug: DEV,
-            compressAttrs: true,
             pathToMinBundle: pathObj.distMin
         }, cb);
     });

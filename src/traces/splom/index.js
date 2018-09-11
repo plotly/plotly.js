@@ -229,7 +229,9 @@ function plotOne(gd, cd0) {
         scene.matrix = createMatrix(regl);
     }
 
-    var selectMode = dragmode === 'lasso' || dragmode === 'select' || !!trace.selectedpoints;
+    var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
+    var selectMode = dragmode === 'lasso' || dragmode === 'select' ||
+      !!trace.selectedpoints || clickSelectEnabled;
     scene.selectBatch = null;
     scene.unselectBatch = null;
 
@@ -346,7 +348,7 @@ function hoverPoints(pointData, xval, yval) {
     return [pointData];
 }
 
-function selectPoints(searchInfo, polygon) {
+function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var trace = cd[0].trace;
     var stash = cd[0].t;
@@ -375,10 +377,10 @@ function selectPoints(searchInfo, polygon) {
     // filter out points by visible scatter ones
     var els = null;
     var unels = null;
-    if(polygon !== false && !polygon.degenerate) {
+    if(selectionTester !== false && !selectionTester.degenerate) {
         els = [], unels = [];
         for(i = 0; i < x.length; i++) {
-            if(polygon.contains([xpx[i], ypx[i]])) {
+            if(selectionTester.contains([xpx[i], ypx[i]], null, i, searchInfo)) {
                 els.push(i);
                 selection.push({
                     pointNumber: i,

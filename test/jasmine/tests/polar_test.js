@@ -236,19 +236,19 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'radial-axis', 'radial-line',
+                'radial-line', 'radial-axis',
                 'frontplot',
-                'angular-axis', 'angular-line'
+                'angular-line', 'angular-axis'
             ]);
             return Plotly.relayout(gd, 'polar.angularaxis.layer', 'below traces');
         })
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'angular-axis',
-                'radial-axis',
                 'angular-line',
                 'radial-line',
+                'angular-axis',
+                'radial-axis',
                 'frontplot'
             ]);
             return Plotly.relayout(gd, 'polar.radialaxis.layer', 'above traces');
@@ -256,9 +256,9 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'angular-axis', 'angular-line',
+                'angular-line', 'angular-axis',
                 'frontplot',
-                'radial-axis', 'radial-line'
+                'radial-line', 'radial-axis'
             ]);
             return Plotly.relayout(gd, 'polar.angularaxis.layer', null);
         })
@@ -924,6 +924,13 @@ describe('Test polar interactions:', function() {
             expect(eventCnts.plotly_relayout)
                 .toBe(relayoutNumber, 'no new relayout events after *not far enough* cases');
         })
+        .then(_reset)
+        .then(function() { return Plotly.relayout(gd, 'polar.hole', 0.2); })
+        .then(function() { relayoutNumber++; })
+        .then(function() { return _drag([mid[0] + 30, mid[0] - 30], [50, -50]); })
+        .then(function() {
+            _assertDrag([1.15, 7.70], 'with polar.hole>0, from quadrant #1 move top-right');
+        })
         .catch(failTest)
         .then(done);
     });
@@ -1012,6 +1019,45 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
+    it('should response to drag interactions on inner radial drag area', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        fig.layout.polar.hole = 0.2;
+        // to avoid dragging on hover labels
+        fig.layout.hovermode = false;
+        // adjust margins so that middle of plot area is at 300x300
+        // with its middle at [200,200]
+        fig.layout.width = 400;
+        fig.layout.height = 400;
+        fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+        var dragPos0 = [200, 200];
+
+        // use 'special' drag method - as we need two mousemove events
+        // to activate the radial drag mode
+        function _drag(p0, dp) {
+            var node = d3.select('.polar > .draglayer > .radialdrag-inner').node();
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+        }
+
+        function _assert(rng, msg) {
+            expect(gd._fullLayout.polar.radialaxis.range)
+                .toBeCloseToArray(rng, 1, msg + ' - range');
+        }
+
+        _plot(fig)
+        .then(function() { return _drag(dragPos0, [-50, 0]); })
+        .then(function() {
+            _assert([3.55, 11.36], 'move inward');
+        })
+        .then(function() { return Plotly.relayout(gd, 'polar.radialaxis.autorange', true); })
+        .then(function() { return _drag(dragPos0, [50, 0]); })
+        .then(function() {
+            _assert([-3.55, 11.36], 'move outward');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should response to drag interactions on angular drag area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
@@ -1077,7 +1123,7 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
-    describe('@gl should update scene during drag interactions on radial and angular drag area', function() {
+    describe('should update scene during drag interactions on radial and angular drag area', function() {
         var objs = ['scatter2d', 'line2d'];
         var scene, gl, nTraces;
 
@@ -1132,7 +1178,7 @@ describe('Test polar interactions:', function() {
         }];
 
         specs.forEach(function(s) {
-            it('- ' + s.desc, function(done) {
+            it('@gl - ' + s.desc, function(done) {
                 var fig = Lib.extendDeep({}, require('@mocks/glpolar_scatter.json'));
                 scene = null;
                 gl = null;
