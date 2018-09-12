@@ -103,7 +103,7 @@ module.exports = function calc(gd, trace) {
         var value;
         if(!line) {
             value = parcatConstants.defaultColor;
-        } else if(Array.isArray(line.color)) {
+        } else if(Lib.isArrayOrTypedArray(line.color)) {
             value = line.color[index % line.color.length];
         } else {
             value = line.color;
