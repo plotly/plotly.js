@@ -153,7 +153,7 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
     var fullLayout = gd._fullLayout;
     var xId = xa._id;
     var yId = ya._id;
-    var firstScatter = fullLayout._firstScatter[xId + yId + trace.type] === trace.uid;
+    var firstScatter = fullLayout._firstScatter[firstScatterGroup(trace)] === trace.uid;
     var stackOrientation = (getStackOpts(trace, fullLayout, xa, ya) || {}).orientation;
     var fill = trace.fill;
 
@@ -257,9 +257,15 @@ function calcMarkerSize(trace, serieslen) {
  * per-trace calc this will get confused.
  */
 function setFirstScatter(fullLayout, trace) {
-    var subplotAndType = trace.xaxis + trace.yaxis + trace.type;
+    var group = firstScatterGroup(trace);
     var firstScatter = fullLayout._firstScatter;
-    if(!firstScatter[subplotAndType]) firstScatter[subplotAndType] = trace.uid;
+    if(!firstScatter[group]) firstScatter[group] = trace.uid;
+}
+
+function firstScatterGroup(trace) {
+    var stackGroup = trace.stackgroup;
+    return trace.xaxis + trace.yaxis + trace.type +
+        (stackGroup ? '-' + stackGroup : '');
 }
 
 function getStackOpts(trace, fullLayout, xa, ya) {

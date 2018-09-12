@@ -1,0 +1,51 @@
+{
+  "data": [
+    {
+        "x": [0, 2, 4], "y": [6, 1, 6], "line": {"color": "#000"},
+        "name": "bottom", "legendgroup": "l"
+    }, {
+        "x0": -0.5, "y": [1, 2, 3, 4, 5], "name": "a 1",
+        "stackgroup": "a", "legendgroup": "a",
+        "line": {"color": "#f00"}, "fillcolor": "rgba(255,0,0,0.8)"
+    }, {
+        "x0": 0.5, "y": [5, 4, 3, 2, 1], "name": "b 1",
+        "stackgroup": "b", "legendgroup": "b",
+        "line": {"color": "#00f"}, "fillcolor": "rgba(0,0,255,0.8)"
+    }, {
+        "x0": -0.5, "y": [1, 1, 1, 1, 1], "name": "a 2",
+        "stackgroup": "a", "legendgroup": "a",
+        "line": {"color": "#f80"}, "fillcolor": "rgba(255,136,0,0.8)"
+    }, {
+        "x0": 1, "y": [1, 2, 1], "name": "unstacked 1",
+        "fill": "tozeroy", "legendgroup": "u",
+        "line": {"color": "#888"}, "fillcolor": "rgba(136,136,136,0.8)"
+    }, {
+        "x0": -0.5, "y": [1, 1, 1, 1, 1], "name": "a 3",
+        "stackgroup": "a", "legendgroup": "a",
+        "line": {"color": "#ff0"}, "fillcolor": "rgba(255,255,0,0.8)"
+    }, {
+        "x0": 0.5, "y": [1, 1, 1, 1, 1], "name": "b 2",
+        "stackgroup": "b", "legendgroup": "b",
+        "line": {"color": "#80f"}, "fillcolor": "rgba(136,0,255,0.8)"
+    }, {
+        "x0": 1, "y": [5, 8, 5], "name": "unstacked 2",
+        "fill": "tonexty", "legendgroup": "u",
+        "line": {"color": "#ccc"}, "fillcolor": "rgba(204,204,204,0.8)"
+    }, {
+        "x": [0, 2, 4], "y": [7, 3, 7], "line": {"color": "#0c0"},
+        "name": "top", "legendgroup": "l"
+    }, {
+        "x0": 0.5, "y": [1, 1, 1, 1, 1], "name": "b 3",
+        "stackgroup": "b", "legendgroup": "b",
+        "line": {"color": "#f0f"}, "fillcolor": "rgba(255,0,255,0.8)"
+    }
+  ],
+  "layout": {
+    "width": 500,
+    "height": 500,
+    "title": "Stack groups and unstacked filled traces",
+    "xaxis": {"title": "infer zero"},
+    "xaxis2": {"title": "interpolate"},
+    "grid": {"columns": 1, "rows": 2, "pattern": "independent"}
+  }
+}
