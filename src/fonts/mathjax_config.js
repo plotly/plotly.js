@@ -15,17 +15,6 @@
  */
 if(typeof MathJax !== 'undefined') {
     exports.MathJax = true;
-
-    MathJax.Hub.Config({
-        messageStyle: 'none',
-        displayAlign: 'left',
-        tex2jax: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']]
-        },
-        SVG: {font: 'STIX-Web'},
-    });
-
-    MathJax.Hub.Configured();
 } else {
     exports.MathJax = false;
 }

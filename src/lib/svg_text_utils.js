@@ -165,8 +165,21 @@ function cleanEscapesForTex(s) {
 function texToSVG(_texString, _config, _callback) {
 
     var originalRenderer,
+        originalConfig,
         tmpDiv;
-    MathJax.Hub.Queue(function() {
+    MathJax.Hub.Queue(
+    function() {
+        originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
+        return MathJax.Hub.Config({
+            messageStyle: 'none',
+            displayAlign: 'left',
+            tex2jax: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            SVG: {font: 'STIX-Web'},
+        });
+    },
+    function() {
         // Get original renderer
         originalRenderer = MathJax.Hub.config.menuSettings.renderer;
         if(originalRenderer !== 'SVG') {
@@ -180,6 +193,7 @@ function texToSVG(_texString, _config, _callback) {
             .style({visibility: 'hidden', position: 'absolute'})
             .style({'font-size': _config.fontSize + 'px'})
             .text(cleanEscapesForTex(_texString));
+
         return MathJax.Hub.Typeset(tmpDiv.node());
     },
     function() {
@@ -200,6 +214,9 @@ function texToSVG(_texString, _config, _callback) {
         if(originalRenderer !== 'SVG') {
             return MathJax.Hub.setRenderer(originalRenderer);
         }
+    },
+    function() {
+        return MathJax.Hub.Config(originalConfig);
     });
 }
 
