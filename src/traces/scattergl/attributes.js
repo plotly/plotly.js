@@ -54,8 +54,17 @@ var attrs = module.exports = overrideAll({
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
-        shape: scatterLineAttrs.shape,
-        smoothing: scatterLineAttrs.smoothing,
+        shape: {
+            valType: 'enumerated',
+            values: ['linear', 'hv', 'vh', 'hvh', 'vhv'],
+            dflt: 'linear',
+            role: 'style',
+            editType: 'plot',
+            description: [
+                'Determines the line shape.',
+                'The values correspond to step-wise line shapes.'
+            ].join(' ')
+        },
         dash: {
             valType: 'enumerated',
             values: Object.keys(DASHES),

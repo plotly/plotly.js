@@ -17,7 +17,7 @@ var subTypes = require('../scatter/subtypes');
 var handleXYDefaults = require('../scatter/xy_defaults');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
-var handleLineShapeDefaults = require('../scatter/line_shape_defaults');
+var handleLineShapeDefaults = require('./line_shape_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
 
