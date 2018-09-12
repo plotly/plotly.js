@@ -163,14 +163,9 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
-    var randomID = 'math-output-' + Lib.randstr({}, 64);
-    var tmpDiv = d3.select('body').append('div')
-        .attr({id: randomID})
-        .style({visibility: 'hidden', position: 'absolute'})
-        .style({'font-size': _config.fontSize + 'px'})
-        .text(cleanEscapesForTex(_texString));
 
-    var originalRenderer;
+    var originalRenderer,
+        tmpDiv;
     MathJax.Hub.Queue(function() {
         // Get original renderer
         originalRenderer = MathJax.Hub.config.menuSettings.renderer;
@@ -178,7 +173,15 @@ function texToSVG(_texString, _config, _callback) {
             return MathJax.Hub.setRenderer('SVG');
         }
     },
-    ['Typeset', MathJax.Hub, tmpDiv.node()],
+    function() {
+        var randomID = 'math-output-' + Lib.randstr({}, 64);
+        tmpDiv = d3.select('body').append('div')
+            .attr({id: randomID})
+            .style({visibility: 'hidden', position: 'absolute'})
+            .style({'font-size': _config.fontSize + 'px'})
+            .text(cleanEscapesForTex(_texString));
+        return MathJax.Hub.Typeset(tmpDiv.node());
+    },
     function() {
 
         var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');

@@ -18,7 +18,6 @@ if(typeof MathJax !== 'undefined') {
 
     MathJax.Hub.Config({
         messageStyle: 'none',
-        skipStartupTypeset: true,
         displayAlign: 'left',
         tex2jax: {
             inlineMath: [['$', '$'], ['\\(', '\\)']]
