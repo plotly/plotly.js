@@ -174,10 +174,13 @@ function texToSVG(_texString, _config, _callback) {
     MathJax.Hub.Queue(function() {
         // Get original renderer
         originalRenderer = MathJax.Hub.config.menuSettings.renderer;
+        if(originalRenderer !== 'SVG') {
+            return MathJax.Hub.setRenderer('SVG');
+        }
     },
-    ['setRenderer', MathJax.Hub, 'SVG'],
     ['Typeset', MathJax.Hub, tmpDiv.node()],
     function() {
+
         var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
 
         if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
@@ -191,7 +194,9 @@ function texToSVG(_texString, _config, _callback) {
 
         tmpDiv.remove();
 
-        return MathJax.Hub.setRenderer(originalRenderer);
+        if(originalRenderer !== 'SVG') {
+            return MathJax.Hub.setRenderer(originalRenderer);
+        }
     });
 }
 
