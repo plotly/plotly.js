@@ -10,7 +10,6 @@
 	"showlegend": false, "xaxis": "x", "yaxis": "y" ,
 	"fillcolor": "#FF69B4",
 	"line": { "color": "#FF69B4" }
-	
     },
     {
       "x": [
@@ -44,7 +43,6 @@
 	"showlegend": false,  "xaxis": "x2", "yaxis": "y2" ,
 	"fillcolor": "#90ff70",
 	"line": { "color": "#90ff70" }
-	
     },
     {
       "x": [
@@ -91,7 +89,6 @@
 	"showlegend": false,    "xaxis": "x3", "yaxis": "y3" ,
 	"fillcolor": "#90ff70",
 	"line": { "color": "#90ff70" }
-	
     }
   ],
     "layout": {
