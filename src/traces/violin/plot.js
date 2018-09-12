@@ -138,7 +138,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
         });
 
-        var boxAttrs = trace.box || {};
+        var boxAttrs = trace.box;
         var boxWidth = boxAttrs.width;
         var boxLineWidth = (boxAttrs.line || {}).width;
         var bdPosScaled;
@@ -170,7 +170,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         });
 
         var fn;
-        if(!(trace.box || {}).visible && (trace.meanline || {}).visible) {
+        if(!trace.box.visible && trace.meanline.visible) {
             fn = Lib.identity;
         }
 
