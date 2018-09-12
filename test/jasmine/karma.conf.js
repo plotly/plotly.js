@@ -274,6 +274,10 @@ if(isBundleTest) {
             func.defaultConfig.files.push(pathToIE9mock);
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
+        case 'plotschema':
+            func.defaultConfig.browserify.ignoreTransform = './tasks/compress_attributes.js';
+            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+            break;
         default:
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;

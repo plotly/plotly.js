@@ -6,7 +6,6 @@ var prettySize = require('prettysize');
 
 var constants = require('./constants');
 var common = require('./common');
-var compressAttributes = require('./compress_attributes');
 var strictD3 = require('./strict_d3');
 
 /**
@@ -23,7 +22,7 @@ module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
     var b = browserify(constants.pathToPlotlyIndex, {
         debug: true,
         standalone: 'Plotly',
-        transform: [strictD3, compressAttributes],
+        transform: [strictD3],
         cache: {},
         packageCache: {},
         plugin: [watchify]

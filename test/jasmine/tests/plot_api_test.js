@@ -2962,7 +2962,7 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, data, layout)
             .then(countPlots)
             .then(function() {
-                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
 
                 return Plotly.react(gd, data, layout, {staticPlot: true});
             })
@@ -2972,7 +2972,7 @@ describe('Test plot api', function() {
                 return Plotly.react(gd, data, layout, {});
             })
             .then(function() {
-                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
             })
             .catch(failTest)
             .then(done);

@@ -275,6 +275,24 @@ describe('Test barpolar hover:', function() {
             color: '#1f77b4'
         }
     }, {
+        desc: 'works on a subplot with hole>0',
+        traces: [{
+            r: [1, 2, 3],
+            theta: [0, 90, 180]
+        }],
+        layout: {
+            polar: {hole: 0.2}
+        },
+        xval: 1,
+        yval: 0,
+        exp: {
+            index: 0,
+            x: 290.67,
+            y: 200,
+            extraText: 'r: 1<br>θ: 0°',
+            color: '#1f77b4'
+        }
+    }, {
         desc: 'on overlapping bars of same size, the narrower wins',
         traces: [{
             r: [1, 2, 3],

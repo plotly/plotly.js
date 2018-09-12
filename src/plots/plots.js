@@ -1894,6 +1894,10 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
             return d.map(stripObj);
         }
 
+        if(Lib.isTypedArray(d)) {
+            return Lib.simpleMap(d, Lib.identity);
+        }
+
         // convert native dates to date strings...
         // mostly for external users exporting to plotly
         if(Lib.isJSDate(d)) return Lib.ms2DateTimeLocal(+d);

@@ -170,6 +170,8 @@ function render(scene) {
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
+    var gd = scene.graphDiv;
+
     var glplotOptions = {
         canvas: canvas,
         gl: gl,
@@ -220,7 +222,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
         var update = {};
         update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
-        scene.saveCamera(scene.graphDiv.layout);
+        scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
@@ -228,10 +230,14 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
-        scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
-            Lib.warn('Lost WebGL context.');
-            ev.preventDefault();
-        });
+        scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
+            if(gd && gd.emit) {
+                gd.emit('plotly_webglcontextlost', {
+                    event: event,
+                    layer: scene.id
+                });
+            }
+        }, false);
     }
 
     if(!scene.camera) {

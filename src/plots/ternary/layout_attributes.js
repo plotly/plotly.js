@@ -8,12 +8,14 @@
 
 'use strict';
 
+var colorAttrs = require('../../components/color/attributes');
+var domainAttrs = require('../domain').attributes;
+var axesAttrs = require('../cartesian/layout_attributes');
 
-var axesAttrs = require('../../cartesian/layout_attributes');
-var extendFlat = require('../../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var extendFlat = require('../../lib/extend').extendFlat;
 
-
-module.exports = {
+var ternaryAxesAttrs = {
     title: axesAttrs.title,
     titlefont: axesAttrs.titlefont,
     color: axesAttrs.color,
@@ -63,3 +65,27 @@ module.exports = {
         ].join(' ')
     }
 };
+
+module.exports = overrideAll({
+    domain: domainAttrs({name: 'ternary'}),
+
+    bgcolor: {
+        valType: 'color',
+        role: 'style',
+        dflt: colorAttrs.background,
+        description: 'Set the background color of the subplot'
+    },
+    sum: {
+        valType: 'number',
+        role: 'info',
+        dflt: 1,
+        min: 0,
+        description: [
+            'The number each triplet should sum to,',
+            'and the maximum range of each axis'
+        ].join(' ')
+    },
+    aaxis: ternaryAxesAttrs,
+    baxis: ternaryAxesAttrs,
+    caxis: ternaryAxesAttrs
+}, 'plot', 'from-root');

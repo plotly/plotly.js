@@ -16,15 +16,21 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
+    var clickmode = coerce('clickmode');
+
     var dragMode = coerce('dragmode');
     if(dragMode === 'select') coerce('selectdirection');
 
     var hovermodeDflt;
     if(layoutOut._has('cartesian')) {
-        // flag for 'horizontal' plots:
-        // determines the state of the mode bar 'compare' hovermode button
-        layoutOut._isHoriz = isHoriz(fullData);
-        hovermodeDflt = layoutOut._isHoriz ? 'y' : 'x';
+        if(clickmode.indexOf('select') > -1) {
+            hovermodeDflt = 'closest';
+        } else {
+            // flag for 'horizontal' plots:
+            // determines the state of the mode bar 'compare' hovermode button
+            layoutOut._isHoriz = isHoriz(fullData);
+            hovermodeDflt = layoutOut._isHoriz ? 'y' : 'x';
+        }
     }
     else hovermodeDflt = 'closest';
 
