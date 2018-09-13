@@ -89,12 +89,12 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.text;
-        selection.textLabel = "value: " + selection.data.intensity.toPrecision(3);
+        selection.textLabel = 'value: ' + selection.data.intensity.toPrecision(3);
 
         if(Array.isArray(text) && text[selectIndex] !== undefined) {
-            selection.textLabel = "<br>" + text[selectIndex];
+            selection.textLabel = '<br>' + text[selectIndex];
         } else if(text) {
-            selection.textLabel = "<br>" + text;
+            selection.textLabel = '<br>' + text;
         }
 
         return true;
