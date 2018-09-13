@@ -164,14 +164,14 @@ function convert(scene, trace) {
 
     isosurfaceOpts.values = trace.value;
 
-    if (trace.colorscale){
+    if(trace.colorscale) {
         isosurfaceOpts.colormap = parseColorScale(trace.colorscale);
     }
-    if (trace.color){
+    if(trace.color) {
         isosurfaceOpts.capsColormap = isosurfaceOpts.colormap;
         var color = str2RgbaArray(trace.color).map(function(c) { return c * 255; });
         isosurfaceOpts.colormap = [{index: 0, rgb: color}, {index: 1, rgb: color}];
-        if (!isosurfaceOpts.capsColormap){
+        if(!isosurfaceOpts.capsColormap) {
             isosurfaceOpts.capsColormap = isosurfaceOpts.colormap;
         }
     }
