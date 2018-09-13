@@ -72,7 +72,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
             });
         });
     } else {
-        scatterLayer.selectAll('g.trace').each(function(d, i) {
+        join.each(function(d, i) {
             plotOne(gd, i, plotinfo, d, cdscatterSorted, this, transitionOpts);
         });
     }
