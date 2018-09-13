@@ -44,17 +44,17 @@ module.exports = {
         editType: 'plot'
         // plotAttrs.hoverinfo description is appropriate
     }),
-    hovermode: {
+    hoveron: {
         valType: 'enumerated',
         values: ['category', 'color', 'dimension'],
         dflt: 'category',
         role: 'info',
         editType: 'plot',
         description: [
-            'Sets the hover mode of the parcats diagram.',
+            'Sets the hover interaction mode for the parcats diagram.',
             'If `category`, hover interaction take place per category.',
             'If `color`, hover interactions take place per color per category.',
-            'If `dimension`, hover interactions take across all categories per dimension.'
+            'If `dimension`, hover interactions take place across all categories per dimension.'
         ].join(' ')
     },
     arrangement: {

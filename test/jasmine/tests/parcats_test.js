@@ -1328,7 +1328,7 @@ describe('Click events', function() {
     });
 });
 
-describe('Click events with hovermode color', function() {
+describe('Click events with hoveron color', function() {
 
     // Variable declarations
     // ---------------------
@@ -1340,7 +1340,7 @@ describe('Click events with hovermode color', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_hovermode_color.json'));
+        mock = Lib.extendDeep({}, require('@mocks/parcats_hoveron_color.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -1583,7 +1583,7 @@ describe('Hover events', function() {
     });
 });
 
-describe('Hover events with hovermode color', function() {
+describe('Hover events with hoveron color', function() {
 
     // Variable declarations
     // ---------------------
@@ -1595,12 +1595,12 @@ describe('Hover events with hovermode color', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_hovermode_color.json'));
+        mock = Lib.extendDeep({}, require('@mocks/parcats_hoveron_color.json'));
     });
 
     afterEach(destroyGraphDiv);
 
-    it('hover and unhover should fire on category hovermode color', function(done) {
+    it('hover and unhover should fire on category hoveron color', function(done) {
 
         var hoverData,
             unhoverData,
@@ -1667,7 +1667,7 @@ describe('Hover events with hovermode color', function() {
             .then(done);
     });
 
-    it('hover and unhover should fire on path hovermode color', function(done) {
+    it('hover and unhover should fire on path hoveron color', function(done) {
 
         var hoverData,
             unhoverData,

@@ -694,7 +694,7 @@ function emitPointsEventColorHovermode(bandElement, eventName, event) {
 }
 
 /**
- * Create hover label for a band element's category (for use when hovermode === 'category')
+ * Create hover label for a band element's category (for use when hoveron === 'category')
  *
  * @param {ClientRect} rootBBox
  *  Client bounding box for root of figure
@@ -755,7 +755,7 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
 }
 
 /**
- * Create hover label for a band element's category (for use when hovermode === 'category')
+ * Create hover label for a band element's category (for use when hoveron === 'category')
  *
  * @param {ClientRect} rootBBox
  *  Client bounding box for root of figure
@@ -779,7 +779,7 @@ function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
 }
 
 /**
- * Create hover labels for a band element's category (for use when hovermode === 'dimension')
+ * Create hover labels for a band element's category (for use when hoveron === 'dimension')
  *
  * @param {ClientRect} rootBBox
  *  Client bounding box for root of figure
@@ -899,13 +899,13 @@ function mouseoverCategoryBand(bandViewModel) {
             var gd = bandViewModel.parcatsViewModel.graphDiv;
             var fullLayout = gd._fullLayout;
             var rootBBox = fullLayout._paperdiv.node().getBoundingClientRect();
-            var hovermode = bandViewModel.parcatsViewModel.hovermode;
+            var hoveron = bandViewModel.parcatsViewModel.hoveron;
 
             /** @type {HTMLElement} */
             var bandElement = this;
 
             // Handle style and events
-            if(hovermode === 'color') {
+            if(hoveron === 'color') {
                 styleForColorHovermode(bandElement);
                 emitPointsEventColorHovermode(bandElement, 'plotly_hover', d3.event);
             } else {
@@ -916,11 +916,11 @@ function mouseoverCategoryBand(bandViewModel) {
             // Handle hover label
             if(bandViewModel.parcatsViewModel.hoverinfoItems.indexOf('none') === -1) {
                 var hoverItems;
-                if(hovermode === 'category') {
+                if(hoveron === 'category') {
                     hoverItems = createHoverLabelForCategoryHovermode(rootBBox, bandElement);
-                } else if(hovermode === 'color') {
+                } else if(hoveron === 'color') {
                     hoverItems = createHoverLabelForColorHovermode(rootBBox, bandElement);
-                } else if(hovermode === 'dimension') {
+                } else if(hoveron === 'dimension') {
                     hoverItems = createHoverLabelForDimensionHovermode(rootBBox, bandElement);
                 }
 
@@ -962,11 +962,11 @@ function mouseoutCategory(bandViewModel) {
         // Emit unhover event
         if(parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
 
-            var hovermode = bandViewModel.parcatsViewModel.hovermode;
+            var hoveron = bandViewModel.parcatsViewModel.hoveron;
             var bandElement = this;
 
             // Handle style and events
-            if(hovermode === 'color') {
+            if(hoveron === 'color') {
                 emitPointsEventColorHovermode(bandElement, 'plotly_unhover', d3.event);
             } else {
                 emitPointsEventCategoryHovermode(bandElement, 'plotly_unhover', d3.event);
@@ -1209,7 +1209,7 @@ function dragDimensionEnd(d) {
     // ----------------------------
     if(d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
         if(!d.dragHasMoved && d.potentialClickBand) {
-            if(d.parcatsViewModel.hovermode === 'color') {
+            if(d.parcatsViewModel.hoveron === 'color') {
                 emitPointsEventColorHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
             } else {
                 emitPointsEventCategoryHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
@@ -1489,7 +1489,7 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
         y: traceY,
         width: traceWidth,
         height: traceHeight,
-        hovermode: trace.hovermode,
+        hoveron: trace.hoveron,
         hoverinfoItems: hoverinfoItems,
         arrangement: trace.arrangement,
         bundlecolors: trace.bundlecolors,
@@ -1949,8 +1949,8 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
  *  X position of this trace with respect to the Figure (pixels)
  * @property {Number} y
  *  Y position of this trace with respect to the Figure (pixels)
- * @property {String} hovermode
- *  Hover mode. One of: 'none', 'category', 'color', or 'dimension'
+ * @property {String} hoveron
+ *  Hover interaction mode. One of: 'category', 'color', or 'dimension'
  * @property {Array.<String>} hoverinfoItems
  *  Info to display on hover. Array with a combination of 'counts' and/or 'probabilities', or 'none', or 'skip'
  * @property {String} arrangement
