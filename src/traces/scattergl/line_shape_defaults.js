@@ -10,6 +10,5 @@
 'use strict';
 
 module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
-    var shape = coerce('line.shape');
+    coerce('line.shape');
 };
-
