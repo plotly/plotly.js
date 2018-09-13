@@ -15,6 +15,15 @@
  */
 if(typeof MathJax !== 'undefined') {
     exports.MathJax = true;
+
+    MathJax.Hub.Config({
+        skipStartupTypeset: true,
+        tex2jax: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+    });
+
+    MathJax.Hub.Configured();
 } else {
     exports.MathJax = false;
 }

@@ -173,10 +173,6 @@ function texToSVG(_texString, _config, _callback) {
         return MathJax.Hub.Config({
             messageStyle: 'none',
             displayAlign: 'left',
-            tex2jax: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
-            },
-            SVG: {font: 'STIX-Web'},
         });
     },
     function() {
