@@ -52,7 +52,12 @@ var attrs = {
         valType: 'data_array',
         role: 'info',
         editType: 'calc',
-        description: 'Sets the opacity scale of the volume, which opacity to use for which intensity. Array of 256 values in 0..1 range.'
+        description: [
+            'Sets the opacity scale of the volume.',
+            'Defines which opacity to use for which intensity.',
+            'Multiplied with trace.opacity to obtain the final opacity.',
+            'Colorscale-like array of [[0, opacity0], [v1, opacity1], ..., [1, opacityN]].'
+        ].join(' ')
     },
 
     imin: {
@@ -67,27 +72,6 @@ var attrs = {
         role: 'info',
         editType: 'calc',
         description: 'Sets the maximum intensity bound of the volume.'
-    },
-
-    opacity: {
-        valType: 'number',
-        role: 'info',
-        editType: 'calc',
-        description: 'Sets the opacity of the volume.'
-    },
-
-    boundmin: {
-        valType: 'data_array',
-        role: 'info',
-        editType: 'calc',
-        description: ''
-    },
-
-    boundmax: {
-        valType: 'data_array',
-        role: 'info',
-        editType: 'calc',
-        description: ''
     },
 
     text: {

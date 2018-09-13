@@ -33,8 +33,8 @@
     }
 
     var opacityscale = []
-    for (var i=0; i<256; i++) {
-        opacityscale[i] = Math.pow(i/256, 1.2)
+    for (var i=0; i<16; i++) {
+        opacityscale[i] = [i/15, Math.pow(i/15, 1.2)]
     }
 
     Plotly.newPlot(gd, [{
@@ -101,6 +101,33 @@ proto.handlePick = function(selection) {
     }
 };
 
+function parseOpacityScale(opacityScale) {
+    var alphaMapLength = 256;
+    var alphaMap = new Float32Array(alphaMapLength);
+    var alphaMapIndex = 0;
+    var previousEntry = [0, 1];
+    for(var i = 0; i < opacityScale.length; i++) {
+        var entry = opacityScale[i];
+        var startIndex = alphaMapIndex;
+        var startValue = previousEntry[1];
+        var endIndex = Math.max(0, Math.min(Math.floor(entry[0] * alphaMapLength), alphaMapLength-1));
+        var endValue = entry[1];
+        var indexDelta = endIndex - startIndex;
+        while(alphaMapIndex < endIndex) {
+            var t = (alphaMapIndex - startIndex) / indexDelta;
+            alphaMap[alphaMapIndex] = (1 - t) * startValue + t * endValue;
+            alphaMapIndex++;
+        }
+        alphaMap[alphaMapIndex] = endValue;
+        previousEntry = entry;
+    }
+    var lastAlpha = alphaMap[alphaMapIndex];
+    while(alphaMapIndex < alphaMapLength) {
+        alphaMap[alphaMapIndex++] = lastAlpha;
+    }
+    return alphaMap;
+}
+
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 
 function getSequence(src) {
@@ -141,18 +168,12 @@ function convert(gl, scene, trace) {
         toDataCoords(zs, 'zaxis')
     ];
 
-    // var bounds = [
-    //    volumeOpts.boundmin || [xs[0], ys[0], zs[0]],
-    //    volumeOpts.boundmax || [xs[xs.length - 1], ys[ys.length - 1], zs[zs.length - 1]]
-    // ];
-
-
     volumeOpts.values = trace.value;
 
     volumeOpts.colormap = parseColorScale(trace.colorscale);
 
     if(trace.opacityscale) {
-        volumeOpts.alphamap = trace.opacityscale;
+        volumeOpts.alphamap = parseOpacityScale(trace.opacityscale);
     }
 
     volumeOpts.isoBounds = [trace.cmin, trace.cmax];
@@ -160,8 +181,6 @@ function convert(gl, scene, trace) {
         trace.imin === undefined ? trace.cmin : trace.imin,
         trace.imax === undefined ? trace.cmax : trace.imax
     ];
-
-    volumeOpts.opacity = trace.opacity === undefined ? 1 : trace.opacity;
 
     var bounds = [[0, 0, 0], volumeOpts.dimensions];
 
