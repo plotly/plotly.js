@@ -49,7 +49,8 @@
       smoothnormals: true,
       isocaps: true,
 
-      colorscale: 'Portland'
+      colorscale: 'Portland',
+      color: 'grey'
     }])
 
 */
@@ -163,14 +164,14 @@ function convert(scene, trace) {
 
     isosurfaceOpts.values = trace.value;
 
-    if (trace.colorscale) {
+    if (trace.colorscale){
         isosurfaceOpts.colormap = parseColorScale(trace.colorscale);
     }
-    if (trace.color) {
+    if (trace.color){
         isosurfaceOpts.capsColormap = isosurfaceOpts.colormap;
         var color = str2RgbaArray(trace.color).map(function(c) { return c * 255; });
         isosurfaceOpts.colormap = [{index: 0, rgb: color}, {index: 1, rgb: color}];
-        if (!isosurfaceOpts.capsColormap) {
+        if (!isosurfaceOpts.capsColormap){
             isosurfaceOpts.capsColormap = isosurfaceOpts.colormap;
         }
     }
@@ -178,7 +179,7 @@ function convert(scene, trace) {
     isosurfaceOpts.isoBounds = [trace.isomin, trace.isomax];
 
     isosurfaceOpts.isoCaps = trace.isocaps;
-    isosurfaceOpts.singleMesh = false; //trace.singlemesh === undefined ? true : trace.singlemesh;
+    isosurfaceOpts.singleMesh = false;
 
     isosurfaceOpts.smoothNormals = trace.smoothnormals === undefined ? true : trace.smoothnormals;
 

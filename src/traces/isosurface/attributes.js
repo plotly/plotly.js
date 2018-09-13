@@ -126,7 +126,7 @@ var attrs = {
             'Sets the color of the isosurface.',
             'By default the isosurface color is computed from the colorscale.',
             'Isocaps still use the colorscale colors even with this set.'
-        ].join(" ")
+        ].join(' ')
     },
 
     text: {

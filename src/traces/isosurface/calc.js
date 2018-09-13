@@ -15,8 +15,9 @@ module.exports = function calc(gd, trace) {
     var len = value.length;
     var vMax = -Infinity;
     var vMin = Infinity;
+    var i = 0;
 
-    for(var i = 0; i < len; i++) {
+    for(i = 0; i < len; i++) {
         var v = value[i];
         vMax = Math.max(vMax, v);
         vMin = Math.min(vMin, v);
@@ -37,7 +38,7 @@ module.exports = function calc(gd, trace) {
     var zMax = -Infinity;
     var zMin = Infinity;
 
-    for(var i = 0; i < len; i++) {
+    for(i = 0; i < len; i++) {
         var xx = x[i];
         xMax = Math.max(xMax, xx);
         xMin = Math.min(xMin, xx);
