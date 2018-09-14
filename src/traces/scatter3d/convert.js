@@ -23,7 +23,6 @@ var DASH_PATTERNS = require('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
 
 var calculateError = require('./calc_errors');
-var errorBarsAttributes = require('../../components/errorbars/attributes');
 
 function LineWithMarkers(scene, uid) {
     this.scene = scene;
@@ -117,17 +116,17 @@ function constructDelaunay(points, color, axis) {
 function calculateErrorParams(errors) {
     var capSize = [0.0, 0.0, 0.0],
         color = [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-        lineWidth = [0.0, 0.0, 0.0];
+        lineWidth = [1.0, 1.0, 1.0];
 
     for(var i = 0; i < 3; i++) {
         var e = errors[i];
 
-        if(e && e.copy_zstyle !== false) e = errors[2];
-        if(!e) continue;
+        if(e && e.copy_zstyle !== false && errors[2].visible !== false) e = errors[2];
+        if(!e || !e.visible) continue;
 
-        capSize[i] = (e.width || 0) / 2;  // ballpark rescaling
+        capSize[i] = e.width / 2;  // ballpark rescaling
         color[i] = str2RgbaArray(e.color);
-        lineWidth = (e.thickness || errorBarsAttributes.thickness.dflt);
+        lineWidth[i] = e.thickness;
 
     }
 

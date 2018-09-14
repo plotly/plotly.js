@@ -2,17 +2,15 @@
     "data": [{
         "type": "scatter3d",
         "mode": "markers",
-        "x": [1],
-        "y": [1],
-        "z": [1],
+        "x": [5, 10],
+        "y": [5, 10],
+        "z": [5, 10],
         "error_x": {
             "type": "sqrt",
-            "thickness": 5
+            "color": "red"
         },
         "error_y": {
-            "type": "sqrt",
-            "thickness": 5,
-            "color": "red"
+            "type": "sqrt"
         }
     }],
     "layout": {}
