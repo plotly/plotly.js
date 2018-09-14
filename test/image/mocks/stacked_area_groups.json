@@ -42,10 +42,7 @@
   ],
   "layout": {
     "width": 500,
-    "height": 500,
-    "title": "Stack groups and unstacked filled traces",
-    "xaxis": {"title": "infer zero"},
-    "xaxis2": {"title": "interpolate"},
-    "grid": {"columns": 1, "rows": 2, "pattern": "independent"}
+    "height": 450,
+    "title": "Stack groups and unstacked filled traces"
   }
 }
