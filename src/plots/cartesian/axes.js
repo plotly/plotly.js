@@ -2141,7 +2141,6 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
 
         var gridcontainer = plotinfo.gridlayer.selectAll('.' + axid);
         var zlcontainer = plotinfo.zerolinelayer;
-        var gridvals = plotinfo['hidegrid' + axLetter] ? [] : valsClipped;
         var gridpath = ax._gridpath || ((axLetter === 'x' ?
                 ('M0,' + counteraxis._offset + 'v') :
                 ('M' + counteraxis._offset + ',0h')
