@@ -1184,6 +1184,39 @@ describe('stacked area', function() {
         .then(done);
     });
 
+    it('can add/delete stack groups', function(done) {
+        var data01 = [
+            {mode: 'markers', y: [1, 2, -1, 2, 1], stackgroup: 'a'},
+            {mode: 'markers', y: [2, 3, 2, 3, 2], stackgroup: 'b'}
+        ];
+        var data0 = [Lib.extendDeep({}, data01[0])];
+        var data1 = [Lib.extendDeep({}, data01[1])];
+
+        function _assert(yRange, nTraces) {
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yRange, 2);
+            expect(gd.querySelectorAll('g.trace.scatter').length).toBe(nTraces);
+        }
+
+        Plotly.newPlot(gd, data01)
+        .then(function() {
+            _assert([-1.293, 3.293], 2);
+            return Plotly.react(gd, data0);
+        })
+        .then(function() {
+            _assert([-1.220, 2.220], 1);
+            return Plotly.react(gd, data01);
+        })
+        .then(function() {
+            _assert([-1.293, 3.293], 2);
+            return Plotly.react(gd, data1);
+        })
+        .then(function() {
+            _assert([0, 3.205], 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('does not stack on date axes', function(done) {
         Plotly.newPlot(gd, [
             {y: ['2016-01-01', '2017-01-01'], stackgroup: 'a'},
