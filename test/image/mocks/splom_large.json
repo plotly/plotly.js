@@ -297,6 +297,14 @@
     "yaxis": {
       "zerolinecolor": "red",
       "zerolinewidth": 2
+    },
+    "xaxis2": {
+      "zeroline": false
+    },
+    "yaxis2": {
+      "rangemode": "tozero",
+      "zeroline": true,
+      "showline": true
     }
   }
 }

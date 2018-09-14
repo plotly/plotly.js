@@ -11,11 +11,11 @@
 var createLine = require('regl-line2d');
 
 var Registry = require('../../registry');
-var Lib = require('../../lib');
 var prepareRegl = require('../../lib/prepare_regl');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
-var AxisIDs = require('../../plots/cartesian/axis_ids');
+var getFromId = require('../../plots/cartesian/axis_ids').getFromId;
+var shouldShowZeroLine = require('../../plots/cartesian/axes').shouldShowZeroLine;
 
 var SPLOM = 'splom';
 
@@ -63,13 +63,13 @@ function dragOne(gd, trace, stash, scene) {
         var i = visibleDims[k];
         var rng = ranges[k] = new Array(4);
 
-        var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+        var xa = getFromId(gd, trace._diag[i][0]);
         if(xa) {
             rng[0] = xa.r2l(xa.range[0]);
             rng[2] = xa.r2l(xa.range[1]);
         }
 
-        var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+        var ya = getFromId(gd, trace._diag[i][1]);
         if(ya) {
             rng[1] = ya.r2l(ya.range[0]);
             rng[3] = ya.r2l(ya.range[1]);
@@ -144,17 +144,17 @@ function makeGridData(gd) {
                 push('grid', xa, x, yOffset, x, yOffset + ya._length);
             }
         }
-        if(showZeroLine(xa)) {
-            x = xa._offset + xa.l2p(0);
-            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
-        }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
                 y = yOffset + yb + ym * yVals[k].x;
                 push('grid', ya, xa._offset, y, xa._offset + xa._length, y);
             }
         }
-        if(showZeroLine(ya)) {
+        if(shouldShowZeroLine(gd, xa, ya)) {
+            x = xa._offset + xa.l2p(0);
+            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
+        }
+        if(shouldShowZeroLine(gd, ya, xa)) {
             y = yOffset + yb + 0;
             push('zeroline', ya, xa._offset, y, xa._offset + xa._length, y);
         }
@@ -166,20 +166,6 @@ function makeGridData(gd) {
     }
 
     return gridBatches;
-}
-
-// just like in Axes.doTicks but without the loop over traces
-function showZeroLine(ax) {
-    var rng = Lib.simpleMap(ax.range, ax.r2l);
-    var p0 = ax.l2p(0);
-
-    return (
-        ax.zeroline &&
-        ax._vals && ax._vals.length &&
-        (rng[0] * rng[1] <= 0) &&
-        (ax.type === 'linear' || ax.type === '-') &&
-        ((p0 > 1 && p0 < ax._length - 1) || !ax.showline)
-    );
 }
 
 function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
