@@ -175,12 +175,15 @@ function texToSVG(_texString, _config, _callback) {
 
         originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
         if(MathJax.Hub.processSectionDelay !== undefined) {
-            // MathJax 3.5+
+            // MathJax 2.5+
             MathJax.Hub.processSectionDelay = 0;
         }
 
         return MathJax.Hub.Config({
             messageStyle: 'none',
+            tex2jax: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
             displayAlign: 'left',
         });
     },
@@ -202,7 +205,6 @@ function texToSVG(_texString, _config, _callback) {
         return MathJax.Hub.Typeset(tmpDiv.node());
     },
     function() {
-
         var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
 
         if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
@@ -221,7 +223,7 @@ function texToSVG(_texString, _config, _callback) {
         }
     },
     function() {
-        if (originalProcessSectionDelay !== undefined) {
+        if(originalProcessSectionDelay !== undefined) {
             MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
         }
         return MathJax.Hub.Config(originalConfig);
