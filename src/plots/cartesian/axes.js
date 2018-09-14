@@ -1687,19 +1687,13 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         vals = vals.filter(ax._tickFilter);
     }
 
-    // remove zero lines, grid lines, and inside ticks if they're within
-    // 1 pixel of the end
+    // Remove zero lines, grid lines, and inside ticks if they're within
+    // 1 pixel of the end.
     // The key case here is removing zero lines when the axis bound is zero.
-    function clipEnds(d) {
-        var p = ax.l2p(d.x);
-        return (p > 1 && p < ax._length - 1);
-    }
-    var valsClipped = vals.filter(clipEnds);
-
-    // don't clip angular values
-    if(isAngular(ax)) {
-        valsClipped = vals;
-    }
+    // Don't clip angular values.
+    var valsClipped = ax._valsClipped = isAngular(ax) ?
+        vals :
+        vals.filter(function(d) { return clipEnds(ax, d.x); });
 
     function drawTicks(container, tickpath) {
         var ticks = container.selectAll('path.' + tcls)
@@ -2142,58 +2136,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         });
     }
 
-    function traceHasBarsOrFill(trace, subplot) {
-        if(trace.visible !== true || trace.xaxis + trace.yaxis !== subplot) return false;
-        if(Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter]) return true;
-        return trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter;
-    }
-
-    function lineNearZero(ax2, position) {
-        if(!ax2.showline || !ax2.linewidth) return false;
-        var tolerance = Math.max((ax2.linewidth + ax.zerolinewidth) / 2, 1);
-
-        function closeEnough(pos2) {
-            return typeof pos2 === 'number' && Math.abs(pos2 - position) < tolerance;
-        }
-
-        if(closeEnough(ax2._mainLinePosition) || closeEnough(ax2._mainMirrorPosition)) {
-            return true;
-        }
-        var linePositions = ax2._linepositions || {};
-        for(var k in linePositions) {
-            if(closeEnough(linePositions[k][0]) || closeEnough(linePositions[k][1])) {
-                return true;
-            }
-        }
-    }
-
-    function anyCounterAxLineAtZero(counterAxis, rng) {
-        var mainCounterAxis = counterAxis._mainAxis;
-        if(!mainCounterAxis) return;
-
-        var zeroPosition = ax._offset + (
-            ((Math.abs(rng[0]) < Math.abs(rng[1])) === (axLetter === 'x')) ?
-            0 : ax._length
-        );
-
-        var plotinfo = fullLayout._plots[counterAxis._mainSubplot];
-        if(!(plotinfo.mainplotinfo || plotinfo).overlays.length) {
-            return lineNearZero(counterAxis, zeroPosition);
-        }
-
-        var counterLetterAxes = axes.list(gd, counterLetter);
-        for(var i = 0; i < counterLetterAxes.length; i++) {
-            var counterAxis2 = counterLetterAxes[i];
-            if(
-                counterAxis2._mainAxis === mainCounterAxis &&
-                lineNearZero(counterAxis2, zeroPosition)
-            ) {
-                return true;
-            }
-        }
-    }
-
-    function drawGrid(plotinfo, counteraxis, subplot) {
+    function drawGrid(plotinfo, counteraxis) {
         if(fullLayout._hasOnlyLargeSploms) return;
 
         var gridcontainer = plotinfo.gridlayer.selectAll('.' + axid);
@@ -2204,7 +2147,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
                 ('M' + counteraxis._offset + ',0h')
             ) + counteraxis._length);
         var grid = gridcontainer.selectAll('path.' + gcls)
-            .data((ax.showgrid === false) ? [] : gridvals, datafn);
+            .data((ax.showgrid === false) ? [] : valsClipped, datafn);
         grid.enter().append('path').classed(gcls, 1)
             .classed('crisp', 1)
             .attr('d', gridpath)
@@ -2222,24 +2165,8 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
 
         // zero line
         if(zlcontainer) {
-            var hasBarsOrFill = false;
-            for(var i = 0; i < gd._fullData.length; i++) {
-                if(traceHasBarsOrFill(gd._fullData[i], subplot)) {
-                    hasBarsOrFill = true;
-                    break;
-                }
-            }
-            var rng = Lib.simpleMap(ax.range, ax.r2l);
             var zlData = {x: 0, id: axid};
-
-            var showZl = (rng[0] * rng[1] <= 0) && ax.zeroline &&
-                (ax.type === 'linear' || ax.type === '-') && gridvals.length &&
-                (
-                    hasBarsOrFill ||
-                    clipEnds(zlData) ||
-                    !anyCounterAxLineAtZero(counteraxis, rng)
-                );
-
+            var showZl = axes.shouldShowZeroLine(gd, ax, counteraxis);
             var zl = zlcontainer.selectAll('path.' + zcls)
                 .data(showZl ? [zlData] : []);
             zl.enter().append('path').classed(zcls, 1).classed('zl', 1)
@@ -2326,6 +2253,96 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         return drawLabels(mainContainer, ax._mainLinePosition);
     }
 };
+
+axes.shouldShowZeroLine = function(gd, ax, counterAxis) {
+    var rng = Lib.simpleMap(ax.range, ax.r2l);
+    return (
+        (rng[0] * rng[1] <= 0) &&
+        ax.zeroline &&
+        (ax.type === 'linear' || ax.type === '-') &&
+        ax._valsClipped.length &&
+        (
+            clipEnds(ax, 0) ||
+            !anyCounterAxLineAtZero(gd, ax, counterAxis, rng) ||
+            hasBarsOrFill(gd, ax)
+        )
+    );
+};
+
+function clipEnds(ax, l) {
+    var p = ax.l2p(l);
+    return (p > 1 && p < ax._length - 1);
+}
+
+function anyCounterAxLineAtZero(gd, ax, counterAxis, rng) {
+    var mainCounterAxis = counterAxis._mainAxis;
+    if(!mainCounterAxis) return;
+
+    var fullLayout = gd._fullLayout;
+    var axLetter = ax._id.charAt(0);
+    var counterLetter = axes.counterLetter(ax._id);
+
+    var zeroPosition = ax._offset + (
+        ((Math.abs(rng[0]) < Math.abs(rng[1])) === (axLetter === 'x')) ?
+        0 : ax._length
+    );
+
+    function lineNearZero(ax2) {
+        if(!ax2.showline || !ax2.linewidth) return false;
+        var tolerance = Math.max((ax2.linewidth + ax.zerolinewidth) / 2, 1);
+
+        function closeEnough(pos2) {
+            return typeof pos2 === 'number' && Math.abs(pos2 - zeroPosition) < tolerance;
+        }
+
+        if(closeEnough(ax2._mainLinePosition) || closeEnough(ax2._mainMirrorPosition)) {
+            return true;
+        }
+        var linePositions = ax2._linepositions || {};
+        for(var k in linePositions) {
+            if(closeEnough(linePositions[k][0]) || closeEnough(linePositions[k][1])) {
+                return true;
+            }
+        }
+    }
+
+    var plotinfo = fullLayout._plots[counterAxis._mainSubplot];
+    if(!(plotinfo.mainplotinfo || plotinfo).overlays.length) {
+        return lineNearZero(counterAxis, zeroPosition);
+    }
+
+    var counterLetterAxes = axes.list(gd, counterLetter);
+    for(var i = 0; i < counterLetterAxes.length; i++) {
+        var counterAxis2 = counterLetterAxes[i];
+        if(
+            counterAxis2._mainAxis === mainCounterAxis &&
+            lineNearZero(counterAxis2, zeroPosition)
+        ) {
+            return true;
+        }
+    }
+}
+
+function hasBarsOrFill(gd, ax) {
+    var fullData = gd._fullData;
+    var subplot = ax._mainSubplot;
+    var axLetter = ax._id.charAt(0);
+
+    for(var i = 0; i < fullData.length; i++) {
+        var trace = fullData[i];
+
+        if(trace.visible === true &&
+            (trace.xaxis + trace.yaxis) === subplot &&
+            (
+                Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter] ||
+                trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter
+            )
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
 
 /**
  * Find all margin pushers for 2D axes and reserve them for later use
