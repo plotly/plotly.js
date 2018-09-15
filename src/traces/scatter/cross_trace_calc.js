@@ -57,10 +57,10 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         }
         if(!index) {
             // t and trace need to stay on the first cd entry
-            cd[0].t = cd[1].t;
-            cd[0].trace = cd[1].trace;
-            delete cd[1].t;
-            delete cd[1].trace;
+            calcTrace[0].t = calcTrace[1].t;
+            calcTrace[0].trace = calcTrace[1].trace;
+            delete calcTrace[1].t;
+            delete calcTrace[1].trace;
         }
     }
 
