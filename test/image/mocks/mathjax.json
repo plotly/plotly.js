@@ -43,6 +43,7 @@
         },
         "height":500,
         "width":800,
+        "margin": {"r": 250},
         "title": "$i\\hbar\\frac{d\\Psi}{dt}=-[V-\\frac{-\\hbar^2}{2m}\\nabla^2]\\Psi$",
         "annotations":[
             {
