@@ -124,6 +124,8 @@ module.exports = function draw(gd) {
                 .call(setupTraceToggle, gd);
         });
 
+    Lib.syncOrAsync([Plots.previousPromises,
+        function() {
     if(firstRender) {
         computeLegendDimensions(gd, groups, traces);
         expandMargin(gd);
@@ -354,6 +356,7 @@ module.exports = function draw(gd) {
             }
         });
     }
+        }], gd);
 };
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
