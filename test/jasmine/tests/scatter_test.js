@@ -1106,6 +1106,11 @@ describe('stacked area', function() {
                     .toBeCloseToArray(ranges[axId], 0.1, msg + ' - ' + axId);
             }
         }
+
+        var bottoms = [0, 3, 6, 9, 12, 15];
+        var middles = [1, 4, 7, 10, 13, 16];
+        var midsAndBottoms = bottoms.concat(middles);
+
         Plotly.newPlot(gd, Lib.extendDeep({}, mock))
         .then(function() {
             // initial ranges, as in the baseline image
@@ -1120,7 +1125,7 @@ describe('stacked area', function() {
                 y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
             }, 'base case');
 
-            return Plotly.restyle(gd, 'visible', 'legendonly', [0, 3, 6, 9, 12, 15]);
+            return Plotly.restyle(gd, 'visible', 'legendonly', middles);
         })
         .then(function() {
             var xr = [2, 6];
@@ -1128,9 +1133,9 @@ describe('stacked area', function() {
                 x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
                 y: [0, 4.21], y2: [0, 5.26],
                 y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
-            }, 'bottom trace legendonly');
+            }, 'middle trace legendonly');
 
-            return Plotly.restyle(gd, 'visible', false, [0, 3, 6, 9, 12, 15]);
+            return Plotly.restyle(gd, 'visible', false, middles);
         })
         .then(function() {
             var xr = [2, 6];
@@ -1140,12 +1145,11 @@ describe('stacked area', function() {
                 // which we kept when it was visible: 'legendonly'
                 y: [0, 4.21], y2: [0, 4.21],
                 y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
-            }, 'bottom trace visible: false');
+            }, 'middle trace visible: false');
 
             // put the bottom traces back to legendonly so they still contribute
             // config attributes, and hide the middles too
-            return Plotly.restyle(gd, 'visible', 'legendonly',
-                [0, 3, 6, 9, 12, 15, 1, 4, 7, 10, 13, 16]);
+            return Plotly.restyle(gd, 'visible', 'legendonly', midsAndBottoms);
         })
         .then(function() {
             var xr = [3, 5];
@@ -1155,7 +1159,7 @@ describe('stacked area', function() {
                 y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
             }, 'only top trace showing');
 
-            return Plotly.restyle(gd, 'visible', true, [0, 3, 6, 9, 12, 15]);
+            return Plotly.restyle(gd, 'visible', true, middles);
         })
         .then(function() {
             var xr = [1, 7];
@@ -1163,12 +1167,12 @@ describe('stacked area', function() {
                 x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
                 y: [0, 7.37], y2: [0, 7.37],
                 y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
-            }, 'top and bottom showing');
+            }, 'top and middle showing');
 
-            return Plotly.restyle(gd, {x: null, y: null}, [0, 3, 6, 9, 12, 15]);
+            return Plotly.restyle(gd, {x: null, y: null}, middles);
         })
         .then(function() {
-            return Plotly.restyle(gd, 'visible', true, [1, 4, 7, 10, 13, 16]);
+            return Plotly.restyle(gd, 'visible', true, bottoms);
         })
         .then(function() {
             var xr = [2, 6];
@@ -1178,7 +1182,7 @@ describe('stacked area', function() {
                 x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
                 y: [0, 4.21], y2: [0, 4.21],
                 y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
-            }, 'bottom trace *implicit* visible: false');
+            }, 'middle trace *implicit* visible: false');
         })
         .catch(failTest)
         .then(done);

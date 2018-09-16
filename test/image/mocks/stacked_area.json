@@ -1,18 +1,18 @@
 {
   "data": [
     {
-        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "middle", "legendgroup": "m"
+        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "bottom", "legendgroup": "m"
     }, {
-        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "bottom", "legendgroup": "b"
+        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "middle", "legendgroup": "b"
     }, {
         "x": [3, 4 ,5], "y": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "a", "name": "top", "legendgroup": "t"
     },
 
     {
-        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "middle", "legendgroup": "m",
+        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "bottom", "legendgroup": "m",
         "showlegend": false, "xaxis": "x2", "yaxis": "y2"
     }, {
-        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "bottom", "legendgroup": "b",
+        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "middle", "legendgroup": "b",
         "showlegend": false, "xaxis": "x2", "yaxis": "y2",
         "stackgaps": "interpolate"
     }, {
@@ -21,10 +21,10 @@
     },
 
     {
-        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "b", "name": "middle", "legendgroup": "m",
+        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "b", "name": "bottom", "legendgroup": "m",
         "showlegend": false, "xaxis": "x3", "yaxis": "y3", "mode": "lines+markers"
     }, {
-        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "b", "name": "bottom", "legendgroup": "b",
+        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "b", "name": "middle", "legendgroup": "b",
         "showlegend": false, "xaxis": "x3", "yaxis": "y3", "mode": "lines+markers",
         "groupnorm": "fraction"
     }, {
@@ -33,11 +33,11 @@
     },
 
     {
-        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "middle", "legendgroup": "m",
+        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "bottom", "legendgroup": "m",
         "showlegend": false, "xaxis": "x4", "yaxis": "y4", "mode": "lines+markers",
         "stackgaps": "interpolate", "groupnorm": "fraction"
     }, {
-        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "bottom", "legendgroup": "b",
+        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "middle", "legendgroup": "b",
         "showlegend": false, "xaxis": "x4", "yaxis": "y4", "mode": "lines+markers"
     }, {
         "x": [3, 4 ,5], "y": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "a", "name": "top", "legendgroup": "t",
@@ -45,10 +45,10 @@
     },
 
     {
-        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "middle", "legendgroup": "m",
+        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "bottom", "legendgroup": "m",
         "showlegend": false, "xaxis": "x5", "yaxis": "y5"
     }, {
-        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "bottom", "legendgroup": "b",
+        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "middle", "legendgroup": "b",
         "showlegend": false, "xaxis": "x5", "yaxis": "y5"
     }, {
         "x": [3, 4 ,5], "y": [1, 2, 1], "line": {"color": "blue"}, "stackgroup": "a", "name": "top", "legendgroup": "t",
@@ -57,10 +57,10 @@
     },
 
     {
-        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "middle", "legendgroup": "m",
+        "x": [2, 5, 6], "y": [1, 3, 4], "line": {"color": "green"}, "stackgroup": "a", "name": "bottom", "legendgroup": "m",
         "showlegend": false, "xaxis": "x6", "yaxis": "y6"
     }, {
-        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "bottom", "legendgroup": "b",
+        "x": [1, 3, 5, 7], "y": [2, 6, 4, 5], "line": {"color": "red"}, "stackgroup": "a", "name": "middle", "legendgroup": "b",
         "showlegend": false, "xaxis": "x6", "yaxis": "y6",
         "groupnorm": "percent"
     }, {
