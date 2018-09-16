@@ -415,6 +415,8 @@ function drawTexts(g, gd, maxLength) {
         .call(Drawing.font, fullLayout.legend.font)
         .text(isEditable ? ensureLength(name, maxLength) : name);
 
+    svgTextUtils.positionText(textEl, constants.textOffsetX, 0);
+
     function textLayout(s) {
         svgTextUtils.convertToTspans(s, gd, function() {
             computeTextDimensions(g, gd);
@@ -520,7 +522,7 @@ function computeTextDimensions(g, gd) {
         height = mathjaxBB.height;
         width = mathjaxBB.width;
 
-        Drawing.setTranslate(mathjaxGroup, 40, (height / 4));
+        Drawing.setTranslate(mathjaxGroup, 0, (height / 4));
     }
     else {
         var text = g.select('.legendtext');
@@ -533,9 +535,7 @@ function computeTextDimensions(g, gd) {
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
         var textY = lineHeight * (0.3 + (1 - textLines) / 2);
-        // TODO: this 40 should go in a constants file (along with other
-        // values related to the legend symbol size)
-        svgTextUtils.positionText(text, 40, textY);
+        svgTextUtils.positionText(text, constants.textOffsetX, textY);
     }
 
     height = Math.max(height, 16) + 3;
