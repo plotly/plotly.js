@@ -812,7 +812,8 @@ proto.updateMainDrag = function(fullLayout) {
         var cpath;
 
         if(clampAndSetR0R1(rr0, rr1)) {
-            path1 = path0 + _this.pathSector(r1) + _this.pathSector(r0);
+            path1 = path0 + _this.pathSector(r1);
+            if(r0) path1 += _this.pathSector(r0);
             // keep 'starting' angle
             cpath = pathCorner(r0, a0) + pathCorner(r1, a0);
         }
@@ -837,7 +838,8 @@ proto.updateMainDrag = function(fullLayout) {
         var cpath;
 
         if(clampAndSetR0R1(rr0, rr1)) {
-            path1 = path0 + _this.pathSector(r1) + _this.pathSector(r0);
+            path1 = path0 + _this.pathSector(r1);
+            if(r0) path1 += _this.pathSector(r0);
             // keep 'starting' angle here too
             cpath = [
                 pathCornerForPolygons(r0, vangles0[0], vangles0[1]),
