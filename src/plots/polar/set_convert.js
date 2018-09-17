@@ -166,7 +166,7 @@ function setConvertAngular(ax, polarLayout) {
                 // Set the angular range in degrees to make auto-tick computation cleaner,
                 // changing rotation/direction should not affect the angular tick value.
                 ax.range = Lib.isFullCircle(sectorInRad) ?
-                    sector.slice() :
+                    [sector[0], sector[0] + 360] :
                     sectorInRad.map(g2rad).map(rad2deg);
                 break;
 
