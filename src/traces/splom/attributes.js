@@ -11,6 +11,7 @@
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 function makeAxesValObject(axLetter) {
     return {
@@ -86,7 +87,15 @@ module.exports = {
 
     // mode: {}, (only 'markers' for now)
 
-    text: scatterGlAttrs.text,
+    text: extendFlat({}, scatterGlAttrs.text, {
+        description: [
+            'Sets text elements associated with each (x,y) pair to appear on hover.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y) coordinates.'
+        ].join(' ')
+    }),
     marker: scatterGlAttrs.marker,
 
     xaxes: makeAxesValObject('x'),
