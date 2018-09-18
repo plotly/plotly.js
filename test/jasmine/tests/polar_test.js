@@ -13,6 +13,9 @@ var doubleClick = require('../assets/double_click');
 var drag = require('../assets/drag');
 var delay = require('../assets/delay');
 
+var customAssertions = require('../assets/custom_assertions');
+var assertNodeDisplay = customAssertions.assertNodeDisplay;
+
 describe('Test legacy polar plots logs:', function() {
     var gd;
 
@@ -625,6 +628,35 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert('relayout -> circular', {letter: 'A', cnt: 2});
         })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not attempt to draw radial axis when *polar.hole* is set to 1', function(done) {
+        var gd = createGraphDiv();
+
+        var queries = [
+            '.radial-axis', '.radial-grid', '.radial-line > line',
+            '.radialdrag', '.radialdrag-inner'
+        ];
+
+        function _assert(msg, showing) {
+            var exp = showing ? null : 'none';
+            var sp3 = d3.select(gd).select('.polarlayer > .polar');
+            queries.forEach(function(q) {
+                assertNodeDisplay(sp3.selectAll(q), [exp], msg + ' ' + q);
+            });
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            r: ['a', 'b', 'c']
+        }])
+        .then(function() { _assert('base', true); })
+        .then(function() { return Plotly.relayout(gd, 'polar.hole', 1); })
+        .then(function() { _assert('hole=1', false); })
+        .then(function() { return Plotly.relayout(gd, 'polar.hole', 0.2); })
+        .then(function() { _assert('hole=0.2', true); })
         .catch(failTest)
         .then(done);
     });

@@ -380,6 +380,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var radialLayout = polarLayout.radialaxis;
     var a0 = mod(polarLayout.sector[0], 360);
     var ax = _this.radialAxis;
+    var hasRoomForIt = innerRadius < radius;
 
     _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
     _this.fillViewInitialKey('radialaxis.range', ax.range.slice());
@@ -410,8 +411,10 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         _this.radialTickLayout = newTickLayout;
     }
 
-    ax.setScale();
-    doTicksSingle(gd, ax, true);
+    if(hasRoomForIt) {
+        ax.setScale();
+        doTicksSingle(gd, ax, true);
+    }
 
     // stash 'actual' radial axis angle for drag handlers (in degrees)
     var angle = _this.radialAxisAngle = _this.vangles ?
@@ -420,24 +423,31 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     var trans = strTranslate(cx, cy) + strRotate(-angle);
 
-    updateElement(layers['radial-axis'], radialLayout.showticklabels || radialLayout.ticks, {
-        transform: trans
-    });
+    updateElement(
+        layers['radial-axis'],
+        hasRoomForIt && (radialLayout.showticklabels || radialLayout.ticks),
+        {transform: trans}
+    );
 
     // move all grid paths to about circle center,
     // undo individual grid lines translations
-    updateElement(layers['radial-grid'], radialLayout.showgrid, {
-        transform: strTranslate(cx, cy)
-    })
-    .selectAll('path').attr('transform', null);
+    updateElement(
+        layers['radial-grid'],
+        hasRoomForIt && radialLayout.showgrid,
+        {transform: strTranslate(cx, cy)}
+    ).selectAll('path').attr('transform', null);
 
-    updateElement(layers['radial-line'].select('line'), radialLayout.showline, {
-        x1: innerRadius,
-        y1: 0,
-        x2: radius,
-        y2: 0,
-        transform: trans
-    })
+    updateElement(
+        layers['radial-line'].select('line'),
+        hasRoomForIt && radialLayout.showline,
+        {
+            x1: innerRadius,
+            y1: 0,
+            x2: radius,
+            y2: 0,
+            transform: trans
+        }
+    )
     .attr('stroke-width', radialLayout.linewidth)
     .call(Color.stroke, radialLayout.linecolor);
 };
@@ -802,7 +812,8 @@ proto.updateMainDrag = function(fullLayout) {
         var cpath;
 
         if(clampAndSetR0R1(rr0, rr1)) {
-            path1 = path0 + _this.pathSector(r1) + _this.pathSector(r0);
+            path1 = path0 + _this.pathSector(r1);
+            if(r0) path1 += _this.pathSector(r0);
             // keep 'starting' angle
             cpath = pathCorner(r0, a0) + pathCorner(r1, a0);
         }
@@ -827,7 +838,8 @@ proto.updateMainDrag = function(fullLayout) {
         var cpath;
 
         if(clampAndSetR0R1(rr0, rr1)) {
-            path1 = path0 + _this.pathSector(r1) + _this.pathSector(r0);
+            path1 = path0 + _this.pathSector(r1);
+            if(r0) path1 += _this.pathSector(r0);
             // keep 'starting' angle here too
             cpath = [
                 pathCornerForPolygons(r0, vangles0[0], vangles0[1]),
@@ -963,7 +975,10 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
 
     var radialDrag = dragBox.makeRectDragger(layers, className, 'crosshair', -bl2, -bl2, bl, bl);
     var dragOpts = {element: radialDrag, gd: gd};
-    d3.select(radialDrag).attr('transform', strTranslate(tx, ty));
+
+    updateElement(d3.select(radialDrag), radialAxis.visible && innerRadius < radius, {
+        transform: strTranslate(tx, ty)
+    });
 
     // move function (either rotate or re-range flavor)
     var moveFn2;
