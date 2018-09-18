@@ -539,4 +539,36 @@ describe('Plotly.validate', function() {
         var out = Plotly.validate(shapeMock.data, shapeMock.layout);
         expect(out).toBeUndefined();
     });
+
+    it('should work with *trace* layout attributes', function() {
+        var out = Plotly.validate([{
+            type: 'bar',
+            y: [1, 2, 1]
+        }, {
+            type: 'barpolar',
+            r: [1, 2, 3]
+        }, {
+            type: 'scatterpolar',
+            theta: [0, 90, 200],
+            subplot: 'polar2'
+        }], {
+            bargap: 0.3,
+            polar: {bargap: 0.2},
+            polar2: {bargap: 0.05},
+            polar3: {bargap: 0.4}
+        });
+
+        expect(out.length).toBe(1);
+        assertErrorContent(
+            out[0], 'unused', 'layout', null, ['polar3'], 'polar3',
+            'In layout, container polar3 did not get coerced'
+        );
+
+        // Plotly.validate should be more strict here.
+        //
+        // It should log an 'unused' warning for `polar2.bargap`,
+        // but trace layout attribute set in subplot containers are considered
+        // valid as long as one trace on that graph has those trace layout
+        // attributes.
+    });
 });
