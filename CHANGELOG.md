@@ -10,6 +10,22 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.41.1] -- 2018-09-18
+
+### Fixed
+- Bring back hover labels on "touch" hover (bug introduced in 1.29.0) [#2997]
+- Fix MathJax rendering in legends [#3018]
+- Fix fill and layering for multiple stack-groups and unstacked `scatter` traces [#3005]
+- Fix removal of `scatter` traces with set `stackgroup` [#3005]
+- Fix stacked area gap insertion edge case [#3017]
+- Fix zeroline logic for `splom`-generated axes [#3015]
+- Fix `error_x` and `error_y` on `scatter3d` w/o `error_z` [#3011]
+- Fix `scatter3d` error bars on log axes [#2992]
+- Fix `Plotly.react` when updating geo axis `dtick` [#3016]
+- Fix `polar.hole=1` case [#3021]
+- Fix handling of `polar.sector` that span more than 360 degrees [#3021]
+
+
 ## [1.41.0] -- 2018-09-12
 
 ### Added
