@@ -2521,6 +2521,8 @@ describe('hovermode defaults to', function() {
 
 
 describe('touch devices', function() {
+    afterEach(destroyGraphDiv);
+
     ['pan', 'zoom'].forEach(function(type) {
         describe('dragmode:' + type, function() {
             var data = [{x: [1, 2, 3], y: [1, 3, 2], type: 'bar'}];
