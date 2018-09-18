@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.41.0
+* plotly.js (gl2d) v1.41.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -52101,6 +52101,12 @@ dragElement.init = function init(options) {
         initialEvent = e;
         rightClick = e.buttons === 2 || e.ctrlKey;
 
+        // fix Fx.hover for touch events
+        if(typeof e.clientX === 'undefined' && typeof e.clientY === 'undefined') {
+            e.clientX = startX;
+            e.clientY = startY;
+        }
+
         newMouseDownTime = (new Date()).getTime();
         if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
             // in a click train
@@ -57904,7 +57910,8 @@ module.exports = {
     scrollBarWidth: 6,
     scrollBarMinHeight: 20,
     scrollBarColor: '#808BA4',
-    scrollBarMargin: 4
+    scrollBarMargin: 4,
+    textOffsetX: 40
 };
 
 },{}],373:[function(_dereq_,module,exports){
@@ -58143,236 +58150,239 @@ module.exports = function draw(gd) {
                 .call(setupTraceToggle, gd);
         });
 
-    if(firstRender) {
-        computeLegendDimensions(gd, groups, traces);
-        expandMargin(gd);
-    }
-
-    // Position and size the legend
-    var lxMin = 0,
-        lxMax = fullLayout.width,
-        lyMin = 0,
-        lyMax = fullLayout.height;
-
-    computeLegendDimensions(gd, groups, traces);
-
-    if(opts._height > lyMax) {
-        // If the legend doesn't fit in the plot area,
-        // do not expand the vertical margins.
-        expandHorizontalMargin(gd);
-    } else {
-        expandMargin(gd);
-    }
-
-    // Scroll section must be executed after repositionLegend.
-    // It requires the legend width, height, x and y to position the scrollbox
-    // and these values are mutated in repositionLegend.
-    var gs = fullLayout._size,
-        lx = gs.l + gs.w * opts.x,
-        ly = gs.t + gs.h * (1 - opts.y);
-
-    if(anchorUtils.isRightAnchor(opts)) {
-        lx -= opts._width;
-    }
-    else if(anchorUtils.isCenterAnchor(opts)) {
-        lx -= opts._width / 2;
-    }
-
-    if(anchorUtils.isBottomAnchor(opts)) {
-        ly -= opts._height;
-    }
-    else if(anchorUtils.isMiddleAnchor(opts)) {
-        ly -= opts._height / 2;
-    }
-
-    // Make sure the legend left and right sides are visible
-    var legendWidth = opts._width,
-        legendWidthMax = gs.w;
-
-    if(legendWidth > legendWidthMax) {
-        lx = gs.l;
-        legendWidth = legendWidthMax;
-    }
-    else {
-        if(lx + legendWidth > lxMax) lx = lxMax - legendWidth;
-        if(lx < lxMin) lx = lxMin;
-        legendWidth = Math.min(lxMax - lx, opts._width);
-    }
-
-    // Make sure the legend top and bottom are visible
-    // (legends with a scroll bar are not allowed to stretch beyond the extended
-    // margins)
-    var legendHeight = opts._height,
-        legendHeightMax = gs.h;
-
-    if(legendHeight > legendHeightMax) {
-        ly = gs.t;
-        legendHeight = legendHeightMax;
-    }
-    else {
-        if(ly + legendHeight > lyMax) ly = lyMax - legendHeight;
-        if(ly < lyMin) ly = lyMin;
-        legendHeight = Math.min(lyMax - ly, opts._height);
-    }
-
-    // Set size and position of all the elements that make up a legend:
-    // legend, background and border, scroll box and scroll bar
-    Drawing.setTranslate(legend, lx, ly);
-
-    // to be safe, remove previous listeners
-    scrollBar.on('.drag', null);
-    legend.on('wheel', null);
-
-    if(opts._height <= legendHeight || gd._context.staticPlot) {
-        // if scrollbar should not be shown.
-        bg.attr({
-            width: legendWidth - opts.borderwidth,
-            height: legendHeight - opts.borderwidth,
-            x: opts.borderwidth / 2,
-            y: opts.borderwidth / 2
-        });
-
-        Drawing.setTranslate(scrollBox, 0, 0);
-
-        clipPath.select('rect').attr({
-            width: legendWidth - 2 * opts.borderwidth,
-            height: legendHeight - 2 * opts.borderwidth,
-            x: opts.borderwidth,
-            y: opts.borderwidth
-        });
-
-        Drawing.setClipUrl(scrollBox, clipId);
-
-        Drawing.setRect(scrollBar, 0, 0, 0, 0);
-        delete opts._scrollY;
-    }
-    else {
-        var scrollBarHeight = Math.max(constants.scrollBarMinHeight,
-            legendHeight * legendHeight / opts._height);
-        var scrollBarYMax = legendHeight -
-            scrollBarHeight -
-            2 * constants.scrollBarMargin;
-        var scrollBoxYMax = opts._height - legendHeight;
-        var scrollRatio = scrollBarYMax / scrollBoxYMax;
-
-        var scrollBoxY = Math.min(opts._scrollY || 0, scrollBoxYMax);
-
-        // increase the background and clip-path width
-        // by the scrollbar width and margin
-        bg.attr({
-            width: legendWidth -
-                2 * opts.borderwidth +
-                constants.scrollBarWidth +
-                constants.scrollBarMargin,
-            height: legendHeight - opts.borderwidth,
-            x: opts.borderwidth / 2,
-            y: opts.borderwidth / 2
-        });
-
-        clipPath.select('rect').attr({
-            width: legendWidth -
-                2 * opts.borderwidth +
-                constants.scrollBarWidth +
-                constants.scrollBarMargin,
-            height: legendHeight - 2 * opts.borderwidth,
-            x: opts.borderwidth,
-            y: opts.borderwidth + scrollBoxY
-        });
-
-        Drawing.setClipUrl(scrollBox, clipId);
-
-        scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
-
-        legend.on('wheel', function() {
-            scrollBoxY = Lib.constrain(
-                opts._scrollY +
-                    d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
-                0, scrollBoxYMax);
-            scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
-            if(scrollBoxY !== 0 && scrollBoxY !== scrollBoxYMax) {
-                d3.event.preventDefault();
+    Lib.syncOrAsync([Plots.previousPromises,
+        function() {
+            if(firstRender) {
+                computeLegendDimensions(gd, groups, traces);
+                expandMargin(gd);
             }
-        });
 
-        var eventY0, scrollBoxY0;
+            // Position and size the legend
+            var lxMin = 0,
+                lxMax = fullLayout.width,
+                lyMin = 0,
+                lyMax = fullLayout.height;
 
-        var drag = d3.behavior.drag()
-        .on('dragstart', function() {
-            eventY0 = d3.event.sourceEvent.clientY;
-            scrollBoxY0 = scrollBoxY;
-        })
-        .on('drag', function() {
-            var e = d3.event.sourceEvent;
-            if(e.buttons === 2 || e.ctrlKey) return;
+            computeLegendDimensions(gd, groups, traces);
 
-            scrollBoxY = Lib.constrain(
-                (e.clientY - eventY0) / scrollRatio + scrollBoxY0,
-                0, scrollBoxYMax);
-            scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
-        });
+            if(opts._height > lyMax) {
+                // If the legend doesn't fit in the plot area,
+                // do not expand the vertical margins.
+                expandHorizontalMargin(gd);
+            } else {
+                expandMargin(gd);
+            }
 
-        scrollBar.call(drag);
-    }
+            // Scroll section must be executed after repositionLegend.
+            // It requires the legend width, height, x and y to position the scrollbox
+            // and these values are mutated in repositionLegend.
+            var gs = fullLayout._size,
+                lx = gs.l + gs.w * opts.x,
+                ly = gs.t + gs.h * (1 - opts.y);
 
+            if(anchorUtils.isRightAnchor(opts)) {
+                lx -= opts._width;
+            }
+            else if(anchorUtils.isCenterAnchor(opts)) {
+                lx -= opts._width / 2;
+            }
 
-    function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
-        opts._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
-        Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
+            if(anchorUtils.isBottomAnchor(opts)) {
+                ly -= opts._height;
+            }
+            else if(anchorUtils.isMiddleAnchor(opts)) {
+                ly -= opts._height / 2;
+            }
 
-        Drawing.setRect(
-            scrollBar,
-            legendWidth,
-            constants.scrollBarMargin + scrollBoxY * scrollRatio,
-            constants.scrollBarWidth,
-            scrollBarHeight
-        );
-        clipPath.select('rect').attr({
-            y: opts.borderwidth + scrollBoxY
-        });
-    }
+            // Make sure the legend left and right sides are visible
+            var legendWidth = opts._width,
+                legendWidthMax = gs.w;
 
-    if(gd._context.edits.legendPosition) {
-        var xf, yf, x0, y0;
+            if(legendWidth > legendWidthMax) {
+                lx = gs.l;
+                legendWidth = legendWidthMax;
+            }
+            else {
+                if(lx + legendWidth > lxMax) lx = lxMax - legendWidth;
+                if(lx < lxMin) lx = lxMin;
+                legendWidth = Math.min(lxMax - lx, opts._width);
+            }
 
-        legend.classed('cursor-move', true);
+            // Make sure the legend top and bottom are visible
+            // (legends with a scroll bar are not allowed to stretch beyond the extended
+            // margins)
+            var legendHeight = opts._height,
+                legendHeightMax = gs.h;
 
-        dragElement.init({
-            element: legend.node(),
-            gd: gd,
-            prepFn: function() {
-                var transform = Drawing.getTranslate(legend);
+            if(legendHeight > legendHeightMax) {
+                ly = gs.t;
+                legendHeight = legendHeightMax;
+            }
+            else {
+                if(ly + legendHeight > lyMax) ly = lyMax - legendHeight;
+                if(ly < lyMin) ly = lyMin;
+                legendHeight = Math.min(lyMax - ly, opts._height);
+            }
 
-                x0 = transform.x;
-                y0 = transform.y;
-            },
-            moveFn: function(dx, dy) {
-                var newX = x0 + dx,
-                    newY = y0 + dy;
+            // Set size and position of all the elements that make up a legend:
+            // legend, background and border, scroll box and scroll bar
+            Drawing.setTranslate(legend, lx, ly);
 
-                Drawing.setTranslate(legend, newX, newY);
+            // to be safe, remove previous listeners
+            scrollBar.on('.drag', null);
+            legend.on('wheel', null);
 
-                xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, opts.xanchor);
-                yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, opts.yanchor);
-            },
-            doneFn: function() {
-                if(xf !== undefined && yf !== undefined) {
-                    Registry.call('relayout', gd, {'legend.x': xf, 'legend.y': yf});
-                }
-            },
-            clickFn: function(numClicks, e) {
-                var clickedTrace = fullLayout._infolayer.selectAll('g.traces').filter(function() {
-                    var bbox = this.getBoundingClientRect();
-                    return (
-                        e.clientX >= bbox.left && e.clientX <= bbox.right &&
-                        e.clientY >= bbox.top && e.clientY <= bbox.bottom
-                    );
+            if(opts._height <= legendHeight || gd._context.staticPlot) {
+                // if scrollbar should not be shown.
+                bg.attr({
+                    width: legendWidth - opts.borderwidth,
+                    height: legendHeight - opts.borderwidth,
+                    x: opts.borderwidth / 2,
+                    y: opts.borderwidth / 2
                 });
-                if(clickedTrace.size() > 0) {
-                    clickOrDoubleClick(gd, legend, clickedTrace, numClicks, e);
-                }
+
+                Drawing.setTranslate(scrollBox, 0, 0);
+
+                clipPath.select('rect').attr({
+                    width: legendWidth - 2 * opts.borderwidth,
+                    height: legendHeight - 2 * opts.borderwidth,
+                    x: opts.borderwidth,
+                    y: opts.borderwidth
+                });
+
+                Drawing.setClipUrl(scrollBox, clipId);
+
+                Drawing.setRect(scrollBar, 0, 0, 0, 0);
+                delete opts._scrollY;
             }
-        });
-    }
+            else {
+                var scrollBarHeight = Math.max(constants.scrollBarMinHeight,
+                    legendHeight * legendHeight / opts._height);
+                var scrollBarYMax = legendHeight -
+                    scrollBarHeight -
+                    2 * constants.scrollBarMargin;
+                var scrollBoxYMax = opts._height - legendHeight;
+                var scrollRatio = scrollBarYMax / scrollBoxYMax;
+
+                var scrollBoxY = Math.min(opts._scrollY || 0, scrollBoxYMax);
+
+                // increase the background and clip-path width
+                // by the scrollbar width and margin
+                bg.attr({
+                    width: legendWidth -
+                        2 * opts.borderwidth +
+                        constants.scrollBarWidth +
+                        constants.scrollBarMargin,
+                    height: legendHeight - opts.borderwidth,
+                    x: opts.borderwidth / 2,
+                    y: opts.borderwidth / 2
+                });
+
+                clipPath.select('rect').attr({
+                    width: legendWidth -
+                        2 * opts.borderwidth +
+                        constants.scrollBarWidth +
+                        constants.scrollBarMargin,
+                    height: legendHeight - 2 * opts.borderwidth,
+                    x: opts.borderwidth,
+                    y: opts.borderwidth + scrollBoxY
+                });
+
+                Drawing.setClipUrl(scrollBox, clipId);
+
+                scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
+
+                legend.on('wheel', function() {
+                    scrollBoxY = Lib.constrain(
+                        opts._scrollY +
+                            d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
+                        0, scrollBoxYMax);
+                    scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
+                    if(scrollBoxY !== 0 && scrollBoxY !== scrollBoxYMax) {
+                        d3.event.preventDefault();
+                    }
+                });
+
+                var eventY0, scrollBoxY0;
+
+                var drag = d3.behavior.drag()
+                .on('dragstart', function() {
+                    eventY0 = d3.event.sourceEvent.clientY;
+                    scrollBoxY0 = scrollBoxY;
+                })
+                .on('drag', function() {
+                    var e = d3.event.sourceEvent;
+                    if(e.buttons === 2 || e.ctrlKey) return;
+
+                    scrollBoxY = Lib.constrain(
+                        (e.clientY - eventY0) / scrollRatio + scrollBoxY0,
+                        0, scrollBoxYMax);
+                    scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
+                });
+
+                scrollBar.call(drag);
+            }
+
+
+            function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
+                opts._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
+                Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
+
+                Drawing.setRect(
+                    scrollBar,
+                    legendWidth,
+                    constants.scrollBarMargin + scrollBoxY * scrollRatio,
+                    constants.scrollBarWidth,
+                    scrollBarHeight
+                );
+                clipPath.select('rect').attr({
+                    y: opts.borderwidth + scrollBoxY
+                });
+            }
+
+            if(gd._context.edits.legendPosition) {
+                var xf, yf, x0, y0;
+
+                legend.classed('cursor-move', true);
+
+                dragElement.init({
+                    element: legend.node(),
+                    gd: gd,
+                    prepFn: function() {
+                        var transform = Drawing.getTranslate(legend);
+
+                        x0 = transform.x;
+                        y0 = transform.y;
+                    },
+                    moveFn: function(dx, dy) {
+                        var newX = x0 + dx,
+                            newY = y0 + dy;
+
+                        Drawing.setTranslate(legend, newX, newY);
+
+                        xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, opts.xanchor);
+                        yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, opts.yanchor);
+                    },
+                    doneFn: function() {
+                        if(xf !== undefined && yf !== undefined) {
+                            Registry.call('relayout', gd, {'legend.x': xf, 'legend.y': yf});
+                        }
+                    },
+                    clickFn: function(numClicks, e) {
+                        var clickedTrace = fullLayout._infolayer.selectAll('g.traces').filter(function() {
+                            var bbox = this.getBoundingClientRect();
+                            return (
+                                e.clientX >= bbox.left && e.clientX <= bbox.right &&
+                                e.clientY >= bbox.top && e.clientY <= bbox.bottom
+                            );
+                        });
+                        if(clickedTrace.size() > 0) {
+                            clickOrDoubleClick(gd, legend, clickedTrace, numClicks, e);
+                        }
+                    }
+                });
+            }
+        }], gd);
 };
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
@@ -58430,6 +58440,8 @@ function drawTexts(g, gd, maxLength) {
         .classed('user-select-none', true)
         .call(Drawing.font, fullLayout.legend.font)
         .text(isEditable ? ensureLength(name, maxLength) : name);
+
+    svgTextUtils.positionText(textEl, constants.textOffsetX, 0);
 
     function textLayout(s) {
         svgTextUtils.convertToTspans(s, gd, function() {
@@ -58549,9 +58561,7 @@ function computeTextDimensions(g, gd) {
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
         var textY = lineHeight * (0.3 + (1 - textLines) / 2);
-        // TODO: this 40 should go in a constants file (along with other
-        // values related to the legend symbol size)
-        svgTextUtils.positionText(text, 40, textY);
+        svgTextUtils.positionText(text, constants.textOffsetX, textY);
     }
 
     height = Math.max(height, 16) + 3;
@@ -66475,7 +66485,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.41.0';
+exports.version = '1.41.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -66600,11 +66610,13 @@ function rad2deg(rad) { return rad / PI * 180; }
  * is sector a full circle?
  * ... this comes up a lot in SVG path-drawing routines
  *
+ * N.B. we consider all sectors that span more that 2pi 'full' circles
+ *
  * @param {2-item array} aBnds : angular bounds in *radians*
  * @return {boolean}
  */
 function isFullCircle(aBnds) {
-    return Math.abs(Math.abs(aBnds[1] - aBnds[0]) - twoPI) < 1e-15;
+    return Math.abs(aBnds[1] - aBnds[0]) > twoPI - 1e-15;
 }
 
 /**
@@ -76410,14 +76422,15 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
 
         if(key.charAt(0) === '_' || typeof oldVal === 'function' || oldVal === newVal) continue;
 
-        // FIXME: ax.tick0 and dtick get filled in during plotting, and unlike other auto values
-        // they don't make it back into the input, so newContainer won't have them.
-        // similar for axis ranges for 3D
-        // contourcarpet doesn't HAVE zmin/zmax, they're just auto-added. It needs them.
-        if(key === 'tick0' || key === 'dtick') {
+        // FIXME: ax.tick0 and dtick get filled in during plotting (except for geo subplots),
+        // and unlike other auto values they don't make it back into the input,
+        // so newContainer won't have them.
+        if((key === 'tick0' || key === 'dtick') && outerparts[0] !== 'geo') {
             var tickMode = newContainer.tickmode;
             if(tickMode === 'auto' || tickMode === 'array' || !tickMode) continue;
         }
+        // FIXME: Similarly for axis ranges for 3D
+        // contourcarpet doesn't HAVE zmin/zmax, they're just auto-added. It needs them.
         if(key === 'range' && newContainer.autorange) continue;
         if((key === 'zmin' || key === 'zmax') && newContainer.type === 'contourcarpet') continue;
 
@@ -82701,19 +82714,13 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         vals = vals.filter(ax._tickFilter);
     }
 
-    // remove zero lines, grid lines, and inside ticks if they're within
-    // 1 pixel of the end
+    // Remove zero lines, grid lines, and inside ticks if they're within
+    // 1 pixel of the end.
     // The key case here is removing zero lines when the axis bound is zero.
-    function clipEnds(d) {
-        var p = ax.l2p(d.x);
-        return (p > 1 && p < ax._length - 1);
-    }
-    var valsClipped = vals.filter(clipEnds);
-
-    // don't clip angular values
-    if(isAngular(ax)) {
-        valsClipped = vals;
-    }
+    // Don't clip angular values.
+    var valsClipped = ax._valsClipped = isAngular(ax) ?
+        vals :
+        vals.filter(function(d) { return clipEnds(ax, d.x); });
 
     function drawTicks(container, tickpath) {
         var ticks = container.selectAll('path.' + tcls)
@@ -83156,69 +83163,17 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         });
     }
 
-    function traceHasBarsOrFill(trace, subplot) {
-        if(trace.visible !== true || trace.xaxis + trace.yaxis !== subplot) return false;
-        if(Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter]) return true;
-        return trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter;
-    }
-
-    function lineNearZero(ax2, position) {
-        if(!ax2.showline || !ax2.linewidth) return false;
-        var tolerance = Math.max((ax2.linewidth + ax.zerolinewidth) / 2, 1);
-
-        function closeEnough(pos2) {
-            return typeof pos2 === 'number' && Math.abs(pos2 - position) < tolerance;
-        }
-
-        if(closeEnough(ax2._mainLinePosition) || closeEnough(ax2._mainMirrorPosition)) {
-            return true;
-        }
-        var linePositions = ax2._linepositions || {};
-        for(var k in linePositions) {
-            if(closeEnough(linePositions[k][0]) || closeEnough(linePositions[k][1])) {
-                return true;
-            }
-        }
-    }
-
-    function anyCounterAxLineAtZero(counterAxis, rng) {
-        var mainCounterAxis = counterAxis._mainAxis;
-        if(!mainCounterAxis) return;
-
-        var zeroPosition = ax._offset + (
-            ((Math.abs(rng[0]) < Math.abs(rng[1])) === (axLetter === 'x')) ?
-            0 : ax._length
-        );
-
-        var plotinfo = fullLayout._plots[counterAxis._mainSubplot];
-        if(!(plotinfo.mainplotinfo || plotinfo).overlays.length) {
-            return lineNearZero(counterAxis, zeroPosition);
-        }
-
-        var counterLetterAxes = axes.list(gd, counterLetter);
-        for(var i = 0; i < counterLetterAxes.length; i++) {
-            var counterAxis2 = counterLetterAxes[i];
-            if(
-                counterAxis2._mainAxis === mainCounterAxis &&
-                lineNearZero(counterAxis2, zeroPosition)
-            ) {
-                return true;
-            }
-        }
-    }
-
-    function drawGrid(plotinfo, counteraxis, subplot) {
+    function drawGrid(plotinfo, counteraxis) {
         if(fullLayout._hasOnlyLargeSploms) return;
 
         var gridcontainer = plotinfo.gridlayer.selectAll('.' + axid);
         var zlcontainer = plotinfo.zerolinelayer;
-        var gridvals = plotinfo['hidegrid' + axLetter] ? [] : valsClipped;
         var gridpath = ax._gridpath || ((axLetter === 'x' ?
                 ('M0,' + counteraxis._offset + 'v') :
                 ('M' + counteraxis._offset + ',0h')
             ) + counteraxis._length);
         var grid = gridcontainer.selectAll('path.' + gcls)
-            .data((ax.showgrid === false) ? [] : gridvals, datafn);
+            .data((ax.showgrid === false) ? [] : valsClipped, datafn);
         grid.enter().append('path').classed(gcls, 1)
             .classed('crisp', 1)
             .attr('d', gridpath)
@@ -83236,24 +83191,8 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
 
         // zero line
         if(zlcontainer) {
-            var hasBarsOrFill = false;
-            for(var i = 0; i < gd._fullData.length; i++) {
-                if(traceHasBarsOrFill(gd._fullData[i], subplot)) {
-                    hasBarsOrFill = true;
-                    break;
-                }
-            }
-            var rng = Lib.simpleMap(ax.range, ax.r2l);
             var zlData = {x: 0, id: axid};
-
-            var showZl = (rng[0] * rng[1] <= 0) && ax.zeroline &&
-                (ax.type === 'linear' || ax.type === '-') && gridvals.length &&
-                (
-                    hasBarsOrFill ||
-                    clipEnds(zlData) ||
-                    !anyCounterAxLineAtZero(counteraxis, rng)
-                );
-
+            var showZl = axes.shouldShowZeroLine(gd, ax, counteraxis);
             var zl = zlcontainer.selectAll('path.' + zcls)
                 .data(showZl ? [zlData] : []);
             zl.enter().append('path').classed(zcls, 1).classed('zl', 1)
@@ -83340,6 +83279,96 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         return drawLabels(mainContainer, ax._mainLinePosition);
     }
 };
+
+axes.shouldShowZeroLine = function(gd, ax, counterAxis) {
+    var rng = Lib.simpleMap(ax.range, ax.r2l);
+    return (
+        (rng[0] * rng[1] <= 0) &&
+        ax.zeroline &&
+        (ax.type === 'linear' || ax.type === '-') &&
+        ax._valsClipped.length &&
+        (
+            clipEnds(ax, 0) ||
+            !anyCounterAxLineAtZero(gd, ax, counterAxis, rng) ||
+            hasBarsOrFill(gd, ax)
+        )
+    );
+};
+
+function clipEnds(ax, l) {
+    var p = ax.l2p(l);
+    return (p > 1 && p < ax._length - 1);
+}
+
+function anyCounterAxLineAtZero(gd, ax, counterAxis, rng) {
+    var mainCounterAxis = counterAxis._mainAxis;
+    if(!mainCounterAxis) return;
+
+    var fullLayout = gd._fullLayout;
+    var axLetter = ax._id.charAt(0);
+    var counterLetter = axes.counterLetter(ax._id);
+
+    var zeroPosition = ax._offset + (
+        ((Math.abs(rng[0]) < Math.abs(rng[1])) === (axLetter === 'x')) ?
+        0 : ax._length
+    );
+
+    function lineNearZero(ax2) {
+        if(!ax2.showline || !ax2.linewidth) return false;
+        var tolerance = Math.max((ax2.linewidth + ax.zerolinewidth) / 2, 1);
+
+        function closeEnough(pos2) {
+            return typeof pos2 === 'number' && Math.abs(pos2 - zeroPosition) < tolerance;
+        }
+
+        if(closeEnough(ax2._mainLinePosition) || closeEnough(ax2._mainMirrorPosition)) {
+            return true;
+        }
+        var linePositions = ax2._linepositions || {};
+        for(var k in linePositions) {
+            if(closeEnough(linePositions[k][0]) || closeEnough(linePositions[k][1])) {
+                return true;
+            }
+        }
+    }
+
+    var plotinfo = fullLayout._plots[counterAxis._mainSubplot];
+    if(!(plotinfo.mainplotinfo || plotinfo).overlays.length) {
+        return lineNearZero(counterAxis, zeroPosition);
+    }
+
+    var counterLetterAxes = axes.list(gd, counterLetter);
+    for(var i = 0; i < counterLetterAxes.length; i++) {
+        var counterAxis2 = counterLetterAxes[i];
+        if(
+            counterAxis2._mainAxis === mainCounterAxis &&
+            lineNearZero(counterAxis2, zeroPosition)
+        ) {
+            return true;
+        }
+    }
+}
+
+function hasBarsOrFill(gd, ax) {
+    var fullData = gd._fullData;
+    var subplot = ax._mainSubplot;
+    var axLetter = ax._id.charAt(0);
+
+    for(var i = 0; i < fullData.length; i++) {
+        var trace = fullData[i];
+
+        if(trace.visible === true &&
+            (trace.xaxis + trace.yaxis) === subplot &&
+            (
+                Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter] ||
+                trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter
+            )
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
 
 /**
  * Find all margin pushers for 2D axes and reserve them for later use
@@ -103471,7 +103500,7 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
     var fullLayout = gd._fullLayout;
     var xId = xa._id;
     var yId = ya._id;
-    var firstScatter = fullLayout._firstScatter[xId + yId + trace.type] === trace.uid;
+    var firstScatter = fullLayout._firstScatter[firstScatterGroup(trace)] === trace.uid;
     var stackOrientation = (getStackOpts(trace, fullLayout, xa, ya) || {}).orientation;
     var fill = trace.fill;
 
@@ -103575,9 +103604,15 @@ function calcMarkerSize(trace, serieslen) {
  * per-trace calc this will get confused.
  */
 function setFirstScatter(fullLayout, trace) {
-    var subplotAndType = trace.xaxis + trace.yaxis + trace.type;
+    var group = firstScatterGroup(trace);
     var firstScatter = fullLayout._firstScatter;
-    if(!firstScatter[subplotAndType]) firstScatter[subplotAndType] = trace.uid;
+    if(!firstScatter[group]) firstScatter[group] = trace.uid;
+}
+
+function firstScatterGroup(trace) {
+    var stackGroup = trace.stackgroup;
+    return trace.xaxis + trace.yaxis + trace.type +
+        (stackGroup ? '-' + stackGroup : '');
 }
 
 function getStackOpts(trace, fullLayout, xa, ya) {
@@ -103750,48 +103785,6 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
     var groupOpts, interpolate, groupnorm, posAttr, valAttr;
     var hasAnyBlanks;
 
-    function insertBlank(calcTrace, index, position, traceIndex) {
-        hasAnyBlanks[traceIndex] = true;
-        var newEntry = {
-            i: null,
-            gap: true,
-            s: 0
-        };
-        newEntry[posAttr] = position;
-        calcTrace.splice(index, 0, newEntry);
-        // Even if we're not interpolating, if one trace has multiple
-        // values at the same position and this trace only has one value there,
-        // we just duplicate that one value rather than insert a zero.
-        // We also make it look like a real point - because it's ambiguous which
-        // one really is the real one!
-        if(index && position === calcTrace[index - 1][posAttr]) {
-            var prevEntry = calcTrace[index - 1];
-            newEntry.s = prevEntry.s;
-            // TODO is it going to cause any problems to have multiple
-            // calcdata points with the same index?
-            newEntry.i = prevEntry.i;
-            newEntry.gap = prevEntry.gap;
-        }
-        else if(interpolate) {
-            newEntry.s = getInterp(calcTrace, index, position);
-        }
-        if(!index) {
-            // t and trace need to stay on the first cd entry
-            cd[0].t = cd[1].t;
-            cd[0].trace = cd[1].trace;
-            delete cd[1].t;
-            delete cd[1].trace;
-        }
-    }
-
-    function getInterp(calcTrace, index, position) {
-        var pt0 = calcTrace[index - 1];
-        var pt1 = calcTrace[index + 1];
-        if(!pt1) return pt0.s;
-        if(!pt0) return pt1.s;
-        return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
-    }
-
     for(var stackGroup in subplotStackOpts) {
         groupOpts = subplotStackOpts[stackGroup];
         var indices = groupOpts.traceIndices;
@@ -103831,20 +103824,20 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
                 posj = cd[j][posAttr];
                 for(; posj > allPositions[k] && k < allPositions.length; k++) {
                     // the current trace is missing a position from some previous trace(s)
-                    insertBlank(cd, j, allPositions[k], i);
+                    insertBlank(cd, j, allPositions[k], i, hasAnyBlanks, interpolate, posAttr);
                     j++;
                 }
                 if(posj !== allPositions[k]) {
                     // previous trace(s) are missing a position from the current trace
                     for(i2 = 0; i2 < i; i2++) {
-                        insertBlank(calcTraces[indices[i2]], k, posj, i2);
+                        insertBlank(calcTraces[indices[i2]], k, posj, i2, hasAnyBlanks, interpolate, posAttr);
                     }
                     allPositions.splice(k, 0, posj);
                 }
                 k++;
             }
             for(; k < allPositions.length; k++) {
-                insertBlank(cd, j, allPositions[k], i);
+                insertBlank(cd, j, allPositions[k], i, hasAnyBlanks, interpolate, posAttr);
                 j++;
             }
         }
@@ -103899,6 +103892,48 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         }
     }
 };
+
+function insertBlank(calcTrace, index, position, traceIndex, hasAnyBlanks, interpolate, posAttr) {
+    hasAnyBlanks[traceIndex] = true;
+    var newEntry = {
+        i: null,
+        gap: true,
+        s: 0
+    };
+    newEntry[posAttr] = position;
+    calcTrace.splice(index, 0, newEntry);
+    // Even if we're not interpolating, if one trace has multiple
+    // values at the same position and this trace only has one value there,
+    // we just duplicate that one value rather than insert a zero.
+    // We also make it look like a real point - because it's ambiguous which
+    // one really is the real one!
+    if(index && position === calcTrace[index - 1][posAttr]) {
+        var prevEntry = calcTrace[index - 1];
+        newEntry.s = prevEntry.s;
+        // TODO is it going to cause any problems to have multiple
+        // calcdata points with the same index?
+        newEntry.i = prevEntry.i;
+        newEntry.gap = prevEntry.gap;
+    }
+    else if(interpolate) {
+        newEntry.s = getInterp(calcTrace, index, position, posAttr);
+    }
+    if(!index) {
+        // t and trace need to stay on the first cd entry
+        calcTrace[0].t = calcTrace[1].t;
+        calcTrace[0].trace = calcTrace[1].trace;
+        delete calcTrace[1].t;
+        delete calcTrace[1].trace;
+    }
+}
+
+function getInterp(calcTrace, index, position, posAttr) {
+    var pt0 = calcTrace[index - 1];
+    var pt1 = calcTrace[index + 1];
+    if(!pt1) return pt0.s;
+    if(!pt0) return pt1.s;
+    return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
+}
 
 },{"./calc":594}],600:[function(_dereq_,module,exports){
 /**
@@ -104888,12 +104923,56 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
 
 'use strict';
 
-module.exports = function linkTraces(gd, plotinfo, cdscatter) {
-    var trace, i;
-    var prevtrace = null;
+var LINKEDFILLS = {tonextx: 1, tonexty: 1, tonext: 1};
 
-    for(i = 0; i < cdscatter.length; ++i) {
+module.exports = function linkTraces(gd, plotinfo, cdscatter) {
+    var trace, i, group, prevtrace, groupIndex;
+
+    // first sort traces to keep stacks & filled-together groups together
+    var groupIndices = {};
+    var needsSort = false;
+    var prevGroupIndex = -1;
+    var nextGroupIndex = 0;
+    var prevUnstackedGroupIndex = -1;
+    for(i = 0; i < cdscatter.length; i++) {
         trace = cdscatter[i][0].trace;
+        group = trace.stackgroup || '';
+        if(group) {
+            if(group in groupIndices) {
+                groupIndex = groupIndices[group];
+            }
+            else {
+                groupIndex = groupIndices[group] = nextGroupIndex;
+                nextGroupIndex++;
+            }
+        }
+        else if(trace.fill in LINKEDFILLS && prevUnstackedGroupIndex >= 0) {
+            groupIndex = prevUnstackedGroupIndex;
+        }
+        else {
+            groupIndex = prevUnstackedGroupIndex = nextGroupIndex;
+            nextGroupIndex++;
+        }
+
+        if(groupIndex < prevGroupIndex) needsSort = true;
+        trace._groupIndex = prevGroupIndex = groupIndex;
+    }
+
+    var cdscatterSorted = cdscatter.slice();
+    if(needsSort) {
+        cdscatterSorted.sort(function(a, b) {
+            var traceA = a[0].trace;
+            var traceB = b[0].trace;
+            return (traceA._groupIndex - traceB._groupIndex) ||
+                (traceA.index - traceB.index);
+        });
+    }
+
+    // now link traces to each other
+    var prevtraces = {};
+    for(i = 0; i < cdscatterSorted.length; i++) {
+        trace = cdscatterSorted[i][0].trace;
+        group = trace.stackgroup || '';
 
         // Note: The check which ensures all cdscatter here are for the same axis and
         // are either cartesian or scatterternary has been removed. This code assumes
@@ -104902,19 +104981,22 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
         if(trace.visible === true) {
             trace._nexttrace = null;
 
-            if(['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1) {
-                trace._prevtrace = prevtrace;
+            if(trace.fill in LINKEDFILLS) {
+                prevtrace = prevtraces[group];
+                trace._prevtrace = prevtrace || null;
 
                 if(prevtrace) {
                     prevtrace._nexttrace = trace;
                 }
             }
 
-            prevtrace = trace;
+            prevtraces[group] = trace;
         } else {
             trace._prevtrace = trace._nexttrace = null;
         }
     }
+
+    return cdscatterSorted;
 };
 
 },{}],610:[function(_dereq_,module,exports){
@@ -105086,15 +105168,18 @@ var linkTraces = _dereq_('./link_traces');
 var polygonTester = _dereq_('../../lib/polygon').tester;
 
 module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transitionOpts, makeOnCompleteCallback) {
-    var i, uids, join, onComplete;
+    var join, onComplete;
 
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionOpts;
     var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
 
+    // Link traces so the z-order of fill layers is correct
+    var cdscatterSorted = linkTraces(gd, plotinfo, cdscatter);
+
     join = scatterLayer.selectAll('g.trace')
-        .data(cdscatter, function(d) { return d[0].trace.uid; });
+        .data(cdscatterSorted, function(d) { return d[0].trace.uid; });
 
     // Append new traces:
     join.enter().append('g')
@@ -105102,26 +105187,9 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
             return 'trace scatter trace' + d[0].trace.uid;
         })
         .style('stroke-miterlimit', 2);
-
-    // After the elements are created but before they've been draw, we have to perform
-    // this extra step of linking the traces. This allows appending of fill layers so that
-    // the z-order of fill layers is correct.
-    linkTraces(gd, plotinfo, cdscatter);
+    join.order();
 
     createFills(gd, join, plotinfo);
-
-    // Sort the traces, once created, so that the ordering is preserved even when traces
-    // are shown and hidden. This is needed since we're not just wiping everything out
-    // and recreating on every update.
-    for(i = 0, uids = {}; i < cdscatter.length; i++) {
-        uids[cdscatter[i][0].trace.uid] = i;
-    }
-
-    join.sort(function(a, b) {
-        var idx1 = uids[a[0].trace.uid];
-        var idx2 = uids[b[0].trace.uid];
-        return idx1 - idx2;
-    });
 
     if(hasTransition) {
         if(makeOnCompleteCallback) {
@@ -105145,12 +105213,12 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
             // Must run the selection again since otherwise enters/updates get grouped together
             // and these get executed out of order. Except we need them in order!
             scatterLayer.selectAll('g.trace').each(function(d, i) {
-                plotOne(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
+                plotOne(gd, i, plotinfo, d, cdscatterSorted, this, transitionOpts);
             });
         });
     } else {
-        scatterLayer.selectAll('g.trace').each(function(d, i) {
-            plotOne(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
+        join.each(function(d, i) {
+            plotOne(gd, i, plotinfo, d, cdscatterSorted, this, transitionOpts);
         });
     }
 
@@ -107905,11 +107973,11 @@ module.exports = {
 var createLine = _dereq_('regl-line2d');
 
 var Registry = _dereq_('../../registry');
-var Lib = _dereq_('../../lib');
 var prepareRegl = _dereq_('../../lib/prepare_regl');
 var getModuleCalcData = _dereq_('../../plots/get_data').getModuleCalcData;
 var Cartesian = _dereq_('../../plots/cartesian');
-var AxisIDs = _dereq_('../../plots/cartesian/axis_ids');
+var getFromId = _dereq_('../../plots/cartesian/axis_ids').getFromId;
+var shouldShowZeroLine = _dereq_('../../plots/cartesian/axes').shouldShowZeroLine;
 
 var SPLOM = 'splom';
 
@@ -107957,13 +108025,13 @@ function dragOne(gd, trace, stash, scene) {
         var i = visibleDims[k];
         var rng = ranges[k] = new Array(4);
 
-        var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+        var xa = getFromId(gd, trace._diag[i][0]);
         if(xa) {
             rng[0] = xa.r2l(xa.range[0]);
             rng[2] = xa.r2l(xa.range[1]);
         }
 
-        var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+        var ya = getFromId(gd, trace._diag[i][1]);
         if(ya) {
             rng[1] = ya.r2l(ya.range[0]);
             rng[3] = ya.r2l(ya.range[1]);
@@ -108038,17 +108106,17 @@ function makeGridData(gd) {
                 push('grid', xa, x, yOffset, x, yOffset + ya._length);
             }
         }
-        if(showZeroLine(xa)) {
-            x = xa._offset + xa.l2p(0);
-            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
-        }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
                 y = yOffset + yb + ym * yVals[k].x;
                 push('grid', ya, xa._offset, y, xa._offset + xa._length, y);
             }
         }
-        if(showZeroLine(ya)) {
+        if(shouldShowZeroLine(gd, xa, ya)) {
+            x = xa._offset + xa.l2p(0);
+            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
+        }
+        if(shouldShowZeroLine(gd, ya, xa)) {
             y = yOffset + yb + 0;
             push('zeroline', ya, xa._offset, y, xa._offset + xa._length, y);
         }
@@ -108060,20 +108128,6 @@ function makeGridData(gd) {
     }
 
     return gridBatches;
-}
-
-// just like in Axes.doTicks but without the loop over traces
-function showZeroLine(ax) {
-    var rng = Lib.simpleMap(ax.range, ax.r2l);
-    var p0 = ax.l2p(0);
-
-    return (
-        ax.zeroline &&
-        ax._vals && ax._vals.length &&
-        (rng[0] * rng[1] <= 0) &&
-        (ax.type === 'linear' || ax.type === '-') &&
-        ((p0 > 1 && p0 < ax._length - 1) || !ax.showline)
-    );
 }
 
 function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
@@ -108159,7 +108213,7 @@ module.exports = {
     toSVG: Cartesian.toSVG
 };
 
-},{"../../lib":440,"../../lib/prepare_regl":454,"../../plots/cartesian":499,"../../plots/cartesian/axis_ids":491,"../../plots/get_data":516,"../../registry":532,"regl-line2d":254}],628:[function(_dereq_,module,exports){
+},{"../../lib/prepare_regl":454,"../../plots/cartesian":499,"../../plots/cartesian/axes":488,"../../plots/cartesian/axis_ids":491,"../../plots/get_data":516,"../../registry":532,"regl-line2d":254}],628:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -108251,7 +108305,7 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     // fill in splom subplot keys
     for(i = 0; i < axLength; i++) {
         for(j = 0; j < axLength; j++) {
-            var id = [xaxes[i] + yaxes[j]];
+            var id = xaxes[i] + yaxes[j];
 
             if(i > j && showUpper) {
                 layout._splomSubplots[id] = 1;

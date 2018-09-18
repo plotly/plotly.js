@@ -7,7 +7,7 @@ Click to enter Component C title                       // plots/ternary/ternary.
 Click to enter Plot title                              // plot_api/plot_api.js:547
 Click to enter X axis title                            // plots/plots.js:328
 Click to enter Y axis title                            // plots/plots.js:329
-Click to enter radial axis title                       // plots/polar/polar.js:471
+Click to enter radial axis title                       // plots/polar/polar.js:481
 Compare data on hover                                  // components/modebar/buttons.js:178
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:89
 Double-click to zoom back out                          // plots/cartesian/dragbox.js:1036
