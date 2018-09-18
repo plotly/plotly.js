@@ -1687,8 +1687,17 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            if(o.l + o.r > fullLayout.width * 0.5) o.l = o.r = 0;
-            if(o.b + o.t > fullLayout.height * 0.5) o.b = o.t = 0;
+            var rescaleFactor;
+            if(o.l + o.r > (fullLayout.width * 0.5)) {
+                rescaleFactor = (fullLayout.width * 0.5) / (o.l + o.r);
+                o.l *= rescaleFactor;
+                o.r *= rescaleFactor;
+            }
+            if(o.b + o.t > (fullLayout.height * 0.5)) {
+                rescaleFactor = (fullLayout.height * 0.5) / (o.b + o.t);
+                o.b *= rescaleFactor;
+                o.t *= rescaleFactor;
+            }
 
             var xl = o.xl !== undefined ? o.xl : o.x;
             var xr = o.xr !== undefined ? o.xr : o.x;

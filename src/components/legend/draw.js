@@ -170,10 +170,9 @@ module.exports = function draw(gd) {
 
             // Make sure the legend left and right sides are visible
             var legendWidth = opts._width,
-                legendWidthMax = gs.w;
+                legendWidthMax = gs.w * Math.max(1 - opts.x, 1);
 
             if(legendWidth > legendWidthMax) {
-                lx = gs.l;
                 legendWidth = legendWidthMax;
             }
             else {
@@ -186,11 +185,14 @@ module.exports = function draw(gd) {
             // (legends with a scroll bar are not allowed to stretch beyond the extended
             // margins)
             var legendHeight = opts._height,
-                legendHeightMax = gs.h;
+                legendHeightMax = gs.h * Math.max(opts.y, 1);
 
+            var padY = 12;
             if(legendHeight > legendHeightMax) {
-                ly = gs.t;
                 legendHeight = legendHeightMax;
+                if(!helpers.isVertical(opts)) {
+                    ly += padY;
+                }
             }
             else {
                 if(ly + legendHeight > lyMax) ly = lyMax - legendHeight;
@@ -642,12 +644,13 @@ function computeLegendDimensions(gd, groups, traces) {
         });
 
         // check if legend fits in one row
-        oneRowLegend = fullLayout._size.w > borderwidth + fullTracesWidth - traceGap;
+        var legendWidthMax = fullLayout._size.w * Math.max(1 - opts.x, 1);
+        oneRowLegend = legendWidthMax > borderwidth + fullTracesWidth - traceGap;
         traces.each(function(d) {
             var legendItem = d[0],
                 traceWidth = oneRowLegend ? 40 + d[0].width : maxTraceWidth;
 
-            if((borderwidth + offsetX + traceGap + traceWidth) > fullLayout._size.w) {
+            if((borderwidth + offsetX + traceGap + traceWidth) > legendWidthMax) {
                 offsetX = 0;
                 rowHeight = rowHeight + maxTraceHeight;
                 opts._height = opts._height + maxTraceHeight;
