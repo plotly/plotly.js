@@ -13,6 +13,7 @@ var click = require('../assets/click');
 var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var failTest = require('../assets/fail_test');
+var touchEvent = require('../assets/touch_event');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -20,6 +21,20 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var assertElemRightTo = customAssertions.assertElemRightTo;
 var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
 var assertElemInside = customAssertions.assertElemInside;
+
+function touch(path, options) {
+    var len = path.length;
+    Lib.clearThrottle();
+    touchEvent('touchstart', path[0][0], path[0][1], options);
+
+    path.slice(1, len).forEach(function(pt) {
+        Lib.clearThrottle();
+        touchEvent('touchmove', pt[0], pt[1], options);
+    });
+
+    touchEvent('touchend', path[len - 1][0], path[len - 1][1], options);
+    return;
+}
 
 describe('hover info', function() {
     'use strict';
@@ -2501,5 +2516,45 @@ describe('hovermode defaults to', function() {
           })
           .catch(failTest)
           .then(done);
+    });
+});
+
+
+describe('touch devices', function() {
+    afterEach(destroyGraphDiv);
+
+    ['pan', 'zoom'].forEach(function(type) {
+        describe('dragmode:' + type, function() {
+            var data = [{x: [1, 2, 3], y: [1, 3, 2], type: 'bar'}];
+            var layout = {width: 600, height: 400, dragmode: type};
+            var gd;
+
+            beforeEach(function(done) {
+                gd = createGraphDiv();
+                Plotly.plot(gd, data, layout).then(done);
+            });
+
+            it('emits click events', function(done) {
+                var hoverHandler = jasmine.createSpy('hover');
+                var clickHandler = jasmine.createSpy('click');
+                gd.on('plotly_hover', hoverHandler);
+                gd.on('plotly_click', clickHandler);
+
+                var gdBB = gd.getBoundingClientRect();
+                var touchPoint = [[gdBB.left + 300, gdBB.top + 200]];
+
+                Promise.resolve()
+                    .then(function() {
+                        touch(touchPoint);
+                    })
+                    .then(delay(HOVERMINTIME * 1.1))
+                    .then(function() {
+                        expect(clickHandler).toHaveBeenCalled();
+                        expect(hoverHandler).not.toHaveBeenCalled();
+                    })
+                    .catch(failTest)
+                    .then(done);
+            });
+        });
     });
 });
