@@ -10,7 +10,7 @@ Click to enter Y axis title                            // plots/plots.js:329
 Click to enter radial axis title                       // plots/polar/polar.js:481
 Compare data on hover                                  // components/modebar/buttons.js:178
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:89
-Double-click to zoom back out                          // plots/cartesian/dragbox.js:1036
+Double-click to zoom back out                          // plots/cartesian/dragbox.js:1038
 Download plot                                          // components/modebar/buttons.js:55
 Download plot as a png                                 // components/modebar/buttons.js:54
 Edit in Chart Studio                                   // components/modebar/buttons.js:87
