@@ -10,6 +10,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.41.2] -- 2018-09-19
+
+### Fixed
+- Fix two-sided zoombox -> double-click -> one-sided zoombox behavior [#3028]
+
+
 ## [1.41.1] -- 2018-09-18
 
 ### Fixed
