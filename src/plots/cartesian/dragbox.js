@@ -85,6 +85,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var editX, editY;
     // graph-wide optimization flags
     var hasScatterGl, hasOnlyLargeSploms, hasSplom, hasSVG;
+    // collected changes to be made to the plot by relayout at the end
+    var updates;
 
     function recomputeAxisLists() {
         xa0 = plotinfo.xaxis;
@@ -291,9 +293,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // zoom takes over minDrag, so it also has to take over gd._dragged
     var zoomDragged;
 
-    // collected changes to be made to the plot by relayout at the end
-    var updates = {};
-
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();
         x0 = startX - dragBBox.left;
@@ -386,6 +385,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function zoomDone() {
+        updates = {};
+
         // more strict than dragged, which allows you to come back to where you started
         // and still count as dragged
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
@@ -936,6 +937,7 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
             axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction),
             axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction)
         ];
+
         updates[axi._name + '.range[0]'] = axi.range[0];
         updates[axi._name + '.range[1]'] = axi.range[1];
     }
