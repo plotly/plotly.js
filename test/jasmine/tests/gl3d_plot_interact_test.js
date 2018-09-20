@@ -1425,4 +1425,25 @@ describe('Test removal of gl contexts', function() {
         })
         .then(done);
     });
+
+    it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
+        var _mock = Lib.extendDeep({}, require('@mocks/gl3d_marker-arrays.json'));
+
+        Plotly.plot(gd, _mock).then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.on('plotly_webglcontextlost', resolve);
+                setTimeout(reject, 10);
+
+                var ev = new window.WebGLContextEvent('webglcontextlost');
+                var canvas = gd.querySelector('div#scene > canvas');
+                canvas.dispatchEvent(ev);
+            });
+        })
+        .then(function(eventData) {
+            expect((eventData || {}).event).toBeDefined();
+            expect((eventData || {}).layer).toBe('scene');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

@@ -34,7 +34,7 @@ var rad2deg = Lib.rad2deg;
  *
  * Radial axis coordinate systems:
  * - d, c and l: same as for cartesian axes
- * - g: like calcdata but translated about `radialaxis.range[0]`
+ * - g: like calcdata but translated about `radialaxis.range[0]` & `polar.hole`
  *
  * Angular axis coordinate systems:
  * - d: data, in whatever form it's provided
@@ -61,9 +61,15 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
 };
 
 function setConvertRadial(ax, polarLayout) {
+    var subplot = polarLayout._subplot;
+
     ax.setGeometry = function() {
         var rl0 = ax._rl[0];
         var rl1 = ax._rl[1];
+
+        var b = subplot.innerRadius;
+        var m = (subplot.radius - b) / (rl1 - rl0);
+        var b2 = b / m;
 
         var rFilter = rl0 > rl1 ?
             function(v) { return v <= 0; } :
@@ -71,14 +77,12 @@ function setConvertRadial(ax, polarLayout) {
 
         ax.c2g = function(v) {
             var r = ax.c2l(v) - rl0;
-            return rFilter(r) ? r : 0;
+            return (rFilter(r) ? r : 0) + b2;
         };
 
         ax.g2c = function(v) {
-            return ax.l2c(v + rl0);
+            return ax.l2c(v + rl0 - b2);
         };
-
-        var m = polarLayout._subplot.radius / (rl1 - rl0);
 
         ax.g2p = function(v) { return v * m; };
         ax.c2p = function(v) { return ax.g2p(ax.c2g(v)); };
@@ -162,7 +166,7 @@ function setConvertAngular(ax, polarLayout) {
                 // Set the angular range in degrees to make auto-tick computation cleaner,
                 // changing rotation/direction should not affect the angular tick value.
                 ax.range = Lib.isFullCircle(sectorInRad) ?
-                    sector.slice() :
+                    [sector[0], sector[0] + 360] :
                     sectorInRad.map(g2rad).map(rad2deg);
                 break;
 

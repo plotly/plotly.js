@@ -11,12 +11,10 @@ var _bundle = require('./util/browserify_wrapper');
  *  - plotly.min.js bundle in dist/ (for requirejs test)
  */
 
-
 // Browserify plotly.js and plotly.min.js
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
     standalone: 'Plotly',
     debug: true,
-    compressAttrs: true,
     pathToMinBundle: constants.pathToPlotlyDistMin
 });
 

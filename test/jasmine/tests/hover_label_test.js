@@ -13,6 +13,7 @@ var click = require('../assets/click');
 var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var failTest = require('../assets/fail_test');
+var touchEvent = require('../assets/touch_event');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -20,6 +21,20 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var assertElemRightTo = customAssertions.assertElemRightTo;
 var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
 var assertElemInside = customAssertions.assertElemInside;
+
+function touch(path, options) {
+    var len = path.length;
+    Lib.clearThrottle();
+    touchEvent('touchstart', path[0][0], path[0][1], options);
+
+    path.slice(1, len).forEach(function(pt) {
+        Lib.clearThrottle();
+        touchEvent('touchmove', pt[0], pt[1], options);
+    });
+
+    touchEvent('touchend', path[len - 1][0], path[len - 1][1], options);
+    return;
+}
 
 describe('hover info', function() {
     'use strict';
@@ -2450,6 +2465,95 @@ describe('hover distance', function() {
             assertHoverLabelContent({
                 nums: '(2, 3)',
                 name: 'trace 0'
+            });
+        });
+    });
+});
+
+describe('hovermode defaults to', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('\'closest\' for cartesian plots if clickmode includes \'select\'', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6] }], { clickmode: 'event+select' })
+          .then(function() {
+              expect(gd._fullLayout.hovermode).toBe('closest');
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('\'x\' for horizontal cartesian plots if clickmode lacks \'select\'', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'h' }], { clickmode: 'event' })
+          .then(function() {
+              expect(gd._fullLayout.hovermode).toBe('y');
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('\'y\' for vertical cartesian plots if clickmode lacks \'select\'', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'v' }], { clickmode: 'event' })
+          .then(function() {
+              expect(gd._fullLayout.hovermode).toBe('x');
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('\'closest\' for a non-cartesian plot', function(done) {
+        var mock = require('@mocks/polar_scatter.json');
+        expect(mock.layout.hovermode).toBeUndefined();
+
+        Plotly.plot(gd, mock.data, mock.layout)
+          .then(function() {
+              expect(gd._fullLayout.hovermode).toBe('closest');
+          })
+          .catch(failTest)
+          .then(done);
+    });
+});
+
+
+describe('touch devices', function() {
+    afterEach(destroyGraphDiv);
+
+    ['pan', 'zoom'].forEach(function(type) {
+        describe('dragmode:' + type, function() {
+            var data = [{x: [1, 2, 3], y: [1, 3, 2], type: 'bar'}];
+            var layout = {width: 600, height: 400, dragmode: type};
+            var gd;
+
+            beforeEach(function(done) {
+                gd = createGraphDiv();
+                Plotly.plot(gd, data, layout).then(done);
+            });
+
+            it('emits click events', function(done) {
+                var hoverHandler = jasmine.createSpy('hover');
+                var clickHandler = jasmine.createSpy('click');
+                gd.on('plotly_hover', hoverHandler);
+                gd.on('plotly_click', clickHandler);
+
+                var gdBB = gd.getBoundingClientRect();
+                var touchPoint = [[gdBB.left + 300, gdBB.top + 200]];
+
+                Promise.resolve()
+                    .then(function() {
+                        touch(touchPoint);
+                    })
+                    .then(delay(HOVERMINTIME * 1.1))
+                    .then(function() {
+                        expect(clickHandler).toHaveBeenCalled();
+                        expect(hoverHandler).not.toHaveBeenCalled();
+                    })
+                    .catch(failTest)
+                    .then(done);
             });
         });
     });

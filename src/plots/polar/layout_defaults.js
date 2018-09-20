@@ -30,6 +30,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     opts.bgColor = Color.combine(bgColor, opts.paper_bgcolor);
 
     var sector = coerce('sector');
+    coerce('hole');
 
     // could optimize, subplotData is not always needed!
     var subplotData = getSubplotData(opts.fullData, constants.name, opts.id);

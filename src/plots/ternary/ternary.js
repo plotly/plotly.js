@@ -25,6 +25,7 @@ var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select').prepSelect;
+var selectOnClick = require('../cartesian/select').selectOnClick;
 var clearSelect = require('../cartesian/select').clearSelect;
 var constants = require('../cartesian/constants');
 
@@ -33,6 +34,12 @@ function Ternary(options, fullLayout) {
     this.graphDiv = options.graphDiv;
     this.init(fullLayout);
     this.makeFramework(fullLayout);
+
+    // unfortunately, we have to keep track of some axis tick settings
+    // as ternary subplots do not implement the 'ticks' editType
+    this.aTickLayout = null;
+    this.bTickLayout = null;
+    this.cTickLayout = null;
 }
 
 module.exports = Ternary;
@@ -253,6 +260,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
         _axislayer: _this.layers.aaxis,
         _gridlayer: _this.layers.agrid,
+        anchor: 'free',
+        position: 0,
         _pos: 0, // _this.xaxis.domain[0] * graphSize.w,
         _id: 'y',
         _length: w,
@@ -273,6 +282,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.baxis,
         _gridlayer: _this.layers.bgrid,
         _counteraxis: _this.aaxis,
+        anchor: 'free',
+        position: 0,
         _pos: 0, // (1 - yDomain0) * graphSize.h,
         _id: 'x',
         _length: w,
@@ -295,6 +306,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.caxis,
         _gridlayer: _this.layers.cgrid,
         _counteraxis: _this.baxis,
+        anchor: 'free',
+        position: 0,
         _pos: 0, // _this.xaxis.domain[1] * graphSize.w,
         _id: 'y',
         _length: w,
@@ -368,12 +381,33 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 };
 
 proto.drawAxes = function(doTitles) {
-    var _this = this,
-        gd = _this.graphDiv,
-        titlesuffix = _this.id.substr(7) + 'title',
-        aaxis = _this.aaxis,
-        baxis = _this.baxis,
-        caxis = _this.caxis;
+    var _this = this;
+    var gd = _this.graphDiv;
+    var titlesuffix = _this.id.substr(7) + 'title';
+    var layers = _this.layers;
+    var aaxis = _this.aaxis;
+    var baxis = _this.baxis;
+    var caxis = _this.caxis;
+    var newTickLayout;
+
+    newTickLayout = strTickLayout(aaxis);
+    if(_this.aTickLayout !== newTickLayout) {
+        layers.aaxis.selectAll('.ytick').remove();
+        _this.aTickLayout = newTickLayout;
+    }
+
+    newTickLayout = strTickLayout(baxis);
+    if(_this.bTickLayout !== newTickLayout) {
+        layers.baxis.selectAll('.xtick').remove();
+        _this.bTickLayout = newTickLayout;
+    }
+
+    newTickLayout = strTickLayout(caxis);
+    if(_this.cTickLayout !== newTickLayout) {
+        layers.caxis.selectAll('.ytick').remove();
+        _this.cTickLayout = newTickLayout;
+    }
+
     // 3rd arg true below skips titles, so we can configure them
     // correctly later on.
     Axes.doTicksSingle(gd, aaxis, true);
@@ -423,6 +457,11 @@ proto.drawAxes = function(doTitles) {
     }
 };
 
+function strTickLayout(axLayout) {
+    return axLayout.ticks + String(axLayout.ticklen) + String(axLayout.showticklabels);
+}
+
+
 // hard coded paths for zoom corners
 // uses the same sizing as cartesian, length is MINZOOM/2, width is 3px
 var CLEN = constants.MINZOOM / 2 + 0.87;
@@ -452,6 +491,7 @@ proto.initInteractions = function() {
         element: dragger,
         gd: gd,
         plotinfo: {
+            id: _this.id,
             xaxis: _this.xaxis,
             yaxis: _this.yaxis
         },
@@ -462,21 +502,19 @@ proto.initInteractions = function() {
             dragOptions.xaxes = [_this.xaxis];
             dragOptions.yaxes = [_this.yaxis];
             var dragModeNow = gd._fullLayout.dragmode;
-            if(e.shiftKey) {
-                if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                else dragModeNow = 'pan';
-            }
 
             if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
             else dragOptions.minDrag = undefined;
 
             if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
+                dragOptions.clickFn = clickZoomPan;
                 dragOptions.doneFn = zoomDone;
                 zoomPrep(e, startX, startY);
             }
             else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
+                dragOptions.clickFn = clickZoomPan;
                 dragOptions.doneFn = dragDone;
                 panPrep();
                 clearSelect(zoomContainer);
@@ -484,23 +522,33 @@ proto.initInteractions = function() {
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
-        },
-        clickFn: function(numClicks, evt) {
-            removeZoombox(gd);
-
-            if(numClicks === 2) {
-                var attrs = {};
-                attrs[_this.id + '.aaxis.min'] = 0;
-                attrs[_this.id + '.baxis.min'] = 0;
-                attrs[_this.id + '.caxis.min'] = 0;
-                gd.emit('plotly_doubleclick', null);
-                Registry.call('relayout', gd, attrs);
-            }
-            Fx.click(gd, evt, _this.id);
         }
     };
 
     var x0, y0, mins0, span0, mins, lum, path0, dimmed, zb, corners;
+
+    function clickZoomPan(numClicks, evt) {
+        var clickMode = gd._fullLayout.clickmode;
+
+        removeZoombox(gd);
+
+        if(numClicks === 2) {
+            var attrs = {};
+            attrs[_this.id + '.aaxis.min'] = 0;
+            attrs[_this.id + '.baxis.min'] = 0;
+            attrs[_this.id + '.caxis.min'] = 0;
+            gd.emit('plotly_doubleclick', null);
+            Registry.call('relayout', gd, attrs);
+        }
+
+        if(clickMode.indexOf('select') > -1 && numClicks === 1) {
+            selectOnClick(evt, gd, [_this.xaxis], [_this.yaxis], _this.id, dragOptions);
+        }
+
+        if(clickMode.indexOf('event') > -1) {
+            Fx.click(gd, evt, _this.id);
+        }
+    }
 
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();

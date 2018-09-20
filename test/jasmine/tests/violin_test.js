@@ -124,8 +124,8 @@ describe('Test violin defaults', function() {
                 color: 'red'
             }
         });
-        expect(traceOut.box).toBeUndefined();
-        expect(traceOut.meanline).toBeUndefined();
+        expect(traceOut.box).toEqual({visible: false});
+        expect(traceOut.meanline).toEqual({visible: false});
     });
 
     it('should use violin style settings to default inner style attribute', function() {

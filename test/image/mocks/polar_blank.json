@@ -21,6 +21,11 @@
     "text": "<b>N.B.</b><br>radial<br>auotrange<br>for (0,0)<br>gives [0,1]",
     "textposition": "left",
     "subplot": "polar4"
+  }, {
+    "type": "scatterpolar",
+    "r": [1, 2, 3],
+    "theta": [0, 90, 200],
+    "subplot": "polar5"
   }],
   "layout": {
     "polar": {
@@ -69,6 +74,14 @@
       },
       "radialaxis": {"visible": false}
     },
+    "polar5": {
+      "domain": {
+        "x": [0.12, 0.34],
+        "y": [0.11, 0.34]
+      },
+      "hole": 1
+    },
+    "showlegend": false,
     "width": 600,
     "height": 500
   }

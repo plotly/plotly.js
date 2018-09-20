@@ -1052,6 +1052,36 @@ describe('parcoords basic use', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function() {
+        var eventData;
+        var cnt = 0;
+        gd.on('plotly_webglcontextlost', function(d) {
+            eventData = d;
+            cnt++;
+        });
+
+        function trigger(name) {
+            var ev = new window.WebGLContextEvent('webglcontextlost');
+            var canvas = gd.querySelector('.gl-canvas-' + name);
+            canvas.dispatchEvent(ev);
+        }
+
+        function _assert(d, c) {
+            expect((eventData || {}).event).toBeDefined();
+            expect((eventData || {}).layer).toBe(d);
+            expect(cnt).toBe(c);
+        }
+
+        trigger('context');
+        _assert('contextLayer', 1);
+
+        trigger('focus');
+        _assert('focusLayer', 2);
+
+        trigger('pick');
+        _assert('pickLayer', 3);
+    });
 });
 
 describe('@noCI parcoords constraint interactions', function() {

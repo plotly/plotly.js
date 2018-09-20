@@ -312,6 +312,22 @@ exports.assertNodeOrder = function(selectorBehind, selectorInFront, msg) {
     }
 };
 
+/**
+ * Ordering test for any number of nodes - calls assertNodeOrder n-1 times.
+ * Note that we only take the first matching node for each selector, and it's
+ * not necessary that the nodes be siblings or at the same level of nesting.
+ *
+ * @param {Array[string]} selectorArray: css selectors in the order they should
+ *     appear in the document, from back to front.
+ * @param {string} msg: context for debugging
+ */
+exports.assertMultiNodeOrder = function(selectorArray, msg) {
+    for(var i = 0; i < selectorArray.length - 1; i++) {
+        var msgi = (msg ? msg + ' - ' : '') + 'entries ' + i + ' and ' + (i + 1);
+        exports.assertNodeOrder(selectorArray[i], selectorArray[i + 1], msgi);
+    }
+};
+
 function getParents(node) {
     var parent = node.parentNode;
     if(parent) return getParents(parent).concat(node);
@@ -324,3 +340,9 @@ function collectionToArray(collection) {
     for(var i = 0; i < len; i++) a[i] = collection[i];
     return a;
 }
+
+exports.assertD3Data = function(selection, expectedData) {
+    var data = [];
+    selection.each(function(d) { data.push(d); });
+    expect(data).toEqual(expectedData);
+};
