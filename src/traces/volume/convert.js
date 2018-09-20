@@ -172,6 +172,8 @@ function convert(gl, scene, trace) {
 
     volumeOpts.colormap = parseColorScale(trace.colorscale);
 
+    volumeOpts.opacity = trace.opacity;
+
     if(trace.opacityscale) {
         volumeOpts.alphamap = parseOpacityScale(trace.opacityscale);
     }
