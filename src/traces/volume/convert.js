@@ -110,7 +110,7 @@ function parseOpacityScale(opacityScale) {
         var entry = opacityScale[i];
         var startIndex = alphaMapIndex;
         var startValue = previousEntry[1];
-        var endIndex = Math.max(0, Math.min(Math.floor(entry[0] * alphaMapLength), alphaMapLength-1));
+        var endIndex = Math.max(0, Math.min(Math.floor(entry[0] * alphaMapLength), alphaMapLength - 1));
         var endValue = entry[1];
         var indexDelta = endIndex - startIndex;
         while(alphaMapIndex < endIndex) {
