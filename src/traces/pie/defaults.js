@@ -65,18 +65,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
+    handleDomainDefaults(traceOut, layout, coerce);
+
+    var hole = coerce('hole');
     var title = coerce('title');
     if(title) {
         var titlePosition = coerce('titleposition');
 
-        if(titlePosition === 'inhole' || titlePosition === 'outside') {
-            coerceFont(coerce, 'titlefont', layout.font);
-        }
+        if(!hole && titlePosition === 'middle center') traceOut.titleposition = 'top center';
+        coerceFont(coerce, 'titlefont', layout.font);
     }
-
-    handleDomainDefaults(traceOut, layout, coerce);
-
-    coerce('hole');
 
     coerce('sort');
     coerce('direction');

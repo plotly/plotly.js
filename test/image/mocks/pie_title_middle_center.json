@@ -4,9 +4,9 @@
       "values": [955, 405, 360, 310, 295],
       "labels": ["Mandarin", "Spanish", "English", "Hindi", "Arabic"],
       "textinfo": "label+percent",
-      "hole": 0.3,
+      "hole": 0.1,
       "title": "Num. speakers",
-      "titleposition": "inhole",
+      "titleposition": "middle center",
       "type": "pie"
     }
   ],

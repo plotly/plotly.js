@@ -183,49 +183,233 @@ describe('Pie traces:', function() {
         .then(done);
     });
 
-    it('shows title in hole', function(done) {
+    it('shows multiline title in hole', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Pie',
-            titleposition: 'inhole',
+            title: 'Test<br>Title',
+            titleposition: 'middle center',
             hole: 0.5,
             type: 'pie',
+            textinfo: 'none'
         }], {height: 300, width: 300})
         .then(function() {
             var title = d3.selectAll('.titletext text');
             expect(title.size()).toBe(1);
+            var titlePos = getClientPosition('g.titletext');
+            var pieCenterPos = getClientPosition('g.trace');
+            expect(Math.abs(titlePos[0] - pieCenterPos[0])).toBeLessThan(2);
+            expect(Math.abs(titlePos[1] - pieCenterPos[1])).toBeLessThan(2);
         })
         .catch(failTest)
         .then(done);
     });
 
-    it('does not show title inside if there is no hole', function(done) {
+    function _verifyPointInCircle(x, y, circleCenter, radius) {
+        var dist = Math.pow(x - circleCenter[0], 2) + Math.pow(y - circleCenter[1], 2);
+        return Math.abs(Math.sqrt(dist) - radius);
+    }
+
+    it('scales multiline title to fit in hole', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Pie',
-            titleposition: 'inhole',
-            hole: 0,
+            title: 'Test<br>Title',
+            titleposition: 'middle center',
+            titlefont: {
+                size: 60
+            },
+            hole: 0.1,
             type: 'pie',
+            textinfo: 'none'
         }], {height: 300, width: 300})
         .then(function() {
             var title = d3.selectAll('.titletext text');
-            expect(title.size()).toBe(0);
+            expect(title.size()).toBe(1);
+            var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
+            var pieBox = d3.select('g.trace').node().getBoundingClientRect();
+            var radius = 0.1 * Math.min(pieBox.width / 2, pieBox.height / 2);
+            var pieCenterPos = getClientPosition('g.trace');
+            // unfortunately boundingClientRect is inaccurate and so we allow an error of 2
+            expect(_verifyPointInCircle(titleBox.left, titleBox.top, pieCenterPos, radius))
+                .toBeLessThan(2);
+            expect(_verifyPointInCircle(titleBox.right, titleBox.top, pieCenterPos, radius))
+                .toBeLessThan(2);
+            expect(_verifyPointInCircle(titleBox.left, titleBox.bottom, pieCenterPos, radius))
+                .toBeLessThan(2);
+            expect(_verifyPointInCircle(titleBox.right, titleBox.bottom, pieCenterPos, radius))
+                .toBeLessThan(2);
         })
         .catch(failTest)
         .then(done);
     });
 
-    it('shows title outside', function(done) {
+    function _verifyTitle(checkLeft, checkRight, checkTop, checkBottom, checkMiddleX) {
+        var title = d3.selectAll('.titletext text');
+        expect(title.size()).toBe(1);
+        var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
+        var pieBox = d3.select('g.trace').node().getBoundingClientRect();
+        // check that margins agree. we leave an error margin of 2.
+        if(checkLeft) expect(Math.abs(titleBox.left - pieBox.left)).toBeLessThan(2);
+        if(checkRight) expect(Math.abs(titleBox.right - pieBox.right)).toBeLessThan(2);
+        if(checkTop) expect(Math.abs(titleBox.top - pieBox.top)).toBeLessThan(2);
+        if(checkBottom) expect(Math.abs(titleBox.bottom - pieBox.bottom)).toBeLessThan(2);
+        if(checkMiddleX) {
+            expect(Math.abs(titleBox.left + titleBox.right - pieBox.left - pieBox.right))
+                .toBeLessThan(2);
+        }
+    }
+
+    it('shows title top center if there is no hole', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [2, 2, 2, 2],
+            title: 'Test<BR>Title',
+            titleposition: 'middle center',
+            titlefont: {
+                size: 12
+            },
+            hole: 0,
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(false, false, true, false, true))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows title top center', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 1, 1, 1, 2],
-            title: 'Pie',
-            titleposition: 'outside',
+            title: 'Test<BR>Title',
+            titleposition: 'top center',
+            titlefont: {
+                size: 12
+            },
             type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(false, false, true, false, true))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows title top left', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [3, 2, 1],
+            title: 'Test<BR>Title',
+            titleposition: 'top left',
+            titlefont: {
+                size: 12
+            },
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(true, false, true, false, false))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows title top right', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [4, 5, 6, 5],
+            title: 'Test<BR>Title',
+            titleposition: 'top right',
+            titlefont: {
+                size: 12
+            },
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(false, true, true, false, false))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows title bottom left', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [4, 5, 6, 5],
+            title: 'Test<BR>Title',
+            titleposition: 'bottom left',
+            titlefont: {
+                size: 12
+            },
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(true, false, false, true, false))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows title bottom center', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [4, 5, 6, 5],
+            title: 'Test<BR>Title',
+            titleposition: 'bottom center',
+            titlefont: {
+                size: 12
+            },
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(false, false, false, true, true))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows title bottom right', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [4, 5, 6, 5],
+            title: 'Test<BR>Title',
+            titleposition: 'bottom right',
+            titlefont: {
+                size: 12
+            },
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(false, true, false, true, false))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not intersect pulled slices', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [2, 2, 2, 2],
+            title: 'Test<BR>Title',
+            titleposition: 'top center',
+            titlefont: {
+                size: 14
+            },
+            pull: [0.9, 0.9, 0.9, 0.9],
+            type: 'pie',
+            textinfo: 'none'
         }], {height: 300, width: 300})
         .then(function() {
             var title = d3.selectAll('.titletext text');
             expect(title.size()).toBe(1);
+            var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
+            var minSliceTop = Infinity;
+            d3.selectAll('g.slice').each(function() {
+                var sliceTop = d3.select(this).node().getBoundingClientRect().top;
+                minSliceTop = Math.min(minSliceTop, sliceTop);
+            });
+            expect(titleBox.bottom).toBeLessThan(minSliceTop);
         })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('correctly positions large title', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [1, 3, 4, 1, 2],
+            title: 'Test<BR>Title',
+            titleposition: 'top center',
+            titlefont: {
+                size: 60
+            },
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(false, false, true, false, true))
         .catch(failTest)
         .then(done);
     });

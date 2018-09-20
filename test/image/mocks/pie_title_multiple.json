@@ -5,7 +5,8 @@
       "labels": ["Platinum", "Palladium", "Rhodium", "Ruthenium", "Iridium", "Osmium"],
       "type": "pie",
       "name": "Year 2013",
-      "title": "Year 2013",
+      "title": "Year<br>2013",
+      "titleposition": "top left",
       "domain": {
         "x": [0, 0.5],
         "y": [0.51, 1]
@@ -17,7 +18,8 @@
       "labels": ["Platinum", "Palladium", "Rhodium", "Ruthenium", "Iridium", "Osmium"],
       "type": "pie",
       "name": "Year 2014",
-      "title": "Year 2014",
+      "title": "Year<br>2014",
+      "titleposition": "top right",
       "domain": {
         "x": [0.51, 1],
         "y": [0.51, 1]
@@ -29,7 +31,8 @@
       "labels": ["Platinum", "Palladium", "Rhodium", "Ruthenium", "Iridium", "Osmium"],
       "type": "pie",
       "name": "Year 2015",
-      "title": "Year 2015",
+      "title": "Year<br>2015",
+      "titleposition": "bottom left",
       "domain": {
         "x": [0, 0.5],
         "y": [0, 0.5]
@@ -41,7 +44,8 @@
       "labels": ["Platinum", "Palladium", "Rhodium", "Ruthenium", "Iridium", "Osmium"],
       "type": "pie",
       "name": "Year 2016",
-      "title": "Year 2016",
+      "title": "Year<br>2016",
+      "titleposition": "bottom right",
       "domain": {
         "x": [0.51, 1],
         "y": [0, 0.5]

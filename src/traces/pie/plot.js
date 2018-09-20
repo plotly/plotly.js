@@ -22,6 +22,7 @@ var eventData = require('./event_data');
 module.exports = function plot(gd, cdpie) {
     var fullLayout = gd._fullLayout;
 
+    prerenderTitles(cdpie, gd);
     scalePies(cdpie, fullLayout._size);
 
     var pieGroups = Lib.makeTraceGroups(fullLayout._pielayer, cdpie, 'trace').each(function(cd) {
@@ -309,11 +310,8 @@ module.exports = function plot(gd, cdpie) {
             });
 
             // add the title
-            var hasTitle = trace.title &&
-                ((trace.titleposition === 'inhole' && trace.hole > 0) ||
-                 (trace.titleposition === 'outside'));
             var titleTextGroup = d3.select(this).selectAll('g.titletext')
-                .data(hasTitle ? [0] : []);
+                .data(trace.title ? [0] : []);
 
             titleTextGroup.enter().append('g')
                 .classed('titletext', true);
@@ -329,30 +327,23 @@ module.exports = function plot(gd, cdpie) {
                     .attr({
                         'class': 'titletext',
                         transform: '',
-                        'text-anchor': 'middle'
+                        'text-anchor': 'middle',
                     })
                 .call(Drawing.font, trace.titlefont)
                 .call(svgTextUtils.convertToTspans, gd);
 
-
-                var titleBB = Drawing.bBox(titleText.node());
-                // translation and scaling for the title text box.
-                // The translation is for the center point.
                 var transform;
 
-                if(trace.titleposition === 'outside') {
-                    transform = positionTitleOutside(titleBB, cd0, fullLayout._size);
+                if(trace.titleposition === 'middle center') {
+                    transform = positionTitleInside(cd0);
                 } else {
-                    transform = positionTitleInside(titleBB, cd0);
+                    transform = positionTitleOutside(cd0, fullLayout._size);
                 }
 
                 titleText.attr('transform',
                     'translate(' + transform.x + ',' + transform.y + ')' +
                     (transform.scale < 1 ? ('scale(' + transform.scale + ')') : '') +
-                    'translate(' +
-                            (-(titleBB.left + titleBB.right) / 2) + ',' +
-                            (-(titleBB.top + titleBB.bottom) / 2) +
-                        ')');
+                    'translate(' + transform.tx + ',' + transform.ty + ')');
             });
 
             // now make sure no labels overlap (at least within one pie)
@@ -418,6 +409,28 @@ module.exports = function plot(gd, cdpie) {
     }, 0);
 };
 
+function prerenderTitles(cdpie, gd) {
+    var cd0, trace;
+    // Determine the width and height of the title for each pie.
+    for(var i = 0; i < cdpie.length; i++) {
+        cd0 = cdpie[i][0];
+        trace = cd0.trace;
+
+        if(trace.title) {
+            var dummyTitle = Drawing.tester.append('text')
+                .attr('data-notex', 1)
+                .text(trace.title)
+                .call(Drawing.font, trace.titlefont)
+                .call(svgTextUtils.convertToTspans, gd);
+            var bBox = Drawing.bBox(dummyTitle.node(), true);
+            cd0.titleBox = {
+                width: bBox.width,
+                height: bBox.height,
+            };
+            dummyTitle.remove();
+        }
+    }
+}
 
 function transformInsideText(textBB, pt, cd0) {
     var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
@@ -501,59 +514,76 @@ function transformOutsideText(textBB, pt) {
     };
 }
 
-function positionTitleInside(titleBB, cd0) {
-    var textDiameter = Math.sqrt(titleBB.width * titleBB.width + titleBB.height * titleBB.height);
+function positionTitleInside(cd0) {
+    var textDiameter =
+        Math.sqrt(cd0.titleBox.width * cd0.titleBox.width + cd0.titleBox.height * cd0.titleBox.height);
     return {
         x: cd0.cx,
         y: cd0.cy,
-        scale: cd0.trace.hole * cd0.r * 2 / textDiameter
+        scale: cd0.trace.hole * cd0.r * 2 / textDiameter,
+        tx: 0,
+        ty: - cd0.titleBox.height / 2 + cd0.trace.titlefont.size
     };
 }
 
-function positionTitleOutside(titleBB, cd0, plotSize) {
-    var scaleX, scaleY, chartWidth, titleSpace, titleShift, maxPull;
+function positionTitleOutside(cd0, plotSize) {
+    var scaleX = 1, scaleY = 1, maxWidth, maxPull;
     var trace = cd0.trace;
-
-    maxPull = getMaxPull(trace);
-    chartWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
-    scaleX = chartWidth / titleBB.width;
-    if(isSinglePie(trace)) {
-        titleShift = trace.titlefont.size / 2;
-        // we need to leave enough free space for an outside label
-        if(trace.outsidetextfont) titleShift += 3 * trace.outsidetextfont.size / 2;
-        else titleShift += trace.titlefont.size / 4;
-        return {
-            x: cd0.cx,
-            y: cd0.cy - (1 + maxPull) * cd0.r - titleShift,
-            scale: scaleX
-        };
-    }
-    titleSpace = getTitleSpace(trace, plotSize);
-    // we previously left a free space of height titleSpace.
-    // The text must fit in this space.
-    scaleY = titleSpace / titleBB.height;
-    return {
+    // position of the baseline point of the text box in the plot, before scaling.
+    // we anchored the text in the middle, so the baseline is on the bottom middle
+    // of the first line of text.
+    var topMiddle = {
         x: cd0.cx,
-        y: cd0.cy - (1 + maxPull) * cd0.r - (titleSpace / 2),
-        scale: Math.min(scaleX, scaleY)
+        y: cd0.cy
+    };
+    // relative translation of the text box after scaling
+    var translate = {
+        tx: 0,
+        ty: 0
+    };
+
+    // we reason below as if the baseline is the top middle point of the text box.
+    // so we must add the font size to approximate the y-coord. of the top.
+    // note that this correction must happen after scaling.
+    translate.ty += trace.titlefont.size;
+    maxPull = getMaxPull(trace);
+
+    if(trace.titleposition.indexOf('top') !== -1) {
+        topMiddle.y -= (1 + maxPull) * cd0.r;
+        translate.ty -= cd0.titleBox.height;
+    }
+    else if(trace.titleposition.indexOf('bottom') !== -1) {
+        topMiddle.y += (1 + maxPull) * cd0.r;
+    }
+
+    if(trace.titleposition.indexOf('left') !== -1) {
+        // we start the text at the left edge of the pie
+        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2 + cd0.r;
+        topMiddle.x -= (1 + maxPull) * cd0.r;
+        translate.tx += cd0.titleBox.width / 2;
+    } else if(trace.titleposition.indexOf('center') !== -1) {
+        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
+    } else if(trace.titleposition.indexOf('right') !== -1) {
+        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2 + cd0.r;
+        topMiddle.x += (1 + maxPull) * cd0.r;
+        translate.tx -= cd0.titleBox.width / 2;
+    }
+    scaleX = maxWidth / cd0.titleBox.width;
+    scaleY = getTitleSpace(cd0, plotSize) / cd0.titleBox.height;
+    return {
+        x: topMiddle.x,
+        y: topMiddle.y,
+        scale: Math.min(scaleX, scaleY),
+        tx: translate.tx,
+        ty: translate.ty
     };
 }
 
-function isSinglePie(trace) {
-    // check if there is a single pie per y-column
-    if(trace.domain.y[0] === 0 && trace.domain.y[1] === 1) return true;
-    return false;
-}
-
-function getTitleSpace(trace, plotSize) {
-    var chartHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
-    // leave 3/2 * titlefont.size free space. We need at least titlefont.size
-    // space, and the 1/2 * titlefont.size is a small buffer to avoid the text
-    // touching the pie.
-    var titleSpace = (trace.title && trace.titleposition === 'outside') ?
-        (3 * trace.titlefont.size / 2) : 0;
-    if(chartHeight > titleSpace) return titleSpace;
-    else return chartHeight / 2;
+function getTitleSpace(cd0, plotSize) {
+    var trace = cd0.trace;
+    var pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
+    // use at most half of the plot for the pie
+    return Math.min(cd0.titleBox.height, pieBoxHeight / 2);
 }
 
 function getMaxPull(trace) {
@@ -687,7 +717,9 @@ function scalePies(cdpie, plotSize) {
         pieBoxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
         pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
         // leave some space for the title, if it will be displayed outside
-        if(!isSinglePie(trace)) pieBoxHeight -= getTitleSpace(trace, plotSize);
+        if(trace.title && trace.titleposition !== 'middle center') {
+            pieBoxHeight -= getTitleSpace(cd0, plotSize);
+        }
 
         maxPull = getMaxPull(trace);
 
@@ -695,6 +727,9 @@ function scalePies(cdpie, plotSize) {
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
         cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - pieBoxHeight / 2;
+        if(trace.title && trace.titleposition.indexOf('bottom') !== -1) {
+            cd0.cy -= getTitleSpace(cd0, plotSize);
+        }
 
         if(trace.scalegroup && scaleGroups.indexOf(trace.scalegroup) === -1) {
             scaleGroups.push(trace.scalegroup);

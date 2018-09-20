@@ -192,15 +192,16 @@ module.exports = {
     },
     titleposition: {
         valType: 'enumerated',
-        values: ['inhole', 'outside'],
-        dflt: 'outside',
+        values: [
+            'top left', 'top center', 'top right',
+            'middle center',
+            'bottom left', 'bottom center', 'bottom right'
+        ],
+        dflt: 'top center',
         role: 'info',
         editType: 'calc',
         description: [
             'Specifies the location of the `title`.',
-            'If `inhole` and the chart is a donut, the text is scaled',
-            'and displayed inside the hole.',
-            'If `outside`, the text is shown above the pie chart.'
         ].join(' ')
     },
     titlefont: extendFlat({}, textFontAttrs, {
