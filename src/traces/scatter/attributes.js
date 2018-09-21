@@ -544,18 +544,20 @@ module.exports = {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'For legacy polar chart only.',
-            'Please switch to *scatterpolar* trace type.',
-            'Sets the radial coordinates.'
+            'r coordinates in scatter traces are deprecated!',
+            'Please switch to the *scatterpolar* trace type.',
+            'Sets the radial coordinates',
+            'for legacy polar chart only.'
         ].join('')
     },
     t: {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'For legacy polar chart only.',
-            'Please switch to *scatterpolar* trace type.',
-            'Sets the angular coordinates.'
+            't coordinates in scatter traces are deprecated!',
+            'Please switch to the *scatterpolar* trace type.',
+            'Sets the angular coordinates',
+            'for legacy polar chart only.'
         ].join('')
     }
 };

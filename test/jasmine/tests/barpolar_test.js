@@ -1,9 +1,42 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 
+var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+
+describe('Test barpolar defaults:', function() {
+    var gd;
+
+    function _supply(opts, layout) {
+        gd = {};
+        opts = Array.isArray(opts) ? opts : [opts];
+
+        gd.data = opts.map(function(o) {
+            return Lib.extendFlat({type: 'barpolar'}, o || {});
+        });
+        gd.layout = layout || {};
+
+        supplyAllDefaults(gd);
+    }
+
+    it('should not coerce polar.bar* attributes on subplot w/o visible barpolar', function() {
+        _supply([
+            {visible: false, subplot: 'polar'},
+            {r: [1], subplot: 'polar2'},
+            {type: 'scatterpolar', r: [1], subplot: 'polar3'}
+        ]);
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.polar.barmode).toBeUndefined();
+        expect(fullLayout.polar.bargap).toBeUndefined();
+        expect(fullLayout.polar2.barmode).toBe('stack');
+        expect(fullLayout.polar2.bargap).toBe(0.1);
+        expect(fullLayout.polar3.barmode).toBeUndefined();
+        expect(fullLayout.polar3.bargap).toBeUndefined();
+    });
+});
 
 describe('Test barpolar hover:', function() {
     var gd;
