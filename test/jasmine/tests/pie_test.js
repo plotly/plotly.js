@@ -187,7 +187,6 @@ describe('Pie traces:', function() {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
             title: 'Test<br>Title',
-            titleposition: 'middle center',
             hole: 0.5,
             type: 'pie',
             textinfo: 'none'
@@ -243,22 +242,24 @@ describe('Pie traces:', function() {
     });
 
     function _verifyTitle(checkLeft, checkRight, checkTop, checkBottom, checkMiddleX) {
-        var title = d3.selectAll('.titletext text');
-        expect(title.size()).toBe(1);
-        var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
-        var pieBox = d3.select('g.trace').node().getBoundingClientRect();
-        // check that margins agree. we leave an error margin of 2.
-        if(checkLeft) expect(Math.abs(titleBox.left - pieBox.left)).toBeLessThan(2);
-        if(checkRight) expect(Math.abs(titleBox.right - pieBox.right)).toBeLessThan(2);
-        if(checkTop) expect(Math.abs(titleBox.top - pieBox.top)).toBeLessThan(2);
-        if(checkBottom) expect(Math.abs(titleBox.bottom - pieBox.bottom)).toBeLessThan(2);
-        if(checkMiddleX) {
-            expect(Math.abs(titleBox.left + titleBox.right - pieBox.left - pieBox.right))
-                .toBeLessThan(2);
-        }
+        return function() {
+            var title = d3.selectAll('.titletext text');
+            expect(title.size()).toBe(1);
+            var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
+            var pieBox = d3.select('g.trace').node().getBoundingClientRect();
+            // check that margins agree. we leave an error margin of 2.
+            if(checkLeft) expect(Math.abs(titleBox.left - pieBox.left)).toBeLessThan(2);
+            if(checkRight) expect(Math.abs(titleBox.right - pieBox.right)).toBeLessThan(2);
+            if(checkTop) expect(Math.abs(titleBox.top - pieBox.top)).toBeLessThan(2);
+            if(checkBottom) expect(Math.abs(titleBox.bottom - pieBox.bottom)).toBeLessThan(2);
+            if(checkMiddleX) {
+                expect(Math.abs(titleBox.left + titleBox.right - pieBox.left - pieBox.right))
+                    .toBeLessThan(2);
+            }
+        };
     }
 
-    it('shows title top center if there is no hole', function(done) {
+    it('shows title top center if hole is zero', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
             title: 'Test<BR>Title',
@@ -267,6 +268,21 @@ describe('Pie traces:', function() {
                 size: 12
             },
             hole: 0,
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(false, false, true, false, true))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows title top center if titleposition is undefined and no hole', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [2, 2, 2, 2],
+            title: 'Test<BR>Title',
+            titlefont: {
+                size: 12
+            },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})

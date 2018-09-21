@@ -197,7 +197,6 @@ module.exports = {
             'middle center',
             'bottom left', 'bottom center', 'bottom right'
         ],
-        dflt: 'top center',
         role: 'info',
         editType: 'calc',
         description: [

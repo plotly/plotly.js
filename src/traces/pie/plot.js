@@ -582,7 +582,7 @@ function positionTitleOutside(cd0, plotSize) {
 function getTitleSpace(cd0, plotSize) {
     var trace = cd0.trace;
     var pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
-    // use at most half of the plot for the pie
+    // use at most half of the plot for the title
     return Math.min(cd0.titleBox.height, pieBoxHeight / 2);
 }
 

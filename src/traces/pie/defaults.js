@@ -70,8 +70,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var hole = coerce('hole');
     var title = coerce('title');
     if(title) {
-        var titlePosition = coerce('titleposition');
-
+        var titlePosition = coerce('titleposition', hole ? 'middle center' : 'top center');
         if(!hole && titlePosition === 'middle center') traceOut.titleposition = 'top center';
         coerceFont(coerce, 'titlefont', layout.font);
     }
