@@ -558,17 +558,14 @@ describe('Plotly.validate', function() {
             polar3: {bargap: 0.4}
         });
 
-        expect(out.length).toBe(1);
+        expect(out.length).toBe(2);
         assertErrorContent(
-            out[0], 'unused', 'layout', null, ['polar3'], 'polar3',
+            out[0], 'unused', 'layout', null, ['polar2', 'bargap'], 'polar2.bargap',
+            'In layout, key polar2.bargap did not get coerced'
+        );
+        assertErrorContent(
+            out[1], 'unused', 'layout', null, ['polar3'], 'polar3',
             'In layout, container polar3 did not get coerced'
         );
-
-        // Plotly.validate should be more strict here.
-        //
-        // It should log an 'unused' warning for `polar2.bargap`,
-        // but trace layout attribute set in subplot containers are considered
-        // valid as long as one trace on that graph has those trace layout
-        // attributes.
     });
 });
