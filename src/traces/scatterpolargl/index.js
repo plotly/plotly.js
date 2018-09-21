@@ -165,7 +165,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
-    newPointData.extraText = makeHoverPointText(cdi, trace, subplot);
+    makeHoverPointText(cdi, trace, subplot, newPointData);
 
     return scatterPointData;
 }
