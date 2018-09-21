@@ -13,7 +13,10 @@ var axesAttrs = require('../../cartesian/layout_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
-var deprecationWarning = 'Legacy polar charts are deprecated!';
+var deprecationWarning = [
+    'Legacy polar charts are deprecated!',
+    'Please switch to *polar* subplots.'
+].join(' ');
 
 var domainAttr = extendFlat({}, axesAttrs.domain, {
     description: [

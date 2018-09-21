@@ -12,19 +12,24 @@ var scatterAttrs = require('../../../traces/scatter/attributes');
 var scatterMarkerAttrs = scatterAttrs.marker;
 var extendFlat = require('../../../lib/extend').extendFlat;
 
-var deprecationWarning = 'Area traces are deprecated!';
+var deprecationWarning = [
+    'Area traces are deprecated!',
+    'Please switch to the *barpolar* trace type.'
+].join(' ');
 
 module.exports = {
     r: extendFlat({}, scatterAttrs.r, {
         description: [
             deprecationWarning,
-            scatterAttrs.r.description
+            'Sets the radial coordinates',
+            'for legacy polar chart only.'
         ].join(' ')
     }),
     t: extendFlat({}, scatterAttrs.t, {
         description: [
             deprecationWarning,
-            scatterAttrs.t.description
+            'Sets the angular coordinates',
+            'for legacy polar chart only.'
         ].join(' ')
     }),
     marker: {
