@@ -116,6 +116,38 @@ describe('Test barpolar hover:', function() {
             color: '#1f77b4'
         }
     }, {
+        desc: 'with custom text scalar',
+        traces: [{
+            r: [1, 2, 3],
+            theta: [0, 90, 180],
+            text: 'TEXT'
+        }],
+        xval: 1,
+        yval: 0,
+        exp: {
+            index: 0,
+            x: 263.33,
+            y: 200,
+            extraText: 'r: 1<br>θ: 0°<br>TEXT',
+            color: '#1f77b4'
+        }
+    }, {
+        desc: 'with custom text array',
+        traces: [{
+            r: [1, 2, 3],
+            theta: [0, 90, 180],
+            text: ['A', 'B', 'C']
+        }],
+        xval: 1,
+        yval: 0,
+        exp: {
+            index: 0,
+            x: 263.33,
+            y: 200,
+            extraText: 'r: 1<br>θ: 0°<br>A',
+            color: '#1f77b4'
+        }
+    }, {
         desc: 'works with bars with offsets',
         traces: [{
             r: [1, 2, 3],
