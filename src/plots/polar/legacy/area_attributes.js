@@ -10,15 +10,53 @@
 
 var scatterAttrs = require('../../../traces/scatter/attributes');
 var scatterMarkerAttrs = scatterAttrs.marker;
+var extendFlat = require('../../../lib/extend').extendFlat;
+
+var deprecationWarning = [
+    'Area traces are deprecated!',
+    'Please switch to the *barpolar* trace type.'
+].join(' ');
 
 module.exports = {
-    r: scatterAttrs.r,
-    t: scatterAttrs.t,
+    r: extendFlat({}, scatterAttrs.r, {
+        description: [
+            deprecationWarning,
+            'Sets the radial coordinates',
+            'for legacy polar chart only.'
+        ].join(' ')
+    }),
+    t: extendFlat({}, scatterAttrs.t, {
+        description: [
+            deprecationWarning,
+            'Sets the angular coordinates',
+            'for legacy polar chart only.'
+        ].join(' ')
+    }),
     marker: {
-        color: scatterMarkerAttrs.color,
-        size: scatterMarkerAttrs.size,
-        symbol: scatterMarkerAttrs.symbol,
-        opacity: scatterMarkerAttrs.opacity,
+        color: extendFlat({}, scatterMarkerAttrs.color, {
+            description: [
+                deprecationWarning,
+                scatterMarkerAttrs.color.description
+            ].join(' ')
+        }),
+        size: extendFlat({}, scatterMarkerAttrs.size, {
+            description: [
+                deprecationWarning,
+                scatterMarkerAttrs.size.description
+            ].join(' ')
+        }),
+        symbol: extendFlat({}, scatterMarkerAttrs.symbol, {
+            description: [
+                deprecationWarning,
+                scatterMarkerAttrs.symbol.description
+            ].join(' ')
+        }),
+        opacity: extendFlat({}, scatterMarkerAttrs.opacity, {
+            description: [
+                deprecationWarning,
+                scatterMarkerAttrs.opacity.description
+            ].join(' ')
+        }),
         editType: 'calc'
     }
 };

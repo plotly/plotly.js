@@ -11,6 +11,7 @@
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var getTraceColor = require('../bar/hover').getTraceColor;
+var fillHoverText = require('../scatter/fill_hover_text');
 var makeHoverPointText = require('../scatterpolar/hover').makeHoverPointText;
 var isPtInsidePolygon = require('../../plots/polar/helpers').isPtInsidePolygon;
 
@@ -58,7 +59,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.y0 = pointData.y1 = cdi.ct[1];
 
     var _cdi = Lib.extendFlat({}, cdi, {r: cdi.s, theta: cdi.p});
-    pointData.extraText = makeHoverPointText(_cdi, trace, subplot);
+    fillHoverText(cdi, trace, pointData);
+    makeHoverPointText(_cdi, trace, subplot, pointData);
     pointData.color = getTraceColor(trace, cdi);
     pointData.xLabelVal = pointData.yLabelVal = undefined;
 

@@ -1,9 +1,42 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 
+var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+
+describe('Test barpolar defaults:', function() {
+    var gd;
+
+    function _supply(opts, layout) {
+        gd = {};
+        opts = Array.isArray(opts) ? opts : [opts];
+
+        gd.data = opts.map(function(o) {
+            return Lib.extendFlat({type: 'barpolar'}, o || {});
+        });
+        gd.layout = layout || {};
+
+        supplyAllDefaults(gd);
+    }
+
+    it('should not coerce polar.bar* attributes on subplot w/o visible barpolar', function() {
+        _supply([
+            {visible: false, subplot: 'polar'},
+            {r: [1], subplot: 'polar2'},
+            {type: 'scatterpolar', r: [1], subplot: 'polar3'}
+        ]);
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.polar.barmode).toBeUndefined();
+        expect(fullLayout.polar.bargap).toBeUndefined();
+        expect(fullLayout.polar2.barmode).toBe('stack');
+        expect(fullLayout.polar2.bargap).toBe(0.1);
+        expect(fullLayout.polar3.barmode).toBeUndefined();
+        expect(fullLayout.polar3.bargap).toBeUndefined();
+    });
+});
 
 describe('Test barpolar hover:', function() {
     var gd;
@@ -80,6 +113,38 @@ describe('Test barpolar hover:', function() {
             x: 263.33,
             y: 200,
             extraText: 'r: 1<br>θ: 0°',
+            color: '#1f77b4'
+        }
+    }, {
+        desc: 'with custom text scalar',
+        traces: [{
+            r: [1, 2, 3],
+            theta: [0, 90, 180],
+            text: 'TEXT'
+        }],
+        xval: 1,
+        yval: 0,
+        exp: {
+            index: 0,
+            x: 263.33,
+            y: 200,
+            extraText: 'r: 1<br>θ: 0°<br>TEXT',
+            color: '#1f77b4'
+        }
+    }, {
+        desc: 'with custom text array',
+        traces: [{
+            r: [1, 2, 3],
+            theta: [0, 90, 180],
+            text: ['A', 'B', 'C']
+        }],
+        xval: 1,
+        yval: 0,
+        exp: {
+            index: 0,
+            x: 263.33,
+            y: 200,
+            extraText: 'r: 1<br>θ: 0°<br>A',
             color: '#1f77b4'
         }
     }, {

@@ -14,6 +14,8 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
+var SLICES_SELECTOR = '.slice path';
+var LEGEND_ENTRIES_SELECTOR = '.legendpoints path';
 
 describe('Pie defaults', function() {
     function _supply(trace) {
@@ -100,11 +102,11 @@ describe('Pie traces:', function() {
                 expect(this.style.stroke.replace(/\s/g, '')).toBe('rgb(100,100,100)');
                 expect(this.style.strokeOpacity).toBe('0.7');
             }
-            var slices = d3.selectAll('.slice path');
+            var slices = d3.selectAll(SLICES_SELECTOR);
             slices.each(checkPath);
             expect(slices.size()).toBe(5);
 
-            var legendEntries = d3.selectAll('.legendpoints path');
+            var legendEntries = d3.selectAll(LEGEND_ENTRIES_SELECTOR);
             legendEntries.each(checkPath);
             expect(legendEntries.size()).toBe(5);
         })
@@ -141,7 +143,7 @@ describe('Pie traces:', function() {
 
     function _checkSliceColors(colors) {
         return function() {
-            d3.select(gd).selectAll('.slice path').each(function(d, i) {
+            d3.select(gd).selectAll(SLICES_SELECTOR).each(function(d, i) {
                 expect(this.style.fill.replace(/(\s|rgb\(|\))/g, '')).toBe(colors[i], i);
             });
         };
@@ -428,6 +430,40 @@ describe('Pie traces:', function() {
         .then(_verifyTitle(false, false, true, false, true))
         .catch(failTest)
         .then(done);
+    });
+
+    it('supports separate stroke width values per slice', function(done) {
+        var data = [
+            {
+                values: [20, 26, 55],
+                labels: ['Residential', 'Non-Residential', 'Utility'],
+                type: 'pie',
+                pull: [0.1, 0, 0],
+                marker: {
+                    colors: ['rebeccapurple', 'purple', 'mediumpurple'],
+                    line: {
+                        width: [3, 0, 0]
+                    }
+                }
+            }
+        ];
+        var layout = {
+            showlegend: true
+        };
+
+        Plotly.plot(gd, data, layout)
+          .then(function() {
+              var expWidths = ['3', '0', '0'];
+
+              d3.selectAll(SLICES_SELECTOR).each(function(d) {
+                  expect(this.style.strokeWidth).toBe(expWidths[d.pointNumber]);
+              });
+              d3.selectAll(LEGEND_ENTRIES_SELECTOR).each(function(d) {
+                  expect(this.style.strokeWidth).toBe(expWidths[d[0].i]);
+              });
+          })
+          .catch(failTest)
+          .then(done);
     });
 });
 
@@ -924,7 +960,7 @@ describe('pie relayout', function() {
             return Plotly.relayout(gd, 'colorway', relayoutColors);
         })
         .then(function() {
-            var slices = d3.selectAll('.slice path');
+            var slices = d3.selectAll(SLICES_SELECTOR);
             slices.each(checkRelayoutColor);
         })
         .then(done);
