@@ -1361,6 +1361,7 @@ describe('bar visibility toggling:', function() {
             spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
 
             _assert('base', [0.5, 3.5], [-2.222, 2.222], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('normal');
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(function() {
@@ -1369,6 +1370,11 @@ describe('bar visibility toggling:', function() {
         })
         .then(function() {
             _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            _assert('both legendonly', [0.5, 3.5], [0, 2.105], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('normal');
             return Plotly.restyle(gd, 'visible', true, [1]);
         })
         .then(function() {
@@ -1391,6 +1397,7 @@ describe('bar visibility toggling:', function() {
             spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
 
             _assert('base', [0.5, 3.5], [0, 5.263], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('reversed');
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(function() {
@@ -1399,6 +1406,11 @@ describe('bar visibility toggling:', function() {
         })
         .then(function() {
             _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            _assert('both legendonly', [0.5, 3.5], [0, 2.105], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('reversed');
             return Plotly.restyle(gd, 'visible', true, [1]);
         })
         .then(function() {

@@ -1482,7 +1482,10 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     }
 
     // trace module layout defaults
-    var modules = layoutOut._visibleModules;
+    // use _modules rather than _visibleModules so that even
+    // legendonly traces can include settings - eg barmode, which affects
+    // legend.traceorder default value.
+    var modules = layoutOut._modules;
     for(i = 0; i < modules.length; i++) {
         _module = modules[i];
 
