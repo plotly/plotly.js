@@ -189,5 +189,14 @@ module.exports = {
             'The number of observations represented by each state. Defaults to 1 so that each state represents',
             'one observation'
         ].join(' ')
-    }
+    },
+
+    // Hide unsupported top-level properties from plot-schema
+    customdata: undefined,
+    hoverlabel: undefined,
+    ids: undefined,
+    legendgroup: undefined,
+    opacity: undefined,
+    selectedpoints: undefined,
+    showlegend: undefined
 };
