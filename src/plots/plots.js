@@ -428,13 +428,6 @@ plots.supplyDefaults = function(gd, opts) {
     // attach helper method to check whether a plot type is present on graph
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
 
-    // special cases that introduce interactions between traces
-    var _modules = newFullLayout._visibleModules;
-    for(i = 0; i < _modules.length; i++) {
-        var _module = _modules[i];
-        if(_module.cleanData) _module.cleanData(newFullData);
-    }
-
     if(oldFullData.length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
             relinkPrivateKeys(newFullData[i], oldFullData[i]);
@@ -443,6 +436,20 @@ plots.supplyDefaults = function(gd, opts) {
 
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData, gd._transitionData);
+
+    // Special cases that introduce interactions between traces.
+    // This is after relinkPrivateKeys so we can use those in cleanData
+    // and after layout module defaults, so we can use eg barmode
+    var _modules = newFullLayout._visibleModules;
+    var cleanDataFuncs = [];
+    for(i = 0; i < _modules.length; i++) {
+        var _module = _modules[i];
+        // some trace types share cleanData (ie histogram2d, histogram2dcontour)
+        if(_module.cleanData) Lib.pushUnique(cleanDataFuncs, _module.cleanData);
+    }
+    for(i = 0; i < cleanDataFuncs.length; i++) {
+        cleanDataFuncs[i](newFullData, newFullLayout);
+    }
 
     // turn on flag to optimize large splom-only graphs
     // mostly by omitting SVG layers during Cartesian.drawFramework

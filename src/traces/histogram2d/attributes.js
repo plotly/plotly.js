@@ -36,17 +36,19 @@ module.exports = extendFlat(
 
         histnorm: histogramAttrs.histnorm,
         histfunc: histogramAttrs.histfunc,
-        autobinx: histogramAttrs.autobinx,
         nbinsx: histogramAttrs.nbinsx,
         xbins: histogramAttrs.xbins,
-        autobiny: histogramAttrs.autobiny,
         nbinsy: histogramAttrs.nbinsy,
         ybins: histogramAttrs.ybins,
 
         xgap: heatmapAttrs.xgap,
         ygap: heatmapAttrs.ygap,
         zsmooth: heatmapAttrs.zsmooth,
-        zhoverformat: heatmapAttrs.zhoverformat
+        zhoverformat: heatmapAttrs.zhoverformat,
+        _deprecated: {
+            autobinx: histogramAttrs._deprecated.autobinx,
+            autobiny: histogramAttrs._deprecated.autobiny
+        }
     },
     colorscaleAttrs('', {
         cLetter: 'z',

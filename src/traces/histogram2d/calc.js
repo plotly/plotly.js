@@ -15,7 +15,6 @@ var Axes = require('../../plots/cartesian/axes');
 var binFunctions = require('../histogram/bin_functions');
 var normFunctions = require('../histogram/norm_functions');
 var doAvg = require('../histogram/average');
-var cleanBins = require('../histogram/clean_bins');
 var getBinSpanLabelRound = require('../histogram/bin_label_vals');
 
 
@@ -38,8 +37,8 @@ module.exports = function calc(gd, trace) {
     if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
 
     // calculate the bins
-    cleanAndAutobin(trace, 'x', x, xa, xr2c, xc2r, xcalendar);
-    cleanAndAutobin(trace, 'y', y, ya, yr2c, yc2r, ycalendar);
+    doAutoBin(trace, 'x', x, xa, xr2c, xc2r, xcalendar);
+    doAutoBin(trace, 'y', y, ya, yr2c, yc2r, ycalendar);
 
     // make the empty bin array & scale the map
     var z = [];
@@ -182,31 +181,47 @@ module.exports = function calc(gd, trace) {
     };
 };
 
-function cleanAndAutobin(trace, axLetter, data, ax, r2c, c2r, calendar) {
-    var binSpecAttr = axLetter + 'bins';
-    var autoBinAttr = 'autobin' + axLetter;
-    var binSpec = trace[binSpecAttr];
+function doAutoBin(trace, axLetter, data, ax, r2c, c2r, calendar) {
+    var binAttr = axLetter + 'bins';
+    var binSpec = trace[binAttr];
+    if(!binSpec) binSpec = trace[binAttr] = {};
+    var inputBinSpec = trace._input[binAttr] || {};
+    var autoBin = trace._autoBin = {};
 
-    cleanBins(trace, ax, axLetter);
+    // clear out any previously added autobin info
+    if(!inputBinSpec.size) delete binSpec.size;
+    if(inputBinSpec.start === undefined) delete binSpec.start;
+    if(inputBinSpec.end === undefined) delete binSpec.end;
 
-    if(trace[autoBinAttr] || !binSpec || binSpec.start === null || binSpec.end === null) {
-        binSpec = Axes.autoBin(data, ax, trace['nbins' + axLetter], '2d', calendar);
+    var autoSize = !binSpec.size;
+    var autoStart = binSpec.start === undefined;
+    var autoEnd = binSpec.end === undefined;
+
+    if(autoSize || autoStart || autoEnd) {
+        var newBinSpec = Axes.autoBin(data, ax, trace['nbins' + axLetter], '2d', calendar, binSpec.size);
         if(trace.type === 'histogram2dcontour') {
-            // the "true" last argument reverses the tick direction (which we can't
+            // the "true" 2nd argument reverses the tick direction (which we can't
             // just do with a minus sign because of month bins)
-            binSpec.start = c2r(Axes.tickIncrement(
-                r2c(binSpec.start), binSpec.size, true, calendar));
-            binSpec.end = c2r(Axes.tickIncrement(
-                r2c(binSpec.end), binSpec.size, false, calendar));
+            if(autoStart) {
+                newBinSpec.start = c2r(Axes.tickIncrement(
+                    r2c(newBinSpec.start), newBinSpec.size, true, calendar));
+            }
+            if(autoEnd) {
+                newBinSpec.end = c2r(Axes.tickIncrement(
+                    r2c(newBinSpec.end), newBinSpec.size, false, calendar));
+            }
         }
+        if(autoSize) binSpec.size = autoBin.size = newBinSpec.size;
+        if(autoStart) binSpec.start = autoBin.start = newBinSpec.start;
+        if(autoEnd) binSpec.end = autoBin.end = newBinSpec.end;
+    }
 
-        // copy bin info back to the source data.
-        trace._input[binSpecAttr] = trace[binSpecAttr] = binSpec;
-        // note that it's possible to get here with an explicit autobin: false
-        // if the bins were not specified.
-        // in that case this will remain in the trace, so that future updates
-        // which would change the autobinning will not do so.
-        trace._input[autoBinAttr] = trace[autoBinAttr];
+    // Backward compatibility for one-time autobinning.
+    // autobin: true is handled in cleanData, but autobin: false
+    // needs to be here where we have determined the values.
+    if(trace._input['autobin' + axLetter] === false) {
+        trace._input[binAttr] = Lib.extendFlat({}, binSpec);
+        delete trace._input['autobin' + axLetter];
     }
 }
 

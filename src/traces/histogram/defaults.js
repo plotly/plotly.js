@@ -13,7 +13,6 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 
-var handleBinDefaults = require('./bin_defaults');
 var handleStyleDefaults = require('../bar/style_defaults');
 var attributes = require('./attributes');
 
@@ -51,8 +50,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var hasAggregationData = traceOut[aggLetter];
     if(hasAggregationData) coerce('histfunc');
+    coerce('histnorm');
 
-    handleBinDefaults(traceIn, traceOut, coerce, [sampleLetter]);
+    // Note: bin defaults are now handled in Histogram.cleanData
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 

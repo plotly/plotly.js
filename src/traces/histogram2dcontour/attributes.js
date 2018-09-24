@@ -23,10 +23,8 @@ module.exports = extendFlat({
 
     histnorm: histogram2dAttrs.histnorm,
     histfunc: histogram2dAttrs.histfunc,
-    autobinx: histogram2dAttrs.autobinx,
     nbinsx: histogram2dAttrs.nbinsx,
     xbins: histogram2dAttrs.xbins,
-    autobiny: histogram2dAttrs.autobiny,
     nbinsy: histogram2dAttrs.nbinsy,
     ybins: histogram2dAttrs.ybins,
 
@@ -34,7 +32,11 @@ module.exports = extendFlat({
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
     line: contourAttrs.line,
-    zhoverformat: histogram2dAttrs.zhoverformat
+    zhoverformat: histogram2dAttrs.zhoverformat,
+    _deprecated: {
+        autobinx: histogram2dAttrs._deprecated.autobinx,
+        autobiny: histogram2dAttrs._deprecated.autobiny
+    }
 },
     colorscaleAttrs('', {
         cLetter: 'z',

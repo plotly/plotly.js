@@ -1119,17 +1119,30 @@ describe('Test plot api', function() {
         });
 
         it('turns off autobin when you edit bin specs', function(done) {
+            // test retained (modified) for backward compat with new autobin logic
             var start0 = 0.2;
             var end1 = 6;
             var size1 = 0.5;
 
             function check(auto, msg) {
-                expect(gd.data[0].autobinx).toBe(auto, msg);
-                expect(gd.data[0].xbins.start).negateIf(auto).toBe(start0, msg);
-                expect(gd.data[1].autobinx).toBe(auto, msg);
-                expect(gd.data[1].autobiny).toBe(auto, msg);
-                expect(gd.data[1].xbins.end).negateIf(auto).toBe(end1, msg);
-                expect(gd.data[1].ybins.size).negateIf(auto).toBe(size1, msg);
+                expect(gd.data[0].autobinx).toBeUndefined(msg);
+                expect(gd.data[1].autobinx).toBeUndefined(msg);
+                expect(gd.data[1].autobiny).toBeUndefined(msg);
+
+                if(auto) {
+                    expect(gd.data[0].xbins).toBeUndefined(msg);
+                    expect(gd.data[1].xbins).toBeUndefined(msg);
+                    expect(gd.data[1].ybins).toBeUndefined(msg);
+                }
+                else {
+                    // we can have - and use - partial autobin now
+                    expect(gd.data[0].xbins).toEqual({start: start0});
+                    expect(gd.data[1].xbins).toEqual({end: end1});
+                    expect(gd.data[1].ybins).toEqual({size: size1});
+                    expect(gd._fullData[0].xbins.start).toBe(start0, msg);
+                    expect(gd._fullData[1].xbins.end).toBe(end1, msg);
+                    expect(gd._fullData[1].ybins.size).toBe(size1, msg);
+                }
             }
 
             Plotly.plot(gd, [

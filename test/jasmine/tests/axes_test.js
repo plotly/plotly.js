@@ -1220,7 +1220,7 @@ describe('Test axes', function() {
                 axOut = {};
                 mockSupplyDefaults(axIn, axOut, 'log');
                 // tick0 gets ignored for D<n>
-                expect(axOut.tick0).toBe(0);
+                expect(axOut.tick0).toBeUndefined(v);
                 expect(axOut.dtick).toBe(v);
             });
 

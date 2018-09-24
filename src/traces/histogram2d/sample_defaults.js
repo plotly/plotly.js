@@ -10,8 +10,6 @@
 'use strict';
 
 var Registry = require('../../registry');
-var handleBinDefaults = require('../histogram/bin_defaults');
-
 
 module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     var x = coerce('x');
@@ -34,7 +32,7 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout
     var hasAggregationData = coerce('z') || coerce('marker.color');
 
     if(hasAggregationData) coerce('histfunc');
+    coerce('histnorm');
 
-    var binDirections = ['x', 'y'];
-    handleBinDefaults(traceIn, traceOut, coerce, binDirections);
+    // Note: bin defaults are now handled in Histogram2D.cleanData
 };

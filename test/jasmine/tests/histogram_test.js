@@ -187,10 +187,10 @@ describe('Test histogram', function() {
 
 
     describe('calc', function() {
-        function _calc(opts, extraTraces, layout) {
+        function _calc(opts, extraTraces, layout, prependExtras) {
             var base = { type: 'histogram' };
             var trace = Lib.extendFlat({}, base, opts);
-            var gd = { data: [trace] };
+            var gd = { data: prependExtras ? [] : [trace] };
 
             if(layout) gd.layout = layout;
 
@@ -200,8 +200,16 @@ describe('Test histogram', function() {
                 });
             }
 
+            if(prependExtras) gd.data.push(trace);
+
             supplyAllDefaults(gd);
-            var fullTrace = gd._fullData[0];
+            var fullTrace = gd._fullData[prependExtras ? gd._fullData.length - 1 : 0];
+
+            if(prependExtras) {
+                for(var i = 0; i < gd._fullData.length - 1; i++) {
+                    calc(gd, gd._fullData[i]);
+                }
+            }
 
             var out = calc(gd, fullTrace);
             delete out[0].trace;
@@ -408,8 +416,8 @@ describe('Test histogram', function() {
             ]);
         });
 
-        function calcPositions(opts, extraTraces) {
-            return _calc(opts, extraTraces).map(function(v) { return v.p; });
+        function calcPositions(opts, extraTraces, prepend) {
+            return _calc(opts, extraTraces, {}, prepend).map(function(v) { return v.p; });
         }
 
         it('harmonizes autobins when all traces are autobinned', function() {
@@ -420,25 +428,11 @@ describe('Test histogram', function() {
 
             expect(calcPositions(trace2)).toBeCloseToArray([5.5, 6.5], 5);
 
-            expect(calcPositions(trace1, [trace2])).toEqual([1, 2, 3, 4]);
-            // huh, turns out even this one is an example of "unexpected bin positions"
-            // (see another example below) - in this case it's because trace1 gets
-            // autoshifted to keep integers off the bin edges, whereas trace2 doesn't
-            // because there are as many integers as half-integers.
-            // In this case though, it's unexpected but arguably better than the
-            // "expected" result.
-            expect(calcPositions(trace2, [trace1])).toEqual([5, 6, 7]);
+            expect(calcPositions(trace1, [trace2])).toEqual([1, 3, 5]);
+            expect(calcPositions(trace2, [trace1])).toEqual([5, 7]);
         });
 
-        it('can sometimes give unexpected bin positions', function() {
-            // documenting an edge case that might not be desirable but for now
-            // we've decided to ignore: a larger bin sets the bin start, but then it
-            // doesn't quite make sense with the smaller bin we end up with
-            // we *could* fix this by ensuring that the bin start is based on the
-            // same bin spec that gave the minimum bin size, but incremented down to
-            // include the minimum start... but that would have awkward edge cases
-            // involving month bins so for now we're ignoring it.
-
+        it('autobins all data as one', function() {
             // all integers, so all autobins should get shifted to start 0.5 lower
             // than they otherwise would.
             var trace1 = {x: [1, 2, 3, 4]};
@@ -450,19 +444,21 @@ describe('Test histogram', function() {
             // {size: 5, start: -5.5}: -5..-1, 0..4, 5..9
             expect(calcPositions(trace2)).toEqual([-3, 2, 7]);
 
-            // unexpected behavior when we put these together,
-            // because 2 and 5 are mutually prime. Normally you could never get
-            // groupings 1&2, 3&4... you'd always get 0&1, 2&3...
-            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([1.5, 3.5], 5);
-            expect(calcPositions(trace2, [trace1])).toBeCloseToArray([
-                -2.5, -0.5, 1.5, 3.5, 5.5, 7.5
-            ], 5);
+            // together bins match the wider trace
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([2], 5);
+            expect(calcPositions(trace2, [trace1])).toEqual([-3, 2, 7]);
+
+            // unless we add enough points to shrink the bins
+            expect(calcPositions(trace2, [trace1, trace1, trace1, trace1]))
+                .toBeCloseToArray([-1.5, 0.5, 2.5, 4.5, 6.5], 5);
         });
 
         it('harmonizes autobins with smaller manual bins', function() {
             var trace1 = {x: [1, 2, 3, 4]};
             var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 7.1, size: 0.4}};
 
+            // size is preserved, and start is shifted to be compatible with trace2
+            // (but we can't just use start from trace2 or it would cut off all our data!)
             expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
                 0.9, 1.3, 1.7, 2.1, 2.5, 2.9, 3.3, 3.7, 4.1
             ], 5);
@@ -470,11 +466,64 @@ describe('Test histogram', function() {
 
         it('harmonizes autobins with larger manual bins', function() {
             var trace1 = {x: [1, 2, 3, 4]};
-            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 15, size: 7}};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 3.7, end: 15, size: 7}};
 
             expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
-                0.8, 2.55, 4.3
+                0.2, 7.2
             ], 5);
+        });
+
+        it('ignores incompatible sizes, and harmonizes start values', function() {
+            var trace1 = {x: [1, 2, 3, 4], xbins: {start: 1.7, end: 3.5, size: 0.6}};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 7.1, size: 0.4}};
+
+            // trace1 is first: all its settings are used directly,
+            // and trace2 uses its size and shifts start to harmonize with it.
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
+                2.0, 2.6, 3.2
+            ], 5);
+            expect(calcPositions(trace2, [trace1], true)).toBeCloseToArray([
+                5.0, 5.6, 6.2, 6.8
+            ], 5);
+
+            // switch the order: trace2 values win
+            expect(calcPositions(trace2, [trace1])).toBeCloseToArray([
+                4.9, 5.3, 5.7, 6.1, 6.5, 6.9
+            ], 5);
+            expect(calcPositions(trace1, [trace2], true)).toBeCloseToArray([
+                2.1, 2.5, 2.9
+            ], 5);
+        });
+
+        it('can take size and start from different traces in any order', function() {
+            var trace1 = {x: [1, 2, 3, 4], xbins: {size: 0.6}};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.8}};
+
+            [true, false].forEach(function(prepend) {
+                expect(calcPositions(trace1, [trace2], prepend)).toBeCloseToArray([
+                    0.9, 1.5, 2.1, 2.7, 3.3, 3.9
+                ], 5);
+
+                expect(calcPositions(trace2, [trace1], prepend)).toBeCloseToArray([
+                    5.1, 5.7, 6.3, 6.9, 7.5, 8.1
+                ], 5);
+            });
+        });
+
+        it('works with only a size specified', function() {
+            // this used to not just lose the size, but actually errored out.
+            var trace1 = {x: [1, 2, 3, 4], xbins: {size: 0.8}};
+            var trace2 = {x: [5, 6, 7, 8]};
+
+            [true, false].forEach(function(prepend) {
+                expect(calcPositions(trace1, [trace2], prepend)).toBeCloseToArray([
+                    1, 1.8, 2.6, 3.4, 4.2
+                ], 5);
+
+                expect(calcPositions(trace2, [trace1], prepend)).toBeCloseToArray([
+                    5, 5.8, 6.6, 7.4, 8.2
+                ], 5);
+            });
         });
 
         it('ignores traces on other axes', function() {
@@ -483,7 +532,7 @@ describe('Test histogram', function() {
             var trace3 = {x: [1, 1.1, 1.2, 1.3], xaxis: 'x2'};
             var trace4 = {x: [1, 1.2, 1.4, 1.6], yaxis: 'y2'};
 
-            expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 2, 3, 4]);
+            expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 3, 5]);
             expect(calcPositions(trace3)).toBeCloseToArray([1.1, 1.3], 5);
         });
 
@@ -610,43 +659,59 @@ describe('Test histogram', function() {
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
             Plotly.plot(gd, [{x: data1, type: 'histogram' }]);
             expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
-            expect(gd._fullData[0].autobinx).toBe(true);
+            expect(gd._fullData[0].nbinsx).toBe(0);
 
             // same range but fewer samples changes autobin size
             var data2 = [1.5, 5];
             Plotly.restyle(gd, 'x', [data2]);
             expect(gd._fullData[0].xbins).toEqual({start: -2.5, end: 7.5, size: 5});
-            expect(gd._fullData[0].autobinx).toBe(true);
+            expect(gd._fullData[0].nbinsx).toBe(0);
 
             // different range
             var data3 = [10, 20.2, 20, 30, 30, 30, 40, 40, 50];
             Plotly.restyle(gd, 'x', [data3]);
             expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
-            expect(gd._fullData[0].autobinx).toBe(true);
+            expect(gd._fullData[0].nbinsx).toBe(0);
 
-            // explicit change to a bin attribute clears autobin
+            // explicit change to start does not update anything else
             Plotly.restyle(gd, 'xbins.start', 3);
             expect(gd._fullData[0].xbins).toEqual({start: 3, end: 55, size: 10});
-            expect(gd._fullData[0].autobinx).toBe(false);
+            expect(gd._fullData[0].nbinsx).toBe(0);
 
             // restart autobin
             Plotly.restyle(gd, 'autobinx', true);
             expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
-            expect(gd._fullData[0].autobinx).toBe(true);
+            expect(gd._fullData[0].nbinsx).toBe(0);
+
+            // explicit end does not update anything else
+            Plotly.restyle(gd, 'xbins.end', 43);
+            expect(gd._fullData[0].xbins).toEqual({start: 5, end: 43, size: 10});
+            expect(gd._fullData[0].nbinsx).toBe(0);
+
+            // nbins would update all three, but explicit end is honored
+            Plotly.restyle(gd, 'nbinsx', 3);
+            expect(gd._fullData[0].xbins).toEqual({start: 0, end: 43, size: 20});
+            expect(gd._fullData[0].nbinsx).toBe(3);
+
+            // explicit size updates auto start *and* end, and moots nbins
+            Plotly.restyle(gd, {'xbins.end': null, 'xbins.size': 2});
+            expect(gd._fullData[0].xbins).toEqual({start: 9, end: 51, size: 2});
+            expect(gd._fullData[0].nbinsx).toBeUndefined();
         });
 
         it('respects explicit autobin: false as a one-time autobin', function() {
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
             Plotly.plot(gd, [{x: data1, type: 'histogram', autobinx: false }]);
             // we have no bins, so even though autobin is false we have to autobin once
+            // but for backward compat. calc pushes these bins back into gd.data
+            // even though there's no `autobinx` attribute anymore.
             expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
-            expect(gd._fullData[0].autobinx).toBe(false);
+            expect(gd.data[0].xbins).toEqual({start: 1, end: 6, size: 1});
 
             // since autobin is false, this will not change the bins
             var data2 = [1.5, 5];
             Plotly.restyle(gd, 'x', [data2]);
             expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
-            expect(gd._fullData[0].autobinx).toBe(false);
         });
 
         it('allows changing axis type with new x data', function() {
@@ -738,6 +803,53 @@ describe('Test histogram', function() {
             })
             .then(function() {
                 assertTraceCount(3);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('autobins all histograms together except `visible: false`', function(done) {
+            function _assertBinCenters(expectedCenters) {
+                var centers = gd.calcdata.map(function(cd) {
+                    return cd.map(function(cdi) { return cdi.p; });
+                });
+
+                expect(centers).toBeCloseTo2DArray(expectedCenters);
+            }
+
+            var hidden = [undefined];
+
+            Plotly.newPlot(gd, [
+                {type: 'histogram', x: [1]},
+                {type: 'histogram', x: [10, 10.1, 10.2, 10.3]},
+                {type: 'histogram', x: [20, 20, 20, 20, 20, 20, 20, 20, 20, 21]}
+            ])
+            .then(function() {
+                _assertBinCenters([[0], [10], [20]]);
+                return Plotly.restyle(gd, 'visible', 'legendonly', [1, 2]);
+            })
+            .then(function() {
+                _assertBinCenters([[0], hidden, hidden]);
+                return Plotly.restyle(gd, 'visible', false, [1, 2]);
+            })
+            .then(function() {
+                _assertBinCenters([[1], hidden, hidden]);
+                return Plotly.restyle(gd, 'visible', [false, false, true]);
+            })
+            .then(function() {
+                _assertBinCenters([hidden, hidden, [20, 21]]);
+                return Plotly.restyle(gd, 'visible', [false, true, false]);
+            })
+            .then(function() {
+                _assertBinCenters([hidden, [10.1, 10.3], hidden]);
+                // only one trace is visible, despite traces being grouped
+                expect(gd._fullLayout.bargap).toBe(0);
+                return Plotly.restyle(gd, 'visible', ['legendonly', true, 'legendonly']);
+            })
+            .then(function() {
+                _assertBinCenters([hidden, [10], hidden]);
+                // legendonly traces still flip us back to gapped
+                expect(gd._fullLayout.bargap).toBe(0.2);
             })
             .catch(failTest)
             .then(done);
