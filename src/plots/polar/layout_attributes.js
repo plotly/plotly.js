@@ -112,16 +112,6 @@ var radialAxisAttrs = {
 
     hoverformat: axesAttrs.hoverformat,
 
-    // More attributes:
-
-    // We'll need some attribute that determines the span
-    // to draw donut-like charts
-    // e.g. https://github.com/matplotlib/matplotlib/issues/4217
-    //
-    // maybe something like 'span' or 'hole' (like pie, but pie set it in data coords?)
-    // span: {},
-    // hole: 1
-
     editType: 'calc'
 };
 
@@ -254,6 +244,17 @@ module.exports = {
             'Sets angular span of this polar subplot with two angles (in degrees).',
             'Sector are assumed to be spanned in the counterclockwise direction',
             'with *0* corresponding to rightmost limit of the polar subplot.'
+        ].join(' ')
+    },
+    hole: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0,
+        editType: 'plot',
+        role: 'info',
+        description: [
+            'Sets the fraction of the radius to cut out of the polar subplot.'
         ].join(' ')
     },
 

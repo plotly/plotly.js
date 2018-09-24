@@ -116,17 +116,17 @@ function constructDelaunay(points, color, axis) {
 function calculateErrorParams(errors) {
     var capSize = [0.0, 0.0, 0.0],
         color = [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-        lineWidth = [0.0, 0.0, 0.0];
+        lineWidth = [1.0, 1.0, 1.0];
 
     for(var i = 0; i < 3; i++) {
         var e = errors[i];
 
-        if(e && e.copy_zstyle !== false) e = errors[2];
-        if(!e) continue;
+        if(e && e.copy_zstyle !== false && errors[2].visible !== false) e = errors[2];
+        if(!e || !e.visible) continue;
 
         capSize[i] = e.width / 2;  // ballpark rescaling
         color[i] = str2RgbaArray(e.color);
-        lineWidth = e.thickness;
+        lineWidth[i] = e.thickness;
 
     }
 
@@ -252,7 +252,7 @@ function convertPlotlyOptions(scene, data) {
         }
     }
 
-    params.errorBounds = calculateError(data, scaleFactor);
+    params.errorBounds = calculateError(data, scaleFactor, sceneLayout);
 
     var errorParams = calculateErrorParams([data.error_x, data.error_y, data.error_z]);
     params.errorColor = errorParams.color;

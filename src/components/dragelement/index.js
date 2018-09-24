@@ -137,6 +137,12 @@ dragElement.init = function init(options) {
         initialEvent = e;
         rightClick = e.buttons === 2 || e.ctrlKey;
 
+        // fix Fx.hover for touch events
+        if(typeof e.clientX === 'undefined' && typeof e.clientY === 'undefined') {
+            e.clientX = startX;
+            e.clientY = startY;
+        }
+
         newMouseDownTime = (new Date()).getTime();
         if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
             // in a click train

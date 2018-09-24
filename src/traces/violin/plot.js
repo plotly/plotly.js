@@ -11,11 +11,12 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+
 var boxPlot = require('../box/plot');
 var linePoints = require('../scatter/line_points');
 var helpers = require('./helpers');
 
-module.exports = function plot(gd, plotinfo, cd, violinLayer) {
+module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -32,22 +33,12 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
         return Drawing.smoothopen(segments[0], 1);
     }
 
-    var traces = violinLayer.selectAll('g.trace.violins')
-        .data(cd, function(d) { return d[0].trace.uid; });
-
-    traces.enter().append('g')
-        .attr('class', 'trace violins');
-
-    traces.exit().remove();
-
-    traces.order();
-
-    traces.each(function(d) {
-        var cd0 = d[0];
+    Lib.makeTraceGroups(violinLayer, cdViolins, 'trace violins').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        var sel = d3.select(this);
-        if(!plotinfo.isRangePlot) cd0.node3 = sel;
+        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
         var numViolins = fullLayout._numViolins;
         var group = (fullLayout.violinmode === 'group' && numViolins > 1);
         var groupFraction = 1 - fullLayout.violingap;
@@ -60,7 +51,7 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
         t.wHover = t.dPos * (group ? groupFraction / numViolins : 1);
 
         if(trace.visible !== true || t.empty) {
-            d3.select(this).remove();
+            plotGroup.remove();
             return;
         }
 
@@ -71,7 +62,7 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
         var hasNegativeSide = hasBothSides || trace.side === 'negative';
         var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
 
-        var violins = sel.selectAll('path.violin').data(Lib.identity);
+        var violins = plotGroup.selectAll('path.violin').data(Lib.identity);
 
         violins.enter().append('path')
             .style('vector-effect', 'non-scaling-stroke')
@@ -147,7 +138,7 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
             d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
         });
 
-        var boxAttrs = trace.box || {};
+        var boxAttrs = trace.box;
         var boxWidth = boxAttrs.width;
         var boxLineWidth = (boxAttrs.line || {}).width;
         var bdPosScaled;
@@ -165,27 +156,27 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
         }
 
         // inner box
-        boxPlot.plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, {
+        boxPlot.plotBoxAndWhiskers(plotGroup, {pos: posAxis, val: valAxis}, trace, {
             bPos: bPos,
             bdPos: bdPosScaled,
             bPosPxOffset: bPosPxOffset
         });
 
         // meanline insider box
-        boxPlot.plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, {
+        boxPlot.plotBoxMean(plotGroup, {pos: posAxis, val: valAxis}, trace, {
             bPos: bPos,
             bdPos: bdPosScaled,
             bPosPxOffset: bPosPxOffset
         });
 
         var fn;
-        if(!(trace.box || {}).visible && (trace.meanline || {}).visible) {
+        if(!trace.box.visible && trace.meanline.visible) {
             fn = Lib.identity;
         }
 
         // N.B. use different class name than boxPlot.plotBoxMean,
         // to avoid selectAll conflict
-        var meanPaths = sel.selectAll('path.meanline').data(fn || []);
+        var meanPaths = plotGroup.selectAll('path.meanline').data(fn || []);
         meanPaths.enter().append('path')
             .attr('class', 'meanline')
             .style('fill', 'none')
@@ -202,6 +193,6 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
             );
         });
 
-        boxPlot.plotPoints(sel, {x: xa, y: ya}, trace, t);
+        boxPlot.plotPoints(plotGroup, {x: xa, y: ya}, trace, t);
     });
 };

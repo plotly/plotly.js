@@ -3,9 +3,10 @@ var path = require('path');
 
 var browserify = require('browserify');
 var minify = require('minify-stream');
+var derequire = require('derequire');
+var through = require('through2');
 
 var constants = require('./constants');
-var compressAttributes = require('./compress_attributes');
 var strictD3 = require('./strict_d3');
 
 /** Convenience browserify wrapper
@@ -18,7 +19,7 @@ var strictD3 = require('./strict_d3');
  *  - debug {boolean} [optional]
  *  Additional option:
  *  - pathToMinBundle {string} path to destination minified bundle
- *  - compressAttrs {boolean} do we compress attribute meta?
+ *  - noCompress {boolean} skip attribute meta compression?
  * @param {function} cb callback
  *
  * Outputs one bundle (un-minified) file if opts.pathToMinBundle is omitted
@@ -36,10 +37,11 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     browserifyOpts.standalone = opts.standalone;
     browserifyOpts.debug = opts.debug;
 
-    browserifyOpts.transform = [];
-    if(opts.compressAttrs) {
-        browserifyOpts.transform.push(compressAttributes);
+    if(opts.noCompress) {
+        browserifyOpts.ignoreTransform = './tasks/compress_attributes.js';
     }
+
+    browserifyOpts.transform = [];
     if(opts.debug) {
         browserifyOpts.transform.push(strictD3);
     }
@@ -60,6 +62,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     if(pathToMinBundle) {
         bundleStream
+            .pipe(applyDerequire())
             .pipe(minify(constants.uglifyOptions))
             .pipe(fs.createWriteStream(pathToMinBundle))
             .on('finish', function() {
@@ -69,6 +72,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     }
 
     bundleStream
+        .pipe(applyDerequire())
         .pipe(fs.createWriteStream(pathToBundle))
         .on('finish', function() {
             logger(pathToBundle);
@@ -79,4 +83,15 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 function logger(pathToOutput) {
     var log = 'ok ' + path.basename(pathToOutput);
     console.log(log);
+}
+
+function applyDerequire() {
+    var buf = '';
+    return through(function(chunk, enc, next) {
+        buf += chunk.toString();
+        next();
+    }, function(done) {
+        this.push(derequire(buf));
+        done();
+    });
 }

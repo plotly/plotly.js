@@ -3,7 +3,7 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var subplotMock = require('@mocks/multiple_subplots.json');
 
 var FORMATS = ['png', 'jpeg', 'webp', 'svg'];
@@ -66,7 +66,7 @@ describe('Plotly.toImage', function() {
             expect(function() { Plotly.toImage(gd, {format: 'x'}); })
                 .toThrow(new Error('Image format is not jpeg, png, svg or webp.'));
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -82,7 +82,7 @@ describe('Plotly.toImage', function() {
             expect(function() { Plotly.toImage(gd, {width: 0.5}); })
                 .toThrow(new Error('Height and width should be pixel values.'));
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -110,7 +110,7 @@ describe('Plotly.toImage', function() {
             expect(img.height).toBe(400);
             expect(img.width).toBe(400);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -138,7 +138,7 @@ describe('Plotly.toImage', function() {
         .then(function(url) {
             expect(url.split('webp')[0]).toBe('data:image/');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -166,7 +166,7 @@ describe('Plotly.toImage', function() {
             expect(d.indexOf('data:image/')).toBe(-1);
             expect(d.length).toBeWithin(15831, 1e3, 'webp image length');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -179,7 +179,7 @@ describe('Plotly.toImage', function() {
             .then(function(url) { return assertSize(url, 1400, 900); })
             .then(function() { return Plotly.toImage(gd, {format: f, scale: 0.5}); })
             .then(function(url) { return assertSize(url, 350, 225); })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -193,7 +193,7 @@ describe('Plotly.toImage', function() {
             expect(img.width).toBe(700);
             expect(img.height).toBe(450);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -207,7 +207,7 @@ describe('Plotly.toImage', function() {
             expect(img.width).toBe(700);
             expect(img.height).toBe(450);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

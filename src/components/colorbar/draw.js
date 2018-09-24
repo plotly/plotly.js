@@ -39,9 +39,9 @@ module.exports = function draw(gd, id) {
     // opts: options object, containing everything from attributes
     // plus a few others that are the equivalent of the colorbar "data"
     var opts = {};
-    Object.keys(attributes).forEach(function(k) {
+    for(var k in attributes) {
         opts[k] = null;
-    });
+    }
     // fillcolor can be a d3 scale, domain is z values, range is colors
     // or leave it out for no fill,
     // or set to a string constant for single-color fill
@@ -57,17 +57,23 @@ module.exports = function draw(gd, id) {
     // contour map) if this is omitted, fillcolors will be
     // evaluated halfway between levels
     opts.filllevels = null;
+    // for continuous colorscales: fill with a gradient instead of explicit levels
+    // value should be the colorscale [[0, c0], [v1, c1], ..., [1, cEnd]]
+    opts.fillgradient = null;
+    // when using a gradient, we need the data range specified separately
+    opts.zrange = null;
 
     function component() {
         var fullLayout = gd._fullLayout,
             gs = fullLayout._size;
         if((typeof opts.fillcolor !== 'function') &&
-                (typeof opts.line.color !== 'function')) {
+                (typeof opts.line.color !== 'function') &&
+                !opts.fillgradient) {
             fullLayout._infolayer.selectAll('g.' + id).remove();
             return;
         }
-        var zrange = d3.extent(((typeof opts.fillcolor === 'function') ?
-            opts.fillcolor : opts.line.color).domain());
+        var zrange = opts.zrange || (d3.extent(((typeof opts.fillcolor === 'function') ?
+            opts.fillcolor : opts.line.color).domain()));
         var linelevels = [];
         var filllevels = [];
         var linecolormap = typeof opts.line.color === 'function' ?
@@ -87,7 +93,10 @@ module.exports = function draw(gd, id) {
             if(l > zr0 && l < zr1) linelevels.push(l);
         }
 
-        if(typeof opts.fillcolor === 'function') {
+        if(opts.fillgradient) {
+            filllevels = [0];
+        }
+        else if(typeof opts.fillcolor === 'function') {
             if(opts.filllevels) {
                 l0 = opts.filllevels.end + opts.filllevels.size / 100;
                 ls = opts.filllevels.size;
@@ -358,6 +367,12 @@ module.exports = function draw(gd, id) {
                 .classed(cn.cbfill, true)
                 .style('stroke', 'none');
             fills.exit().remove();
+
+            var zBounds = zrange
+                .map(cbAxisOut.c2p)
+                .map(Math.round)
+                .sort(function(a, b) { return a - b; });
+
             fills.each(function(d, i) {
                 var z = [
                     (i === 0) ? zrange[0] :
@@ -370,25 +385,27 @@ module.exports = function draw(gd, id) {
 
                 // offset the side adjoining the next rectangle so they
                 // overlap, to prevent antialiasing gaps
-                if(i !== filllevels.length - 1) {
-                    z[1] += (z[1] > z[0]) ? 1 : -1;
-                }
-
-
-                // Tinycolor can't handle exponents and
-                // at this scale, removing it makes no difference.
-                var colorString = fillcolormap(d).replace('e-', ''),
-                    opaqueColor = tinycolor(colorString).toHexString();
+                z[1] = Lib.constrain(z[1] + (z[1] > z[0]) ? 1 : -1, zBounds[0], zBounds[1]);
 
                 // Colorbar cannot currently support opacities so we
                 // use an opaque fill even when alpha channels present
-                d3.select(this).attr({
+                var fillEl = d3.select(this).attr({
                     x: xLeft,
                     width: Math.max(thickPx, 2),
                     y: d3.min(z),
                     height: Math.max(d3.max(z) - d3.min(z), 2),
-                    fill: opaqueColor
                 });
+
+                if(opts.fillgradient) {
+                    Drawing.gradient(fillEl, gd, id, 'vertical',
+                        opts.fillgradient, 'fill');
+                }
+                else {
+                    // Tinycolor can't handle exponents and
+                    // at this scale, removing it makes no difference.
+                    var colorString = fillcolormap(d).replace('e-', '');
+                    fillEl.attr('fill', tinycolor(colorString).toHexString());
+                }
             });
 
             var lines = container.select('.cblines')
@@ -650,13 +667,13 @@ module.exports = function draw(gd, id) {
 
     // or use .options to set multiple options at once via a dictionary
     component.options = function(o) {
-        Object.keys(o).forEach(function(name) {
+        for(var name in o) {
             // in case something random comes through
             // that's not an option, ignore it
             if(typeof component[name] === 'function') {
                 component[name](o[name]);
             }
-        });
+        }
         return component;
     };
 

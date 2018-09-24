@@ -77,8 +77,8 @@ module.exports = {
         valType: 'enumerated',
         values: [true, false, 'reversed'],
         dflt: true,
-        role: 'style',
-        editType: 'calc',
+        role: 'info',
+        editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
             'Determines whether or not the range of this axis is',
@@ -91,7 +91,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
-        role: 'style',
+        role: 'info',
         editType: 'plot',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
@@ -99,7 +99,8 @@ module.exports = {
             'If *tozero*`, the range extends to 0,',
             'regardless of the input data',
             'If *nonnegative*, the range is non-negative,',
-            'regardless of the input data.'
+            'regardless of the input data.',
+            'Applies only to linear axes.'
         ].join(' ')
     },
     range: {
@@ -573,7 +574,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         role: 'style',
-        editType: 'layoutstyle',
+        editType: 'ticks+layoutstyle',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
         ].join(' ')

@@ -15,11 +15,12 @@ Box.layoutAttributes = require('./layout_attributes');
 Box.supplyDefaults = require('./defaults').supplyDefaults;
 Box.supplyLayoutDefaults = require('./layout_defaults').supplyLayoutDefaults;
 Box.calc = require('./calc');
-Box.setPositions = require('./set_positions').setPositions;
+Box.crossTraceCalc = require('./cross_trace_calc').crossTraceCalc;
 Box.plot = require('./plot').plot;
 Box.style = require('./style').style;
 Box.styleOnSelect = require('./style').styleOnSelect;
 Box.hoverPoints = require('./hover').hoverPoints;
+Box.eventData = require('./event_data');
 Box.selectPoints = require('./select');
 
 Box.moduleType = 'trace';

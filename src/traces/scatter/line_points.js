@@ -9,7 +9,11 @@
 
 'use strict';
 
-var BADNUM = require('../../constants/numerical').BADNUM;
+var numConstants = require('../../constants/numerical');
+var BADNUM = numConstants.BADNUM;
+var LOG_CLIP = numConstants.LOG_CLIP;
+var LOG_CLIP_PLUS = LOG_CLIP + 0.5;
+var LOG_CLIP_MINUS = LOG_CLIP - 0.5;
 var Lib = require('../../lib');
 var segmentsIntersect = Lib.segmentsIntersect;
 var constrain = Lib.constrain;
@@ -19,6 +23,10 @@ var constants = require('./constants');
 module.exports = function linePoints(d, opts) {
     var xa = opts.xaxis;
     var ya = opts.yaxis;
+    var xLog = xa.type === 'log';
+    var yLog = ya.type === 'log';
+    var xLen = xa._length;
+    var yLen = ya._length;
     var connectGaps = opts.connectGaps;
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
@@ -59,7 +67,25 @@ module.exports = function linePoints(d, opts) {
         if(!di) return false;
         var x = xa.c2p(di.x);
         var y = ya.c2p(di.y);
-        if(x === BADNUM || y === BADNUM) return di.intoCenter || false;
+
+        // if non-positive log values, set them VERY far off-screen
+        // so the line looks essentially straight from the previous point.
+        if(x === BADNUM) {
+            if(xLog) x = xa.c2p(di.x, true);
+            if(x === BADNUM) return false;
+            // If BOTH were bad log values, make the line follow a constant
+            // exponent rather than a constant slope
+            if(yLog && y === BADNUM) {
+                x *= Math.abs(xa._m * yLen * (xa._m > 0 ? LOG_CLIP_PLUS : LOG_CLIP_MINUS) /
+                    (ya._m * xLen * (ya._m > 0 ? LOG_CLIP_PLUS : LOG_CLIP_MINUS)));
+            }
+            x *= 1000;
+        }
+        if(y === BADNUM) {
+            if(yLog) y = ya.c2p(di.y, true);
+            if(y === BADNUM) return false;
+            y *= 1000;
+        }
         return [x, y];
     }
 
@@ -79,8 +105,8 @@ module.exports = function linePoints(d, opts) {
     var latestXFrac, latestYFrac;
     // if we're off-screen, increase tolerance over baseTolerance
     function getTolerance(pt, nextPt) {
-        var xFrac = pt[0] / xa._length;
-        var yFrac = pt[1] / ya._length;
+        var xFrac = pt[0] / xLen;
+        var yFrac = pt[1] / yLen;
         var offScreenFraction = Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1);
         if(offScreenFraction && (latestXFrac !== undefined) &&
             crossesViewport(xFrac, yFrac, latestXFrac, latestYFrac)
@@ -88,7 +114,7 @@ module.exports = function linePoints(d, opts) {
             offScreenFraction = 0;
         }
         if(offScreenFraction && nextPt &&
-            crossesViewport(xFrac, yFrac, nextPt[0] / xa._length, nextPt[1] / ya._length)
+            crossesViewport(xFrac, yFrac, nextPt[0] / xLen, nextPt[1] / yLen)
         ) {
             offScreenFraction = 0;
         }
@@ -114,10 +140,10 @@ module.exports = function linePoints(d, opts) {
     // if both are outside there will be 0 or 2 intersections
     // (or 1 if it's right at a corner - we'll treat that like 0)
     // returns an array of intersection pts
-    var xEdge0 = -xa._length * maxScreensAway;
-    var xEdge1 = xa._length * (1 + maxScreensAway);
-    var yEdge0 = -ya._length * maxScreensAway;
-    var yEdge1 = ya._length * (1 + maxScreensAway);
+    var xEdge0 = -xLen * maxScreensAway;
+    var xEdge1 = xLen * (1 + maxScreensAway);
+    var yEdge0 = -yLen * maxScreensAway;
+    var yEdge1 = yLen * (1 + maxScreensAway);
     var edges = [
         [xEdge0, yEdge0, xEdge1, yEdge0],
         [xEdge1, yEdge0, xEdge1, yEdge1],
@@ -261,8 +287,8 @@ module.exports = function linePoints(d, opts) {
     }
 
     function addPt(pt) {
-        latestXFrac = pt[0] / xa._length;
-        latestYFrac = pt[1] / ya._length;
+        latestXFrac = pt[0] / xLen;
+        latestYFrac = pt[1] / yLen;
         // Are we more than maxScreensAway off-screen any direction?
         // if so, clip to this box, but in such a way that on-screen
         // drawing is unchanged

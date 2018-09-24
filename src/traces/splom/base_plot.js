@@ -11,11 +11,11 @@
 var createLine = require('regl-line2d');
 
 var Registry = require('../../registry');
-var Lib = require('../../lib');
 var prepareRegl = require('../../lib/prepare_regl');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
-var AxisIDs = require('../../plots/cartesian/axis_ids');
+var getFromId = require('../../plots/cartesian/axis_ids').getFromId;
+var shouldShowZeroLine = require('../../plots/cartesian/axes').shouldShowZeroLine;
 
 var SPLOM = 'splom';
 
@@ -45,36 +45,34 @@ function drag(gd) {
     for(var i = 0; i < cd.length; i++) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
-        var scene = cd0.t._scene;
+        var stash = cd0.t;
+        var scene = stash._scene;
 
         if(trace.type === 'splom' && scene && scene.matrix) {
-            dragOne(gd, trace, scene);
+            dragOne(gd, trace, stash, scene);
         }
     }
 }
 
-function dragOne(gd, trace, scene) {
-    var dimensions = trace.dimensions;
+function dragOne(gd, trace, stash, scene) {
     var visibleLength = scene.matrixOptions.data.length;
+    var visibleDims = stash.visibleDims;
     var ranges = new Array(visibleLength);
 
-    for(var i = 0, k = 0; i < dimensions.length; i++) {
-        if(dimensions[i].visible) {
-            var rng = ranges[k] = new Array(4);
+    for(var k = 0; k < visibleDims.length; k++) {
+        var i = visibleDims[k];
+        var rng = ranges[k] = new Array(4);
 
-            var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
-            if(xa) {
-                rng[0] = xa.r2l(xa.range[0]);
-                rng[2] = xa.r2l(xa.range[1]);
-            }
+        var xa = getFromId(gd, trace._diag[i][0]);
+        if(xa) {
+            rng[0] = xa.r2l(xa.range[0]);
+            rng[2] = xa.r2l(xa.range[1]);
+        }
 
-            var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
-            if(ya) {
-                rng[1] = ya.r2l(ya.range[0]);
-                rng[3] = ya.r2l(ya.range[1]);
-            }
-
-            k++;
+        var ya = getFromId(gd, trace._diag[i][1]);
+        if(ya) {
+            rng[1] = ya.r2l(ya.range[0]);
+            rng[3] = ya.r2l(ya.range[1]);
         }
     }
 
@@ -146,17 +144,17 @@ function makeGridData(gd) {
                 push('grid', xa, x, yOffset, x, yOffset + ya._length);
             }
         }
-        if(showZeroLine(xa)) {
-            x = xa._offset + xa.l2p(0);
-            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
-        }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
                 y = yOffset + yb + ym * yVals[k].x;
                 push('grid', ya, xa._offset, y, xa._offset + xa._length, y);
             }
         }
-        if(showZeroLine(ya)) {
+        if(shouldShowZeroLine(gd, xa, ya)) {
+            x = xa._offset + xa.l2p(0);
+            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
+        }
+        if(shouldShowZeroLine(gd, ya, xa)) {
             y = yOffset + yb + 0;
             push('zeroline', ya, xa._offset, y, xa._offset + xa._length, y);
         }
@@ -168,20 +166,6 @@ function makeGridData(gd) {
     }
 
     return gridBatches;
-}
-
-// just like in Axes.doTicks but without the loop over traces
-function showZeroLine(ax) {
-    var rng = Lib.simpleMap(ax.range, ax.r2l);
-    var p0 = ax.l2p(0);
-
-    return (
-        ax.zeroline &&
-        ax._vals && ax._vals.length &&
-        (rng[0] * rng[1] <= 0) &&
-        (ax.type === 'linear' || ax.type === '-') &&
-        ((p0 > 1 && p0 < ax._length - 1) || !ax.showline)
-    );
 }
 
 function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
@@ -229,6 +213,30 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcda
     Cartesian.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
 }
 
+function updateFx(gd) {
+    Cartesian.updateFx(gd);
+
+    var fullLayout = gd._fullLayout;
+    var dragmode = fullLayout.dragmode;
+
+    // unset selection styles when coming out of a selection mode
+    if(dragmode === 'zoom' || dragmode === 'pan') {
+        var cd = gd.calcdata;
+
+        for(var i = 0; i < cd.length; i++) {
+            var cd0 = cd[i][0];
+            var trace = cd0.trace;
+
+            if(trace.type === 'splom') {
+                var scene = cd0.t._scene;
+                if(scene.selectBatch === null) {
+                    scene.matrix.update(scene.matrixOptions, null);
+                }
+            }
+        }
+    }
+}
+
 module.exports = {
     name: SPLOM,
     attr: Cartesian.attr,
@@ -239,6 +247,6 @@ module.exports = {
     plot: plot,
     drag: drag,
     clean: clean,
-    updateFx: Cartesian.updateFx,
+    updateFx: updateFx,
     toSVG: Cartesian.toSVG
 };

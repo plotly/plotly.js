@@ -44,12 +44,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
-    var dfltHoverOn = [];
-
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
-        dfltHoverOn.push('points');
     }
 
     if(subTypes.hasText(traceOut)) {
@@ -60,12 +57,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
-
-    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
-        dfltHoverOn.push('fills');
-    }
-
-    coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});

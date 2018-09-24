@@ -69,6 +69,7 @@ exports.getModuleCalcData = function(calcdata, arg1) {
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
+        // N.B. 'legendonly' traces do not make it past here
         if(trace.visible !== true) continue;
 
         // group calcdata trace not by 'module' (as the name of this function
@@ -122,21 +123,4 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     }
 
     return subplotData;
-};
-
-/**
- * Get a lookup object of trace uids corresponding in a given calcdata array.
- *
- * @param {array} calcdata: as in gd.calcdata (or a subset)
- * @return {object} lookup object of uids (`uid: 1`)
- */
-exports.getUidsFromCalcData = function(calcdata) {
-    var out = {};
-
-    for(var i = 0; i < calcdata.length; i++) {
-        var trace = calcdata[i][0].trace;
-        out[trace.uid] = 1;
-    }
-
-    return out;
 };

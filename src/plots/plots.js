@@ -277,6 +277,9 @@ var extraFormatKeys = [
  * gd._fullLayout._modules
  *   is a list of all the trace modules required to draw the plot.
  *
+ * gd._fullLayout._visibleModules
+ *   subset of _modules, a list of modules corresponding to visible:true traces.
+ *
  * gd._fullLayout._basePlotModules
  *   is a list of all the plot modules required to draw the plot.
  *
@@ -378,6 +381,7 @@ plots.supplyDefaults = function(gd, opts) {
 
     // clear the lists of trace and baseplot modules, and subplots
     newFullLayout._modules = [];
+    newFullLayout._visibleModules = [];
     newFullLayout._basePlotModules = [];
     var subplots = newFullLayout._subplots = emptySubplotLists();
 
@@ -386,6 +390,11 @@ plots.supplyDefaults = function(gd, opts) {
     var splomSubplots = newFullLayout._splomSubplots = {};
     // initialize splom grid defaults
     newFullLayout._splomGridDflt = {};
+
+    // for stacked area traces to share config across traces
+    newFullLayout._scatterStackOpts = {};
+    // for the first scatter trace on each subplot (so it knows tonext->tozero)
+    newFullLayout._firstScatter = {};
 
     // for traces to request a default rangeslider on their x axes
     // eg set `_requestRangeslider.x2 = true` for xaxis2
@@ -420,7 +429,7 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
 
     // special cases that introduce interactions between traces
-    var _modules = newFullLayout._modules;
+    var _modules = newFullLayout._visibleModules;
     for(i = 0; i < _modules.length; i++) {
         var _module = _modules[i];
         if(_module.cleanData) _module.cleanData(newFullData);
@@ -696,7 +705,7 @@ plots._hasPlotType = function(category) {
         if(basePlotModules[i].name === category) return true;
     }
 
-    // check trace modules
+    // check trace modules (including non-visible:true)
     var modules = this._modules || [];
     for(i = 0; i < modules.length; i++) {
         var name = modules[i].name;
@@ -890,6 +899,7 @@ plots.clearExpandedTraceDefaultColors = function(trace) {
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var modules = fullLayout._modules;
+    var visibleModules = fullLayout._visibleModules;
     var basePlotModules = fullLayout._basePlotModules;
     var cnt = 0;
     var colorCnt = 0;
@@ -904,9 +914,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         var _module = fullTrace._module;
         if(!_module) return;
 
-        if(fullTrace.visible === true) Lib.pushUnique(modules, _module);
+        Lib.pushUnique(modules, _module);
+        if(fullTrace.visible === true) Lib.pushUnique(visibleModules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
-
         cnt++;
 
         // TODO: do we really want color not to increment for explicitly invisible traces?
@@ -932,8 +942,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         fullTrace = templater.newTrace(trace);
         fullTrace.uid = fullLayout._traceUids[i];
         plots.supplyTraceDefaults(trace, fullTrace, colorCnt, fullLayout, i);
-
-        fullTrace.uid = fullLayout._traceUids[i];
 
         fullTrace.index = i;
         fullTrace._input = trace;
@@ -1139,8 +1147,12 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         coerce('ids');
 
         if(Registry.traceIs(traceOut, 'showLegend')) {
+            traceOut._dfltShowLegend = true;
             coerce('showlegend');
             coerce('legendgroup');
+        }
+        else {
+            traceOut._dfltShowLegend = false;
         }
 
         Registry.getComponentMethod(
@@ -1179,16 +1191,19 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
  * parameters? If so, we should still keep going with supplyDefaults
  * even if the trace is invisible, which may just be because it has no data yet.
  */
-function hasMakesDataTransform(traceIn) {
-    var transformsIn = traceIn.transforms;
-    if(Array.isArray(transformsIn) && transformsIn.length) {
-        for(var i = 0; i < transformsIn.length; i++) {
-            var _module = transformsRegistry[transformsIn[i].type];
+function hasMakesDataTransform(trace) {
+    var transforms = trace.transforms;
+    if(Array.isArray(transforms) && transforms.length) {
+        for(var i = 0; i < transforms.length; i++) {
+            var ti = transforms[i];
+            var _module = ti._module || transformsRegistry[ti.type];
             if(_module && _module.makesData) return true;
         }
     }
     return false;
 }
+
+plots.hasMakesDataTransform = hasMakesDataTransform;
 
 plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
     // For now we only allow transforms on 1D traces, ie those that specify a _length.
@@ -1467,7 +1482,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     }
 
     // trace module layout defaults
-    var modules = layoutOut._modules;
+    var modules = layoutOut._visibleModules;
     for(i = 0; i < modules.length; i++) {
         _module = modules[i];
 
@@ -1527,6 +1542,9 @@ plots.purge = function(gd) {
     // remove any planned throttles
     Lib.clearThrottle();
 
+    // remove responsive handler
+    Lib.clearResponsive(gd);
+
     // data and layout
     delete gd.data;
     delete gd.layout;
@@ -1547,7 +1565,6 @@ plots.purge = function(gd) {
     // (and to have a record of them...)
     delete gd._promises;
     delete gd._redrawTimer;
-    delete gd.firstscatter;
     delete gd._hmlumcount;
     delete gd._hmpixcount;
     delete gd._transitionData;
@@ -1571,7 +1588,7 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var _modules = gd._fullLayout._modules;
+    var _modules = gd._fullLayout._visibleModules;
     var styleModules = [];
     var i;
 
@@ -1875,6 +1892,10 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
 
         if(Array.isArray(d)) {
             return d.map(stripObj);
+        }
+
+        if(Lib.isTypedArray(d)) {
+            return Lib.simpleMap(d, Lib.identity);
         }
 
         // convert native dates to date strings...
@@ -2231,8 +2252,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.supplyDefaults(gd);
         plots.doCalcdata(gd);
-        plots.doSetPositions(gd);
-        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
     }
@@ -2414,8 +2433,6 @@ plots.doCalcdata = function(gd, traces) {
     gd.calcdata = calcdata;
 
     // extra helper variables
-    // firstscatter: fill-to-next on the first trace goes to zero
-    gd.firstscatter = true;
 
     // how many box/violins plots do we have (in case they're grouped)
     fullLayout._numBoxes = 0;
@@ -2430,8 +2447,6 @@ plots.doCalcdata = function(gd, traces) {
 
     // for sharing colors across pies (and for legend)
     fullLayout._piecolormap = {};
-    fullLayout._piecolorway = null;
-    fullLayout._piedefaultcolorcount = 0;
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
@@ -2442,10 +2457,13 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    // find array attributes in trace
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
+
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
+
+        // keep track of trace extremes (for autorange) in here
+        trace._extremes = {};
     }
 
     // add polar axes to axis list
@@ -2547,7 +2565,10 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);
 
+    doCrossTraceCalc(gd);
+
     Registry.getComponentMethod('fx', 'calc')(gd);
+    Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
 function clearAxesCalc(axList) {
@@ -2556,29 +2577,52 @@ function clearAxesCalc(axList) {
     }
 }
 
-plots.doSetPositions = function(gd) {
+function doCrossTraceCalc(gd) {
     var fullLayout = gd._fullLayout;
-    var subplots = fullLayout._subplots.cartesian;
-    var modules = fullLayout._modules;
-    var methods = [];
-    var i, j;
+    var modules = fullLayout._visibleModules;
+    var hash = {};
+    var i, j, k;
 
     // position and range calculations for traces that
     // depend on each other ie bars (stacked or grouped)
     // and boxes (grouped) push each other out of the way
 
     for(j = 0; j < modules.length; j++) {
-        Lib.pushUnique(methods, modules[j].setPositions);
-    }
-    if(!methods.length) return;
-
-    for(i = 0; i < subplots.length; i++) {
-        var subplotInfo = fullLayout._plots[subplots[i]];
-        for(j = 0; j < methods.length; j++) {
-            methods[j](gd, subplotInfo);
+        var _module = modules[j];
+        var fn = _module.crossTraceCalc;
+        if(fn) {
+            var spType = _module.basePlotModule.name;
+            if(hash[spType]) {
+                Lib.pushUnique(hash[spType], fn);
+            } else {
+                hash[spType] = [fn];
+            }
         }
     }
-};
+
+    for(k in hash) {
+        var methods = hash[k];
+        var subplots = fullLayout._subplots[k];
+
+        if(Array.isArray(subplots)) {
+            for(i = 0; i < subplots.length; i++) {
+                var sp = subplots[i];
+                var spInfo = k === 'cartesian' ?
+                    fullLayout._plots[sp] :
+                    fullLayout[sp];
+
+                for(j = 0; j < methods.length; j++) {
+                    methods[j](gd, spInfo, sp);
+                }
+            }
+        }
+        else {
+            for(j = 0; j < methods.length; j++) {
+                methods[j](gd);
+            }
+        }
+    }
+}
 
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {

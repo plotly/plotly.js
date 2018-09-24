@@ -33,8 +33,8 @@ var setConvert = require('./set_convert');
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
-    var id = containerOut._id;
     var font = options.font || {};
+    var splomStash = options.splomStash || {};
 
     var visible = coerce('visible', !options.cheateronly);
 
@@ -48,14 +48,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     setConvert(containerOut, layoutOut);
 
     var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
-
-    // both x and y axes may need autorange done just for the range slider's purposes
-    // the logic is complicated to figure this out later, particularly for y axes since
-    // the settings can be spread out in the x axes... so instead we'll collect them
-    // during supplyDefaults
-    containerOut._rangesliderAutorange = false;
-
-    if(autoRange) coerce('rangemode');
+    if(autoRange && (axType === 'linear' || axType === '-')) coerce('rangemode');
 
     coerce('range');
     containerOut.cleanRange();
@@ -73,7 +66,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // template too.
     var dfltFontColor = (dfltColor !== layoutAttributes.color.dflt) ? dfltColor : font.color;
     // try to get default title from splom trace, fallback to graph-wide value
-    var dfltTitle = ((layoutOut._splomAxes || {})[letter] || {})[id] || layoutOut._dfltTitle[letter];
+    var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
     coerce('title', dfltTitle);
     Lib.coerceFont(coerce, 'titlefont', {

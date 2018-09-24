@@ -21,16 +21,15 @@ module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
 
     for(var i = 0; i < calcdata.length; i++) {
-        var calcTrace = calcdata[i],
-            trace = calcTrace[0].trace;
+        var calcTrace = calcdata[i];
+        var trace = calcTrace[0].trace;
 
-        if(!Registry.traceIs(trace, 'errorBarsOK')) continue;
-
-        var xa = Axes.getFromId(gd, trace.xaxis),
-            ya = Axes.getFromId(gd, trace.yaxis);
-
-        calcOneAxis(calcTrace, trace, xa, 'x');
-        calcOneAxis(calcTrace, trace, ya, 'y');
+        if(trace.visible === true && Registry.traceIs(trace, 'errorBarsOK')) {
+            var xa = Axes.getFromId(gd, trace.xaxis);
+            var ya = Axes.getFromId(gd, trace.yaxis);
+            calcOneAxis(calcTrace, trace, xa, 'x');
+            calcOneAxis(calcTrace, trace, ya, 'y');
+        }
     }
 };
 
@@ -44,12 +43,29 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     var computeError = makeComputeError(opts);
 
     for(var i = 0; i < calcTrace.length; i++) {
-        var calcPt = calcTrace[i],
-            calcCoord = calcPt[coord];
+        var calcPt = calcTrace[i];
+
+        var iIn = calcPt.i;
+
+        // for types that don't include `i` in each calcdata point
+        if(iIn === undefined) iIn = i;
+
+        // for stacked area inserted points
+        // TODO: errorbars have been tested cursorily with stacked area,
+        // but not thoroughly. It's not even really clear what you want to do:
+        // Should it just be calculated based on that trace's size data?
+        // Should you add errors from below in quadrature?
+        // And what about normalization, where in principle the errors shrink
+        // again when you get up to the top end?
+        // One option would be to forbid errorbars with stacking until we
+        // decide how to handle these questions.
+        else if(iIn === null) continue;
+
+        var calcCoord = calcPt[coord];
 
         if(!isNumeric(axis.c2l(calcCoord))) continue;
 
-        var errors = computeError(calcCoord, i);
+        var errors = computeError(calcCoord, iIn);
         if(isNumeric(errors[0]) && isNumeric(errors[1])) {
             var shoe = calcPt[coord + 's'] = calcCoord - errors[0],
                 hat = calcPt[coord + 'h'] = calcCoord + errors[1];
@@ -57,5 +73,8 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
         }
     }
 
-    Axes.expand(axis, vals, {padded: true});
+    var extremes = Axes.findExtremes(axis, vals, {padded: true});
+    var axId = axis._id;
+    trace._extremes[axId].min = trace._extremes[axId].min.concat(extremes.min);
+    trace._extremes[axId].max = trace._extremes[axId].max.concat(extremes.max);
 }

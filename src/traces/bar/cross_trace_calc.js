@@ -24,7 +24,7 @@ var Sieve = require('./sieve.js');
  * now doing this one subplot at a time
  */
 
-module.exports = function setPositions(gd, plotinfo) {
+function crossTraceCalc(gd, plotinfo) {
     var xa = plotinfo.xaxis,
         ya = plotinfo.yaxis;
 
@@ -52,8 +52,7 @@ module.exports = function setPositions(gd, plotinfo) {
 
     setGroupPositions(gd, xa, ya, calcTracesVertical);
     setGroupPositions(gd, ya, xa, calcTracesHorizontal);
-};
-
+}
 
 function setGroupPositions(gd, pa, sa, calcTraces) {
     if(!calcTraces.length) return;
@@ -64,6 +63,8 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
         excluded,
         included,
         i, calcTrace, fullTrace;
+
+    initBase(gd, pa, sa, calcTraces);
 
     if(overlay) {
         setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
@@ -108,6 +109,45 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
     }
 
     collectExtents(calcTraces, pa);
+}
+
+function initBase(gd, pa, sa, calcTraces) {
+    var i, j;
+
+    for(i = 0; i < calcTraces.length; i++) {
+        var cd = calcTraces[i];
+        var trace = cd[0].trace;
+        var base = trace.base;
+        var b;
+
+        // not sure if it really makes sense to have dates for bar size data...
+        // ideally if we want to make gantt charts or something we'd treat
+        // the actual size (trace.x or y) as time delta but base as absolute
+        // time. But included here for completeness.
+        var scalendar = trace.orientation === 'h' ? trace.xcalendar : trace.ycalendar;
+
+        if(isArrayOrTypedArray(base)) {
+            for(j = 0; j < Math.min(base.length, cd.length); j++) {
+                b = sa.d2c(base[j], 0, scalendar);
+                if(isNumeric(b)) {
+                    cd[j].b = +b;
+                    cd[j].hasB = 1;
+                }
+                else cd[j].b = 0;
+            }
+            for(; j < cd.length; j++) {
+                cd[j].b = 0;
+            }
+        } else {
+            b = sa.d2c(base, 0, scalendar);
+            var hasBase = isNumeric(b);
+            b = hasBase ? b : 0;
+            for(j = 0; j < cd.length; j++) {
+                cd[j].b = b;
+                if(hasBase) cd[j].hasB = 1;
+            }
+        }
+    }
 }
 
 
@@ -207,7 +247,7 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
 function setOffsetAndWidth(gd, pa, sieve) {
     var fullLayout = gd._fullLayout,
         bargap = fullLayout.bargap,
-        bargroupgap = fullLayout.bargroupgap,
+        bargroupgap = fullLayout.bargroupgap || 0,
         minDiff = sieve.minDiff,
         calcTraces = sieve.traces,
         i, calcTrace, calcTrace0,
@@ -250,7 +290,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
 function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var fullLayout = gd._fullLayout,
         bargap = fullLayout.bargap,
-        bargroupgap = fullLayout.bargroupgap,
+        bargroupgap = fullLayout.bargroupgap || 0,
         positions = sieve.positions,
         distinctPositions = sieve.distinctPositions,
         minDiff = sieve.minDiff,
@@ -310,7 +350,7 @@ function applyAttributes(sieve) {
         fullTrace = calcTrace0.trace;
         t = calcTrace0.t;
 
-        var offset = fullTrace.offset,
+        var offset = fullTrace._offset || fullTrace.offset,
             initialPoffset = t.poffset,
             newPoffset;
 
@@ -337,7 +377,7 @@ function applyAttributes(sieve) {
             t.poffset = offset;
         }
 
-        var width = fullTrace.width,
+        var width = fullTrace._width || fullTrace.width,
             initialBarwidth = t.barwidth;
 
         if(isArrayOrTypedArray(width)) {
@@ -455,7 +495,8 @@ function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
         }
     }
 
-    Axes.expand(pa, [pMin, pMax], {padded: false});
+    var extremes = Axes.findExtremes(pa, [pMin, pMax], {padded: false});
+    putExtremes(calcTraces, pa, extremes);
 }
 
 function expandRange(range, newValue) {
@@ -489,7 +530,8 @@ function setBaseAndTop(gd, sa, sieve) {
         }
     }
 
-    Axes.expand(sa, sRange, {tozero: true, padded: true});
+    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
+    putExtremes(traces, sa, extremes);
 }
 
 
@@ -527,7 +569,10 @@ function stackBars(gd, sa, sieve) {
     }
 
     // if barnorm is set, let normalizeBars update the axis range
-    if(!barnorm) Axes.expand(sa, sRange, {tozero: true, padded: true});
+    if(!barnorm) {
+        var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
+        putExtremes(traces, sa, extremes);
+    }
 }
 
 
@@ -592,12 +637,19 @@ function normalizeBars(gd, sa, sieve) {
     }
 
     // update range of size axis
-    Axes.expand(sa, sRange, {tozero: true, padded: padded});
+    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: padded});
+    putExtremes(traces, sa, extremes);
 }
 
 
 function getAxisLetter(ax) {
     return ax._id.charAt(0);
+}
+
+function putExtremes(cd, ax, extremes) {
+    for(var i = 0; i < cd.length; i++) {
+        cd[i][0].trace._extremes[ax._id] = extremes;
+    }
 }
 
 // find the full position span of bars at each position
@@ -631,22 +683,37 @@ function collectExtents(calcTraces, pa) {
         return String(Math.round(roundFactor * (p - pMin)));
     };
 
+    var poffset, poffsetIsArray;
+
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         cd[0].t.extents = extents;
+        poffset = cd[0].t.poffset;
+        poffsetIsArray = Array.isArray(poffset);
+
         for(j = 0; j < cd.length; j++) {
             var di = cd[j];
             var p0 = di[posLetter] - di.w / 2;
+
             if(isNumeric(p0)) {
                 var p1 = di[posLetter] + di.w / 2;
                 var pVal = round(di.p);
                 if(extents[pVal]) {
                     extents[pVal] = [Math.min(p0, extents[pVal][0]), Math.max(p1, extents[pVal][1])];
-                }
-                else {
+                } else {
                     extents[pVal] = [p0, p1];
                 }
             }
+
+            di.p0 = di.p + ((poffsetIsArray) ? poffset[j] : poffset);
+            di.p1 = di.p0 + di.w;
+            di.s0 = di.b;
+            di.s1 = di.s0 + di.s;
         }
     }
 }
+
+module.exports = {
+    crossTraceCalc: crossTraceCalc,
+    setGroupPositions: setGroupPositions
+};

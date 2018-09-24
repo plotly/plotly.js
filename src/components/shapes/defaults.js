@@ -61,6 +61,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
         if(axRef !== 'paper') {
             ax = Axes.getFromId(gdMock, axRef);
+            ax._shapeIndices.push(shapeOut._index);
             r2pos = helpers.rangeToShapePosition(ax);
             pos2r = helpers.shapePositionToRange(ax);
         }

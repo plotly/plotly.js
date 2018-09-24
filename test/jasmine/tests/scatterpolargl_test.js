@@ -3,7 +3,7 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 
 var customAssertions = require('../assets/custom_assertions');
@@ -79,10 +79,26 @@ describe('Test scatterpolargl hover:', function() {
         pos: [470, 80],
         nums: 'r: 4\nθ: d',
         name: 'angular cate...'
+    }, {
+        desc: 'with custom text scalar',
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.text = 'a'; });
+            return fig;
+        },
+        nums: 'r: 3.886013\nθ: 125.2822°\na',
+        name: 'Trial 3'
+    }, {
+        desc: 'with custom text array',
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.text = t.r.map(String); });
+            return fig;
+        },
+        nums: 'r: 3.886013\nθ: 125.2822°\n3.88601339194',
+        name: 'Trial 3'
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(fail).then(done);
+            run(specs).catch(failTest).then(done);
         });
     });
 });

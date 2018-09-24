@@ -19,7 +19,7 @@ module.exports = templatedArray('shape', {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Determines whether or not this shape is visible.'
         ].join(' ')
@@ -29,7 +29,7 @@ module.exports = templatedArray('shape', {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Specifies the shape type to be drawn.',
 
@@ -79,7 +79,7 @@ module.exports = templatedArray('shape', {
         values: ['scaled', 'pixel'],
         dflt: 'scaled',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the shapes\'s sizing mode along the x axis.',
             'If set to *scaled*, `x0`, `x1` and x coordinates within `path` refer to',
@@ -95,7 +95,7 @@ module.exports = templatedArray('shape', {
     xanchor: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Only relevant in conjunction with `xsizemode` set to *pixel*.',
             'Specifies the anchor point on the x axis to which `x0`, `x1`',
@@ -107,7 +107,7 @@ module.exports = templatedArray('shape', {
     x0: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the shape\'s starting x position.',
             'See `type` and `xsizemode` for more info.'
@@ -116,7 +116,7 @@ module.exports = templatedArray('shape', {
     x1: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the shape\'s end x position.',
             'See `type` and `xsizemode` for more info.'
@@ -138,7 +138,7 @@ module.exports = templatedArray('shape', {
         values: ['scaled', 'pixel'],
         dflt: 'scaled',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the shapes\'s sizing mode along the y axis.',
             'If set to *scaled*, `y0`, `y1` and y coordinates within `path` refer to',
@@ -154,7 +154,7 @@ module.exports = templatedArray('shape', {
     yanchor: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Only relevant in conjunction with `ysizemode` set to *pixel*.',
             'Specifies the anchor point on the y axis to which `y0`, `y1`',
@@ -166,7 +166,7 @@ module.exports = templatedArray('shape', {
     y0: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the shape\'s starting y position.',
             'See `type` and `ysizemode` for more info.'
@@ -175,7 +175,7 @@ module.exports = templatedArray('shape', {
     y1: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the shape\'s end y position.',
             'See `type` and `ysizemode` for more info.'
@@ -185,7 +185,7 @@ module.exports = templatedArray('shape', {
     path: {
         valType: 'string',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'For `type` *path* - a valid SVG path with the pixel values',
             'replaced by data values in `xsizemode`/`ysizemode` being *scaled*',
@@ -224,10 +224,10 @@ module.exports = templatedArray('shape', {
     },
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {editType: 'arraydraw'}),
-        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calcIfAutorange+arraydraw'}),
+        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calc+arraydraw'}),
         dash: extendFlat({}, dash, {editType: 'arraydraw'}),
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw'
+        editType: 'calc+arraydraw'
     },
     fillcolor: {
         valType: 'color',
