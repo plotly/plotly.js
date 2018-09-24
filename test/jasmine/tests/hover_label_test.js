@@ -2062,7 +2062,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
         })
         .then(function() {
@@ -2074,7 +2074,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
         })
         .then(function() {
@@ -2086,7 +2086,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
 
             // test arrayOk case
@@ -2113,7 +2113,7 @@ describe('Test hover label custom styling:', function() {
             assertPtLabel(null);
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
 
             // test base case

@@ -703,6 +703,7 @@ function createHoverText(hoverData, opts, gd) {
 
         var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
         var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
+        var contrastColor = Color.contrast(commonBgColor);
 
         lpath.style({
             fill: commonBgColor,
@@ -713,7 +714,7 @@ function createHoverText(hoverData, opts, gd) {
             .call(Drawing.font,
                 commonLabelOpts.font.family || fontFamily,
                 commonLabelOpts.font.size || fontSize,
-                commonLabelOpts.font.color || Color.background
+                commonLabelOpts.font.color || contrastColor
              )
             .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd);
