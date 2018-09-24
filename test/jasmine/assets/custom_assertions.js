@@ -92,6 +92,7 @@ function count(selector) {
  *  - axis {string}
  *  - vOrder {array of number}
  *  - hOrder {array of number}
+ *  - isRotated {boolean}
  * @param {string} msg
  */
 exports.assertHoverLabelContent = function(expectation, msg) {
@@ -105,17 +106,22 @@ exports.assertHoverLabelContent = function(expectation, msg) {
     var axMsg = 'common axis hover label';
     var axCnt = count(axSelector);
 
+    var reRotate = /(\brotate\(.*?\);?)/;
+
     if(ptCnt === 1) {
-        assertLabelContent(
-            d3.select(ptSelector + '> text.nums'),
-            expectation.nums,
-            ptMsg + ' (nums)'
-        );
-        assertLabelContent(
-            d3.select(ptSelector + '> text.name'),
-            expectation.name,
-            ptMsg + ' (name)'
-        );
+        var g = d3.select(ptSelector);
+        var numsSel = g.select('text.nums');
+        var nameSel = g.select('text.name');
+
+        assertLabelContent(numsSel, expectation.nums, ptMsg + ' (nums)');
+        assertLabelContent(nameSel, expectation.name, ptMsg + ' (name)');
+
+        if('isRotated' in expectation) {
+            expect(g.attr('transform').match(reRotate))
+                .negateIf(expectation.isRotated)
+                .toBe(null, ptMsg + ' should be rotated');
+
+        }
     } else if(ptCnt > 1) {
         if(!Array.isArray(expectation.nums) || !Array.isArray(expectation.name)) {
             fail(ptMsg + ': expecting more than 1 labels.');
@@ -126,16 +132,19 @@ exports.assertHoverLabelContent = function(expectation, msg) {
 
         var bboxes = [];
         d3.selectAll(ptSelector).each(function(_, i) {
-            assertLabelContent(
-                d3.select(this).select('text.nums'),
-                expectation.nums[i],
-                ptMsg + ' (nums ' + i + ')'
-            );
-            assertLabelContent(
-                d3.select(this).select('text.name'),
-                expectation.name[i],
-                ptMsg + ' (name ' + i + ')'
-            );
+            var g = d3.select(this);
+            var numsSel = g.select('text.nums');
+            var nameSel = g.select('text.name');
+
+            assertLabelContent(numsSel, expectation.nums[i], ptMsg + ' (nums ' + i + ')');
+            assertLabelContent(nameSel, expectation.name[i], ptMsg + ' (name ' + i + ')');
+
+            if('isRotated' in expectation) {
+                expect(g.attr('transform').match(reRotate))
+                    .negateIf(expectation.isRotated)
+                    .toBe(null, ptMsg + ' ' + i + ' should be rotated');
+            }
+
             bboxes.push({bbox: this.getBoundingClientRect(), index: i});
         });
         if(expectation.vOrder) {

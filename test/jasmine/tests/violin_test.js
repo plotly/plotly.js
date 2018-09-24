@@ -439,6 +439,7 @@ describe('Test violin hover:', function() {
         name: ['categories', '', '', '', '', '', ''],
         axis: 'categories',
         hOrder: [4, 5, 3, 6, 0, 2, 1],
+        isRotated: true
     }, {
         desc: 'multiple horizontal violins',
         mock: require('@mocks/box_grouped_horz.json'),
@@ -454,6 +455,7 @@ describe('Test violin hover:', function() {
         name: ['kale', '', '', '', ''],
         axis: 'day 2',
         hOrder: [4, 3, 0, 2, 1],
+        isRotated: true
     }, {
         desc: 'multiple horizontal violins (under hovermode:closest)',
         mock: require('@mocks/box_grouped_horz.json'),
@@ -473,6 +475,7 @@ describe('Test violin hover:', function() {
         ],
         name: ['radishes', '', '', '', ''],
         hOrder: [4, 3, 0, 2, 1],
+        isRotated: true
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
