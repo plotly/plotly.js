@@ -796,12 +796,20 @@ function createHoverText(hoverData, opts, gd) {
         var name = '';
         var text = '';
 
-            // combine possible non-opaque trace color with bgColor
-        var baseColor = Color.opacity(d.color) ? d.color : Color.defaultLine;
-        var traceColor = Color.combine(baseColor, bgColor);
-
+        // combine possible non-opaque trace color with bgColor
+        var color0 = d.bgcolor || d.color;
+        // color for 'nums' part of the label
+        var numsColor = Color.combine(
+            Color.opacity(color0) ? color0 : Color.defaultLine,
+            bgColor
+        );
+        // color for 'name' part of the label
+        var nameColor = Color.combine(
+            Color.opacity(d.color) ? d.color : Color.defaultLine,
+            bgColor
+        );
         // find a contrasting color for border and text
-        var contrastColor = d.borderColor || Color.contrast(traceColor);
+        var contrastColor = d.borderColor || Color.contrast(numsColor);
 
         // to get custom 'name' labels pass cleanPoint
         if(d.nameOverride !== undefined) d.name = d.nameOverride;
@@ -870,7 +878,7 @@ function createHoverText(hoverData, opts, gd) {
             tx2.call(Drawing.font,
                     d.fontFamily || fontFamily,
                     d.fontSize || fontSize,
-                    traceColor)
+                    nameColor)
                 .text(name)
                 .attr('data-notex', 1)
                 .call(svgTextUtils.positionText, 0, 0)
@@ -884,7 +892,7 @@ function createHoverText(hoverData, opts, gd) {
 
         g.select('path')
             .style({
-                fill: traceColor,
+                fill: numsColor,
                 stroke: contrastColor
             });
         var tbb = tx.node().getBoundingClientRect();
@@ -1190,7 +1198,7 @@ function cleanPoint(d, hovermode) {
     }
 
     fill('hoverinfo', 'hi', 'hoverinfo');
-    fill('color', 'hbg', 'hoverlabel.bgcolor');
+    fill('bgcolor', 'hbg', 'hoverlabel.bgcolor');
     fill('borderColor', 'hbc', 'hoverlabel.bordercolor');
     fill('fontFamily', 'htf', 'hoverlabel.font.family');
     fill('fontSize', 'hts', 'hoverlabel.font.size');
