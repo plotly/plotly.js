@@ -237,6 +237,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         vLinePoint: null
     };
 
+    // does subplot have one (or more) horizontal traces,
+    // (to determine whether we rotate the labels or not)
+    var hasOneHorizontalTrace = false;
+
     // Figure out what we're hovering on:
     // mouse location or user-supplied data
 
@@ -256,6 +260,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             trace = cd[0].trace;
             if(trace.hoverinfo !== 'skip' && helpers.isTraceInSubplots(trace, subplots)) {
                 searchData.push(cd);
+                if(trace.orientation === 'h') {
+                    hasOneHorizontalTrace = true;
+                }
             }
         }
 
@@ -577,9 +584,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     gd._hoverdata = newhoverdata;
 
-    // if there's more than one horz bar trace,
-    // rotate the labels so they don't overlap
-    var rotateLabels = hovermode === 'y' && searchData.length > 1;
+    var rotateLabels = (
+        (hovermode === 'y' && (searchData.length > 1 || hoverData.length > 1)) ||
+        (hovermode === 'closest' && hasOneHorizontalTrace)
+    );
 
     var bgColor = Color.combine(
         fullLayout.plot_bgcolor || Color.background,

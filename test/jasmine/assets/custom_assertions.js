@@ -90,6 +90,8 @@ function count(selector) {
  *  - nums {string || array of strings}
  *  - name {string || array of strings}
  *  - axis {string}
+ *  - vOrder {array of number}
+ *  - hOrder {array of number}
  * @param {string} msg
  */
 exports.assertHoverLabelContent = function(expectation, msg) {
