@@ -446,6 +446,7 @@ function mouseoverPath(d) {
                 }
 
                 var hovertext = hovertextParts.join('<br>');
+                var mouseX = d3.mouse(gd)[0];
 
                 Fx.loneHover({
                     x: hoverCenterX - rootBBox.left + graphDivBBox.left,
@@ -456,7 +457,7 @@ function mouseoverPath(d) {
                     fontFamily: 'Monaco, "Courier New", monospace',
                     fontSize: 10,
                     fontColor: textColor,
-                    idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
+                    idealAlign: mouseX < hoverCenterX ? 'right' : 'left'
                 }, {
                     container: fullLayout._hoverlayer.node(),
                     outerContainer: fullLayout._paper.node(),
