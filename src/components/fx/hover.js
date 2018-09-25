@@ -237,8 +237,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         vLinePoint: null
     };
 
-    // does subplot have one (or more) horizontal traces,
-    // (to determine whether we rotate the labels or not)
+    // does subplot have one (or more) horizontal traces?
+    // This is used to determine whether we rotate the labels or not
     var hasOneHorizontalTrace = false;
 
     // Figure out what we're hovering on:
@@ -590,7 +590,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     var rotateLabels = (
         (hovermode === 'y' && (searchData.length > 1 || hoverData.length > 1)) ||
-        (hovermode === 'closest' && hasOneHorizontalTrace)
+        (hovermode === 'closest' && hasOneHorizontalTrace && hoverData.length > 1)
     );
 
     var bgColor = Color.combine(

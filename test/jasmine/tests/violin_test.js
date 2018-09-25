@@ -476,6 +476,19 @@ describe('Test violin hover:', function() {
         name: ['radishes', '', '', '', ''],
         hOrder: [4, 3, 0, 2, 1],
         isRotated: true
+    }, {
+        desc: 'hovering over single pt on horizontal violin should not rotate labels',
+        mock: require('@mocks/violin_old-faithful.json'),
+        patch: function(fig) {
+            fig.data[0].x = fig.data[0].y;
+            delete fig.data[0].y;
+            fig.layout = {hovermode: 'closest'};
+            return fig;
+        },
+        pos: [539, 293],
+        nums: '(96, Old Faithful)',
+        name: '',
+        isRotated: false
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
