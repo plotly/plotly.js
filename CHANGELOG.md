@@ -10,6 +10,23 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.41.3] -- 2018-09-25
+
+### Fixed
+- Fix handling of hover `text` in `barpolar` traces [#3040]
+- Fix `scatterpolar[gl]` `text` placement in hover label [#3040]
+- Fix `pie` trace support for individual stroke width values [#3030]
+- Fix handling of CSS `max-width` and `max-height` in auto-size routine [#3033]
+- Rotate hover labels when `hovermode: 'y'` and a single trace produces multiple
+  labels [#3043]
+- Rotate hover labels when `hovermode: 'closest'` and multiple labels are
+  generated including one from an horizontal trace [#3043]
+- Fix hover label coloring on white bgcolor [#3048]
+- Do not coerce nor validate `polar?.bar*` attributes on
+  subplots w/o visible `barpolar` traces [#3023]
+- Fix legacy polar attribute descriptions [#3023]
+
+
 ## [1.41.2] -- 2018-09-19
 
 ### Fixed
