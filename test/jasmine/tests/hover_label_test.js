@@ -2062,7 +2062,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
         })
         .then(function() {
@@ -2074,7 +2074,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
         })
         .then(function() {
@@ -2086,7 +2086,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
 
             // test arrayOk case
@@ -2113,7 +2113,7 @@ describe('Test hover label custom styling:', function() {
             assertPtLabel(null);
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
 
             // test base case
@@ -2197,6 +2197,72 @@ describe('Test hover label custom styling:', function() {
             assertCommonLabel({
                 path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work for x/y cartesian traces (multi-trace case)', function(done) {
+        var gd = createGraphDiv();
+
+        function assertNameLabel(expectation) {
+            var g = d3.selectAll('g.hovertext > text.name');
+
+            if(expectation === null) {
+                expect(g.size()).toBe(0);
+            } else {
+                g.each(function(_, i) {
+                    var textStyle = window.getComputedStyle(this);
+                    expect(textStyle.fill).toBe(expectation.color[i]);
+                });
+            }
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+        }, {
+            x: [1, 2, 3],
+            y: [4, 5, 4],
+        }], {
+            hovermode: 'x',
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            assertNameLabel({
+                color: ['rgb(31, 119, 180)', 'rgb(255, 127, 14)']
+            });
+            return Plotly.restyle(gd, 'marker.color', ['red', 'blue']);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            assertNameLabel({
+                color: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)']
+            });
+            return Plotly.relayout(gd, 'hoverlabel.bgcolor', 'white');
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            // should not affect the name font color
+            assertNameLabel({
+                color: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)']
+            });
+            return Plotly.restyle(gd, 'marker.color', ['rgba(255,0,0,0.1)', 'rgba(0,0,255,0.1)']);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            // should blend with plot_bgcolor
+            assertNameLabel({
+                color: ['rgb(255, 179, 179)', 'rgb(179, 179, 255)']
+            });
+            return Plotly.restyle(gd, 'marker.color', ['rgba(255,0,0,0)', 'rgba(0,0,255,0)']);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            // uses default line color when opacity=0
+            assertNameLabel({
+                color: ['rgb(68, 68, 68)', 'rgb(68, 68, 68)']
             });
         })
         .catch(failTest)
