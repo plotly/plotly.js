@@ -1759,13 +1759,13 @@
                 "r": {
                     "valType": "data_array",
                     "editType": "calc",
-                    "description": "For legacy polar chart only.Please switch to *scatterpolar* trace type.Sets the radial coordinates.",
+                    "description": "r coordinates in scatter traces are deprecated!Please switch to the *scatterpolar* trace type.Sets the radial coordinatesfor legacy polar chart only.",
                     "role": "data"
                 },
                 "t": {
                     "valType": "data_array",
                     "editType": "calc",
-                    "description": "For legacy polar chart only.Please switch to *scatterpolar* trace type.Sets the angular coordinates.",
+                    "description": "t coordinates in scatter traces are deprecated!Please switch to the *scatterpolar* trace type.Sets the angular coordinatesfor legacy polar chart only.",
                     "role": "data"
                 },
                 "error_x": {
@@ -3283,13 +3283,13 @@
                 "r": {
                     "valType": "data_array",
                     "editType": "calc",
-                    "description": "For legacy polar chart only.Please switch to *scatterpolar* trace type.Sets the radial coordinates.",
+                    "description": "r coordinates in scatter traces are deprecated!Please switch to the *scatterpolar* trace type.Sets the radial coordinatesfor legacy polar chart only.",
                     "role": "data"
                 },
                 "t": {
                     "valType": "data_array",
                     "editType": "calc",
-                    "description": "For legacy polar chart only.Please switch to *scatterpolar* trace type.Sets the angular coordinates.",
+                    "description": "t coordinates in scatter traces are deprecated!Please switch to the *scatterpolar* trace type.Sets the angular coordinatesfor legacy polar chart only.",
                     "role": "data"
                 },
                 "_deprecated": {
@@ -39063,13 +39063,13 @@
                 "r": {
                     "valType": "data_array",
                     "editType": "calc",
-                    "description": "For legacy polar chart only.Please switch to *scatterpolar* trace type.Sets the radial coordinates.",
+                    "description": "Area traces are deprecated! Please switch to the *barpolar* trace type. Sets the radial coordinates for legacy polar chart only.",
                     "role": "data"
                 },
                 "t": {
                     "valType": "data_array",
                     "editType": "calc",
-                    "description": "For legacy polar chart only.Please switch to *scatterpolar* trace type.Sets the angular coordinates.",
+                    "description": "Area traces are deprecated! Please switch to the *barpolar* trace type. Sets the angular coordinates for legacy polar chart only.",
                     "role": "data"
                 },
                 "marker": {
@@ -39078,7 +39078,7 @@
                         "arrayOk": true,
                         "role": "style",
                         "editType": "style",
-                        "description": "Sets themarkercolor. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set."
+                        "description": "Area traces are deprecated! Please switch to the *barpolar* trace type. Sets themarkercolor. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set."
                     },
                     "size": {
                         "valType": "number",
@@ -39087,7 +39087,7 @@
                         "arrayOk": true,
                         "role": "style",
                         "editType": "calc",
-                        "description": "Sets the marker size (in px)."
+                        "description": "Area traces are deprecated! Please switch to the *barpolar* trace type. Sets the marker size (in px)."
                     },
                     "symbol": {
                         "valType": "enumerated",
@@ -39381,7 +39381,7 @@
                         "arrayOk": true,
                         "role": "style",
                         "editType": "style",
-                        "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name."
+                        "description": "Area traces are deprecated! Please switch to the *barpolar* trace type. Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name."
                     },
                     "opacity": {
                         "valType": "number",
@@ -39390,7 +39390,7 @@
                         "arrayOk": true,
                         "role": "style",
                         "editType": "style",
-                        "description": "Sets the marker opacity."
+                        "description": "Area traces are deprecated! Please switch to the *barpolar* trace type. Sets the marker opacity."
                     },
                     "editType": "calc",
                     "role": "object",
@@ -47038,7 +47038,7 @@
                             "editType": "plot"
                         }
                     ],
-                    "description": "Defines the start and end point of this radial axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Defines the start and end point of this radial axis.",
                     "editType": "plot"
                 },
                 "domain": {
@@ -47068,19 +47068,19 @@
                 "orientation": {
                     "valType": "number",
                     "role": "style",
-                    "description": "Sets the orientation (an angle with respect to the origin) of the radial axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the orientation (an angle with respect to the origin) of the radial axis.",
                     "editType": "plot"
                 },
                 "showline": {
                     "valType": "boolean",
                     "role": "style",
-                    "description": "Determines whether or not the line bounding this radial axis will be shown on the figure.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Determines whether or not the line bounding this radial axis will be shown on the figure.",
                     "editType": "plot"
                 },
                 "showticklabels": {
                     "valType": "boolean",
                     "role": "style",
-                    "description": "Determines whether or not the radial axis ticks will feature tick labels.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Determines whether or not the radial axis ticks will feature tick labels.",
                     "editType": "plot"
                 },
                 "tickorientation": {
@@ -47090,37 +47090,38 @@
                         "vertical"
                     ],
                     "role": "style",
-                    "description": "Sets the orientation (from the paper perspective) of the radial axis tick labels.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the orientation (from the paper perspective) of the radial axis tick labels.",
                     "editType": "plot"
                 },
                 "ticklen": {
                     "valType": "number",
                     "min": 0,
                     "role": "style",
-                    "description": "Sets the length of the tick lines on this radial axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the length of the tick lines on this radial axis.",
                     "editType": "plot"
                 },
                 "tickcolor": {
                     "valType": "color",
                     "role": "style",
-                    "description": "Sets the color of the tick lines on this radial axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the color of the tick lines on this radial axis.",
                     "editType": "plot"
                 },
                 "ticksuffix": {
                     "valType": "string",
                     "role": "style",
-                    "description": "Sets the length of the tick lines on this radial axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the length of the tick lines on this radial axis.",
                     "editType": "plot"
                 },
                 "endpadding": {
                     "valType": "number",
                     "role": "style",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots.",
                     "editType": "plot"
                 },
                 "visible": {
                     "valType": "boolean",
                     "role": "info",
-                    "description": "Determines whether or not this axis will be visible.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Determines whether or not this axis will be visible.",
                     "editType": "plot"
                 },
                 "editType": "plot",
@@ -47142,7 +47143,7 @@
                             "editType": "plot"
                         }
                     ],
-                    "description": "Defines the start and end point of this angular axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Defines the start and end point of this angular axis.",
                     "editType": "plot"
                 },
                 "domain": {
@@ -47172,13 +47173,13 @@
                 "showline": {
                     "valType": "boolean",
                     "role": "style",
-                    "description": "Determines whether or not the line bounding this angular axis will be shown on the figure.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Determines whether or not the line bounding this angular axis will be shown on the figure.",
                     "editType": "plot"
                 },
                 "showticklabels": {
                     "valType": "boolean",
                     "role": "style",
-                    "description": "Determines whether or not the angular axis ticks will feature tick labels.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Determines whether or not the angular axis ticks will feature tick labels.",
                     "editType": "plot"
                 },
                 "tickorientation": {
@@ -47188,37 +47189,38 @@
                         "vertical"
                     ],
                     "role": "style",
-                    "description": "Sets the orientation (from the paper perspective) of the angular axis tick labels.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the orientation (from the paper perspective) of the angular axis tick labels.",
                     "editType": "plot"
                 },
                 "ticklen": {
                     "valType": "number",
                     "min": 0,
                     "role": "style",
-                    "description": "Sets the length of the tick lines on this angular axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the length of the tick lines on this angular axis.",
                     "editType": "plot"
                 },
                 "tickcolor": {
                     "valType": "color",
                     "role": "style",
-                    "description": "Sets the color of the tick lines on this angular axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the color of the tick lines on this angular axis.",
                     "editType": "plot"
                 },
                 "ticksuffix": {
                     "valType": "string",
                     "role": "style",
-                    "description": "Sets the length of the tick lines on this angular axis.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the length of the tick lines on this angular axis.",
                     "editType": "plot"
                 },
                 "endpadding": {
                     "valType": "number",
                     "role": "style",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots.",
                     "editType": "plot"
                 },
                 "visible": {
                     "valType": "boolean",
                     "role": "info",
-                    "description": "Determines whether or not this axis will be visible.",
+                    "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Determines whether or not this axis will be visible.",
                     "editType": "plot"
                 },
                 "editType": "plot",
@@ -47231,13 +47233,13 @@
                     "counterclockwise"
                 ],
                 "role": "info",
-                "description": "For polar plots only. Sets the direction corresponding to positive angles.",
+                "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Sets the direction corresponding to positive angles in legacy polar charts.",
                 "editType": "plot"
             },
             "orientation": {
                 "valType": "angle",
                 "role": "info",
-                "description": "For polar plots only. Rotates the entire polar by the given angle.",
+                "description": "Legacy polar charts are deprecated! Please switch to *polar* subplots. Rotates the entire polar by the given angle in legacy polar charts.",
                 "editType": "plot"
             },
             "editType": "plot",
