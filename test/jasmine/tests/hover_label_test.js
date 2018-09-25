@@ -2536,6 +2536,113 @@ describe('hover distance', function() {
     });
 });
 
+describe('hover label rotation:', function() {
+    var gd;
+
+    function _hover(gd, opts) {
+        Fx.hover(gd, opts);
+        Lib.clearThrottle();
+    }
+
+    describe('when a single pt is picked', function() {
+        afterAll(destroyGraphDiv);
+
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'bar',
+                orientation: 'h',
+                y: [0, 1, 2],
+                x: [1, 2, 1]
+            }, {
+                type: 'bar',
+                orientation: 'h',
+                y: [3, 4, 5],
+                x: [1, 2, 1]
+            }], {
+                hovermode: 'y'
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should rotate labels under *hovermode:y*', function() {
+            _hover(gd, { xval: 2, yval: 1 });
+            assertHoverLabelContent({
+                nums: '2',
+                name: 'trace 0',
+                axis: '1',
+                // N.B. could be changed to be made consistent with 'closest'
+                isRotated: true
+            });
+        });
+
+        it('should not rotate labels under *hovermode:closest*', function(done) {
+            Plotly.relayout(gd, 'hovermode', 'closest').then(function() {
+                _hover(gd, { xval: 1.9, yval: 1 });
+                assertHoverLabelContent({
+                    nums: '(2, 1)',
+                    name: 'trace 0',
+                    axis: '',
+                    isRotated: false
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('when mulitple pts are picked', function() {
+        afterAll(destroyGraphDiv);
+
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'bar',
+                orientation: 'h',
+                y: [0, 1, 2],
+                x: [1, 2, 1]
+            }, {
+                type: 'bar',
+                orientation: 'h',
+                y: [0, 1, 2],
+                x: [1, 2, 1]
+            }], {
+                hovermode: 'y'
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should rotate labels under *hovermode:y*', function() {
+            _hover(gd, { xval: 2, yval: 1 });
+            assertHoverLabelContent({
+                nums: ['2', '2'],
+                name: ['trace 0', 'trace 1'],
+                axis: '1',
+                isRotated: true
+            });
+        });
+
+        it('should not rotate labels under *hovermode:closest*', function(done) {
+            Plotly.relayout(gd, 'hovermode', 'closest').then(function() {
+                _hover(gd, { xval: 1.9, yval: 1 });
+                assertHoverLabelContent({
+                    nums: '(2, 1)',
+                    // N.B. only showing the 'top' trace
+                    name: 'trace 1',
+                    axis: '',
+                    isRotated: false
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+});
+
 describe('hovermode defaults to', function() {
     var gd;
 
