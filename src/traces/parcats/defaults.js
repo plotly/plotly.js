@@ -106,7 +106,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var labelfontDflt = {
         family: layout.font.family,
-        size: Math.round(layout.font.size / 1.2),
+        size: Math.round(layout.font.size),
         color: layout.font.color
     };
 
@@ -114,7 +114,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var categoryfontDefault = {
         family: layout.font.family,
-        size: Math.round(layout.font.size / 1.4),
+        size: Math.round(layout.font.size / 1.2),
         color: layout.font.color
     };
 
