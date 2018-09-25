@@ -249,8 +249,12 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hovermode = 'array';
         for(itemnum = 0; itemnum < evt.length; itemnum++) {
             cd = gd.calcdata[evt[itemnum].curveNumber||0];
+            trace = cd[0].trace;
             if(cd[0].trace.hoverinfo !== 'skip') {
                 searchData.push(cd);
+                if(trace.orientation === 'h') {
+                    hasOneHorizontalTrace = true;
+                }
             }
         }
     }
