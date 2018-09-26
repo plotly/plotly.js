@@ -367,6 +367,8 @@ describe('Test shapes:', function() {
         });
 
         it('can replace the shapes array', function(done) {
+            spyOn(Lib, 'warn');
+
             Plotly.relayout(gd, { shapes: [
                 getRandomShape(),
                 getRandomShape()
@@ -375,6 +377,7 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInLowerLayer()).toEqual(0);
                 expect(countShapePathsInSubplots()).toEqual(0);
                 expect(gd.layout.shapes.length).toBe(2);
+                expect(Lib.warn).not.toHaveBeenCalled();
             })
             .catch(failTest)
             .then(done);
