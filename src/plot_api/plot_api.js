@@ -1979,9 +1979,10 @@ function _relayout(gd, aobj) {
             var obji = (componentArray || [])[i] || {};
             var updateValObject = valObject || {editType: 'calc'};
 
-            if(propStr === '') {
+            if(i !== '' && propStr === '') {
                 // special handling of undoit if we're adding or removing an element
-                // ie 'annotations[2]' which can be {...} (add) or null (remove)
+                // ie 'annotations[2]' which can be {...} (add) or null,
+                // does not work when replacing the entire array
                 if(manageArrays.isAddVal(vi)) {
                     undoit[ai] = null;
                 } else if(manageArrays.isRemoveVal(vi)) {
@@ -1990,7 +1991,6 @@ function _relayout(gd, aobj) {
                     Lib.warn('unrecognized full object value', aobj);
                 }
             }
-
             editTypes.update(flags, updateValObject);
 
             // prepare the edits object we'll send to applyContainerArrayChanges
