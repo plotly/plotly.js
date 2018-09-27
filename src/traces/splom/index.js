@@ -200,7 +200,7 @@ function plotOne(gd, cd0) {
 
     var visibleDims = trace._visibleDims;
     var visibleLength = cdata.length;
-    var viewOpts = {};
+    var viewOpts = scene.viewOpts = {};
     viewOpts.ranges = new Array(visibleLength);
     viewOpts.domains = new Array(visibleLength);
 
@@ -298,8 +298,8 @@ function plotOne(gd, cd0) {
         }
     }
     else {
-        scene.matrix.update(matrixOpts, null);
-        scene.matrix.update(viewOpts, null);
+        var opts = Lib.extendFlat({}, matrixOpts, viewOpts);
+        scene.matrix.update(opts, null);
         stash.xpx = stash.ypx = null;
     }
 

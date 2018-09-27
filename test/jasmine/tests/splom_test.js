@@ -921,10 +921,10 @@ describe('Test splom drag:', function() {
             var scene = gd._fullLayout._splomScenes[uid];
             // N.B. _drag triggers two updateSubplots call
             // - 1 update and 1 draw call per updateSubplot
-            // - 2 update calls (1 for data, 1 for view opts)
+            // - 1 update calls for data+view opts
             //   during splom plot on mouseup
             // - 1 draw call during splom plot on mouseup
-            expect(scene.matrix.update).toHaveBeenCalledTimes(4);
+            expect(scene.matrix.update).toHaveBeenCalledTimes(3);
             expect(scene.matrix.draw).toHaveBeenCalledTimes(3);
 
             _assertRanges('after drag', [
