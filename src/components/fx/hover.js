@@ -396,6 +396,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         if(fullLayout[subplotId]) {
             pointData.subplot = fullLayout[subplotId]._subplot;
         }
+        // add ref to splom scene
+        if(fullLayout._splomScenes && fullLayout._splomScenes[trace.uid]) {
+            pointData.scene = fullLayout._splomScenes[trace.uid];
+        }
 
         closedataPreviousLength = hoverData.length;
 

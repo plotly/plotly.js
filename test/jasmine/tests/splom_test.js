@@ -422,10 +422,11 @@ describe('Test splom trace calc step:', function() {
             yaxis: {type: 'linear'}
         });
 
-        var cd = gd.calcdata[0][0];
+        var trace = gd._fullData[0];
+        var scene = gd._fullLayout._splomScenes[trace.uid];
 
-        expect(cd.t._scene.matrixOptions.data).toBeCloseTo2DArray([[2, 1, 2]]);
-        expect(cd.t.visibleDims).toEqual([1]);
+        expect(scene.matrixOptions.data).toBeCloseTo2DArray([[2, 1, 2]]);
+        expect(trace._visibleDims).toEqual([1]);
         expect(Lib.log).toHaveBeenCalledTimes(1);
         expect(Lib.log).toHaveBeenCalledWith('Skipping splom dimension 0 with conflicting axis types');
     });
@@ -448,13 +449,14 @@ describe('Test splom interactions:', function() {
 
         Plotly.plot(gd, fig).then(function() {
             expect(gd._fullLayout._splomGrid).toBeDefined();
-            expect(gd.calcdata[0][0].t._scene).toBeDefined();
+            expect(gd._fullLayout._splomScenes).toBeDefined();
+            expect(Object.keys(gd._fullLayout._splomScenes).length).toBe(1);
 
-            return Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout, gd.calcdata);
+            return Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
         })
         .then(function() {
-            expect(gd._fullLayout._splomGrid).toBe(null);
-            expect(gd.calcdata[0][0].t._scene).toBe(null);
+            expect(gd._fullLayout._splomGrid).toBeUndefined();
+            expect(gd._fullLayout._splomScenes).toBeUndefined();
         })
         .catch(failTest)
         .then(done);
@@ -658,14 +660,22 @@ describe('Test splom interactions:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
 
         function _assert(msg, exp) {
+            var splomScenes = gd._fullLayout._splomScenes;
+            var ids = Object.keys(splomScenes);
+
             for(var i = 0; i < 3; i++) {
-                expect(Boolean(gd.calcdata[i][0].t._scene))
-                    .toBe(Boolean(exp[i]), msg + ' - trace ' + i);
+                var drawFn = splomScenes[ids[i]].draw;
+                expect(drawFn).toHaveBeenCalledTimes(exp[i], msg + ' - trace ' + i);
+                drawFn.calls.reset();
             }
         }
 
         Plotly.plot(gd, fig).then(function() {
-            _assert('base', [1, 1, 1]);
+            var splomScenes = gd._fullLayout._splomScenes;
+            for(var k in splomScenes) {
+                spyOn(splomScenes[k], 'draw').and.callThrough();
+            }
+
             return Plotly.restyle(gd, 'visible', 'legendonly', [0, 2]);
         })
         .then(function() {
@@ -890,7 +900,8 @@ describe('Test splom drag:', function() {
 
         Plotly.plot(gd, fig)
         .then(function() {
-            var scene = gd.calcdata[0][0].t._scene;
+            var uid = gd._fullData[0].uid;
+            var scene = gd._fullLayout._splomScenes[uid];
             spyOn(scene.matrix, 'update');
             spyOn(scene.matrix, 'draw');
 
@@ -906,7 +917,8 @@ describe('Test splom drag:', function() {
         })
         .then(function() { return _drag([130, 130], [150, 150]); })
         .then(function() {
-            var scene = gd.calcdata[0][0].t._scene;
+            var uid = gd._fullData[0].uid;
+            var scene = gd._fullLayout._splomScenes[uid];
             // N.B. _drag triggers two updateSubplots call
             // - 1 update and 1 draw call per updateSubplot
             // - 2 update calls (1 for data, 1 for view opts)
@@ -1107,7 +1119,7 @@ describe('Test splom select:', function() {
             grid: {xgap: 0, ygap: 0}
         };
 
-        var scene;
+        var uid, scene;
 
         function _assert(msg, exp) {
             expect(scene.matrix.update).toHaveBeenCalledTimes(exp.updateCnt, 'update cnt');
@@ -1122,7 +1134,8 @@ describe('Test splom select:', function() {
         }
 
         Plotly.plot(gd, fig).then(function() {
-            scene = gd.calcdata[0][0].t._scene;
+            uid = gd._fullData[0].uid;
+            scene = gd._fullLayout._splomScenes[uid];
             spyOn(scene.matrix, 'update').and.callThrough();
             spyOn(scene.matrix, 'draw').and.callThrough();
         })
