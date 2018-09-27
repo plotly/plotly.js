@@ -525,7 +525,9 @@ describe('Test splom interactions:', function() {
 
         function _assert(exp) {
             var msg = ' - call #' + cnt;
-            var subplots = d3.selectAll('g.cartesianlayer > g.subplot');
+            var gd3 = d3.select(gd);
+            var subplots = gd3.selectAll('g.cartesianlayer > g.subplot');
+            var bgs = gd3.selectAll('.bglayer > rect.bg');
 
             expect(subplots.size())
                 .toBe(exp.subplotCnt, '# of <g.subplot>' + msg);
@@ -546,22 +548,47 @@ describe('Test splom interactions:', function() {
             expect(!!gd._fullLayout._splomGrid)
                 .toBe(exp.hasSplomGrid, 'has regl-line2d splom grid' + msg);
 
+            expect(bgs.size()).toBe(exp.bgCnt, '# of <rect.bg> ' + msg);
+
             cnt++;
         }
 
         Plotly.plot(gd, figLarge).then(function() {
             _assert({
                 subplotCnt: 400,
-                innerSubplotNodeCnt: 5,
-                hasSplomGrid: true
+                innerSubplotNodeCnt: 4,
+                hasSplomGrid: true,
+                bgCnt: 0
             });
+
+            return Plotly.relayout(gd, 'paper_bgcolor', 'red');
+        })
+        .then(function() {
+            _assert({
+                subplotCnt: 400,
+                innerSubplotNodeCnt: 4,
+                hasSplomGrid: true,
+                bgCnt: 400
+            });
+
+            return Plotly.relayout(gd, 'plot_bgcolor', 'red');
+        })
+        .then(function() {
+            _assert({
+                subplotCnt: 400,
+                innerSubplotNodeCnt: 4,
+                hasSplomGrid: true,
+                bgCnt: 0
+            });
+
             return Plotly.restyle(gd, 'dimensions', [dimsSmall]);
         })
         .then(function() {
             _assert({
                 subplotCnt: 25,
                 innerSubplotNodeCnt: 17,
-                hasSplomGrid: false
+                hasSplomGrid: false,
+                bgCnt: 25
             });
 
             // make sure 'new' subplot layers are in order
@@ -591,9 +618,10 @@ describe('Test splom interactions:', function() {
                 // new subplots though have reduced number of children.
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
-                    return (p[1] > 5 || p[2] > 5) ? 5 : 17;
+                    return (p[1] > 5 || p[2] > 5) ? 4 : 17;
                 },
-                hasSplomGrid: true
+                hasSplomGrid: true,
+                bgCnt: 0
             });
         })
         .catch(failTest)
