@@ -1738,8 +1738,8 @@ function addAxRangeSequence(seq, rangesAltered) {
     // subroutine of its own so that finalDraw always gets
     // executed after drawData
     var doTicks = rangesAltered ?
-        function(gd) { return subroutines.doTicksRelayout(gd, rangesAltered); } :
-        subroutines.doTicksRelayout;
+        function(gd) { return Axes.doTicks(gd, Object.keys(rangesAltered), true); } :
+        function(gd) { return Axes.doTicks(gd, 'redraw'); };
 
     seq.push(
         subroutines.doAutoRangeAndConstraints,

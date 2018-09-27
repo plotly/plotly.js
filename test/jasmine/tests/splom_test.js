@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
+var Axes = require('@src/plots/cartesian/axes');
 var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
 var d3 = require('d3');
@@ -741,6 +742,83 @@ describe('Test splom interactions:', function() {
             assertDims('after', 4810, 3656);
             expect(Lib.log)
                 .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Test splom update switchboard:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    var methods;
+
+    function addSpies() {
+        methods.forEach(function(m) {
+            var obj = m[0];
+            var k = m[1];
+            spyOn(obj, k).and.callThrough();
+        });
+    }
+
+    function assertSpies(msg, exp) {
+        methods.forEach(function(m, i) {
+            var obj = m[0];
+            var k = m[1];
+            var expi = exp[i];
+            expect(obj[k]).toHaveBeenCalledTimes(expi[1], expi[0]);
+            obj[k].calls.reset();
+        });
+    }
+
+    it('@gl should trigger minimal sequence for axis range updates (large splom case)', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var matrix, regl, splomGrid;
+
+        Plotly.plot(gd, fig).then(function() {
+            var fullLayout = gd._fullLayout;
+            var trace = gd._fullData[0];
+            var scene = fullLayout._splomScenes[trace.uid];
+            matrix = scene.matrix;
+            regl = matrix.regl;
+            splomGrid = fullLayout._splomGrid;
+
+            methods = [
+                [Plots, 'supplyDefaults'],
+                [Axes, 'doTicks'],
+                [regl, 'clear'],
+                [splomGrid, 'update']
+            ];
+            addSpies();
+
+            expect(fullLayout.xaxis.range).toBeCloseToArray([-0.0921, 0.9574], 1, 'xrng (base)');
+
+            return Plotly.relayout(gd, 'xaxis.range', [0, 1]);
+        })
+        .then(function() {
+            var msg = 'after update';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doTicks', 1],
+                ['regl clear', 1],
+                ['splom grid update', 1],
+                ['splom grid draw', 1],
+                ['splom matrix update', 1],
+                ['splom matrix draw', 1]
+            ]);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 1], 1, 'xrng ' + msg);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0, 1], 1, 'xrng ' + msg);
         })
         .catch(failTest)
         .then(done);
