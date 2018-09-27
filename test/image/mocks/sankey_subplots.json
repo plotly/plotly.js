@@ -1,0 +1,46 @@
+{
+    "data": [{
+            "domain": {
+                "x": [0, 0.45]
+            },
+            "type": "sankey",
+            "orientation": "h",
+            "node": {
+                "line": {
+                    "color": "black"
+                },
+                "label": ["el1", "el2", "el3"]
+            },
+            "link": {
+                "source": [0, 2],
+                "target": [1, 1],
+                "value": [120, 50],
+                "label": ["stram1", "stream2"]
+            }
+        },
+        {
+            "domain": {
+                "x": [0.55, 1]
+            },
+            "type": "sankey",
+            "orientation": "h",
+            "node": {
+                "line": {
+                    "color": "black"
+                },
+                "label": ["el4", "el5", "el6"]
+            },
+            "link": {
+                "source": [0, 2],
+                "target": [1, 1],
+                "value": [120, 50],
+                "label": ["stram4", "stream5"]
+            }
+        }
+    ],
+    "layout": {
+        "title": "Multiple Sankey plots",
+        "autosize": true,
+        "showlegend": false
+    }
+}

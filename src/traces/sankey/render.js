@@ -172,7 +172,7 @@ function sankeyModel(layout, d, traceIndex) {
         valueFormat: valueFormat,
         valueSuffix: valueSuffix,
         textFont: textFont,
-        translateX: domain.x[0] * width + layout.margin.l,
+        translateX: domain.x[0] * layout.width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
         dragParallel: horizontal ? height : width,
         dragPerpendicular: horizontal ? width : height,

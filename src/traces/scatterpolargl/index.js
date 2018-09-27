@@ -61,7 +61,7 @@ function plot(container, subplot, cdata) {
 
         // filter out by range
         for(i = 0; i < rArray.length; i++) {
-            if(!subplot.isPtWithinSector({r: rArray[i], theta: thetaArray[i]})) {
+            if(!subplot.isPtInside({r: rArray[i], theta: thetaArray[i]})) {
                 subRArray[i] = NaN;
                 subThetaArray[i] = NaN;
             }
@@ -161,11 +161,11 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     cdi.r = rArray[newPointData.index];
     cdi.theta = thetaArray[newPointData.index];
 
-    if(!subplot.isPtWithinSector(cdi)) return;
+    if(!subplot.isPtInside(cdi)) return;
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
-    newPointData.extraText = makeHoverPointText(cdi, trace, subplot);
+    makeHoverPointText(cdi, trace, subplot, newPointData);
 
     return scatterPointData;
 }

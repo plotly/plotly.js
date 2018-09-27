@@ -150,6 +150,30 @@ describe('Test scatterpolar hover:', function() {
         pos: [465, 90],
         nums: 'r: 4\nθ: d',
         name: 'angular cate...'
+    }, {
+        desc: 'on a subplot with hole>0',
+        patch: function(fig) {
+            fig.layout.polar.hole = 0.2;
+            return fig;
+        },
+        nums: 'r: 1.108937\nθ: 115.4969°',
+        name: 'Trial 3'
+    }, {
+        desc: 'with custom text scalar',
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.text = 'a'; });
+            return fig;
+        },
+        nums: 'r: 4.022892\nθ: 128.342°\na',
+        name: 'Trial 3'
+    }, {
+        desc: 'with custom text array',
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.text = t.r.map(String); });
+            return fig;
+        },
+        nums: 'r: 4.022892\nθ: 128.342°\n4.02289202968',
+        name: 'Trial 3'
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {

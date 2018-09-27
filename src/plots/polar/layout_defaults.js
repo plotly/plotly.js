@@ -30,6 +30,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     opts.bgColor = Color.combine(bgColor, opts.paper_bgcolor);
 
     var sector = coerce('sector');
+    coerce('hole');
 
     // could optimize, subplotData is not always needed!
     var subplotData = getSubplotData(opts.fullData, constants.name, opts.id);
@@ -91,7 +92,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             case 'radialaxis':
                 var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
                 axIn.autorange = autoRange;
-                if(autoRange) coerceAxis('rangemode');
+                if(autoRange && (axType === 'linear' || axType === '-')) coerceAxis('rangemode');
                 if(autoRange === 'reversed') axOut._m = -1;
 
                 coerceAxis('range');

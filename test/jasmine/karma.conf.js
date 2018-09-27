@@ -137,7 +137,7 @@ func.defaultConfig = {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'jasmine-spec-tags', 'browserify'],
+    frameworks: ['jasmine', 'jasmine-spec-tags', 'browserify', 'viewport'],
 
     // list of files / patterns to load in the browser
     //
@@ -272,6 +272,10 @@ if(isBundleTest) {
             // to catch reference errors that could occur
             // when plotly.js is first loaded.
             func.defaultConfig.files.push(pathToIE9mock);
+            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+            break;
+        case 'plotschema':
+            func.defaultConfig.browserify.ignoreTransform = './tasks/compress_attributes.js';
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
         default:

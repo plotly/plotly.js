@@ -79,6 +79,22 @@ describe('Test scatterpolargl hover:', function() {
         pos: [470, 80],
         nums: 'r: 4\nθ: d',
         name: 'angular cate...'
+    }, {
+        desc: 'with custom text scalar',
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.text = 'a'; });
+            return fig;
+        },
+        nums: 'r: 3.886013\nθ: 125.2822°\na',
+        name: 'Trial 3'
+    }, {
+        desc: 'with custom text array',
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.text = t.r.map(String); });
+            return fig;
+        },
+        nums: 'r: 3.886013\nθ: 125.2822°\n3.88601339194',
+        name: 'Trial 3'
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {

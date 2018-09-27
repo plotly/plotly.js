@@ -2784,6 +2784,37 @@ describe('Test plot api', function() {
             .then(done);
         });
 
+        it('picks up special dtick geo case', function(done) {
+            var data = [{type: 'scattergeo'}];
+            var layout = {};
+
+            function countLines() {
+                var path = d3.select(gd).select('.lataxis > path');
+                return path.attr('d').split('M').length;
+            }
+
+            Plotly.react(gd, data)
+            .then(countPlots)
+            .then(function() {
+                layout.geo = {lataxis: {showgrid: true, dtick: 10}};
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+                expect(countLines()).toBe(18);
+            })
+            .then(function() {
+                layout.geo.lataxis.dtick = 30;
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+                expect(countLines()).toBe(6);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('picks up minimal sequence for cartesian axis range updates', function(done) {
             var data = [{y: [1, 2, 1]}];
             var layout = {xaxis: {range: [1, 2]}};
@@ -2962,7 +2993,7 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, data, layout)
             .then(countPlots)
             .then(function() {
-                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
 
                 return Plotly.react(gd, data, layout, {staticPlot: true});
             })
@@ -2972,7 +3003,7 @@ describe('Test plot api', function() {
                 return Plotly.react(gd, data, layout, {});
             })
             .then(function() {
-                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
             })
             .catch(failTest)
             .then(done);

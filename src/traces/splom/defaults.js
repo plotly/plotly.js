@@ -89,7 +89,7 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     // fill in splom subplot keys
     for(i = 0; i < axLength; i++) {
         for(j = 0; j < axLength; j++) {
-            var id = [xaxes[i] + yaxes[j]];
+            var id = xaxes[i] + yaxes[j];
 
             if(i > j && showUpper) {
                 layout._splomSubplots[id] = 1;

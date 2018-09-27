@@ -6,6 +6,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
+var delay = require('../assets/delay');
 
 describe('config argument', function() {
 
@@ -160,6 +161,17 @@ describe('config argument', function() {
             var relayoutHeight = 288;
 
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: true up its max-width and max-height', function(done) {
+            gd.style.maxWidth = '400px';
+            gd.style.maxHeight = '300px';
+            Plotly.plot(gd, data, {autosize: true})
+            .then(function() {
+                checkLayoutSize(400, 300);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should respect attribute autosizable: false', function(done) {
@@ -527,6 +539,110 @@ describe('config argument', function() {
                 delete window.PLOTLY_ENV;
                 done();
             });
+        });
+    });
+
+    describe('responsive figure', function() {
+        var gd;
+        var startWidth = 960, startHeight = 400;
+        var newWidth = 400, newHeight = 700;
+        var data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
+
+        beforeEach(function() {
+            viewport.set(startWidth, startHeight);
+            gd = createGraphDiv();
+
+            // Make the graph fill the parent
+            gd.style.width = '100%';
+            gd.style.height = '100%';
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd); // Needed to remove all event listeners
+            destroyGraphDiv();
+            viewport.reset();
+        });
+
+        function checkLayoutSize(width, height) {
+            expect(gd._fullLayout.width).toBe(width);
+            expect(gd._fullLayout.height).toBe(height);
+
+            var svg = document.getElementsByClassName('main-svg')[0];
+            expect(+svg.getAttribute('width')).toBe(width);
+            expect(+svg.getAttribute('height')).toBe(height);
+        }
+
+        function testResponsive() {
+            checkLayoutSize(startWidth, startHeight);
+            viewport.set(newWidth, newHeight);
+
+            return Promise.resolve()
+            .then(delay(200))
+            .then(function() {
+                checkLayoutSize(newWidth, newHeight);
+            })
+            .catch(failTest);
+        }
+
+        it('should resize when the viewport width/height changes', function(done) {
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(testResponsive)
+            .then(done);
+        });
+
+        it('should still be responsive if the plot is edited', function(done) {
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+            .then(testResponsive)
+            .then(done);
+        });
+
+        it('should still be responsive if the plot is purged and replotted', function(done) {
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
+            .then(testResponsive)
+            .then(done);
+        });
+
+        it('should only have one resize handler when plotted more than once', function(done) {
+            var cntWindowResize = 0;
+            window.addEventListener('resize', function() {cntWindowResize++;});
+            spyOn(Plotly.Plots, 'resize').and.callThrough();
+
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+            .then(function() {viewport.set(newWidth, newHeight);})
+            .then(delay(200))
+            // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
+            .then(function() {
+                expect(cntWindowResize).toBe(1);
+                expect(Plotly.Plots.resize.calls.count()).toBe(1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should become responsive if configured as such via Plotly.react', function(done) {
+            Plotly.plot(gd, data, {}, {responsive: false})
+            .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
+            .then(testResponsive)
+            .then(done);
+        });
+
+        it('should stop being responsive if configured as such via Plotly.react', function(done) {
+            Plotly.plot(gd, data, {}, {responsive: true})
+            // Check initial size
+            .then(function() {checkLayoutSize(startWidth, startHeight);})
+            // Turn off responsiveness
+            .then(function() {return Plotly.react(gd, data, {}, {responsive: false});})
+            // Resize viewport
+            .then(function() {viewport.set(newWidth, newHeight);})
+            // Wait for resize to happen (Plotly.resize has an internal timeout)
+            .then(delay(200))
+            // Check that final figure's size hasn't changed
+            .then(function() {checkLayoutSize(startWidth, startHeight);})
+            .catch(failTest)
+            .then(done);
         });
     });
 });

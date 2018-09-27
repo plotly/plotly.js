@@ -9,9 +9,11 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
 var failTest = require('../assets/fail_test');
+var transitions = require('../assets/transitions');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
+var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
 
 var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
@@ -629,6 +631,91 @@ describe('end-to-end scatter tests', function() {
         .then(done);
     });
 
+    it('should keep layering correct as mode & fill change', function(done) {
+        var fillCase = {name: 'fill', edit: {mode: 'none', fill: 'tonexty'}};
+        var i, j;
+
+        var cases = [fillCase];
+        var modeParts = ['lines', 'markers', 'text'];
+        for(i = 0; i < modeParts.length; i++) {
+            var modePart = modeParts[i];
+            var prevCasesLength = cases.length;
+
+            cases.push({name: modePart, edit: {mode: modePart, fill: 'none'}});
+            for(j = 0; j < prevCasesLength; j++) {
+                var prevCase = cases[j];
+                cases.push({
+                    name: prevCase.name + '_' + modePart,
+                    edit: {
+                        mode: (prevCase.edit.mode === 'none' ? '' : (prevCase.edit.mode + '+')) + modePart,
+                        fill: prevCase.edit.fill
+                    }
+                });
+            }
+        }
+
+        // visit each case N times, in an order that covers each *transition*
+        // from any case to any other case.
+        var indices = transitions(cases.length);
+
+        var p = Plotly.plot(gd, [
+            {y: [1, 2], text: 'a'},
+            {y: [2, 3], text: 'b'},
+            {y: [3, 4], text: 'c'}
+        ]);
+
+        function setMode(i) { return function() {
+            return Plotly.restyle(gd, cases[indices[i]].edit);
+        }; }
+
+        function testOrdering(i) { return function() {
+            var name = cases[indices[i]].name;
+            var hasFills = name.indexOf('fill') !== -1;
+            var hasLines = name.indexOf('lines') !== -1;
+            var hasMarkers = name.indexOf('markers') !== -1;
+            var hasText = name.indexOf('text') !== -1;
+            var tracei, prefix;
+
+            // construct the expected ordering based on case name
+            var selectorArray = [];
+            for(tracei = 0; tracei < 3; tracei++) {
+                prefix = '.xy .trace:nth-child(' + (tracei + 1) + ') ';
+
+                // two fills are attached to the first trace, one to the second
+                if(hasFills) {
+                    if(tracei === 0) {
+                        selectorArray.push(
+                            prefix + 'g:first-child>.js-fill',
+                            prefix + 'g:last-child>.js-fill');
+                    }
+                    else if(tracei === 1) selectorArray.push(prefix + 'g:last-child>.js-fill');
+                }
+                if(hasLines) selectorArray.push(prefix + '.js-line');
+                if(hasMarkers) selectorArray.push(prefix + '.point');
+                if(hasText) selectorArray.push(prefix + '.textpoint');
+            }
+
+            // ordering in the legend
+            for(tracei = 0; tracei < 3; tracei++) {
+                prefix = '.legend .traces:nth-child(' + (tracei + 1) + ') ';
+                if(hasFills) selectorArray.push(prefix + '.js-fill');
+                if(hasLines) selectorArray.push(prefix + '.js-line');
+                if(hasMarkers) selectorArray.push(prefix + '.scatterpts');
+                if(hasText) selectorArray.push(prefix + '.pointtext');
+            }
+
+            var msg = i ? ('from ' + cases[indices[i - 1]].name + ' to ') : 'from default to ';
+            msg += name;
+            assertMultiNodeOrder(selectorArray, msg);
+        }; }
+
+        for(i = 0; i < indices.length; i++) {
+            p = p.then(setMode(i)).then(testOrdering(i));
+        }
+
+        p.catch(failTest).then(done);
+    });
+
     function _assertNodes(ptStyle, txContent) {
         var pts = d3.selectAll('.point');
         var txs = d3.selectAll('.textpoint');
@@ -832,6 +919,32 @@ describe('end-to-end scatter tests', function() {
         .then(done);
     });
 
+    it('correctly autoranges fill tonext traces across multiple subplots', function(done) {
+        Plotly.newPlot(gd, [
+            {y: [3, 4, 5], fill: 'tonexty'},
+            {y: [4, 5, 6], fill: 'tonexty'},
+            {y: [3, 4, 5], fill: 'tonexty', yaxis: 'y2'},
+            {y: [4, 5, 6], fill: 'tonexty', yaxis: 'y2'}
+        ], {})
+        .then(function() {
+            expect(gd._fullLayout.yaxis.range[0]).toBe(0);
+            // when we had a single `gd.firstscatter` this one was ~2.73
+            // even though the fill was correctly drawn down to zero
+            expect(gd._fullLayout.yaxis2.range[0]).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('correctly autoranges fill tonext traces with only one point', function(done) {
+        Plotly.newPlot(gd, [{y: [3], fill: 'tonexty'}])
+        .then(function() {
+            expect(gd._fullLayout.yaxis.range[0]).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should work with typed arrays', function(done) {
         function _assert(colors, sizes) {
             var pts = d3.selectAll('.point');
@@ -972,6 +1085,166 @@ describe('end-to-end scatter tests', function() {
         })
         .then(function() {
             _assert('back to visible:false', 0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('stacked area', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+    var mock = require('@mocks/stacked_area');
+
+    it('updates ranges correctly when traces are toggled', function(done) {
+        function checkRanges(ranges, msg) {
+            for(var axId in ranges) {
+                var axName = axId.charAt(0) + 'axis' + axId.slice(1);
+                expect(gd._fullLayout[axName].range)
+                    .toBeCloseToArray(ranges[axId], 0.1, msg + ' - ' + axId);
+            }
+        }
+
+        var bottoms = [0, 3, 6, 9, 12, 15];
+        var middles = [1, 4, 7, 10, 13, 16];
+        var midsAndBottoms = bottoms.concat(middles);
+
+        Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+        .then(function() {
+            // initial ranges, as in the baseline image
+            var xr = [1, 7];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 8.42], y2: [0, 10.53],
+                // TODO: for normalized data, perhaps we want to
+                // remove padding from the top (like we do from the zero)
+                // when data stay within the normalization limit?
+                // (y3&4 are more padded because they have markers)
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'base case');
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', middles);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 4.21], y2: [0, 5.26],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'middle trace legendonly');
+
+            return Plotly.restyle(gd, 'visible', false, middles);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                // now we lose the explicit config from the bottom trace,
+                // which we kept when it was visible: 'legendonly'
+                y: [0, 4.21], y2: [0, 4.21],
+                y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
+            }, 'middle trace visible: false');
+
+            // put the bottom traces back to legendonly so they still contribute
+            // config attributes, and hide the middles too
+            return Plotly.restyle(gd, 'visible', 'legendonly', midsAndBottoms);
+        })
+        .then(function() {
+            var xr = [3, 5];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 2.11], y2: [0, 2.11],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'only top trace showing');
+
+            return Plotly.restyle(gd, 'visible', true, middles);
+        })
+        .then(function() {
+            var xr = [1, 7];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 7.37], y2: [0, 7.37],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'top and middle showing');
+
+            return Plotly.restyle(gd, {x: null, y: null}, middles);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'visible', true, bottoms);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            // an invalid trace (no data) implicitly has visible: false, and is
+            // equivalent to explicit visible: false in removing stack config.
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 4.21], y2: [0, 4.21],
+                y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
+            }, 'middle trace *implicit* visible: false');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('can add/delete stack groups', function(done) {
+        var data01 = [
+            {mode: 'markers', y: [1, 2, -1, 2, 1], stackgroup: 'a'},
+            {mode: 'markers', y: [2, 3, 2, 3, 2], stackgroup: 'b'}
+        ];
+        var data0 = [Lib.extendDeep({}, data01[0])];
+        var data1 = [Lib.extendDeep({}, data01[1])];
+
+        function _assert(yRange, nTraces) {
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yRange, 2);
+            expect(gd.querySelectorAll('g.trace.scatter').length).toBe(nTraces);
+        }
+
+        Plotly.newPlot(gd, data01)
+        .then(function() {
+            _assert([-1.293, 3.293], 2);
+            return Plotly.react(gd, data0);
+        })
+        .then(function() {
+            _assert([-1.220, 2.220], 1);
+            return Plotly.react(gd, data01);
+        })
+        .then(function() {
+            _assert([-1.293, 3.293], 2);
+            return Plotly.react(gd, data1);
+        })
+        .then(function() {
+            _assert([0, 3.205], 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not stack on date axes', function(done) {
+        Plotly.newPlot(gd, [
+            {y: ['2016-01-01', '2017-01-01'], stackgroup: 'a'},
+            {y: ['2016-01-01', '2017-01-01'], stackgroup: 'a'}
+        ])
+        .then(function() {
+            expect(gd.layout.yaxis.range.map(function(v) { return v.slice(0, 4); }))
+                // if we had stacked, this would go into the 2060s since we'd be
+                // adding milliseconds since 1970
+                .toEqual(['2015', '2017']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not stack on category axes', function(done) {
+        Plotly.newPlot(gd, [
+            {y: ['a', 'b'], stackgroup: 'a'},
+            {y: ['b', 'c'], stackgroup: 'a'}
+        ])
+        .then(function() {
+            // if we had stacked, we'd calculate a new category 3
+            // and autorange to ~[-0.2, 3.2]
+            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.1, 2.1], 1);
         })
         .catch(failTest)
         .then(done);

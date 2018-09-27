@@ -170,6 +170,8 @@ function render(scene) {
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
+    var gd = scene.graphDiv;
+
     var glplotOptions = {
         canvas: canvas,
         gl: gl,
@@ -220,7 +222,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
         var update = {};
         update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
-        scene.saveCamera(scene.graphDiv.layout);
+        scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
@@ -228,10 +230,14 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
-        scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
-            Lib.warn('Lost WebGL context.');
-            ev.preventDefault();
-        });
+        scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
+            if(gd && gd.emit) {
+                gd.emit('plotly_webglcontextlost', {
+                    event: event,
+                    layer: scene.id
+                });
+            }
+        }, false);
     }
 
     if(!scene.camera) {
@@ -523,7 +529,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 var objBounds = obj.bounds;
                 var pad = obj._trace.data._pad || 0;
 
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i] - pad);
+                if(obj.constructor.name === 'ErrorBars' && axis._lowerLogErrorBound) {
+                    sceneBounds[0][i] = Math.min(sceneBounds[0][i], axis._lowerLogErrorBound);
+                } else {
+                    sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i] - pad);
+                }
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i] + pad);
             }
 

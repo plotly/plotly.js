@@ -40,13 +40,6 @@ then simply run,
 browserify index.js > bundle.js
 ```
 
-to trim meta information (and thus save a few bytes), run:
-
-
-```
-browserify -t path/to/plotly.js/tasks/util/compress_attributes.js index.js > bundle.js
-```
-
 ## Angular CLI
 
 Currently Angular CLI uses Webpack under the hood to bundle and build your Angular application.
