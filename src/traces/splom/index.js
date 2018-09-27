@@ -306,6 +306,23 @@ function plotOne(gd, cd0) {
     scene.draw();
 }
 
+function editStyle(gd, cd0) {
+    var trace = cd0.trace;
+    var scene = gd._fullLayout._splomScenes[trace.uid];
+
+    calcColorscales(trace);
+
+    Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(trace));
+    // TODO [un]selected styles?
+
+    var opts = Lib.extendFlat({}, scene.matrixOptions, scene.viewOpts);
+
+    // TODO this is too long for arrayOk attributes!
+    scene.matrix.update(opts, null);
+
+    scene.draw();
+}
+
 function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
@@ -476,6 +493,7 @@ module.exports = {
     hoverPoints: hoverPoints,
     selectPoints: selectPoints,
     styleOnSelect: styleOnSelect,
+    editStyle: editStyle,
 
     meta: {
         description: [

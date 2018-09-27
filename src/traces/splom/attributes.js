@@ -8,10 +8,15 @@
 
 'use strict';
 
+var scatterAttrs = require('../scatter/attributes');
+var colorAttrs = require('../../components/colorscale/attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var extendFlat = require('../../lib/extend').extendFlat;
+
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 function makeAxesValObject(axLetter) {
     return {
@@ -96,7 +101,21 @@ module.exports = {
             'this trace\'s (x,y) coordinates.'
         ].join(' ')
     }),
-    marker: scatterGlAttrs.marker,
+
+    marker: extendFlat({}, colorAttrs('marker'), {
+        symbol: scatterMarkerAttrs.symbol,
+        size: scatterMarkerAttrs.size,
+        sizeref: scatterMarkerAttrs.sizeref,
+        sizemin: scatterMarkerAttrs.sizemin,
+        sizemode: scatterMarkerAttrs.sizemode,
+        opacity: scatterMarkerAttrs.opacity,
+        colorbar: scatterMarkerAttrs.colorbar,
+        line: extendFlat({}, colorAttrs('marker.line'), {
+            width: scatterMarkerLineAttrs.width,
+            editType: 'calc'
+        }),
+        editType: 'calc'
+    }),
 
     xaxes: makeAxesValObject('x'),
     yaxes: makeAxesValObject('y'),

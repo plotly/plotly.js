@@ -808,6 +808,10 @@ describe('Test splom update switchboard:', function() {
         });
     }
 
+    function toPlainArray(typedArray) {
+        return Array.prototype.slice.call(typedArray);
+    }
+
     it('@gl should trigger minimal sequence for axis range updates (large splom case)', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
         var matrix, regl, splomGrid;
@@ -847,6 +851,55 @@ describe('Test splom update switchboard:', function() {
 
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 1], 1, 'xrng ' + msg);
             expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0, 1], 1, 'xrng ' + msg);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should trigger minimal sequence for marker style updates', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+        var scene, matrix, regl;
+
+        Plotly.plot(gd, fig).then(function() {
+            var fullLayout = gd._fullLayout;
+            var trace = gd._fullData[0];
+            scene = fullLayout._splomScenes[trace.uid];
+            matrix = scene.matrix;
+            regl = matrix.regl;
+
+            methods = [
+                [Plots, 'supplyDefaults'],
+                [Plots, 'doCalcdata'],
+                [Axes, 'doTicks'],
+                [regl, 'clear'],
+                [matrix, 'update'],
+                [matrix, 'draw']
+            ];
+            addSpies();
+
+            expect(toPlainArray(scene.matrixOptions.color))
+                .toBeCloseToArray([31, 119, 180, 255], 1, 'base color');
+            expect(scene.matrixOptions.size).toBe(3, 'base size');
+            expect(fullLayout.xaxis.range).toBeCloseToArray([0.851, 3.148], 1, 'base xrng');
+
+            return Plotly.restyle(gd, 'marker.color', 'black');
+        })
+        .then(function() {
+            var msg = 'after scaler marker.color restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['doTicks', 0],
+                ['regl clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(toPlainArray(scene.matrixOptions.color))
+                .toBeCloseToArray([0, 0, 0, 255], 1, msg);
+
+            return Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']]);
         })
         .catch(failTest)
         .then(done);
