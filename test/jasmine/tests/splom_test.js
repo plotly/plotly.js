@@ -808,7 +808,7 @@ describe('Test splom update switchboard:', function() {
             var msg = 'after update';
 
             assertSpies(msg, [
-                ['supplyDefaults', 1],
+                ['supplyDefaults', 0],
                 ['doTicks', 1],
                 ['regl clear', 1],
                 ['splom grid update', 1],
