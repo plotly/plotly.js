@@ -106,7 +106,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets text elements associated with each sector.',
-            'If trace `textinfo` contains a *text* flag, these elements will seen',
+            'If trace `textinfo` contains a *text* flag, these elements will be seen',
             'on the chart.',
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
