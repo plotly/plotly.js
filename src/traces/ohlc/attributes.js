@@ -12,6 +12,7 @@
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var dash = require('../../components/drawing/attributes').dash;
+var fxAttrs = require('../../components/fx/attributes');
 
 var INCREASING_COLOR = '#3D9970';
 var DECREASING_COLOR = '#FF4136';
@@ -117,15 +118,16 @@ module.exports = {
         ].join(' ')
     },
 
-    hoveron: {
-        valType: 'flaglist',
-        flags: ['ohlc', 'points'],
-        dflt: 'points',
-        role: 'info',
-        editType: 'style',
-        description: [
-            'Do the hover effects show info in separate tooltips',
-            'or a single tooltip?'
-        ].join(' ')
-    },
+    hoverlabel: extendFlat({}, fxAttrs.hoverlabel, {
+        split: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            editType: 'style',
+            description: [
+                'Show hover information (open, close, high, low) in',
+                'separate labels.'
+            ].join(' ')
+        }
+    }),
 };

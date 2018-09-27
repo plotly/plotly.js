@@ -1054,11 +1054,13 @@ describe('hover info', function() {
                 .then(done);
             });
 
-            it('shows correct labels in ohlc mode', function(done) {
+            it('shows correct labels in split mode', function(done) {
                 var pts;
                 Plotly.plot(gd, financeMock({
                     customdata: [11, 22, 33],
-                    hoveron: 'ohlc'
+                    hoverlabel: {
+                        split: true
+                    }
                 }))
                 .then(function() {
                     gd.on('plotly_hover', function(e) { pts = e.points; });

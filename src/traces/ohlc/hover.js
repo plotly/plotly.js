@@ -22,16 +22,12 @@ var DIRSYMBOL = {
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
-    var hoveron = trace.hoveron;
 
-    if(hoveron.indexOf('ohlc') !== -1) {
-        return hoverOnOhlc(pointData, xval, yval, hovermode);
-    }
-    else if(hoveron.indexOf('points') !== -1) {
-        return hoverOnPoints(pointData, xval, yval, hovermode);
+    if(trace.hoverlabel.split) {
+        return hoverSplit(pointData, xval, yval, hovermode);
     }
 
-    return [];
+    return hoverOnPoints(pointData, xval, yval, hovermode);
 }
 
 function getClosestPoint(pointData, xval, yval, hovermode) {
@@ -94,7 +90,7 @@ function getClosestPoint(pointData, xval, yval, hovermode) {
     return pointData;
 }
 
-function hoverOnOhlc(pointData, xval, yval, hovermode) {
+function hoverSplit(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var ya = pointData.ya;
     var trace = cd[0].trace;
@@ -197,6 +193,6 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
 
 module.exports = {
     hoverPoints: hoverPoints,
-    hoverOnOhlc: hoverOnOhlc,
+    hoverSplit: hoverSplit,
     hoverOnPoints: hoverOnPoints
 };
