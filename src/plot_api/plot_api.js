@@ -1572,8 +1572,10 @@ function _restyle(gd, aobj, traces) {
             else {
                 if(valObject) {
                     // must redo calcdata when restyling array values of arrayOk attributes
-                    if(valObject.arrayOk && (
-                        Lib.isArrayOrTypedArray(newVal) || Lib.isArrayOrTypedArray(oldVal))
+                    // ... but no need to this for regl-based traces
+                    if(valObject.arrayOk &&
+                        !Registry.traceIs(contFull, 'regl') &&
+                        (Lib.isArrayOrTypedArray(newVal) || Lib.isArrayOrTypedArray(oldVal))
                     ) {
                         flags.calc = true;
                     }

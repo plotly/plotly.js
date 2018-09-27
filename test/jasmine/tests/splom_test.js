@@ -901,6 +901,27 @@ describe('Test splom update switchboard:', function() {
 
             return Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']]);
         })
+        .then(function() {
+            var msg = 'after arrayOk marker.color restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['doTicks', 0],
+                ['clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(toPlainArray(scene.matrixOptions.colors[0]))
+                .toBeCloseToArray([1, 0, 0, 1], 1, msg + '- 0');
+            expect(toPlainArray(scene.matrixOptions.colors[1]))
+                .toBeCloseToArray([0, 0.501, 0, 1], 1, msg + '- 1');
+            expect(toPlainArray(scene.matrixOptions.colors[2]))
+                .toBeCloseToArray([0, 0, 1, 1], 1, msg + '- 2');
+
+            return Plotly.restyle(gd, 'marker.size', 20);
+        })
         .catch(failTest)
         .then(done);
     });
