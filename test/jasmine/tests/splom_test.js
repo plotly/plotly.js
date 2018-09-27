@@ -922,6 +922,40 @@ describe('Test splom update switchboard:', function() {
 
             return Plotly.restyle(gd, 'marker.size', 20);
         })
+        .then(function() {
+            var msg = 'after scalar marker.size restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 1],
+                ['doTicks', 1],
+                ['regl clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(scene.matrixOptions.size).toBe(10, msg);
+            expect(gd._fullLayout.xaxis.range)
+                .toBeCloseToArray([0.753, 3.246], 1, 'xrng ' + msg);
+
+            return Plotly.restyle(gd, 'marker.size', [[4, 10, 20]]);
+        })
+        .then(function() {
+            var msg = 'after scalar marker.size restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 1],
+                ['doTicks', 1],
+                ['regl clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(scene.matrixOptions.sizes).toBeCloseToArray([2, 5, 10], 1, msg);
+            expect(gd._fullLayout.xaxis.range)
+                .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
+        })
         .catch(failTest)
         .then(done);
     });

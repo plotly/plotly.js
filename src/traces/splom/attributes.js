@@ -104,7 +104,7 @@ module.exports = {
 
     marker: extendFlat({}, colorAttrs('marker'), {
         symbol: scatterMarkerAttrs.symbol,
-        size: scatterMarkerAttrs.size,
+        size: extendFlat({}, scatterMarkerAttrs.size, {editType: 'markerSize'}),
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,

@@ -1344,7 +1344,20 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
     } else {
         seq.push(Plots.previousPromises);
 
+        // maybe only call Plots.supplyDataDefaults in the splom case,
+        // to skip over long and slow axes defaults
         Plots.supplyDefaults(gd);
+
+        if(flags.markerSize) {
+            Plots.doCalcdata(gd);
+            addAxRangeSequence(seq);
+
+            // TODO
+            // if all axes have autorange:false, then
+            // proceed to subroutines.doTraceStyle(),
+            // otherwise we must go through addAxRangeSequence,
+            // which in general must redraws 'all' axes
+        }
 
         if(flags.style) seq.push(subroutines.doTraceStyle);
         if(flags.colorbars) seq.push(subroutines.doColorBars);
