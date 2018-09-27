@@ -86,23 +86,21 @@ function calc(gd, trace) {
     var visibleLength = cdata.length;
     var hasTooManyPoints = (visibleLength * commonLength) > TOO_MANY_POINTS;
 
+    // Reuse SVG scatter axis expansion routine.
+    // For graphs with very large number of points and array marker.size,
+    // use average marker size instead to speed things up.
+    var ppad;
+    if(hasTooManyPoints) {
+        ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
+    } else {
+        ppad = calcMarkerSize(trace, commonLength);
+    }
+
     for(k = 0; k < visibleDims.length; k++) {
         i = visibleDims[k];
         dim = dimensions[i];
-
         xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
         ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
-
-        // Reuse SVG scatter axis expansion routine.
-        // For graphs with very large number of points and array marker.size,
-        // use average marker size instead to speed things up.
-        var ppad;
-        if(hasTooManyPoints) {
-            ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
-        } else {
-            ppad = calcMarkerSize(trace, commonLength);
-        }
-
         calcAxisExpansion(gd, trace, xa, ya, cdata[k], cdata[k], ppad);
     }
 
