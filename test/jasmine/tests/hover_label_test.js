@@ -1967,7 +1967,7 @@ describe('hover updates', function() {
                 size: 16,
                 color: colors0.slice()
             }
-        }])
+        }], { width: 700, height: 450 })
         .then(function() {
 
             gd.on('plotly_hover', function(eventData) {
