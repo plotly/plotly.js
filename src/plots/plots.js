@@ -1371,11 +1371,10 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
             reservedHeight = reservedMargins.bottom + reservedMargins.top,
             factor = 1 - 2 * frameMargins;
 
-        var gdBB = fullLayout._container && fullLayout._container.node ?
-            fullLayout._container.node().getBoundingClientRect() : {
-                width: fullLayout.width,
-                height: fullLayout.height
-            };
+        var gdBB = {
+            width: fullLayout.width,
+            height: fullLayout.height
+        };
 
         newWidth = Math.round(factor * (gdBB.width - reservedWidth));
         newHeight = Math.round(factor * (gdBB.height - reservedHeight));

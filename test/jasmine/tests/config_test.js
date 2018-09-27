@@ -543,23 +543,26 @@ describe('config argument', function() {
     });
 
     describe('responsive figure', function() {
-        var gd;
-        var startWidth = 960, startHeight = 400;
-        var newWidth = 400, newHeight = 700;
-        var data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
+        var gd, data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
+        var width = 960, height = 800;
+
+        var parent, elWidth, elHeight;
 
         beforeEach(function() {
-            viewport.set(startWidth, startHeight);
-            gd = createGraphDiv();
+            viewport.set(width, height);
 
-            // Make the graph fill the parent
-            gd.style.width = '100%';
-            gd.style.height = '100%';
+            // Prepare a parent container that fills the viewport
+            parent = document.createElement('div');
+            parent.style.width = '100vw';
+            parent.style.height = '100vh';
+            parent.style.position = 'fixed';
+            parent.style.top = '0';
+            parent.style.left = '0';
         });
 
         afterEach(function() {
             Plotly.purge(gd); // Needed to remove all event listeners
-            destroyGraphDiv();
+            document.body.removeChild(parent);
             viewport.reset();
         });
 
@@ -573,24 +576,41 @@ describe('config argument', function() {
         }
 
         function testResponsive() {
-            checkLayoutSize(startWidth, startHeight);
-            viewport.set(newWidth, newHeight);
+            checkLayoutSize(elWidth, elHeight);
+            viewport.set(width / 2, height / 2);
 
             return Promise.resolve()
             .then(delay(200))
             .then(function() {
-                checkLayoutSize(newWidth, newHeight);
+                checkLayoutSize(elWidth / 2, elHeight / 2);
             })
             .catch(failTest);
         }
 
+        function fillParent(numRows, numCols, cb) {
+            elWidth = width / numCols, elHeight = height / numRows;
+
+            // Fill parent
+            for(var i = 0; i < (numCols * numRows); i++) {
+                var col = document.createElement('div');
+                col.style.height = '100%';
+                col.style.width = '100%';
+                if(typeof(cb) === typeof(Function)) cb.call(col, i);
+                parent.appendChild(col);
+            }
+            document.body.appendChild(parent);
+            gd = parent.childNodes[0];
+        }
+
         it('should resize when the viewport width/height changes', function(done) {
+            fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(testResponsive)
             .then(done);
         });
 
         it('should still be responsive if the plot is edited', function(done) {
+            fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
             .then(testResponsive)
@@ -598,6 +618,7 @@ describe('config argument', function() {
         });
 
         it('should still be responsive if the plot is purged and replotted', function(done) {
+            fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
             .then(testResponsive)
@@ -605,13 +626,14 @@ describe('config argument', function() {
         });
 
         it('should only have one resize handler when plotted more than once', function(done) {
+            fillParent(1, 1);
             var cntWindowResize = 0;
             window.addEventListener('resize', function() {cntWindowResize++;});
             spyOn(Plotly.Plots, 'resize').and.callThrough();
 
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
-            .then(function() {viewport.set(newWidth, newHeight);})
+            .then(function() {viewport.set(width / 2, width / 2);})
             .then(delay(200))
             // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
             .then(function() {
@@ -623,6 +645,7 @@ describe('config argument', function() {
         });
 
         it('should become responsive if configured as such via Plotly.react', function(done) {
+            fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: false})
             .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
             .then(testResponsive)
@@ -630,18 +653,56 @@ describe('config argument', function() {
         });
 
         it('should stop being responsive if configured as such via Plotly.react', function(done) {
+            fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             // Check initial size
-            .then(function() {checkLayoutSize(startWidth, startHeight);})
+            .then(function() {checkLayoutSize(width, height);})
             // Turn off responsiveness
             .then(function() {return Plotly.react(gd, data, {}, {responsive: false});})
             // Resize viewport
-            .then(function() {viewport.set(newWidth, newHeight);})
+            .then(function() {viewport.set(width / 2, height / 2);})
             // Wait for resize to happen (Plotly.resize has an internal timeout)
             .then(delay(200))
             // Check that final figure's size hasn't changed
-            .then(function() {checkLayoutSize(startWidth, startHeight);})
+            .then(function() {checkLayoutSize(width, height);})
             .catch(failTest)
+            .then(done);
+        });
+
+        // Testing fancier CSS layouts
+        it('should resize horizontally in a flexbox when responsive: true', function(done) {
+            parent.style.display = 'flex';
+            parent.style.flexDirection = 'row';
+            fillParent(1, 2, function() {
+                this.style.flexGrow = '1';
+            });
+
+            Plotly.plot(gd, data, {}, { responsive: true })
+            .then(testResponsive)
+            .then(done);
+        });
+
+        it('should resize vertically in a flexbox when responsive: true', function(done) {
+            parent.style.display = 'flex';
+            parent.style.flexDirection = 'column';
+            fillParent(2, 1, function() {
+                this.style.flexGrow = '1';
+            });
+
+            Plotly.plot(gd, data, {}, { responsive: true })
+            .then(testResponsive)
+            .then(done);
+        });
+
+        it('should resize in both direction in a grid when responsive: true', function(done) {
+            var numCols = 2, numRows = 2;
+            parent.style.display = 'grid';
+            parent.style.gridTemplateColumns = 'repeat(' + numCols + ', 1fr)';
+            parent.style.gridTemplateRows = 'repeat(' + numRows + ', 1fr)';
+            fillParent(numRows, numCols);
+
+            Plotly.plot(gd, data, {}, { responsive: true })
+            .then(testResponsive)
             .then(done);
         });
     });
