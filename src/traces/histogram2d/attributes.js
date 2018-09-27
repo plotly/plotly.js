@@ -9,6 +9,7 @@
 'use strict';
 
 var histogramAttrs = require('../histogram/attributes');
+var makeBinAttrs = require('../histogram/bin_attributes');
 var heatmapAttrs = require('../heatmap/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
@@ -37,18 +38,16 @@ module.exports = extendFlat(
         histnorm: histogramAttrs.histnorm,
         histfunc: histogramAttrs.histfunc,
         nbinsx: histogramAttrs.nbinsx,
-        xbins: histogramAttrs.xbins,
+        xbins: makeBinAttrs('x'),
         nbinsy: histogramAttrs.nbinsy,
-        ybins: histogramAttrs.ybins,
+        ybins: makeBinAttrs('y'),
+        autobinx: histogramAttrs.autobinx,
+        autobiny: histogramAttrs.autobiny,
 
         xgap: heatmapAttrs.xgap,
         ygap: heatmapAttrs.ygap,
         zsmooth: heatmapAttrs.zsmooth,
-        zhoverformat: heatmapAttrs.zhoverformat,
-        _deprecated: {
-            autobinx: histogramAttrs._deprecated.autobinx,
-            autobiny: histogramAttrs._deprecated.autobiny
-        }
+        zhoverformat: heatmapAttrs.zhoverformat
     },
     colorscaleAttrs('', {
         cLetter: 'z',

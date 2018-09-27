@@ -53,6 +53,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('histnorm');
 
     // Note: bin defaults are now handled in Histogram.cleanData
+    // autobin(x|y) are only included here to appease Plotly.validate
+    coerce('autobin' + sampleLetter);
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 

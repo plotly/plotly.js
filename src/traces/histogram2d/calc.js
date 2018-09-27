@@ -219,9 +219,11 @@ function doAutoBin(trace, axLetter, data, ax, r2c, c2r, calendar) {
     // Backward compatibility for one-time autobinning.
     // autobin: true is handled in cleanData, but autobin: false
     // needs to be here where we have determined the values.
-    if(trace._input['autobin' + axLetter] === false) {
+    var autoBinAttr = 'autobin' + axLetter;
+    if(trace._input[autoBinAttr] === false) {
         trace._input[binAttr] = Lib.extendFlat({}, binSpec);
-        delete trace._input['autobin' + axLetter];
+        delete trace._input[autoBinAttr];
+        delete trace[autoBinAttr];
     }
 }
 

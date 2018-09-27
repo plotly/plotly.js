@@ -359,9 +359,11 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
     // Backward compatibility for one-time autobinning.
     // autobin: true is handled in cleanData, but autobin: false
     // needs to be here where we have determined the values.
-    if(trace._input['autobin' + mainData] === false) {
+    var autoBinAttr = 'autobin' + mainData;
+    if(trace._input[autoBinAttr] === false) {
         trace._input[binAttr] = Lib.extendFlat({}, trace[binAttr] || {});
-        delete trace._input['autobin' + mainData];
+        delete trace._input[autoBinAttr];
+        delete trace[autoBinAttr];
     }
 
     return [traceBinOptsCalc, pos0];

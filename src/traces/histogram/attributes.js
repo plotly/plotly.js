@@ -9,6 +9,7 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
+var makeBinAttrs = require('./bin_attributes');
 
 module.exports = {
     x: {
@@ -138,7 +139,7 @@ module.exports = {
             'Ignored if `xbins.size` is provided.'
         ].join(' ')
     },
-    xbins: makeBinsAttr('x'),
+    xbins: makeBinAttrs('x', true),
 
     nbinsy: {
         valType: 'integer',
@@ -153,7 +154,36 @@ module.exports = {
             'Ignored if `ybins.size` is provided.'
         ].join(' ')
     },
-    ybins: makeBinsAttr('y'),
+    ybins: makeBinAttrs('y', true),
+    autobinx: {
+        valType: 'boolean',
+        dflt: null,
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Obsolete: since v1.42 each bin attribute is auto-determined',
+            'separately and `autobinx` is not needed. However, we accept',
+            '`autobinx: true` or `false` and will update `xbins` accordingly',
+            'before deleting `autobinx` from the trace.'
+        ].join(' ')
+    },
+    autobiny: {
+        valType: 'boolean',
+        dflt: null,
+        role: 'style',
+        editType: 'calc',
+        impliedEdits: {
+            'ybins.start': undefined,
+            'ybins.end': undefined,
+            'ybins.size': undefined
+        },
+        description: [
+            'Obsolete: since v1.42 each bin attribute is auto-determined',
+            'separately and `autobiny` is not needed. However, we accept',
+            '`autobiny: true` or `false` and will update `ybins` accordingly',
+            'before deleting `autobiny` from the trace.'
+        ].join(' ')
+    },
 
     marker: barAttrs.marker,
 
@@ -161,69 +191,6 @@ module.exports = {
     unselected: barAttrs.unselected,
 
     _deprecated: {
-        bardir: barAttrs._deprecated.bardir,
-        autobinx: {
-            valType: 'boolean',
-            dflt: null,
-            role: 'style',
-            editType: 'calc',
-            impliedEdits: {
-                'xbins.start': undefined,
-                'xbins.end': undefined,
-                'xbins.size': undefined
-            },
-            description: [
-                'Obsolete: since v1.42 each bin',
-                'attribute is auto-determined separately.'
-            ].join(' ')
-        },
-        autobiny: {
-            valType: 'boolean',
-            dflt: null,
-            role: 'style',
-            editType: 'calc',
-            impliedEdits: {
-                'ybins.start': undefined,
-                'ybins.end': undefined,
-                'ybins.size': undefined
-            },
-            description: [
-                'Obsolete: since v1.42 each bin',
-                'attribute is auto-determined separately.'
-            ].join(' ')
-        }
+        bardir: barAttrs._deprecated.bardir
     }
 };
-
-function makeBinsAttr(axLetter) {
-    return {
-        start: {
-            valType: 'any', // for date axes
-            role: 'style',
-            editType: 'calc',
-            description: [
-                'Sets the starting value for the', axLetter,
-                'axis bins.'
-            ].join(' ')
-        },
-        end: {
-            valType: 'any', // for date axes
-            role: 'style',
-            editType: 'calc',
-            description: [
-                'Sets the end value for the', axLetter,
-                'axis bins.'
-            ].join(' ')
-        },
-        size: {
-            valType: 'any', // for date axes
-            role: 'style',
-            editType: 'calc',
-            description: [
-                'Sets the step in-between value each', axLetter,
-                'axis bin.'
-            ].join(' ')
-        },
-        editType: 'calc'
-    };
-}
