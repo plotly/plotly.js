@@ -893,9 +893,7 @@ function selectPoints(searchInfo, selectionTester) {
     return selection;
 }
 
-function style(gd, cds) {
-    if(!cds) return;
-
+function styleOnSelect(gd, cds) {
     var stash = cds[0][0].t;
     var scene = stash._scene;
 
@@ -957,7 +955,7 @@ module.exports = {
     calc: calc,
     plot: plot,
     hoverPoints: hoverPoints,
-    style: style,
+    styleOnSelect: styleOnSelect,
     selectPoints: selectPoints,
 
     sceneOptions: sceneOptions,

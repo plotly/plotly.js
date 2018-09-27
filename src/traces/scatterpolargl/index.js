@@ -183,7 +183,7 @@ module.exports = {
     calc: calc,
     plot: plot,
     hoverPoints: hoverPoints,
-    style: ScatterGl.style,
+    styleOnSelect: ScatterGl.styleOnSelect,
     selectPoints: ScatterGl.selectPoints,
 
     meta: {

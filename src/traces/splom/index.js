@@ -424,9 +424,7 @@ function selectPoints(searchInfo, selectionTester) {
     return selection;
 }
 
-function style(gd, cds) {
-    if(!cds) return;
-
+function styleOnSelect(gd, cds) {
     var fullLayout = gd._fullLayout;
     var cd0 = cds[0];
     var scene0 = fullLayout._splomScenes[cd0[0].trace.uid];
@@ -479,7 +477,7 @@ module.exports = {
     plot: plot,
     hoverPoints: hoverPoints,
     selectPoints: selectPoints,
-    style: style,
+    styleOnSelect: styleOnSelect,
 
     meta: {
         description: [

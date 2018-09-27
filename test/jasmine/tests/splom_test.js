@@ -1087,20 +1087,20 @@ describe('Test splom select:', function() {
 
         Plotly.newPlot(gd, fig).then(function() {
             // 'scattergl' trace module
-            spyOn(gd._fullLayout._modules[0], 'style').and.callFake(function() {
+            spyOn(gd._fullLayout._modules[0], 'styleOnSelect').and.callFake(function() {
                 cnt++;
                 scatterGlCnt = cnt;
             });
             // 'splom' trace module
-            spyOn(gd._fullLayout._modules[1], 'style').and.callFake(function() {
+            spyOn(gd._fullLayout._modules[1], 'styleOnSelect').and.callFake(function() {
                 cnt++;
                 splomCnt = cnt;
             });
         })
         .then(function() { return _select([[20, 395], [195, 205]]); })
         .then(function() {
-            expect(gd._fullLayout._modules[0].style).toHaveBeenCalledTimes(1);
-            expect(gd._fullLayout._modules[1].style).toHaveBeenCalledTimes(1);
+            expect(gd._fullLayout._modules[0].styleOnSelect).toHaveBeenCalledTimes(1);
+            expect(gd._fullLayout._modules[1].styleOnSelect).toHaveBeenCalledTimes(1);
 
             expect(cnt).toBe(2);
             expect(splomCnt).toBe(1, 'splom redraw before scattergl');
