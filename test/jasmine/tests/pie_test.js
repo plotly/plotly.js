@@ -61,7 +61,7 @@ describe('Pie defaults', function() {
     });
 });
 
-describe('Pie traces:', function() {
+describe('Pie traces', function() {
     'use strict';
 
     var gd;
@@ -149,7 +149,7 @@ describe('Pie traces:', function() {
         };
     }
 
-    it('propagates explicit colors to the same labels in earlier OR later traces', function(done) {
+    it('propagate explicit colors to the same labels in earlier OR later traces', function(done) {
         var data1 = [
             {type: 'pie', values: [3, 2], marker: {colors: ['red', 'black']}, domain: {x: [0.5, 1]}},
             {type: 'pie', values: [2, 5], domain: {x: [0, 0.5]}}
@@ -432,7 +432,7 @@ describe('Pie traces:', function() {
         .then(done);
     });
 
-    it('supports separate stroke width values per slice', function(done) {
+    it('support separate stroke width values per slice', function(done) {
         var data = [
             {
                 values: [20, 26, 55],
