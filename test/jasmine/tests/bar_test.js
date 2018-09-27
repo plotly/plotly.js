@@ -1423,6 +1423,37 @@ describe('bar visibility toggling:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('gets the right legend traceorder if all bars are visible: false', function(done) {
+        function _assert(traceorder, yRange, legendCount) {
+            expect(gd._fullLayout.legend.traceorder).toBe(traceorder);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yRange, 2);
+            expect(d3.select(gd).selectAll('.legend .traces').size()).toBe(legendCount);
+        }
+        Plotly.newPlot(gd, [
+            {type: 'bar', y: [1, 2, 3]},
+            {type: 'bar', y: [3, 2, 1]},
+            {y: [2, 3, 2]},
+            {y: [3, 2, 3]}
+        ], {
+            barmode: 'stack', width: 400, height: 400
+        })
+        .then(function() {
+            _assert('reversed', [0, 4.211], 4);
+
+            return Plotly.restyle(gd, {visible: false}, [0, 1]);
+        })
+        .then(function() {
+            _assert('normal', [1.922, 3.077], 2);
+
+            return Plotly.restyle(gd, {visible: 'legendonly'}, [0, 1]);
+        })
+        .then(function() {
+            _assert('reversed', [1.922, 3.077], 4);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('bar hover', function() {
