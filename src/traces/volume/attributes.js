@@ -41,7 +41,7 @@ var attrs = {
         ].join(' ')
     },
 
-    value: {
+    values: {
         valType: 'data_array',
         role: 'info',
         editType: 'calc',
@@ -60,18 +60,32 @@ var attrs = {
         ].join(' ')
     },
 
-    imin: {
+    vmin: {
         valType: 'number',
         role: 'info',
         editType: 'calc',
-        description: 'Sets the minimum intensity bound of the volume.'
+        description: 'Sets the minimum intensity bound of the volume. Defaults to the smallest value in values.'
     },
 
-    imax: {
+    vmax: {
         valType: 'number',
         role: 'info',
         editType: 'calc',
-        description: 'Sets the maximum intensity bound of the volume.'
+        description: 'Sets the maximum intensity bound of the volume. Defaults to the largest value in values.'
+    },
+
+    cmin: {
+        valType: 'number',
+        role: 'info',
+        editType: 'calc',
+        description: 'Sets the colorscale start intensity of the volume. Defaults to the smallest value in values.'
+    },
+
+    cmax: {
+        valType: 'number',
+        role: 'info',
+        editType: 'calc',
+        description: 'Sets the colorscale end intensity of the volume. Defaults to the largest value in values.'
     },
 
     text: {
@@ -100,12 +114,6 @@ var fromMesh3d = ['opacity', 'lightposition', 'lighting'];
 
 fromMesh3d.forEach(function(k) {
     attrs[k] = mesh3dAttrs[k];
-});
-
-attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {
-    editType: 'calc',
-    flags: ['x', 'y', 'z', 'intensity', 'text', 'name'],
-    dflt: 'x+y+z+intensity+text+name'
 });
 
 module.exports = attrs;

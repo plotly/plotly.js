@@ -19,22 +19,24 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var value = coerce('value');
+    var values = coerce('values');
 
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
 
     if(
-        !value || !value.length ||
+        !values || !values.length ||
         !x || !x.length || !y || !y.length || !z || !z.length
     ) {
         traceOut.visible = false;
         return;
     }
 
-    coerce('imin');
-    coerce('imax');
+    coerce('vmin');
+    coerce('vmax');
+    coerce('cmin');
+    coerce('cmax');
     coerce('opacityscale');
 
     coerce('lighting.ambient');

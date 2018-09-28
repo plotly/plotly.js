@@ -11,13 +11,13 @@
 var colorscaleCalc = require('../../components/colorscale/calc');
 
 module.exports = function calc(gd, trace) {
-    var value = trace.value;
-    var len = value.length;
+    var values = trace.values;
+    var len = values.length;
     var vMax = -Infinity;
     var vMin = Infinity;
 
     for(var i = 0; i < len; i++) {
-        var v = value[i];
+        var v = values[i];
         vMax = Math.max(vMax, v);
         vMin = Math.min(vMin, v);
     }

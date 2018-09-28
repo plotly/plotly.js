@@ -44,13 +44,13 @@
       y: ys,
       z: zs,
 
-      value: data,
+      values: data,
+
+      vmin: 0.05,
+      vmax: 0.22,
 
       cmin: 0.05,
-      cmax: 0.22,
-
-      imin: 0.05,
-      imax: 0.25,
+      cmax: 0.25,
 
       opacity: 0.05,
 
@@ -65,6 +65,8 @@ var volumePlot = require('gl-volume3d');
 var simpleMap = require('../../lib').simpleMap;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 
+var distinctVals = require('../../lib').distinctVals;
+
 function Volume(scene, uid) {
     this.scene = scene;
     this.uid = uid;
@@ -75,30 +77,7 @@ function Volume(scene, uid) {
 var proto = Volume.prototype;
 
 proto.handlePick = function(selection) {
-    // TODO
-    // Raymarch into the object volume to find a voxel with intensity higher than a user-definable limit.
-    //
-    if(selection.object === this.mesh) {
-        var selectIndex = selection.index = selection.data.index;
-
-        selection.traceCoordinate = [
-            selection.data.position[0],
-            selection.data.position[1],
-            selection.data.position[2],
-            selection.data.intensity
-        ];
-
-        var text = this.data.text;
-        selection.textLabel = 'value: ' + selection.data.intensity.toPrecision(3);
-
-        if(Array.isArray(text) && text[selectIndex] !== undefined) {
-            selection.textLabel = '<br>' + text[selectIndex];
-        } else if(text) {
-            selection.textLabel = '<br>' + text;
-        }
-
-        return true;
-    }
+    return false;
 };
 
 function parseOpacityScale(opacityScale) {
@@ -130,9 +109,22 @@ function parseOpacityScale(opacityScale) {
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 
-function getSequence(src) {
+/*
+    Finds the first ascending sequence of unique coordinates in src.
+    Steps through src in stride-length steps.
+
+    Useful for creating meshgrids out of 3D volume coordinates.
+
+    E.g.
+        getSequence([1,2,3,1,2,3], 1) -> [1,2,3] // steps through the first half of the array, bails on the second 1
+        getSequence([1,1,2,2,3,3,1,1,2,2,3,3], 1) -> [1,2,3] // steps through every element in the first half of the array
+        getSequence([1,1,2,2,3,3,1,1,2,2,3,3], 2) -> [1,2,3] // skips every other element
+
+        getSequence([1,1,1, 1,1,1, 1,1,1, 2,2,2, 2,2,2, 2,2,2], 9) -> [1,2] // skips from seq[0] to seq[9] to end of array
+*/
+function getSequence(src, stride) {
     var xs = [src[0]];
-    for(var i = 1, last = xs[0]; i < src.length; i++) {
+    for(var i = 0, last = xs[0]; i < src.length; i += stride) {
         var p = src[i];
         if(p >= last) {
             if(p > last) {
@@ -157,9 +149,9 @@ function convert(gl, scene, trace) {
         return simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
     }
 
-    var xs = getSequence(trace.x);
-    var ys = getSequence(trace.y);
-    var zs = getSequence(trace.z);
+    var xs = getSequence(trace.x, 1);
+    var ys = getSequence(trace.y, xs.length);
+    var zs = getSequence(trace.z, xs.length * ys.length);
 
     volumeOpts.dimensions = [xs.length, ys.length, zs.length];
     volumeOpts.meshgrid = [
@@ -168,7 +160,7 @@ function convert(gl, scene, trace) {
         toDataCoords(zs, 'zaxis')
     ];
 
-    volumeOpts.values = trace.value;
+    volumeOpts.values = trace.values;
 
     volumeOpts.colormap = parseColorScale(trace.colorscale);
 
@@ -178,11 +170,29 @@ function convert(gl, scene, trace) {
         volumeOpts.alphamap = parseOpacityScale(trace.opacityscale);
     }
 
-    volumeOpts.isoBounds = [trace.cmin, trace.cmax];
-    volumeOpts.intensityBounds = [
-        trace.imin === undefined ? trace.cmin : trace.imin,
-        trace.imax === undefined ? trace.cmax : trace.imax
-    ];
+    var vmin = trace.vmin;
+    var vmax = trace.vmax;
+
+    if(vmin === undefined || vmax === undefined) {
+        var minV = trace.values[0], maxV = trace.values[0];
+        for(var i = 1; i < trace.values.length; i++) {
+            var v = trace.values[v];
+            if(v > maxV) {
+                maxV = v;
+            } else if(v < minV) {
+                minV = v;
+            }
+        }
+        if(vmin === undefined) {
+            vmin = minV;
+        }
+        if(vmax === undefined) {
+            vmax = maxV;
+        }
+    }
+
+    volumeOpts.isoBounds = [vmin, vmax];
+    volumeOpts.intensityBounds = [trace.cmin, trace.cmax];
 
     var bounds = [[0, 0, 0], volumeOpts.dimensions];
 
