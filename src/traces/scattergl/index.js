@@ -952,7 +952,7 @@ module.exports = {
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
-    cleanData: require('../scatter/clean_data'),
+    crossTraceDefaults: require('../scatter/cross_trace_defaults'),
     colorbar: require('../scatter/marker_colorbar'),
     calc: calc,
     plot: plot,

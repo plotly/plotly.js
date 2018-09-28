@@ -438,17 +438,17 @@ plots.supplyDefaults = function(gd, opts) {
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData, gd._transitionData);
 
     // Special cases that introduce interactions between traces.
-    // This is after relinkPrivateKeys so we can use those in cleanData
+    // This is after relinkPrivateKeys so we can use those in crossTraceDefaults
     // and after layout module defaults, so we can use eg barmode
     var _modules = newFullLayout._visibleModules;
-    var cleanDataFuncs = [];
+    var crossTraceDefaultsFuncs = [];
     for(i = 0; i < _modules.length; i++) {
-        var _module = _modules[i];
-        // some trace types share cleanData (ie histogram2d, histogram2dcontour)
-        if(_module.cleanData) Lib.pushUnique(cleanDataFuncs, _module.cleanData);
+        var funci = _modules[i].crossTraceDefaults;
+        // some trace types share crossTraceDefaults (ie histogram2d, histogram2dcontour)
+        if(funci) Lib.pushUnique(crossTraceDefaultsFuncs, funci);
     }
-    for(i = 0; i < cleanDataFuncs.length; i++) {
-        cleanDataFuncs[i](newFullData, newFullLayout);
+    for(i = 0; i < crossTraceDefaultsFuncs.length; i++) {
+        crossTraceDefaultsFuncs[i](newFullData, newFullLayout);
     }
 
     // turn on flag to optimize large splom-only graphs

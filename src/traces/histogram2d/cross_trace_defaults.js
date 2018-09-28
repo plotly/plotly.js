@@ -23,7 +23,7 @@ var BINDIRECTIONS = ['x', 'y'];
 // Handle bin attrs and relink auto-determined values so fullData is complete
 // does not have cross-trace coupling, but moved out here so we have axis types
 // and relinked trace._autoBin
-module.exports = function cleanData(fullData, fullLayout) {
+module.exports = function crossTraceDefaults(fullData, fullLayout) {
     var i, j, traceOut, binDirection;
 
     function coerce(attr) {

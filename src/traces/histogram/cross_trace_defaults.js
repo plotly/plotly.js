@@ -30,7 +30,7 @@ var BINATTRS = {
 };
 
 // handle bin attrs and relink auto-determined values so fullData is complete
-module.exports = function cleanData(fullData, fullLayout) {
+module.exports = function crossTraceDefaults(fullData, fullLayout) {
     var allBinOpts = fullLayout._histogramBinOpts = {};
     var isOverlay = fullLayout.barmode === 'overlay';
     var i, j, traceOut, traceIn, binDirection, group, binOpts;

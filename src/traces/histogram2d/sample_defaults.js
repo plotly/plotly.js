@@ -34,7 +34,7 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout
     if(hasAggregationData) coerce('histfunc');
     coerce('histnorm');
 
-    // Note: bin defaults are now handled in Histogram2D.cleanData
+    // Note: bin defaults are now handled in Histogram2D.crossTraceDefaults
     // autobin(x|y) are only included here to appease Plotly.validate
     coerce('autobinx');
     coerce('autobiny');

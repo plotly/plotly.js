@@ -52,7 +52,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(hasAggregationData) coerce('histfunc');
     coerce('histnorm');
 
-    // Note: bin defaults are now handled in Histogram.cleanData
+    // Note: bin defaults are now handled in Histogram.crossTraceDefaults
     // autobin(x|y) are only included here to appease Plotly.validate
     coerce('autobin' + sampleLetter);
 
