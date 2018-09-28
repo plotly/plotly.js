@@ -20,7 +20,7 @@ var mergeLength = require('../parcoords/merge_length');
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
     coerce('line.shape');
-    var lineColor = coerce('line.color', defaultColor);
+    var lineColor = coerce('line.color', layout.colorway[0]);
     if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
         if(lineColor.length) {
             coerce('line.colorscale');
