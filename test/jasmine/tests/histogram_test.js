@@ -808,7 +808,7 @@ describe('Test histogram', function() {
             .then(done);
         });
 
-        it('autobins all histograms together except `visible: false`', function(done) {
+        it('autobins all histograms (on the same subplot) together except `visible: false`', function(done) {
             function _assertBinCenters(expectedCenters) {
                 var centers = gd.calcdata.map(function(cd) {
                     return cd.map(function(cdi) { return cdi.p; });
