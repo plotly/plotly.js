@@ -1,0 +1,62 @@
+{
+  "data": [
+    {
+      "values": [38600, 83100, 11100, 15400, 1740, 77],
+      "labels": ["Platinum", "Palladium", "Rhodium", "Ruthenium", "Iridium", "Osmium"],
+      "type": "pie",
+      "name": "Year 2013",
+      "title": "Year<br>2013",
+      "titleposition": "top left",
+      "domain": {
+        "x": [0, 0.5],
+        "y": [0.51, 1]
+      },
+      "hoverinfo": "label+percent+name",
+      "textinfo": "none"
+    },{
+      "values": [45800, 92900, 11100, 11000, 1960, 322],
+      "labels": ["Platinum", "Palladium", "Rhodium", "Ruthenium", "Iridium", "Osmium"],
+      "type": "pie",
+      "name": "Year 2014",
+      "title": "Year<br>2014",
+      "titleposition": "top right",
+      "domain": {
+        "x": [0.51, 1],
+        "y": [0.51, 1]
+      },
+      "hoverinfo": "label+percent+name",
+      "textinfo": "none"
+    },{
+      "values": [42700, 85300,  10600, 8230, 1010, 8],
+      "labels": ["Platinum", "Palladium", "Rhodium", "Ruthenium", "Iridium", "Osmium"],
+      "type": "pie",
+      "name": "Year 2015",
+      "title": "Year<br>2015",
+      "titleposition": "bottom left",
+      "domain": {
+        "x": [0, 0.5],
+        "y": [0, 0.5]
+      },
+      "hoverinfo": "label+percent+name",
+      "textinfo": "none"
+    },{
+      "values": [42300, 80400, 10700, 8410, 1300, 27],
+      "labels": ["Platinum", "Palladium", "Rhodium", "Ruthenium", "Iridium", "Osmium"],
+      "type": "pie",
+      "name": "Year 2016",
+      "title": "Year<br>2016",
+      "titleposition": "bottom right",
+      "domain": {
+        "x": [0.51, 1],
+        "y": [0, 0.5]
+      },
+      "hoverinfo": "label+percent+name",
+      "textinfo": "none"
+    }
+ ],
+ "layout": {
+    "title": "U.S. Imports for Platinum-group Metals",
+    "height": 400,
+    "width": 500
+  }
+}

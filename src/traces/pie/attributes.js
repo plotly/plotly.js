@@ -180,6 +180,33 @@ module.exports = {
         description: 'Sets the font used for `textinfo` lying outside the pie.'
     }),
 
+    title: {
+        valType: 'string',
+        dflt: '',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Sets the title of the pie chart.',
+            'If it is empty, no title is displayed.'
+        ].join(' ')
+    },
+    titleposition: {
+        valType: 'enumerated',
+        values: [
+            'top left', 'top center', 'top right',
+            'middle center',
+            'bottom left', 'bottom center', 'bottom right'
+        ],
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Specifies the location of the `title`.',
+        ].join(' ')
+    },
+    titlefont: extendFlat({}, textFontAttrs, {
+        description: 'Sets the font used for `title`.'
+    }),
+
     // position and shape
     domain: domainAttrs({name: 'pie', trace: true, editType: 'calc'}),
 
