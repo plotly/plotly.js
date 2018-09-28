@@ -1365,11 +1365,6 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
         // just hide it
         document.body.style.overflow = 'hidden';
     }
-    else if(isNumeric(frameMargins) && frameMargins > 0) {
-        var factor = 1 - 2 * frameMargins;
-        newWidth = Math.round(factor * fullLayout.width);
-        newHeight = Math.round(factor * fullLayout.height);
-    }
     else {
         // plotly.js - let the developers do what they want, either
         // provide height and width for the container div,
@@ -1379,6 +1374,12 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
 
         newWidth = parseFloat(computedStyle.width) || parseFloat(computedStyle.maxWidth) || fullLayout.width;
         newHeight = parseFloat(computedStyle.height) || parseFloat(computedStyle.maxHeight) || fullLayout.height;
+
+        if(isNumeric(frameMargins) && frameMargins > 0) {
+            var factor = 1 - 2 * frameMargins;
+            newWidth = Math.round(factor * newWidth);
+            newHeight = Math.round(factor * newHeight);
+        }
     }
 
     var minWidth = plots.layoutAttributes.width.min,

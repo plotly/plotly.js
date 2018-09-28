@@ -145,7 +145,7 @@ describe('config argument', function() {
                 fillFrame: false,
                 frameMargins: 0.1
             };
-            var layoutHeight = 360;
+            var layoutHeight = Math.round(0.8 * containerHeightBeforePlot);
             var relayoutHeight = layoutHeight;
 
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
@@ -157,8 +157,8 @@ describe('config argument', function() {
                 fillFrame: false,
                 frameMargins: 0.1
             };
-            var layoutHeight = 360;
-            var relayoutHeight = 288;
+            var layoutHeight = Math.round(0.8 * containerHeightBeforePlot);
+            var relayoutHeight = Math.round(0.8 * containerHeightBeforeRelayout);
 
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
