@@ -1465,12 +1465,7 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
 
     // Handle path shape
     // -----------------
-    var pathShape;
-    if(trace.line && trace.line.shape) {
-        pathShape = trace.line.shape;
-    } else {
-        pathShape = 'linear';
-    }
+    var pathShape = trace.line.shape;
 
     // Handle hover info
     // -----------------

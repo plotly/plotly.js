@@ -13,7 +13,6 @@
 var wrap = require('../../lib/gup').wrap;
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleCalc = require('../../components/colorscale/calc');
-var parcatConstants = require('./constants');
 var filterUnique = require('../../lib/filter_unique.js');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
@@ -101,9 +100,7 @@ module.exports = function calc(gd, trace) {
     // Build color generation function
     function getMarkerColorInfo(index) {
         var value;
-        if(!line) {
-            value = parcatConstants.defaultColor;
-        } else if(Lib.isArrayOrTypedArray(line.color)) {
+        if(Lib.isArrayOrTypedArray(line.color)) {
             value = line.color[index % line.color.length];
         } else {
             value = line.color;
