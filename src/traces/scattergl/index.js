@@ -265,33 +265,32 @@ function sceneUpdate(gd, subplot) {
                     scene.fill2d.draw(i);
                     if(scene.line2d && scene.lineOptions[i]) {
                         scene.line2d.draw(i);
-			if(scene.error2d && scene.errorXOptions[i]) {
-			    scene.error2d.draw(i);
-			}
-			if(scene.error2d && scene.errorYOptions[i]) {
-			    scene.error2d.draw(i + scene.count);
-			}
+                        if(scene.error2d && scene.errorXOptions[i]) {
+                            scene.error2d.draw(i);
+                        }
+                        if(scene.error2d && scene.errorYOptions[i]) {
+                            scene.error2d.draw(i + scene.count);
+                        }
                     }
                     if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
                         // traces in no-selection mode
                         scene.scatter2d.draw(i);
                     }
                 } else {
-		    if(scene.line2d && scene.lineOptions[i]) {
-			scene.line2d.draw(i);
-		    }
-		    if(scene.error2d && scene.errorXOptions[i]) {
-			scene.error2d.draw(i);
-		    }
-		    if(scene.error2d && scene.errorYOptions[i]) {
-			scene.error2d.draw(i + scene.count);
-		    }
-		    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
-			// traces in no-selection mode
-			scene.scatter2d.draw(i);
-		    }
-		    
-		}
+                    if(scene.line2d && scene.lineOptions[i]) {
+                        scene.line2d.draw(i);
+                    }
+                    if(scene.error2d && scene.errorXOptions[i]) {
+                        scene.error2d.draw(i);
+                    }
+                    if(scene.error2d && scene.errorYOptions[i]) {
+                        scene.error2d.draw(i + scene.count);
+                    }
+                    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
+                        // traces in no-selection mode
+                        scene.scatter2d.draw(i);
+                    }
+                }
             }
 
             // draw traces in selection mode
