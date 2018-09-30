@@ -1,105 +1,141 @@
 {
   "data": [
     {
-      "x": [null, 3     ,        3,           null, null
-      ],
+        "x": [null, 3     ,        3,           null, null ],
 	"y": [ 25,30,35,40        ,50      ],
 	"type": "scattergl",
 	"fill": "tozerox",
 	"mode": "none",
-	"showlegend": false, "xaxis": "x", "yaxis": "y" ,
+	"showlegend": true, "xaxis": "x", "yaxis": "y" ,
 	"fillcolor": "#FF69B4",
 	"line": { "color": "#FF69B4" }
     },
     {
-      "x": [
-        null,
-        null,
-        null,
-          5,
-	  5
-      ],
+        "x": [        null,        null,        null,          5,	  5      ],
 	"y": [ 25,30,35,40        ,50      ],
 	"type": "scattergl",
 	"fill": "tozerox",
 	"mode": "markers+lines",
-	"showlegend": false, "xaxis": "x", "yaxis": "y" ,
+	"showlegend": true, "xaxis": "x", "yaxis": "y" ,
 	"fillcolor": "#202ff0",
 	 "line": { "color": "#101ff0" }
     },
     {
-      "x": [
-        1,
-        2,
-        3,
-          4,
-	  5
-      ],
-      "y": [ null,       50,        50,null    ,null
-      ],
+        "x": [null, 3     ,        3,           null, null   ],
+	"y": [ 25,30,35,40        ,50      ],
+	"type": "scatter",
+	"fill": "tozerox",
+	"mode": "none",
+	"showlegend": true, "xaxis": "x2", "yaxis": "y2" ,
+	"fillcolor": "#DD5792",
+	"line": { "color": "#DD5792" }
+    },
+    {
+        "x": [        null,        null,        null,          5,	  5      ],
+	"y": [ 25,30,35,40        ,50      ],
+	"type": "scatter",
+	"fill": "tozerox",
+	"mode": "markers+lines",
+	"showlegend": true, "xaxis": "x2", "yaxis": "y2" ,
+	"fillcolor": "#000fd0",
+	 "line": { "color": "#0000d0" }
+    },
+    {
+        "x": [        1,        2,        3,          4,	  5      ],
+        "y": [ null,       50,        50,null    ,null      ],
 	"type": "scattergl",
 	"fill": "tozeroy",
 	"mode": "none",
-	"showlegend": false,  "xaxis": "x2", "yaxis": "y2" ,
-	"fillcolor": "#90ff70",
-	"line": { "color": "#90ff70" }
+	"showlegend": true,  "xaxis": "x3", "yaxis": "y3" ,
+	"fillcolor": "#80aa70",
+	"line": { "color": "#80aa70" }
     },
     {
-      "x": [
-        1,
-        2,
-        3,
-          4,
-	  5
-      ],
-	"y": [null
-	    ,null
-	    ,null
-        ,
-        50,
-        50
-      ],
+        "x": [        1,        2,        3,          4,	  5      ],
+	"y": [null	    ,null	    ,null        ,        50,        50      ],
 	"type": "scattergl",
 	"fill": "tozeroy",
 	"mode": "markers+lines",
-	"showlegend": false,   "xaxis": "x2", "yaxis": "y2" ,
+	"showlegend": true,   "xaxis": "x3", "yaxis": "y3" ,
+	"fillcolor": "#f09090",
+	 "line": { "color": "#e0b0b0" }
+    },
+    {
+        "x": [        1,        2,        3,          4,	  5      ],
+        "y": [ null,       50,        50,null    ,null      ],
+	"type": "scatter",
+	"fill": "tozeroy",
+	"mode": "none",
+	"showlegend": true,  "xaxis": "x4", "yaxis": "y4" ,
+	"fillcolor": "#608a50",
+	"line": { "color": "#608a50" }
+    },
+    {
+        "x": [        1,        2,        3,          4,	  5      ],
+	"y": [null	    ,null	    ,null        ,        50,        50      ],
+	"type": "scatter",
+	"fill": "tozeroy",
+	"mode": "markers+lines",
+	"showlegend": true,   "xaxis": "x4", "yaxis": "y4" ,
+	"fillcolor": "#e07070",
+	 "line": { "color": "#c09090" }
+    },
+    {
+	"x": [ 1,  1,  2,  3,  4,  5,5      ],
+	"y": [ 0,25,25,25,25,25,0      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "markers+lines",
+	"showlegend": true,    "xaxis": "x5", "yaxis": "y5" ,
 	"fillcolor": "#f02f20",
 	 "line": { "color": "#f01f10" }
     },
     {
-	"x": [ 1,  1,  2,  3,  4,  5,5
-      ],
-	"y": [ 0,25,25,25,25,25,0
-      ],
-	"type": "scattergl",
-	"fill": "tozeroy",
-	"mode": "markers+lines",
-	"showlegend": false,    "xaxis": "x3", "yaxis": "y3" ,
-	"fillcolor": "#f02f20",
-	 "line": { "color": "#f01f10" }
-    },
-    {
-	"x": [ 1,  2,  2,  3,  4,  4,5
-      ],
-	"y": [ 0,  0,50,50,50,  0,0
-      ],
+	"x": [ 1,  2,  2,  3,  4,  4,5      ],
+	"y": [ 0,  0,50,50,50,  0,0      ],
 	"type": "scattergl",
 	"fill": "tozeroy",
 	"mode": "none",
-	"showlegend": false,    "xaxis": "x3", "yaxis": "y3" ,
+	"showlegend": true,    "xaxis": "x5", "yaxis": "y5" ,
 	"fillcolor": "#90ff70",
 	"line": { "color": "#90ff70" }
+    },
+    {
+	"x": [ 1,  1,  2,  3,  4,  5,5      ],
+	"y": [ 0,25,25,25,25,25,0      ],
+	"type": "scatter",
+	"fill": "tozeroy",
+	"mode": "markers+lines",
+	"showlegend": true,    "xaxis": "x6", "yaxis": "y6" ,
+	"fillcolor": "#d00f00",
+	 "line": { "color": "#d00000" }
+    },
+    {
+	"x": [ 1,  2,  2,  3,  4,  4,5      ],
+	"y": [ 0,  0,50,50,50,  0,0      ],
+	"type": "scatter",
+	"fill": "tozeroy",
+	"mode": "none",
+	"showlegend": true,    "xaxis": "x6", "yaxis": "y6" ,
+	"fillcolor": "#70df50",
+	"line": { "color": "#70df50" }
     }
   ],
     "layout": {
 	"width": 800,"height": 800,
-	"margin": {"l": 100, "r": 100, "t": 100, "b": 100},
-	"grid": {"columns": 1, "rows": 3, "pattern": "independent", "roworder": "bottom to top"} ,
-	"xaxis" : { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+	"margin": {"l": 60, "r": 60, "t": 60, "b": 60},
+	"grid": {"columns": 2, "rows": 3, "pattern": "independent", "roworder": "bottom to top"} ,
+	"xaxis" : { "title": "GL" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
 	"xaxis2": { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
-	"xaxis3": { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+	"xaxis3": { "title": "GL" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+	"xaxis4": { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+	"xaxis5": { "title": "GL" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+	"xaxis6": { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },			
 	"yaxis" : { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 },
 	"yaxis2": { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 },
-	"yaxis3": { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 }
+	"yaxis3": { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 },
+	"yaxis4": { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 },
+	"yaxis5": { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 },
+	"yaxis6": { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 }	
     }
 }

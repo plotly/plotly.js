@@ -259,41 +259,39 @@ function sceneUpdate(gd, subplot) {
         // draw traces in proper order
         scene.draw = function draw() {
             var i;
-            var allReadyDrawLines = Lib.repeat(false, scene.count);
-            var allReadyDrawMarkers = Lib.repeat(false, scene.count);
             for(i = 0; i < scene.count; i++) {
                 if(scene.fill2d && scene.fillOptions[i]) {
                     // must do all fills first
                     scene.fill2d.draw(i);
                     if(scene.line2d && scene.lineOptions[i] && (scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox')) {
                         scene.line2d.draw(i);
-                        allReadyDrawLines[i] = true;
+			if(scene.error2d && scene.errorXOptions[i]) {
+			    scene.error2d.draw(i);
+			}
+			if(scene.error2d && scene.errorYOptions[i]) {
+			    scene.error2d.draw(i + scene.count);
+			}
                     }
-                    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i]) && (scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox')) {
+                    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
                         // traces in no-selection mode
                         scene.scatter2d.draw(i);
-                        allReadyDrawMarkers[i] = true;
                     }
-                }
-            }
-            for(i = 0; i < scene.count; i++) {
-                if(scene.line2d && scene.lineOptions[i]) {
-                    if(!allReadyDrawLines[i]) {
-                        scene.line2d.draw(i);
-                    }
-                }
-                if(scene.error2d && scene.errorXOptions[i]) {
-                    scene.error2d.draw(i);
-                }
-                if(scene.error2d && scene.errorYOptions[i]) {
-                    scene.error2d.draw(i + scene.count);
-                }
-                if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
-                    // traces in no-selection mode
-                    if(!allReadyDrawMarkers[i]) {
-                        scene.scatter2d.draw(i);
-                    }
-                }
+                } else {
+		    if(scene.line2d && scene.lineOptions[i]) {
+			scene.line2d.draw(i);
+		    }
+		    if(scene.error2d && scene.errorXOptions[i]) {
+			scene.error2d.draw(i);
+		    }
+		    if(scene.error2d && scene.errorYOptions[i]) {
+			scene.error2d.draw(i + scene.count);
+		    }
+		    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
+			// traces in no-selection mode
+			scene.scatter2d.draw(i);
+		    }
+		    
+		}
             }
 
             // draw traces in selection mode
@@ -563,6 +561,9 @@ function plot(gd, subplot, cdata) {
                     pos = pos.concat(prevLinePos);
                     fillOptions.hole = hole;
                 }
+		console.log(srcPos);
+		console.log("/\ /\ /\  srcPos / pos  \/ \/ \/");
+		console.log(pos);		
                 fillOptions.fillmode = trace.fill;
                 fillOptions.opacity = trace.opacity;
                 fillOptions.positions = pos;
