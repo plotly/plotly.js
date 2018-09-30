@@ -163,6 +163,17 @@ describe('config argument', function() {
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
+        it('should fill the container when autosize: true up its max-width and max-height', function(done) {
+            gd.style.maxWidth = '400px';
+            gd.style.maxHeight = '300px';
+            Plotly.plot(gd, data, {autosize: true})
+            .then(function() {
+                checkLayoutSize(400, 300);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should respect attribute autosizable: false', function(done) {
             var autosize = false;
             var config = {

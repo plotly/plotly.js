@@ -1296,7 +1296,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
-    it('should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
+    it('@flaky should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/0.json'));
 

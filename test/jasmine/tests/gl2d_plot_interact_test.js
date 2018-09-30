@@ -215,7 +215,7 @@ describe('Test gl plot side effects', function() {
         .then(done);
     });
 
-    it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
+    it('@noCI @gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
         var _mock = Lib.extendDeep({}, require('@mocks/gl2d_12.json'));
 
         function _trigger(name) {

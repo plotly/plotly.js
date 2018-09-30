@@ -2,14 +2,45 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Colorbar = require('@src/components/colorbar');
+
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var supplyAllDefaults = require('../assets/supply_defaults');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
 
 describe('Test colorbar:', function() {
     'use strict';
+
+    describe('supplyDefaults:', function() {
+        function _supply(trace, layout) {
+            var gd = {
+                data: [trace],
+                layout: layout
+            };
+            supplyAllDefaults(gd);
+            return gd._fullData[0];
+        }
+
+        it('should fill in tickfont defaults', function() {
+            var out = _supply({
+                type: 'heatmap',
+                z: [[1, 2, 3], [2, 3, 6]]
+            });
+            expect(out.colorbar.tickfont.color).toBe('#444', 'dflt color');
+        });
+
+        it('should inherit tickfont defaults from global font', function() {
+            var out = _supply({
+                type: 'heatmap',
+                z: [[1, 2, 3], [2, 3, 6]]
+            }, {
+                font: {color: 'red'}
+            });
+            expect(out.colorbar.tickfont.color).toBe('red', 'from global font');
+        });
+    });
 
     describe('hasColorbar', function() {
         var hasColorbar = Colorbar.hasColorbar,

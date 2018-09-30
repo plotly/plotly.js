@@ -13,6 +13,7 @@ var click = require('../assets/click');
 var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var failTest = require('../assets/fail_test');
+var touchEvent = require('../assets/touch_event');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -20,6 +21,20 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var assertElemRightTo = customAssertions.assertElemRightTo;
 var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
 var assertElemInside = customAssertions.assertElemInside;
+
+function touch(path, options) {
+    var len = path.length;
+    Lib.clearThrottle();
+    touchEvent('touchstart', path[0][0], path[0][1], options);
+
+    path.slice(1, len).forEach(function(pt) {
+        Lib.clearThrottle();
+        touchEvent('touchmove', pt[0], pt[1], options);
+    });
+
+    touchEvent('touchend', path[len - 1][0], path[len - 1][1], options);
+    return;
+}
 
 describe('hover info', function() {
     'use strict';
@@ -2047,7 +2062,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
         })
         .then(function() {
@@ -2059,7 +2074,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
         })
         .then(function() {
@@ -2071,7 +2086,7 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
 
             // test arrayOk case
@@ -2098,7 +2113,7 @@ describe('Test hover label custom styling:', function() {
             assertPtLabel(null);
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
-                text: [13, 'Arial', 'rgb(255, 255, 255)']
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
             });
 
             // test base case
@@ -2182,6 +2197,72 @@ describe('Test hover label custom styling:', function() {
             assertCommonLabel({
                 path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work for x/y cartesian traces (multi-trace case)', function(done) {
+        var gd = createGraphDiv();
+
+        function assertNameLabel(expectation) {
+            var g = d3.selectAll('g.hovertext > text.name');
+
+            if(expectation === null) {
+                expect(g.size()).toBe(0);
+            } else {
+                g.each(function(_, i) {
+                    var textStyle = window.getComputedStyle(this);
+                    expect(textStyle.fill).toBe(expectation.color[i]);
+                });
+            }
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+        }, {
+            x: [1, 2, 3],
+            y: [4, 5, 4],
+        }], {
+            hovermode: 'x',
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            assertNameLabel({
+                color: ['rgb(31, 119, 180)', 'rgb(255, 127, 14)']
+            });
+            return Plotly.restyle(gd, 'marker.color', ['red', 'blue']);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            assertNameLabel({
+                color: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)']
+            });
+            return Plotly.relayout(gd, 'hoverlabel.bgcolor', 'white');
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            // should not affect the name font color
+            assertNameLabel({
+                color: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)']
+            });
+            return Plotly.restyle(gd, 'marker.color', ['rgba(255,0,0,0.1)', 'rgba(0,0,255,0.1)']);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            // should blend with plot_bgcolor
+            assertNameLabel({
+                color: ['rgb(255, 179, 179)', 'rgb(179, 179, 255)']
+            });
+            return Plotly.restyle(gd, 'marker.color', ['rgba(255,0,0,0)', 'rgba(0,0,255,0)']);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+            // uses default line color when opacity=0
+            assertNameLabel({
+                color: ['rgb(68, 68, 68)', 'rgb(68, 68, 68)']
             });
         })
         .catch(failTest)
@@ -2455,6 +2536,113 @@ describe('hover distance', function() {
     });
 });
 
+describe('hover label rotation:', function() {
+    var gd;
+
+    function _hover(gd, opts) {
+        Fx.hover(gd, opts);
+        Lib.clearThrottle();
+    }
+
+    describe('when a single pt is picked', function() {
+        afterAll(destroyGraphDiv);
+
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'bar',
+                orientation: 'h',
+                y: [0, 1, 2],
+                x: [1, 2, 1]
+            }, {
+                type: 'bar',
+                orientation: 'h',
+                y: [3, 4, 5],
+                x: [1, 2, 1]
+            }], {
+                hovermode: 'y'
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should rotate labels under *hovermode:y*', function() {
+            _hover(gd, { xval: 2, yval: 1 });
+            assertHoverLabelContent({
+                nums: '2',
+                name: 'trace 0',
+                axis: '1',
+                // N.B. could be changed to be made consistent with 'closest'
+                isRotated: true
+            });
+        });
+
+        it('should not rotate labels under *hovermode:closest*', function(done) {
+            Plotly.relayout(gd, 'hovermode', 'closest').then(function() {
+                _hover(gd, { xval: 1.9, yval: 1 });
+                assertHoverLabelContent({
+                    nums: '(2, 1)',
+                    name: 'trace 0',
+                    axis: '',
+                    isRotated: false
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('when mulitple pts are picked', function() {
+        afterAll(destroyGraphDiv);
+
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'bar',
+                orientation: 'h',
+                y: [0, 1, 2],
+                x: [1, 2, 1]
+            }, {
+                type: 'bar',
+                orientation: 'h',
+                y: [0, 1, 2],
+                x: [1, 2, 1]
+            }], {
+                hovermode: 'y'
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should rotate labels under *hovermode:y*', function() {
+            _hover(gd, { xval: 2, yval: 1 });
+            assertHoverLabelContent({
+                nums: ['2', '2'],
+                name: ['trace 0', 'trace 1'],
+                axis: '1',
+                isRotated: true
+            });
+        });
+
+        it('should not rotate labels under *hovermode:closest*', function(done) {
+            Plotly.relayout(gd, 'hovermode', 'closest').then(function() {
+                _hover(gd, { xval: 1.9, yval: 1 });
+                assertHoverLabelContent({
+                    nums: '(2, 1)',
+                    // N.B. only showing the 'top' trace
+                    name: 'trace 1',
+                    axis: '',
+                    isRotated: false
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+});
+
 describe('hovermode defaults to', function() {
     var gd;
 
@@ -2501,5 +2689,45 @@ describe('hovermode defaults to', function() {
           })
           .catch(failTest)
           .then(done);
+    });
+});
+
+
+describe('touch devices', function() {
+    afterEach(destroyGraphDiv);
+
+    ['pan', 'zoom'].forEach(function(type) {
+        describe('dragmode:' + type, function() {
+            var data = [{x: [1, 2, 3], y: [1, 3, 2], type: 'bar'}];
+            var layout = {width: 600, height: 400, dragmode: type};
+            var gd;
+
+            beforeEach(function(done) {
+                gd = createGraphDiv();
+                Plotly.plot(gd, data, layout).then(done);
+            });
+
+            it('emits click events', function(done) {
+                var hoverHandler = jasmine.createSpy('hover');
+                var clickHandler = jasmine.createSpy('click');
+                gd.on('plotly_hover', hoverHandler);
+                gd.on('plotly_click', clickHandler);
+
+                var gdBB = gd.getBoundingClientRect();
+                var touchPoint = [[gdBB.left + 300, gdBB.top + 200]];
+
+                Promise.resolve()
+                    .then(function() {
+                        touch(touchPoint);
+                    })
+                    .then(delay(HOVERMINTIME * 1.1))
+                    .then(function() {
+                        expect(clickHandler).toHaveBeenCalled();
+                        expect(hoverHandler).not.toHaveBeenCalled();
+                    })
+                    .catch(failTest)
+                    .then(done);
+            });
+        });
     });
 });

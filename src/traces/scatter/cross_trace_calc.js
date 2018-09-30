@@ -30,48 +30,6 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
     var groupOpts, interpolate, groupnorm, posAttr, valAttr;
     var hasAnyBlanks;
 
-    function insertBlank(calcTrace, index, position, traceIndex) {
-        hasAnyBlanks[traceIndex] = true;
-        var newEntry = {
-            i: null,
-            gap: true,
-            s: 0
-        };
-        newEntry[posAttr] = position;
-        calcTrace.splice(index, 0, newEntry);
-        // Even if we're not interpolating, if one trace has multiple
-        // values at the same position and this trace only has one value there,
-        // we just duplicate that one value rather than insert a zero.
-        // We also make it look like a real point - because it's ambiguous which
-        // one really is the real one!
-        if(index && position === calcTrace[index - 1][posAttr]) {
-            var prevEntry = calcTrace[index - 1];
-            newEntry.s = prevEntry.s;
-            // TODO is it going to cause any problems to have multiple
-            // calcdata points with the same index?
-            newEntry.i = prevEntry.i;
-            newEntry.gap = prevEntry.gap;
-        }
-        else if(interpolate) {
-            newEntry.s = getInterp(calcTrace, index, position);
-        }
-        if(!index) {
-            // t and trace need to stay on the first cd entry
-            cd[0].t = cd[1].t;
-            cd[0].trace = cd[1].trace;
-            delete cd[1].t;
-            delete cd[1].trace;
-        }
-    }
-
-    function getInterp(calcTrace, index, position) {
-        var pt0 = calcTrace[index - 1];
-        var pt1 = calcTrace[index + 1];
-        if(!pt1) return pt0.s;
-        if(!pt0) return pt1.s;
-        return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
-    }
-
     for(var stackGroup in subplotStackOpts) {
         groupOpts = subplotStackOpts[stackGroup];
         var indices = groupOpts.traceIndices;
@@ -111,20 +69,20 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
                 posj = cd[j][posAttr];
                 for(; posj > allPositions[k] && k < allPositions.length; k++) {
                     // the current trace is missing a position from some previous trace(s)
-                    insertBlank(cd, j, allPositions[k], i);
+                    insertBlank(cd, j, allPositions[k], i, hasAnyBlanks, interpolate, posAttr);
                     j++;
                 }
                 if(posj !== allPositions[k]) {
                     // previous trace(s) are missing a position from the current trace
                     for(i2 = 0; i2 < i; i2++) {
-                        insertBlank(calcTraces[indices[i2]], k, posj, i2);
+                        insertBlank(calcTraces[indices[i2]], k, posj, i2, hasAnyBlanks, interpolate, posAttr);
                     }
                     allPositions.splice(k, 0, posj);
                 }
                 k++;
             }
             for(; k < allPositions.length; k++) {
-                insertBlank(cd, j, allPositions[k], i);
+                insertBlank(cd, j, allPositions[k], i, hasAnyBlanks, interpolate, posAttr);
                 j++;
             }
         }
@@ -179,3 +137,45 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         }
     }
 };
+
+function insertBlank(calcTrace, index, position, traceIndex, hasAnyBlanks, interpolate, posAttr) {
+    hasAnyBlanks[traceIndex] = true;
+    var newEntry = {
+        i: null,
+        gap: true,
+        s: 0
+    };
+    newEntry[posAttr] = position;
+    calcTrace.splice(index, 0, newEntry);
+    // Even if we're not interpolating, if one trace has multiple
+    // values at the same position and this trace only has one value there,
+    // we just duplicate that one value rather than insert a zero.
+    // We also make it look like a real point - because it's ambiguous which
+    // one really is the real one!
+    if(index && position === calcTrace[index - 1][posAttr]) {
+        var prevEntry = calcTrace[index - 1];
+        newEntry.s = prevEntry.s;
+        // TODO is it going to cause any problems to have multiple
+        // calcdata points with the same index?
+        newEntry.i = prevEntry.i;
+        newEntry.gap = prevEntry.gap;
+    }
+    else if(interpolate) {
+        newEntry.s = getInterp(calcTrace, index, position, posAttr);
+    }
+    if(!index) {
+        // t and trace need to stay on the first cd entry
+        calcTrace[0].t = calcTrace[1].t;
+        calcTrace[0].trace = calcTrace[1].trace;
+        delete calcTrace[1].t;
+        delete calcTrace[1].trace;
+    }
+}
+
+function getInterp(calcTrace, index, position, posAttr) {
+    var pt0 = calcTrace[index - 1];
+    var pt1 = calcTrace[index + 1];
+    if(!pt1) return pt0.s;
+    if(!pt0) return pt1.s;
+    return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
+}
