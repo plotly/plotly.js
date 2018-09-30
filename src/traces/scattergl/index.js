@@ -263,7 +263,7 @@ function sceneUpdate(gd, subplot) {
                 if(scene.fill2d && scene.fillOptions[i]) {
                     // must do all fills first
                     scene.fill2d.draw(i);
-                    if(scene.line2d && scene.lineOptions[i] && (scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox')) {
+                    if(scene.line2d && scene.lineOptions[i]) {
                         scene.line2d.draw(i);
 			if(scene.error2d && scene.errorXOptions[i]) {
 			    scene.error2d.draw(i);
