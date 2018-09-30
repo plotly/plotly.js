@@ -561,9 +561,6 @@ function plot(gd, subplot, cdata) {
                     pos = pos.concat(prevLinePos);
                     fillOptions.hole = hole;
                 }
-		console.log(srcPos);
-		console.log("/\ /\ /\  srcPos / pos  \/ \/ \/");
-		console.log(pos);		
                 fillOptions.fillmode = trace.fill;
                 fillOptions.opacity = trace.opacity;
                 fillOptions.positions = pos;
