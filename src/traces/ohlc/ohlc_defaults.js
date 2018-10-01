@@ -19,7 +19,7 @@ module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
     var low = coerce('low');
     var close = coerce('close');
 
-    coerce('hoverlabel');
+    coerce('hoverlabel.split');
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x'], layout);
