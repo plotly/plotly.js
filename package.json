@@ -110,7 +110,7 @@
     "sane-topojson": "^2.0.0",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
-    "svg-path-sdf": "^1.1.1",
+    "svg-path-sdf": "^1.1.2",
     "tinycolor2": "^1.3.0",
     "topojson-client": "^2.1.0",
     "webgl-context": "^2.2.0",
