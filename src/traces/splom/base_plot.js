@@ -168,20 +168,19 @@ function makeGridData(gd) {
 }
 
 function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    oldLoop:
-    for(var i = 0; i < oldFullData.length; i++) {
-        var oldTrace = oldFullData[i];
+    var lookup = {};
+    var i;
 
-        if(oldTrace.type === 'splom') {
-            for(var j = 0; j < newFullData.length; j++) {
-                var newTrace = newFullData[j];
-
-                if(oldTrace.uid === newTrace.uid && newTrace.type === 'splom') {
-                    continue oldLoop;
-                }
+    if(oldFullLayout._splomScenes) {
+        for(i = 0; i < newFullData.length; i++) {
+            var newTrace = newFullData[i];
+            if(newTrace.type === 'splom') {
+                lookup[newTrace.uid] = 1;
             }
-
-            if(oldFullLayout._splomScenes) {
+        }
+        for(i = 0; i < oldFullData.length; i++) {
+            var oldTrace = oldFullData[i];
+            if(!lookup[oldTrace.uid]) {
                 var scene = oldFullLayout._splomScenes[oldTrace.uid];
                 if(scene && scene.destroy) scene.destroy();
                 // must first set scene to null in order to get garbage collected
