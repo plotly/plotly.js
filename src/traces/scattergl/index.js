@@ -261,35 +261,23 @@ function sceneUpdate(gd, subplot) {
             var i;
             for(i = 0; i < scene.count; i++) {
                 if(scene.fill2d && scene.fillOptions[i]) {
-                    // must do all fills first
                     scene.fill2d.draw(i);
-                    if(scene.line2d && scene.lineOptions[i]) {
-                        scene.line2d.draw(i);
-                        if(scene.error2d && scene.errorXOptions[i]) {
-                            scene.error2d.draw(i);
-                        }
-                        if(scene.error2d && scene.errorYOptions[i]) {
-                            scene.error2d.draw(i + scene.count);
-                        }
-                    }
-                    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
-                        // traces in no-selection mode
-                        scene.scatter2d.draw(i);
-                    }
-                } else {
-                    if(scene.line2d && scene.lineOptions[i]) {
-                        scene.line2d.draw(i);
-                    }
-                    if(scene.error2d && scene.errorXOptions[i]) {
-                        scene.error2d.draw(i);
-                    }
-                    if(scene.error2d && scene.errorYOptions[i]) {
-                        scene.error2d.draw(i + scene.count);
-                    }
-                    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
-                        // traces in no-selection mode
-                        scene.scatter2d.draw(i);
-                    }
+                }
+                if(scene.line2d && scene.lineOptions[i]) {
+                    scene.line2d.draw(i);
+                }
+                if(scene.error2d && scene.errorXOptions[i]) {
+                    scene.error2d.draw(i);
+                }
+                if(scene.error2d && scene.errorYOptions[i]) {
+                    scene.error2d.draw(i + scene.count);
+                }
+                if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
+                    // traces in no-selection mode
+                    scene.scatter2d.draw(i);
+                }
+                if(scene.glText[i] && scene.textOptions[i]) {
+                    scene.glText[i].render();
                 }
             }
 
@@ -297,12 +285,6 @@ function sceneUpdate(gd, subplot) {
             if(scene.scatter2d && scene.select2d && scene.selectBatch) {
                 scene.select2d.draw(scene.selectBatch);
                 scene.scatter2d.draw(scene.unselectBatch);
-            }
-
-            for(i = 0; i < scene.count; i++) {
-                if(scene.glText[i] && scene.textOptions[i]) {
-                    scene.glText[i].render();
-                }
             }
 
             scene.dirty = false;
