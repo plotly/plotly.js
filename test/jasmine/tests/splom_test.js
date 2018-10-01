@@ -588,7 +588,7 @@ describe('Test splom interactions:', function() {
                 subplotCnt: 25,
                 innerSubplotNodeCnt: 17,
                 hasSplomGrid: false,
-                bgCnt: 25
+                bgCnt: 0
             });
 
             // make sure 'new' subplot layers are in order

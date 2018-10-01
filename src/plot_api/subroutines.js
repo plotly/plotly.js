@@ -125,7 +125,8 @@ function lsInner(gd) {
     // activate mode just for large splom (which benefit the most from this
     // optimization), but this could apply to all cartesian subplots.
     var noNeedForBg = (
-        fullLayout._hasOnlyLargeSploms &&
+        Color.opacity(fullLayout.paper_bgcolor) === 1 &&
+        Color.opacity(fullLayout.plot_bgcolor) === 1 &&
         fullLayout.paper_bgcolor === fullLayout.plot_bgcolor
     );
 

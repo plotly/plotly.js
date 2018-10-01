@@ -246,9 +246,6 @@ exports.assertElemInside = function(elem, container, msg) {
  * quick plot area dimension check: test width and/or height of the inner
  * plot area (single subplot) to verify that the margins are as expected
  *
- * Note: if you use margin.pad on the plot, width and height will be larger
- * than you expected by twice that padding.
- *
  * opts can have keys (all optional):
  *   width (exact width match)
  *   height (exact height match)
@@ -261,7 +258,7 @@ exports.assertPlotSize = function(opts, msg) {
     var widthLessThan = opts.widthLessThan;
     var heightLessThan = opts.heightLessThan;
 
-    var plotBB = d3.select('.bglayer .bg').node().getBoundingClientRect();
+    var plotBB = d3.select('.plotclip > rect').node().getBoundingClientRect();
     var actualWidth = plotBB.width;
     var actualHeight = plotBB.height;
 
