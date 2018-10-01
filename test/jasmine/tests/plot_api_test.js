@@ -533,6 +533,7 @@ describe('Test plot api', function() {
                 spyOn(subroutines, m);
             });
             spyOn(Axes, 'doTicks');
+            spyOn(Plots, 'supplyDefaults').and.callThrough();
         });
 
         function mock(gd) {
@@ -542,6 +543,7 @@ describe('Test plot api', function() {
             Axes.doTicks.calls.reset();
 
             supplyAllDefaults(gd);
+            Plots.supplyDefaults.calls.reset();
             Plots.doCalcdata(gd);
             gd.emit = function() {};
             return gd;
@@ -650,6 +652,7 @@ describe('Test plot api', function() {
                 expect(Axes.doTicks).toHaveBeenCalledTimes(1);
                 expect(Axes.doTicks.calls.allArgs()[0][1]).toEqual(['x']);
                 expect(Axes.doTicks.calls.allArgs()[0][2]).toBe(true, 'skip-axis-title argument');
+                expect(Plots.supplyDefaults).not.toHaveBeenCalled();
             }
 
             var specs = [
