@@ -39,7 +39,7 @@ function drag(gd) {
     var fullLayout = gd._fullLayout;
 
     if(fullLayout._hasOnlyLargeSploms) {
-        drawGrid(gd);
+        updateGrid(gd);
     }
 
     for(var i = 0; i < cd.length; i++) {
@@ -77,10 +77,8 @@ function dragOne(gd, trace, scene) {
 
     if(scene.selectBatch) {
         scene.matrix.update({ranges: ranges}, {ranges: ranges});
-        scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
     } else {
         scene.matrix.update({ranges: ranges});
-        scene.matrix.draw();
     }
 }
 

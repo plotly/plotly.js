@@ -252,8 +252,6 @@ function sceneUpdate(gd, subplot) {
                     scene.glText[i].update(opt);
                 }
             }
-
-            scene.draw();
         };
 
         // draw traces in proper order
