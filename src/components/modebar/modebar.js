@@ -14,7 +14,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Icons = require('../../../build/ploticon');
-
+var Parser = new DOMParser();
 
 /**
  * UI controller for interactive plots
@@ -192,8 +192,6 @@ proto.createIcon = function(thisIcon) {
 
     if(thisIcon.path) {
         icon = document.createElementNS(svgNS, 'svg');
-        icon.setAttribute('height', '1em');
-        icon.setAttribute('width', (thisIcon.width / iconHeight) + 'em');
         icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
 
         var path = document.createElementNS(svgNS, 'path');
@@ -215,9 +213,12 @@ proto.createIcon = function(thisIcon) {
     }
 
     if(thisIcon.svg) {
-        icon = document.createElement('div');
-        icon.innerHTML = '<svg height="1em" width="' + (thisIcon.width / iconHeight) + 'em" viewbox="0, 0, ' + thisIcon.width + ',' + thisIcon.height + '" xmlns="">' + thisIcon.svg + '</svg>';
+        var svgDoc = Parser.parseFromString(thisIcon.svg, 'application/xml');
+        icon = svgDoc.childNodes[0];
     }
+
+    icon.setAttribute('height', '1em');
+    icon.setAttribute('width', '1em');
 
     return icon;
 };
