@@ -38,6 +38,11 @@ describe('ModeBar', function() {
             _context: {
                 displaylogo: true,
                 displayModeBar: true,
+                modeBarStyle: {
+                    orientation: 'h',
+                    bgcolor: 'rgba(255,255,255,0.7)',
+                    iconColor: 'rgba(0, 31, 95, 0.3)'
+                },
                 modeBarButtonsToRemove: [],
                 modeBarButtonsToAdd: [],
                 locale: 'en',

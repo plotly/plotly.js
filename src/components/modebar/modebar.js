@@ -163,11 +163,11 @@ proto.createButton = function(config) {
     if(config.toggle) d3.select(button).classed('active', true);
 
     var icon = config.icon;
-    if(config.color) icon.color = config.color;
     if(typeof icon === 'function') {
         button.appendChild(icon());
     }
     else {
+        if(icon) icon.color = config.color;
         button.appendChild(this.createIcon(icon || Icons.question));
     }
     button.setAttribute('data-gravity', config.gravity || 'n');
