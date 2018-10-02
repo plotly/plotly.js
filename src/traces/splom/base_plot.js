@@ -28,7 +28,7 @@ function plot(gd) {
     if(!success) return;
 
     if(fullLayout._hasOnlyLargeSploms) {
-        drawGrid(gd);
+        updateGrid(gd);
     }
 
     _module.plot(gd, {}, splomCalcData);
@@ -39,7 +39,7 @@ function drag(gd) {
     var fullLayout = gd._fullLayout;
 
     if(fullLayout._hasOnlyLargeSploms) {
-        drawGrid(gd);
+        updateGrid(gd);
     }
 
     for(var i = 0; i < cd.length; i++) {
@@ -77,14 +77,12 @@ function dragOne(gd, trace, scene) {
 
     if(scene.selectBatch) {
         scene.matrix.update({ranges: ranges}, {ranges: ranges});
-        scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
     } else {
         scene.matrix.update({ranges: ranges});
-        scene.matrix.draw();
     }
 }
 
-function drawGrid(gd) {
+function updateGrid(gd) {
     var fullLayout = gd._fullLayout;
     var regl = fullLayout._glcanvas.data()[0].regl;
     var splomGrid = fullLayout._splomGrid;
@@ -92,9 +90,7 @@ function drawGrid(gd) {
     if(!splomGrid) {
         splomGrid = fullLayout._splomGrid = createLine(regl);
     }
-
     splomGrid.update(makeGridData(gd));
-    splomGrid.draw();
 }
 
 function makeGridData(gd) {
@@ -238,6 +234,7 @@ module.exports = {
     drawFramework: Cartesian.drawFramework,
     plot: plot,
     drag: drag,
+    updateGrid: updateGrid,
     clean: clean,
     updateFx: updateFx,
     toSVG: Cartesian.toSVG

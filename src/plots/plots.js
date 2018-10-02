@@ -20,7 +20,6 @@ var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
 var axisIDs = require('../plots/cartesian/axis_ids');
-var sortBasePlotModules = require('./sort_modules').sortBasePlotModules;
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
@@ -487,9 +486,6 @@ plots.supplyDefaults = function(gd, opts) {
     if(!skipUpdateCalc && oldCalcdata.length === newFullData.length) {
         plots.supplyDefaultsUpdateCalc(oldCalcdata, newFullData);
     }
-
-    // sort base plot modules for consistent ordering
-    newFullLayout._basePlotModules.sort(sortBasePlotModules);
 };
 
 plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {

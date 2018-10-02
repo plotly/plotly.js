@@ -139,11 +139,12 @@ function sceneUpdate(gd, trace) {
         scene = splomScenes[uid] = Lib.extendFlat({}, reset, first);
 
         scene.draw = function draw() {
-            // draw traces in selection mode
-            if(scene.matrix && scene.selectBatch) {
-                scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
-            } else if(scene.matrix) {
-                scene.matrix.draw();
+            if(scene.matrix && scene.matrix.draw) {
+                if(scene.selectBatch) {
+                    scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
+                } else {
+                    scene.matrix.draw();
+                }
             }
 
             scene.dirty = false;
@@ -302,8 +303,6 @@ function plotOne(gd, cd0) {
         scene.matrix.update(opts, null);
         stash.xpx = stash.ypx = null;
     }
-
-    scene.draw();
 }
 
 function editStyle(gd, cd0) {
@@ -319,8 +318,6 @@ function editStyle(gd, cd0) {
 
     // TODO this is too long for arrayOk attributes!
     scene.matrix.update(opts, null);
-
-    scene.draw();
 }
 
 function hoverPoints(pointData, xval, yval) {
@@ -439,31 +436,6 @@ function selectPoints(searchInfo, selectionTester) {
     return selection;
 }
 
-function styleOnSelect(gd, cds) {
-    var fullLayout = gd._fullLayout;
-    var cd0 = cds[0];
-    var scene0 = fullLayout._splomScenes[cd0[0].trace.uid];
-    scene0.matrix.regl.clear({color: true, depth: true});
-
-    if(fullLayout._splomGrid) {
-        fullLayout._splomGrid.draw();
-    }
-
-    for(var i = 0; i < cds.length; i++) {
-        var scene = fullLayout._splomScenes[cds[i][0].trace.uid];
-        scene.draw();
-    }
-
-    // redraw all subplot with scattergl traces,
-    // as we cleared the whole canvas above
-    if(fullLayout._has('cartesian')) {
-        for(var k in fullLayout._plots) {
-            var sp = fullLayout._plots[k];
-            if(sp._scene) sp._scene.draw();
-        }
-    }
-}
-
 function getDimIndex(trace, ax) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
@@ -492,7 +464,6 @@ module.exports = {
     plot: plot,
     hoverPoints: hoverPoints,
     selectPoints: selectPoints,
-    styleOnSelect: styleOnSelect,
     editStyle: editStyle,
 
     meta: {

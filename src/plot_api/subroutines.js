@@ -462,21 +462,21 @@ exports.drawMainTitle = function(gd) {
     });
 };
 
-// First, see if we need to do arraysToCalcdata
-// call it regardless of what change we made, in case
-// supplyDefaults brought in an array that was already
-// in gd.data but not in gd._fullData previously
 exports.doTraceStyle = function(gd) {
-    var fullLayout = gd._fullLayout;
+    var calcdata = gd.calcdata;
     var editStyleCalls = [];
     var i;
 
-    for(i = 0; i < gd.calcdata.length; i++) {
-        var cd = gd.calcdata[i];
+    for(i = 0; i < calcdata.length; i++) {
+        var cd = calcdata[i];
         var cd0 = cd[0] || {};
         var trace = cd0.trace || {};
         var _module = trace._module || {};
 
+        // See if we need to do arraysToCalcdata
+        // call it regardless of what change we made, in case
+        // supplyDefaults brought in an array that was already
+        // in gd.data but not in gd._fullData previously
         var arraysToCalcdata = _module.arraysToCalcdata;
         if(arraysToCalcdata) arraysToCalcdata(cd, trace);
 
@@ -485,16 +485,12 @@ exports.doTraceStyle = function(gd) {
     }
 
     if(editStyleCalls.length) {
-        clearGlCanvases(gd);
-
-        if(fullLayout._hasOnlyLargeSploms) {
-            fullLayout._splomGrid.draw();
-        }
-
         for(i = 0; i < editStyleCalls.length; i++) {
             var edit = editStyleCalls[i];
             edit.fn(gd, edit.cd0);
         }
+        clearGlCanvases(gd);
+        exports.redrawReglTraces(gd);
     }
 
     Plots.style(gd);
@@ -546,8 +542,9 @@ exports.doTicksRelayout = function(gd) {
     Axes.doTicks(gd, 'redraw');
 
     if(gd._fullLayout._hasOnlyLargeSploms) {
+        Registry.subplotsRegistry.splom.updateGrid(gd);
         clearGlCanvases(gd);
-        Registry.subplotsRegistry.splom.plot(gd);
+        exports.redrawReglTraces(gd);
     }
 
     exports.drawMainTitle(gd);
@@ -600,6 +597,8 @@ exports.drawData = function(gd) {
         basePlotModules[i].plot(gd);
     }
 
+    exports.redrawReglTraces(gd);
+
     // styling separate from drawing
     Plots.style(gd);
 
@@ -611,6 +610,61 @@ exports.drawData = function(gd) {
     fullLayout._replotting = false;
 
     return Plots.previousPromises(gd);
+};
+
+// Draw (or redraw) all traces in one go,
+// useful during drag and selection where buffers of targeted traces are updated,
+// but all traces need to be redrawn following clearGlCanvases.
+//
+// Note that _module.plot for regl trace does NOT draw things
+// on the canvas, they only update the buffers.
+// Drawing is perform here.
+//
+// TODO try adding per-subplot option using gl.SCISSOR_TEST for
+// non-overlaying, disjoint subplots.
+//
+// TODO try to include parcoords in here.
+exports.redrawReglTraces = function(gd) {
+    var fullLayout = gd._fullLayout;
+
+    if(fullLayout._has('regl')) {
+        var fullData = gd._fullData;
+        var cartesianIds = [];
+        var polarIds = [];
+        var i, sp;
+
+        if(fullLayout._hasOnlyLargeSploms) {
+            fullLayout._splomGrid.draw();
+        }
+
+        // N.B.
+        // - Loop over fullData (not _splomScenes) to preserve splom trace-to-trace ordering
+        // - Fill list if subplot ids (instead of fullLayout._subplots) to handle cases where all traces
+        //   of a given module are `visible !== true`
+        for(i = 0; i < fullData.length; i++) {
+            var trace = fullData[i];
+
+            if(trace.visible === true) {
+                if(trace.type === 'splom') {
+                    fullLayout._splomScenes[trace.uid].draw();
+                } else if(trace.type === 'scattergl') {
+                    Lib.pushUnique(cartesianIds, trace.xaxis + trace.yaxis);
+                } else if(trace.type === 'scatterpolargl') {
+                    Lib.pushUnique(polarIds, trace.subplot);
+                }
+            }
+        }
+
+        for(i = 0; i < cartesianIds.length; i++) {
+            sp = fullLayout._plots[cartesianIds[i]];
+            if(sp._scene) sp._scene.draw();
+        }
+
+        for(i = 0; i < polarIds.length; i++) {
+            sp = fullLayout[polarIds[i]]._subplot;
+            if(sp._scene) sp._scene.draw();
+        }
+    }
 };
 
 exports.doAutoRangeAndConstraints = function(gd) {
