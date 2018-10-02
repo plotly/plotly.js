@@ -1182,7 +1182,10 @@ describe('Test scattergl autorange:', function() {
 
     describe('should return the approximative values for ~big~ data', function() {
         beforeEach(function() {
-            spyOn(ScatterGl, 'plot');
+            // to avoid expansive draw calls (which could be problematic on CI)
+            spyOn(ScatterGl, 'plot').and.callFake(function(gd) {
+                gd._fullLayout._plots.xy._scene.scatter2d = {draw: function() {}};
+            });
         });
 
         // threshold for 'fast' axis expansion routine

@@ -139,11 +139,12 @@ function sceneUpdate(gd, trace) {
         scene = splomScenes[uid] = Lib.extendFlat({}, reset, first);
 
         scene.draw = function draw() {
-            // draw traces in selection mode
-            if(scene.matrix && scene.selectBatch) {
-                scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
-            } else if(scene.matrix) {
-                scene.matrix.draw();
+            if(scene.matrix && scene.matrix.draw) {
+                if(scene.selectBatch) {
+                    scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
+                } else {
+                    scene.matrix.draw();
+                }
             }
 
             scene.dirty = false;
@@ -302,8 +303,6 @@ function plotOne(gd, cd0) {
         scene.matrix.update(opts, null);
         stash.xpx = stash.ypx = null;
     }
-
-    scene.draw();
 }
 
 function editStyle(gd, cd0) {

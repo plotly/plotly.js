@@ -640,8 +640,6 @@ function plot(gd, subplot, cdata) {
     if(scene.glText) {
         scene.glText.forEach(function(text) { text.update(vpRange0); });
     }
-
-    scene.draw();
 }
 
 

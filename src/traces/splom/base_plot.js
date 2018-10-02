@@ -28,7 +28,7 @@ function plot(gd) {
     if(!success) return;
 
     if(fullLayout._hasOnlyLargeSploms) {
-        drawGrid(gd);
+        updateGrid(gd);
     }
 
     _module.plot(gd, {}, splomCalcData);
@@ -84,7 +84,7 @@ function dragOne(gd, trace, scene) {
     }
 }
 
-function drawGrid(gd) {
+function updateGrid(gd) {
     var fullLayout = gd._fullLayout;
     var regl = fullLayout._glcanvas.data()[0].regl;
     var splomGrid = fullLayout._splomGrid;
@@ -92,9 +92,7 @@ function drawGrid(gd) {
     if(!splomGrid) {
         splomGrid = fullLayout._splomGrid = createLine(regl);
     }
-
     splomGrid.update(makeGridData(gd));
-    splomGrid.draw();
 }
 
 function makeGridData(gd) {
