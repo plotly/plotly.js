@@ -1298,23 +1298,26 @@ describe('Test splom select:', function() {
         var cnt = 0;
         var scatterGlCnt = 0;
         var splomCnt = 0;
+        var scatterglScene, splomScene;
 
         Plotly.newPlot(gd, fig).then(function() {
-            // 'scattergl' trace module
-            spyOn(gd._fullLayout._modules[0], 'styleOnSelect').and.callFake(function() {
+            var fullLayout = gd._fullLayout;
+            scatterglScene = fullLayout._plots.xy._scene;
+            splomScene = fullLayout._splomScenes[gd._fullData[1].uid];
+
+            spyOn(scatterglScene, 'draw').and.callFake(function() {
                 cnt++;
                 scatterGlCnt = cnt;
             });
-            // 'splom' trace module
-            spyOn(gd._fullLayout._modules[1], 'styleOnSelect').and.callFake(function() {
+            spyOn(splomScene, 'draw').and.callFake(function() {
                 cnt++;
                 splomCnt = cnt;
             });
         })
         .then(function() { return _select([[20, 395], [195, 205]]); })
         .then(function() {
-            expect(gd._fullLayout._modules[0].styleOnSelect).toHaveBeenCalledTimes(1);
-            expect(gd._fullLayout._modules[1].styleOnSelect).toHaveBeenCalledTimes(1);
+            expect(scatterglScene.draw).toHaveBeenCalledTimes(1);
+            expect(splomScene.draw).toHaveBeenCalledTimes(1);
 
             expect(cnt).toBe(2);
             expect(splomCnt).toBe(1, 'splom redraw before scattergl');
