@@ -41,7 +41,7 @@ function render(scene) {
     svgContainer.setAttributeNS(null, 'viewBox', '0 0 ' + width + ' ' + height);
     svgContainer.setAttributeNS(null, 'width', width);
     svgContainer.setAttributeNS(null, 'height', height);
-
+    
     computeTickMarks(scene);
     scene.glplot.axes.update(scene.axesOptions);
 
@@ -383,6 +383,13 @@ function computeTraceBounds(scene, trace, bounds) {
     }
 }
 
+function isCloseToZero (a) {
+    if (Math.abs(a) > Number.MIN_VALUE) { // the smallest positive numeric value representable in JavaScript
+        return false;
+    }
+    return true;
+}
+
 proto.plot = function(sceneData, fullLayout, layout) {
 
     // Save parameters
@@ -399,7 +406,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     else this.glplot.clearColor = [0, 0, 0, 0];
 
     this.glplot.snapToData = true;
-
+    
     // Update layout
     this.fullLayout = fullLayout;
     this.fullSceneLayout = fullSceneLayout;
@@ -421,7 +428,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Convert scene data
     if(!sceneData) sceneData = [];
     else if(!Array.isArray(sceneData)) sceneData = [sceneData];
-
+    
     // Compute trace bounding box
     var dataBounds = [
         [Infinity, Infinity, Infinity],
@@ -435,19 +442,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
     var dataScale = [1, 1, 1];
     for(j = 0; j < 3; ++j) {
-        if(dataBounds[0][j] > dataBounds[1][j]) {
-            dataScale[j] = 1.0;
-        }
-        else {
-            if(dataBounds[1][j] === dataBounds[0][j]) {
-                dataScale[j] = 1.0;
-            }
-            else {
-                dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
-            }
-        }
+        var diff = dataBounds[1][j] - dataBounds[0][j];
+        if(!isCloseToZero(diff)) dataScale[j] = 1.0 / diff;
     }
-
+    
     // Save scale
     this.dataScale = dataScale;
 
@@ -558,7 +556,14 @@ proto.plot = function(sceneData, fullLayout, layout) {
             } else {
                 var d = sceneBounds[1][i] - sceneBounds[0][i];
                 sceneBounds[0][i] -= d / 32.0;
-                sceneBounds[1][i] += d / 32.0;
+                sceneBounds[1][i] += d / 32.0;            
+            }
+            
+            if(axis.autorange === 'reversed') {
+                // swap bounds: 
+                var tmp = sceneBounds[0][i];
+                sceneBounds[0][i] = sceneBounds[1][i];
+                sceneBounds[1][i] = tmp;
             }
         } else {
             var range = axis.range;
@@ -570,14 +575,14 @@ proto.plot = function(sceneData, fullLayout, layout) {
             sceneBounds[1][i] += 1;
         }
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
-
+        
         // Update plot bounds
         this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i];
         this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i];
     }
-
+    
     var axesScaleRatio = [1, 1, 1];
-
+    
     // Compute axis scale per category
     for(i = 0; i < 3; ++i) {
         axis = fullSceneLayout[axisProperties[i]];
