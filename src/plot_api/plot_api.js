@@ -428,7 +428,7 @@ function setPlotContext(gd, config) {
         keys = Object.keys(config);
         for(i = 0; i < keys.length; i++) {
             key = keys[i];
-            if(key === 'editable' || key === 'edits') continue;
+            if(key === 'editable' || key === 'edits' || key === 'modeBarStyle') continue;
             if(key in context) {
                 if(key === 'setBackground' && config[key] === 'opaque') {
                     context[key] = opaqueSetBackground;
@@ -462,6 +462,15 @@ function setPlotContext(gd, config) {
                 key = keys[i];
                 if(key in context.edits) {
                     context.edits[key] = config.edits[key];
+                }
+            }
+        }
+        if(config.modeBarStyle) {
+            keys = Object.keys(config.modeBarStyle);
+            for(i = 0; i < keys.length; i++) {
+                key = keys[i];
+                if(key in context.modeBarStyle) {
+                    context.modeBarStyle[key] = config.modeBarStyle[key];
                 }
             }
         }

@@ -102,6 +102,13 @@ module.exports = {
     // display the mode bar (true, false, or 'hover')
     displayModeBar: 'hover',
 
+    // mode bar style
+    modeBarStyle: {
+        orientation: 'h',
+        bgcolor: 'rgba(255,255,255,0.7)',
+        iconColor: 'rgba(0, 31, 95, 0.3)'
+    },
+
     /*
      * remove mode bar button by name
      * (see ../components/modebar/buttons.js for the list of names)

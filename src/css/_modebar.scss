@@ -3,7 +3,6 @@
     top: 2px;
     right: 2px;
     z-index: 1001;
-    background: rgba(255,255,255,0.7);
 }
 
 .modebar--hover {
@@ -23,12 +22,7 @@
     position: relative;
     vertical-align: middle;
     white-space: nowrap;
-
-    &:first-child {
-        margin-left: 0px;
-    }
 }
-
 
 .modebar-btn {
     position: relative;
@@ -43,20 +37,17 @@
         position: relative;
         top: 2px;
     }
+}
 
-    path {
-        fill: rgba(0,31,95,0.3);
-    }
+.modebar.vertical {
+    .modebar-group {
+        display: block;
+        float: none;
+        margin: 0 auto;
 
-    &.active path, &:hover path {
-        fill: rgba(0,22,72,0.5);
-    }
-
-    &.modebar-btn--logo {
-        padding: 3px 1px;
-
-        path {
-            fill: $color-brand-primary !important;
+        .modebar-btn {
+            display:block;
+            text-align: center;
         }
     }
 }

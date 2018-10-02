@@ -52,6 +52,11 @@ proto.update = function(graphInfo, buttons) {
     }
     else this.element.className = 'modebar';
 
+    if(context.modeBarStyle.orientation === 'v') {
+        this.element.className += ' vertical';
+    }
+    this.element.style.backgroundColor = context.modeBarStyle.bgcolor;
+
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
     var needsNewLogo = (this.hasLogo !== context.displaylogo);
@@ -62,7 +67,7 @@ proto.update = function(graphInfo, buttons) {
     if(needsNewButtons || needsNewLogo || needsNewLocale) {
         this.removeAllButtons();
 
-        this.updateButtons(buttons);
+        this.updateButtons(buttons, context.modeBarStyle.iconColor);
 
         if(context.displaylogo) {
             this.element.appendChild(this.getLogo());
@@ -73,7 +78,7 @@ proto.update = function(graphInfo, buttons) {
     this.updateActiveButton();
 };
 
-proto.updateButtons = function(buttons) {
+proto.updateButtons = function(buttons, iconColor) {
     var _this = this;
 
     this.buttons = buttons;
@@ -93,6 +98,7 @@ proto.updateButtons = function(buttons) {
             }
             _this.buttonsNames.push(buttonName);
 
+            buttonConfig.color = iconColor;
             var button = _this.createButton(buttonConfig);
             _this.buttonElements.push(button);
             group.appendChild(button);
@@ -157,6 +163,7 @@ proto.createButton = function(config) {
     if(config.toggle) d3.select(button).classed('active', true);
 
     var icon = config.icon;
+    if(config.color) icon.color = config.color;
     if(typeof icon === 'function') {
         button.appendChild(icon());
     }
@@ -173,6 +180,7 @@ proto.createButton = function(config) {
  * @Param {object} thisIcon
  * @Param {number} thisIcon.width
  * @Param {string} thisIcon.path
+ * @Param {string} thisIcon.color
  * @Return {HTMLelement}
  */
 proto.createIcon = function(thisIcon) {
@@ -180,24 +188,34 @@ proto.createIcon = function(thisIcon) {
             Number(thisIcon.height) :
             thisIcon.ascent - thisIcon.descent,
         svgNS = 'http://www.w3.org/2000/svg',
-        icon = document.createElementNS(svgNS, 'svg'),
-        path = document.createElementNS(svgNS, 'path');
+        icon = document.createElementNS(svgNS, 'svg');
 
     icon.setAttribute('height', '1em');
     icon.setAttribute('width', (thisIcon.width / iconHeight) + 'em');
     icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
 
-    path.setAttribute('d', thisIcon.path);
+    if(thisIcon.path) {
+        var path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', thisIcon.path);
 
-    if(thisIcon.transform) {
-        path.setAttribute('transform', thisIcon.transform);
-    }
-    else if(thisIcon.ascent !== undefined) {
-        // Legacy icon transform calculation
-        path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
+        if(thisIcon.transform) {
+            path.setAttribute('transform', thisIcon.transform);
+        }
+        else if(thisIcon.ascent !== undefined) {
+            // Legacy icon transform calculation
+            path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
+        }
+
+        if(thisIcon.color) {
+            path.setAttribute('fill', thisIcon.color);
+        }
+
+        icon.appendChild(path);
     }
 
-    icon.appendChild(path);
+    if(thisIcon.svg) {
+        icon.innerHTML = thisIcon.svg;
+    }
 
     return icon;
 };
@@ -272,7 +290,7 @@ proto.getLogo = function() {
     a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly'));
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-    a.appendChild(this.createIcon(Icons.plotlylogo));
+    a.appendChild(this.createIcon(Icons.newplotlylogo));
 
     group.appendChild(a);
     return group;
