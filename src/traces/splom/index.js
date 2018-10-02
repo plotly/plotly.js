@@ -318,8 +318,6 @@ function editStyle(gd, cd0) {
 
     // TODO this is too long for arrayOk attributes!
     scene.matrix.update(opts, null);
-
-    scene.draw();
 }
 
 function hoverPoints(pointData, xval, yval) {

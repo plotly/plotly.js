@@ -234,6 +234,7 @@ module.exports = {
     drawFramework: Cartesian.drawFramework,
     plot: plot,
     drag: drag,
+    updateGrid: updateGrid,
     clean: clean,
     updateFx: updateFx,
     toSVG: Cartesian.toSVG

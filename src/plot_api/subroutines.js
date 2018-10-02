@@ -462,21 +462,21 @@ exports.drawMainTitle = function(gd) {
     });
 };
 
-// First, see if we need to do arraysToCalcdata
-// call it regardless of what change we made, in case
-// supplyDefaults brought in an array that was already
-// in gd.data but not in gd._fullData previously
 exports.doTraceStyle = function(gd) {
-    var fullLayout = gd._fullLayout;
+    var calcdata = gd.calcdata;
     var editStyleCalls = [];
     var i;
 
-    for(i = 0; i < gd.calcdata.length; i++) {
-        var cd = gd.calcdata[i];
+    for(i = 0; i < calcdata.length; i++) {
+        var cd = calcdata[i];
         var cd0 = cd[0] || {};
         var trace = cd0.trace || {};
         var _module = trace._module || {};
 
+        // See if we need to do arraysToCalcdata
+        // call it regardless of what change we made, in case
+        // supplyDefaults brought in an array that was already
+        // in gd.data but not in gd._fullData previously
         var arraysToCalcdata = _module.arraysToCalcdata;
         if(arraysToCalcdata) arraysToCalcdata(cd, trace);
 
@@ -485,16 +485,12 @@ exports.doTraceStyle = function(gd) {
     }
 
     if(editStyleCalls.length) {
-        clearGlCanvases(gd);
-
-        if(fullLayout._hasOnlyLargeSploms) {
-            fullLayout._splomGrid.draw();
-        }
-
         for(i = 0; i < editStyleCalls.length; i++) {
             var edit = editStyleCalls[i];
             edit.fn(gd, edit.cd0);
         }
+        clearGlCanvases(gd);
+        exports.redrawReglTraces(gd);
     }
 
     Plots.style(gd);
@@ -546,8 +542,9 @@ exports.doTicksRelayout = function(gd) {
     Axes.doTicks(gd, 'redraw');
 
     if(gd._fullLayout._hasOnlyLargeSploms) {
+        Registry.subplotsRegistry.splom.updateGrid(gd);
         clearGlCanvases(gd);
-        Registry.subplotsRegistry.splom.plot(gd);
+        exports.redrawReglTraces(gd);
     }
 
     exports.drawMainTitle(gd);
