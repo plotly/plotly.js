@@ -1136,7 +1136,7 @@ describe('@noCI Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should work on overlaid subplots', function(done) {
+    it('@gl should work on overlaid subplots', function(done) {
         gd = createGraphDiv();
 
         var scene, scene2;
@@ -1176,6 +1176,5 @@ describe('@noCI Test gl2d lasso/select:', function() {
         })
         .catch(failTest)
         .then(done);
-
     });
 });
