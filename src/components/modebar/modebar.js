@@ -219,8 +219,6 @@ proto.createIcon = function(thisIcon) {
         icon.innerHTML = '<svg height="1em" width="' + (thisIcon.width / iconHeight) + 'em" viewbox="0, 0, ' + thisIcon.width + ',' + thisIcon.height + '" xmlns="">' + thisIcon.svg + '</svg>';
     }
 
-
-
     return icon;
 };
 
