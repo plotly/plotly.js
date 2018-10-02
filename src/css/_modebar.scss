@@ -28,6 +28,7 @@
     position: relative;
     font-size: 16px;
     padding: 3px 4px;
+    height: 22px;
     /* display: inline-block; including this breaks 3d interaction in .embed mode. Chrome bug? */
     cursor: pointer;
     line-height: normal;
@@ -43,7 +44,8 @@
     .modebar-group {
         display: block;
         float: none;
-        margin: 0 auto;
+        margin-left: 0px;
+        margin-top: 8px;
 
         .modebar-btn {
             display:block;
