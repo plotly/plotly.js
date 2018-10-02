@@ -188,13 +188,14 @@ proto.createIcon = function(thisIcon) {
             Number(thisIcon.height) :
             thisIcon.ascent - thisIcon.descent,
         svgNS = 'http://www.w3.org/2000/svg',
-        icon = document.createElementNS(svgNS, 'svg');
-
-    icon.setAttribute('height', '1em');
-    icon.setAttribute('width', (thisIcon.width / iconHeight) + 'em');
-    icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
+        icon;
 
     if(thisIcon.path) {
+        icon = document.createElementNS(svgNS, 'svg');
+        icon.setAttribute('height', '1em');
+        icon.setAttribute('width', (thisIcon.width / iconHeight) + 'em');
+        icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
+
         var path = document.createElementNS(svgNS, 'path');
         path.setAttribute('d', thisIcon.path);
 
@@ -214,8 +215,11 @@ proto.createIcon = function(thisIcon) {
     }
 
     if(thisIcon.svg) {
-        icon.innerHTML = thisIcon.svg;
+        icon = document.createElement('div');
+        icon.innerHTML = '<svg height="1em" width="' + (thisIcon.width / iconHeight) + 'em" viewbox="0, 0, ' + thisIcon.width + ',' + thisIcon.height + '" xmlns="">' + thisIcon.svg + '</svg>';
     }
+
+
 
     return icon;
 };
