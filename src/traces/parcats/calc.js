@@ -174,8 +174,8 @@ module.exports = function calc(gd, trace) {
             var cats = dimensionModels[d].categories;
 
             if(cats[catInd] === undefined) {
-                var catValue = trace.dimensions[containerInd].categoryarray[catInd];
-                var catLabel = trace.dimensions[containerInd].ticktext[catInd];
+                var catValue = trace.dimensions[containerInd]._categoryarray[catInd];
+                var catLabel = trace.dimensions[containerInd]._ticktext[catInd];
                 cats[catInd] = createCategoryModel(d, catInd, catValue, catLabel);
             }
 
@@ -480,19 +480,19 @@ function validateDimensionDisplayInds(trace) {
 function validateCategoryProperties(dim, uniqueInfoDim) {
 
     // Update categoryarray
-    dim.categoryarray = uniqueInfoDim.uniqueValues;
+    dim._categoryarray = uniqueInfoDim.uniqueValues;
 
     // Handle ticktext
     if(dim.ticktext === null || dim.ticktext === undefined) {
-        dim.ticktext = [];
+        dim._ticktext = [];
     } else {
         // Shallow copy to avoid modifying input array
-        dim.ticktext = dim.ticktext.slice();
+        dim._ticktext = dim.ticktext.slice();
     }
 
     // Extend ticktext with elements from uniqueInfoDim.uniqueValues
-    for(var i = dim.ticktext.length; i < uniqueInfoDim.uniqueValues.length; i++) {
-        dim.ticktext.push(uniqueInfoDim.uniqueValues[i]);
+    for(var i = dim._ticktext.length; i < uniqueInfoDim.uniqueValues.length; i++) {
+        dim._ticktext.push(uniqueInfoDim.uniqueValues[i]);
     }
 }
 
