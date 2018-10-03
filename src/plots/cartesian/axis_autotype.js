@@ -65,7 +65,8 @@ function category(a) {
 
     for(var i = 0; i < a.length; i += inc) {
         ai = a[Math.round(i)];
-        if(Lib.cleanNumber(ai) !== BADNUM) curvenums++;
+        if(typeof ai === 'boolean') curvecats++;
+        else if(Lib.cleanNumber(ai) !== BADNUM) curvenums++;
         else if(typeof ai === 'string' && ai !== '' && ai !== 'None') curvecats++;
     }
 

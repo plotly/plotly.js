@@ -189,6 +189,22 @@ describe('Test axes', function() {
             fullData = [];
         });
 
+        describe('autotype', function() {
+            function fullTrace(mods) {
+                return Lib.extendDeep(
+                    {type: 'scatter', xaxis: 'x', yaxis: 'y'},
+                    mods
+                );
+            }
+            it('treats booleans as categories', function() {
+                fullData = [fullTrace({x: [0, 1, 2], y: [true, false, true]})];
+                layoutIn = {xaxis: {}, yaxis: {}};
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                expect(layoutOut.xaxis.type).toBe('linear');
+                expect(layoutOut.yaxis.type).toBe('category');
+            });
+        });
+
         it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
             layoutIn = {
                 xaxis: {},
