@@ -224,5 +224,29 @@ module.exports = {
             'or a logo image, for example. To omit one of these items on the plot,',
             'make an item with matching `templateitemname` and `visible: false`.'
         ].join(' ')
+    },
+    modeBarStyle: {
+        orientation: {
+            valType: 'enumerated',
+            values: ['v', 'h'],
+            dflt: 'h',
+            role: 'info',
+            editType: 'modebar',
+            description: 'Sets the orientation of the modebar.'
+        },
+        bgcolor: {
+            valType: 'color',
+            role: 'style',
+            dflt: 'rgba(255,255,255,0.7)',
+            editType: 'modebar',
+            description: 'Sets the background color of the modebar.'
+        },
+        iconColor: {
+            valType: 'color',
+            role: 'style',
+            dflt: 'rgba(0, 31, 95, 0.3)',
+            editType: 'modebar',
+            description: 'Sets the color of the icons in the modebar.'
+        }
     }
 };

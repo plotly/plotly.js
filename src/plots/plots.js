@@ -1334,6 +1334,10 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('datarevision');
 
+    coerce('modeBarStyle.orientation');
+    coerce('modeBarStyle.bgcolor');
+    coerce('modeBarStyle.iconColor');
+
     Registry.getComponentMethod(
         'calendars',
         'handleDefaults'

@@ -46,16 +46,18 @@ proto.update = function(graphInfo, buttons) {
     this.graphInfo = graphInfo;
 
     var context = this.graphInfo._context;
+    var fullLayout = this.graphInfo._fullLayout;
 
     if(context.displayModeBar === 'hover') {
         this.element.className = 'modebar modebar--hover';
     }
     else this.element.className = 'modebar';
 
-    if(context.modeBarStyle.orientation === 'v') {
+    if(fullLayout.modeBarStyle.orientation === 'v') {
         this.element.className += ' vertical';
+        buttons = buttons.reverse();
     }
-    this.element.style.backgroundColor = context.modeBarStyle.bgcolor;
+    this.element.style.backgroundColor = fullLayout.modeBarStyle.bgcolor;
 
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
@@ -67,10 +69,10 @@ proto.update = function(graphInfo, buttons) {
     if(needsNewButtons || needsNewLogo || needsNewLocale) {
         this.removeAllButtons();
 
-        this.updateButtons(buttons, context.modeBarStyle.iconColor);
+        this.updateButtons(buttons, fullLayout.modeBarStyle.iconColor);
 
         if(context.displaylogo) {
-            if(context.modeBarStyle.orientation === 'v') {
+            if(fullLayout.modeBarStyle.orientation === 'v') {
                 this.element.prepend(this.getLogo());
             } else {
                 this.element.appendChild(this.getLogo());
