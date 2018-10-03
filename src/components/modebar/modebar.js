@@ -70,7 +70,12 @@ proto.update = function(graphInfo, buttons) {
         this.updateButtons(buttons, context.modeBarStyle.iconColor);
 
         if(context.displaylogo) {
-            this.element.appendChild(this.getLogo());
+            if(context.modeBarStyle.orientation === 'v') {
+                this.element.prepend(this.getLogo());
+            } else {
+                this.element.appendChild(this.getLogo());
+            }
+
             this.hasLogo = true;
         }
     }
