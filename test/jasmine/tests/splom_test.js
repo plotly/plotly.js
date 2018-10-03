@@ -774,45 +774,6 @@ describe('Test splom interactions:', function() {
         .catch(failTest)
         .then(done);
     });
-
-    it('@gl should clear axis auto-types when changing subplot arrangement', function(done) {
-        var data = [{
-            type: 'splom',
-            showupperhalf: false,
-            diagonal: {visible: false},
-            dimensions: [{
-                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-            }, {
-                values: ['lyndon', 'richard', 'gerald', 'jimmy', 'ronald', 'george', 'bill', 'georgeW', 'barack', 'donald']
-            }, {
-                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-            }]
-        }];
-
-        Plotly.plot(gd, data).then(function() {
-            expect(gd.layout.xaxis.type).toBe('linear');
-            expect(gd.layout.xaxis2.type).toBe('category');
-            expect(gd.layout.xaxis3).toBeUndefined();
-            expect(gd.layout.yaxis.type).toBe('category');
-            expect(gd.layout.yaxis2.type).toBe('linear');
-            expect(gd.layout.yaxis3).toBeUndefined();
-
-            return Plotly.restyle(gd, {
-                'showupperhalf': true,
-                'diagonal.visible': true
-            });
-        })
-        .then(function() {
-            expect(gd.layout.xaxis.type).toBe('linear');
-            expect(gd.layout.xaxis2.type).toBe('category');
-            expect(gd.layout.xaxis3.type).toBe('linear');
-            expect(gd.layout.yaxis.type).toBe('linear');
-            expect(gd.layout.yaxis2.type).toBe('category');
-            expect(gd.layout.yaxis3.type).toBe('linear');
-        })
-        .catch(failTest)
-        .then(done);
-    });
 });
 
 describe('Test splom update switchboard:', function() {

@@ -18,7 +18,6 @@ var Plots = require('../plots/plots');
 var AxisIds = require('../plots/cartesian/axis_ids');
 var cleanId = AxisIds.cleanId;
 var getFromTrace = AxisIds.getFromTrace;
-var id2name = AxisIds.id2name;
 var Color = require('../components/color');
 
 
@@ -571,35 +570,25 @@ exports.hasParent = function(aobj, attr) {
  * @param {object} layoutUpdate: any update being done concurrently to the layout,
  *   which may supercede clearing the axis types
  */
-var xy = ['x', 'y'];
-var xyz = ['x', 'y', 'z'];
+var axLetters = ['x', 'y', 'z'];
 exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     for(var i = 0; i < traces.length; i++) {
         var trace = gd._fullData[i];
-        var letters = Registry.traceIs(trace, 'gl3d') ? xyz : xy;
+        for(var j = 0; j < 3; j++) {
+            var ax = getFromTrace(gd, trace, axLetters[j]);
 
-        for(var j = 0; j < letters.length; j++) {
-            var l = letters[j];
-            var axes = trace.type === 'splom' ?
-                trace[l + 'axes'].map(function(id) { return gd._fullLayout[id2name(id)]; }) :
-                [getFromTrace(gd, trace, l)];
+            // do not clear log type - that's never an auto result so must have been intentional
+            if(ax && ax.type !== 'log') {
+                var axAttr = ax._name;
+                var sceneName = ax._id.substr(1);
+                if(sceneName.substr(0, 5) === 'scene') {
+                    if(layoutUpdate[sceneName] !== undefined) continue;
+                    axAttr = sceneName + '.' + axAttr;
+                }
+                var typeAttr = axAttr + '.type';
 
-            for(var k = 0; k < axes.length; k++) {
-                var ax = axes[k];
-
-                // do not clear log type - that's never an auto result so must have been intentional
-                if(ax && ax.type !== 'log') {
-                    var axAttr = ax._name;
-                    var sceneName = ax._id.substr(1);
-                    if(sceneName.substr(0, 5) === 'scene') {
-                        if(layoutUpdate[sceneName] !== undefined) continue;
-                        axAttr = sceneName + '.' + axAttr;
-                    }
-                    var typeAttr = axAttr + '.type';
-
-                    if(layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
-                        Lib.nestedProperty(gd.layout, typeAttr).set(null);
-                    }
+                if(layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
+                    Lib.nestedProperty(gd.layout, typeAttr).set(null);
                 }
             }
         }
