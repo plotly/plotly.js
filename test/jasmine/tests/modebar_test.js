@@ -33,10 +33,11 @@ describe('ModeBar', function() {
                 _paperdiv: d3.select(getMockContainerTree()),
                 _has: Plots._hasPlotType,
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
-                modeBarStyle: {
+                modebar: {
                     orientation: 'h',
                     bgcolor: 'rgba(255,255,255,0.7)',
-                    iconColor: 'rgba(0, 31, 95, 0.3)'
+                    color: 'rgba(0, 31, 95, 0.3)',
+                    activecolor: 'rgba(0, 31, 95, 1)'
                 }
             },
             _fullData: [],

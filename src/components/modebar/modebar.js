@@ -57,15 +57,15 @@ proto.update = function(graphInfo, buttons) {
     }
     else this.element.className = 'modebar';
 
-    if(fullLayout.modeBarStyle.orientation === 'v') {
+    if(fullLayout.modebar.orientation === 'v') {
         this.element.className += ' vertical';
         buttons = buttons.reverse();
     }
 
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId, 'background-color: ' + fullLayout.modeBarStyle.bgcolor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + fullLayout.modeBarStyle.iconColor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + fullLayout.modeBarStyle.activeIconColor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + fullLayout.modeBarStyle.activeIconColor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId, 'background-color: ' + fullLayout.modebar.bgcolor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + fullLayout.modebar.color);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + fullLayout.modebar.activecolor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + fullLayout.modebar.activecolor);
 
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
@@ -80,7 +80,7 @@ proto.update = function(graphInfo, buttons) {
         this.updateButtons(buttons);
 
         if(context.displaylogo) {
-            if(fullLayout.modeBarStyle.orientation === 'v') {
+            if(fullLayout.modebar.orientation === 'v') {
                 this.element.prepend(this.getLogo());
             } else {
                 this.element.appendChild(this.getLogo());

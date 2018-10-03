@@ -225,7 +225,7 @@ module.exports = {
             'make an item with matching `templateitemname` and `visible: false`.'
         ].join(' ')
     },
-    modeBarStyle: {
+    modebar: {
         orientation: {
             valType: 'enumerated',
             values: ['v', 'h'],
@@ -241,14 +241,14 @@ module.exports = {
             editType: 'modebar',
             description: 'Sets the background color of the modebar.'
         },
-        iconColor: {
+        color: {
             valType: 'color',
             role: 'style',
             dflt: 'rgba(0, 31, 95, 0.3)',
             editType: 'modebar',
             description: 'Sets the color of the icons in the modebar.'
         },
-        activeIconColor: {
+        activecolor: {
             valType: 'color',
             role: 'style',
             dflt: 'rgba(0, 22, 72, 0.5)',
