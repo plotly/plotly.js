@@ -237,7 +237,7 @@ module.exports = {
         bgcolor: {
             valType: 'color',
             role: 'style',
-            dflt: 'rgba(255,255,255,0.7)',
+            dflt: 'rgba(255, 255, 255, 0.7)',
             editType: 'modebar',
             description: 'Sets the background color of the modebar.'
         },
@@ -247,6 +247,7 @@ module.exports = {
             dflt: 'rgba(0, 31, 95, 0.3)',
             editType: 'modebar',
             description: 'Sets the color of the icons in the modebar.'
-        }
+        },
+        editType: 'modebar'
     }
 };
