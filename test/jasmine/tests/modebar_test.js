@@ -32,17 +32,17 @@ describe('ModeBar', function() {
                 dragmode: 'zoom',
                 _paperdiv: d3.select(getMockContainerTree()),
                 _has: Plots._hasPlotType,
-                _subplots: {xaxis: xaxes || [], yaxis: yaxes || []}
+                _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
+                modeBarStyle: {
+                    orientation: 'h',
+                    bgcolor: 'rgba(255,255,255,0.7)',
+                    iconColor: 'rgba(0, 31, 95, 0.3)'
+                }
             },
             _fullData: [],
             _context: {
                 displaylogo: true,
                 displayModeBar: true,
-                modeBarStyle: {
-                    orientation: 'h',
-                    bgcolor: 'rgba(255,255,255,0.7)',
-                    iconColor: 'rgba(0, 31, 95, 0.3)'
-                },
                 modeBarButtonsToRemove: [],
                 modeBarButtonsToAdd: [],
                 locale: 'en',
