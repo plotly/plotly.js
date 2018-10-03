@@ -45,8 +45,12 @@ var proto = ModeBar.prototype;
 proto.update = function(graphInfo, buttons) {
     this.graphInfo = graphInfo;
 
-    var context = this.graphInfo._context;
-    var fullLayout = this.graphInfo._fullLayout;
+    var context = this.graphInfo._context,
+        fullLayout = this.graphInfo._fullLayout,
+        modeBarId = 'modebar-' + fullLayout._uid;
+
+    this.element.setAttribute('id', modeBarId);
+    this._uid = modeBarId;
 
     if(context.displayModeBar === 'hover') {
         this.element.className = 'modebar modebar--hover';
@@ -57,7 +61,11 @@ proto.update = function(graphInfo, buttons) {
         this.element.className += ' vertical';
         buttons = buttons.reverse();
     }
-    this.element.style.backgroundColor = fullLayout.modeBarStyle.bgcolor;
+
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId, 'background-color: ' + fullLayout.modeBarStyle.bgcolor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + fullLayout.modeBarStyle.iconColor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + fullLayout.modeBarStyle.activeIconColor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + fullLayout.modeBarStyle.activeIconColor);
 
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
@@ -69,7 +77,7 @@ proto.update = function(graphInfo, buttons) {
     if(needsNewButtons || needsNewLogo || needsNewLocale) {
         this.removeAllButtons();
 
-        this.updateButtons(buttons, fullLayout.modeBarStyle.iconColor);
+        this.updateButtons(buttons);
 
         if(context.displaylogo) {
             if(fullLayout.modeBarStyle.orientation === 'v') {
@@ -85,7 +93,7 @@ proto.update = function(graphInfo, buttons) {
     this.updateActiveButton();
 };
 
-proto.updateButtons = function(buttons, iconColor) {
+proto.updateButtons = function(buttons) {
     var _this = this;
 
     this.buttons = buttons;
@@ -105,7 +113,6 @@ proto.updateButtons = function(buttons, iconColor) {
             }
             _this.buttonsNames.push(buttonName);
 
-            buttonConfig.color = iconColor;
             var button = _this.createButton(buttonConfig);
             _this.buttonElements.push(button);
             group.appendChild(button);
@@ -174,7 +181,6 @@ proto.createButton = function(config) {
         button.appendChild(icon());
     }
     else {
-        if(icon) icon.color = config.color;
         button.appendChild(this.createIcon(icon || Icons.question));
     }
     button.setAttribute('data-gravity', config.gravity || 'n');
@@ -200,6 +206,7 @@ proto.createIcon = function(thisIcon) {
     if(thisIcon.path) {
         icon = document.createElementNS(svgNS, 'svg');
         icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
+        icon.setAttribute('class', 'icon');
 
         var path = document.createElementNS(svgNS, 'path');
         path.setAttribute('d', thisIcon.path);
@@ -210,10 +217,6 @@ proto.createIcon = function(thisIcon) {
         else if(thisIcon.ascent !== undefined) {
             // Legacy icon transform calculation
             path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
-        }
-
-        if(thisIcon.color) {
-            path.setAttribute('fill', thisIcon.color);
         }
 
         icon.appendChild(path);
@@ -316,6 +319,7 @@ proto.removeAllButtons = function() {
 
 proto.destroy = function() {
     Lib.removeElement(this.container.querySelector('.modebar'));
+    Lib.deleteRelatedStyleRule(this._uid);
 };
 
 function createModeBar(gd, buttons) {

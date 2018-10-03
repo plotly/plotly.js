@@ -293,9 +293,15 @@ describe('ModeBar', function() {
         it('removes the mode bar entirely', function() {
             var modeBarParent = modeBar.element.parentNode;
 
+            var style = document.querySelector('style[id*="modebar"]');
+            expect(style).toBeTruthy();
+
             modeBar.destroy();
 
             expect(modeBarParent.querySelector('.modebar')).toBeNull();
+
+            style = document.querySelector('style[id*="modebar"]');
+            expect(style).toBeNull();
         });
     });
 

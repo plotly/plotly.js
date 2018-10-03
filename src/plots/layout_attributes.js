@@ -248,6 +248,13 @@ module.exports = {
             editType: 'modebar',
             description: 'Sets the color of the icons in the modebar.'
         },
+        activeIconColor: {
+            valType: 'color',
+            role: 'style',
+            dflt: 'rgba(0, 22, 72, 0.5)',
+            editType: 'modebar',
+            description: 'Sets the color of the active or hovered on icons in the modebar.'
+        },
         editType: 'modebar'
     }
 };
