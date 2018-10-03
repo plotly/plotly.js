@@ -78,7 +78,7 @@
     "gl-mat4": "^1.2.0",
     "gl-mesh3d": "git://github.com/archmoj/gl-mesh3d.git#5828f6255d8c5360631d5feec65801bb104a88e8",
     "gl-plot2d": "^1.3.1",
-    "gl-plot3d": "git://github.com/archmoj/gl-plot3d.git#cc9bdcb7c5a1de9b0d7bce58ac2b7a2fbba37387",
+    "gl-plot3d": "git://github.com/archmoj/gl-plot3d.git#ce601a50cd3057899f6074f8ea5fcf0ab77f417c",
     "gl-pointcloud2d": "^1.0.1",
     "gl-scatter3d": "git://github.com/archmoj/gl-scatter3d.git#b649f8fb619242525b64ccf1def62cb2ed3f224f",
     "gl-select-box": "^1.0.2",
