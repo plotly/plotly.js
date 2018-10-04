@@ -57,7 +57,7 @@ and use the `Plotly` object in the window scope.
 
 ### Download the latest release
 
-[Latest Release on Github](https://github.com/plotly/plotly.js/releases/)
+[Latest Release on GitHub](https://github.com/plotly/plotly.js/releases/)
 
 and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
 

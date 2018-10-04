@@ -20,7 +20,6 @@ var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
 var axisIDs = require('../plots/cartesian/axis_ids');
-var sortBasePlotModules = require('./sort_modules').sortBasePlotModules;
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
@@ -428,13 +427,6 @@ plots.supplyDefaults = function(gd, opts) {
     // attach helper method to check whether a plot type is present on graph
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
 
-    // special cases that introduce interactions between traces
-    var _modules = newFullLayout._visibleModules;
-    for(i = 0; i < _modules.length; i++) {
-        var _module = _modules[i];
-        if(_module.cleanData) _module.cleanData(newFullData);
-    }
-
     if(oldFullData.length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
             relinkPrivateKeys(newFullData[i], oldFullData[i]);
@@ -443,6 +435,20 @@ plots.supplyDefaults = function(gd, opts) {
 
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData, gd._transitionData);
+
+    // Special cases that introduce interactions between traces.
+    // This is after relinkPrivateKeys so we can use those in crossTraceDefaults
+    // and after layout module defaults, so we can use eg barmode
+    var _modules = newFullLayout._visibleModules;
+    var crossTraceDefaultsFuncs = [];
+    for(i = 0; i < _modules.length; i++) {
+        var funci = _modules[i].crossTraceDefaults;
+        // some trace types share crossTraceDefaults (ie histogram2d, histogram2dcontour)
+        if(funci) Lib.pushUnique(crossTraceDefaultsFuncs, funci);
+    }
+    for(i = 0; i < crossTraceDefaultsFuncs.length; i++) {
+        crossTraceDefaultsFuncs[i](newFullData, newFullLayout);
+    }
 
     // turn on flag to optimize large splom-only graphs
     // mostly by omitting SVG layers during Cartesian.drawFramework
@@ -468,7 +474,7 @@ plots.supplyDefaults = function(gd, opts) {
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     // clean subplots and other artifacts from previous plot calls
-    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
@@ -487,9 +493,6 @@ plots.supplyDefaults = function(gd, opts) {
     if(!skipUpdateCalc && oldCalcdata.length === newFullData.length) {
         plots.supplyDefaultsUpdateCalc(oldCalcdata, newFullData);
     }
-
-    // sort base plot modules for consistent ordering
-    newFullLayout._basePlotModules.sort(sortBasePlotModules);
 };
 
 plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
@@ -718,7 +721,7 @@ plots._hasPlotType = function(category) {
     return false;
 };
 
-plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
+plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
 
     var basePlotModules = oldFullLayout._basePlotModules || [];
@@ -726,7 +729,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
         var _module = basePlotModules[i];
 
         if(_module.clean) {
-            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
         }
     }
 
@@ -1450,7 +1453,10 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     }
 
     // trace module layout defaults
-    var modules = layoutOut._visibleModules;
+    // use _modules rather than _visibleModules so that even
+    // legendonly traces can include settings - eg barmode, which affects
+    // legend.traceorder default value.
+    var modules = layoutOut._modules;
     for(i = 0; i < modules.length; i++) {
         _module = modules[i];
 

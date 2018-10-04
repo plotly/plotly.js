@@ -269,7 +269,7 @@ exports.plot = function(gd, data, layout, config) {
                         Lib.error(msg);
                     } else {
                         Lib.log(msg + ' Clearing graph and plotting again.');
-                        Plots.cleanPlot([], {}, gd._fullData, fullLayout, gd.calcdata);
+                        Plots.cleanPlot([], {}, gd._fullData, fullLayout);
                         Plots.supplyDefaults(gd);
                         fullLayout = gd._fullLayout;
                         Plots.doCalcdata(gd);
@@ -614,7 +614,7 @@ exports.newPlot = function(gd, data, layout, config) {
     gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {}, gd.calcdata || []);
+    Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {});
 
     Plots.purge(gd);
     return exports.plot(gd, data, layout, config);
@@ -1344,7 +1344,20 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
     } else {
         seq.push(Plots.previousPromises);
 
+        // maybe only call Plots.supplyDataDefaults in the splom case,
+        // to skip over long and slow axes defaults
         Plots.supplyDefaults(gd);
+
+        if(flags.markerSize) {
+            Plots.doCalcdata(gd);
+            addAxRangeSequence(seq);
+
+            // TODO
+            // if all axes have autorange:false, then
+            // proceed to subroutines.doTraceStyle(),
+            // otherwise we must go through addAxRangeSequence,
+            // which in general must redraws 'all' axes
+        }
 
         if(flags.style) seq.push(subroutines.doTraceStyle);
         if(flags.colorbars) seq.push(subroutines.doColorBars);
@@ -1434,6 +1447,18 @@ function _restyle(gd, aobj, traces) {
         }
     }
 
+    function allBins(binAttr) {
+        return function(j) {
+            return fullData[j][binAttr];
+        };
+    }
+
+    function arrayBins(binAttr) {
+        return function(vij, j) {
+            return vij === false ? fullData[traces[j]][binAttr] : null;
+        };
+    }
+
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
     for(var ai in aobj) {
@@ -1448,6 +1473,17 @@ function _restyle(gd, aobj, traces) {
             oldVal,
             newVal,
             valObject;
+
+        // Backward compatibility shim for turning histogram autobin on,
+        // or freezing previous autobinned values.
+        // Replace obsolete `autobin(x|y): true` with `(x|y)bins: null`
+        // and `autobin(x|y): false` with the `(x|y)bins` in `fullData`
+        if(ai === 'autobinx' || ai === 'autobiny') {
+            ai = ai.charAt(ai.length - 1) + 'bins';
+            if(Array.isArray(vi)) vi = vi.map(arrayBins(ai));
+            else if(vi === false) vi = traces.map(allBins(ai));
+            else vi = null;
+        }
 
         redoit[ai] = vi;
 
@@ -1572,8 +1608,10 @@ function _restyle(gd, aobj, traces) {
             else {
                 if(valObject) {
                     // must redo calcdata when restyling array values of arrayOk attributes
-                    if(valObject.arrayOk && (
-                        Lib.isArrayOrTypedArray(newVal) || Lib.isArrayOrTypedArray(oldVal))
+                    // ... but no need to this for regl-based traces
+                    if(valObject.arrayOk &&
+                        !Registry.traceIs(contFull, 'regl') &&
+                        (Lib.isArrayOrTypedArray(newVal) || Lib.isArrayOrTypedArray(oldVal))
                     ) {
                         flags.calc = true;
                     }
@@ -1609,8 +1647,12 @@ function _restyle(gd, aobj, traces) {
             }
         }
 
-        // major enough changes deserve autoscale, autobin, and
+        // Major enough changes deserve autoscale and
         // non-reversed axes so people don't get confused
+        //
+        // Note: autobin (or its new analog bin clearing) is not included here
+        // since we're not pushing bins back to gd.data, so if we have bin
+        // info it was explicitly provided by the user.
         if(['orientation', 'type'].indexOf(ai) !== -1) {
             axlist = [];
             for(i = 0; i < traces.length; i++) {
@@ -1619,10 +1661,6 @@ function _restyle(gd, aobj, traces) {
                 if(Registry.traceIs(trace, 'cartesian')) {
                     addToAxlist(trace.xaxis || 'x');
                     addToAxlist(trace.yaxis || 'y');
-
-                    if(ai === 'type') {
-                        doextra(['autobinx', 'autobiny'], true, i);
-                    }
                 }
             }
 
@@ -1701,15 +1739,11 @@ exports.relayout = function relayout(gd, astr, val) {
         seq.push(subroutines.layoutReplot);
     }
     else if(Object.keys(aobj).length) {
-        Plots.supplyDefaults(gd);
+        axRangeSupplyDefaultsByPass(gd, flags, specs) || Plots.supplyDefaults(gd);
 
         if(flags.legend) seq.push(subroutines.doLegend);
         if(flags.layoutstyle) seq.push(subroutines.layoutStyles);
-
-        if(flags.axrange) {
-            addAxRangeSequence(seq, specs.rangesAltered);
-        }
-
+        if(flags.axrange) addAxRangeSequence(seq, specs.rangesAltered);
         if(flags.ticks) seq.push(subroutines.doTicksRelayout);
         if(flags.modebar) seq.push(subroutines.doModeBar);
         if(flags.camera) seq.push(subroutines.doCamera);
@@ -1733,13 +1767,35 @@ exports.relayout = function relayout(gd, astr, val) {
     });
 };
 
+// Optimization mostly for large splom traces where
+// Plots.supplyDefaults can take > 100ms
+function axRangeSupplyDefaultsByPass(gd, flags, specs) {
+    var k;
+
+    if(!flags.axrange) return false;
+
+    for(k in flags) {
+        if(k !== 'axrange' && flags[k]) return false;
+    }
+
+    for(k in specs.rangesAltered) {
+        var axName = Axes.id2name(k);
+        var axIn = gd.layout[axName];
+        var axOut = gd._fullLayout[axName];
+        axOut.autorange = axIn.autorange;
+        axOut.range = axIn.range.slice();
+        axOut.cleanRange();
+    }
+    return true;
+}
+
 function addAxRangeSequence(seq, rangesAltered) {
     // N.B. leave as sequence of subroutines (for now) instead of
     // subroutine of its own so that finalDraw always gets
     // executed after drawData
     var doTicks = rangesAltered ?
-        function(gd) { return subroutines.doTicksRelayout(gd, rangesAltered); } :
-        subroutines.doTicksRelayout;
+        function(gd) { return Axes.doTicks(gd, Object.keys(rangesAltered), true); } :
+        function(gd) { return Axes.doTicks(gd, 'redraw'); };
 
     seq.push(
         subroutines.doAutoRangeAndConstraints,
@@ -2156,15 +2212,13 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     }
     else {
         seq.push(Plots.previousPromises);
-        Plots.supplyDefaults(gd);
+        axRangeSupplyDefaultsByPass(gd, relayoutFlags, relayoutSpecs) || Plots.supplyDefaults(gd);
 
         if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
         if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
         if(relayoutFlags.legend) seq.push(subroutines.doLegend);
         if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
-        if(relayoutFlags.axrange) {
-            addAxRangeSequence(seq, relayoutSpecs.rangesAltered);
-        }
+        if(relayoutFlags.axrange) addAxRangeSequence(seq, relayoutSpecs.rangesAltered);
         if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
         if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
         if(relayoutFlags.camera) seq.push(subroutines.doCamera);
@@ -3168,10 +3222,9 @@ exports.purge = function purge(gd) {
 
     var fullLayout = gd._fullLayout || {};
     var fullData = gd._fullData || [];
-    var calcdata = gd.calcdata || [];
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, fullData, fullLayout, calcdata);
+    Plots.cleanPlot([], {}, fullData, fullLayout);
 
     // purge properties
     Plots.purge(gd);

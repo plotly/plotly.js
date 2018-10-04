@@ -386,6 +386,19 @@ exports.cleanData = function(data) {
         // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
         // supported, but new tinycolor does not because they're not valid css
         Color.clean(trace);
+
+        // remove obsolete autobin(x|y) attributes, but only if true
+        // if false, this needs to happen in Histogram.calc because it
+        // can be a one-time autobin so we need to know the results before
+        // we can push them back into the trace.
+        if(trace.autobinx) {
+            delete trace.autobinx;
+            delete trace.xbins;
+        }
+        if(trace.autobiny) {
+            delete trace.autobiny;
+            delete trace.ybins;
+        }
     }
 };
 

@@ -252,8 +252,6 @@ function sceneUpdate(gd, subplot) {
                     scene.glText[i].update(opt);
                 }
             }
-
-            scene.draw();
         };
 
         // draw traces in proper order
@@ -294,18 +292,6 @@ function sceneUpdate(gd, subplot) {
             }
 
             scene.dirty = false;
-        };
-
-        scene.clear = function clear() {
-            var vp = getViewport(gd._fullLayout, subplot.xaxis, subplot.yaxis);
-
-            if(scene.select2d) {
-                clearViewport(scene.select2d, vp);
-            }
-
-            var anyComponent = scene.scatter2d || scene.line2d ||
-                (scene.glText || [])[0] || scene.fill2d || scene.error2d;
-            if(anyComponent) clearViewport(anyComponent, vp);
         };
 
         // remove scene resources
@@ -357,14 +343,6 @@ function getViewport(fullLayout, xaxis, yaxis) {
         (width - gs.r) - (1 - xaxis.domain[1]) * gs.w,
         (height - gs.t) - (1 - yaxis.domain[1]) * gs.h
     ];
-}
-
-function clearViewport(comp, vp) {
-    var gl = comp.regl._gl;
-    gl.enable(gl.SCISSOR_TEST);
-    gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
 function plot(gd, subplot, cdata) {
@@ -640,8 +618,6 @@ function plot(gd, subplot, cdata) {
     if(scene.glText) {
         scene.glText.forEach(function(text) { text.update(vpRange0); });
     }
-
-    scene.draw();
 }
 
 
@@ -893,21 +869,6 @@ function selectPoints(searchInfo, selectionTester) {
     return selection;
 }
 
-function style(gd, cds) {
-    if(!cds) return;
-
-    var stash = cds[0][0].t;
-    var scene = stash._scene;
-
-    // don't clear the subplot if there are splom traces
-    // on the graph
-    if(!gd._fullLayout._has('splom')) {
-        scene.clear();
-    }
-
-    scene.draw();
-}
-
 function styleTextSelection(cd) {
     var cd0 = cd[0];
     var stash = cd0.t;
@@ -952,12 +913,11 @@ module.exports = {
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
-    cleanData: require('../scatter/clean_data'),
+    crossTraceDefaults: require('../scatter/cross_trace_defaults'),
     colorbar: require('../scatter/marker_colorbar'),
     calc: calc,
     plot: plot,
     hoverPoints: hoverPoints,
-    style: style,
     selectPoints: selectPoints,
 
     sceneOptions: sceneOptions,

@@ -1135,4 +1135,46 @@ describe('@noCI Test gl2d lasso/select:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should work on overlaid subplots', function(done) {
+        gd = createGraphDiv();
+
+        var scene, scene2;
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [40, 50, 60],
+            type: 'scattergl',
+            mode: 'markers'
+        }, {
+            x: [2, 3, 4],
+            y: [4, 5, 6],
+            yaxis: 'y2',
+            type: 'scattergl',
+            mode: 'markers'
+        }], {
+            xaxis: {domain: [0.2, 1]},
+            yaxis2: {overlaying: 'y', side: 'left', position: 0},
+            showlegend: false,
+            margin: {l: 0, t: 0, b: 0, r: 0},
+            width: 400,
+            height: 400,
+            dragmode: 'select'
+        })
+        .then(delay(100))
+        .then(function() {
+            scene = gd._fullLayout._plots.xy._scene;
+            scene2 = gd._fullLayout._plots.xy2._scene;
+
+            spyOn(scene.scatter2d, 'draw');
+            spyOn(scene2.scatter2d, 'draw');
+        })
+        .then(function() { return select([[20, 20], [380, 250]]); })
+        .then(function() {
+            expect(scene.scatter2d.draw).toHaveBeenCalledTimes(1);
+            expect(scene2.scatter2d.draw).toHaveBeenCalledTimes(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

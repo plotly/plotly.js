@@ -34,6 +34,6 @@ module.exports = {
     calc: require('./calc').calc,
     plot: require('./plot'),
     style: require('./style'),
-    hoverPoints: require('./hover'),
+    hoverPoints: require('./hover').hoverPoints,
     selectPoints: require('./select')
 };

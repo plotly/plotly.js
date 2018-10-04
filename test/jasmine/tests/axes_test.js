@@ -189,6 +189,80 @@ describe('Test axes', function() {
             fullData = [];
         });
 
+        describe('autotype', function() {
+            function supplyWithTrace(trace) {
+                var fullTrace = Lib.extendDeep(
+                    {type: 'scatter', xaxis: 'x', yaxis: 'y'},
+                    trace
+                );
+                layoutIn = {xaxis: {}, yaxis: {}};
+                supplyLayoutDefaults(layoutIn, layoutOut, [fullTrace]);
+            }
+
+            function checkTypes(xType, yType, msg) {
+                expect(layoutOut.xaxis.type).toBe(xType, msg);
+                expect(layoutOut.yaxis.type).toBe(yType, msg);
+            }
+
+            it('treats booleans as categories', function() {
+                supplyWithTrace({x: [0, 1, 2], y: [true, false, true]});
+                checkTypes('linear', 'category');
+            });
+
+            it('sees a single "None" or "" as a category', function() {
+                supplyWithTrace({x: ['None'], y: ['']});
+                checkTypes('category', 'category');
+            });
+
+            it('lets a single number beat up to two distinct categories', function() {
+                supplyWithTrace({
+                    x: ['2.1', 'N/A', '', 'N/A', '', 'N/A', 'N/A', '', '', ''],
+                    y: [0, 'None', true, 'None', 'None', 'None', 'None', 'None']
+                });
+                checkTypes('linear', 'linear');
+            });
+
+            it('turns back to category with >2 per distinct number', function() {
+                supplyWithTrace({
+                    x: [4, 4, 4, 4, 4, 4, 4, 4, 'Yes', 'No', 'Maybe'],
+                    y: [1, 2, 1, 2, 1, 2, true, false, '', 'None', 'nan']
+                });
+                checkTypes('category', 'category');
+            });
+
+            it('works with world calendars', function() {
+                // these are only valid dates in chinese
+                var intercalary = ['1995-08i-01', '1995-08i-29', '1984-10i-15'];
+                supplyWithTrace({
+                    x: intercalary, xcalendar: 'chinese',
+                    y: intercalary, ycalendar: 'gregorian'
+                });
+                checkTypes('date', 'category');
+            });
+
+            it('requires >twice as many distinct dates as numbers', function() {
+                supplyWithTrace({
+                    x: ['2000-01-01', '2000-01-02', '2000-01-03', 1, 1.2],
+                    y: ['2000-01', '2000-02', '2000-03', '2000-04', 1.1]
+                });
+                checkTypes('linear', 'date');
+
+                supplyWithTrace({
+                    x: ['2000-01-01', '2000-01-02', '2000-01-03', 1, 1],
+                    y: ['2000-01', '2000-01', '2000-01', '2000-01', 1.1]
+                });
+                checkTypes('date', 'linear');
+            });
+
+            it('counts ambiguous dates as both dates and numbers', function() {
+                supplyWithTrace({
+                    x: ['2000', '2000-01', '2000-02'], // 3 dates, 1 number
+                    y: ['2000', '2001', '2000-01'] // 3 dates, 2 numbers
+                });
+                checkTypes('date', 'linear');
+            });
+        });
+
         it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
             layoutIn = {
                 xaxis: {},
@@ -1220,7 +1294,7 @@ describe('Test axes', function() {
                 axOut = {};
                 mockSupplyDefaults(axIn, axOut, 'log');
                 // tick0 gets ignored for D<n>
-                expect(axOut.tick0).toBe(0);
+                expect(axOut.tick0).toBeUndefined(v);
                 expect(axOut.dtick).toBe(v);
             });
 

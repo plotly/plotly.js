@@ -51,12 +51,25 @@ function lsInner(gd) {
     var gs = fullLayout._size;
     var pad = gs.p;
     var axList = Axes.list(gd, '', true);
+    var i, subplot, plotinfo, xa, ya;
+
+    fullLayout._paperdiv.style({
+        width: (fullLayout.autosize) ? '100%' : fullLayout.width + 'px',
+        height: (fullLayout.autosize && !fullLayout._hasZeroHeight) ? '100%' : fullLayout.height + 'px'
+    })
+    .selectAll('.main-svg')
+    .call(Drawing.setSize, fullLayout.width, fullLayout.height);
+    gd._context.setBackground(gd, fullLayout.paper_bgcolor);
+
+    exports.drawMainTitle(gd);
+    ModeBar.manage(gd);
 
     // _has('cartesian') means SVG specifically, not GL2D - but GL2D
     // can still get here because it makes some of the SVG structure
     // for shared features like selections.
-    var hasSVGCartesian = fullLayout._has('cartesian');
-    var i;
+    if(!fullLayout._has('cartesian')) {
+        return gd._promises.length && Promise.all(gd._promises);
+    }
 
     function getLinePosition(ax, counterAx, side) {
         var lwHalf = ax._lw / 2;
@@ -103,25 +116,22 @@ function lsInner(gd) {
         ax._mainSubplot = findMainSubplot(ax, fullLayout);
     }
 
-    fullLayout._paperdiv
-        .style({
-            width: (fullLayout.autosize) ? '100%' : fullLayout.width + 'px',
-            height: (fullLayout.autosize && !fullLayout._hasZeroHeight) ? '100%' : fullLayout.height + 'px'
-        })
-        .selectAll('.main-svg')
-            .call(Drawing.setSize, fullLayout.width, fullLayout.height);
-
-    gd._context.setBackground(gd, fullLayout.paper_bgcolor);
-
-    var subplotSelection = fullLayout._paper.selectAll('g.subplot');
-
-    // figure out which backgrounds we need to draw, and in which layers
-    // to put them
+    // figure out which backgrounds we need to draw,
+    // and in which layers to put them
     var lowerBackgroundIDs = [];
+    var backgroundIds = [];
     var lowerDomains = [];
-    subplotSelection.each(function(d) {
-        var subplot = d[0];
-        var plotinfo = fullLayout._plots[subplot];
+    // no need to draw background when paper and plot color are the same color,
+    // activate mode just for large splom (which benefit the most from this
+    // optimization), but this could apply to all cartesian subplots.
+    var noNeedForBg = (
+        Color.opacity(fullLayout.paper_bgcolor) === 1 &&
+        Color.opacity(fullLayout.plot_bgcolor) === 1 &&
+        fullLayout.paper_bgcolor === fullLayout.plot_bgcolor
+    );
+
+    for(subplot in fullLayout._plots) {
+        plotinfo = fullLayout._plots[subplot];
 
         if(plotinfo.mainplot) {
             // mainplot is a reference to the main plot this one is overlaid on
@@ -131,23 +141,26 @@ function lsInner(gd) {
                 plotinfo.bg.remove();
             }
             plotinfo.bg = undefined;
-            return;
-        }
-
-        var xDomain = plotinfo.xaxis.domain;
-        var yDomain = plotinfo.yaxis.domain;
-        var plotgroup = plotinfo.plotgroup;
-
-        if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
-            var pgNode = plotgroup.node();
-            var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
-            pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
         } else {
-            plotgroup.select('rect.bg').remove();
-            lowerBackgroundIDs.push(subplot);
-            lowerDomains.push([xDomain, yDomain]);
+            var xDomain = plotinfo.xaxis.domain;
+            var yDomain = plotinfo.yaxis.domain;
+            var plotgroup = plotinfo.plotgroup;
+
+            if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
+                var pgNode = plotgroup.node();
+                var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
+                pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
+                backgroundIds.push(subplot);
+            } else {
+                plotgroup.select('rect.bg').remove();
+                lowerDomains.push([xDomain, yDomain]);
+                if(!noNeedForBg) {
+                    lowerBackgroundIDs.push(subplot);
+                    backgroundIds.push(subplot);
+                }
+            }
         }
-    });
+    }
 
     // now create all the lower-layer backgrounds at once now that
     // we have the list of subplots that need them
@@ -163,13 +176,13 @@ function lsInner(gd) {
         fullLayout._plots[subplot].bg = d3.select(this);
     });
 
-    subplotSelection.each(function(d) {
-        var subplot = d[0];
-        var plotinfo = fullLayout._plots[subplot];
-        var xa = plotinfo.xaxis;
-        var ya = plotinfo.yaxis;
+    // style all backgrounds
+    for(i = 0; i < backgroundIds.length; i++) {
+        plotinfo = fullLayout._plots[backgroundIds[i]];
+        xa = plotinfo.xaxis;
+        ya = plotinfo.yaxis;
 
-        if(plotinfo.bg && hasSVGCartesian) {
+        if(plotinfo.bg) {
             plotinfo.bg
                 .call(Drawing.setRect,
                     xa._offset - pad, ya._offset - pad,
@@ -177,72 +190,83 @@ function lsInner(gd) {
                 .call(Color.fill, fullLayout.plot_bgcolor)
                 .style('stroke-width', 0);
         }
+    }
 
-        // Clip so that data only shows up on the plot area.
-        var clipId = plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+    if(!fullLayout._hasOnlyLargeSploms) {
+        for(subplot in fullLayout._plots) {
+            plotinfo = fullLayout._plots[subplot];
+            xa = plotinfo.xaxis;
+            ya = plotinfo.yaxis;
 
-        var plotClip = Lib.ensureSingleById(fullLayout._clips, 'clipPath', clipId, function(s) {
-            s.classed('plotclip', true)
-                .append('rect');
-        });
+            // Clip so that data only shows up on the plot area.
+            var clipId = plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        plotinfo.clipRect = plotClip.select('rect').attr({
-            width: xa._length,
-            height: ya._length
-        });
+            var plotClip = Lib.ensureSingleById(fullLayout._clips, 'clipPath', clipId, function(s) {
+                s.classed('plotclip', true)
+                    .append('rect');
+            });
 
-        Drawing.setTranslate(plotinfo.plot, xa._offset, ya._offset);
+            plotinfo.clipRect = plotClip.select('rect').attr({
+                width: xa._length,
+                height: ya._length
+            });
 
-        var plotClipId;
-        var layerClipId;
+            Drawing.setTranslate(plotinfo.plot, xa._offset, ya._offset);
 
-        if(plotinfo._hasClipOnAxisFalse) {
-            plotClipId = null;
-            layerClipId = clipId;
-        } else {
-            plotClipId = clipId;
-            layerClipId = null;
+            var plotClipId;
+            var layerClipId;
+
+            if(plotinfo._hasClipOnAxisFalse) {
+                plotClipId = null;
+                layerClipId = clipId;
+            } else {
+                plotClipId = clipId;
+                layerClipId = null;
+            }
+
+            Drawing.setClipUrl(plotinfo.plot, plotClipId);
+
+            // stash layer clipId value (null or same as clipId)
+            // to DRY up Drawing.setClipUrl calls on trace-module and trace layers
+            // downstream
+            plotinfo.layerClipId = layerClipId;
         }
+    }
 
-        Drawing.setClipUrl(plotinfo.plot, plotClipId);
+    var xLinesXLeft, xLinesXRight, xLinesYBottom, xLinesYTop,
+        leftYLineWidth, rightYLineWidth;
+    var yLinesYBottom, yLinesYTop, yLinesXLeft, yLinesXRight,
+        connectYBottom, connectYTop;
+    var extraSubplot;
 
-        // stash layer clipId value (null or same as clipId)
-        // to DRY up Drawing.setClipUrl calls on trace-module and trace layers
-        // downstream
-        plotinfo.layerClipId = layerClipId;
+    function xLinePath(y) {
+        return 'M' + xLinesXLeft + ',' + y + 'H' + xLinesXRight;
+    }
 
-        // figure out extra axis line and tick positions as needed
-        if(!hasSVGCartesian) return;
+    function xLinePathFree(y) {
+        return 'M' + xa._offset + ',' + y + 'h' + xa._length;
+    }
 
-        var xLinesXLeft, xLinesXRight, xLinesYBottom, xLinesYTop,
-            leftYLineWidth, rightYLineWidth;
-        var yLinesYBottom, yLinesYTop, yLinesXLeft, yLinesXRight,
-            connectYBottom, connectYTop;
-        var extraSubplot;
+    function yLinePath(x) {
+        return 'M' + x + ',' + yLinesYTop + 'V' + yLinesYBottom;
+    }
 
-        function xLinePath(y) {
-            return 'M' + xLinesXLeft + ',' + y + 'H' + xLinesXRight;
-        }
+    function yLinePathFree(x) {
+        return 'M' + x + ',' + ya._offset + 'v' + ya._length;
+    }
 
-        function xLinePathFree(y) {
-            return 'M' + xa._offset + ',' + y + 'h' + xa._length;
-        }
+    function mainPath(ax, pathFn, pathFnFree) {
+        if(!ax.showline || subplot !== ax._mainSubplot) return '';
+        if(!ax._anchorAxis) return pathFnFree(ax._mainLinePosition);
+        var out = pathFn(ax._mainLinePosition);
+        if(ax.mirror) out += pathFn(ax._mainMirrorPosition);
+        return out;
+    }
 
-        function yLinePath(x) {
-            return 'M' + x + ',' + yLinesYTop + 'V' + yLinesYBottom;
-        }
-
-        function yLinePathFree(x) {
-            return 'M' + x + ',' + ya._offset + 'v' + ya._length;
-        }
-
-        function mainPath(ax, pathFn, pathFnFree) {
-            if(!ax.showline || subplot !== ax._mainSubplot) return '';
-            if(!ax._anchorAxis) return pathFnFree(ax._mainLinePosition);
-            var out = pathFn(ax._mainLinePosition);
-            if(ax.mirror) out += pathFn(ax._mainMirrorPosition);
-            return out;
-        }
+    for(subplot in fullLayout._plots) {
+        plotinfo = fullLayout._plots[subplot];
+        xa = plotinfo.xaxis;
+        ya = plotinfo.yaxis;
 
         /*
          * x lines get longer where they meet y lines, to make a crisp corner.
@@ -323,11 +347,9 @@ function lsInner(gd) {
                     ya.linecolor : 'rgba(0,0,0,0)');
         }
         plotinfo.ylines.attr('d', yPath);
-    });
+    }
 
     Axes.makeClipPaths(gd);
-    exports.drawMainTitle(gd);
-    ModeBar.manage(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }
@@ -440,17 +462,35 @@ exports.drawMainTitle = function(gd) {
     });
 };
 
-// First, see if we need to do arraysToCalcdata
-// call it regardless of what change we made, in case
-// supplyDefaults brought in an array that was already
-// in gd.data but not in gd._fullData previously
 exports.doTraceStyle = function(gd) {
-    for(var i = 0; i < gd.calcdata.length; i++) {
-        var cdi = gd.calcdata[i],
-            _module = ((cdi[0] || {}).trace || {})._module || {},
-            arraysToCalcdata = _module.arraysToCalcdata;
+    var calcdata = gd.calcdata;
+    var editStyleCalls = [];
+    var i;
 
-        if(arraysToCalcdata) arraysToCalcdata(cdi, cdi[0].trace);
+    for(i = 0; i < calcdata.length; i++) {
+        var cd = calcdata[i];
+        var cd0 = cd[0] || {};
+        var trace = cd0.trace || {};
+        var _module = trace._module || {};
+
+        // See if we need to do arraysToCalcdata
+        // call it regardless of what change we made, in case
+        // supplyDefaults brought in an array that was already
+        // in gd.data but not in gd._fullData previously
+        var arraysToCalcdata = _module.arraysToCalcdata;
+        if(arraysToCalcdata) arraysToCalcdata(cd, trace);
+
+        var editStyle = _module.editStyle;
+        if(editStyle) editStyleCalls.push({fn: editStyle, cd0: cd0});
+    }
+
+    if(editStyleCalls.length) {
+        for(i = 0; i < editStyleCalls.length; i++) {
+            var edit = editStyleCalls[i];
+            edit.fn(gd, edit.cd0);
+        }
+        clearGlCanvases(gd);
+        exports.redrawReglTraces(gd);
     }
 
     Plots.style(gd);
@@ -498,16 +538,13 @@ exports.doLegend = function(gd) {
     return Plots.previousPromises(gd);
 };
 
-exports.doTicksRelayout = function(gd, rangesAltered) {
-    if(rangesAltered) {
-        Axes.doTicks(gd, Object.keys(rangesAltered), true);
-    } else {
-        Axes.doTicks(gd, 'redraw');
-    }
+exports.doTicksRelayout = function(gd) {
+    Axes.doTicks(gd, 'redraw');
 
     if(gd._fullLayout._hasOnlyLargeSploms) {
+        Registry.subplotsRegistry.splom.updateGrid(gd);
         clearGlCanvases(gd);
-        Registry.subplotsRegistry.splom.plot(gd);
+        exports.redrawReglTraces(gd);
     }
 
     exports.drawMainTitle(gd);
@@ -560,6 +597,8 @@ exports.drawData = function(gd) {
         basePlotModules[i].plot(gd);
     }
 
+    exports.redrawReglTraces(gd);
+
     // styling separate from drawing
     Plots.style(gd);
 
@@ -571,6 +610,62 @@ exports.drawData = function(gd) {
     fullLayout._replotting = false;
 
     return Plots.previousPromises(gd);
+};
+
+// Draw (or redraw) all regl-based traces in one go,
+// useful during drag and selection where buffers of targeted traces are updated,
+// but all traces need to be redrawn following clearGlCanvases.
+//
+// Note that _module.plot for regl trace does NOT draw things
+// on the canvas, they only update the buffers.
+// Drawing is perform here.
+//
+// TODO try adding per-subplot option using gl.SCISSOR_TEST for
+// non-overlaying, disjoint subplots.
+//
+// TODO try to include parcoords in here.
+// https://github.com/plotly/plotly.js/issues/3069
+exports.redrawReglTraces = function(gd) {
+    var fullLayout = gd._fullLayout;
+
+    if(fullLayout._has('regl')) {
+        var fullData = gd._fullData;
+        var cartesianIds = [];
+        var polarIds = [];
+        var i, sp;
+
+        if(fullLayout._hasOnlyLargeSploms) {
+            fullLayout._splomGrid.draw();
+        }
+
+        // N.B.
+        // - Loop over fullData (not _splomScenes) to preserve splom trace-to-trace ordering
+        // - Fill list if subplot ids (instead of fullLayout._subplots) to handle cases where all traces
+        //   of a given module are `visible !== true`
+        for(i = 0; i < fullData.length; i++) {
+            var trace = fullData[i];
+
+            if(trace.visible === true) {
+                if(trace.type === 'splom') {
+                    fullLayout._splomScenes[trace.uid].draw();
+                } else if(trace.type === 'scattergl') {
+                    Lib.pushUnique(cartesianIds, trace.xaxis + trace.yaxis);
+                } else if(trace.type === 'scatterpolargl') {
+                    Lib.pushUnique(polarIds, trace.subplot);
+                }
+            }
+        }
+
+        for(i = 0; i < cartesianIds.length; i++) {
+            sp = fullLayout._plots[cartesianIds[i]];
+            if(sp._scene) sp._scene.draw();
+        }
+
+        for(i = 0; i < polarIds.length; i++) {
+            sp = fullLayout[polarIds[i]]._subplot;
+            if(sp._scene) sp._scene.draw();
+        }
+    }
 };
 
 exports.doAutoRangeAndConstraints = function(gd) {
