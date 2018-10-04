@@ -649,25 +649,16 @@ describe('Click-to-select', function() {
               });
           });
 
-        // The gl traces: use @gl CI annotation
+        // The gl and mapbox traces: use @gl and @noCI tag
         [
             testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
-            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
-        ]
-          .forEach(function(testCase) {
-              it('@gl trace type ' + testCase.label, function(done) {
-                  _run(testCase, done);
-              });
-          });
-
-        // The mapbox traces: use @noCI annotation cause they are usually too resource-intensive
-        [
+            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []]),
             testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ]
           .forEach(function(testCase) {
-              it('@noCI trace type ' + testCase.label, function(done) {
+              it('@noCI @gl trace type ' + testCase.label, function(done) {
                   _run(testCase, done);
               });
           });

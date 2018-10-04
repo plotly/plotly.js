@@ -1505,7 +1505,7 @@ describe('Test splom select:', function() {
         .then(done);
     });
 
-    it('@gl should behave correctly during select->dblclick->pan scenarios', function(done) {
+    it('@noCI @gl should behave correctly during select->dblclick->pan scenarios', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
         fig.layout = {
             width: 400,
