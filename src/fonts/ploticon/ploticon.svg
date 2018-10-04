@@ -30,19 +30,7 @@
 
 <svg id="newplotlylogo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 132">
   <defs>
-    <style>
-      .cls-1 {
-        fill: #119dff;
-      }
-
-      .cls-2 {
-        fill: #25fefd;
-      }
-
-      .cls-3 {
-        fill: #fff;
-      }
-    </style>
+    <style>.cls-1 {fill: #119dff;} .cls-2 {fill: #25fefd;} .cls-3 {fill: #fff;}</style>
   </defs>
   <title>plotly-logomark</title>
   <g id="symbol">
