@@ -29,6 +29,7 @@ describe('ModeBar', function() {
     function getMockGraphInfo(xaxes, yaxes) {
         return {
             _fullLayout: {
+                _uid: '6ea6a7',
                 dragmode: 'zoom',
                 _paperdiv: d3.select(getMockContainerTree()),
                 _has: Plots._hasPlotType,
@@ -292,16 +293,19 @@ describe('ModeBar', function() {
 
     describe('modeBar.destroy', function() {
         it('removes the mode bar entirely', function() {
-            var modeBarParent = modeBar.element.parentNode;
+            var modeBarParent = modeBar.element.parentNode,
+                gd = getMockGraphInfo(),
+                styleSelector = 'style[id*="modebar-' + gd._fullLayout._uid + '"]';
 
-            var style = document.querySelector('style[id*="modebar"]');
+
+            var style = document.querySelector(styleSelector);
             expect(style).toBeTruthy();
 
             modeBar.destroy();
 
             expect(modeBarParent.querySelector('.modebar')).toBeNull();
 
-            style = document.querySelector('style[id*="modebar"]');
+            style = document.querySelector(styleSelector);
             expect(style).toBeNull();
         });
     });
