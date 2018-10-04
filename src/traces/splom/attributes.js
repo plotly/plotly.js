@@ -31,9 +31,12 @@ function makeAxesValObject(axLetter) {
         },
         description: [
             'Sets the list of ' + axLetter + ' axes',
-            'corresponding to this splom trace.',
+            'corresponding to dimensions of this splom trace.',
             'By default, a splom will match the first N ' + axLetter + 'axes',
-            'where N is the number of input dimensions.'
+            'where N is the number of input dimensions.',
+            'Note that, in case where `diagonal.visible` is false and `showupperhalf`',
+            'or `showlowerhalf` is false, this splom trace will generate',
+            'one less x-axis and one less y-axis.',
         ].join(' ')
     };
 }

@@ -75,7 +75,7 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.yaxis.domain).toBeCloseToArray([0, 1]);
     });
 
-    it('should set `grid.xaxes` and `grid.yaxes` default using the new of dimensions', function() {
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions', function() {
         _supply({
             dimensions: [
                 {values: [1, 2, 3]},
@@ -102,6 +102,105 @@ describe('Test splom trace defaults:', function() {
         expect(subplots.cartesian).toEqual(['xy', 'xy2', 'x2y', 'x2y2']);
     });
 
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions (no upper half, no diagonal case)', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]},
+                {values: [3, 1, 5]}
+            ],
+            showupperhalf: false,
+            diagonal: {visible: false}
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x', 'x2', 'x3']);
+        expect(fullTrace.yaxes).toEqual(['y', 'y2', 'y3']);
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.domain).toBeCloseToArray([0, 0.47]);
+        expect(fullLayout.yaxis2.domain).toBeCloseToArray([0.53, 1]);
+        expect(fullLayout.xaxis2.domain).toBeCloseToArray([0.53, 1]);
+        expect(fullLayout.yaxis3.domain).toBeCloseToArray([0, 0.47]);
+
+        var subplots = fullLayout._subplots;
+        expect(subplots.xaxis).toEqual(['x', 'x2']);
+        expect(subplots.yaxis).toEqual(['y2', 'y3']);
+        expect(subplots.cartesian).toEqual(['xy2', 'xy3', 'x2y3']);
+    });
+
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions (no lower half, no diagonal case)', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]},
+                {values: [3, 1, 5]}
+            ],
+            showlowerhalf: false,
+            diagonal: {visible: false}
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x', 'x2', 'x3']);
+        expect(fullTrace.yaxes).toEqual(['y', 'y2', 'y3']);
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis2.domain).toBeCloseToArray([0, 0.47]);
+        expect(fullLayout.yaxis.domain).toBeCloseToArray([0.53, 1]);
+        expect(fullLayout.xaxis3.domain).toBeCloseToArray([0.53, 1]);
+        expect(fullLayout.yaxis2.domain).toBeCloseToArray([0, 0.47]);
+
+        var subplots = fullLayout._subplots;
+        expect(subplots.xaxis).toEqual(['x2', 'x3']);
+        expect(subplots.yaxis).toEqual(['y', 'y2']);
+        expect(subplots.cartesian).toEqual(['x2y', 'x3y', 'x3y2']);
+    });
+
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions (no upper half, no diagonal, set x|y axes case)', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]},
+                {values: [3, 1, 5]}
+            ],
+            showupperhalf: false,
+            diagonal: {visible: false},
+            xaxes: ['x5', 'x6', 'x7'],
+            yaxes: ['y6', 'y7', 'y8']
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x5', 'x6', 'x7']);
+        expect(fullTrace.yaxes).toEqual(['y6', 'y7', 'y8']);
+
+        var subplots = gd._fullLayout._subplots;
+        expect(subplots.xaxis).toEqual(['x5', 'x6']);
+        expect(subplots.yaxis).toEqual(['y7', 'y8']);
+        expect(subplots.cartesian).toEqual(['x5y7', 'x5y8', 'x6y8']);
+    });
+
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions (no lower half, no diagonal, set x|y axes case)', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]},
+                {values: [3, 1, 5]}
+            ],
+            showlowerhalf: false,
+            diagonal: {visible: false},
+            xaxes: ['x5', 'x6', 'x7'],
+            yaxes: ['y6', 'y7', 'y8']
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x5', 'x6', 'x7']);
+        expect(fullTrace.yaxes).toEqual(['y6', 'y7', 'y8']);
+
+        var subplots = gd._fullLayout._subplots;
+        expect(subplots.xaxis).toEqual(['x6', 'x7']);
+        expect(subplots.yaxis).toEqual(['y6', 'y7']);
+        expect(subplots.cartesian).toEqual(['x6y6', 'x7y6', 'x7y7']);
+    });
     it('should use special `grid.xside` and `grid.yside` defaults on splom w/o lower half generated grids', function() {
         var gridOut;
 
@@ -489,14 +588,14 @@ describe('Test splom interactions:', function() {
             return Plotly.restyle(gd, 'diagonal.visible', false);
         })
         .then(function() {
-            _assert([1138, 7636, 1594, 4]);
+            _assert([1138, 7654, 1600]);
             return Plotly.restyle(gd, {
                 showupperhalf: true,
                 showlowerhalf: false
             });
         })
         .then(function() {
-            _assert([64, 8176, 1582, 112]);
+            _assert([8188, 112, 1588]);
             return Plotly.restyle(gd, 'diagonal.visible', true);
         })
         .then(function() {
@@ -648,21 +747,21 @@ describe('Test splom interactions:', function() {
             expect(gd._fullLayout.grid.yside).toBe('left', 'sanity check dflt grid.yside');
 
             _assert({
-                x: 433, x2: 433, x3: 433,
+                x2: 433, x3: 433, x4: 433,
                 y: 80, y2: 80, y3: 80
             });
             return Plotly.relayout(gd, 'grid.yside', 'left plot');
         })
         .then(function() {
             _assert({
-                x: 433, x2: 433, x3: 433,
+                x2: 433, x3: 433, x4: 433,
                 y: 79, y2: 230, y3: 382
             });
             return Plotly.relayout(gd, 'grid.xside', 'bottom plot');
         })
         .then(function() {
             _assert({
-                x: 212, x2: 323, x3: 433,
+                x2: 212, x3: 323, x4: 433,
                 y: 79, y2: 230, y3: 382
             });
         })
@@ -770,6 +869,86 @@ describe('Test splom interactions:', function() {
             assertDims('after', 4810, 3656);
             expect(Lib.log)
                 .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should update axis arrangement on show(upper|lower)half + diagonal.visible restyles', function(done) {
+        var seq = ['', '2', '3', '4'];
+
+        function getAxesTypes(cont, letter) {
+            return seq.map(function(s) {
+                var ax = cont[letter + 'axis' + s];
+                return ax ? ax.type : null;
+            });
+        }
+
+        // undefined means there's an axis object, but no 'type' key in it
+        // null means there's no axis object
+        function _assertAxisTypes(msg, exp) {
+            var xaxes = getAxesTypes(gd.layout, 'x');
+            var yaxes = getAxesTypes(gd.layout, 'y');
+            var fullXaxes = getAxesTypes(gd._fullLayout, 'x');
+            var fullYaxes = getAxesTypes(gd._fullLayout, 'y');
+
+            expect(xaxes).toEqual(exp.xaxes, msg);
+            expect(fullXaxes).toEqual(exp.fullXaxes, msg);
+            expect(yaxes).toEqual(exp.yaxes, msg);
+            expect(fullYaxes).toEqual(exp.fullYaxes, msg);
+        }
+
+        var data = [{
+            type: 'splom',
+            showupperhalf: false,
+            diagonal: {visible: false},
+            dimensions: [{
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }, {
+                values: ['lyndon', 'richard', 'gerald', 'jimmy', 'ronald', 'george', 'bill', 'georgeW', 'barack', 'donald']
+            }, {
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                axis: {type: 'category'}
+            }, {
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                axis: {type: 'log'}
+            }]
+        }];
+
+        Plotly.plot(gd, data).then(function() {
+            _assertAxisTypes('no upper half / no diagonal', {
+                xaxes: ['linear', 'category', undefined, null],
+                fullXaxes: ['linear', 'category', 'category', null],
+                yaxes: [null, 'category', undefined, undefined],
+                fullYaxes: [null, 'category', 'category', 'log']
+            });
+
+            return Plotly.restyle(gd, {
+                'showupperhalf': true,
+                'diagonal.visible': true
+            });
+        })
+        .then(function() {
+            _assertAxisTypes('full grid', {
+                xaxes: ['linear', 'category', undefined, undefined],
+                fullXaxes: ['linear', 'category', 'category', 'log'],
+                yaxes: ['linear', 'category', undefined, undefined],
+                fullYaxes: ['linear', 'category', 'category', 'log']
+            });
+
+            return Plotly.restyle(gd, {
+                'showlowerhalf': false,
+                'diagonal.visible': false
+            });
+        })
+        .then(function() {
+            // TODO should we delete layout.xaxis and layout.yaxis4 here?
+            _assertAxisTypes('no lower half / no diagonal', {
+                xaxes: ['linear', 'category', undefined, undefined],
+                fullXaxes: [null, 'category', 'category', 'log'],
+                yaxes: ['linear', 'category', undefined, undefined],
+                fullYaxes: ['linear', 'category', 'category', null]
+            });
         })
         .catch(failTest)
         .then(done);
