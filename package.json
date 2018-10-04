@@ -102,7 +102,7 @@
     "polybooljs": "^1.2.0",
     "regl": "^1.3.7",
     "regl-error2d": "^2.0.5",
-    "regl-line2d": "git://github.com/archmoj/regl-line2d.git#e613c7f11907fea6bc533d970203d3396b0ef651",
+    "regl-line2d": "git://github.com/archmoj/regl-line2d.git#87dbc502d0a22611ed135b6d525e7bc7bad3932f",
     "regl-scatter2d": "^3.0.6",
     "regl-splom": "^1.0.4",
     "right-now": "^1.0.0",
