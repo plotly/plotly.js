@@ -158,9 +158,10 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
         }
     }
 
-    // when lower half is omitted, override grid default
-    // to make sure axes remain on the left/bottom of the plot area
-    if(!showLower) {
+    // when lower half is omitted, or when just the diagonal is gone,
+    // override grid default to make sure axes remain on
+    // the left/bottom of the plot area
+    if(!showLower || (!showDiag && showUpper && showLower)) {
         layout._splomGridDflt.xside = 'bottom';
         layout._splomGridDflt.yside = 'left';
     }
