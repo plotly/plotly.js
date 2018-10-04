@@ -942,7 +942,6 @@ describe('Test splom interactions:', function() {
             });
         })
         .then(function() {
-            // TODO should we delete layout.xaxis and layout.yaxis4 here?
             _assertAxisTypes('no lower half / no diagonal', {
                 xaxes: ['linear', 'category', undefined, undefined],
                 fullXaxes: [null, 'category', 'category', 'log'],

@@ -612,7 +612,7 @@ exports.drawData = function(gd) {
     return Plots.previousPromises(gd);
 };
 
-// Draw (or redraw) all traces in one go,
+// Draw (or redraw) all regl-based traces in one go,
 // useful during drag and selection where buffers of targeted traces are updated,
 // but all traces need to be redrawn following clearGlCanvases.
 //
@@ -624,6 +624,7 @@ exports.drawData = function(gd) {
 // non-overlaying, disjoint subplots.
 //
 // TODO try to include parcoords in here.
+// https://github.com/plotly/plotly.js/issues/3069
 exports.redrawReglTraces = function(gd) {
     var fullLayout = gd._fullLayout;
 
