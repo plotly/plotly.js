@@ -467,7 +467,7 @@ plots.supplyDefaults = function(gd, opts) {
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     // clean subplots and other artifacts from previous plot calls
-    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
@@ -714,7 +714,7 @@ plots._hasPlotType = function(category) {
     return false;
 };
 
-plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
+plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
 
     var basePlotModules = oldFullLayout._basePlotModules || [];
@@ -722,7 +722,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
         var _module = basePlotModules[i];
 
         if(_module.clean) {
-            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
         }
     }
 

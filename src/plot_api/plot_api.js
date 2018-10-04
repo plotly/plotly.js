@@ -269,7 +269,7 @@ exports.plot = function(gd, data, layout, config) {
                         Lib.error(msg);
                     } else {
                         Lib.log(msg + ' Clearing graph and plotting again.');
-                        Plots.cleanPlot([], {}, gd._fullData, fullLayout, gd.calcdata);
+                        Plots.cleanPlot([], {}, gd._fullData, fullLayout);
                         Plots.supplyDefaults(gd);
                         fullLayout = gd._fullLayout;
                         Plots.doCalcdata(gd);
@@ -614,7 +614,7 @@ exports.newPlot = function(gd, data, layout, config) {
     gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {}, gd.calcdata || []);
+    Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {});
 
     Plots.purge(gd);
     return exports.plot(gd, data, layout, config);
@@ -3199,10 +3199,9 @@ exports.purge = function purge(gd) {
 
     var fullLayout = gd._fullLayout || {};
     var fullData = gd._fullData || [];
-    var calcdata = gd.calcdata || [];
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, fullData, fullLayout, calcdata);
+    Plots.cleanPlot([], {}, fullData, fullLayout);
 
     // purge properties
     Plots.purge(gd);
