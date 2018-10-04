@@ -45,14 +45,15 @@
 }
 
 .modebar.vertical {
+    top: -1px;
     .modebar-group {
         display: block;
         float: none;
         margin-left: 0px;
-        margin-top: 8px;
+        margin-bottom: 8px;
 
         .modebar-btn {
-            display:block;
+            display: block;
             text-align: center;
         }
     }
