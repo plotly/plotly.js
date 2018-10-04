@@ -19,7 +19,7 @@ Scatter.isBubble = subtypes.isBubble;
 
 Scatter.attributes = require('./attributes');
 Scatter.supplyDefaults = require('./defaults');
-Scatter.cleanData = require('./clean_data');
+Scatter.crossTraceDefaults = require('./cross_trace_defaults');
 Scatter.calc = require('./calc').calc;
 Scatter.crossTraceCalc = require('./cross_trace_calc');
 Scatter.arraysToCalcdata = require('./arrays_to_calcdata');

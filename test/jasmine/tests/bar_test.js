@@ -1361,6 +1361,7 @@ describe('bar visibility toggling:', function() {
             spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
 
             _assert('base', [0.5, 3.5], [-2.222, 2.222], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('normal');
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(function() {
@@ -1369,6 +1370,11 @@ describe('bar visibility toggling:', function() {
         })
         .then(function() {
             _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            _assert('both legendonly', [0.5, 3.5], [0, 2.105], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('normal');
             return Plotly.restyle(gd, 'visible', true, [1]);
         })
         .then(function() {
@@ -1391,6 +1397,7 @@ describe('bar visibility toggling:', function() {
             spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
 
             _assert('base', [0.5, 3.5], [0, 5.263], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('reversed');
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(function() {
@@ -1399,6 +1406,11 @@ describe('bar visibility toggling:', function() {
         })
         .then(function() {
             _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            _assert('both legendonly', [0.5, 3.5], [0, 2.105], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('reversed');
             return Plotly.restyle(gd, 'visible', true, [1]);
         })
         .then(function() {
@@ -1407,6 +1419,37 @@ describe('bar visibility toggling:', function() {
         })
         .then(function() {
             _assert('back to both visible', [0.5, 3.5], [0, 5.263], 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('gets the right legend traceorder if all bars are visible: false', function(done) {
+        function _assert(traceorder, yRange, legendCount) {
+            expect(gd._fullLayout.legend.traceorder).toBe(traceorder);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yRange, 2);
+            expect(d3.select(gd).selectAll('.legend .traces').size()).toBe(legendCount);
+        }
+        Plotly.newPlot(gd, [
+            {type: 'bar', y: [1, 2, 3]},
+            {type: 'bar', y: [3, 2, 1]},
+            {y: [2, 3, 2]},
+            {y: [3, 2, 3]}
+        ], {
+            barmode: 'stack', width: 400, height: 400
+        })
+        .then(function() {
+            _assert('reversed', [0, 4.211], 4);
+
+            return Plotly.restyle(gd, {visible: false}, [0, 1]);
+        })
+        .then(function() {
+            _assert('normal', [1.922, 3.077], 2);
+
+            return Plotly.restyle(gd, {visible: 'legendonly'}, [0, 1]);
+        })
+        .then(function() {
+            _assert('reversed', [1.922, 3.077], 4);
         })
         .catch(failTest)
         .then(done);

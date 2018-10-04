@@ -23,12 +23,12 @@ module.exports = extendFlat({
 
     histnorm: histogram2dAttrs.histnorm,
     histfunc: histogram2dAttrs.histfunc,
-    autobinx: histogram2dAttrs.autobinx,
     nbinsx: histogram2dAttrs.nbinsx,
     xbins: histogram2dAttrs.xbins,
-    autobiny: histogram2dAttrs.autobiny,
     nbinsy: histogram2dAttrs.nbinsy,
     ybins: histogram2dAttrs.ybins,
+    autobinx: histogram2dAttrs.autobinx,
+    autobiny: histogram2dAttrs.autobiny,
 
     autocontour: contourAttrs.autocontour,
     ncontours: contourAttrs.ncontours,
