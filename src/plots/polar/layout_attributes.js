@@ -59,7 +59,7 @@ var radialAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
     type: axesAttrs.type,
 
-    autorange: axesAttrs.autorange,
+    autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {
         valType: 'enumerated',
         values: ['tozero', 'nonnegative', 'normal'],
@@ -75,7 +75,13 @@ var radialAxisAttrs = {
             'of the input data (same behavior as for cartesian axes).'
         ].join(' ')
     },
-    range: axesAttrs.range,
+    range: extendFlat({}, axesAttrs.range, {
+        items: [
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+        ],
+        editType: 'plot'
+    }),
 
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,

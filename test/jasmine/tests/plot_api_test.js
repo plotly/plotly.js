@@ -6,6 +6,7 @@ var Queue = require('@src/lib/queue');
 var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
+var Axes = require('@src/plots/cartesian/axes');
 var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
 var helpers = require('@src/plot_api/helpers');
@@ -531,14 +532,18 @@ describe('Test plot api', function() {
             mockedMethods.forEach(function(m) {
                 spyOn(subroutines, m);
             });
+            spyOn(Axes, 'doTicks');
+            spyOn(Plots, 'supplyDefaults').and.callThrough();
         });
 
         function mock(gd) {
             mockedMethods.forEach(function(m) {
                 subroutines[m].calls.reset();
             });
+            Axes.doTicks.calls.reset();
 
             supplyAllDefaults(gd);
+            Plots.supplyDefaults.calls.reset();
             Plots.doCalcdata(gd);
             gd.emit = function() {};
             return gd;
@@ -634,7 +639,7 @@ describe('Test plot api', function() {
         });
 
         it('should trigger minimal sequence for cartesian axis range updates', function() {
-            var seq = ['doAutoRangeAndConstraints', 'doTicksRelayout', 'drawData', 'finalDraw'];
+            var seq = ['doAutoRangeAndConstraints', 'drawData', 'finalDraw'];
 
             function _assert(msg) {
                 expect(gd.calcdata).toBeDefined();
@@ -644,6 +649,10 @@ describe('Test plot api', function() {
                         '# of ' + m + ' calls - ' + msg
                     );
                 });
+                expect(Axes.doTicks).toHaveBeenCalledTimes(1);
+                expect(Axes.doTicks.calls.allArgs()[0][1]).toEqual(['x']);
+                expect(Axes.doTicks.calls.allArgs()[0][2]).toBe(true, 'skip-axis-title argument');
+                expect(Plots.supplyDefaults).not.toHaveBeenCalled();
             }
 
             var specs = [
@@ -2601,6 +2610,7 @@ describe('Test plot api', function() {
             spyOn(annotations, 'drawOne').and.callThrough();
             spyOn(annotations, 'draw').and.callThrough();
             spyOn(images, 'draw').and.callThrough();
+            spyOn(Axes, 'doTicks').and.callThrough();
         });
 
         afterEach(destroyGraphDiv);
@@ -2836,10 +2846,11 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, data, layout)
             .then(countPlots)
             .then(function() {
+                expect(Axes.doTicks).toHaveBeenCalledWith(gd, '');
                 return Plotly.react(gd, data, layout2);
             })
             .then(function() {
-                expect(subroutines.doTicksRelayout).toHaveBeenCalledTimes(1);
+                expect(Axes.doTicks).toHaveBeenCalledWith(gd, 'redraw');
                 expect(subroutines.layoutStyles).not.toHaveBeenCalled();
             })
             .catch(failTest)

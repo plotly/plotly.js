@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
+var Axes = require('@src/plots/cartesian/axes');
 var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
 var d3 = require('d3');
@@ -74,7 +75,7 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.yaxis.domain).toBeCloseToArray([0, 1]);
     });
 
-    it('should set `grid.xaxes` and `grid.yaxes` default using the new of dimensions', function() {
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions', function() {
         _supply({
             dimensions: [
                 {values: [1, 2, 3]},
@@ -101,6 +102,105 @@ describe('Test splom trace defaults:', function() {
         expect(subplots.cartesian).toEqual(['xy', 'xy2', 'x2y', 'x2y2']);
     });
 
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions (no upper half, no diagonal case)', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]},
+                {values: [3, 1, 5]}
+            ],
+            showupperhalf: false,
+            diagonal: {visible: false}
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x', 'x2', 'x3']);
+        expect(fullTrace.yaxes).toEqual(['y', 'y2', 'y3']);
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.domain).toBeCloseToArray([0, 0.47]);
+        expect(fullLayout.yaxis2.domain).toBeCloseToArray([0.53, 1]);
+        expect(fullLayout.xaxis2.domain).toBeCloseToArray([0.53, 1]);
+        expect(fullLayout.yaxis3.domain).toBeCloseToArray([0, 0.47]);
+
+        var subplots = fullLayout._subplots;
+        expect(subplots.xaxis).toEqual(['x', 'x2']);
+        expect(subplots.yaxis).toEqual(['y2', 'y3']);
+        expect(subplots.cartesian).toEqual(['xy2', 'xy3', 'x2y3']);
+    });
+
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions (no lower half, no diagonal case)', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]},
+                {values: [3, 1, 5]}
+            ],
+            showlowerhalf: false,
+            diagonal: {visible: false}
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x', 'x2', 'x3']);
+        expect(fullTrace.yaxes).toEqual(['y', 'y2', 'y3']);
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis2.domain).toBeCloseToArray([0, 0.47]);
+        expect(fullLayout.yaxis.domain).toBeCloseToArray([0.53, 1]);
+        expect(fullLayout.xaxis3.domain).toBeCloseToArray([0.53, 1]);
+        expect(fullLayout.yaxis2.domain).toBeCloseToArray([0, 0.47]);
+
+        var subplots = fullLayout._subplots;
+        expect(subplots.xaxis).toEqual(['x2', 'x3']);
+        expect(subplots.yaxis).toEqual(['y', 'y2']);
+        expect(subplots.cartesian).toEqual(['x2y', 'x3y', 'x3y2']);
+    });
+
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions (no upper half, no diagonal, set x|y axes case)', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]},
+                {values: [3, 1, 5]}
+            ],
+            showupperhalf: false,
+            diagonal: {visible: false},
+            xaxes: ['x5', 'x6', 'x7'],
+            yaxes: ['y6', 'y7', 'y8']
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x5', 'x6', 'x7']);
+        expect(fullTrace.yaxes).toEqual(['y6', 'y7', 'y8']);
+
+        var subplots = gd._fullLayout._subplots;
+        expect(subplots.xaxis).toEqual(['x5', 'x6']);
+        expect(subplots.yaxis).toEqual(['y7', 'y8']);
+        expect(subplots.cartesian).toEqual(['x5y7', 'x5y8', 'x6y8']);
+    });
+
+    it('should set `grid.xaxes` and `grid.yaxes` default using the number of dimensions (no lower half, no diagonal, set x|y axes case)', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]},
+                {values: [3, 1, 5]}
+            ],
+            showlowerhalf: false,
+            diagonal: {visible: false},
+            xaxes: ['x5', 'x6', 'x7'],
+            yaxes: ['y6', 'y7', 'y8']
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x5', 'x6', 'x7']);
+        expect(fullTrace.yaxes).toEqual(['y6', 'y7', 'y8']);
+
+        var subplots = gd._fullLayout._subplots;
+        expect(subplots.xaxis).toEqual(['x6', 'x7']);
+        expect(subplots.yaxis).toEqual(['y6', 'y7']);
+        expect(subplots.cartesian).toEqual(['x6y6', 'x7y6', 'x7y7']);
+    });
     it('should use special `grid.xside` and `grid.yside` defaults on splom w/o lower half generated grids', function() {
         var gridOut;
 
@@ -422,10 +522,11 @@ describe('Test splom trace calc step:', function() {
             yaxis: {type: 'linear'}
         });
 
-        var cd = gd.calcdata[0][0];
+        var trace = gd._fullData[0];
+        var scene = gd._fullLayout._splomScenes[trace.uid];
 
-        expect(cd.t._scene.matrixOptions.data).toBeCloseTo2DArray([[2, 1, 2]]);
-        expect(cd.t.visibleDims).toEqual([1]);
+        expect(scene.matrixOptions.data).toBeCloseTo2DArray([[2, 1, 2]]);
+        expect(trace._visibleDims).toEqual([1]);
         expect(Lib.log).toHaveBeenCalledTimes(1);
         expect(Lib.log).toHaveBeenCalledWith('Skipping splom dimension 0 with conflicting axis types');
     });
@@ -448,13 +549,14 @@ describe('Test splom interactions:', function() {
 
         Plotly.plot(gd, fig).then(function() {
             expect(gd._fullLayout._splomGrid).toBeDefined();
-            expect(gd.calcdata[0][0].t._scene).toBeDefined();
+            expect(gd._fullLayout._splomScenes).toBeDefined();
+            expect(Object.keys(gd._fullLayout._splomScenes).length).toBe(1);
 
-            return Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout, gd.calcdata);
+            return Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
         })
         .then(function() {
-            expect(gd._fullLayout._splomGrid).toBe(null);
-            expect(gd.calcdata[0][0].t._scene).toBe(null);
+            expect(gd._fullLayout._splomGrid).toBeUndefined();
+            expect(gd._fullLayout._splomScenes).toBeUndefined();
         })
         .catch(failTest)
         .then(done);
@@ -486,14 +588,14 @@ describe('Test splom interactions:', function() {
             return Plotly.restyle(gd, 'diagonal.visible', false);
         })
         .then(function() {
-            _assert([1138, 7636, 1594, 4]);
+            _assert([1138, 7654, 1600]);
             return Plotly.restyle(gd, {
                 showupperhalf: true,
                 showlowerhalf: false
             });
         })
         .then(function() {
-            _assert([64, 8176, 1582, 112]);
+            _assert([8188, 112, 1588]);
             return Plotly.restyle(gd, 'diagonal.visible', true);
         })
         .then(function() {
@@ -522,7 +624,9 @@ describe('Test splom interactions:', function() {
 
         function _assert(exp) {
             var msg = ' - call #' + cnt;
-            var subplots = d3.selectAll('g.cartesianlayer > g.subplot');
+            var gd3 = d3.select(gd);
+            var subplots = gd3.selectAll('g.cartesianlayer > g.subplot');
+            var bgs = gd3.selectAll('.bglayer > rect.bg');
 
             expect(subplots.size())
                 .toBe(exp.subplotCnt, '# of <g.subplot>' + msg);
@@ -543,22 +647,47 @@ describe('Test splom interactions:', function() {
             expect(!!gd._fullLayout._splomGrid)
                 .toBe(exp.hasSplomGrid, 'has regl-line2d splom grid' + msg);
 
+            expect(bgs.size()).toBe(exp.bgCnt, '# of <rect.bg> ' + msg);
+
             cnt++;
         }
 
         Plotly.plot(gd, figLarge).then(function() {
             _assert({
                 subplotCnt: 400,
-                innerSubplotNodeCnt: 5,
-                hasSplomGrid: true
+                innerSubplotNodeCnt: 4,
+                hasSplomGrid: true,
+                bgCnt: 0
             });
+
+            return Plotly.relayout(gd, 'paper_bgcolor', 'red');
+        })
+        .then(function() {
+            _assert({
+                subplotCnt: 400,
+                innerSubplotNodeCnt: 4,
+                hasSplomGrid: true,
+                bgCnt: 400
+            });
+
+            return Plotly.relayout(gd, 'plot_bgcolor', 'red');
+        })
+        .then(function() {
+            _assert({
+                subplotCnt: 400,
+                innerSubplotNodeCnt: 4,
+                hasSplomGrid: true,
+                bgCnt: 0
+            });
+
             return Plotly.restyle(gd, 'dimensions', [dimsSmall]);
         })
         .then(function() {
             _assert({
                 subplotCnt: 25,
                 innerSubplotNodeCnt: 17,
-                hasSplomGrid: false
+                hasSplomGrid: false,
+                bgCnt: 0
             });
 
             // make sure 'new' subplot layers are in order
@@ -588,9 +717,10 @@ describe('Test splom interactions:', function() {
                 // new subplots though have reduced number of children.
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
-                    return (p[1] > 5 || p[2] > 5) ? 5 : 17;
+                    return (p[1] > 5 || p[2] > 5) ? 4 : 17;
                 },
-                hasSplomGrid: true
+                hasSplomGrid: true,
+                bgCnt: 0
             });
         })
         .catch(failTest)
@@ -617,21 +747,21 @@ describe('Test splom interactions:', function() {
             expect(gd._fullLayout.grid.yside).toBe('left', 'sanity check dflt grid.yside');
 
             _assert({
-                x: 433, x2: 433, x3: 433,
+                x2: 433, x3: 433, x4: 433,
                 y: 80, y2: 80, y3: 80
             });
             return Plotly.relayout(gd, 'grid.yside', 'left plot');
         })
         .then(function() {
             _assert({
-                x: 433, x2: 433, x3: 433,
+                x2: 433, x3: 433, x4: 433,
                 y: 79, y2: 230, y3: 382
             });
             return Plotly.relayout(gd, 'grid.xside', 'bottom plot');
         })
         .then(function() {
             _assert({
-                x: 212, x2: 323, x3: 433,
+                x2: 212, x3: 323, x4: 433,
                 y: 79, y2: 230, y3: 382
             });
         })
@@ -658,14 +788,22 @@ describe('Test splom interactions:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
 
         function _assert(msg, exp) {
+            var splomScenes = gd._fullLayout._splomScenes;
+            var ids = Object.keys(splomScenes);
+
             for(var i = 0; i < 3; i++) {
-                expect(Boolean(gd.calcdata[i][0].t._scene))
-                    .toBe(Boolean(exp[i]), msg + ' - trace ' + i);
+                var drawFn = splomScenes[ids[i]].draw;
+                expect(drawFn).toHaveBeenCalledTimes(exp[i], msg + ' - trace ' + i);
+                drawFn.calls.reset();
             }
         }
 
         Plotly.plot(gd, fig).then(function() {
-            _assert('base', [1, 1, 1]);
+            var splomScenes = gd._fullLayout._splomScenes;
+            for(var k in splomScenes) {
+                spyOn(splomScenes[k], 'draw').and.callThrough();
+            }
+
             return Plotly.restyle(gd, 'visible', 'legendonly', [0, 2]);
         })
         .then(function() {
@@ -683,7 +821,7 @@ describe('Test splom interactions:', function() {
         .then(done);
     });
 
-    it('@gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
+    it('@noCI @gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
 
         function assertDims(msg, w, h) {
@@ -731,6 +869,270 @@ describe('Test splom interactions:', function() {
             assertDims('after', 4810, 3656);
             expect(Lib.log)
                 .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should update axis arrangement on show(upper|lower)half + diagonal.visible restyles', function(done) {
+        var seq = ['', '2', '3', '4'];
+
+        function getAxesTypes(cont, letter) {
+            return seq.map(function(s) {
+                var ax = cont[letter + 'axis' + s];
+                return ax ? ax.type : null;
+            });
+        }
+
+        // undefined means there's an axis object, but no 'type' key in it
+        // null means there's no axis object
+        function _assertAxisTypes(msg, exp) {
+            var xaxes = getAxesTypes(gd.layout, 'x');
+            var yaxes = getAxesTypes(gd.layout, 'y');
+            var fullXaxes = getAxesTypes(gd._fullLayout, 'x');
+            var fullYaxes = getAxesTypes(gd._fullLayout, 'y');
+
+            expect(xaxes).toEqual(exp.xaxes, msg);
+            expect(fullXaxes).toEqual(exp.fullXaxes, msg);
+            expect(yaxes).toEqual(exp.yaxes, msg);
+            expect(fullYaxes).toEqual(exp.fullYaxes, msg);
+        }
+
+        var data = [{
+            type: 'splom',
+            showupperhalf: false,
+            diagonal: {visible: false},
+            dimensions: [{
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }, {
+                values: ['lyndon', 'richard', 'gerald', 'jimmy', 'ronald', 'george', 'bill', 'georgeW', 'barack', 'donald']
+            }, {
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                axis: {type: 'category'}
+            }, {
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                axis: {type: 'log'}
+            }]
+        }];
+
+        Plotly.plot(gd, data).then(function() {
+            _assertAxisTypes('no upper half / no diagonal', {
+                xaxes: ['linear', 'category', undefined, null],
+                fullXaxes: ['linear', 'category', 'category', null],
+                yaxes: [null, 'category', undefined, undefined],
+                fullYaxes: [null, 'category', 'category', 'log']
+            });
+
+            return Plotly.restyle(gd, {
+                'showupperhalf': true,
+                'diagonal.visible': true
+            });
+        })
+        .then(function() {
+            _assertAxisTypes('full grid', {
+                xaxes: ['linear', 'category', undefined, undefined],
+                fullXaxes: ['linear', 'category', 'category', 'log'],
+                yaxes: ['linear', 'category', undefined, undefined],
+                fullYaxes: ['linear', 'category', 'category', 'log']
+            });
+
+            return Plotly.restyle(gd, {
+                'showlowerhalf': false,
+                'diagonal.visible': false
+            });
+        })
+        .then(function() {
+            _assertAxisTypes('no lower half / no diagonal', {
+                xaxes: ['linear', 'category', undefined, undefined],
+                fullXaxes: [null, 'category', 'category', 'log'],
+                yaxes: ['linear', 'category', undefined, undefined],
+                fullYaxes: ['linear', 'category', 'category', null]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Test splom update switchboard:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    var methods;
+
+    function addSpies() {
+        methods.forEach(function(m) {
+            var obj = m[0];
+            var k = m[1];
+            spyOn(obj, k).and.callThrough();
+        });
+    }
+
+    function assertSpies(msg, exp) {
+        methods.forEach(function(m, i) {
+            var obj = m[0];
+            var k = m[1];
+            var expi = exp[i];
+            expect(obj[k]).toHaveBeenCalledTimes(expi[1], expi[0]);
+            obj[k].calls.reset();
+        });
+    }
+
+    function toPlainArray(typedArray) {
+        return Array.prototype.slice.call(typedArray);
+    }
+
+    it('@gl should trigger minimal sequence for axis range updates (large splom case)', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var matrix, regl, splomGrid;
+
+        Plotly.plot(gd, fig).then(function() {
+            var fullLayout = gd._fullLayout;
+            var trace = gd._fullData[0];
+            var scene = fullLayout._splomScenes[trace.uid];
+            matrix = scene.matrix;
+            regl = matrix.regl;
+            splomGrid = fullLayout._splomGrid;
+
+            methods = [
+                [Plots, 'supplyDefaults'],
+                [Axes, 'doTicks'],
+                [regl, 'clear'],
+                [splomGrid, 'update']
+            ];
+            addSpies();
+
+            expect(fullLayout.xaxis.range).toBeCloseToArray([-0.0921, 0.9574], 1, 'xrng (base)');
+
+            return Plotly.relayout(gd, 'xaxis.range', [0, 1]);
+        })
+        .then(function() {
+            var msg = 'after update';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 0],
+                ['doTicks', 1],
+                ['regl clear', 1],
+                ['splom grid update', 1],
+                ['splom grid draw', 1],
+                ['splom matrix update', 1],
+                ['splom matrix draw', 1]
+            ]);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 1], 1, 'xrng ' + msg);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0, 1], 1, 'xrng ' + msg);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should trigger minimal sequence for marker style updates', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+        var scene, matrix, regl;
+
+        Plotly.plot(gd, fig).then(function() {
+            var fullLayout = gd._fullLayout;
+            var trace = gd._fullData[0];
+            scene = fullLayout._splomScenes[trace.uid];
+            matrix = scene.matrix;
+            regl = matrix.regl;
+
+            methods = [
+                [Plots, 'supplyDefaults'],
+                [Plots, 'doCalcdata'],
+                [Axes, 'doTicks'],
+                [regl, 'clear'],
+                [matrix, 'update'],
+                [matrix, 'draw']
+            ];
+            addSpies();
+
+            expect(toPlainArray(scene.matrixOptions.color))
+                .toBeCloseToArray([31, 119, 180, 255], 1, 'base color');
+            expect(scene.matrixOptions.size).toBe(3, 'base size');
+            expect(fullLayout.xaxis.range).toBeCloseToArray([0.851, 3.148], 1, 'base xrng');
+
+            return Plotly.restyle(gd, 'marker.color', 'black');
+        })
+        .then(function() {
+            var msg = 'after scaler marker.color restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['doTicks', 0],
+                ['regl clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(toPlainArray(scene.matrixOptions.color))
+                .toBeCloseToArray([0, 0, 0, 255], 1, msg);
+
+            return Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']]);
+        })
+        .then(function() {
+            var msg = 'after arrayOk marker.color restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['doTicks', 0],
+                ['clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(toPlainArray(scene.matrixOptions.colors[0]))
+                .toBeCloseToArray([1, 0, 0, 1], 1, msg + '- 0');
+            expect(toPlainArray(scene.matrixOptions.colors[1]))
+                .toBeCloseToArray([0, 0.501, 0, 1], 1, msg + '- 1');
+            expect(toPlainArray(scene.matrixOptions.colors[2]))
+                .toBeCloseToArray([0, 0, 1, 1], 1, msg + '- 2');
+
+            return Plotly.restyle(gd, 'marker.size', 20);
+        })
+        .then(function() {
+            var msg = 'after scalar marker.size restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 1],
+                ['doTicks', 1],
+                ['regl clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(scene.matrixOptions.size).toBe(10, msg);
+            expect(gd._fullLayout.xaxis.range)
+                .toBeCloseToArray([0.753, 3.246], 1, 'xrng ' + msg);
+
+            return Plotly.restyle(gd, 'marker.size', [[4, 10, 20]]);
+        })
+        .then(function() {
+            var msg = 'after scalar marker.size restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 1],
+                ['doTicks', 1],
+                ['regl clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(scene.matrixOptions.sizes).toBeCloseToArray([2, 5, 10], 1, msg);
+            expect(gd._fullLayout.xaxis.range)
+                .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
         })
         .catch(failTest)
         .then(done);
@@ -890,7 +1292,8 @@ describe('Test splom drag:', function() {
 
         Plotly.plot(gd, fig)
         .then(function() {
-            var scene = gd.calcdata[0][0].t._scene;
+            var uid = gd._fullData[0].uid;
+            var scene = gd._fullLayout._splomScenes[uid];
             spyOn(scene.matrix, 'update');
             spyOn(scene.matrix, 'draw');
 
@@ -906,13 +1309,14 @@ describe('Test splom drag:', function() {
         })
         .then(function() { return _drag([130, 130], [150, 150]); })
         .then(function() {
-            var scene = gd.calcdata[0][0].t._scene;
+            var uid = gd._fullData[0].uid;
+            var scene = gd._fullLayout._splomScenes[uid];
             // N.B. _drag triggers two updateSubplots call
             // - 1 update and 1 draw call per updateSubplot
-            // - 2 update calls (1 for data, 1 for view opts)
+            // - 1 update calls for data+view opts
             //   during splom plot on mouseup
             // - 1 draw call during splom plot on mouseup
-            expect(scene.matrix.update).toHaveBeenCalledTimes(4);
+            expect(scene.matrix.update).toHaveBeenCalledTimes(3);
             expect(scene.matrix.draw).toHaveBeenCalledTimes(3);
 
             _assertRanges('after drag', [
@@ -1072,23 +1476,26 @@ describe('Test splom select:', function() {
         var cnt = 0;
         var scatterGlCnt = 0;
         var splomCnt = 0;
+        var scatterglScene, splomScene;
 
         Plotly.newPlot(gd, fig).then(function() {
-            // 'scattergl' trace module
-            spyOn(gd._fullLayout._modules[0], 'style').and.callFake(function() {
+            var fullLayout = gd._fullLayout;
+            scatterglScene = fullLayout._plots.xy._scene;
+            splomScene = fullLayout._splomScenes[gd._fullData[1].uid];
+
+            spyOn(scatterglScene, 'draw').and.callFake(function() {
                 cnt++;
                 scatterGlCnt = cnt;
             });
-            // 'splom' trace module
-            spyOn(gd._fullLayout._modules[1], 'style').and.callFake(function() {
+            spyOn(splomScene, 'draw').and.callFake(function() {
                 cnt++;
                 splomCnt = cnt;
             });
         })
         .then(function() { return _select([[20, 395], [195, 205]]); })
         .then(function() {
-            expect(gd._fullLayout._modules[0].style).toHaveBeenCalledTimes(1);
-            expect(gd._fullLayout._modules[1].style).toHaveBeenCalledTimes(1);
+            expect(scatterglScene.draw).toHaveBeenCalledTimes(1);
+            expect(splomScene.draw).toHaveBeenCalledTimes(1);
 
             expect(cnt).toBe(2);
             expect(splomCnt).toBe(1, 'splom redraw before scattergl');
@@ -1098,7 +1505,7 @@ describe('Test splom select:', function() {
         .then(done);
     });
 
-    it('@gl should behave correctly during select->dblclick->pan scenarios', function(done) {
+    it('@noCI @gl should behave correctly during select->dblclick->pan scenarios', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
         fig.layout = {
             width: 400,
@@ -1107,7 +1514,7 @@ describe('Test splom select:', function() {
             grid: {xgap: 0, ygap: 0}
         };
 
-        var scene;
+        var uid, scene;
 
         function _assert(msg, exp) {
             expect(scene.matrix.update).toHaveBeenCalledTimes(exp.updateCnt, 'update cnt');
@@ -1122,7 +1529,8 @@ describe('Test splom select:', function() {
         }
 
         Plotly.plot(gd, fig).then(function() {
-            scene = gd.calcdata[0][0].t._scene;
+            uid = gd._fullData[0].uid;
+            scene = gd._fullLayout._splomScenes[uid];
             spyOn(scene.matrix, 'update').and.callThrough();
             spyOn(scene.matrix, 'draw').and.callThrough();
         })
