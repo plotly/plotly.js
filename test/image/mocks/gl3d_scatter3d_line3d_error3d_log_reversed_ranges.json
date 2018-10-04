@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+      "x": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5], 
+      "y": [25, 16, 9, 4, 1, 0, 1, 4, 9, 16, 25], 
+      "z": [1e-05, 1e-04, 1e-03, 1e-02, 1e-01, 1e00, 1e+01, 1e+02, 1e+03, 1e+04, 1e+05], 
+      "line": {
+        "color": "black"
+      }, 
+      "type": "scatter3d", 
+      "mode": "lines+markers", 
+      "error_x": {
+        "type": "sqrt", 
+        "color": "red"
+      }, 
+      "error_y": {
+        "type": "sqrt", 
+        "color": "green"
+      }, 
+      "error_z": {
+        "type": "sqrt", 
+        "color": "blue"
+      }
+    }
+  ], 
+  "layout": {
+    "height": 758, 
+    "width": 1310, 
+    "title": "X-axis using autorange: 'reversed', Y-axis using range: [30, -5] & Z-axis using range: 'reversed' & type: log", 
+    "scene": {
+      "xaxis": {
+        "autorange": "reversed",
+        "showbackground": true,
+        "backgroundcolor": "rgb(127, 191, 191)",
+        "gridcolor": "rgb(255, 255, 255)",
+        "zerolinecolor": "rgb(0, 0, 0)"
+      }, 
+      "yaxis": {
+        "range": [30, -5],
+        "showbackground": true,
+        "backgroundcolor": "rgb(191, 127, 191)",
+        "gridcolor": "rgb(255, 255, 255)",
+        "zerolinecolor": "rgb(0, 0, 0)"
+      }, 
+      "zaxis": {
+        "autorange": "reversed", 
+        "type": "log",
+        "showbackground": true,
+        "backgroundcolor": "rgb(191, 191, 127)",
+        "gridcolor": "rgb(255, 255, 255)",
+        "zerolinecolor": "rgb(0, 0, 0)"
+      }
+    }    
+  }
+}

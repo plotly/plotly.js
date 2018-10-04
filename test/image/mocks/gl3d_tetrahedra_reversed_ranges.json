@@ -1,0 +1,92 @@
+{
+  "data": [
+    {
+      "type":"mesh3d",
+      "name": "colorscale + intensity",
+      "x":[0, 1, 2, 0],
+      "y":[0, 0, 1, 2],
+      "z":[0, 2, 0, 1],
+      "i":[0, 0, 0, 1],
+      "j":[1, 2, 3, 2],
+      "k":[2, 3, 1, 3],
+      "colorscale": [
+        [0, "rgb(0, 0, 0)"],
+        [0.33, "rgb(255, 0, 0)"],
+        [0.66, "rgb(0, 255, 0)"],
+        [1, "rgb(0, 0, 255)"]
+      ],
+      "intensity": [0, 0.33, 0.66, 1],
+      "cmin": -0.5,
+      "cmax": 0.5,
+      "colorbar": {
+        "x": 0,
+        "title": "for colorscale + intensity tetrahedra",
+        "titleside": "right"
+      }
+    }, 
+    {
+      "type":"mesh3d",
+      "name": "facecolor",
+      "x":[3, 4, 5, 3],
+      "y":[0, 0, 1, 2],
+      "z":[0, 2, 0, 1],
+      "i":[0, 0, 0, 1],
+      "j":[1, 2, 3, 2],
+      "k":[2, 3, 1, 3],
+      "facecolor": [
+        "rgb(0, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(0, 255, 0)",
+        "rgb(0, 0, 255)"
+      ]
+    },
+    {
+      "type":"mesh3d",
+      "name": "vertexcolor",
+      "x":[6, 7, 8, 6],
+      "y":[0, 0, 1, 2],
+      "z":[0, 2, 0, 1],
+      "i":[0, 0, 0, 1],
+      "j":[1, 2, 3, 2],
+      "k":[2, 3, 1, 3],
+      "vertexcolor": [
+        "rgb(0, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(0, 255, 0)",
+        "rgb(0, 0, 255)"
+      ]
+    },
+    {
+      "type":"mesh3d",
+      "name": "color",
+      "x":[9, 10, 11, 9],
+      "y":[0, 0, 1, 2],
+      "z":[0, 2, 0, 1],
+      "i":[0, 0, 0, 1],
+      "j":[1, 2, 3, 2],
+      "k":[2, 3, 1, 3],
+      "color": "rgb(0, 255, 0)"
+    }
+  ],
+  "layout": {
+    "title": "Tetrahedra",
+    "scene": {
+        "aspectratio": {
+          "x": 5,
+          "y": 1,
+          "z": 1
+        },
+        "camera": {
+            "eye": {
+                "x": 0,
+                "y": -3,
+                "z": 1.8
+            }
+        },
+        "xaxis": {
+          "autorange": "reversed"
+        }
+    },
+    "width": 1000
+  }
+}
