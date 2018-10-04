@@ -9,6 +9,7 @@ var Registry = require('@src/registry');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
+var failTest = require('../assets/fail_test');
 
 
 describe('ModeBar', function() {
@@ -293,20 +294,12 @@ describe('ModeBar', function() {
 
     describe('modeBar.destroy', function() {
         it('removes the mode bar entirely', function() {
-            var modeBarParent = modeBar.element.parentNode,
-                gd = getMockGraphInfo(),
-                styleSelector = 'style[id*="modebar-' + gd._fullLayout._uid + '"]';
-
-
-            var style = document.querySelector(styleSelector);
-            expect(style).toBeTruthy();
+            var modeBarParent = modeBar.element.parentNode;
 
             modeBar.destroy();
 
             expect(modeBarParent.querySelector('.modebar')).toBeNull();
 
-            style = document.querySelector(styleSelector);
-            expect(style).toBeNull();
         });
     });
 
@@ -1243,6 +1236,106 @@ describe('ModeBar', function() {
                 })
                 .then(done);
             });
+        });
+    });
+
+    describe('modebar styling', function() {
+        var gd,
+            colors = ['rgba(128, 128, 128, 0.7)', 'rgba(255, 0, 128, 0.2)'],
+            targetBtn = 'pan2d', button, style;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
+
+        function checkButtonColor(button, color) {
+            var paths = button.node.querySelector('path');
+            var style = window.getComputedStyle(paths);
+            expect(style.fill).toBe(color);
+        }
+
+        it('create an associated style element and destroy it on purge', function(done) {
+            var styleSelector, style;
+            Plotly.plot(gd, [], {})
+            .then(function() {
+                styleSelector = 'style[id*="modebar-' + gd._fullLayout._uid + '"]';
+
+                style = document.querySelector(styleSelector);
+                expect(style).toBeTruthy();
+            })
+            .then(function() {
+                Plotly.purge(gd);
+                style = document.querySelector(styleSelector);
+                expect(style).toBeNull();
+            })
+            .then(done);
+        });
+
+        it('changes icon colors', function(done) {
+            Plotly.plot(gd, [], {modebar: { color: colors[0]}})
+            .then(function() {
+                button = selectButton(gd._fullLayout._modeBar, targetBtn);
+                checkButtonColor(button, colors[0]);
+            })
+            .then(function() {Plotly.relayout(gd, 'modebar.color', colors[1]);})
+            .then(function() {
+                checkButtonColor(button, colors[1]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('changes active icon colors', function(done) {
+            Plotly.plot(gd, [], {modebar: { activecolor: colors[0]}})
+            .then(function() {
+                button = selectButton(gd._fullLayout._modeBar, targetBtn);
+                button.click();
+                checkButtonColor(button, colors[0]);
+            })
+            .then(function() {Plotly.relayout(gd, 'modebar.activecolor', colors[1]);})
+            .then(function() {
+                checkButtonColor(button, colors[1]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('changes background color', function(done) {
+            Plotly.plot(gd, [], {modebar: { bgcolor: colors[0]}})
+            .then(function() {
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                expect(style.backgroundColor).toBe(colors[0]);
+            })
+            .then(function() {Plotly.relayout(gd, 'modebar.bgcolor', colors[1]);})
+            .then(function() {
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                expect(style.backgroundColor).toBe(colors[1]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('changes orientation', function(done) {
+            var modeBarEl, size;
+
+            Plotly.plot(gd, [], {modebar: { orientation: 'v' }})
+            .then(function() {
+                modeBarEl = gd._fullLayout._modeBar.element;
+                size = modeBarEl.getBoundingClientRect();
+                expect(size.width < size.height).toBeTruthy();
+            })
+            .then(function() {Plotly.relayout(gd, 'modebar.orientation', 'h');})
+            .catch(failTest)
+            .then(function() {
+                size = modeBarEl.getBoundingClientRect();
+                expect(size.width > size.height).toBeTruthy();
+            })
+            .then(done);
         });
     });
 });
