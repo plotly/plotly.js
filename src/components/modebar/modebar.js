@@ -62,6 +62,7 @@ proto.update = function(graphInfo, buttons) {
         buttons = buttons.reverse();
     }
 
+    Lib.deleteRelatedStyleRule(modeBarId);
     Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId, 'background-color: ' + fullLayout.modebar.bgcolor);
     Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + fullLayout.modebar.color);
     Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + fullLayout.modebar.activecolor);
