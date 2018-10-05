@@ -1336,8 +1336,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('modebar.orientation');
     coerce('modebar.bgcolor', Color.addOpacity(layoutOut.paper_bgcolor, 0.5));
-    coerce('modebar.color', Color.contrast(Color.rgb(layoutOut.modebar.bgcolor), 30, 30));
-    coerce('modebar.activecolor', Color.contrast(Color.rgb(layoutOut.modebar.bgcolor)));
+    var modebarDefaultColor = Color.contrast(Color.rgb(layoutOut.modebar.bgcolor));
+    coerce('modebar.color', Color.addOpacity(modebarDefaultColor, 0.3));
+    coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
 
     Registry.getComponentMethod(
         'calendars',
