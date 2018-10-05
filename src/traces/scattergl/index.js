@@ -259,12 +259,31 @@ function sceneUpdate(gd, subplot) {
         // draw traces in proper order
         scene.draw = function draw() {
             var i;
+	    var we_must_draw_previous_line_marker = 0 ;
             for(i = 0; i < scene.count; i++) {
+		var we_defer_somes_draw = 0 ;
+		if ( scene.fill2d && scene.fillOptions[i] && scene.fillOptions[i].fillmode == "tonext" ) {
+		    we_defer_somes_draw = 1 ;
+		} else {
+		    if ( we_must_draw_previous_line_marker && scene.line2d && scene.lineOptions[i-1] ) {
+			scene.line2d.draw(i-1);
+		    }
+		    if ( we_must_draw_previous_line_marker && scene.scatter2d && scene.markerOptions[i-1] ) {
+			scene.scatter2d.draw(i-1);
+		    }
+		    we_must_draw_previous_line_marker = 0 ;
+		}
                 if(scene.fill2d && scene.fillOptions[i]) {
                     scene.fill2d.draw(i);
                 }
+		// we draw line2d 
+		if ( we_must_draw_previous_line_marker && scene.line2d && scene.lineOptions[i-1] ) {
+		    scene.line2d.draw(i-1);
+		}
                 if(scene.line2d && scene.lineOptions[i]) {
-                    scene.line2d.draw(i);
+		    if ( we_defer_somes_draw == 0 ) {
+			scene.line2d.draw(i);
+		    }
                 }
                 if(scene.error2d && scene.errorXOptions[i]) {
                     scene.error2d.draw(i);
@@ -272,13 +291,25 @@ function sceneUpdate(gd, subplot) {
                 if(scene.error2d && scene.errorYOptions[i]) {
                     scene.error2d.draw(i + scene.count);
                 }
-                if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
-                    // traces in no-selection mode
-                    scene.scatter2d.draw(i);
-                }
+		// we draw scatter2d 
+		if (!scene.selectBatch || !scene.selectBatch[i]) {
+		    if ( we_must_draw_previous_line_marker && scene.scatter2d && scene.markerOptions[i-1] ) {
+			scene.scatter2d.draw(i-1);
+		    }
+		    if(scene.scatter2d && scene.markerOptions[i]) {
+			if ( we_defer_somes_draw == 0 ) {
+			    scene.scatter2d.draw(i);
+			}
+		    }
+		}
                 if(scene.glText[i] && scene.textOptions[i]) {
                     scene.glText[i].render();
                 }
+		if ( we_defer_somes_draw == 1 ) {
+		    we_must_draw_previous_line_marker = 1 ;
+		} else {
+		    we_must_draw_previous_line_marker = 0 ;
+		}
             }
 
             // draw traces in selection mode
