@@ -471,9 +471,7 @@ function validateDimensionDisplayInds(trace) {
 
 
 /**
- * Validate the requested display order for the dimensions.
- * If the display order is a permutation of 0 through dimensions.length - 1 then leave it alone. Otherwise, repalce
- * the display order with the dimension order
+ * Update category properties based on the unique values found for this dimension
  * @param {Object} dim
  * @param {UniqueInfo} uniqueInfoDim
  */
