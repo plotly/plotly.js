@@ -2,7 +2,7 @@ var fs = require('fs');
 var xml2js = require('xml2js');
 
 var parser = new xml2js.Parser();
-
+var builder = new xml2js.Builder({ headless: true, rootName: 'svg', renderOpts: {'newline': ''}});
 
 module.exports = function pullFontSVG(data, pathOut) {
     parser.parseString(data, function(err, result) {
@@ -25,6 +25,17 @@ module.exports = function pullFontSVG(data, pathOut) {
                 height: ascent - descent,
                 path: glyph.$.d,
                 transform: transform,
+            };
+        });
+
+        // Load SVG
+        var svgs = result.svg.defs[0].svg;
+        svgs.forEach(function(svg) {
+            var name = svg.$.id;
+            delete svg.$.id;
+            chars[name] = {
+                name: name,
+                svg: builder.buildObject(svg)
             };
         });
 
