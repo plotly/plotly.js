@@ -3248,6 +3248,9 @@ function makePlotFramework(gd) {
     var gd3 = d3.select(gd);
     var fullLayout = gd._fullLayout;
 
+    // Check if gd has a specified height
+    fullLayout._hasZeroHeight = gd.clientHeight === 0;
+
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
     fullLayout._container.enter().insert('div', ':first-child')

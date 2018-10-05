@@ -54,8 +54,8 @@ function lsInner(gd) {
     var i, subplot, plotinfo, xa, ya;
 
     fullLayout._paperdiv.style({
-        width: fullLayout.width + 'px',
-        height: fullLayout.height + 'px'
+        width: (fullLayout.autosize) ? '100%' : fullLayout.width + 'px',
+        height: (fullLayout.autosize && !fullLayout._hasZeroHeight) ? '100%' : fullLayout.height + 'px'
     })
     .selectAll('.main-svg')
     .call(Drawing.setSize, fullLayout.width, fullLayout.height);
