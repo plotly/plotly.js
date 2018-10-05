@@ -17,11 +17,6 @@ var filterUnique = require('../../lib/filter_unique.js');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 
-
-function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
-
-// Exports
-// =======
 /**
  * Create a wrapped ParcatsModel object from trace
  *
@@ -31,24 +26,18 @@ function visible(dimension) { return !('visible' in dimension) || dimension.visi
  * @return {Array.<ParcatsModel>}
  */
 module.exports = function calc(gd, trace) {
+    var visibleDims = Lib.filterVisible(trace.dimensions);
 
-    // Process inputs
-    // --------------
-    if(trace.dimensions.filter(visible).length === 0) {
-        // No visible dimensions specified. Nothing to compute
-        return [];
-    }
+    if(visibleDims.length === 0) return [];
 
-    // Compute unique information
-    // --------------------------
-    // UniqueInfo per dimension
-    var uniqueInfoDims = trace.dimensions.filter(visible).map(function(dim) {
+    var uniqueInfoDims = visibleDims.map(function(dim) {
         var categoryValues;
         if(dim.categoryorder === 'trace') {
             // Use order of first occurrence in trace
             categoryValues = null;
         } else if(dim.categoryorder === 'array') {
-            // Use categories specified in `categoryarray` first, then add extra to the end in trace order
+            // Use categories specified in `categoryarray` first,
+            // then add extra to the end in trace order
             categoryValues = dim.categoryarray;
         } else {
             // Get all categories up front so we can order them
@@ -61,8 +50,6 @@ module.exports = function calc(gd, trace) {
         return getUniqueInfo(dim.values, categoryValues);
     });
 
-    // Process counts
-    // --------------
     var counts,
         count,
         totalCount;
@@ -72,13 +59,9 @@ module.exports = function calc(gd, trace) {
         counts = [trace.counts];
     }
 
-    // Validate dimension display order
-    // --------------------------------
-    validateDimensionDisplayInds(trace);
+    validateDimensionDisplayInds(visibleDims);
 
-    // Validate category display order
-    // -------------------------------
-    trace.dimensions.filter(visible).forEach(function(dim, dimInd) {
+    visibleDims.forEach(function(dim, dimInd) {
         validateCategoryProperties(dim, uniqueInfoDims[dimInd]);
     });
 
@@ -111,7 +94,7 @@ module.exports = function calc(gd, trace) {
 
     // Number of values and counts
     // ---------------------------
-    var numValues = trace.dimensions.filter(visible)[0].values.length;
+    var numValues = visibleDims[0].values.length;
 
     // Build path info
     // ---------------
@@ -155,12 +138,8 @@ module.exports = function calc(gd, trace) {
         updatePathModel(pathModels[pathKey], valueInd, count);
     }
 
-    // Build categories info
-    // ---------------------
-
-    // Array of DimensionModel objects
-    var dimensionModels = trace.dimensions.filter(visible).map(function(di, i) {
-        return createDimensionModel(i, di._index, di.displayindex, di.label, totalCount);
+    var dimensionModels = visibleDims.map(function(di, i) {
+        return createDimensionModel(i, di._index, di._displayindex, di.label, totalCount);
     });
 
 
@@ -174,8 +153,8 @@ module.exports = function calc(gd, trace) {
             var cats = dimensionModels[d].categories;
 
             if(cats[catInd] === undefined) {
-                var catValue = trace.dimensions[containerInd].categoryarray[catInd];
-                var catLabel = trace.dimensions[containerInd].ticktext[catInd];
+                var catValue = trace.dimensions[containerInd]._categoryarray[catInd];
+                var catLabel = trace.dimensions[containerInd]._ticktext[catInd];
                 cats[catInd] = createCategoryModel(d, catInd, catValue, catLabel);
             }
 
@@ -216,7 +195,6 @@ module.exports = function calc(gd, trace) {
  */
 function createParcatsModel(dimensions, paths, count) {
     var maxCats = dimensions
-        .filter(visible)
         .map(function(d) {return d.categories.length;})
         .reduce(function(v1, v2) {return Math.max(v1, v2);});
     return {dimensions: dimensions, paths: paths, trace: undefined, maxCats: maxCats, count: count};
@@ -456,43 +434,47 @@ function getUniqueInfo(values, uniqueValues) {
 
 /**
  * Validate the requested display order for the dimensions.
- * If the display order is a permutation of 0 through dimensions.length - 1 then leave it alone. Otherwise, repalce
- * the display order with the dimension order
+ * If the display order is a permutation of 0 through dimensions.length - 1, link to _displayindex
+ * Otherwise, replace the display order with the dimension order
  * @param {Object} trace
  */
-function validateDimensionDisplayInds(trace) {
-    var displayInds = trace.dimensions.filter(visible).map(function(dim) {return dim.displayindex;});
-    if(!isRangePermutation(displayInds)) {
-        trace.dimensions.filter(visible).forEach(function(dim, i) {
-            dim.displayindex = i;
-        });
+function validateDimensionDisplayInds(visibleDims) {
+    var displayInds = visibleDims.map(function(d) { return d.displayindex; });
+    var i;
+
+    if(isRangePermutation(displayInds)) {
+        for(i = 0; i < visibleDims.length; i++) {
+            visibleDims[i]._displayindex = visibleDims[i].displayindex;
+        }
+    } else {
+        for(i = 0; i < visibleDims.length; i++) {
+            visibleDims[i]._displayindex = i;
+        }
     }
 }
 
 
 /**
- * Validate the requested display order for the dimensions.
- * If the display order is a permutation of 0 through dimensions.length - 1 then leave it alone. Otherwise, repalce
- * the display order with the dimension order
+ * Update category properties based on the unique values found for this dimension
  * @param {Object} dim
  * @param {UniqueInfo} uniqueInfoDim
  */
 function validateCategoryProperties(dim, uniqueInfoDim) {
 
     // Update categoryarray
-    dim.categoryarray = uniqueInfoDim.uniqueValues;
+    dim._categoryarray = uniqueInfoDim.uniqueValues;
 
     // Handle ticktext
     if(dim.ticktext === null || dim.ticktext === undefined) {
-        dim.ticktext = [];
+        dim._ticktext = [];
     } else {
         // Shallow copy to avoid modifying input array
-        dim.ticktext = dim.ticktext.slice();
+        dim._ticktext = dim.ticktext.slice();
     }
 
     // Extend ticktext with elements from uniqueInfoDim.uniqueValues
-    for(var i = dim.ticktext.length; i < uniqueInfoDim.uniqueValues.length; i++) {
-        dim.ticktext.push(uniqueInfoDim.uniqueValues[i]);
+    for(var i = dim._ticktext.length; i < uniqueInfoDim.uniqueValues.length; i++) {
+        dim._ticktext.push(uniqueInfoDim.uniqueValues[i]);
     }
 }
 
