@@ -383,13 +383,6 @@ function computeTraceBounds(scene, trace, bounds) {
     }
 }
 
-function isCloseToZero(a) {
-    if(Math.abs(a) > Number.MIN_VALUE) { // the smallest positive numeric value representable in JavaScript
-        return false;
-    }
-    return true;
-}
-
 proto.plot = function(sceneData, fullLayout, layout) {
 
     // Save parameters
@@ -442,8 +435,12 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
     var dataScale = [1, 1, 1];
     for(j = 0; j < 3; ++j) {
-        var diff = dataBounds[1][j] - dataBounds[0][j];
-        if(!isCloseToZero(diff)) dataScale[j] = 1.0 / diff;
+        if(dataBounds[1][j] === dataBounds[0][j]) {
+            dataScale[j] = 1.0;
+        }
+        else {
+            dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
+        }
     }
 
     // Save scale
