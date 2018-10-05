@@ -17,11 +17,6 @@ var filterUnique = require('../../lib/filter_unique.js');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 
-
-function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
-
-// Exports
-// =======
 /**
  * Create a wrapped ParcatsModel object from trace
  *
@@ -31,24 +26,18 @@ function visible(dimension) { return !('visible' in dimension) || dimension.visi
  * @return {Array.<ParcatsModel>}
  */
 module.exports = function calc(gd, trace) {
+    var visibleDims = Lib.filterVisible(trace.dimensions);
 
-    // Process inputs
-    // --------------
-    if(trace.dimensions.filter(visible).length === 0) {
-        // No visible dimensions specified. Nothing to compute
-        return [];
-    }
+    if(visibleDims.length === 0) return [];
 
-    // Compute unique information
-    // --------------------------
-    // UniqueInfo per dimension
-    var uniqueInfoDims = trace.dimensions.filter(visible).map(function(dim) {
+    var uniqueInfoDims = visibleDims.map(function(dim) {
         var categoryValues;
         if(dim.categoryorder === 'trace') {
             // Use order of first occurrence in trace
             categoryValues = null;
         } else if(dim.categoryorder === 'array') {
-            // Use categories specified in `categoryarray` first, then add extra to the end in trace order
+            // Use categories specified in `categoryarray` first,
+            // then add extra to the end in trace order
             categoryValues = dim.categoryarray;
         } else {
             // Get all categories up front so we can order them
@@ -61,8 +50,6 @@ module.exports = function calc(gd, trace) {
         return getUniqueInfo(dim.values, categoryValues);
     });
 
-    // Process counts
-    // --------------
     var counts,
         count,
         totalCount;
@@ -72,13 +59,9 @@ module.exports = function calc(gd, trace) {
         counts = [trace.counts];
     }
 
-    // Validate dimension display order
-    // --------------------------------
-    validateDimensionDisplayInds(trace);
+    validateDimensionDisplayInds(visibleDims);
 
-    // Validate category display order
-    // -------------------------------
-    trace.dimensions.filter(visible).forEach(function(dim, dimInd) {
+    visibleDims.forEach(function(dim, dimInd) {
         validateCategoryProperties(dim, uniqueInfoDims[dimInd]);
     });
 
@@ -111,7 +94,7 @@ module.exports = function calc(gd, trace) {
 
     // Number of values and counts
     // ---------------------------
-    var numValues = trace.dimensions.filter(visible)[0].values.length;
+    var numValues = visibleDims[0].values.length;
 
     // Build path info
     // ---------------
@@ -155,11 +138,7 @@ module.exports = function calc(gd, trace) {
         updatePathModel(pathModels[pathKey], valueInd, count);
     }
 
-    // Build categories info
-    // ---------------------
-
-    // Array of DimensionModel objects
-    var dimensionModels = trace.dimensions.filter(visible).map(function(di, i) {
+    var dimensionModels = visibleDims.map(function(di, i) {
         return createDimensionModel(i, di._index, di._displayindex, di.label, totalCount);
     });
 
@@ -216,7 +195,6 @@ module.exports = function calc(gd, trace) {
  */
 function createParcatsModel(dimensions, paths, count) {
     var maxCats = dimensions
-        .filter(visible)
         .map(function(d) {return d.categories.length;})
         .reduce(function(v1, v2) {return Math.max(v1, v2);});
     return {dimensions: dimensions, paths: paths, trace: undefined, maxCats: maxCats, count: count};
@@ -460,8 +438,7 @@ function getUniqueInfo(values, uniqueValues) {
  * Otherwise, replace the display order with the dimension order
  * @param {Object} trace
  */
-function validateDimensionDisplayInds(trace) {
-    var visibleDims = Lib.filterVisible(trace.dimensions);
+function validateDimensionDisplayInds(visibleDims) {
     var displayInds = visibleDims.map(function(d) { return d.displayindex; });
     var i;
 
