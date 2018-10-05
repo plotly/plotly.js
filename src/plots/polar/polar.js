@@ -28,6 +28,8 @@ var prepSelect = require('../cartesian/select').prepSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
 var clearSelect = require('../cartesian/select').clearSelect;
 var setCursor = require('../../lib/setcursor');
+var clearGlCanvases = require('../../lib/clear_gl_canvases');
+var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var constants = require('./constants');
@@ -1058,7 +1060,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
             .attr('transform', strTranslate(cx, cy))
             .selectAll('path').attr('transform', null);
 
-        if(_this._scene) _this._scene.clear();
+        var hasRegl = false;
 
         for(var traceType in _this.traceHash) {
             var moduleCalcData = _this.traceHash[traceType];
@@ -1066,6 +1068,12 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
             var _module = moduleCalcData[0][0].trace._module;
             var polarLayoutNow = gd._fullLayout[_this.id];
             _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
+            if(Registry.traceIs(traceType, 'gl') && moduleCalcDataVisible.length) hasRegl = true;
+        }
+
+        if(hasRegl) {
+            clearGlCanvases(gd);
+            redrawReglTraces(gd);
         }
     }
 
@@ -1185,7 +1193,7 @@ proto.updateAngularDrag = function(fullLayout) {
             scatterTraces.call(Drawing.hideOutsideRangePoints, _this);
         }
 
-        if(_this._scene) _this._scene.clear();
+        var hasRegl = false;
 
         for(var traceType in _this.traceHash) {
             if(Registry.traceIs(traceType, 'gl')) {
@@ -1193,7 +1201,13 @@ proto.updateAngularDrag = function(fullLayout) {
                 var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
                 var _module = moduleCalcData[0][0].trace._module;
                 _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
+                if(moduleCalcDataVisible.length) hasRegl = true;
             }
+        }
+
+        if(hasRegl) {
+            clearGlCanvases(gd);
+            redrawReglTraces(gd);
         }
     }
 

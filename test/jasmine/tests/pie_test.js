@@ -198,8 +198,8 @@ describe('Pie traces:', function() {
             expect(title.size()).toBe(1);
             var titlePos = getClientPosition('g.titletext');
             var pieCenterPos = getClientPosition('g.trace');
-            expect(Math.abs(titlePos[0] - pieCenterPos[0])).toBeLessThan(2);
-            expect(Math.abs(titlePos[1] - pieCenterPos[1])).toBeLessThan(2);
+            expect(Math.abs(titlePos[0] - pieCenterPos[0])).toBeLessThan(4);
+            expect(Math.abs(titlePos[1] - pieCenterPos[1])).toBeLessThan(4);
         })
         .catch(failTest)
         .then(done);
@@ -229,15 +229,15 @@ describe('Pie traces:', function() {
             var pieBox = d3.select('g.trace').node().getBoundingClientRect();
             var radius = 0.1 * Math.min(pieBox.width / 2, pieBox.height / 2);
             var pieCenterPos = getClientPosition('g.trace');
-            // unfortunately boundingClientRect is inaccurate and so we allow an error of 2
+            // unfortunately boundingClientRect is inaccurate and so we allow an error of 3
             expect(_verifyPointInCircle(titleBox.left, titleBox.top, pieCenterPos, radius))
-                .toBeLessThan(2);
+                .toBeLessThan(3);
             expect(_verifyPointInCircle(titleBox.right, titleBox.top, pieCenterPos, radius))
-                .toBeLessThan(2);
+                .toBeLessThan(3);
             expect(_verifyPointInCircle(titleBox.left, titleBox.bottom, pieCenterPos, radius))
-                .toBeLessThan(2);
+                .toBeLessThan(3);
             expect(_verifyPointInCircle(titleBox.right, titleBox.bottom, pieCenterPos, radius))
-                .toBeLessThan(2);
+                .toBeLessThan(3);
         })
         .catch(failTest)
         .then(done);

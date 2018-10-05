@@ -153,26 +153,6 @@ describe('Test Plots', function() {
 
             testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
         });
-
-        it('should sort base plot modules on fullLayout object', function() {
-            var gd = Lib.extendDeep({}, require('@mocks/plot_types.json'));
-            gd.data.unshift({type: 'scattergl'});
-            gd.data.push({type: 'splom'});
-
-            supplyAllDefaults(gd);
-            var names = gd._fullLayout._basePlotModules.map(function(m) {
-                return m.name;
-            });
-
-            expect(names).toEqual([
-                'splom',
-                'cartesian',
-                'gl3d',
-                'geo',
-                'pie',
-                'ternary'
-            ]);
-        });
     });
 
     describe('Plots.supplyLayoutGlobalDefaults should', function() {

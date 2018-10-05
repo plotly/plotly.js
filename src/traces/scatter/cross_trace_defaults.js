@@ -11,7 +11,7 @@
 
 
 // remove opacity for any trace that has a fill or is filled to
-module.exports = function cleanData(fullData) {
+module.exports = function crossTraceDefaults(fullData) {
     for(var i = 0; i < fullData.length; i++) {
         var tracei = fullData[i];
         if(tracei.type !== 'scatter') continue;

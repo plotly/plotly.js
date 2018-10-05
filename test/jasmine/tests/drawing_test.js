@@ -363,7 +363,7 @@ describe('Drawing', function() {
                 'width', 'left', 'right'
             ].forEach(function(dim) {
                 // give larger dimensions some extra tolerance
-                var tol = Math.max(expected[dim] / 10, 3);
+                var tol = Math.max(expected[dim] / 10, 3.5);
                 expect(actual[dim]).toBeWithin(expected[dim], tol, dim);
             });
         }

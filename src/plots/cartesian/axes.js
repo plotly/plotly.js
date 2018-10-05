@@ -21,6 +21,7 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 
 var axAttrs = require('./layout_attributes');
+var cleanTicks = require('./clean_ticks');
 
 var constants = require('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
@@ -280,43 +281,22 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
     return hasOneAxisChanged;
 };
 
-axes.autoBin = function(data, ax, nbins, is2d, calendar) {
-    var dataMin = Lib.aggNums(Math.min, null, data),
-        dataMax = Lib.aggNums(Math.max, null, data);
-
-    if(!calendar) calendar = ax.calendar;
+axes.autoBin = function(data, ax, nbins, is2d, calendar, size) {
+    var dataMin = Lib.aggNums(Math.min, null, data);
+    var dataMax = Lib.aggNums(Math.max, null, data);
 
     if(ax.type === 'category') {
         return {
             start: dataMin - 0.5,
             end: dataMax + 0.5,
-            size: 1,
+            size: Math.max(1, Math.round(size) || 1),
             _dataSpan: dataMax - dataMin,
         };
     }
 
-    var size0;
-    if(nbins) size0 = ((dataMax - dataMin) / nbins);
-    else {
-        // totally auto: scale off std deviation so the highest bin is
-        // somewhat taller than the total number of bins, but don't let
-        // the size get smaller than the 'nice' rounded down minimum
-        // difference between values
-        var distinctData = Lib.distinctVals(data),
-            msexp = Math.pow(10, Math.floor(
-                Math.log(distinctData.minDiff) / Math.LN10)),
-            minSize = msexp * Lib.roundUp(
-                distinctData.minDiff / msexp, [0.9, 1.9, 4.9, 9.9], true);
-        size0 = Math.max(minSize, 2 * Lib.stdev(data) /
-            Math.pow(data.length, is2d ? 0.25 : 0.4));
+    if(!calendar) calendar = ax.calendar;
 
-        // fallback if ax.d2c output BADNUMs
-        // e.g. when user try to plot categorical bins
-        // on a layout.xaxis.type: 'linear'
-        if(!isNumeric(size0)) size0 = 1;
-    }
-
-    // piggyback off autotick code to make "nice" bin sizes
+    // piggyback off tick code to make "nice" bin sizes and edges
     var dummyAx;
     if(ax.type === 'log') {
         dummyAx = {
@@ -333,19 +313,51 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
     }
     axes.setConvert(dummyAx);
 
-    axes.autoTicks(dummyAx, size0);
+    size = size && cleanTicks.dtick(size, dummyAx.type);
+
+    if(size) {
+        dummyAx.dtick = size;
+        dummyAx.tick0 = cleanTicks.tick0(undefined, dummyAx.type, calendar);
+    }
+    else {
+        var size0;
+        if(nbins) size0 = ((dataMax - dataMin) / nbins);
+        else {
+            // totally auto: scale off std deviation so the highest bin is
+            // somewhat taller than the total number of bins, but don't let
+            // the size get smaller than the 'nice' rounded down minimum
+            // difference between values
+            var distinctData = Lib.distinctVals(data);
+            var msexp = Math.pow(10, Math.floor(
+                Math.log(distinctData.minDiff) / Math.LN10));
+            var minSize = msexp * Lib.roundUp(
+                distinctData.minDiff / msexp, [0.9, 1.9, 4.9, 9.9], true);
+            size0 = Math.max(minSize, 2 * Lib.stdev(data) /
+                Math.pow(data.length, is2d ? 0.25 : 0.4));
+
+            // fallback if ax.d2c output BADNUMs
+            // e.g. when user try to plot categorical bins
+            // on a layout.xaxis.type: 'linear'
+            if(!isNumeric(size0)) size0 = 1;
+        }
+
+        axes.autoTicks(dummyAx, size0);
+    }
+
+
+    var finalSize = dummyAx.dtick;
     var binStart = axes.tickIncrement(
-            axes.tickFirst(dummyAx), dummyAx.dtick, 'reverse', calendar);
+            axes.tickFirst(dummyAx), finalSize, 'reverse', calendar);
     var binEnd, bincount;
 
     // check for too many data points right at the edges of bins
     // (>50% within 1% of bin edges) or all data points integral
     // and offset the bins accordingly
-    if(typeof dummyAx.dtick === 'number') {
+    if(typeof finalSize === 'number') {
         binStart = autoShiftNumericBins(binStart, data, dummyAx, dataMin, dataMax);
 
-        bincount = 1 + Math.floor((dataMax - binStart) / dummyAx.dtick);
-        binEnd = binStart + bincount * dummyAx.dtick;
+        bincount = 1 + Math.floor((dataMax - binStart) / finalSize);
+        binEnd = binStart + bincount * finalSize;
     }
     else {
         // month ticks - should be the only nonlinear kind we have at this point.
@@ -354,7 +366,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
         // we bin it on a linear axis (which one could argue against, but that's
         // a separate issue)
         if(dummyAx.dtick.charAt(0) === 'M') {
-            binStart = autoShiftMonthBins(binStart, data, dummyAx.dtick, dataMin, calendar);
+            binStart = autoShiftMonthBins(binStart, data, finalSize, dataMin, calendar);
         }
 
         // calculate the endpoint for nonlinear ticks - you have to
@@ -362,7 +374,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
         binEnd = binStart;
         bincount = 0;
         while(binEnd <= dataMax) {
-            binEnd = axes.tickIncrement(binEnd, dummyAx.dtick, false, calendar);
+            binEnd = axes.tickIncrement(binEnd, finalSize, false, calendar);
             bincount++;
         }
     }
@@ -370,7 +382,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
     return {
         start: ax.c2r(binStart, 0, calendar),
         end: ax.c2r(binEnd, 0, calendar),
-        size: dummyAx.dtick,
+        size: finalSize,
         _dataSpan: dataMax - dataMin
     };
 };
