@@ -160,7 +160,7 @@ module.exports = function calc(gd, trace) {
 
     // Array of DimensionModel objects
     var dimensionModels = trace.dimensions.filter(visible).map(function(di, i) {
-        return createDimensionModel(i, di._index, di.displayindex, di.label, totalCount);
+        return createDimensionModel(i, di._index, di._displayindex, di.label, totalCount);
     });
 
 
@@ -456,16 +456,23 @@ function getUniqueInfo(values, uniqueValues) {
 
 /**
  * Validate the requested display order for the dimensions.
- * If the display order is a permutation of 0 through dimensions.length - 1 then leave it alone. Otherwise, repalce
- * the display order with the dimension order
+ * If the display order is a permutation of 0 through dimensions.length - 1, link to _displayindex
+ * Otherwise, replace the display order with the dimension order
  * @param {Object} trace
  */
 function validateDimensionDisplayInds(trace) {
-    var displayInds = trace.dimensions.filter(visible).map(function(dim) {return dim.displayindex;});
-    if(!isRangePermutation(displayInds)) {
-        trace.dimensions.filter(visible).forEach(function(dim, i) {
-            dim.displayindex = i;
-        });
+    var visibleDims = Lib.filterVisible(trace.dimensions);
+    var displayInds = visibleDims.map(function(d) { return d.displayindex; });
+    var i;
+
+    if(isRangePermutation(displayInds)) {
+        for(i = 0; i < visibleDims.length; i++) {
+            visibleDims[i]._displayindex = visibleDims[i].displayindex;
+        }
+    } else {
+        for(i = 0; i < visibleDims.length; i++) {
+            visibleDims[i]._displayindex = i;
+        }
     }
 }
 
