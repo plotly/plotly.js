@@ -436,16 +436,8 @@ function plot(gd, subplot, cdata) {
                 var last, j;
 
                 var fillData = [];
-                if(trace.fill && (trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
-                        (trace.fill.substr(0, 2) === 'to' && !trace._prevtrace))
-                ) {
-                    fillData.push(i)
-                }
-                if(trace._nexttrace) {
-                    // make the fill-to-next path now for the NEXT trace, so it shows
-                    // behind both lines.
-                    fillData.push(i + 1);
-                }
+                if(trace._ownfill) fillData.push(i);
+                if(trace._nexttrace) fillData.push(i + 1);
                 if(fillData.length) scene.fillOrder[i] = fillData;
 
                 var pos = [], srcPos = (lineOptions && lineOptions.positions) || stash.positions;

@@ -75,9 +75,16 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
                 }
             }
 
+            if(trace.fill && (
+                trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
+                (trace.fill.substr(0, 2) === 'to' && !trace._prevtrace))
+            ) {
+                trace._ownfill = true;
+            }
+
             prevtraces[group] = trace;
         } else {
-            trace._prevtrace = trace._nexttrace = null;
+            trace._prevtrace = trace._nexttrace = trace._ownfill = null;
         }
     }
 
