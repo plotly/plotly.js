@@ -1,0 +1,107 @@
+{
+    "data": [
+{
+"x": [10,11, 12, 13, 14, 15    ,null, 16 , 17 , 18 , 19  ],
+  "y": [null,26, 28, 27, 29,null,null,  26, 30, 30 , null  ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "hv",
+  "line": {"shape": "hv"},
+  "type": "scattergl"
+},{
+  "x": [10,11, 12, 13, 14, 15    ,null, 16 , 17 , 18 , 19  ],
+  "y": [null,21, 23, 22, 24,null,null, 21, 25 , 25 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "vh",
+  "line": {"shape": "vh"},
+  "type": "scattergl"
+},{
+  "x": [10,11, 12, 13, 14, 15    , null , 16 , 17 , 18 , 19  ],
+  "y": [null,16, 18, 17, 19,null,null , 16, 20 , 20 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "hvh",
+  "line": {"shape": "hvh"},
+  "type": "scattergl"
+},
+{
+  "x": [10,11, 12, 13, 14, 15    ,null, 16 , 17 , 18 , 19  ],
+  "y": [null,11, 13, 12, 14,null,null,  11, 15 , 15 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "vhv",
+  "line": {"shape": "vhv"},
+  "type": "scattergl"
+},
+{
+  "x": [10,11, 12, 13, 14, 15    ,null, 16 , 17 , 18 , 19  ],
+  "y": [null,6, 8, 7, 9,null, null, 6, 10 , 10 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "spline",
+  "line": {"shape": "spline","smoothing":4},
+  "type": "scattergl"
+},
+{
+  "x": [10,11, 12, 13, 14, 15    , 16 , 17 , 18 , 19  ],
+  "y": [null,1, 3, 2, 4,null, 1 , 5 , 5 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "linear",
+  "line": {"shape": "linear"},
+  "type": "scattergl"
+},{
+  "x": [1, 2, 3, 4, 5    , 6 , 7 , 8 , 9  ],
+  "y": [26, 28, 27, 29,null, 26, 30, 30 , null  ],
+  "mode": "lines+markers",
+  "name": "hv",
+  "line": {"shape": "hv"},
+  "type": "scattergl"
+},{
+  "x": [1, 2, 3, 4, 5    , 6 , 7 , 8 , 9  ],
+  "y": [21, 23, 22, 24,null, 21, 25 , 25 , null ],
+  "mode": "lines+markers",
+  "name": "vh",
+  "line": {"shape": "vh"},
+  "type": "scattergl"
+},{
+  "x": [1, 2, 3, 4, 5    , 6 , 7 , 8 , 9  ],
+  "y": [16, 18, 17, 19,null, 16, 20 , 20 , null ],
+  "mode": "lines+markers",
+  "name": "hvh",
+  "line": {"shape": "hvh"},
+  "type": "scattergl"
+},{
+  "x": [1, 2, 3, 4, 5    , 6 , 7 , 8 , 9  ],
+  "y": [11, 13, 12, 14,null, 11, 15 , 15 , null ],
+  "mode": "lines+markers",
+  "name": "vhv",
+  "line": {"shape": "vhv"},
+  "type": "scattergl"
+},{
+  "x": [1, 2, 3, 4, 5    , 6 , 7 , 8 , 9  ],
+  "y": [6, 8, 7, 9,null, 6, 10 , 10 , null ],
+  "mode": "lines+markers",
+  "name": "spline",
+  "line": {"shape": "spline","smoothing":4},
+  "type": "scattergl"
+},{
+  "x": [1, 2, 3, 4, 5    , 6 , 7 , 8 , 9  ],
+  "y": [1, 3, 2, 4,null, 1 , 5 , 5 , null ],
+  "mode": "lines+markers",
+  "name": "linear",
+  "line": {"shape": "linear"},
+  "type": "scattergl"
+}
+],
+  "layout": {
+    "margin": {
+      "b": 100,
+      "l": 100,
+      "t": 100,
+      "r": 100
+    },
+    "xaxis": {
+      "title": "x1"
+    },
+    "yaxis": {
+      "title": "y1"
+    },
+      "dragmode": "zoom"
+  }
+}
