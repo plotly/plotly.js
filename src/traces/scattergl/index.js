@@ -271,6 +271,12 @@ function sceneUpdate(gd, subplot) {
                     if(we_must_draw_previous_line_marker && scene.scatter2d && scene.markerOptions[i - 1]) {
                         scene.scatter2d.draw(i - 1);
                     }
+                    if(we_must_draw_previous_line_marker && scene.error2d && scene.errorXOptions[i - 1]) {
+                        scene.error2d.draw(i - 1);
+                    }
+                    if(we_must_draw_previous_line_marker && scene.error2d && scene.errorYOptions[i - 1]) {
+                        scene.error2d.draw(i - 1 + scene.count);
+                    }
                     we_must_draw_previous_line_marker = 0;
                 }
                 if(scene.fill2d && scene.fillOptions[i]) {
@@ -285,8 +291,15 @@ function sceneUpdate(gd, subplot) {
                         scene.line2d.draw(i);
                     }
                 }
+                // we draw error2d
+                if(we_must_draw_previous_line_marker && scene.error2d && scene.errorXOptions[i - 1]) {
+                    scene.error2d.draw(i - 1);
+                }
                 if(scene.error2d && scene.errorXOptions[i]) {
                     scene.error2d.draw(i);
+                }
+                if(we_must_draw_previous_line_marker && scene.error2d && scene.errorYOptions[i - 1]) {
+                    scene.error2d.draw(i - 1 + scene.count);
                 }
                 if(scene.error2d && scene.errorYOptions[i]) {
                     scene.error2d.draw(i + scene.count);
