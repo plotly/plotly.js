@@ -46,6 +46,11 @@
 
 .modebar.vertical {
     top: -1px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 100%;
+    align-content: flex-end;
     .modebar-group {
         display: block;
         float: none;
