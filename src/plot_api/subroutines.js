@@ -54,8 +54,8 @@ function lsInner(gd) {
     var i, subplot, plotinfo, xa, ya;
 
     fullLayout._paperdiv.style({
-        width: (fullLayout.autosize && !gd._context._hasZeroWidth && !gd.layout.width) ? '100%' : fullLayout.width + 'px',
-        height: (fullLayout.autosize && !gd._context._hasZeroHeight && !gd.layout.height) ? '100%' : fullLayout.height + 'px'
+        width: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroWidth && !gd.layout.width) ? '100%' : fullLayout.width + 'px',
+        height: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroHeight && !gd.layout.height) ? '100%' : fullLayout.height + 'px'
     })
     .selectAll('.main-svg')
     .call(Drawing.setSize, fullLayout.width, fullLayout.height);
