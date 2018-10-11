@@ -492,6 +492,38 @@ describe('sankey tests', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should not show labels if hoverinfo is none', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                return Plotly.restyle(gd, 'hoverinfo', 'none');
+            })
+            .then(function() {
+                _hover(404, 302);
+
+                assertNoLabel();
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not show labels if hoverinfo is skip', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                return Plotly.restyle(gd, 'hoverinfo', 'skip');
+            })
+            .then(function() {
+                _hover(404, 302);
+
+                assertNoLabel();
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('Test hover/click event data:', function() {
@@ -574,6 +606,7 @@ describe('sankey tests', function() {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, fig)
+            .then(function() { return Plotly.restyle(gd, 'hoverinfo', 'none'); })
             .then(function() { return _hover('node'); })
             .then(function(d) {
                 _assert(d, {
@@ -610,11 +643,8 @@ describe('sankey tests', function() {
             .then(done);
         });
 
-        it('should not output hover/unhover event data when hovermoder is false', function(done) {
-            var fig = Lib.extendDeep({}, mock);
-
-            Plotly.plot(gd, fig)
-            .then(function() { return Plotly.relayout(gd, 'hovermode', false); })
+        function assertNoHoverEvents() {
+            return Promise.resolve()
             .then(function() { return _hover('node'); })
             .then(failTest).catch(function(err) {
                 expect(err).toBe('plotly_hover did not get called!');
@@ -630,7 +660,26 @@ describe('sankey tests', function() {
             .then(function() { return _unhover('link'); })
             .then(failTest).catch(function(err) {
                 expect(err).toBe('plotly_unhover did not get called!');
-            })
+            });
+        }
+
+        it('should not output hover/unhover event data when hovermoder is false', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, fig)
+            .then(function() { return Plotly.relayout(gd, 'hovermode', false); })
+            .then(assertNoHoverEvents)
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not output hover/unhover event data when hoverinfo is skip', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, fig)
+            .then(function() { return Plotly.restyle(gd, 'hoverinfo', 'skip'); })
+            .then(assertNoHoverEvents)
+            .catch(failTest)
             .then(done);
         });
     });

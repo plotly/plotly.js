@@ -132,10 +132,13 @@ module.exports = function plot(gd, calcData) {
     var linkHover = function(element, d, sankey) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
-        gd.emit('plotly_hover', {
-            event: d3.event,
-            points: [d.link]
-        });
+        if(d.link.trace.hoverinfo !== 'skip') {
+            gd.emit('plotly_hover', {
+                event: d3.event,
+                points: [d.link]
+            });
+        }
+
     };
 
     var sourceLabel = _(gd, 'source:') + ' ';
@@ -146,6 +149,7 @@ module.exports = function plot(gd, calcData) {
     var linkHoverFollow = function(element, d) {
         if(gd._fullLayout.hovermode === false) return;
         var trace = d.link.trace;
+        if(trace.hoverinfo === 'none' || trace.hoverinfo === 'skip') return;
         var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
         var boundingBox = element.getBoundingClientRect();
         var hoverCenterX = boundingBox.left + boundingBox.width / 2;
@@ -179,10 +183,12 @@ module.exports = function plot(gd, calcData) {
     var linkUnhover = function(element, d, sankey) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
-        gd.emit('plotly_unhover', {
-            event: d3.event,
-            points: [d.link]
-        });
+        if(d.link.trace.hoverinfo !== 'skip') {
+            gd.emit('plotly_unhover', {
+                event: d3.event,
+                points: [d.link]
+            });
+        }
 
         Fx.loneUnhover(fullLayout._hoverlayer.node());
     };
@@ -198,15 +204,19 @@ module.exports = function plot(gd, calcData) {
     var nodeHover = function(element, d, sankey) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeHoveredStyle, d, sankey);
-        gd.emit('plotly_hover', {
-            event: d3.event,
-            points: [d.node]
-        });
+        if(d.node.trace.hoverinfo !== 'skip') {
+            gd.emit('plotly_hover', {
+                event: d3.event,
+                points: [d.node]
+            });
+        }
     };
 
     var nodeHoverFollow = function(element, d) {
         if(gd._fullLayout.hovermode === false) return;
+
         var trace = d.node.trace;
+        if(trace.hoverinfo === 'none' || trace.hoverinfo === 'skip') return;
         var nodeRect = d3.select(element).select('.' + cn.nodeRect);
         var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
         var boundingBox = nodeRect.node().getBoundingClientRect();
@@ -243,10 +253,12 @@ module.exports = function plot(gd, calcData) {
     var nodeUnhover = function(element, d, sankey) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
-        gd.emit('plotly_unhover', {
-            event: d3.event,
-            points: [d.node]
-        });
+        if(d.node.trace.hoverinfo !== 'skip') {
+            gd.emit('plotly_unhover', {
+                event: d3.event,
+                points: [d.node]
+            });
+        }
 
         Fx.loneUnhover(fullLayout._hoverlayer.node());
     };
