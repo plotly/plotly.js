@@ -9,19 +9,22 @@ var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var color = require('../../../src/components/color');
+var rgb = color.rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var SLICES_SELECTOR = '.slice path';
+var SLICES_TEXT_SELECTOR = '.pielayer text.slicetext';
 var LEGEND_ENTRIES_SELECTOR = '.legendpoints path';
 
 describe('Pie defaults', function() {
-    function _supply(trace) {
+    function _supply(trace, layout) {
         var gd = {
             data: [trace],
-            layout: {}
+            layout: layout || {}
         };
 
         supplyAllDefaults(gd);
@@ -59,10 +62,23 @@ describe('Pie defaults', function() {
         out = _supply({type: 'pie', labels: ['A', 'B'], values: []});
         expect(out.visible).toBe(false);
     });
+
+    it('does not apply layout.font.color to insidetextfont.color (it\'ll be contrasting instead)', function() {
+        var out = _supply({type: 'pie', values: [1, 2]}, {font: {color: 'blue'}});
+        expect(out.insidetextfont.color).toBe(undefined);
+    });
+
+    it('does apply textfont.color to insidetextfont.color', function() {
+        var out = _supply({type: 'pie', values: [1, 2], textfont: {color: 'blue'}});
+        expect(out.insidetextfont.color).toBe('blue');
+    });
 });
 
 describe('Pie traces', function() {
     'use strict';
+
+    var DARK = color.rgb('#444');
+    var LIGHT = color.rgb('#fff');
 
     var gd;
 
@@ -145,6 +161,14 @@ describe('Pie traces', function() {
         return function() {
             d3.select(gd).selectAll(SLICES_SELECTOR).each(function(d, i) {
                 expect(this.style.fill.replace(/(\s|rgb\(|\))/g, '')).toBe(colors[i], i);
+            });
+        };
+    }
+
+    function _checkFontColors(expFontColors) {
+        return function() {
+            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+                expect(this.style.fill).toBe(expFontColors[i], i);
             });
         };
     }
@@ -462,6 +486,36 @@ describe('Pie traces', function() {
                   expect(this.style.strokeWidth).toBe(expWidths[d[0].i]);
               });
           })
+          .catch(failTest)
+          .then(done);
+    });
+
+    var insideTextTestsTraceDef = {
+        values: [6, 5, 4, 3, 2, 1],
+        type: 'pie',
+        marker: {
+            colors: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
+        }
+    };
+
+    it('should use inside text colors contrasting to slice colors by default', function(done) {
+        Plotly.plot(gd, [insideTextTestsTraceDef])
+          .then(_checkFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use textfont.color for inside text instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTraceDef, { textfont: { color: 'red' } });
+        Plotly.plot(gd, [data])
+          .then(_checkFontColors(Lib.repeat(rgb('red'), 6)))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should not use layout.font.color for inside text, but a contrasting color instead', function(done) {
+        Plotly.plot(gd, [insideTextTestsTraceDef], {font: {color: 'green'}})
+          .then(_checkFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
     });

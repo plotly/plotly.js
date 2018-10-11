@@ -264,7 +264,7 @@ module.exports = function plot(gd, cdpie) {
                             'text-anchor': 'middle'
                         })
                         .call(Drawing.font, textPosition === 'outside' ?
-                            trace.outsidetextfont : trace.insidetextfont)
+                            trace.outsidetextfont : determineInsideTextFont(trace, pt))
                         .call(svgTextUtils.convertToTspans, gd);
 
                     // position the text relative to the slice
@@ -418,10 +418,10 @@ function prerenderTitles(cdpie, gd) {
 
         if(trace.title) {
             var dummyTitle = Drawing.tester.append('text')
-                .attr('data-notex', 1)
-                .text(trace.title)
-                .call(Drawing.font, trace.titlefont)
-                .call(svgTextUtils.convertToTspans, gd);
+              .attr('data-notex', 1)
+              .text(trace.title)
+              .call(Drawing.font, trace.titlefont)
+              .call(svgTextUtils.convertToTspans, gd);
             var bBox = Drawing.bBox(dummyTitle.node(), true);
             cd0.titleBox = {
                 width: bBox.width,
@@ -430,6 +430,11 @@ function prerenderTitles(cdpie, gd) {
             dummyTitle.remove();
         }
     }
+}
+
+function determineInsideTextFont(trace, pt) {
+    var contrast = Color.contrast(pt.color);
+    return Lib.extendFlat({}, { color: contrast }, trace.insidetextfont);
 }
 
 function transformInsideText(textBB, pt, cd0) {
