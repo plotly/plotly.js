@@ -1,10 +1,12 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var readPixel = require('../assets/read_pixel');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
@@ -100,5 +102,71 @@ describe('Test scatterpolargl hover:', function() {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);
         });
+    });
+});
+
+describe('Test scatterpolargl interactions:', function() {
+    var gd;
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function countCanvases() {
+        return d3.selectAll('canvas').size();
+    }
+
+    function totalPixels() {
+        return readPixel(gd.querySelector('.gl-canvas-context'), 0, 0, 400, 400)
+            .reduce(function(acc, v) { return acc + v; }, 0);
+    }
+
+    it('@gl should be able to toggle from svg to gl', function(done) {
+        gd = createGraphDiv();
+
+        var scene;
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            r: [1, 2, 1],
+        }], {
+            width: 400,
+            height: 400
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+
+            return Plotly.restyle(gd, 'type', 'scatterpolargl');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            expect(totalPixels()).not.toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+
+            scene = gd._fullLayout.polar._subplot._scene;
+            spyOn(scene, 'destroy').and.callThrough();
+
+            return Plotly.restyle(gd, 'type', 'scatterpolar');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(scene.destroy).toHaveBeenCalledTimes(1);
+            expect(gd._fullLayout.polar._subplot._scene).toBe(null);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+
+            return Plotly.restyle(gd, 'type', 'scatterpolargl');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            // this here was failing before
+            // https://github.com/plotly/plotly.js/issues/3094
+            // got fixed
+            expect(totalPixels()).not.toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

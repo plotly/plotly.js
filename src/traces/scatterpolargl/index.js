@@ -42,6 +42,8 @@ function calc(container, trace) {
 }
 
 function plot(container, subplot, cdata) {
+    if(!cdata.length) return;
+
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
 
