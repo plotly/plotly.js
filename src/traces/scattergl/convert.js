@@ -393,22 +393,21 @@ function convertLinePositions(gd, trace, positions) {
         if(trace.line.shape === 'hv') {
             linePositions = [];
             for(i = 0; i < count - 1; i++) {
-                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1]) || isNaN(positions[i * 2 + 2]) || isNaN(positions[i * 2 + 3])) {
-                    if(!isNaN(positions[i * 2]) && !isNaN(positions[i * 2 + 1])) {
-                        linePositions.push(positions[i * 2]);
+                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                } else {
+                    linePositions.push(positions[i * 2]);
+                    linePositions.push(positions[i * 2 + 1]);
+                    if(!isNaN(positions[i * 2 + 2]) && !isNaN(positions[i * 2 + 3])) {
+                        linePositions.push(positions[i * 2 + 2]);
                         linePositions.push(positions[i * 2 + 1]);
                     } else {
                         linePositions.push(NaN);
                         linePositions.push(NaN);
                     }
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                }
-                else {
-                    linePositions.push(positions[i * 2]);
-                    linePositions.push(positions[i * 2 + 1]);
-                    linePositions.push(positions[i * 2 + 2]);
-                    linePositions.push(positions[i * 2 + 1]);
                 }
             }
             linePositions.push(positions[positions.length - 2]);
@@ -477,8 +476,13 @@ function convertLinePositions(gd, trace, positions) {
                 else {
                     linePositions.push(positions[i * 2]);
                     linePositions.push(positions[i * 2 + 1]);
-                    linePositions.push(positions[i * 2]);
-                    linePositions.push(positions[i * 2 + 3]);
+                    if(!isNaN(positions[i * 2 + 2]) && !isNaN(positions[i * 2 + 3])) {
+                        linePositions.push(positions[i * 2]);
+                        linePositions.push(positions[i * 2 + 3]);
+                    } else {
+                        linePositions.push(NaN);
+                        linePositions.push(NaN);
+                    }
                 }
             }
             linePositions.push(positions[positions.length - 2]);
