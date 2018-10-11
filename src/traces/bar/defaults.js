@@ -46,7 +46,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(hasInside || hasOutside) {
         var textFont = coerceFont(coerce, 'textfont', layout.font);
-        if(hasInside) coerceFont(coerce, 'insidetextfont', textFont);
+        if(hasInside) {
+            var insideTextFontDefault = Lib.extendFlat({}, textFont);
+            var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
+            var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
+            if(isColorInheritedFromLayoutFont) {
+                delete insideTextFontDefault.color;
+            }
+            coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
+        }
         if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
         coerce('constraintext');
         coerce('selected.textfont.color');
