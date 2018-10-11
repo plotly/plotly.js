@@ -505,8 +505,7 @@ function plot(gd, subplot, cdata) {
                                 for(i = Math.floor(nextPos.length / 2); i--;) {
                                     var xx = nextPos[i * 2], yy = nextPos[i * 2 + 1];
                                     if(isNaN(xx) || isNaN(yy)) continue;
-                                    pos.push(xx);
-                                    pos.push(yy);
+                                    pos.push(xx, yy);
                                 }
                                 fillOptions.fill = nextTrace.fillcolor;
                             }
