@@ -13,6 +13,7 @@ var isNumeric = require('fast-isnumeric');
 
 var ScatterGl = require('../scattergl');
 var calcColorscales = require('../scatter/colorscale_calc');
+var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var Axes = require('../../plots/cartesian/axes');
 var makeHoverPointText = require('../scatterpolar/hover').makeHoverPointText;
 var subTypes = require('../scatter/subtypes');
@@ -26,17 +27,21 @@ function calc(container, trace) {
     var angularAxis = layout[subplotId].angularaxis;
     var rArray = radialAxis.makeCalcdata(trace, 'r');
     var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
+    var len = trace._length;
     var stash = {};
 
-    if(trace._length < rArray.length) rArray = rArray.slice(0, trace._length);
-    if(trace._length < thetaArray.length) thetaArray = thetaArray.slice(0, trace._length);
-
-    calcColorscales(trace);
+    if(len < rArray.length) rArray = rArray.slice(0, len);
+    if(len < thetaArray.length) thetaArray = thetaArray.slice(0, len);
 
     stash.r = rArray;
     stash.theta = thetaArray;
 
-    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {tozero: true});
+    // We could add TOO_MANY_POINTS logic like in Scattergl.calc,
+    // if users asks for scaterpolargl charts with > 1e5 pts
+    var ppad = calcMarkerSize(trace, len);
+    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {ppad: ppad});
+
+    calcColorscales(trace);
 
     return [{x: false, y: false, t: stash, trace: trace}];
 }
