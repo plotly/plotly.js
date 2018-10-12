@@ -185,5 +185,7 @@ module.exports = overrideAll({
         hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {flags: []}),
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The links of the Sankey plot.'
-    }
+    },
+    hoverinfo: undefined,
+    hoverlabel: undefined
 }, 'calc', 'nested');
