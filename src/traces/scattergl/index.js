@@ -961,7 +961,6 @@ module.exports = {
     hoverPoints: hoverPoints,
     selectPoints: selectPoints,
 
-    sceneOptions: sceneOptions,
     sceneUpdate: sceneUpdate,
     calcHover: calcHover,
 
