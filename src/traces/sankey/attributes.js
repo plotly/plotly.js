@@ -17,7 +17,7 @@ var domainAttrs = require('../../plots/domain').attributes;
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'sankey', trace: true}),
 
     orientation: {
@@ -186,6 +186,7 @@ module.exports = overrideAll({
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The links of the Sankey plot.'
     },
-    hoverinfo: undefined,
-    hoverlabel: undefined
 }, 'calc', 'nested');
+// hide unsupported top-level properties from plot-schema
+attrs.hoverinfo = undefined;
+attrs.hoverlabel = undefined;

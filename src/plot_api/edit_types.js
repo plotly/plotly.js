@@ -10,7 +10,6 @@
 
 var Lib = require('../lib');
 var extendFlat = Lib.extendFlat;
-var extendDeepAll = Lib.extendDeepAll;
 var isPlainObject = Lib.isPlainObject;
 
 var traceOpts = {
@@ -116,7 +115,7 @@ function falseObj(keys) {
  * @return {object} a new attributes object with `editType` modified as directed
  */
 function overrideAll(attrs, editTypeOverride, overrideContainers) {
-    var out = extendDeepAll({}, attrs);
+    var out = extendFlat({}, attrs);
     for(var key in out) {
         var attr = out[key];
         if(isPlainObject(attr)) {
