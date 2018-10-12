@@ -255,5 +255,16 @@ module.exports = {
             'Do the hover effects highlight individual boxes ',
             'or sample points or both?'
         ].join(' ')
-    }
+    },
+    vwidth: {
+        valType: 'number',
+        min: 0,
+        role: 'info',
+        dflt: false,
+        editType: 'calc',
+        description: [
+            'Sets the width of the violins.',
+            'This overrides the normal width of the violins.'
+        ].join(' ')
+    },
 };

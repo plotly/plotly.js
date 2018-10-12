@@ -43,6 +43,6 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
             }
         }
 
-        setPositionOffset('violin', gd, violinList, posAxis, [minPad, maxPad]);
+        setPositionOffset('violin', gd, violinList, posAxis, [minPad, maxPad], vwidth);
     }
 };

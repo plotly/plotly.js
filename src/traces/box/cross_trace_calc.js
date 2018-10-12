@@ -48,11 +48,11 @@ function crossTraceCalc(gd, plotinfo) {
             }
         }
 
-        setPositionOffset('box', gd, boxList, posAxis, [minPad, maxPad]);
+        setPositionOffset('box', gd, boxList, posAxis, [minPad, maxPad], false);
     }
 }
 
-function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
+function setPositionOffset(traceType, gd, boxList, posAxis, pad, vwidth) {
     var calcdata = gd.calcdata;
     var fullLayout = gd._fullLayout;
     var pointList = [];
@@ -76,6 +76,15 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
     // and then use for posAxis autorange
     var boxdv = Lib.distinctVals(pointList);
     var dPos = boxdv.minDiff / 2;
+    console.log('');
+    console.log('minDiff is ' + boxdv.minDiff);
+    console.log('dPos is ' + dPos);
+    // var dPos = 0.05
+    var dPos = 0.5
+
+    if (vwidth) {
+        console.log('vwidth is ' + vwidth);
+    }
 
     // if there's no duplication of x points,
     // disable 'group' mode by setting counter to 1
