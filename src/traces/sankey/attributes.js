@@ -18,11 +18,6 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 module.exports = overrideAll({
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'percent', 'name'],
-    }),
-    hoverlabel: fxAttrs.hoverlabel, // needs editType override
-
     domain: domainAttrs({name: 'sankey', trace: true}),
 
     orientation: {
@@ -127,6 +122,8 @@ module.exports = overrideAll({
             role: 'style',
             description: 'Sets the thickness (in px) of the `nodes`.'
         },
+        hoverinfo: Object.assign(plotAttrs.hoverinfo, {flags: []}),
+        hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The nodes of the Sankey plot.'
     },
 
@@ -185,6 +182,8 @@ module.exports = overrideAll({
             role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
+        hoverinfo: Object.assign(plotAttrs.hoverinfo, {flags: []}),
+        hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The links of the Sankey plot.'
     }
 }, 'calc', 'nested');

@@ -13,6 +13,7 @@ var attributes = require('./attributes');
 var Color = require('../../components/color');
 var tinycolor = require('tinycolor2');
 var handleDomainDefaults = require('../../plots/domain').defaults;
+var Registry = require('../../registry');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -24,6 +25,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('node.thickness');
     coerce('node.line.color');
     coerce('node.line.width');
+    coerce('node.hoverinfo');
+    Registry.getComponentMethod(
+        'fx',
+        'supplyDefaults'
+    )(traceIn.node, traceOut.node, defaultColor, layout);
 
     var colors = layout.colorway;
 
@@ -39,6 +45,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('link.value');
     coerce('link.line.color');
     coerce('link.line.width');
+    coerce('link.hoverinfo');
+    Registry.getComponentMethod(
+        'fx',
+        'supplyDefaults'
+    )(traceIn.link, traceOut.link, defaultColor, layout);
 
     coerce('link.color', traceOut.link.value.map(function() {
         return tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
