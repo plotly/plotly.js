@@ -121,7 +121,7 @@ module.exports = overrideAll({
             role: 'style',
             description: 'Sets the thickness (in px) of the `nodes`.'
         },
-        hoverinfo: Object.assign(plotAttrs.hoverinfo, {flags: []}),
+        hoverinfo: Object.assign({}, plotAttrs.hoverinfo, {flags: []}),
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The nodes of the Sankey plot.'
     },
@@ -181,7 +181,7 @@ module.exports = overrideAll({
             role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
-        hoverinfo: Object.assign(plotAttrs.hoverinfo, {flags: []}),
+        hoverinfo: Object.assign({}, plotAttrs.hoverinfo, {flags: []}),
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The links of the Sankey plot.'
     }
