@@ -59,6 +59,7 @@ function plot(container, subplot, cdata) {
         var cd = cdscatter[0];
         var trace = cd.trace;
         var stash = cd.t;
+        var len = trace._length;
         var rArray = stash.r;
         var thetaArray = stash.theta;
         var i;
@@ -74,12 +75,11 @@ function plot(container, subplot, cdata) {
             }
         }
 
-        var count = rArray.length;
-        var positions = new Array(count * 2);
-        var x = Array(count);
-        var y = Array(count);
+        var positions = new Array(len * 2);
+        var x = Array(len);
+        var y = Array(len);
 
-        for(i = 0; i < count; i++) {
+        for(i = 0; i < len; i++) {
             var r = subRArray[i];
             var xx, yy;
 
@@ -139,7 +139,6 @@ function plot(container, subplot, cdata) {
         stash.r = rArray;
         stash.theta = thetaArray;
         stash.positions = positions;
-        stash.count = count;
     });
 
     return ScatterGl.plot(container, subplot, cdata);

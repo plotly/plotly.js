@@ -42,8 +42,8 @@ function calc(gd, trace) {
     var xa = AxisIDs.getFromId(gd, trace.xaxis);
     var ya = AxisIDs.getFromId(gd, trace.yaxis);
     var subplot = fullLayout._plots[trace.xaxis + trace.yaxis];
-    var count = trace._length;
-    var count2 = count * 2;
+    var len = trace._length;
+    var len2 = len * 2;
     var stash = {};
     var i, xx, yy;
 
@@ -52,8 +52,8 @@ function calc(gd, trace) {
 
     // we need hi-precision for scatter2d,
     // regl-scatter2d uses NaNs for bad/missing values
-    var positions = new Array(count2);
-    for(i = 0; i < count; i++) {
+    var positions = new Array(len2);
+    for(i = 0; i < len; i++) {
         xx = x[i];
         yy = y[i];
         positions[i * 2] = xx === BADNUM ? NaN : xx;
@@ -61,12 +61,12 @@ function calc(gd, trace) {
     }
 
     if(xa.type === 'log') {
-        for(i = 0; i < count2; i += 2) {
+        for(i = 0; i < len2; i += 2) {
             positions[i] = xa.c2l(positions[i]);
         }
     }
     if(ya.type === 'log') {
-        for(i = 1; i < count2; i += 2) {
+        for(i = 1; i < len2; i += 2) {
             positions[i] = ya.c2l(positions[i]);
         }
     }
@@ -77,8 +77,8 @@ function calc(gd, trace) {
         // FIXME: delegate this to webworker
         stash.tree = cluster(positions);
     } else {
-        var ids = stash.ids = new Array(count);
-        for(i = 0; i < count; i++) {
+        var ids = stash.ids = new Array(len);
+        for(i = 0; i < len; i++) {
             ids[i] = i;
         }
     }
@@ -92,12 +92,9 @@ function calc(gd, trace) {
     // For graphs with very large number of points and array marker.size,
     // use average marker size instead to speed things up.
     setFirstScatter(fullLayout, trace);
-    var ppad;
-    if(count < TOO_MANY_POINTS) {
-        ppad = calcMarkerSize(trace, count);
-    } else if(opts.marker) {
-        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
-    }
+    var ppad = len < TOO_MANY_POINTS ?
+        calcMarkerSize(trace, len) :
+        2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     if(opts.errorX) expandForErrorBars(trace, xa, opts.errorX);
     if(opts.errorY) expandForErrorBars(trace, ya, opts.errorY);
@@ -111,7 +108,7 @@ function calc(gd, trace) {
 
     // FIXME: organize it in a more appropriate manner, probably in sceneOptions
     // put point-cluster instance for optimized regl calc
-    if(opts.marker && count >= TOO_MANY_POINTS) {
+    if(opts.marker && len >= TOO_MANY_POINTS) {
         opts.marker.cluster = stash.tree;
     }
 
@@ -129,13 +126,10 @@ function calc(gd, trace) {
 
     // stash scene ref
     stash._scene = scene;
-    stash.index = scene.count;
+    stash.index = scene.count++;
     stash.x = x;
     stash.y = y;
     stash.positions = positions;
-    stash.count = count;
-
-    scene.count++;
 
     return [{x: false, y: false, t: stash, trace: trace}];
 }
@@ -554,6 +548,7 @@ function plot(gd, subplot, cdata) {
         var trace = cd0.trace;
         var stash = cd0.t;
         var index = stash.index;
+        var len = trace._length;
         var x = stash.x;
         var y = stash.y;
 
@@ -574,7 +569,7 @@ function plot(gd, subplot, cdata) {
                     selDict[selPts[j]] = 1;
                 }
                 var unselPts = [];
-                for(j = 0; j < stash.count; j++) {
+                for(j = 0; j < len; j++) {
                     if(!selDict[j]) unselPts.push(j);
                 }
                 scene.unselectBatch[index] = unselPts;
@@ -585,9 +580,9 @@ function plot(gd, subplot, cdata) {
             // - spin that in a webworker
             // - compute selection from polygons in data coordinates
             //   (maybe just for linear axes)
-            var xpx = stash.xpx = new Array(stash.count);
-            var ypx = stash.ypx = new Array(stash.count);
-            for(j = 0; j < stash.count; j++) {
+            var xpx = stash.xpx = new Array(len);
+            var ypx = stash.ypx = new Array(len);
+            for(j = 0; j < len; j++) {
                 xpx[j] = xaxis.c2p(x[j]);
                 ypx[j] = yaxis.c2p(y[j]);
             }
@@ -849,6 +844,7 @@ function selectPoints(searchInfo, selectionTester) {
     var selection = [];
     var trace = cd[0].trace;
     var stash = cd[0].t;
+    var len = trace._length;
     var x = stash.x;
     var y = stash.y;
     var scene = stash._scene;
@@ -868,7 +864,7 @@ function selectPoints(searchInfo, selectionTester) {
     var i;
     if(selectionTester !== false && !selectionTester.degenerate) {
         els = [], unels = [];
-        for(i = 0; i < stash.count; i++) {
+        for(i = 0; i < len; i++) {
             if(selectionTester.contains([stash.xpx[i], stash.ypx[i]], false, i, searchInfo)) {
                 els.push(i);
                 selection.push({
@@ -882,7 +878,7 @@ function selectPoints(searchInfo, selectionTester) {
             }
         }
     } else {
-        unels = arrayRange(stash.count);
+        unels = arrayRange(len);
     }
 
     // make sure selectBatch is created
@@ -916,6 +912,7 @@ function selectPoints(searchInfo, selectionTester) {
 
 function styleTextSelection(cd) {
     var cd0 = cd[0];
+    var trace = cd0.trace;
     var stash = cd0.t;
     var scene = stash._scene;
     var index = stash.index;
@@ -932,8 +929,7 @@ function styleTextSelection(cd) {
         var utc = unselOpts.color;
         var base = baseOpts.color;
         var hasArrayBase = Array.isArray(base);
-        opts.color = new Array(stash.count);
-
+        opts.color = new Array(trace._length);
 
         for(i = 0; i < els.length; i++) {
             j = els[i];
