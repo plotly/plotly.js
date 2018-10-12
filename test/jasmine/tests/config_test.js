@@ -705,5 +705,50 @@ describe('config argument', function() {
             .then(testResponsive)
             .then(done);
         });
+
+        it('should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
+            fillParent(1, 1, function() {
+                this.style.display = 'inline-block';
+                this.style.width = null;
+                this.style.height = null;
+            });
+            Plotly.plot(gd, data, {autosize: true}, {responsive: true})
+            .then(function() {
+                checkLayoutSize(700, 450);
+                expect(gd.clientWidth).toBe(700);
+                expect(gd.clientHeight).toBe(450);
+            })
+            .then(function() {
+                return Plotly.newPlot(gd, data, {autosize: true}, {responsive: true});
+            })
+            // It is important to test newPlot to make sure an initially zero size container
+            // is still considered to have zero size after a plot is drawn into it.
+            .then(function() {
+                checkLayoutSize(700, 450);
+                expect(gd.clientWidth).toBe(700);
+                expect(gd.clientHeight).toBe(450);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        // The following test is to guarantee we're not breaking the existing (although maybe not ideal) behaviour.
+        // In a future version, one may prefer responsive/autosize:true winning over an explicit width/height when embedded in a webpage.
+        it('should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
+            fillParent(1, 1, function() {
+                this.style.width = '1000px';
+                this.style.height = '500px';
+            });
+
+            Plotly.plot(gd, data, {autosize: true, width: 1200, height: 700}, {responsive: true})
+            .then(function() {
+                expect(gd.clientWidth).toBe(1000);
+                expect(gd.clientHeight).toBe(500);
+                // The plot should overflow the container!
+                checkLayoutSize(1200, 700);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

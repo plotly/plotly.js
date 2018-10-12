@@ -488,6 +488,10 @@ function setPlotContext(gd, config) {
     if(context.setBackground === 'transparent' || typeof context.setBackground !== 'function') {
         context.setBackground = setBackground;
     }
+
+    // Check if gd has a specified widht/height to begin with
+    context._hasZeroHeight = context._hasZeroHeight || gd.clientHeight === 0;
+    context._hasZeroWidth = context._hasZeroWidth || gd.clientWidth === 0;
 }
 
 function plotPolar(gd, data, layout) {
@@ -3247,9 +3251,6 @@ exports.purge = function purge(gd) {
 function makePlotFramework(gd) {
     var gd3 = d3.select(gd);
     var fullLayout = gd._fullLayout;
-
-    // Check if gd has a specified height
-    fullLayout._hasZeroHeight = gd.clientHeight === 0;
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
