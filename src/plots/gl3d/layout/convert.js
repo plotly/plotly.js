@@ -25,6 +25,7 @@ function AxesOptions() {
     this.tickFont = [ 'sans-serif', 'sans-serif', 'sans-serif' ];
     this.tickSize = [ 12, 12, 12 ];
     this.tickAngle = [ 0, 0, 0 ];
+    this.tickAlign = [ 'auto', 'auto', 'auto' ];
     this.tickColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
     this.tickPad = [ 18, 18, 18 ];
 
@@ -33,6 +34,7 @@ function AxesOptions() {
     this.labelFont = ['Open Sans', 'Open Sans', 'Open Sans'];
     this.labelSize = [ 20, 20, 20 ];
     this.labelAngle = [ 0, 0, 0 ];
+    this.labelAlign = [ 'auto', 'auto', 'auto' ];
     this.labelColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
     this.labelPad = [ 30, 30, 30 ];
 
@@ -91,6 +93,18 @@ proto.merge = function(sceneLayout) {
             if(axes.titlefont.family) opts.labelFont[i] = axes.titlefont.family;
             if(axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
         }
+        // Title rotation/alignment similar to ticks
+        if('titleangle' in axes) {
+          if(axes.titleangle === 'auto') {
+            opts.labelAlign[i] = 'auto';
+            opts.labelAngle[i] = 0;
+          } else {
+            opts.labelAlign[i] = -1;
+            opts.labelAngle[i] = Math.PI * -axes.labelangle / 180;
+          }
+        }
+        if(axes.titlealign === 'auto') opts.labelAlign[i] = 'auto';
+        if('titlealign' in axes) opts.lableAlign[i] = axes.titlealign;
 
         // Lines
         if('showline' in axes) opts.lineEnable[i] = axes.showline;
@@ -118,10 +132,17 @@ proto.merge = function(sceneLayout) {
         if('tickcolor' in axes) opts.lineTickColor[i] = str2RgbaArray(axes.tickcolor);
         if('tickwidth' in axes) opts.lineTickWidth[i] = axes.tickwidth;
         if('tickangle' in axes) {
-            opts.tickAngle[i] = (axes.tickangle === 'auto') ?
-                0 :
-                Math.PI * -axes.tickangle / 180;
+          if(axes.tickangle === 'auto') {
+            opts.tickAlign[i] = 'auto';
+            opts.tickAngle[i] = 0;
+          } else {
+            opts.tickAlign[i] = -1;
+            opts.tickAngle[i] = Math.PI * -axes.tickangle / 180;
+          }
         }
+        if(axes.tickalign === 'auto') opts.tickAlign[i] = 'auto';
+        if('tickalign' in axes) opts.tickAlign[i] = axes.tickalign;
+
         // tick labels
         if('showticklabels' in axes) opts.tickEnable[i] = axes.showticklabels;
         if('tickfont' in axes) {
