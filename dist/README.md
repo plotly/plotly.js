@@ -33,6 +33,19 @@ or the un-minified version as:
 
 You can grab the relevant MathJax files in `./dist/extras/mathjax/`.
 
+By default, plotly.js will modify the global MathJax configuration on load.
+This can lead to undesirable behavior if plotly.js is loaded alongside
+other libraries that also rely on MathJax. To disable this global configuration
+process, set the `MathJaxConfig` property to `'local'` in the `window.PlotlyConfig`
+object.  This property must be set before the plotly.js script tag, for example:
+
+```html
+<script>
+   window.PlotlyConfig = {MathJaxConfig: 'local'}
+</script>
+<script src="plotly.min.js"></script>
+```
+
 ### To include localization
 
 Plotly.js defaults to US English (en-US) and includes British English (en) in the standard bundle.
@@ -75,7 +88,7 @@ The main plotly.js bundle weights in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
-| 5.8 MB | 2.7 MB | 819.8 kB | 6 MB |
+| 6 MB | 2.7 MB | 830.5 kB | 6.2 MB |
 
 ## Partial bundles
 
@@ -98,7 +111,7 @@ The `basic` partial bundle contains trace modules `scatter`, `bar` and `pie`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.2 MB | 775.4 kB | 254.1 kB |
+| 2.2 MB | 782.9 kB | 256.2 kB |
 
 #### CDN links
 
@@ -144,7 +157,7 @@ The `cartesian` partial bundle contains trace modules `scatter`, `bar`, `box`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.5 MB | 885.7 kB | 288.7 kB |
+| 2.6 MB | 895.4 kB | 291.5 kB |
 
 #### CDN links
 
@@ -190,7 +203,7 @@ The `geo` partial bundle contains trace modules `scatter`, `scattergeo` and `cho
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.2 MB | 798.5 kB | 263.2 kB |
+| 2.3 MB | 803.7 kB | 264.7 kB |
 
 #### CDN links
 
@@ -236,7 +249,7 @@ The `gl3d` partial bundle contains trace modules `scatter`, `scatter3d`, `surfac
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.2 MB | 1.3 MB | 411.4 kB |
+| 3.3 MB | 1.3 MB | 413.9 kB |
 
 #### CDN links
 
@@ -282,7 +295,7 @@ The `gl2d` partial bundle contains trace modules `scatter`, `scattergl`, `splom`
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.3 MB | 1.3 MB | 431.3 kB |
+| 3.4 MB | 1.3 MB | 432.6 kB |
 
 #### CDN links
 
@@ -328,7 +341,7 @@ The `mapbox` partial bundle contains trace modules `scatter` and `scattermapbox`
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.7 MB | 1.3 MB | 400.9 kB |
+| 2.8 MB | 1.3 MB | 402.5 kB |
 
 #### CDN links
 
@@ -374,7 +387,7 @@ The `finance` partial bundle contains trace modules `scatter`, `bar`, `histogram
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.3 MB | 805.5 kB | 263 kB |
+| 2.3 MB | 814.6 kB | 265.8 kB |
 
 #### CDN links
 
