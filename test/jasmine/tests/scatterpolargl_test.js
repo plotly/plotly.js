@@ -169,4 +169,85 @@ describe('Test scatterpolargl interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should be able to toggle from svg to gl (on graph with scattergl subplot)', function(done) {
+        gd = createGraphDiv();
+
+        var sceneXY, scenePolar;
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            y: [1, 2, 1]
+        }, {
+            type: 'scatterpolargl',
+            r: [1, 2, 1]
+        }], {
+            grid: {rows: 1, columns: 2},
+            yaxis: {domain: {column: 0}},
+            polar: {domain: {column: 1}},
+            width: 400,
+            height: 400
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            expect(totalPixels()).not.toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+
+            sceneXY = gd._fullLayout._plots.xy._scene;
+            spyOn(sceneXY, 'destroy').and.callThrough();
+
+            scenePolar = gd._fullLayout.polar._subplot._scene;
+            spyOn(scenePolar, 'destroy').and.callThrough();
+
+            return Plotly.restyle(gd, 'type', 'scatterpolar', [1]);
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            expect(totalPixels()).not.toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+
+            expect(sceneXY.destroy).toHaveBeenCalledTimes(0);
+            expect(gd._fullLayout._plots.xy._scene).not.toBe(null);
+
+            // N.B. does not destroy scene in this case,
+            // we don't need as the same gl canvases are still there
+            expect(scenePolar.destroy).toHaveBeenCalledTimes(0);
+            expect(gd._fullLayout.polar._subplot._scene).not.toBe(null);
+
+            return Plotly.restyle(gd, 'type', 'scatterpolargl', [1]);
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            expect(totalPixels()).not.toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+
+            return Plotly.restyle(gd, 'type', 'scatter', [0]);
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            expect(totalPixels()).not.toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+
+            // Similarly, does not destroy scene in this case,
+            // we don't need as the same gl canvases are still there
+            expect(sceneXY.destroy).toHaveBeenCalledTimes(0);
+            expect(gd._fullLayout._plots.xy._scene).not.toBe(null);
+
+            expect(scenePolar.destroy).toHaveBeenCalledTimes(0);
+            expect(gd._fullLayout.polar._subplot._scene).not.toBe(null);
+
+            return Plotly.restyle(gd, 'type', 'scatterpolar', [1]);
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(2);
+
+            expect(sceneXY.destroy).toHaveBeenCalledTimes(1);
+            expect(gd._fullLayout._plots.xy._scene).toBe(null);
+            expect(scenePolar.destroy).toHaveBeenCalledTimes(1);
+            expect(gd._fullLayout.polar._subplot._scene).toBe(null);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
