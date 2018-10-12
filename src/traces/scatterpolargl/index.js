@@ -20,11 +20,11 @@ var subTypes = require('../scatter/subtypes');
 
 var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
 
-function calc(container, trace) {
-    var layout = container._fullLayout;
+function calc(gd, trace) {
+    var fullLayout = gd._fullLayout;
     var subplotId = trace.subplot;
-    var radialAxis = layout[subplotId].radialaxis;
-    var angularAxis = layout[subplotId].angularaxis;
+    var radialAxis = fullLayout[subplotId].radialaxis;
+    var angularAxis = fullLayout[subplotId].angularaxis;
     var rArray = radialAxis.makeCalcdata(trace, 'r');
     var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
     var len = trace._length;
@@ -46,13 +46,12 @@ function calc(container, trace) {
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
-function plot(container, subplot, cdata) {
+function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
-
-    var scene = ScatterGl.sceneUpdate(container, subplot);
+    var scene = ScatterGl.sceneUpdate(gd, subplot);
 
     cdata.forEach(function(cdscatter, traceIndex) {
         if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
@@ -141,7 +140,7 @@ function plot(container, subplot, cdata) {
         stash.positions = positions;
     });
 
-    return ScatterGl.plot(container, subplot, cdata);
+    return ScatterGl.plot(gd, subplot, cdata);
 }
 
 function hoverPoints(pointData, xval, yval, hovermode) {
