@@ -95,13 +95,13 @@ proto.merge = function(sceneLayout) {
         }
         // Title rotation/alignment similar to ticks
         if('titleangle' in axes) {
-          if(axes.titleangle === 'auto') {
-            opts.labelAlign[i] = 'auto';
-            opts.labelAngle[i] = 0;
-          } else {
-            opts.labelAlign[i] = -1;
-            opts.labelAngle[i] = Math.PI * -axes.labelangle / 180;
-          }
+            if(axes.titleangle === 'auto') {
+                opts.labelAlign[i] = 'auto';
+                opts.labelAngle[i] = 0;
+            } else {
+                opts.labelAlign[i] = -1;
+                opts.labelAngle[i] = Math.PI * -axes.labelangle / 180;
+            }
         }
         if(axes.titlealign === 'auto') opts.labelAlign[i] = 'auto';
         if('titlealign' in axes) opts.lableAlign[i] = axes.titlealign;
@@ -132,13 +132,13 @@ proto.merge = function(sceneLayout) {
         if('tickcolor' in axes) opts.lineTickColor[i] = str2RgbaArray(axes.tickcolor);
         if('tickwidth' in axes) opts.lineTickWidth[i] = axes.tickwidth;
         if('tickangle' in axes) {
-          if(axes.tickangle === 'auto') {
-            opts.tickAlign[i] = 'auto';
-            opts.tickAngle[i] = 0;
-          } else {
-            opts.tickAlign[i] = -1;
-            opts.tickAngle[i] = Math.PI * -axes.tickangle / 180;
-          }
+            if(axes.tickangle === 'auto') {
+                opts.tickAlign[i] = 'auto';
+                opts.tickAngle[i] = 0;
+            } else {
+                opts.tickAlign[i] = -1;
+                opts.tickAngle[i] = Math.PI * -axes.tickangle / 180;
+            }
         }
         if(axes.tickalign === 'auto') opts.tickAlign[i] = 'auto';
         if('tickalign' in axes) opts.tickAlign[i] = axes.tickalign;
