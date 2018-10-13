@@ -32,6 +32,7 @@ function AxesOptions() {
     this.labelEnable = [ true, true, true ];
     this.labelFont = ['Open Sans', 'Open Sans', 'Open Sans'];
     this.labelSize = [ 20, 20, 20 ];
+    this.labelAngle = [ 0, 0, 0 ];
     this.labelColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
     this.labelPad = [ 30, 30, 30 ];
 
@@ -118,10 +119,9 @@ proto.merge = function(sceneLayout) {
         if('tickwidth' in axes) opts.lineTickWidth[i] = axes.tickwidth;
         if('tickangle' in axes) {
             opts.tickAngle[i] = (axes.tickangle === 'auto') ?
-                -3600 : // i.e. special number to set auto option
+                0 :
                 Math.PI * -axes.tickangle / 180;
         }
-
         // tick labels
         if('showticklabels' in axes) opts.tickEnable[i] = axes.showticklabels;
         if('tickfont' in axes) {
