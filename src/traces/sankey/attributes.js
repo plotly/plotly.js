@@ -122,7 +122,14 @@ var attrs = module.exports = overrideAll({
             role: 'style',
             description: 'Sets the thickness (in px) of the `nodes`.'
         },
-        hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {valtype: 'enumerated', values: ['all', 'none', 'skip'], flags: [], arrayOk: false }),
+        hoverinfo: {
+            valtype: 'enumerated',
+            values: ['all', 'none', 'skip'],
+            dflt: 'all',
+            role: 'info',
+            editType: 'none',
+            description: plotAttrs.hoverinfo.description
+        },
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The nodes of the Sankey plot.'
     },
@@ -182,7 +189,14 @@ var attrs = module.exports = overrideAll({
             role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
-        hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {valtype: 'enumerated', values: ['all', 'none', 'skip'], flags: [], arrayOk: false }),
+        hoverinfo: {
+            valtype: 'enumerated',
+            values: ['all', 'none', 'skip'],
+            dflt: 'all',
+            role: 'info',
+            editType: 'none',
+            description: plotAttrs.hoverinfo.description
+        },
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The links of the Sankey plot.'
     }
