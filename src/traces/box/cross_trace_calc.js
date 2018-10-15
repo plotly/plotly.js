@@ -76,14 +76,10 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad, vwidth) {
     // and then use for posAxis autorange
     var boxdv = Lib.distinctVals(pointList);
     var dPos = boxdv.minDiff / 2;
-    console.log('');
-    console.log('minDiff is ' + boxdv.minDiff);
-    console.log('dPos is ' + dPos);
-    // var dPos = 0.05
-    var dPos = 0.5
 
-    if (vwidth) {
-        console.log('vwidth is ' + vwidth);
+    // override dPos if violin width given
+    if (vwidth != false) {
+        dPos = vwidth;
     }
 
     // if there's no duplication of x points,
