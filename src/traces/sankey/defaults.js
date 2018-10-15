@@ -13,11 +13,18 @@ var attributes = require('./attributes');
 var Color = require('../../components/color');
 var tinycolor = require('tinycolor2');
 var handleDomainDefaults = require('../../plots/domain').defaults;
-var handleFxDefaults = require('../../components/fx/defaults');
+var handleHoverLabelDefaults = require('../../components/fx/hoverlabel_defaults');
+var fxAttrs = require('../../components/fx/attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+    function coerceHoverLabel(type) {
+        function coerce(attr, dflt) {
+            return Lib.coerce(traceIn[type], traceOut[type], fxAttrs, attr, dflt);
+        }
+        handleHoverLabelDefaults(traceIn[type], traceOut[type], coerce, layout.hoverlabel);
     }
 
     coerce('node.label');
@@ -26,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('node.line.color');
     coerce('node.line.width');
     coerce('node.hoverinfo');
-    handleFxDefaults(traceIn.node, traceOut.node, defaultColor, layout);
+    coerceHoverLabel('node');
 
     var colors = layout.colorway;
 
@@ -43,7 +50,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('link.line.color');
     coerce('link.line.width');
     coerce('link.hoverinfo');
-    handleFxDefaults(traceIn.link, traceOut.link, defaultColor, layout);
+    coerceHoverLabel('link');
 
     coerce('link.color', traceOut.link.value.map(function() {
         return tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
