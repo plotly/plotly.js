@@ -122,7 +122,7 @@ var attrs = module.exports = overrideAll({
             description: 'Sets the thickness (in px) of the `nodes`.'
         },
         hoverinfo: {
-            valtype: 'enumerated',
+            valType: 'enumerated',
             values: ['all', 'none', 'skip'],
             dflt: 'all',
             role: 'info',
@@ -189,7 +189,7 @@ var attrs = module.exports = overrideAll({
             description: 'A numeric value representing the flow volume value.'
         },
         hoverinfo: {
-            valtype: 'enumerated',
+            valType: 'enumerated',
             values: ['all', 'none', 'skip'],
             dflt: 'all',
             role: 'info',
