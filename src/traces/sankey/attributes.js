@@ -125,7 +125,6 @@ var attrs = module.exports = overrideAll({
             values: ['all', 'none', 'skip'],
             dflt: 'all',
             role: 'info',
-            editType: 'none',
             description: [
                 'Determines which trace information appear when hovering nodes.',
                 'If `none` or `skip` are set, no information is displayed upon hovering.',
@@ -196,7 +195,6 @@ var attrs = module.exports = overrideAll({
             values: ['all', 'none', 'skip'],
             dflt: 'all',
             role: 'info',
-            editType: 'none',
             description: [
                 'Determines which trace information appear when hovering links.',
                 'If `none` or `skip` are set, no information is displayed upon hovering.',
