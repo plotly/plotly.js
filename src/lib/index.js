@@ -978,33 +978,52 @@ lib.numSeparate = function(value, separators, separatethousands) {
     return x1 + x2;
 };
 
-var TEMPLATE_STRING_REGEX = /%{([^\s%{}]*)}/g;
+var TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)(:[^}]*)?}/g;
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
 /*
- * Substitute values from an object into a string
+ * Substitute values from an object into a string and optionally formats them using d3-format
  *
  * Examples:
  *  Lib.templateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
  *  Lib.templateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
+ *  Lib.templateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
  *
- * @param {string}  input string containing %{...} template strings
- * @param {obj}     data object containing substitution values
+ * @param {string}  input string containing %{...:...} template strings
+ * @param {obj}     data objects containing substitution values
  *
  * @return {string} templated string
  */
 
-lib.templateString = function(string, obj) {
+lib.templateString = function(string) {
+    var args = arguments;
     // Not all that useful, but cache nestedProperty instantiation
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-    return string.replace(TEMPLATE_STRING_REGEX, function(dummy, key) {
-        if(SIMPLE_PROPERTY_REGEX.test(key)) {
-            return obj[key] || '';
+    return string.replace(TEMPLATE_STRING_REGEX, function(dummy, key, format) {
+        var obj, value, i;
+        for(i = 1; i < args.length; i++) {
+            obj = args[i];
+            if(SIMPLE_PROPERTY_REGEX.test(key)) {
+                if(obj.hasOwnProperty(key)) {
+                    value = obj[key];
+                }
+            } else {
+                // getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
+                // value = getterCache[key]();
+                value = getterCache[key] || lib.nestedProperty(obj, key).get();
+                if(value) getterCache[key] = value;
+            }
+            if(value !== undefined) break;
         }
-        getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
-        return getterCache[key]() || '';
+
+        if(value === undefined) value = '';
+
+        if(format) {
+            value = d3.format(format.replace(/^:/, ''))(value);
+        }
+        return value;
     });
 };
 

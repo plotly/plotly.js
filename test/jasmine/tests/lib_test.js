@@ -2143,6 +2143,25 @@ describe('Test lib.js:', function() {
         it('replaces empty key with empty string', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
         });
+
+        it('find the first object with a given key', function() {
+            var obj1 = {a: 'first'}, obj2 = {a: 'second', foo: {bar: 'bar'}};
+
+            // Simple key
+            expect(Lib.templateString('foo %{a}', obj1, obj2)).toEqual('foo first');
+            expect(Lib.templateString('foo %{a}', obj2, obj1)).toEqual('foo second');
+
+            // Nested Keys
+            expect(Lib.templateString('foo %{foo.bar}', obj1, obj2)).toEqual('foo bar');
+
+            // Nested keys with 0
+            expect(Lib.templateString('y: %{y}', {y: 0}, {y: 1})).toEqual('y: 0');
+        });
+
+        it('formats value using d3 mini-language', function() {
+            expect(Lib.templateString('a: %{a:.0%}', {a: 0.123})).toEqual('a: 12%');
+            expect(Lib.templateString('b: %{b:2.2f}', {b: 43})).toEqual('b: 43.00');
+        });
     });
 
     describe('relativeAttr()', function() {

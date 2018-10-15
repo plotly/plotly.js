@@ -144,7 +144,8 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         rotateLabels: false,
         bgColor: opts.bgColor || Color.background,
         container: container3,
-        outerContainer: outerContainer3
+        outerContainer: outerContainer3,
+        hovertemplate: opts.hovertemplate || false
     };
 
     var hoverLabel = createHoverText([pointData], fullOpts, opts.gd);
@@ -200,7 +201,8 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
         rotateLabels: false,
         bgColor: opts.bgColor || Color.background,
         container: container3,
-        outerContainer: outerContainer3
+        outerContainer: outerContainer3,
+        hovertemplate: opts.hovertemplate || false
     };
 
     var hoverLabel = createHoverText(pointsData, fullOpts, opts.gd);
@@ -948,6 +950,17 @@ function createHoverText(hoverData, opts, gd) {
             // if 'name' is also empty, remove entire label
             if(name === '') g.remove();
             text = name;
+        }
+
+        // hovertemplate
+        var trace = d.trace, hovertemplate = opts.hovertemplate || trace.hovertemplate || false;
+        if(hovertemplate) {
+            var i = d.index;
+            var obj = {
+                x: trace.x[i],
+                y: trace.y[i]
+            };
+            text = Lib.templateString(hovertemplate, {text: text}, d.cd[i], obj, trace, gd._fullLayout);
         }
 
         // main label

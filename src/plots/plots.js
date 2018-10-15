@@ -1170,6 +1170,8 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             Lib.coerceHoverinfo(traceIn, traceOut, layout);
         }
 
+        coerce('hovertemplate');
+
         if(!Registry.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
         if(Registry.traceIs(traceOut, 'notLegendIsolatable')) {

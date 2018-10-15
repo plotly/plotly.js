@@ -1549,6 +1549,33 @@ describe('hover info', function() {
               .toBeWithin(0, 1); // Be robust against floating point arithmetic and subtle future layout changes
         });
     });
+
+    describe('hovertemplate', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('should format labels according to a template string', function() {
+            var gd = document.getElementById('graph');
+            Plotly.restyle(gd, 'data[0].hovertemplate', '%{y:$.2f}').then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                var hoverTrace = gd._hoverdata[0];
+
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(17);
+                expect(hoverTrace.x).toEqual(0.388);
+                expect(hoverTrace.y).toEqual(1);
+
+                assertHoverLabelContent({
+                    nums: '$1.00',
+                    axis: '0.388'
+                });
+            });
+        });
+    });
 });
 
 describe('hover info on stacked subplots', function() {
