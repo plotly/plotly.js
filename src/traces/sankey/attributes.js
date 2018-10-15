@@ -9,7 +9,6 @@
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
-var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
@@ -127,7 +126,11 @@ var attrs = module.exports = overrideAll({
             dflt: 'all',
             role: 'info',
             editType: 'none',
-            description: plotAttrs.hoverinfo.description
+            description: [
+                'Determines which trace information appear when hovering nodes.',
+                'If `none` or `skip` are set, no information is displayed upon hovering.',
+                'But, if `none` is set, click and hover events are still fired.'
+            ].join(' ')
         },
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The nodes of the Sankey plot.'
@@ -194,7 +197,11 @@ var attrs = module.exports = overrideAll({
             dflt: 'all',
             role: 'info',
             editType: 'none',
-            description: plotAttrs.hoverinfo.description
+            description: [
+                'Determines which trace information appear when hovering links.',
+                'If `none` or `skip` are set, no information is displayed upon hovering.',
+                'But, if `none` is set, click and hover events are still fired.'
+            ].join(' ')
         },
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The links of the Sankey plot.'
