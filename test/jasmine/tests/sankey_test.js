@@ -466,6 +466,59 @@ describe('sankey tests', function() {
             .then(done);
         });
 
+        it('should show the correct hover labels with the style provided in template', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.layout.template = {
+                data: {
+                    sankey: [{
+                        node: {
+                            hoverlabel: {
+                                bgcolor: 'red',
+                                bordercolor: 'blue',
+                                font: {
+                                    size: 20,
+                                    color: 'black',
+                                    family: 'Roboto'
+                                }
+                            }
+                        },
+                        link: {
+                            hoverlabel: {
+                                bgcolor: 'yellow',
+                                bordercolor: 'magenta',
+                                font: {
+                                    size: 18,
+                                    color: 'green',
+                                    family: 'Roboto'
+                                }
+                            }
+                        }
+                    }]
+                }
+            };
+
+            Plotly.plot(gd, mockCopy)
+            .then(function() {
+                _hover(404, 302);
+
+                assertLabel(
+                    ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 20, 'Roboto', 'rgb(0, 0, 0)']
+                );
+            })
+            .then(function() {
+                _hover(450, 300);
+
+                assertLabel(
+                    ['source: Solid', 'target: Industry', '46TWh'],
+                    ['rgb(255, 255, 0)', 'rgb(255, 0, 255)', 18, 'Roboto', 'rgb(0, 128, 0)']
+                );
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should show the correct hover labels even if there is no link.label supplied', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
