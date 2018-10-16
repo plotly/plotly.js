@@ -921,6 +921,18 @@ describe('Test plot api', function() {
             expect(gd._fullData[0].marker.color).toBe('blue');
         });
 
+        it('ignores invalid trace indices', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+
+            // Call restyle on an invalid trace indice
+            Plotly.restyle(gd, {'type': 'scatter', 'marker.color': 'red'}, [1]);
+        });
+
         it('restores null values to defaults', function() {
             var gd = {
                 data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
@@ -2579,6 +2591,11 @@ describe('Test plot api', function() {
             })
             .catch(failTest)
             .then(done);
+        });
+
+        it('ignores invalid trace indices', function() {
+            // Call update on an invalid trace indice
+            Plotly.update(gd, {'type': 'scatter', 'marker.color': 'red'}, {}, [1]);
         });
     });
 
