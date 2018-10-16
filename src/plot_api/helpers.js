@@ -490,6 +490,9 @@ exports.coerceTraceIndices = function(gd, traceIndices) {
     else if(!Array.isArray(traceIndices) || !traceIndices.length) {
         return gd.data.map(function(_, i) { return i; });
     }
+    else if(Array.isArray(traceIndices)) {
+        return traceIndices.filter(function(i) {return i < gd.data.length;});
+    }
 
     return traceIndices;
 };
