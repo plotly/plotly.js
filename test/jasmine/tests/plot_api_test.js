@@ -930,7 +930,7 @@ describe('Test plot api', function() {
             mockDefaultsAndCalc(gd);
 
             // Call restyle on an invalid trace indice
-            Plotly.restyle(gd, {'type': 'scatter', 'marker.color': 'scatter'}, [1]);
+            Plotly.restyle(gd, {'type': 'scatter', 'marker.color': 'red'}, [1]);
         });
 
         it('restores null values to defaults', function() {
@@ -2595,7 +2595,7 @@ describe('Test plot api', function() {
 
         it('ignores invalid trace indices', function() {
             // Call update on an invalid trace indice
-            Plotly.update(gd, {'type': 'scatter', 'marker.color': 'scatter'}, {}, [1]);
+            Plotly.update(gd, {'type': 'scatter', 'marker.color': 'red'}, {}, [1]);
         });
     });
 

@@ -491,7 +491,15 @@ exports.coerceTraceIndices = function(gd, traceIndices) {
         return gd.data.map(function(_, i) { return i; });
     }
     else if(Array.isArray(traceIndices)) {
-        return traceIndices.filter(function(i) {return i < gd.data.length;});
+        var traceIndicesOut = [];
+        for(var i = 0; i < traceIndices.length; i++) {
+            if(Lib.isIndex(traceIndices[i], gd.data.length)) {
+                traceIndicesOut.push(traceIndices[i]);
+            } else {
+                Lib.warn('trace index (', traceIndices[i], ') is not a number or is out of bounds');
+            }
+        }
+        return traceIndicesOut;
     }
 
     return traceIndices;
