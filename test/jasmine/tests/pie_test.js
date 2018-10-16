@@ -68,8 +68,8 @@ describe('Pie defaults', function() {
         expect(out.insidetextfont.color).toBe(undefined);
     });
 
-    it('does apply textfont.color to insidetextfont.color', function() {
-        var out = _supply({type: 'pie', values: [1, 2], textfont: {color: 'blue'}});
+    it('does apply textfont.color to insidetextfont.color if not set', function() {
+        var out = _supply({type: 'pie', values: [1, 2], textfont: {color: 'blue'}}, {font: {color: 'red'}});
         expect(out.insidetextfont.color).toBe('blue');
     });
 });
@@ -168,7 +168,23 @@ describe('Pie traces', function() {
     function _checkFontColors(expFontColors) {
         return function() {
             d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
-                expect(this.style.fill).toBe(expFontColors[i], i);
+                expect(this.style.fill).toBe(expFontColors[i], 'fill color of ' + i);
+            });
+        };
+    }
+
+    function _checkFontFamilies(expFontFamilies) {
+        return function() {
+            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+                expect(this.style.fontFamily).toBe(expFontFamilies[i], 'fontFamily of ' + i);
+            });
+        };
+    }
+
+    function _checkFontSizes(expFontSizes) {
+        return function() {
+            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+                expect(this.style.fontSize).toBe(expFontSizes[i] + 'px', 'fontSize of ' + i);
             });
         };
     }
@@ -490,6 +506,35 @@ describe('Pie traces', function() {
           .then(done);
     });
 
+    [
+        {fontAttr: 'textfont', textposition: 'outside'},
+        {fontAttr: 'textfont', textposition: 'inside'},
+        {fontAttr: 'outsidetextfont', textposition: 'outside'},
+        {fontAttr: 'insidetextfont', textposition: 'inside'}
+    ].forEach(function(spec) {
+        var desc = 'allow to specify ' + spec.fontAttr +
+          ' properties per individual slice (textposition ' + spec.textposition + ')';
+        it(desc, function(done) {
+            var data = {
+                values: [3, 2, 1],
+                type: 'pie',
+                textposition: spec.textposition
+            };
+            data[spec.fontAttr] = {
+                color: ['red', 'green', 'blue'],
+                family: ['Arial', 'Gravitas', 'Roboto'],
+                size: [12, 20, 16]
+            };
+
+            Plotly.plot(gd, [data])
+              .then(_checkFontColors([rgb('red'), rgb('green'), rgb('blue')]))
+              .then(_checkFontFamilies(['Arial', 'Gravitas', 'Roboto']))
+              .then(_checkFontSizes([12, 20, 16]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+
     var insideTextTestsTraceDef = {
         values: [6, 5, 4, 3, 2, 1],
         type: 'pie',
@@ -506,9 +551,17 @@ describe('Pie traces', function() {
     });
 
     it('should use textfont.color for inside text instead of the contrasting default', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTraceDef, { textfont: { color: 'red' } });
+        var data = Lib.extendFlat({}, insideTextTestsTraceDef, {textfont: {color: 'red'}});
         Plotly.plot(gd, [data])
           .then(_checkFontColors(Lib.repeat(rgb('red'), 6)))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use matching color from textfont.color array for inside text, contrasting otherwise', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTraceDef, {textfont: {color: ['red', 'blue']}});
+        Plotly.plot(gd, [data])
+          .then(_checkFontColors([rgb('red'), rgb('blue'), LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
     });
@@ -518,6 +571,119 @@ describe('Pie traces', function() {
           .then(_checkFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
+    });
+
+    it('should use matching color from insidetextfont.color array instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTraceDef, {textfont: {color: ['orange', 'purple']}});
+        Plotly.plot(gd, [data])
+          .then(_checkFontColors([rgb('orange'), rgb('purple'), LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    [
+        {fontAttr: 'outsidetextfont', textposition: 'outside'},
+        {fontAttr: 'insidetextfont', textposition: 'inside'}
+    ].forEach(function(spec) {
+        it('should fall back to textfont scalar values if ' + spec.fontAttr + ' value ' +
+          'arrays don\'t cover all slices', function(done) {
+            var data = Lib.extendFlat({}, insideTextTestsTraceDef, {
+                textposition: spec.textposition,
+                textfont: {color: 'orange', family: 'Gravitas', size: 12}
+            });
+            data[spec.fontAttr] = {color: ['blue', 'yellow'], family: ['Arial', 'Arial'], size: [24, 34]};
+
+            var orange = rgb('orange');
+            Plotly.plot(gd, [data])
+              .then(_checkFontColors([rgb('blue'), rgb('yellow'), orange, orange, orange, orange]))
+              .then(_checkFontFamilies(['Arial', 'Arial', 'Gravitas', 'Gravitas', 'Gravitas', 'Gravitas']))
+              .then(_checkFontSizes([24, 34, 12, 12, 12, 12]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+
+    it('should fall back to textfont array values and layout.font scalar (except color)' +
+      ' values for inside text', function(done) {
+        var layout = {font: {color: 'orange', family: 'serif', size: 16}};
+        var data = Lib.extendFlat({}, insideTextTestsTraceDef, {
+            textfont: {
+                color: ['blue', 'blue'], family: ['Arial', 'Arial'], size: [18, 18]
+            },
+            insidetextfont: {
+                color: ['purple'], family: ['Roboto'], size: [24]
+            }
+        });
+
+        Plotly.plot(gd, [data], layout)
+          .then(_checkFontColors([rgb('purple'), rgb('blue'), LIGHT, LIGHT, DARK, LIGHT]))
+          .then(_checkFontFamilies(['Roboto', 'Arial', 'serif', 'serif', 'serif', 'serif']))
+          .then(_checkFontSizes([24, 18, 16, 16, 16, 16]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should fall back to textfont array values and layout.font scalar' +
+      ' values for outside text', function(done) {
+        var layout = {font: {color: 'orange', family: 'serif', size: 16}};
+        var data = Lib.extendFlat({}, insideTextTestsTraceDef, {
+            textposition: 'outside',
+            textfont: {
+                color: ['blue', 'blue'], family: ['Arial', 'Arial'], size: [18, 18]
+            },
+            outsidetextfont: {
+                color: ['purple'], family: ['Roboto'], size: [24]
+            }
+        });
+
+        var orange = rgb('orange');
+        Plotly.plot(gd, [data], layout)
+          .then(_checkFontColors([rgb('purple'), rgb('blue'), orange, orange, orange, orange]))
+          .then(_checkFontFamilies(['Roboto', 'Arial', 'serif', 'serif', 'serif', 'serif']))
+          .then(_checkFontSizes([24, 18, 16, 16, 16, 16]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    [
+        {fontAttr: 'textfont'},
+        {fontAttr: 'insidetextfont'}
+    ].forEach(function(spec) {
+        it('should fall back to layout.font scalar values for inside text (except color) if ' + spec.fontAttr + ' value ' +
+          'arrays don\'t cover all slices', function(done) {
+            var layout = {font: {color: 'orange', family: 'serif', size: 16}};
+            var data = Lib.extendFlat({}, insideTextTestsTraceDef);
+            data.textposition = 'inside';
+            data[spec.fontAttr] = {color: ['blue', 'yellow'], family: ['Arial', 'Arial'], size: [24, 34]};
+
+            Plotly.plot(gd, [data], layout)
+              .then(_checkFontColors([rgb('blue'), rgb('yellow'), LIGHT, LIGHT, DARK, LIGHT]))
+              .then(_checkFontFamilies(['Arial', 'Arial', 'serif', 'serif', 'serif', 'serif']))
+              .then(_checkFontSizes([24, 34, 16, 16, 16, 16]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+
+    [
+        {fontAttr: 'textfont'},
+        {fontAttr: 'outsidetextfont'}
+    ].forEach(function(spec) {
+        it('should fall back to layout.font scalar values for outside text if ' + spec.fontAttr + ' value ' +
+          'arrays don\'t cover all slices', function(done) {
+            var layout = {font: {color: 'orange', family: 'serif', size: 16}};
+            var data = Lib.extendFlat({}, insideTextTestsTraceDef);
+            data.textposition = 'outside';
+            data[spec.fontAttr] = {color: ['blue', 'yellow'], family: ['Arial', 'Arial'], size: [24, 34]};
+
+            var orange = rgb('orange');
+            Plotly.plot(gd, [data], layout)
+              .then(_checkFontColors([rgb('blue'), rgb('yellow'), orange, orange, orange, orange]))
+              .then(_checkFontFamilies(['Arial', 'Arial', 'serif', 'serif', 'serif', 'serif']))
+              .then(_checkFontSizes([24, 34, 16, 16, 16, 16]))
+              .catch(failTest)
+              .then(done);
+        });
     });
 });
 

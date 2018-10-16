@@ -17,6 +17,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var textFontAttrs = fontAttrs({
     editType: 'calc',
+    arrayOk: true,
     colorEditType: 'style',
     description: 'Sets the font used for `textinfo`.'
 });
@@ -169,7 +170,6 @@ module.exports = {
             'Specifies the location of the `textinfo`.'
         ].join(' ')
     },
-    // TODO make those arrayOk?
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
