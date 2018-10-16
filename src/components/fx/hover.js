@@ -884,7 +884,7 @@ function createHoverText(hoverData, opts, gd) {
 
     // then put the text in, position the pointer to the data,
     // and figure out sizes
-    hoverLabels.each(function(d) {
+    hoverLabels.each(function(d, curveNumber) {
         var g = d3.select(this).attr('transform', '');
         var name = '';
         var text = '';
@@ -956,11 +956,7 @@ function createHoverText(hoverData, opts, gd) {
         var trace = d.trace, hovertemplate = opts.hovertemplate || trace.hovertemplate || false;
         if(hovertemplate) {
             var i = d.index;
-            var obj = {
-                x: trace.x[i],
-                y: trace.y[i]
-            };
-            text = Lib.templateString(hovertemplate, {text: text}, d.cd[i], obj, trace, gd._fullLayout);
+            text = Lib.templateString(hovertemplate, gd._hoverdata[curveNumber], {text: text}, d.cd[i], trace, gd._fullLayout);
         }
 
         // main label
