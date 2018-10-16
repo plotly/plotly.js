@@ -457,8 +457,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     parcoordsLineLayer
         .each(function(d) {
             if(d.viewModel) {
-                if(d.lineLayer) d.lineLayer.update(d);
-                else d.lineLayer = lineLayerMaker(this, d);
+                d.lineLayer = lineLayerMaker(this, d);
 
                 d.viewModel[d.key] = d.lineLayer;
                 d.lineLayer.render(d.viewModel.panels, !d.context);
