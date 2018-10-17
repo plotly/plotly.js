@@ -286,14 +286,12 @@ describe('validateTemplate', function() {
         compareOutputs(out1, out2, expected, countToCheck);
 
         // Test with DOM elements as argument
-        var gd = createGraphDiv(), gdNotemplate = createGraphDiv();
+        var gd = createGraphDiv();
         return Plotly.newPlot(gd, mock)
-        .then(function() {return Plotly.newPlot(gdNotemplate, mockNoTemplate);})
-        .then(function() {
-            var out1 = Plotly.validateTemplate(gd);
-            var out2 = Plotly.validateTemplate(gdNotemplate, template);
-            compareOutputs(out1, out2, expected, countToCheck);
-        })
+        .then(function() {out1 = Plotly.validateTemplate(gd);})
+        .then(function() {return Plotly.newPlot(gd, mockNoTemplate);})
+        .then(function() {out2 = Plotly.validateTemplate(gd, template);})
+        .then(function() {compareOutputs(out1, out2, expected, countToCheck);})
         .catch(failTest)
         .then(destroyGraphDiv);
     }
