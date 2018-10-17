@@ -47,7 +47,12 @@ describe('config argument', function() {
                 width: layoutWidth
             };
             var relayout = {
-                width: relayoutWidth
+                width: relayoutWidth,
+                // didn't need this before #3120 - but since we're now
+                // implicitly clearing autosize when edit width, if you really
+                // want height to re-autosize you need to explicitly re-add
+                // autosize
+                autosize: autosize
             };
 
             var layout2 = Lib.extendDeep({}, layout);
