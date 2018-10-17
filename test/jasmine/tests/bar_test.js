@@ -1114,6 +1114,44 @@ describe('A bar plot', function() {
           .then(done);
     });
 
+    it('should use a contrasting text color by default for outside labels being pushed inside ' +
+      'because of another bar stacked above', function(done) {
+        var trace1 = {
+            x: [5],
+            y: [5],
+            text: ['Giraffes'],
+            type: 'bar',
+            textposition: 'outside'
+        };
+        var trace2 = Lib.extendFlat({}, trace1);
+        var layout = {barmode: 'stack'};
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(assertTextFontColors([LIGHT, DARK]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should style outside labels pushed inside by bars stacked above as inside labels', function(done) {
+        var trace1 = {
+            x: [5],
+            y: [5],
+            text: ['Giraffes'],
+            type: 'bar',
+            textposition: 'outside',
+            insidetextfont: {color: 'blue', family: 'serif', size: 24}
+        };
+        var trace2 = Lib.extendFlat({}, trace1);
+        var layout = {barmode: 'stack', font: {family: 'Arial'}};
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(assertTextFontColors([rgb('blue'), DARK]))
+          .then(assertTextFontFamilies(['serif', 'Arial']))
+          .then(assertTextFontSizes([24, 12]))
+          .catch(failTest)
+          .then(done);
+    });
+
     it('should fall back to textfont array values if insidetextfont array values don\'t ' +
       'cover all bars', function(done) {
         var trace = Lib.extendFlat({}, insideTextTestsTraceDef, {

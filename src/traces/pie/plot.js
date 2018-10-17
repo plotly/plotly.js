@@ -410,7 +410,6 @@ module.exports = function plot(gd, cdpie) {
     }, 0);
 };
 
-// TODO DRY?
 function determineOutsideTextFont(trace, pt, layoutFont) {
     var customColor = helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
       helpers.castOption(trace.textfont.color, pt.pts) ||

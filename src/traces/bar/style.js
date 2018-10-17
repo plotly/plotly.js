@@ -44,28 +44,7 @@ function style(gd, cd) {
 
 function stylePoints(sel, trace, gd) {
     var pts = sel.selectAll('path');
-    var txs = sel.selectAll('text');
-
     Drawing.pointStyle(pts, trace, gd);
-
-    txs.each(function(d) {
-        var tx = d3.select(this);
-        var textFont;
-
-        if(tx.classed('bartext-inside')) {
-            textFont = trace.insidetextfont;
-        } else if(tx.classed('bartext-outside')) {
-            textFont = trace.outsidetextfont;
-        }
-        if(!textFont) textFont = trace.textfont;
-
-        function cast(k) {
-            var cont = textFont[k];
-            return Array.isArray(cont) ? cont[d.i] : cont;
-        }
-
-        Drawing.font(tx, cast('family'), cast('size'), cast('color'));
-    });
 }
 
 function styleOnSelect(gd, cd) {
