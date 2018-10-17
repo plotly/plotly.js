@@ -263,13 +263,7 @@ describe('template interactions', function() {
 
 describe('validateTemplate', function() {
 
-    function checkValidate(mock, expected, countToCheck) {
-        var template = mock.layout.template;
-        var mockNoTemplate = Lib.extendDeep({}, mock);
-        delete mockNoTemplate.layout.template;
-
-        var out1 = Plotly.validateTemplate(mock);
-        var out2 = Plotly.validateTemplate(mockNoTemplate, template);
+    function compareOutputs(out1, out2, expected, countToCheck) {
         expect(out2).toEqual(out1);
         if(expected) {
             expect(countToCheck ? out1.slice(0, countToCheck) : out1)
@@ -280,17 +274,39 @@ describe('validateTemplate', function() {
         }
     }
 
+    function checkValidate(mock, expected, countToCheck) {
+        var template = mock.layout.template;
+        var mockNoTemplate = Lib.extendDeep({}, mock);
+        delete mockNoTemplate.layout.template;
+
+        // Test with objects as argument
+        var out1 = Plotly.validateTemplate(mock);
+        var out2 = Plotly.validateTemplate(mockNoTemplate, template);
+        expect(out2).toEqual(out1);
+        compareOutputs(out1, out2, expected, countToCheck);
+
+        // Test with DOM elements as argument
+        var gd = createGraphDiv();
+        return Plotly.newPlot(gd, mock)
+        .then(function() {out1 = Plotly.validateTemplate(gd);})
+        .then(function() {return Plotly.newPlot(gd, mockNoTemplate);})
+        .then(function() {out2 = Plotly.validateTemplate(gd, template);})
+        .then(function() {compareOutputs(out1, out2, expected, countToCheck);})
+        .catch(failTest)
+        .then(destroyGraphDiv);
+    }
+
     var cleanMock = Lib.extendDeep({}, templateMock);
     cleanMock.layout.annotations.pop();
     cleanMock.data.pop();
     cleanMock.data.splice(1, 1);
     cleanMock.layout.template.data.bar.pop();
 
-    it('returns undefined when the template matches precisely', function() {
-        checkValidate(cleanMock);
+    it('returns undefined when the template matches precisely', function(done) {
+        checkValidate(cleanMock).then(done);
     });
 
-    it('catches all classes of regular issue', function() {
+    it('catches all classes of regular issue', function(done) {
         var messyMock = Lib.extendDeep({}, templateMock);
         messyMock.data.push({type: 'box', x0: 1, y: [1, 2, 3]});
         messyMock.layout.template.layout.geo = {projection: {type: 'orthographic'}};
@@ -347,10 +363,10 @@ describe('validateTemplate', function() {
             path: 'layout.annotations[4]',
             templateitemname: 'nope',
             msg: 'There are no templates for item layout.annotations[4] with name nope'
-        }]);
+        }]).then(done);
     });
 
-    it('catches missing template.data', function() {
+    it('catches missing template.data', function(done) {
         var noDataMock = Lib.extendDeep({}, cleanMock);
         delete noDataMock.layout.template.data;
 
@@ -360,17 +376,17 @@ describe('validateTemplate', function() {
         }],
         // check only the first error - we don't care about the specifics
         // uncovered after we already know there's no template.data
-        1);
+        1).then(done);
     });
 
-    it('catches missing template.layout', function() {
+    it('catches missing template.layout', function(done) {
         var noLayoutMock = Lib.extendDeep({}, cleanMock);
         delete noLayoutMock.layout.template.layout;
 
         checkValidate(noLayoutMock, [{
             code: 'layout',
             msg: 'The template has no key layout.'
-        }], 1);
+        }], 1).then(done);
     });
 
 });
