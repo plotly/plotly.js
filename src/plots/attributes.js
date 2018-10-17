@@ -136,6 +136,7 @@ module.exports = {
         editType: 'none',
         description: [
             'Template string used for rendering the information that appear on hover box.',
+            'Note that this will override `hoverinfo`.',
             'Variables are inserted using %{variable}, for example "y: %{y}".',
             'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".'
         ].join(' ')
