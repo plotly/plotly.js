@@ -510,6 +510,43 @@ describe('Test plot api', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('updates autosize/width/height correctly', function(done) {
+            function assertSizeAndThen(width, height, auto, msg, next) {
+                return function() {
+                    expect(gd._fullLayout.width).toBe(width, msg);
+                    expect(gd._fullLayout.height).toBe(height, msg);
+                    expect(gd._fullLayout.autosize).toBe(auto, msg);
+                    if(!auto) {
+                        expect(gd.layout.width).toBe(width, msg);
+                        expect(gd.layout.height).toBe(height, msg);
+                    }
+
+                    if(next) return Plotly.relayout(gd, next);
+                };
+            }
+
+            // give gd css sizing to be picked up by autosize
+            gd.style.width = '543px';
+            gd.style.height = '432px';
+
+            Plotly.newPlot(gd, [{y: [1, 3, 2]}])
+            .then(assertSizeAndThen(543, 432, true, 'initial',
+                {autosize: false}))
+            .then(assertSizeAndThen(543, 432, false, 'autosize false with no sizes',
+                {autosize: true}))
+            .then(assertSizeAndThen(543, 432, true, 'back to autosized',
+                {width: 600}))
+            .then(assertSizeAndThen(600, 432, false, 'explicit width causes explicit height',
+                {width: null}))
+            .then(assertSizeAndThen(543, 432, true, 'removed width',
+                {height: 500, width: 700}))
+            .then(assertSizeAndThen(700, 500, false, 'explicit height and width',
+                {autosize: true}))
+            .then(assertSizeAndThen(543, 432, true, 'final back to autosize'))
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('Plotly.relayout subroutines switchboard', function() {
