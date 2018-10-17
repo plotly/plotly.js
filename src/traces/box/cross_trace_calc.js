@@ -78,7 +78,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad, vwidth) {
     var dPos = boxdv.minDiff / 2;
 
     // override dPos if violin width given
-    if (vwidth != false) {
+    if(vwidth) {
         dPos = vwidth;
     }
 

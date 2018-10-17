@@ -16,7 +16,7 @@ module.exports = {
         valType: 'number',
         min: 0,
         role: 'info',
-        dflt: false,
+        dflt: 0,
         editType: 'calc',
         description: [
             'Sets the width of the violins.',

@@ -26,10 +26,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.visible === false) return;
 
     coerce('bandwidth');
-    coerce('scalegroup', traceOut.name);
-    coerce('scalemode');
     coerce('side');
-    coerce('vwidth');
+
+    var vwidth = coerce('vwidth');
+    if(!vwidth) {
+        coerce('scalegroup', traceOut.name);
+        coerce('scalemode');
+    }
 
     var span = coerce('span');
     var spanmodeDflt;

@@ -260,11 +260,11 @@ module.exports = {
         valType: 'number',
         min: 0,
         role: 'info',
-        dflt: false,
+        dflt: 0,
         editType: 'calc',
         description: [
-            'Sets the width of the violins.',
-            'This overrides the normal width of the violins.'
+            'Sets the width of the box.',
+            'This overrides the normal width of the box traces.'
         ].join(' ')
     },
 };

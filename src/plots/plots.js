@@ -2612,9 +2612,6 @@ function doCrossTraceCalc(gd) {
                     fullLayout[sp];
 
                 for(j = 0; j < methods.length; j++) {
-                    console.log(methods);
-                    console.log(methods[j])
-                    console.log(methods[j].type)
                     methods[j](gd, spInfo, sp);
                 }
             }
