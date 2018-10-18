@@ -118,6 +118,10 @@ exports.roundUp = function(val, arrayIn, reverse) {
 /**
  * Tweak to Array.sort(sortFn) that improves performance for pre-sorted arrays
  *
+ * Note that newer browsers (such as Chrome v70+) are starting to pick up
+ * on pre-sorted arrays which may render the following optimization unnecessary
+ * in the future.
+ *
  * Motivation: sometimes we need to sort arrays but the input is likely to
  * already be sorted. Browsers don't seem to pick up on pre-sorted arrays,
  * and in fact Chrome is actually *slower* sorting pre-sorted arrays than purely
