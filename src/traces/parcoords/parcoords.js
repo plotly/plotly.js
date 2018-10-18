@@ -461,7 +461,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
                 else d.lineLayer = lineLayerMaker(this, d);
 
                 d.viewModel[d.key] = d.lineLayer;
-                d.lineLayer.render(d.viewModel.panels, !d.context);
+                d.lineLayer.render(d.viewModel.panels, true);
             }
         });
 
