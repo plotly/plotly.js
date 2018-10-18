@@ -955,8 +955,7 @@ function createHoverText(hoverData, opts, gd) {
         // hovertemplate
         var trace = d.trace, hovertemplate = opts.hovertemplate || trace.hovertemplate || false;
         if(hovertemplate) {
-            var i = d.index;
-            text = Lib.templateString(hovertemplate, gd._hoverdata[curveNumber], {text: text}, d.cd[i], trace, gd._fullLayout);
+            text = Lib.templateString(hovertemplate, gd._hoverdata[curveNumber], trace);
         }
 
         // main label
