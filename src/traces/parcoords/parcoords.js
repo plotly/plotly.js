@@ -458,15 +458,15 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .each(function(d) {
             if(d.viewModel) {
                 if((!d.lineLayer) ||
-                    (callbacks)) { // recreate in case of having callbacks e.g. restyle, Should we explicitly test for callback to be a restyle?
+                    (callbacks)) { // recreate in case of having callbacks e.g. restyle. Should we test for callback to be a restyle?
                     d.lineLayer = lineLayerMaker(this, d);
                 } else d.lineLayer.update(d);
 
-                if (d.key) {
+                if(d.key) {
                     d.viewModel[d.key] = d.lineLayer;
 
                     var setChanged = ((!d.context) ||                 // don't update background
-                        ((d.key !== 'contextLayer') || (callbacks))); // unless there is a callback on this line layer
+                        ((d.key !== 'contextLayer') || (callbacks))); // unless there is a callback on the context layer. Should we test the callback?
 
                     d.lineLayer.render(d.viewModel.panels, setChanged);
                 }
