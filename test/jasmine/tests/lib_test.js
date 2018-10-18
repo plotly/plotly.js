@@ -2124,6 +2124,10 @@ describe('Test lib.js:', function() {
             expect(Lib.templateString('foo %{bar}', {bar: 'baz'})).toEqual('foo baz');
         });
 
+        it('evaluates attributes with a dot in their name', function() {
+            expect(Lib.templateString('%{marker.size}', {'marker.size': 12}, {marker: {size: 14}})).toEqual('12');
+        });
+
         it('evaluates nested properties', function() {
             expect(Lib.templateString('foo %{bar.baz}', {bar: {baz: 'asdf'}})).toEqual('foo asdf');
         });
@@ -2144,7 +2148,7 @@ describe('Test lib.js:', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
         });
 
-        it('find the first object with a given key', function() {
+        it('uses the value from the first object with the specified key', function() {
             var obj1 = {a: 'first'}, obj2 = {a: 'second', foo: {bar: 'bar'}};
 
             // Simple key

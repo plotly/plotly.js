@@ -1005,11 +1005,12 @@ lib.templateString = function(string) {
         var obj, value, i;
         for(i = 1; i < args.length; i++) {
             obj = args[i];
-            if(SIMPLE_PROPERTY_REGEX.test(key)) {
-                if(obj.hasOwnProperty(key)) {
-                    value = obj[key];
-                }
-            } else {
+            if(obj.hasOwnProperty(key)) {
+                value = obj[key];
+                break;
+            }
+
+            if(!SIMPLE_PROPERTY_REGEX.test(key)) {
                 // getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
                 // value = getterCache[key]();
                 value = getterCache[key] || lib.nestedProperty(obj, key).get();
