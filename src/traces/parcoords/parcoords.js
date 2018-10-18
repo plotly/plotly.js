@@ -456,18 +456,20 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
 
     parcoordsLineLayer
         .each(function(d) {
-
             if(d.viewModel) {
-                if(d.lineLayer) d.lineLayer.update(d);
-                else d.lineLayer = lineLayerMaker(this, d);
+                if((!d.lineLayer) ||
+                    (callbacks)) { // recreate in case of having callbacks e.g. restyle, Should we explicitly test for callback to be a restyle?
+                    d.lineLayer = lineLayerMaker(this, d);
+                } else d.lineLayer.update(d);
 
-                d.viewModel[d.key] = d.lineLayer;
+                if (d.key) {
+                    d.viewModel[d.key] = d.lineLayer;
 
-                var setChanged = ((d.key) &&
-                    (((d.key !== 'contextLayer') || (callbacks)) || // unless there is callback on this line layer
-                    (!d.context))); // don't update background
+                    var setChanged = ((!d.context) ||                 // don't update background
+                        ((d.key !== 'contextLayer') || (callbacks))); // unless there is a callback on this line layer
 
-                d.lineLayer.render(d.viewModel.panels, setChanged);
+                    d.lineLayer.render(d.viewModel.panels, setChanged);
+                }
             }
         });
 
