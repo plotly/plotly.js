@@ -12,17 +12,6 @@ var boxAttrs = require('../box/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
-    vwidth: {
-        valType: 'number',
-        min: 0,
-        role: 'info',
-        dflt: 0,
-        editType: 'calc',
-        description: [
-            'Sets the width of the violins.',
-            'This overrides the normal width of the violins.'
-        ].join(' ')
-    },
     y: boxAttrs.y,
     x: boxAttrs.x,
     x0: boxAttrs.x0,
@@ -254,5 +243,17 @@ module.exports = {
             'Do the hover effects highlight individual violins',
             'or sample points or the kernel density estimate or any combination of them?'
         ].join(' ')
-    }
+    },
+
+    vwidth: {
+        valType: 'number',
+        min: 0,
+        role: 'info',
+        dflt: 0,
+        editType: 'calc',
+        description: [
+            'Sets the width of the violins.',
+            'This overrides the normal width of the violins.'
+        ].join(' ')
+    },
 };

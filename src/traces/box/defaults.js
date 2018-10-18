@@ -28,7 +28,13 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     coerce('whiskerwidth');
     coerce('boxmean');
-    coerce('vwidth');
+
+    // coerce('vwidth');
+    var vwidth = coerce('vwidth');
+    if(!vwidth) {
+        coerce('scalegroup', traceOut.name);
+        coerce('scalemode');
+    }
 
     var notched = coerce('notched', traceIn.notchwidth !== undefined);
     if(notched) coerce('notchwidth');

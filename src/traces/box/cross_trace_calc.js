@@ -48,11 +48,11 @@ function crossTraceCalc(gd, plotinfo) {
             }
         }
 
-        setPositionOffset('box', gd, boxList, posAxis, [minPad, maxPad], false);
+        setPositionOffset('box', gd, boxList, posAxis, [minPad, maxPad]);
     }
 }
 
-function setPositionOffset(traceType, gd, boxList, posAxis, pad, vwidth) {
+function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
     var calcdata = gd.calcdata;
     var fullLayout = gd._fullLayout;
     var pointList = [];
@@ -77,11 +77,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad, vwidth) {
     var boxdv = Lib.distinctVals(pointList);
     var dPos = boxdv.minDiff / 2;
 
-    // override dPos if violin width given
-    if(vwidth) {
-        dPos = vwidth;
-    }
-
     // if there's no duplication of x points,
     // disable 'group' mode by setting counter to 1
     if(pointList.length === boxdv.vals.length) {
@@ -105,8 +100,15 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad, vwidth) {
 
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
-        // set the width of all boxes
-        calcTrace[0].t.dPos = dPos;
+        // set the width of all boxes and
+        // override this width with
+        // trace.width if it exists
+        if(calcTrace[0].trace && calcTrace[0].trace.vwidth) {
+            calcTrace[0].t.dPos = calcTrace[0].trace.vwidth; 
+        } else {
+            calcTrace[0].t.dPos = dPos;   
+        }
+
         // link extremes to all boxes
         calcTrace[0].trace._extremes[posAxis._id] = extremes;
     }

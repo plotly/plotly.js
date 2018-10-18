@@ -244,7 +244,6 @@ module.exports = {
         marker: scatterAttrs.unselected.marker,
         editType: 'style'
     },
-
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],
@@ -267,4 +266,5 @@ module.exports = {
             'This overrides the normal width of the box traces.'
         ].join(' ')
     },
+
 };
