@@ -7,6 +7,7 @@ var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
+var RESIZE_DELAY = 300;
 
 describe('config argument', function() {
 
@@ -585,7 +586,7 @@ describe('config argument', function() {
             viewport.set(width / 2, height / 2);
 
             return Promise.resolve()
-            .then(delay(200))
+            .then(delay(RESIZE_DELAY))
             .then(function() {
                 checkLayoutSize(elWidth / 2, elHeight / 2);
             })
@@ -639,7 +640,7 @@ describe('config argument', function() {
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
             .then(function() {viewport.set(width / 2, width / 2);})
-            .then(delay(200))
+            .then(delay(RESIZE_DELAY))
             // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
             .then(function() {
                 expect(cntWindowResize).toBe(1);
@@ -667,7 +668,7 @@ describe('config argument', function() {
             // Resize viewport
             .then(function() {viewport.set(width / 2, height / 2);})
             // Wait for resize to happen (Plotly.resize has an internal timeout)
-            .then(delay(200))
+            .then(delay(RESIZE_DELAY))
             // Check that final figure's size hasn't changed
             .then(function() {checkLayoutSize(width, height);})
             .catch(failTest)
