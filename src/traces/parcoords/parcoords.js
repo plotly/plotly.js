@@ -462,14 +462,12 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
                     d.lineLayer = lineLayerMaker(this, d);
                 } else d.lineLayer.update(d);
 
-                if(d.key) {
-                    d.viewModel[d.key] = d.lineLayer;
+                if(d.key) d.viewModel[d.key] = d.lineLayer;
 
-                    var setChanged = ((!d.context) ||                 // don't update background
-                        ((d.key !== 'contextLayer') || (callbacks))); // unless there is a callback on the context layer. Should we test the callback?
+                var setChanged = ((!d.context) || // don't update background
+                                    (callbacks));   // unless there is a callback on the context layer. Should we test the callback?
 
-                    d.lineLayer.render(d.viewModel.panels, setChanged);
-                }
+                d.lineLayer.render(d.viewModel.panels, setChanged);
             }
         });
 
