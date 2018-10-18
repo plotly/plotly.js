@@ -9,7 +9,7 @@ var svgMockList = [
     ['17', require('@mocks/17.json')],
     ['21', require('@mocks/21.json')],
     ['22', require('@mocks/22.json')],
-    ['airfoil', require('@mocks/airfoil.json')],
+    ['airfoil', require('@mocks/airfoil.json')], // important to keep because it's the only mock with config options
     ['annotations-autorange', require('@mocks/annotations-autorange.json')],
     ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
     ['axes_visible-false', require('@mocks/axes_visible-false.json')],

@@ -2641,6 +2641,7 @@ function diffConfig(oldConfig, newConfig) {
     var key;
 
     for(key in oldConfig) {
+        if(key.charAt(0) === '_') continue;
         var oldVal = oldConfig[key];
         var newVal = newConfig[key];
         if(oldVal !== newVal) {
