@@ -2329,10 +2329,6 @@ describe('Test lib.js:', function() {
                 .toEqual(dupes());
 
             expect(callCount).toEqual(18);
-
-            callCount = 0;
-            dupes().sort(sortCounter);
-            expect(callCount).toBeGreaterThan(18);
         });
 
         it('still short-circuits reversed with duplicates', function() {
@@ -2340,10 +2336,6 @@ describe('Test lib.js:', function() {
                 .toEqual(dupes().reverse());
 
             expect(callCount).toEqual(18);
-
-            callCount = 0;
-            dupes().sort(sortCounterReversed);
-            expect(callCount).toBeGreaterThan(18);
         });
     });
 
