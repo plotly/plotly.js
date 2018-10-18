@@ -868,7 +868,22 @@ describe('parcoords basic use', function() {
 
     });
 
-    it('@gl Calling `Plotly.restyle` with a string path should amend the preexisting parcoords', function(done) {
+    it('@gl Calling `Plotly.restyle` with a string path to line color should amend the preexisting parcoords', function(done) {
+
+        expect(gd.data.length).toEqual(1);
+
+        Plotly.restyle(gd, 'line.color', 'red').then(function() {
+
+            expect(gd.data.length).toEqual(1);
+
+            expect(gd.data[0].line.color).toEqual('red');
+        })
+        .catch(failTest)
+        .then(done);
+
+    });
+
+    it('@gl Calling `Plotly.restyle` with a string path to colorscale should amend the preexisting parcoords', function(done) {
 
         expect(gd.data.length).toEqual(1);
 
