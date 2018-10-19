@@ -49,8 +49,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
         // Note that coercing `insidetextfont` is always needed –
         // even if `textposition` is `outside` for each trace – since
-        // an outside label can become an inside one, e.g. because
-        // bar is stacked on top of it.
+        // an outside label can become an inside one, for example because
+        // of a bar being stacked on top of it.
         var insideTextFontDefault = Lib.extendFlat({}, textFont);
         var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
         var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
