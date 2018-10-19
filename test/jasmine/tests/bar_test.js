@@ -7,6 +7,8 @@ var Drawing = require('@src/components/drawing');
 
 var Axes = require('@src/plots/cartesian/axes');
 
+var click = require('../assets/click');
+var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -902,12 +904,17 @@ describe('A bar plot', function() {
         expect(textBB.right).not.toBeGreaterThan(pathBB.left);
     }
 
-    function assertTextFontColors(expFontColors) {
+    function assertTextFontColors(expFontColors, label) {
         return function() {
             var selection = d3.selectAll(BAR_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontColors.length);
             selection.each(function(d, i) {
-                expect(this.style.fill).toBe(expFontColors[i], 'element ' + i);
+                var expFontColor = expFontColors[i];
+                var isArray = Array.isArray(expFontColor);
+                expect(this.style.fill).toBe(isArray ? expFontColor[0] : expFontColor,
+                  (label || '') + ', fill for element ' + i);
+                expect(this.style.fillOpacity).toBe(isArray ? expFontColor[1] : '1',
+                  (label || '') + ', fillOpacity for element ' + i);
             });
         };
     }
@@ -1174,6 +1181,88 @@ describe('A bar plot', function() {
           .then(assertTextFontSizes([16, 24, 12, 12, 12, 12]))
           .catch(failTest)
           .then(done);
+    });
+
+    it('should retain text styles throughout selecting and deselecting data points', function(done) {
+        var trace1 = {
+            x: ['giraffes', 'orangutans', 'monkeys'],
+            y: [12, 18, 29],
+            text: [12, 18, 29],
+            type: 'bar',
+            textposition: 'inside',
+            textfont: {
+                color: ['red', 'orange'],
+                family: ['Arial', 'serif'],
+                size: [8, 24]
+            },
+            insidetextfont: {
+                color: ['blue'],
+                family: ['Arial'],
+                size: [16]
+            }
+        };
+        var trace2 = Lib.extendDeep({}, trace1, {textposition: 'outside'});
+        var layout = {
+            barmode: 'group',
+            font: {
+                family: 'Roboto',
+                size: 12
+            },
+            clickmode: 'event+select'
+        };
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(function() {
+              assertNonSelectionModeStyle('before selection');
+          })
+          .then(function() {
+              return select1stBar2ndTrace();
+          })
+          .then(function() {
+              assertSelectionModeStyle('in selection mode');
+          })
+          .then(function() {
+              return deselect1stBar2ndTrace();
+          })
+          .then(function() {
+              assertNonSelectionModeStyle('after selection');
+          })
+          .catch(failTest)
+          .then(done);
+
+        var blue = rgb('blue');
+        var orange = rgb('orange');
+        var red = rgb('red');
+
+        function assertSelectionModeStyle(label) {
+            var unselColor = [rgb('black'), '0.2'];
+            assertTextFontColors([unselColor, unselColor, unselColor, red, unselColor, unselColor], label)();
+            assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
+            assertTextFontSizes([16, 24, 12, 8, 24, 12])();
+        }
+
+        function assertNonSelectionModeStyle(label) {
+            assertTextFontColors([blue, orange, LIGHT, red, orange, DARK], label)();
+            assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
+            assertTextFontSizes([16, 24, 12, 8, 24, 12])();
+        }
+
+        function select1stBar2ndTrace() {
+            return new Promise(function(resolve) {
+                click(176, 354);
+                resolve();
+            });
+        }
+
+        function deselect1stBar2ndTrace() {
+            return new Promise(function(resolve) {
+                var delayAvoidingDblClick = DBLCLICKDELAY * 1.01;
+                setTimeout(function() {
+                    click(176, 354);
+                    resolve();
+                }, delayAvoidingDblClick);
+            });
+        }
     });
 
     it('should be able to restyle', function(done) {
