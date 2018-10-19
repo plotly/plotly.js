@@ -1085,6 +1085,24 @@ describe('A bar plot', function() {
           .then(done);
     });
 
+    it('should take bar fill opacities into account when calculating contrasting inside text colors', function(done) {
+        var trace = {
+            x: [5, 10],
+            y: [5, 15],
+            text: ['Giraffes', 'Zebras'],
+            type: 'bar',
+            textposition: 'inside',
+            marker: {
+                color: ['rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.8)']
+            }
+        };
+
+        Plotly.plot(gd, [trace])
+          .then(assertTextFontColors([DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
     it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
         var data = Lib.extendFlat({}, insideTextTestsTraceDef, { textfont: { color: '#09f' } });
 
