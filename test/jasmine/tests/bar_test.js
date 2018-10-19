@@ -838,8 +838,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 describe('A bar plot', function() {
     'use strict';
 
-    var DARK = rgb('#444');
-    var LIGHT = rgb('#fff');
+    var DARK = '#444';
+    var LIGHT = '#fff';
 
     var gd;
 
@@ -908,10 +908,12 @@ describe('A bar plot', function() {
         return function() {
             var selection = d3.selectAll(BAR_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontColors.length);
+
             selection.each(function(d, i) {
                 var expFontColor = expFontColors[i];
                 var isArray = Array.isArray(expFontColor);
-                expect(this.style.fill).toBe(isArray ? expFontColor[0] : expFontColor,
+
+                expect(this.style.fill).toBe(isArray ? rgb(expFontColor[0]) : rgb(expFontColor),
                   (label || '') + ', fill for element ' + i);
                 expect(this.style.fillOpacity).toBe(isArray ? expFontColor[1] : '1',
                   (label || '') + ', fillOpacity for element ' + i);
@@ -1067,7 +1069,7 @@ describe('A bar plot', function() {
         .then(done);
     });
 
-    var insideTextTestsTraceDef = {
+    var insideTextTestsTrace = {
         x: ['giraffes', 'orangutans', 'monkeys', 'elefants', 'spiders', 'snakes'],
         y: [20, 14, 23, 10, 59, 15],
         text: [20, 14, 23, 10, 59, 15],
@@ -1079,7 +1081,7 @@ describe('A bar plot', function() {
     };
 
     it('should use inside text colors contrasting to bar colors by default', function(done) {
-        Plotly.plot(gd, [insideTextTestsTraceDef])
+        Plotly.plot(gd, [insideTextTestsTrace])
           .then(assertTextFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
@@ -1104,37 +1106,37 @@ describe('A bar plot', function() {
     });
 
     it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTraceDef, { textfont: { color: '#09f' } });
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: '#09f' } });
 
         Plotly.plot(gd, [data])
-          .then(assertTextFontColors(Lib.repeat(rgb('#09f'), 6)))
+          .then(assertTextFontColors(Lib.repeat('#09f', 6)))
           .catch(failTest)
           .then(done);
     });
 
     it('should use matching color from textfont.color array for inside text, contrasting otherwise', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTraceDef, { textfont: { color: ['#09f', 'green'] } });
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: ['#09f', 'green'] } });
 
         Plotly.plot(gd, [data])
-          .then(assertTextFontColors([rgb('#09f'), rgb('green'), LIGHT, LIGHT, DARK, LIGHT]))
+          .then(assertTextFontColors(['#09f', 'green', LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
     });
 
     it('should use defined insidetextfont.color for inside text instead of the contrasting default', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTraceDef, { insidetextfont: { color: '#09f' } });
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { insidetextfont: { color: '#09f' } });
 
         Plotly.plot(gd, [data])
-          .then(assertTextFontColors(Lib.repeat(rgb('#09f'), 6)))
+          .then(assertTextFontColors(Lib.repeat('#09f', 6)))
           .catch(failTest)
           .then(done);
     });
 
     it('should use matching color from insidetextfont.color array instead of the contrasting default', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTraceDef, { insidetextfont: { color: ['yellow', 'green'] } });
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { insidetextfont: { color: ['yellow', 'green'] } });
 
         Plotly.plot(gd, [data])
-          .then(assertTextFontColors([rgb('yellow'), rgb('green'), LIGHT, LIGHT, DARK, LIGHT]))
+          .then(assertTextFontColors(['yellow', 'green', LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
     });
@@ -1170,7 +1172,7 @@ describe('A bar plot', function() {
         var layout = {barmode: 'stack', font: {family: 'Arial'}};
 
         Plotly.plot(gd, [trace1, trace2], layout)
-          .then(assertTextFontColors([rgb('blue'), DARK]))
+          .then(assertTextFontColors(['blue', DARK]))
           .then(assertTextFontFamilies(['serif', 'Arial']))
           .then(assertTextFontSizes([24, 12]))
           .catch(failTest)
@@ -1179,7 +1181,7 @@ describe('A bar plot', function() {
 
     it('should fall back to textfont array values if insidetextfont array values don\'t ' +
       'cover all bars', function(done) {
-        var trace = Lib.extendFlat({}, insideTextTestsTraceDef, {
+        var trace = Lib.extendFlat({}, insideTextTestsTrace, {
             textfont: {
                 color: ['blue', 'blue', 'blue'],
                 family: ['Arial', 'serif'],
@@ -1194,7 +1196,7 @@ describe('A bar plot', function() {
         var layout = {font: {family: 'Roboto', size: 12}};
 
         Plotly.plot(gd, [trace], layout)
-          .then(assertTextFontColors([rgb('yellow'), rgb('green'), rgb('blue'), LIGHT, DARK, LIGHT]))
+          .then(assertTextFontColors(['yellow', 'green', 'blue', LIGHT, DARK, LIGHT]))
           .then(assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Roboto', 'Roboto', 'Roboto']))
           .then(assertTextFontSizes([16, 24, 12, 12, 12, 12]))
           .catch(failTest)
@@ -1248,19 +1250,15 @@ describe('A bar plot', function() {
           .catch(failTest)
           .then(done);
 
-        var blue = rgb('blue');
-        var orange = rgb('orange');
-        var red = rgb('red');
-
         function assertSelectionModeStyle(label) {
-            var unselColor = [rgb('black'), '0.2'];
-            assertTextFontColors([unselColor, unselColor, unselColor, red, unselColor, unselColor], label)();
+            var unselColor = ['black', '0.2'];
+            assertTextFontColors([unselColor, unselColor, unselColor, 'red', unselColor, unselColor], label)();
             assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
             assertTextFontSizes([16, 24, 12, 8, 24, 12])();
         }
 
         function assertNonSelectionModeStyle(label) {
-            assertTextFontColors([blue, orange, LIGHT, red, orange, DARK], label)();
+            assertTextFontColors(['blue', 'orange', LIGHT, 'red', 'orange', DARK], label)();
             assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
             assertTextFontSizes([16, 24, 12, 8, 24, 12])();
         }
