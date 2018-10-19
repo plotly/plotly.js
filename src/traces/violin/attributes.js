@@ -245,7 +245,7 @@ module.exports = {
         ].join(' ')
     },
 
-    vwidth: {
+    width: {
         valType: 'number',
         min: 0,
         role: 'info',

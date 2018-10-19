@@ -255,7 +255,7 @@ module.exports = {
             'or sample points or both?'
         ].join(' ')
     },
-    vwidth: {
+    width: {
         valType: 'number',
         min: 0,
         role: 'info',

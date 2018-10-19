@@ -29,7 +29,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('side');
     coerce('scalegroup', traceOut.name);
     coerce('scalemode');
-    coerce('vwidth');
+    coerce('width');
 
     var span = coerce('span');
     var spanmodeDflt;

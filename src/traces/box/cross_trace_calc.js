@@ -96,9 +96,9 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
 
-        if(calcTrace[0].trace.vwidth) {
-            if(calcTrace[0].trace.vwidth / 2 > max_half_width) {
-                max_half_width = calcTrace[0].trace.vwidth / 2;
+        if(calcTrace[0].trace.width) {
+            if(calcTrace[0].trace.width / 2 > max_half_width) {
+                max_half_width = calcTrace[0].trace.width / 2;
             }
         }
     }
@@ -115,8 +115,8 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
         calcTrace = calcdata[boxList[i]];
         // set the width of all boxes
         // override dPos with trace.width if present
-        if(calcTrace[0].trace && calcTrace[0].trace.vwidth) {
-            calcTrace[0].t.dPos = calcTrace[0].trace.vwidth / 2;
+        if(calcTrace[0].trace && calcTrace[0].trace.width) {
+            calcTrace[0].t.dPos = calcTrace[0].trace.width / 2;
         } else {
             calcTrace[0].t.dPos = dPos;
         }
