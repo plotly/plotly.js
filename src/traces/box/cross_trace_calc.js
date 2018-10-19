@@ -115,11 +115,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
         calcTrace = calcdata[boxList[i]];
         // set the width of all boxes
         // override dPos with trace.width if present
-        if(calcTrace[0].trace && calcTrace[0].trace.width) {
-            calcTrace[0].t.dPos = calcTrace[0].trace.width / 2;
-        } else {
-            calcTrace[0].t.dPos = dPos;
-        }
+        calcTrace[0].t.dPos = (calcTrace[0].trace.width / 2) || dPos;
 
         // link extremes to all boxes
         calcTrace[0].trace._extremes[posAxis._id] = extremes;
