@@ -171,6 +171,19 @@ module.exports = {
             'the vertical (horizontal).'
         ].join(' ')
     },
+
+    width: {
+        valType: 'number',
+        min: 0,
+        role: 'info',
+        dflt: 0,
+        editType: 'calc',
+        description: [
+            'Sets the width of the box.',
+            'This overrides the normal width of the box traces.'
+        ].join(' ')
+    },
+
     marker: {
         outliercolor: {
             valType: 'color',
@@ -253,17 +266,6 @@ module.exports = {
         description: [
             'Do the hover effects highlight individual boxes ',
             'or sample points or both?'
-        ].join(' ')
-    },
-    width: {
-        valType: 'number',
-        min: 0,
-        role: 'info',
-        dflt: 0,
-        editType: 'calc',
-        description: [
-            'Sets the width of the box.',
-            'This overrides the normal width of the box traces.'
         ].join(' ')
     },
 

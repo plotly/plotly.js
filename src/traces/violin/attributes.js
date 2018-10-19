@@ -135,6 +135,19 @@ module.exports = {
             'right (left) for vertical violins and above (below) for horizontal violins.'
         ].join(' ')
     }),
+
+    width: {
+        valType: 'number',
+        min: 0,
+        role: 'info',
+        dflt: 0,
+        editType: 'calc',
+        description: [
+            'Sets the width of the violins.',
+            'This overrides the normal width of the violins.'
+        ].join(' ')
+    },
+
     marker: boxAttrs.marker,
     text: boxAttrs.text,
 
@@ -245,15 +258,4 @@ module.exports = {
         ].join(' ')
     },
 
-    width: {
-        valType: 'number',
-        min: 0,
-        role: 'info',
-        dflt: 0,
-        editType: 'calc',
-        description: [
-            'Sets the width of the violins.',
-            'This overrides the normal width of the violins.'
-        ].join(' ')
-    },
 };
