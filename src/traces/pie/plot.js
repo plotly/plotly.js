@@ -411,22 +411,22 @@ module.exports = function plot(gd, cdpie) {
 };
 
 function determineOutsideTextFont(trace, pt, layoutFont) {
-    var customColor = helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
+    var color = helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
       helpers.castOption(trace.textfont.color, pt.pts) ||
       layoutFont.color;
 
-    var customFamily = helpers.castOption(trace.outsidetextfont.family, pt.pts) ||
+    var family = helpers.castOption(trace.outsidetextfont.family, pt.pts) ||
       helpers.castOption(trace.textfont.family, pt.pts) ||
       layoutFont.family;
 
-    var customSize = helpers.castOption(trace.outsidetextfont.size, pt.pts) ||
+    var size = helpers.castOption(trace.outsidetextfont.size, pt.pts) ||
       helpers.castOption(trace.textfont.size, pt.pts) ||
       layoutFont.size;
 
     return {
-        color: customColor,
-        family: customFamily,
-        size: customSize
+        color: color,
+        family: family,
+        size: size
     };
 }
 
@@ -441,18 +441,18 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         customColor = helpers.castOption(trace._input.textfont.color, pt.pts);
     }
 
-    var customFamily = helpers.castOption(trace.insidetextfont.family, pt.pts) ||
+    var family = helpers.castOption(trace.insidetextfont.family, pt.pts) ||
       helpers.castOption(trace.textfont.family, pt.pts) ||
       layoutFont.family;
 
-    var customSize = helpers.castOption(trace.insidetextfont.size, pt.pts) ||
+    var size = helpers.castOption(trace.insidetextfont.size, pt.pts) ||
       helpers.castOption(trace.textfont.size, pt.pts) ||
       layoutFont.size;
 
     return {
         color: customColor || Color.contrast(pt.color),
-        family: customFamily,
-        size: customSize
+        family: family,
+        size: size
     };
 }
 
