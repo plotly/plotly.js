@@ -90,23 +90,35 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
     var groupgap = fullLayout[traceType + 'groupgap'];
     var padfactor = (1 - gap) * (1 - groupgap) * dPos / fullLayout[numKey];
 
+    // Find maximum trace width
+    // we baseline this at dPos
+    var max_half_width = dPos;
+    for(i = 0; i < boxList.length; i++) {
+        calcTrace = calcdata[boxList[i]];
+
+        if(calcTrace[0].trace.vwidth) {
+            if(calcTrace[0].trace.vwidth / 2 > max_half_width) {
+                max_half_width = calcTrace[0].trace.vwidth / 2;
+            }
+        }
+    }
+
     // autoscale the x axis - including space for points if they're off the side
     // TODO: this will overdo it if the outermost boxes don't have
     // their points as far out as the other boxes
     var extremes = Axes.findExtremes(posAxis, boxdv.vals, {
-        vpadminus: dPos + pad[0] * padfactor,
-        vpadplus: dPos + pad[1] * padfactor
+        vpadminus: max_half_width + pad[0] * padfactor,
+        vpadplus: max_half_width + pad[1] * padfactor
     });
 
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
-        // set the width of all boxes and
-        // override this width with
-        // trace.width if it exists
+        // set the width of all boxes
+        // override dPos with trace.width if present
         if(calcTrace[0].trace && calcTrace[0].trace.vwidth) {
-            calcTrace[0].t.dPos = calcTrace[0].trace.vwidth; 
+            calcTrace[0].t.dPos = calcTrace[0].trace.vwidth / 2;
         } else {
-            calcTrace[0].t.dPos = dPos;   
+            calcTrace[0].t.dPos = dPos;
         }
 
         // link extremes to all boxes
