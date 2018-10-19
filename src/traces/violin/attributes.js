@@ -143,8 +143,9 @@ module.exports = {
         dflt: 0,
         editType: 'calc',
         description: [
-            'Sets the width of the violins.',
-            'This overrides the normal width of the violins.'
+            'Sets the width of the violin.',
+            'If *0* (default value) the width is automatically selected based on the positions',
+            'of other violin traces in the same subplot.',
         ].join(' ')
     },
 

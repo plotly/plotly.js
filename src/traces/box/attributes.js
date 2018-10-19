@@ -180,7 +180,8 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the width of the box.',
-            'This overrides the normal width of the box traces.'
+            'If *0* (default value) the width is automatically selected based on the positions',
+            'of other box traces in the same subplot.',
         ].join(' ')
     },
 
