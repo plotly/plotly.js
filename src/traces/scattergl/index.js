@@ -313,7 +313,7 @@ function sceneUpdate(gd, subplot) {
             if(scene.glText) {
                 scene.glText.forEach(
                     function(text) {
-                        if (text.destroy)
+                        if(text.destroy)
                             text.destroy();
                     }
                 );
