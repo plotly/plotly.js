@@ -296,25 +296,24 @@ function sceneUpdate(gd, subplot) {
         // remove scene resources
         scene.destroy = function destroy() {
             if((scene.fill2d) &&
-               (scene.fill2d.destroy))
-                scene.fill2d.destroy();
+               (scene.fill2d.destroy)) {
+                scene.fill2d.destroy();}
             if((scene.scatter2d) &&
-               (scene.scatter2d.destroy))
-                scene.scatter2d.destroy();
+               (scene.scatter2d.destroy)) {
+                scene.scatter2d.destroy();}
             if((scene.error2d) &&
-               (scene.error2d.destroy))
-                scene.error2d.destroy();
+               (scene.error2d.destroy)) {
+                scene.error2d.destroy();}
             if((scene.line2d) &&
-               (scene.line2d.destroy))
-                scene.line2d.destroy();
+               (scene.line2d.destroy)) {
+                scene.line2d.destroy();}
             if((scene.select2d) &&
-               (scene.select2d.destroy))
-                scene.select2d.destroy();
+               (scene.select2d.destroy)) {
+                scene.select2d.destroy();}
             if(scene.glText) {
                 scene.glText.forEach(
                     function(text) {
-                        if(text.destroy)
-                            text.destroy();
+                        if(text.destroy) text.destroy();
                     }
                 );
             }
