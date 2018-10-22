@@ -34,7 +34,8 @@ jobs:
             npm run pretest
             npm run cibuild
       - store_artifacts:
-          path: ~/plotly.js/build/plotly.js
+          path: build/plotly.js
+          destination: /plotly.js
       - save_cache:
           paths:
             - node_modules
