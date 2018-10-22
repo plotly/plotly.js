@@ -133,7 +133,7 @@ jobs:
           destination: /plotly.js
       - store_artifacts:
           path: dist/plotly.min.js
-          destinatin: /plotly.min.js
+          destination: /plotly.min.js
       - store_artifacts:
           path: dist/plot-schema.json
           destination: /plot-schema.json
