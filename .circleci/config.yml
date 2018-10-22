@@ -33,9 +33,6 @@ jobs:
           command: |
             npm run pretest
             npm run cibuild
-      - store_artifacts:
-          path: build/plotly.js
-          destination: /plotly.js
       - save_cache:
           paths:
             - node_modules
@@ -123,6 +120,19 @@ jobs:
           name: Run syntax tests
           command: ./.circleci/test.sh syntax
 
+  publish:
+    working_directory: ~/plotly.js
+    steps:
+      - store_artifacts:
+          path: build/plotly.js
+          destination: /plotly.js
+      - store_artifacts:
+          path: dist/plotly.min.js
+          destinatin: /plotly.min.js
+      - store_artifacts:
+          path: dist/plot-schema.json
+          destination: /plot-schema.json
+
 workflows:
   version: 2
   build-and-test:
@@ -141,5 +151,8 @@ workflows:
           requires:
             - build
       - test-syntax:
+          requires:
+            - build
+      - publish:
           requires:
             - build
