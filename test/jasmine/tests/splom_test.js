@@ -49,6 +49,37 @@ describe('Test splom trace defaults:', function() {
         });
 
         expect(gd._fullData[0].visible).toBe(false);
+
+        // make sure these are still coerced - so you can get back via GUI!
+        expect(gd._fullData[0].showupperhalf).toBe(false);
+        expect(gd._fullData[0].showlowerhalf).toBe(false);
+        expect(gd._fullData[0].diagonal.visible).toBe(false);
+    });
+
+    it('still coerces partial visibilities even if all are false with transforms', function() {
+        _supply({
+            dimensions: [{
+                values: [1, 2, 3]
+            }],
+            showupperhalf: false,
+            showlowerhalf: false,
+            diagonal: {visible: false},
+            transforms: [{
+                type: 'filter',
+                target: 'dimensions[0].values',
+                operation: '>',
+                value: 2
+            }]
+        });
+
+        expect(gd._fullData[0].visible).toBe(false);
+
+        expect(gd._fullData[0].transforms[0].enabled).toBe(true);
+
+        // make sure these are still coerced - so you can get back via GUI!
+        expect(gd._fullData[0].showupperhalf).toBe(false);
+        expect(gd._fullData[0].showlowerhalf).toBe(false);
+        expect(gd._fullData[0].diagonal.visible).toBe(false);
     });
 
     it('should set `visible: false` to values-less dimensions', function() {
