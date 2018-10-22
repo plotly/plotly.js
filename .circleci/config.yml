@@ -122,9 +122,12 @@ jobs:
 
   publish:
     docker:
-      - image: circleci/node:10.9.0    
+      - image: circleci/node:10.9.0
     working_directory: ~/plotly.js
     steps:
+      - checkout
+      - attach_workspace:
+          at: ~/plotly.js
       - store_artifacts:
           path: build/plotly.js
           destination: /plotly.js
