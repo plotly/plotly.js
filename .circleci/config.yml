@@ -121,6 +121,8 @@ jobs:
           command: ./.circleci/test.sh syntax
 
   publish:
+    docker:
+      - image: circleci/node:10.9.0    
     working_directory: ~/plotly.js
     steps:
       - store_artifacts:
