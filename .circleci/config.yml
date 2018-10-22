@@ -33,6 +33,8 @@ jobs:
           command: |
             npm run pretest
             npm run cibuild
+      - store_artifacts:
+          path: ~/plotly.js/build/plotly.js
       - run:
           name: Save build artifact
           command: cp build/plotly.js $CIRCLE_ARTIFACTS/
