@@ -1081,8 +1081,16 @@ describe('A bar plot', function() {
     };
 
     it('should use inside text colors contrasting to bar colors by default', function(done) {
-        Plotly.plot(gd, [insideTextTestsTrace])
-          .then(assertTextFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
+        var noMarkerTrace = Lib.extendFlat({}, insideTextTestsTrace);
+        delete noMarkerTrace.marker;
+
+        Plotly.plot(gd, [insideTextTestsTrace, noMarkerTrace])
+          .then(function() {
+              var trace1Colors = [DARK, DARK, LIGHT, LIGHT, DARK, LIGHT];
+              var trace2Colors = Lib.repeat(DARK, 6);
+              var allExpectedColors = trace1Colors.concat(trace2Colors);
+              assertTextFontColors(allExpectedColors)();
+          })
           .catch(failTest)
           .then(done);
     });

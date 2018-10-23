@@ -104,7 +104,7 @@ function determineFont(tx, d, trace, gd) {
     var textFont = trace.textfont;
 
     if(tx.classed('bartext-inside')) {
-        var barColor = d.mc;
+        var barColor = getBarColor(d, trace);
         textFont = getInsideTextFont(trace, d.i, layoutFont, barColor);
     } else if(tx.classed('bartext-outside')) {
         textFont = getOutsideTextFont(trace, d.i, layoutFont);
@@ -159,9 +159,14 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
     };
 }
 
+function getBarColor(cd, trace) {
+    return cd.mc || trace.marker.color;
+}
+
 module.exports = {
     style: style,
     styleOnSelect: styleOnSelect,
     getInsideTextFont: getInsideTextFont,
-    getOutsideTextFont: getOutsideTextFont
+    getOutsideTextFont: getOutsideTextFont,
+    getBarColor: getBarColor
 };
