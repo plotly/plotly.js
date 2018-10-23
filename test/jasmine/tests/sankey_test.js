@@ -394,6 +394,9 @@ describe('sankey tests', function() {
             Lib.clearThrottle();
         }
 
+        var node = [404, 302],
+            link = [450, 300];
+
         it('should show the correct hover labels', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
@@ -433,10 +436,14 @@ describe('sankey tests', function() {
                 );
 
                 return Plotly.restyle(gd, {
-                    'hoverlabel.bgcolor': 'red',
-                    'hoverlabel.bordercolor': 'blue',
-                    'hoverlabel.font.size': 20,
-                    'hoverlabel.font.color': 'black'
+                    'node.hoverlabel.bgcolor': 'red',
+                    'node.hoverlabel.bordercolor': 'blue',
+                    'node.hoverlabel.font.size': 20,
+                    'node.hoverlabel.font.color': 'black',
+                    'link.hoverlabel.bgcolor': 'yellow',
+                    'link.hoverlabel.bordercolor': 'magenta',
+                    'link.hoverlabel.font.size': 18,
+                    'link.hoverlabel.font.color': 'green'
                 });
             })
             .then(function() {
@@ -452,14 +459,67 @@ describe('sankey tests', function() {
 
                 assertLabel(
                     ['source: Solid', 'target: Industry', '46TWh'],
-                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 20, 'Roboto', 'rgb(0, 0, 0)']
+                    ['rgb(255, 255, 0)', 'rgb(255, 0, 255)', 18, 'Roboto', 'rgb(0, 128, 0)']
                 );
             })
             .catch(failTest)
             .then(done);
         });
 
-        it('should show correct hover labels even if there is no link.label supplied', function(done) {
+        it('should show the correct hover labels with the style provided in template', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.layout.template = {
+                data: {
+                    sankey: [{
+                        node: {
+                            hoverlabel: {
+                                bgcolor: 'red',
+                                bordercolor: 'blue',
+                                font: {
+                                    size: 20,
+                                    color: 'black',
+                                    family: 'Roboto'
+                                }
+                            }
+                        },
+                        link: {
+                            hoverlabel: {
+                                bgcolor: 'yellow',
+                                bordercolor: 'magenta',
+                                font: {
+                                    size: 18,
+                                    color: 'green',
+                                    family: 'Roboto'
+                                }
+                            }
+                        }
+                    }]
+                }
+            };
+
+            Plotly.plot(gd, mockCopy)
+            .then(function() {
+                _hover(404, 302);
+
+                assertLabel(
+                    ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 20, 'Roboto', 'rgb(0, 0, 0)']
+                );
+            })
+            .then(function() {
+                _hover(450, 300);
+
+                assertLabel(
+                    ['source: Solid', 'target: Industry', '46TWh'],
+                    ['rgb(255, 255, 0)', 'rgb(255, 0, 255)', 18, 'Roboto', 'rgb(0, 128, 0)']
+                );
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should show the correct hover labels even if there is no link.label supplied', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             delete mockCopy.data[0].link.label;
@@ -477,7 +537,7 @@ describe('sankey tests', function() {
                 .then(done);
         });
 
-        it('should not show labels if hovermode is false', function(done) {
+        it('should not show any labels if hovermode is false', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
@@ -485,8 +545,71 @@ describe('sankey tests', function() {
                 return Plotly.relayout(gd, 'hovermode', false);
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(node[0], node[1]);
+                assertNoLabel();
+            })
+            .then(function() {
+                _hover(link[0], link[1]);
+                assertNoLabel();
+            })
+            .catch(failTest)
+            .then(done);
+        });
 
+        it('should not show node labels if node.hoverinfo is none', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                return Plotly.restyle(gd, 'node.hoverinfo', 'none');
+            })
+            .then(function() {
+                _hover(node[0], node[1]);
+                assertNoLabel();
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not show link labels if link.hoverinfo is none', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                return Plotly.restyle(gd, 'link.hoverinfo', 'none');
+            })
+            .then(function() {
+                _hover(link[0], link[1]);
+                assertNoLabel();
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not show node labels if node.hoverinfo is skip', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                return Plotly.restyle(gd, 'node.hoverinfo', 'skip');
+            })
+            .then(function() {
+                _hover(node[0], node[1]);
+                assertNoLabel();
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not show link labels if link.hoverinfo is skip', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                return Plotly.restyle(gd, 'link.hoverinfo', 'skip');
+            })
+            .then(function() {
+                _hover(link[0], link[1]);
                 assertNoLabel();
             })
             .catch(failTest)
@@ -574,6 +697,7 @@ describe('sankey tests', function() {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, fig)
+            .then(function() { return Plotly.restyle(gd, 'hoverinfo', 'none'); })
             .then(function() { return _hover('node'); })
             .then(function(d) {
                 _assert(d, {
@@ -610,27 +734,40 @@ describe('sankey tests', function() {
             .then(done);
         });
 
+        function assertNoHoverEvents(type) {
+            return function() {
+                return Promise.resolve()
+                .then(function() { return _hover(type); })
+                .then(failTest).catch(function(err) {
+                    expect(err).toBe('plotly_hover did not get called!');
+                })
+                .then(function() { return _unhover(type); })
+                .then(failTest).catch(function(err) {
+                    expect(err).toBe('plotly_unhover did not get called!');
+                });
+            };
+        }
+
         it('should not output hover/unhover event data when hovermoder is false', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, fig)
             .then(function() { return Plotly.relayout(gd, 'hovermode', false); })
-            .then(function() { return _hover('node'); })
-            .then(failTest).catch(function(err) {
-                expect(err).toBe('plotly_hover did not get called!');
-            })
-            .then(function() { return _unhover('node'); })
-            .then(failTest).catch(function(err) {
-                expect(err).toBe('plotly_unhover did not get called!');
-            })
-            .then(function() { return _hover('link'); })
-            .then(failTest).catch(function(err) {
-                expect(err).toBe('plotly_hover did not get called!');
-            })
-            .then(function() { return _unhover('link'); })
-            .then(failTest).catch(function(err) {
-                expect(err).toBe('plotly_unhover did not get called!');
-            })
+            .then(assertNoHoverEvents('node'))
+            .then(assertNoHoverEvents('link'))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not output hover/unhover event data when hoverinfo is skip', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, fig)
+            .then(function() { return Plotly.restyle(gd, 'link.hoverinfo', 'skip'); })
+            .then(assertNoHoverEvents('link'))
+            .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
+            .then(assertNoHoverEvents('node'))
+            .catch(failTest)
             .then(done);
         });
     });

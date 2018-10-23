@@ -31,7 +31,7 @@ var dfltConfig = require('./plot_config');
  *     `layout.template` in another figure.
  */
 exports.makeTemplate = function(figure) {
-    figure = Lib.extendDeep({_context: dfltConfig}, figure);
+    figure = Lib.extendDeep({_context: dfltConfig}, {data: figure.data, layout: figure.layout});
     Plots.supplyDefaults(figure);
     var data = figure.data || [];
     var layout = figure.layout || {};

@@ -1922,8 +1922,24 @@ function _relayout(gd, aobj) {
         // back to its initial value as computed during the first pass in Plots.plotAutoSize.
         //
         // To do so, we must manually set them back here using the _initialAutoSize cache.
-        if(['width', 'height'].indexOf(ai) !== -1 && vi === null) {
-            fullLayout[ai] = gd._initialAutoSize[ai];
+        // can't use impliedEdits for this because behavior depends on vi
+        if(['width', 'height'].indexOf(ai) !== -1) {
+            if(vi) {
+                doextra('autosize', null);
+                // currently we don't support autosize one dim only - so
+                // explicitly set the other one. Note that doextra will
+                // ignore this if the same relayout call also provides oppositeAttr
+                var oppositeAttr = ai === 'height' ? 'width' : 'height';
+                doextra(oppositeAttr, fullLayout[oppositeAttr]);
+            }
+            else {
+                fullLayout[ai] = gd._initialAutoSize[ai];
+            }
+        }
+        else if(ai === 'autosize') {
+            // depends on vi here too, so again can't use impliedEdits
+            doextra('width', vi ? null : fullLayout.width);
+            doextra('height', vi ? null : fullLayout.height);
         }
         // check autorange vs range
         else if(pleafPlus.match(AX_RANGE_RE)) {
@@ -2625,6 +2641,7 @@ function diffConfig(oldConfig, newConfig) {
     var key;
 
     for(key in oldConfig) {
+        if(key.charAt(0) === '_') continue;
         var oldVal = oldConfig[key];
         var newVal = newConfig[key];
         if(oldVal !== newVal) {

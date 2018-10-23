@@ -951,6 +951,8 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         fullTrace._expandedIndex = cnt;
 
         if(fullTrace.transforms && fullTrace.transforms.length) {
+            var sdInvisible = trace.visible !== false && fullTrace.visible === false;
+
             var expandedTraces = applyTransforms(fullTrace, dataOut, layout, fullLayout);
 
             for(var j = 0; j < expandedTraces.length; j++) {
@@ -964,6 +966,17 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
                     // to promote consistency between update calls
                     uid: fullTrace.uid + j
                 };
+
+                // If the first supplyDefaults created `visible: false`,
+                // clear it before running supplyDefaults a second time,
+                // because sometimes there are items we still want to coerce
+                // inside trace modules before determining that the trace is
+                // again `visible: false`, for example partial visibilities
+                // in `splom` traces.
+                if(sdInvisible && expandedTrace.visible === false) {
+                    delete expandedTrace.visible;
+                }
+
                 plots.supplyTraceDefaults(expandedTrace, fullExpandedTrace, cnt, fullLayout, i);
 
                 // relink private (i.e. underscore) keys expanded trace to full expanded trace so

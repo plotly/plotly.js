@@ -51,7 +51,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         }
 
         var axIn = contIn[axName];
-        var axOut = contOut[axName] = Template.newContainer(contOut, axName);
+        var axOut = Template.newContainer(contOut, axName);
         axOut._id = axOut._name = axName;
         axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
