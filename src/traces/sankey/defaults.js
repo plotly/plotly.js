@@ -56,12 +56,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceLink('hoverinfo');
     handleHoverLabelDefaults(linkIn, linkOut, coerceLink, layout.hoverlabel);
 
-    var defautLinkColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
+    var defaultLinkColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
                 'rgba(255, 255, 255, 0.6)' :
                 'rgba(0, 0, 0, 0.2)';
 
     coerceLink('color', linkOut.value.map(function() {
-        return defautLinkColor;
+        return defaultLinkColor;
     }));
 
     handleDomainDefaults(traceOut, layout, coerce);
