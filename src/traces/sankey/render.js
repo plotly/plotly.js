@@ -148,7 +148,9 @@ function sankeyModel(layout, d, traceIndex) {
         .links(links)
         .layout(c.sankeyIterations);
 
-    if(sankey.nodePadding() < nodePad) Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.')
+    if(sankey.nodePadding() < nodePad) {
+        Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
+    }
 
     var node, sankeyNodes = sankey.nodes();
     for(var n = 0; n < sankeyNodes.length; n++) {
