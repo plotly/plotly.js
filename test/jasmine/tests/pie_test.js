@@ -542,9 +542,19 @@ describe('Pie traces', function() {
         }
     };
 
-    it('should use inside text colors contrasting to slice colors by default', function(done) {
+    it('should use inside text colors contrasting to explicitly set slice colors by default', function(done) {
         Plotly.plot(gd, [insideTextTestsTrace])
           .then(_checkFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use inside text colors contrasting to standard slice colors by default', function(done) {
+        var noMarkerTrace = Lib.extendFlat({}, insideTextTestsTrace);
+        delete noMarkerTrace.marker;
+
+        Plotly.plot(gd, [noMarkerTrace])
+          .then(_checkFontColors([LIGHT, DARK, LIGHT, LIGHT, LIGHT, LIGHT]))
           .catch(failTest)
           .then(done);
     });
