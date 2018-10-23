@@ -334,13 +334,13 @@ describe('sliders interactions', function() {
             d3.select(gd).selectAll('.slider-group').each(function(d, i) {
                 var sliderBB = this.getBoundingClientRect();
                 var gdBB = gd.getBoundingClientRect();
+
                 if(i === 0) {
                     expect(sliderBB.left - gdBB.left)
-                        .toBeWithin(12, 3, 'left: ' + msg);
-                }
-                else {
+                        .toBeWithin(12, 5.1, 'left: ' + msg);
+                } else {
                     expect(gdBB.bottom - sliderBB.bottom)
-                        .toBeWithin(8, 3, 'bottom: ' + msg);
+                        .toBeWithin(8, 5.1, 'bottom: ' + msg);
                 }
             });
         }

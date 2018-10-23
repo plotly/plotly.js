@@ -30,14 +30,13 @@ var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
 function calc(gd, trace) {
     var dimensions = trace.dimensions;
     var commonLength = trace._length;
-    var stash = {};
     var opts = {};
     // 'c' for calculated, 'l' for linear,
     // only differ here for log axes, pass ldata to createMatrix as 'data'
     var cdata = opts.cdata = [];
     var ldata = opts.data = [];
     // keep track of visible dimensions
-    var visibleDims = stash.visibleDims = [];
+    var visibleDims = trace._visibleDims = [];
     var i, k, dim, xa, ya;
 
     function makeCalcdata(ax, dim) {
@@ -87,42 +86,45 @@ function calc(gd, trace) {
     var visibleLength = cdata.length;
     var hasTooManyPoints = (visibleLength * commonLength) > TOO_MANY_POINTS;
 
+    // Reuse SVG scatter axis expansion routine.
+    // For graphs with very large number of points and array marker.size,
+    // use average marker size instead to speed things up.
+    var ppad;
+    if(hasTooManyPoints) {
+        ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
+    } else {
+        ppad = calcMarkerSize(trace, commonLength);
+    }
+
     for(k = 0; k < visibleDims.length; k++) {
         i = visibleDims[k];
         dim = dimensions[i];
-
         xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
         ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
-
-        // Reuse SVG scatter axis expansion routine.
-        // For graphs with very large number of points and array marker.size,
-        // use average marker size instead to speed things up.
-        var ppad;
-        if(hasTooManyPoints) {
-            ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
-        } else {
-            ppad = calcMarkerSize(trace, commonLength);
-        }
-
         calcAxisExpansion(gd, trace, xa, ya, cdata[k], cdata[k], ppad);
     }
 
-    var scene = stash._scene = sceneUpdate(gd, stash);
+    var scene = sceneUpdate(gd, trace);
     if(!scene.matrix) scene.matrix = true;
     scene.matrixOptions = opts;
 
     scene.selectedOptions = convertMarkerSelection(trace, trace.selected);
     scene.unselectedOptions = convertMarkerSelection(trace, trace.unselected);
 
-    return [{x: false, y: false, t: stash, trace: trace}];
+    return [{x: false, y: false, t: {}, trace: trace}];
 }
 
-function sceneUpdate(gd, stash) {
-    var scene = stash._scene;
+function sceneUpdate(gd, trace) {
+    var fullLayout = gd._fullLayout;
+    var uid = trace.uid;
 
-    var reset = {
-        dirty: true
-    };
+    // must place ref to 'scene' in fullLayout, so that:
+    // - it can be relinked properly on updates
+    // - it can be destroyed properly when needed
+    var splomScenes = fullLayout._splomScenes;
+    if(!splomScenes) splomScenes = fullLayout._splomScenes = {};
+
+    var reset = {dirty: true};
 
     var first = {
         selectBatch: null,
@@ -131,15 +133,18 @@ function sceneUpdate(gd, stash) {
         select: null
     };
 
+    var scene = splomScenes[trace.uid];
+
     if(!scene) {
-        scene = stash._scene = Lib.extendFlat({}, reset, first);
+        scene = splomScenes[uid] = Lib.extendFlat({}, reset, first);
 
         scene.draw = function draw() {
-            // draw traces in selection mode
-            if(scene.matrix && scene.selectBatch) {
-                scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
-            } else if(scene.matrix) {
-                scene.matrix.draw();
+            if(scene.matrix && scene.matrix.draw) {
+                if(scene.selectBatch) {
+                    scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
+                } else {
+                    scene.matrix.draw();
+                }
             }
 
             scene.dirty = false;
@@ -147,13 +152,13 @@ function sceneUpdate(gd, stash) {
 
         // remove scene resources
         scene.destroy = function destroy() {
-            if(scene.matrix) scene.matrix.destroy();
-
+            if(scene.matrix && scene.matrix.destroy) {
+                scene.matrix.destroy();
+            }
             scene.matrixOptions = null;
             scene.selectBatch = null;
             scene.unselectBatch = null;
-
-            stash._scene = null;
+            scene = null;
         };
     }
 
@@ -178,7 +183,7 @@ function plotOne(gd, cd0) {
     var gs = fullLayout._size;
     var trace = cd0.trace;
     var stash = cd0.t;
-    var scene = stash._scene;
+    var scene = fullLayout._splomScenes[trace.uid];
     var matrixOpts = scene.matrixOptions;
     var cdata = matrixOpts.cdata;
     var regl = fullLayout._glcanvas.data()[0].regl;
@@ -194,9 +199,9 @@ function plotOne(gd, cd0) {
     matrixOpts.upper = trace.showlowerhalf;
     matrixOpts.diagonal = trace.diagonal.visible;
 
-    var visibleDims = stash.visibleDims;
+    var visibleDims = trace._visibleDims;
     var visibleLength = cdata.length;
-    var viewOpts = {};
+    var viewOpts = scene.viewOpts = {};
     viewOpts.ranges = new Array(visibleLength);
     viewOpts.domains = new Array(visibleLength);
 
@@ -294,19 +299,31 @@ function plotOne(gd, cd0) {
         }
     }
     else {
-        scene.matrix.update(matrixOpts, null);
-        scene.matrix.update(viewOpts, null);
+        var opts = Lib.extendFlat({}, matrixOpts, viewOpts);
+        scene.matrix.update(opts, null);
         stash.xpx = stash.ypx = null;
     }
+}
 
-    scene.draw();
+function editStyle(gd, cd0) {
+    var trace = cd0.trace;
+    var scene = gd._fullLayout._splomScenes[trace.uid];
+
+    calcColorscales(trace);
+
+    Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(trace));
+    // TODO [un]selected styles?
+
+    var opts = Lib.extendFlat({}, scene.matrixOptions, scene.viewOpts);
+
+    // TODO this is too long for arrayOk attributes!
+    scene.matrix.update(opts, null);
 }
 
 function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
-    var stash = cd[0].t;
-    var scene = stash._scene;
+    var scene = pointData.scene;
     var cdata = scene.matrixOptions.cdata;
     var xa = pointData.xa;
     var ya = pointData.ya;
@@ -314,8 +331,8 @@ function hoverPoints(pointData, xval, yval) {
     var ypx = ya.c2p(yval);
     var maxDistance = pointData.distance;
 
-    var xi = getDimIndex(trace, stash, xa);
-    var yi = getDimIndex(trace, stash, ya);
+    var xi = getDimIndex(trace, xa);
+    var yi = getDimIndex(trace, ya);
     if(xi === false || yi === false) return [pointData];
 
     var x = cdata[xi];
@@ -352,7 +369,7 @@ function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var trace = cd[0].trace;
     var stash = cd[0].t;
-    var scene = stash._scene;
+    var scene = searchInfo.scene;
     var cdata = scene.matrixOptions.cdata;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
@@ -364,8 +381,8 @@ function selectPoints(searchInfo, selectionTester) {
     var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return selection;
 
-    var xi = getDimIndex(trace, stash, xa);
-    var yi = getDimIndex(trace, stash, ya);
+    var xi = getDimIndex(trace, xa);
+    var yi = getDimIndex(trace, ya);
     if(xi === false || yi === false) return selection;
 
     var xpx = stash.xpx[xi];
@@ -419,38 +436,11 @@ function selectPoints(searchInfo, selectionTester) {
     return selection;
 }
 
-function style(gd, cds) {
-    if(!cds) return;
-
-    var fullLayout = gd._fullLayout;
-    var cd0 = cds[0];
-    var scene0 = cd0[0].t._scene;
-    scene0.matrix.regl.clear({color: true, depth: true});
-
-    if(fullLayout._splomGrid) {
-        fullLayout._splomGrid.draw();
-    }
-
-    for(var i = 0; i < cds.length; i++) {
-        var scene = cds[i][0].t._scene;
-        scene.draw();
-    }
-
-    // redraw all subplot with scattergl traces,
-    // as we cleared the whole canvas above
-    if(fullLayout._has('cartesian')) {
-        for(var k in fullLayout._plots) {
-            var sp = fullLayout._plots[k];
-            if(sp._scene) sp._scene.draw();
-        }
-    }
-}
-
-function getDimIndex(trace, stash, ax) {
+function getDimIndex(trace, ax) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var ind = {x: 0, y: 1}[axLetter];
-    var visibleDims = stash.visibleDims;
+    var visibleDims = trace._visibleDims;
 
     for(var k = 0; k < visibleDims.length; k++) {
         var i = visibleDims[k];
@@ -474,7 +464,7 @@ module.exports = {
     plot: plot,
     hoverPoints: hoverPoints,
     selectPoints: selectPoints,
-    style: style,
+    editStyle: editStyle,
 
     meta: {
         description: [

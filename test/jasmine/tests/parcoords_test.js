@@ -12,6 +12,7 @@ var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var readPixel = require('../assets/read_pixel');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
 var mock2 = require('@mocks/gl2d_parcoords_2.json');
@@ -579,11 +580,12 @@ describe('parcoords edge cases', function() {
 });
 
 describe('parcoords Lifecycle methods', function() {
+    var gd;
+    beforeEach(function() { gd = createGraphDiv(); });
     afterEach(purgeGraphDiv);
 
     it('Plotly.deleteTraces with one trace removes the plot', function(done) {
 
-        var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
 
         mockCopy.data[0].line.showscale = false;
@@ -603,7 +605,6 @@ describe('parcoords Lifecycle methods', function() {
 
     it('@gl Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
 
-        var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
         var mockCopy2 = Lib.extendDeep({}, mock);
         mockCopy2.data[0].dimensions.splice(3, 4);
@@ -635,11 +636,25 @@ describe('parcoords Lifecycle methods', function() {
             .then(done);
     });
 
+    function _assertVisibleData(visible, msg) {
+        return function() {
+            var canvases = d3.selectAll('.gl-canvas');
+            expect(canvases.size()).toBe(3, msg);
+            canvases.each(function() {
+                var imageArray = readPixel(this, 0, 0, this.width, this.height);
+                var foundPixel = false;
+                var i = 0;
+                do {
+                    foundPixel = foundPixel || imageArray[i++] !== 0;
+                } while(!foundPixel && i < imageArray.length);
+                expect(foundPixel).toBe(visible, msg + ' - ' + this.className);
+            });
+        };
+    }
+
     it('@gl Calling `Plotly.restyle` with zero panels left should erase lines', function(done) {
 
         var mockCopy = Lib.extendDeep({}, mock2);
-        var gd = createGraphDiv();
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout);
 
         function restyleDimension(key, dimIndex, setterValue) {
             var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
@@ -650,27 +665,31 @@ describe('parcoords Lifecycle methods', function() {
             };
         }
 
-        restyleDimension('values', 1, [[]])()
-            .then(function() {
-                d3.selectAll('.parcoords-lines').each(function(d) {
-                    var imageArray = d.lineLayer.readPixels(0, 0, d.model.canvasWidth, d.model.canvasHeight);
-                    var foundPixel = false;
-                    var i = 0;
-                    do {
-                        foundPixel = foundPixel || imageArray[i++] !== 0;
-                    } while(!foundPixel && i < imageArray.length);
-                    expect(foundPixel).toEqual(false);
-                });
-            })
-            .catch(failTest)
-            .then(done);
+        Plotly.plot(gd, mockCopy)
+        .then(_assertVisibleData(true, 'initial'))
+        .then(restyleDimension('values', 1, [[]]))
+        .then(_assertVisibleData(false, 'no panels'))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl displays focused and context data after relayout', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock2);
+
+        Plotly.plot(gd, mockCopy)
+        .then(_assertVisibleData(true, 'initial'))
+        .then(function() {
+            return Plotly.relayout(gd, 'paper_bgcolor', '#eef');
+        })
+        .then(_assertVisibleData(true, 'after relayout'))
+        .catch(failTest)
+        .then(done);
     });
 
     describe('Having two datasets', function() {
 
         it('@gl Two subsequent calls to Plotly.plot should create two parcoords rows', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mock);
             mockCopy.data[0].domain = {x: [0, 0.45]};
@@ -700,7 +719,6 @@ describe('parcoords Lifecycle methods', function() {
 
         it('@gl Plotly.addTraces should add a new parcoords row', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mock);
             mockCopy.data[0].domain = {y: [0, 0.35]};
@@ -727,7 +745,6 @@ describe('parcoords Lifecycle methods', function() {
 
         it('@gl Plotly.restyle should update the existing parcoords row', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mock);
 

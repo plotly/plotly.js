@@ -723,7 +723,6 @@ describe('Drag to reordered dimensions', function() {
 
         Plotly.newPlot(gd, mock)
             .then(function() {
-                console.log(gd.data);
                 restyleCallback = jasmine.createSpy('restyleCallback');
                 gd.on('plotly_restyle', restyleCallback);
 
@@ -1228,9 +1227,6 @@ describe('Click events', function() {
             .then(function() {
                 /** @type {ParcatsViewModel} */
                 var parcatsViewModel = d3.select('g.trace.parcats').datum();
-
-                console.log(gd.data[0]);
-                console.log(parcatsViewModel.hoverinfoItems);
 
                 gd.on('plotly_click', function(data) {
                     clickData = data;

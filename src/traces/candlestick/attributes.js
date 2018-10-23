@@ -50,5 +50,7 @@ module.exports = {
     decreasing: directionAttrs(OHLCattrs.decreasing.line.color.dflt),
 
     text: OHLCattrs.text,
-    whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 })
+    whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
+
+    hoverlabel: OHLCattrs.hoverlabel,
 };

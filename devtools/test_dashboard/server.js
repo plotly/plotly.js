@@ -16,7 +16,8 @@ var PORT = process.argv[2] || 3000;
 var server = http.createServer(ecstatic({
     root: constants.pathToRoot,
     cache: 0,
-    gzip: true
+    gzip: true,
+    cors: true
 }));
 
 // Make watchified bundle for plotly.js

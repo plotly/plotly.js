@@ -1154,6 +1154,60 @@ describe('hover info', function() {
                 .then(done);
             });
 
+            it('shows correct labels in split mode', function(done) {
+                var pts;
+                Plotly.plot(gd, financeMock({
+                    customdata: [11, 22, 33],
+                    hoverlabel: {
+                        split: true
+                    }
+                }))
+                .then(function() {
+                    gd.on('plotly_hover', function(e) { pts = e.points; });
+
+                    _hoverNatural(gd, 150, 150);
+                    assertHoverLabelContent({
+                        nums: ['high: 4', 'open: 2', 'close: 3', 'low: 1'],
+                        name: ['', '', '', ''],
+                        axis: 'Jan 2, 2011'
+                    });
+                })
+                .then(function() {
+                    expect(pts).toBeDefined();
+                    expect(pts.length).toBe(4);
+                    expect(pts[0]).toEqual(jasmine.objectContaining({
+                        x: '2011-01-02',
+                        high: 4,
+                        customdata: 22,
+                    }));
+                    expect(pts[1]).toEqual(jasmine.objectContaining({
+                        x: '2011-01-02',
+                        open: 2,
+                        customdata: 22,
+                    }));
+                    expect(pts[2]).toEqual(jasmine.objectContaining({
+                        x: '2011-01-02',
+                        close: 3,
+                        customdata: 22,
+                    }));
+                    expect(pts[3]).toEqual(jasmine.objectContaining({
+                        x: '2011-01-02',
+                        low: 1,
+                        customdata: 22,
+                    }));
+                })
+                .then(function() {
+                    _hoverNatural(gd, 200, 150);
+                    assertHoverLabelContent({
+                        nums: ['high: 5', 'open: 3', 'close: 2\nlow: 2'],
+                        name: ['', '', ''],
+                        axis: 'Jan 3, 2011'
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
             it('shows text iff text is in hoverinfo', function(done) {
                 Plotly.plot(gd, financeMock({text: ['A', 'B', 'C']}))
                 .then(function() {
@@ -1967,7 +2021,7 @@ describe('hover updates', function() {
                 size: 16,
                 color: colors0.slice()
             }
-        }])
+        }], { width: 700, height: 450 })
         .then(function() {
 
             gd.on('plotly_hover', function(eventData) {

@@ -295,7 +295,7 @@ describe('Test streamtube interactions', function() {
     });
 });
 
-describe('Test streamtube hover', function() {
+describe('@noCI Test streamtube hover', function() {
     var gd;
 
     beforeEach(function() {

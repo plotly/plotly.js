@@ -679,14 +679,24 @@ lib.removeElement = function(el) {
  * by all calls to this function
  */
 lib.addStyleRule = function(selector, styleString) {
-    if(!lib.styleSheet) {
-        var style = document.createElement('style');
+    lib.addRelatedStyleRule('global', selector, styleString);
+};
+
+/**
+ * for dynamically adding style rules
+ * to a stylesheet uniquely identified by a uid
+ */
+lib.addRelatedStyleRule = function(uid, selector, styleString) {
+    var id = 'plotly.js-style-' + uid,
+        style = document.getElementById(id);
+    if(!style) {
+        style = document.createElement('style');
+        style.setAttribute('id', id);
         // WebKit hack :(
         style.appendChild(document.createTextNode(''));
         document.head.appendChild(style);
-        lib.styleSheet = style.sheet;
     }
-    var styleSheet = lib.styleSheet;
+    var styleSheet = style.sheet;
 
     if(styleSheet.insertRule) {
         styleSheet.insertRule(selector + '{' + styleString + '}', 0);
@@ -695,6 +705,15 @@ lib.addStyleRule = function(selector, styleString) {
         styleSheet.addRule(selector, styleString, 0);
     }
     else lib.warn('addStyleRule failed');
+};
+
+/**
+ * to remove from the page a stylesheet identified by a given uid
+ */
+lib.deleteRelatedStyleRule = function(uid) {
+    var id = 'plotly.js-style-' + uid,
+        style = document.getElementById(id);
+    if(style) style.remove();
 };
 
 lib.isIE = function() {

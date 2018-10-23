@@ -88,6 +88,7 @@ jobs:
           command: ./.circleci/test.sh image
       - store_artifacts:
           path: build
+          destination: /
 
   test-image2:
     docker:
@@ -107,6 +108,7 @@ jobs:
           command: ./.circleci/test.sh image2
       - store_artifacts:
           path: build
+          destination: /
 
   test-syntax:
     docker:
@@ -119,6 +121,24 @@ jobs:
       - run:
           name: Run syntax tests
           command: ./.circleci/test.sh syntax
+
+  publish:
+    docker:
+      - image: circleci/node:10.9.0
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/plotly.js
+      - store_artifacts:
+          path: build/plotly.js
+          destination: /plotly.js
+      - store_artifacts:
+          path: dist/plotly.min.js
+          destination: /plotly.min.js
+      - store_artifacts:
+          path: dist/plot-schema.json
+          destination: /plot-schema.json
 
 workflows:
   version: 2
@@ -140,3 +160,10 @@ workflows:
       - test-syntax:
           requires:
             - build
+      - publish:
+          requires:
+            - test-jasmine
+            - test-jasmine2
+            - test-image
+            - test-image2
+            - test-syntax

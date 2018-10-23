@@ -19,7 +19,8 @@ var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
 var getFromId = require('./axis_ids').getFromId;
-var sortModules = require('../sort_modules').sortModules;
+var clearGlCanvases = require('../../lib/clear_gl_canvases');
+var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 
 var constants = require('./constants');
 var MINSELECT = constants.MINSELECT;
@@ -514,7 +515,9 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
           // FIXME: make sure we don't have more than single axis for splom
           trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
         ) {
-            searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
+            var info = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
+            info.scene = gd._fullLayout._splomScenes[trace.uid];
+            searchTraces.push(info);
         } else {
             if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
             if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
@@ -661,7 +664,7 @@ function isOnlyOnePointSelected(searchTraces) {
 }
 
 function updateSelectedState(gd, searchTraces, eventData) {
-    var i, j, searchInfo, trace;
+    var i, searchInfo, cd, trace;
 
     if(eventData) {
         var pts = eventData.points || [];
@@ -694,43 +697,25 @@ function updateSelectedState(gd, searchTraces, eventData) {
         }
     }
 
-    // group searchInfo traces by trace modules
-    var lookup = {};
+    var hasRegl = false;
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
+        cd = searchInfo.cd;
+        trace = cd[0].trace;
 
-        var name = searchInfo._module.name;
-        if(lookup[name]) {
-            lookup[name].push(searchInfo);
-        } else {
-            lookup[name] = [searchInfo];
+        if(Registry.traceIs(trace, 'regl')) {
+            hasRegl = true;
         }
+
+        var _module = searchInfo._module;
+        var fn = _module.styleOnSelect || _module.style;
+        if(fn) fn(gd, cd);
     }
 
-    var keys = Object.keys(lookup).sort(sortModules);
-
-    for(i = 0; i < keys.length; i++) {
-        var items = lookup[keys[i]];
-        var len = items.length;
-        var item0 = items[0];
-        var trace0 = item0.cd[0].trace;
-        var _module = item0._module;
-        var styleSelection = _module.styleOnSelect || _module.style;
-
-        if(Registry.traceIs(trace0, 'regl')) {
-            // plot regl traces per module
-            var cds = new Array(len);
-            for(j = 0; j < len; j++) {
-                cds[j] = items[j].cd;
-            }
-            styleSelection(gd, cds);
-        } else {
-            // plot svg trace per trace
-            for(j = 0; j < len; j++) {
-                styleSelection(gd, items[j].cd);
-            }
-        }
+    if(hasRegl) {
+        clearGlCanvases(gd);
+        redrawReglTraces(gd);
     }
 }
 

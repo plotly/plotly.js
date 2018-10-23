@@ -93,19 +93,10 @@ function createFills(gd, traceJoin, plotinfo) {
         var trace = d[0].trace;
 
         var fillData = [];
-        if(trace.fill && (trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
-                (trace.fill.substr(0, 2) === 'to' && !trace._prevtrace))
-        ) {
-            fillData = ['_ownFill'];
-        }
-        if(trace._nexttrace) {
-            // make the fill-to-next path now for the NEXT trace, so it shows
-            // behind both lines.
-            fillData.push('_nextFill');
-        }
+        if(trace._ownfill) fillData.push('_ownFill');
+        if(trace._nexttrace) fillData.push('_nextFill');
 
-        var fillJoin = fills.selectAll('g')
-            .data(fillData, identity);
+        var fillJoin = fills.selectAll('g').data(fillData, identity);
 
         fillJoin.enter().append('g');
 

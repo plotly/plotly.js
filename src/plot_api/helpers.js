@@ -386,6 +386,19 @@ exports.cleanData = function(data) {
         // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
         // supported, but new tinycolor does not because they're not valid css
         Color.clean(trace);
+
+        // remove obsolete autobin(x|y) attributes, but only if true
+        // if false, this needs to happen in Histogram.calc because it
+        // can be a one-time autobin so we need to know the results before
+        // we can push them back into the trace.
+        if(trace.autobinx) {
+            delete trace.autobinx;
+            delete trace.xbins;
+        }
+        if(trace.autobiny) {
+            delete trace.autobiny;
+            delete trace.ybins;
+        }
     }
 };
 
@@ -476,6 +489,17 @@ exports.coerceTraceIndices = function(gd, traceIndices) {
     }
     else if(!Array.isArray(traceIndices) || !traceIndices.length) {
         return gd.data.map(function(_, i) { return i; });
+    }
+    else if(Array.isArray(traceIndices)) {
+        var traceIndicesOut = [];
+        for(var i = 0; i < traceIndices.length; i++) {
+            if(Lib.isIndex(traceIndices[i], gd.data.length)) {
+                traceIndicesOut.push(traceIndices[i]);
+            } else {
+                Lib.warn('trace index (', traceIndices[i], ') is not a number or is out of bounds');
+            }
+        }
+        return traceIndicesOut;
     }
 
     return traceIndices;
