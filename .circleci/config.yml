@@ -88,6 +88,7 @@ jobs:
           command: ./.circleci/test.sh image
       - store_artifacts:
           path: build
+          destination: /
 
   test-image2:
     docker:
@@ -107,6 +108,7 @@ jobs:
           command: ./.circleci/test.sh image2
       - store_artifacts:
           path: build
+          destination: /
 
   test-syntax:
     docker:
