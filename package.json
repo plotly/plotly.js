@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "3d-view": "^2.0.0",
-    "@plotly/d3-sankey": "^0.5.0",
+    "@plotly/d3-sankey": "git://github.com/plotly/d3-sankey.git#6f19390be0da4a81abf6f7f6cfdf5fc8dc73e583",
     "alpha-shape": "^1.0.0",
     "array-range": "^1.0.1",
     "canvas-fit": "^1.5.0",
