@@ -9,20 +9,13 @@
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
-var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
-var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-module.exports = overrideAll({
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'percent', 'name'],
-    }),
-    hoverlabel: fxAttrs.hoverlabel, // needs editType override
-
+var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'sankey', trace: true}),
 
     orientation: {
@@ -127,6 +120,18 @@ module.exports = overrideAll({
             role: 'style',
             description: 'Sets the thickness (in px) of the `nodes`.'
         },
+        hoverinfo: {
+            valType: 'enumerated',
+            values: ['all', 'none', 'skip'],
+            dflt: 'all',
+            role: 'info',
+            description: [
+                'Determines which trace information appear when hovering nodes.',
+                'If `none` or `skip` are set, no information is displayed upon hovering.',
+                'But, if `none` is set, click and hover events are still fired.'
+            ].join(' ')
+        },
+        hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The nodes of the Sankey plot.'
     },
 
@@ -185,6 +190,21 @@ module.exports = overrideAll({
             role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
+        hoverinfo: {
+            valType: 'enumerated',
+            values: ['all', 'none', 'skip'],
+            dflt: 'all',
+            role: 'info',
+            description: [
+                'Determines which trace information appear when hovering links.',
+                'If `none` or `skip` are set, no information is displayed upon hovering.',
+                'But, if `none` is set, click and hover events are still fired.'
+            ].join(' ')
+        },
+        hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         description: 'The links of the Sankey plot.'
     }
 }, 'calc', 'nested');
+// hide unsupported top-level properties from plot-schema
+attrs.hoverinfo = undefined;
+attrs.hoverlabel = undefined;

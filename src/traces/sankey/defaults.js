@@ -13,37 +13,55 @@ var attributes = require('./attributes');
 var Color = require('../../components/color');
 var tinycolor = require('tinycolor2');
 var handleDomainDefaults = require('../../plots/domain').defaults;
+var handleHoverLabelDefaults = require('../../components/fx/hoverlabel_defaults');
+var Template = require('../../plot_api/plot_template');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    coerce('node.label');
-    coerce('node.pad');
-    coerce('node.thickness');
-    coerce('node.line.color');
-    coerce('node.line.width');
+    // node attributes
+    var nodeIn = traceIn.node, nodeOut = Template.newContainer(traceOut, 'node');
+    function coerceNode(attr, dflt) {
+        return Lib.coerce(nodeIn, nodeOut, attributes.node, attr, dflt);
+    }
+    coerceNode('label');
+    coerceNode('pad');
+    coerceNode('thickness');
+    coerceNode('line.color');
+    coerceNode('line.width');
+    coerceNode('hoverinfo');
+    handleHoverLabelDefaults(nodeIn, nodeOut, coerceNode, layout.hoverlabel);
 
     var colors = layout.colorway;
 
     var defaultNodePalette = function(i) {return colors[i % colors.length];};
 
-    coerce('node.color', traceOut.node.label.map(function(d, i) {
+    coerceNode('color', nodeOut.label.map(function(d, i) {
         return Color.addOpacity(defaultNodePalette(i), 0.8);
     }));
 
-    coerce('link.label');
-    coerce('link.source');
-    coerce('link.target');
-    coerce('link.value');
-    coerce('link.line.color');
-    coerce('link.line.width');
+    // link attributes
+    var linkIn = traceIn.link, linkOut = Template.newContainer(traceOut, 'link');
+    function coerceLink(attr, dflt) {
+        return Lib.coerce(linkIn, linkOut, attributes.link, attr, dflt);
+    }
+    coerceLink('label');
+    coerceLink('source');
+    coerceLink('target');
+    coerceLink('value');
+    coerceLink('line.color');
+    coerceLink('line.width');
+    coerceLink('hoverinfo');
+    handleHoverLabelDefaults(linkIn, linkOut, coerceLink, layout.hoverlabel);
 
-    coerce('link.color', traceOut.link.value.map(function() {
-        return tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
-            'rgba(255, 255, 255, 0.6)' :
-            'rgba(0, 0, 0, 0.2)';
+    var defaultLinkColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
+                'rgba(255, 255, 255, 0.6)' :
+                'rgba(0, 0, 0, 0.2)';
+
+    coerceLink('color', linkOut.value.map(function() {
+        return defaultLinkColor;
     }));
 
     handleDomainDefaults(traceOut, layout, coerce);
