@@ -9,13 +9,16 @@
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
+var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-var attrs = module.exports = overrideAll({
+module.exports = overrideAll({
+    hoverinfo: plotAttrs.hoverinfo,
+    hoverlabel: fxAttrs.hoverlabel,
     domain: domainAttrs({name: 'sankey', trace: true}),
 
     orientation: {
@@ -205,6 +208,3 @@ var attrs = module.exports = overrideAll({
         description: 'The links of the Sankey plot.'
     }
 }, 'calc', 'nested');
-// hide unsupported top-level properties from plot-schema
-attrs.hoverinfo = undefined;
-attrs.hoverlabel = undefined;

@@ -21,6 +21,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    var hoverlabelDefault = Lib.extendDeep(layout.hoverlabel, traceIn.hoverlabel);
+
     // node attributes
     var nodeIn = traceIn.node, nodeOut = Template.newContainer(traceOut, 'node');
     function coerceNode(attr, dflt) {
@@ -31,8 +33,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceNode('thickness');
     coerceNode('line.color');
     coerceNode('line.width');
-    coerceNode('hoverinfo');
-    handleHoverLabelDefaults(nodeIn, nodeOut, coerceNode, layout.hoverlabel);
+    coerceNode('hoverinfo', traceIn.hoverinfo);
+    handleHoverLabelDefaults(nodeIn, nodeOut, coerceNode, hoverlabelDefault);
 
     var colors = layout.colorway;
 
@@ -53,8 +55,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceLink('value');
     coerceLink('line.color');
     coerceLink('line.width');
-    coerceLink('hoverinfo');
-    handleHoverLabelDefaults(linkIn, linkOut, coerceLink, layout.hoverlabel);
+    coerceLink('hoverinfo', traceIn.hoverinfo);
+    handleHoverLabelDefaults(linkIn, linkOut, coerceLink, hoverlabelDefault);
 
     var defaultLinkColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
                 'rgba(255, 255, 255, 0.6)' :
