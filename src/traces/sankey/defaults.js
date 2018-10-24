@@ -62,9 +62,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 'rgba(255, 255, 255, 0.6)' :
                 'rgba(0, 0, 0, 0.2)';
 
-    coerceLink('color', linkOut.value.map(function() {
-        return defaultLinkColor;
-    }));
+    coerceLink('color', Lib.repeat(defaultLinkColor, linkOut.value.length));
 
     handleDomainDefaults(traceOut, layout, coerce);
 
