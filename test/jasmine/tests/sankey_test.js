@@ -771,6 +771,27 @@ describe('sankey tests', function() {
             .then(done);
         });
     });
+
+    it('emits a warning if node.pad is too large', function(done) {
+        var gd = createGraphDiv();
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        var warnings = [];
+        spyOn(Lib, 'warn').and.callFake(function(msg) {
+            warnings.push(msg);
+        });
+        Plotly.plot(gd, mockCopy).then(function() {
+            expect(warnings.length).toEqual(0);
+
+            return Plotly.restyle(gd, 'node.pad', 50);
+        })
+        .then(function() {
+            expect(warnings.length).toEqual(1);
+        })
+        .catch(failTest)
+        .finally(destroyGraphDiv)
+        .then(done);
+    });
 });
 
 function assertLabel(content, style) {
