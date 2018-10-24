@@ -13,6 +13,11 @@ var Lib = require('../../lib');
 
 var orientations = ['v', 'h'];
 
+
+function getPosition(di) {
+    return di.pos;
+}
+
 function crossTraceCalc(gd, plotinfo) {
     var calcdata = gd.calcdata;
     var xa = plotinfo.xaxis;
@@ -103,21 +108,19 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
         }
     }
 
-    // autoscale the x axis - including space for points if they're off the side
-    // TODO: this will overdo it if the outermost boxes don't have
-    // their points as far out as the other boxes
-    var extremes = Axes.findExtremes(posAxis, boxdv.vals, {
-        vpadminus: maxHalfWidth + pad[0] * padfactor,
-        vpadplus: maxHalfWidth + pad[1] * padfactor
-    });
-
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
-        // set the width of all boxes
+        // set the width of this box
         // override dPos with trace.width if present
-        calcTrace[0].t.dPos = (calcTrace[0].trace.width / 2) || dPos;
-
-        // link extremes to all boxes
+        var thisDPos = calcTrace[0].t.dPos = (calcTrace[0].trace.width / 2) || dPos;
+        var positions = calcTrace.map(getPosition);
+        // autoscale the x axis - including space for points if they're off the side
+        // TODO: this will overdo it if the outermost boxes don't have
+        // their points as far out as the other boxes
+        var extremes = Axes.findExtremes(posAxis, positions, {
+            vpadminus: thisDPos + pad[0] * padfactor,
+            vpadplus: thisDPos + pad[1] * padfactor
+        });
         calcTrace[0].trace._extremes[posAxis._id] = extremes;
     }
 
