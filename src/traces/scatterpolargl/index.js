@@ -161,7 +161,8 @@ function plot(gd, subplot, cdata) {
         stash.theta = thetaArray;
         stash.positions = positions;
         stash._scene = scene;
-        stash.index = scene.count++;
+        stash.index = scene.count;
+        scene.count++;
     });
 
     return ScatterGl.plot(gd, subplot, cdata);

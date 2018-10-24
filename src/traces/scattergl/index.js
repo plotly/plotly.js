@@ -126,10 +126,11 @@ function calc(gd, trace) {
 
     // stash scene ref
     stash._scene = scene;
-    stash.index = scene.count++;
+    stash.index = scene.count;
     stash.x = x;
     stash.y = y;
     stash.positions = positions;
+    scene.count++;
 
     return [{x: false, y: false, t: stash, trace: trace}];
 }
