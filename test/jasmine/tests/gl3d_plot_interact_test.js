@@ -518,11 +518,11 @@ describe('Test gl3d plots', function() {
         }
 
         Plotly.plot(gd, [{
-          type: 'scatter3d',
-          mode: 'text',
-          x: [1,2,3],
-          y: [2,3,1],
-          z: [3,1,2]
+            type: 'scatter3d',
+            mode: 'text',
+            x: [1, 2, 3],
+            y: [2, 3, 1],
+            z: [3, 1, 2]
         }])
         .then(function() {
             assertIsFilled('not to be empty text');
@@ -530,7 +530,7 @@ describe('Test gl3d plots', function() {
         .catch(failTest)
         .then(done);
     });
-   
+
 });
 
 describe('Test gl3d modebar handlers', function() {
