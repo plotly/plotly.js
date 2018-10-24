@@ -162,8 +162,4 @@ workflows:
             - build
       - publish:
           requires:
-            - test-jasmine
-            - test-jasmine2
-            - test-image
-            - test-image2
-            - test-syntax
+            - build
