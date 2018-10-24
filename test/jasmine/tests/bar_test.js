@@ -903,11 +903,16 @@ describe('A bar plot', function() {
 
     it('Pushes outside text relative bars inside when not outmost', function(done) {
         var data = [{
-            x: [1, 1, 2, 2],
-            y: [10, 20, 20, 10],
+            x: [1, 2],
+            y: [20, 10],
             type: 'bar',
-            text: ['a', 'b', 'c', 'd'],
-            textposition: ['outside', 'inside', 'outside', 'inside'],
+            text: ['a', 'b'],
+            textposition: 'outside',
+        }, {
+            x: [1, 2],
+            y: [20, 10],
+            type: 'bar',
+            text: ['c', 'd']
         }];
         var layout = {barmode: 'relative'};
 
@@ -934,12 +939,17 @@ describe('A bar plot', function() {
 
     it('does not push text inside when base is set', function(done) {
         var data = [{
-            x: [1, 1, 2, 2],
-            y: [10, 20, 20, 10],
-            base: [1, 2, 3, 4],
+            x: [1, 2],
+            y: [20, 10],
+            base: [1, 2],
             type: 'bar',
-            text: ['a', 'b', 'c', 'd'],
-            textposition: ['outside', 'outside', 'outside', 'outside'],
+            text: ['a', 'b'],
+            textposition: 'outside',
+        }, {
+            x: [3, 4],
+            y: [30, 40],
+            type: 'bar',
+            text: ['c', 'd']
         }];
         var layout = {barmode: 'relative'};
 
