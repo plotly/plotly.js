@@ -139,6 +139,13 @@ jobs:
       - store_artifacts:
           path: dist/plot-schema.json
           destination: /plot-schema.json
+      - run:
+          name: Show URLs to build files
+          command: |
+            PROJECT_NUM=45646037
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plotly.js
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plotly.min.js
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plot-schema.json
 
 workflows:
   version: 2
@@ -162,8 +169,4 @@ workflows:
             - build
       - publish:
           requires:
-            - test-jasmine
-            - test-jasmine2
-            - test-image
-            - test-image2
-            - test-syntax
+            - build
