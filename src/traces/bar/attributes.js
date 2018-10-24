@@ -72,7 +72,9 @@ module.exports = {
             '*inside* positions `text` inside, next to the bar end',
             '(rotated and scaled if needed).',
             '*outside* positions `text` outside, next to the bar end',
-            '(scaled if needed).',
+            '(scaled if needed). For stacked and relative bars,',
+            'where *base* is given the default value,',
+            'only outmost bars are given the *outside* position.',
             '*auto* positions `text` inside or outside',
             'so that `text` size is maximized.'
         ].join(' ')
