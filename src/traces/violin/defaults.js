@@ -32,7 +32,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('scalegroup', traceOut.name);
         coerce('scalemode');
     } else {
-        traceOut.scalegroup =  '';
+        traceOut.scalegroup = '';
         traceOut.scalemode = 'width';
     }
 
