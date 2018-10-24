@@ -92,13 +92,13 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
 
     // Find maximum trace width
     // we baseline this at dPos
-    var max_half_width = dPos;
+    var maxHalfWidth = dPos;
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
 
         if(calcTrace[0].trace.width) {
-            if(calcTrace[0].trace.width / 2 > max_half_width) {
-                max_half_width = calcTrace[0].trace.width / 2;
+            if(calcTrace[0].trace.width / 2 > maxHalfWidth) {
+                maxHalfWidth = calcTrace[0].trace.width / 2;
             }
         }
     }
@@ -107,8 +107,8 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
     // TODO: this will overdo it if the outermost boxes don't have
     // their points as far out as the other boxes
     var extremes = Axes.findExtremes(posAxis, boxdv.vals, {
-        vpadminus: max_half_width + pad[0] * padfactor,
-        vpadplus: max_half_width + pad[1] * padfactor
+        vpadminus: maxHalfWidth + pad[0] * padfactor,
+        vpadplus: maxHalfWidth + pad[1] * padfactor
     });
 
     for(i = 0; i < boxList.length; i++) {
