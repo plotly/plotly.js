@@ -261,6 +261,57 @@ describe('Test gl plot side effects', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should not clear context when dimensions are not integers', function(done) {
+        spyOn(Plots, 'cleanPlot').and.callThrough();
+        spyOn(Lib, 'log').and.callThrough();
+
+        var w = 500.5;
+        var h = 400.5;
+        var w0 = Math.floor(w);
+        var h0 = Math.floor(h);
+
+        function assertDims(msg) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.width).toBe(w, msg);
+            expect(fullLayout.height).toBe(h, msg);
+
+            var canvas = fullLayout._glcanvas;
+            expect(canvas.node().width).toBe(w0, msg);
+            expect(canvas.node().height).toBe(h0, msg);
+
+            var gl = canvas.data()[0].regl._gl;
+            expect(gl.drawingBufferWidth).toBe(w0, msg);
+            expect(gl.drawingBufferHeight).toBe(h0, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            y: [1, 2, 1]
+        }], {
+            width: w,
+            height: h
+        })
+        .then(function() {
+            assertDims('base state');
+
+            // once from supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(1);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+
+            return Plotly.restyle(gd, 'mode', 'markers');
+        })
+        .then(function() {
+            assertDims('after restyle');
+
+            // one more supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(2);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl2d plots', function() {
