@@ -1218,6 +1218,22 @@ describe('Test splom update switchboard:', function() {
             expect(scene.matrixOptions.sizes).toBeCloseToArray([2, 5, 10], 1, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
+
+            return Plotly.restyle(gd, 'marker.symbol', 'square');
+        })
+        .then(function() {
+            var msg = 'after scalar marker.symbol restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['doTicks', 0],
+                ['clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(scene.matrixOptions.marker).not.toBeNull(msg);
         })
         .catch(failTest)
         .then(done);
