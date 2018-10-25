@@ -17,6 +17,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var textFontAttrs = fontAttrs({
     editType: 'calc',
+    arrayOk: true,
     colorEditType: 'style',
     description: 'Sets the font used for `textinfo`.'
 });
@@ -106,7 +107,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets text elements associated with each sector.',
-            'If trace `textinfo` contains a *text* flag, these elements will seen',
+            'If trace `textinfo` contains a *text* flag, these elements will be seen',
             'on the chart.',
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
@@ -169,7 +170,6 @@ module.exports = {
             'Specifies the location of the `textinfo`.'
         ].join(' ')
     },
-    // TODO make those arrayOk?
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),

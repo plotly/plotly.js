@@ -7,17 +7,23 @@ var Drawing = require('@src/components/drawing');
 
 var Axes = require('@src/plots/cartesian/axes');
 
+var click = require('../assets/click');
+var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
+var color = require('../../../src/components/color');
+var rgb = color.rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 
 var d3 = require('d3');
+
+var BAR_TEXT_SELECTOR = '.bars .bartext';
 
 describe('Bar.supplyDefaults', function() {
     'use strict';
@@ -122,26 +128,56 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.constraintext).toBeUndefined();
     });
 
-    it('should default textfont to layout.font', function() {
+    it('should default textfont to layout.font except for insidetextfont.color', function() {
         traceIn = {
             textposition: 'inside',
             y: [1, 2, 3]
         };
-
         var layout = {
             font: {family: 'arial', color: '#AAA', size: 13}
         };
+        var layoutFontMinusColor = {family: 'arial', size: 13};
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.textposition).toBe('inside');
         expect(traceOut.textfont).toEqual(layout.font);
         expect(traceOut.textfont).not.toBe(layout.font);
-        expect(traceOut.insidetextfont).toEqual(layout.font);
+        expect(traceOut.insidetextfont).toEqual(layoutFontMinusColor);
         expect(traceOut.insidetextfont).not.toBe(layout.font);
         expect(traceOut.insidetextfont).not.toBe(traceOut.textfont);
         expect(traceOut.outsidetexfont).toBeUndefined();
         expect(traceOut.constraintext).toBe('both');
+    });
+
+    it('should not default insidetextfont.color to layout.font.color', function() {
+        traceIn = {
+            textposition: 'inside',
+            y: [1, 2, 3]
+        };
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.insidetextfont.family).toBe('arial');
+        expect(traceOut.insidetextfont.color).toBeUndefined();
+        expect(traceOut.insidetextfont.size).toBe(13);
+    });
+
+    it('should default insidetextfont.color to textfont.color', function() {
+        traceIn = {
+            textposition: 'inside',
+            y: [1, 2, 3],
+            textfont: {family: 'arial', color: '#09F', size: 20}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+
+        expect(traceOut.insidetextfont.family).toBe('arial');
+        expect(traceOut.insidetextfont.color).toBe('#09F');
+        expect(traceOut.insidetextfont.size).toBe(20);
     });
 
     it('should inherit layout.calendar', function() {
@@ -802,6 +838,9 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 describe('A bar plot', function() {
     'use strict';
 
+    var DARK = '#444';
+    var LIGHT = '#fff';
+
     var gd;
 
     beforeEach(function() {
@@ -849,19 +888,13 @@ describe('A bar plot', function() {
         expect(pathBB.right).not.toBeGreaterThan(textBB.left);
     }
 
-    var colorMap = {
-        'rgb(0, 0, 0)': 'black',
-        'rgb(255, 0, 0)': 'red',
-        'rgb(0, 128, 0)': 'green',
-        'rgb(0, 0, 255)': 'blue'
-    };
-    function assertTextFont(textNode, textFont, index) {
-        expect(textNode.style.fontFamily).toBe(textFont.family[index]);
-        expect(textNode.style.fontSize).toBe(textFont.size[index] + 'px');
+    function assertTextFont(textNode, expectedFontProps, index) {
+        expect(textNode.style.fontFamily).toBe(expectedFontProps.family[index]);
+        expect(textNode.style.fontSize).toBe(expectedFontProps.size[index] + 'px');
 
-        var color = textNode.style.fill;
-        if(!colorMap[color]) colorMap[color] = color;
-        expect(colorMap[color]).toBe(textFont.color[index]);
+        var actualColorRGB = textNode.style.fill;
+        var expectedColorRGB = rgb(expectedFontProps.color[index]);
+        expect(actualColorRGB).toBe(expectedColorRGB);
     }
 
     function assertTextIsBeforePath(textNode, pathNode) {
@@ -869,6 +902,43 @@ describe('A bar plot', function() {
             pathBB = pathNode.getBoundingClientRect();
 
         expect(textBB.right).not.toBeGreaterThan(pathBB.left);
+    }
+
+    function assertTextFontColors(expFontColors, label) {
+        return function() {
+            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            expect(selection.size()).toBe(expFontColors.length);
+
+            selection.each(function(d, i) {
+                var expFontColor = expFontColors[i];
+                var isArray = Array.isArray(expFontColor);
+
+                expect(this.style.fill).toBe(isArray ? rgb(expFontColor[0]) : rgb(expFontColor),
+                  (label || '') + ', fill for element ' + i);
+                expect(this.style.fillOpacity).toBe(isArray ? expFontColor[1] : '1',
+                  (label || '') + ', fillOpacity for element ' + i);
+            });
+        };
+    }
+
+    function assertTextFontFamilies(expFontFamilies) {
+        return function() {
+            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            expect(selection.size()).toBe(expFontFamilies.length);
+            selection.each(function(d, i) {
+                expect(this.style.fontFamily).toBe(expFontFamilies[i]);
+            });
+        };
+    }
+
+    function assertTextFontSizes(expFontSizes) {
+        return function() {
+            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            expect(selection.size()).toBe(expFontSizes.length);
+            selection.each(function(d, i) {
+                expect(this.style.fontSize).toBe(expFontSizes[i] + 'px');
+            });
+        };
     }
 
     it('should show bar texts (inside case)', function(done) {
@@ -997,6 +1067,226 @@ describe('A bar plot', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    var insideTextTestsTrace = {
+        x: ['giraffes', 'orangutans', 'monkeys', 'elefants', 'spiders', 'snakes'],
+        y: [20, 14, 23, 10, 59, 15],
+        text: [20, 14, 23, 10, 59, 15],
+        type: 'bar',
+        textposition: 'auto',
+        marker: {
+            color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
+        }
+    };
+
+    it('should use inside text colors contrasting to bar colors by default', function(done) {
+        var noMarkerTrace = Lib.extendFlat({}, insideTextTestsTrace);
+        delete noMarkerTrace.marker;
+
+        Plotly.plot(gd, [insideTextTestsTrace, noMarkerTrace])
+          .then(function() {
+              var trace1Colors = [DARK, DARK, LIGHT, LIGHT, DARK, LIGHT];
+              var trace2Colors = Lib.repeat(DARK, 6);
+              var allExpectedColors = trace1Colors.concat(trace2Colors);
+              assertTextFontColors(allExpectedColors)();
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should take bar fill opacities into account when calculating contrasting inside text colors', function(done) {
+        var trace = {
+            x: [5, 10],
+            y: [5, 15],
+            text: ['Giraffes', 'Zebras'],
+            type: 'bar',
+            textposition: 'inside',
+            marker: {
+                color: ['rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.8)']
+            }
+        };
+
+        Plotly.plot(gd, [trace])
+          .then(assertTextFontColors([DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: '#09f' } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(Lib.repeat('#09f', 6)))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use matching color from textfont.color array for inside text, contrasting otherwise', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: ['#09f', 'green'] } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(['#09f', 'green', LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use defined insidetextfont.color for inside text instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { insidetextfont: { color: '#09f' } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(Lib.repeat('#09f', 6)))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use matching color from insidetextfont.color array instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { insidetextfont: { color: ['yellow', 'green'] } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(['yellow', 'green', LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use a contrasting text color by default for outside labels being pushed inside ' +
+      'because of another bar stacked above', function(done) {
+        var trace1 = {
+            x: [5],
+            y: [5],
+            text: ['Giraffes'],
+            type: 'bar',
+            textposition: 'outside'
+        };
+        var trace2 = Lib.extendFlat({}, trace1);
+        var layout = {barmode: 'stack'};
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(assertTextFontColors([LIGHT, DARK]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should style outside labels pushed inside by bars stacked above as inside labels', function(done) {
+        var trace1 = {
+            x: [5],
+            y: [5],
+            text: ['Giraffes'],
+            type: 'bar',
+            textposition: 'outside',
+            insidetextfont: {color: 'blue', family: 'serif', size: 24}
+        };
+        var trace2 = Lib.extendFlat({}, trace1);
+        var layout = {barmode: 'stack', font: {family: 'Arial'}};
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(assertTextFontColors(['blue', DARK]))
+          .then(assertTextFontFamilies(['serif', 'Arial']))
+          .then(assertTextFontSizes([24, 12]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should fall back to textfont array values if insidetextfont array values don\'t ' +
+      'cover all bars', function(done) {
+        var trace = Lib.extendFlat({}, insideTextTestsTrace, {
+            textfont: {
+                color: ['blue', 'blue', 'blue'],
+                family: ['Arial', 'serif'],
+                size: [8, 24]
+            },
+            insidetextfont: {
+                color: ['yellow', 'green'],
+                family: ['Arial'],
+                size: [16]
+            }
+        });
+        var layout = {font: {family: 'Roboto', size: 12}};
+
+        Plotly.plot(gd, [trace], layout)
+          .then(assertTextFontColors(['yellow', 'green', 'blue', LIGHT, DARK, LIGHT]))
+          .then(assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Roboto', 'Roboto', 'Roboto']))
+          .then(assertTextFontSizes([16, 24, 12, 12, 12, 12]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should retain text styles throughout selecting and deselecting data points', function(done) {
+        var trace1 = {
+            x: ['giraffes', 'orangutans', 'monkeys'],
+            y: [12, 18, 29],
+            text: [12, 18, 29],
+            type: 'bar',
+            textposition: 'inside',
+            textfont: {
+                color: ['red', 'orange'],
+                family: ['Arial', 'serif'],
+                size: [8, 24]
+            },
+            insidetextfont: {
+                color: ['blue'],
+                family: ['Arial'],
+                size: [16]
+            }
+        };
+        var trace2 = Lib.extendDeep({}, trace1, {textposition: 'outside'});
+        var layout = {
+            barmode: 'group',
+            font: {
+                family: 'Roboto',
+                size: 12
+            },
+            clickmode: 'event+select'
+        };
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(function() {
+              assertNonSelectionModeStyle('before selection');
+          })
+          .then(function() {
+              return select1stBar2ndTrace();
+          })
+          .then(function() {
+              assertSelectionModeStyle('in selection mode');
+          })
+          .then(function() {
+              return deselect1stBar2ndTrace();
+          })
+          .then(function() {
+              assertNonSelectionModeStyle('after selection');
+          })
+          .catch(failTest)
+          .then(done);
+
+        function assertSelectionModeStyle(label) {
+            var unselColor = ['black', '0.2'];
+            assertTextFontColors([unselColor, unselColor, unselColor, 'red', unselColor, unselColor], label)();
+            assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
+            assertTextFontSizes([16, 24, 12, 8, 24, 12])();
+        }
+
+        function assertNonSelectionModeStyle(label) {
+            assertTextFontColors(['blue', 'orange', LIGHT, 'red', 'orange', DARK], label)();
+            assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
+            assertTextFontSizes([16, 24, 12, 8, 24, 12])();
+        }
+
+        function select1stBar2ndTrace() {
+            return new Promise(function(resolve) {
+                click(176, 354);
+                resolve();
+            });
+        }
+
+        function deselect1stBar2ndTrace() {
+            return new Promise(function(resolve) {
+                var delayAvoidingDblClick = DBLCLICKDELAY * 1.01;
+                setTimeout(function() {
+                    click(176, 354);
+                    resolve();
+                }, delayAvoidingDblClick);
+            });
+        }
     });
 
     it('should be able to restyle', function(done) {
@@ -1170,6 +1460,9 @@ describe('A bar plot', function() {
             font: {family: 'arial', color: 'blue', size: 13}
         };
 
+        // Note: insidetextfont.color does NOT inherit from textfont.color
+        // since insidetextfont.color should be contrasting to bar's fill by default.
+        var contrastingLightColorVal = color.contrast('black');
         var expected = {
             y: [10, 20, 30, 40],
             type: 'bar',
@@ -1182,7 +1475,7 @@ describe('A bar plot', function() {
             },
             insidetextfont: {
                 family: ['"comic sans"', 'arial', 'arial'],
-                color: ['black', 'green', 'blue'],
+                color: ['black', 'green', contrastingLightColorVal],
                 size: [8, 12, 16]
             },
             outsidetextfont: {
