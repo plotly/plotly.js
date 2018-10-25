@@ -198,7 +198,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         textHeight;
 
     if(textPosition === 'outside') {
-        if(!isOutmostBar) textPosition = 'inside';
+        if(!isOutmostBar && !calcBar.hasB) textPosition = 'inside';
     }
 
     if(textPosition === 'auto') {

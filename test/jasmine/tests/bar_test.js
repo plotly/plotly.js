@@ -971,6 +971,78 @@ describe('A bar plot', function() {
         .then(done);
     });
 
+    it('Pushes outside text relative bars inside when not outmost', function(done) {
+        var data = [{
+            x: [1, 2],
+            y: [20, 10],
+            type: 'bar',
+            text: ['a', 'b'],
+            textposition: 'outside',
+        }, {
+            x: [1, 2],
+            y: [20, 10],
+            type: 'bar',
+            text: ['c', 'd']
+        }];
+        var layout = {barmode: 'relative'};
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd),
+                barNodes = getAllBarNodes(traceNodes[0]),
+                foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i],
+                    pathNode = barNode.querySelector('path'),
+                    textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsInsidePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not push text inside when base is set', function(done) {
+        var data = [{
+            x: [1, 2],
+            y: [20, 10],
+            base: [1, 2],
+            type: 'bar',
+            text: ['a', 'b'],
+            textposition: 'outside',
+        }, {
+            x: [3, 4],
+            y: [30, 40],
+            type: 'bar',
+            text: ['c', 'd']
+        }];
+        var layout = {barmode: 'relative'};
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd),
+                barNodes = getAllBarNodes(traceNodes[0]),
+                foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i],
+                    pathNode = barNode.querySelector('path'),
+                    textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsAbovePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
     it('should show bar texts (outside case)', function(done) {
         var data = [{
             y: [10, -20, 30],
