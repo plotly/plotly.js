@@ -18,6 +18,11 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
+var markerLineAttrs = extendFlat(colorAttrs('marker.line', {editTypeOverride: 'calc'}), {
+    width: extendFlat({}, scatterMarkerLineAttrs.width, {editType: 'calc'}),
+    editType: 'calc'
+});
+
 var markerAttrs = extendFlat(colorAttrs('marker'), {
     symbol: scatterMarkerAttrs.symbol,
     size: extendFlat({}, scatterMarkerAttrs.size, {editType: 'markerSize'}),
@@ -26,10 +31,7 @@ var markerAttrs = extendFlat(colorAttrs('marker'), {
     sizemode: scatterMarkerAttrs.sizemode,
     opacity: scatterMarkerAttrs.opacity,
     colorbar: scatterMarkerAttrs.colorbar,
-    line: extendFlat({}, colorAttrs('marker.line'), {
-        width: scatterMarkerLineAttrs.width,
-        editType: 'calc'
-    }),
+    line: markerLineAttrs,
     editType: 'calc'
 });
 
