@@ -460,11 +460,22 @@ function getTraceAttributes(type) {
     // make 'type' the first attribute in the object
     attributes.type = null;
 
+
+    var copyBaseAttributes = extendDeepAll({}, baseAttributes),
+        copyModuleAttributes = extendDeepAll({}, _module.attributes);
+
+    // prune global-level trace attributes that are already defined in a trace
+    exports.crawl(copyModuleAttributes, function(attr, attrName, attrs, level, fullAttrString) {
+        delete copyBaseAttributes[fullAttrString];
+        // Prune undefined attributes
+        if(attr === undefined) delete copyModuleAttributes[fullAttrString];
+    });
+
     // base attributes (same for all trace types)
-    extendDeepAll(attributes, baseAttributes);
+    extendDeepAll(attributes, copyBaseAttributes);
 
     // module attributes
-    extendDeepAll(attributes, _module.attributes);
+    extendDeepAll(attributes, copyModuleAttributes);
 
     // subplot attributes
     if(basePlotModule.attributes) {
