@@ -1158,6 +1158,31 @@ describe('Test splom update switchboard:', function() {
             expect(toPlainArray(scene.matrixOptions.colors[2]))
                 .toBeCloseToArray([0, 0, 1, 1], 1, msg + '- 2');
 
+            return Plotly.restyle(gd, {
+                'marker.cmin': -3,
+                'marker.cmax': 3,
+                'marker.color': [[1, 2, 3]]
+            });
+        })
+        .then(function() {
+            var msg = 'after colorscale marker.color restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['doTicks', 0],
+                ['clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(toPlainArray(scene.matrixOptions.colors[0]))
+                .toBeCloseToArray([0.890, 0.6, 0.4078, 1], 1, msg + '- 0');
+            expect(toPlainArray(scene.matrixOptions.colors[1]))
+                .toBeCloseToArray([0.81176, 0.3333, 0.2431, 1], 1, msg + '- 1');
+            expect(toPlainArray(scene.matrixOptions.colors[2]))
+                .toBeCloseToArray([0.6980, 0.0392, 0.1098, 1], 1, msg + '- 2');
+
             return Plotly.restyle(gd, 'marker.size', 20);
         })
         .then(function() {
