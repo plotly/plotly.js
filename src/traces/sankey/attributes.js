@@ -14,10 +14,21 @@ var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
+var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 module.exports = overrideAll({
-    hoverinfo: plotAttrs.hoverinfo,
+    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+        flags: [],
+        arrayOk: false,
+        description: [
+            'Determines which trace information appear on hover.',
+            'If `none` or `skip` are set, no information is displayed upon hovering.',
+            'But, if `none` is set, click and hover events are still fired.',
+            'Note that this attribute is superseded by `node.hoverinfo` and `node.hoverinfo`',
+            'for nodes and links respectively.'
+        ].join(' ')
+    }),
     hoverlabel: fxAttrs.hoverlabel,
     domain: domainAttrs({name: 'sankey', trace: true}),
 
