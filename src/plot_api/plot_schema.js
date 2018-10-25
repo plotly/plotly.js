@@ -112,6 +112,7 @@ exports.get = function() {
  *          @param {String} attrName name string
  *          @param {object[]} attrs all the attributes
  *          @param {Number} level the recursion level, 0 at the root
+ *          @param {String} fullAttrString full attribute name (ie 'marker.line')
  * @param {Number} [specifiedLevel]
  *  The level in the tree, in order to let the callback function detect descend or backtrack,
  *  typically unsupplied (implied 0), just used by the self-recursive call.
@@ -466,9 +467,9 @@ function getTraceAttributes(type) {
 
     // prune global-level trace attributes that are already defined in a trace
     exports.crawl(copyModuleAttributes, function(attr, attrName, attrs, level, fullAttrString) {
-        delete copyBaseAttributes[fullAttrString];
+        Lib.nestedProperty(copyBaseAttributes, fullAttrString).set(undefined);
         // Prune undefined attributes
-        if(attr === undefined) delete copyModuleAttributes[fullAttrString];
+        if(attr === undefined) Lib.nestedProperty(copyModuleAttributes, fullAttrString).set(undefined);
     });
 
     // base attributes (same for all trace types)
