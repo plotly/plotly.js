@@ -461,8 +461,8 @@ function getTraceAttributes(type) {
     attributes.type = null;
 
 
-    var copyBaseAttributes = extendDeepAll({}, baseAttributes),
-        copyModuleAttributes = extendDeepAll({}, _module.attributes);
+    var copyBaseAttributes = extendDeepAll({}, baseAttributes);
+    var copyModuleAttributes = extendDeepAll({}, _module.attributes);
 
     // prune global-level trace attributes that are already defined in a trace
     exports.crawl(copyModuleAttributes, function(attr, attrName, attrs, level, fullAttrString) {
