@@ -983,6 +983,35 @@ describe('Test splom interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should not fail when editing graph with visible:false traces', function(done) {
+        Plotly.plot(gd, [{
+            type: 'splom',
+            dimensions: [{values: []}, {values: []}]
+        }, {
+            type: 'splom',
+            dimensions: [{values: [1, 2, 3]}, {values: [2, 3, 4]}]
+        }])
+        .then(function() {
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+
+            expect(fullData[0].visible).toBe(false, 'trace 0 visible');
+            expect(fullData[1].visible).toBe(true, 'trace 1 visible');
+            expect(Object.keys(fullLayout._splomScenes).length).toBe(1, '# of splom scenes');
+            expect(fullLayout._splomScenes[fullData[1].uid].matrixOptions.opacity).toBe(1, 'marker opacity');
+
+            return Plotly.restyle(gd, 'marker.opacity', [undefined, [0.2, 0.3, 0.4]]);
+        })
+        .then(function() {
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+
+            expect(fullLayout._splomScenes[fullData[1].uid].matrixOptions.opacity).toBe(1, 'marker opacity');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test splom update switchboard:', function() {
