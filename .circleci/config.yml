@@ -130,6 +130,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/plotly.js
+      - run:
+          name: Update plot-schema.json
+          command: node tasks/bundle_plot_schema.js
       - store_artifacts:
           path: build/plotly.js
           destination: /plotly.js
