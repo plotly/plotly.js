@@ -658,10 +658,6 @@ describe('end-to-end scatter tests', function() {
         // from any case to any other case.
         var indices = transitions(cases.length);
 
-        // Drawing.fillGroupStyle logs an error in a try-catch when
-        // things go wrong
-        spyOn(Lib, 'error');
-
         var p = Plotly.plot(gd, [
             {y: [1, 2], text: 'a'},
             {y: [2, 3], text: 'b'},
@@ -711,7 +707,6 @@ describe('end-to-end scatter tests', function() {
             var msg = i ? ('from ' + cases[indices[i - 1]].name + ' to ') : 'from default to ';
             msg += name;
             assertMultiNodeOrder(selectorArray, msg);
-            expect(Lib.error).not.toHaveBeenCalled();
         }; }
 
         for(i = 0; i < indices.length; i++) {
