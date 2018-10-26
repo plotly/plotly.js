@@ -76,9 +76,10 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 di.ct = [(x0 + x1) / 2, y1];
             }
 
+            var text = getText(trace, i);
             if(!isNumeric(x0) || !isNumeric(x1) ||
                     !isNumeric(y0) || !isNumeric(y1) ||
-                    x0 === x1 || y0 === y1) {
+                    ((x0 === x1 || y0 === y1) && !text)) {
                 bar.remove();
                 return;
             }
@@ -120,11 +121,13 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 y1 = fixpx(y1, y0);
             }
 
-            Lib.ensureSingle(bar, 'path')
-                .style('vector-effect', 'non-scaling-stroke')
-                .attr('d',
-                    'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
-                .call(Drawing.setClipUrl, plotinfo.layerClipId);
+            if(x0 !== x1 && y0 !== y1) {
+                Lib.ensureSingle(bar, 'path')
+                    .style('vector-effect', 'non-scaling-stroke')
+                    .attr('d',
+                        'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                    .call(Drawing.setClipUrl, plotinfo.layerClipId);
+            }
 
             appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
 

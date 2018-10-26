@@ -1428,20 +1428,15 @@ describe('A bar plot', function() {
                 text12 = trace1Bar2.querySelector('text'),
                 trace2Bar0 = getAllBarNodes(traceNodes[2])[0],
                 path20 = trace2Bar0.querySelector('path'),
-                text20 = trace2Bar0.querySelector('text'),
-                trace3Bar0 = getAllBarNodes(traceNodes[3])[0],
-                path30 = trace3Bar0.querySelector('path'),
-                text30 = trace3Bar0.querySelector('text');
+                text20 = trace2Bar0.querySelector('text');
 
             expect(text03.textContent).toBe('4');
             expect(text12.textContent).toBe('inside text');
             expect(text20.textContent).toBe('-1');
-            expect(text30.textContent).toBe('outside text');
 
             assertTextIsAbovePath(text03, path03); // outside
             assertTextIsInsidePath(text12, path12); // inside
             assertTextIsInsidePath(text20, path20); // inside
-            assertTextIsBelowPath(text30, path30); // outside
 
             // clear bounding box cache - somehow when you cache
             // text size too early sometimes it changes later...
@@ -1491,20 +1486,14 @@ describe('A bar plot', function() {
                 text12 = trace1Bar2.querySelector('text'),
                 trace2Bar0 = getAllBarNodes(traceNodes[2])[0],
                 path20 = trace2Bar0.querySelector('path'),
-                text20 = trace2Bar0.querySelector('text'),
-                trace3Bar0 = getAllBarNodes(traceNodes[3])[0],
-                path30 = trace3Bar0.querySelector('path'),
-                text30 = trace3Bar0.querySelector('text');
+                text20 = trace2Bar0.querySelector('text');
 
-            expect(text03.textContent).toBe('4');
             expect(text12.textContent).toBe('inside text');
             expect(text20.textContent).toBe('-1');
-            expect(text30.textContent).toBe('outside text');
 
             assertTextIsInsidePath(text03, path03); // inside
             assertTextIsInsidePath(text12, path12); // inside
             assertTextIsInsidePath(text20, path20); // inside
-            assertTextIsInsidePath(text30, path30); // inside
         })
         .catch(failTest)
         .then(done);
