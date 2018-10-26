@@ -77,9 +77,10 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
             }
 
             var text = getText(trace, i);
+            var is_empty = x0 === x1 || y0 === y1;
             if(!isNumeric(x0) || !isNumeric(x1) ||
                     !isNumeric(y0) || !isNumeric(y1) ||
-                    ((x0 === x1 || y0 === y1) && !text)) {
+                    (is_empty && !text)) {
                 bar.remove();
                 return;
             }
@@ -121,7 +122,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 y1 = fixpx(y1, y0);
             }
 
-            if(x0 !== x1 && y0 !== y1) {
+            if(!is_empty) {
                 Lib.ensureSingle(bar, 'path')
                     .style('vector-effect', 'non-scaling-stroke')
                     .attr('d',
