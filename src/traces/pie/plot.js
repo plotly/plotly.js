@@ -264,7 +264,8 @@ module.exports = function plot(gd, cdpie) {
                             'text-anchor': 'middle'
                         })
                         .call(Drawing.font, textPosition === 'outside' ?
-                            trace.outsidetextfont : trace.insidetextfont)
+                          determineOutsideTextFont(trace, pt, gd._fullLayout.font) :
+                          determineInsideTextFont(trace, pt, gd._fullLayout.font))
                         .call(svgTextUtils.convertToTspans, gd);
 
                     // position the text relative to the slice
@@ -409,6 +410,52 @@ module.exports = function plot(gd, cdpie) {
     }, 0);
 };
 
+function determineOutsideTextFont(trace, pt, layoutFont) {
+    var color = helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
+      helpers.castOption(trace.textfont.color, pt.pts) ||
+      layoutFont.color;
+
+    var family = helpers.castOption(trace.outsidetextfont.family, pt.pts) ||
+      helpers.castOption(trace.textfont.family, pt.pts) ||
+      layoutFont.family;
+
+    var size = helpers.castOption(trace.outsidetextfont.size, pt.pts) ||
+      helpers.castOption(trace.textfont.size, pt.pts) ||
+      layoutFont.size;
+
+    return {
+        color: color,
+        family: family,
+        size: size
+    };
+}
+
+function determineInsideTextFont(trace, pt, layoutFont) {
+    var customColor = helpers.castOption(trace.insidetextfont.color, pt.pts);
+    if(!customColor && trace._input.textfont) {
+
+        // Why not simply using trace.textfont? Because if not set, it
+        // defaults to layout.font which has a default color. But if
+        // textfont.color and insidetextfont.color don't supply a value,
+        // a contrasting color shall be used.
+        customColor = helpers.castOption(trace._input.textfont.color, pt.pts);
+    }
+
+    var family = helpers.castOption(trace.insidetextfont.family, pt.pts) ||
+      helpers.castOption(trace.textfont.family, pt.pts) ||
+      layoutFont.family;
+
+    var size = helpers.castOption(trace.insidetextfont.size, pt.pts) ||
+      helpers.castOption(trace.textfont.size, pt.pts) ||
+      layoutFont.size;
+
+    return {
+        color: customColor || Color.contrast(pt.color),
+        family: family,
+        size: size
+    };
+}
+
 function prerenderTitles(cdpie, gd) {
     var cd0, trace;
     // Determine the width and height of the title for each pie.
@@ -418,10 +465,10 @@ function prerenderTitles(cdpie, gd) {
 
         if(trace.title) {
             var dummyTitle = Drawing.tester.append('text')
-                .attr('data-notex', 1)
-                .text(trace.title)
-                .call(Drawing.font, trace.titlefont)
-                .call(svgTextUtils.convertToTspans, gd);
+              .attr('data-notex', 1)
+              .text(trace.title)
+              .call(Drawing.font, trace.titlefont)
+              .call(svgTextUtils.convertToTspans, gd);
             var bBox = Drawing.bBox(dummyTitle.node(), true);
             cd0.titleBox = {
                 width: bBox.width,

@@ -10,8 +10,16 @@
 'use strict';
 
 var d3 = require('d3');
+var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var Lib = require('../../lib');
 var Registry = require('../../registry');
+
+var attributes = require('./attributes'),
+    attributeTextFont = attributes.textfont,
+    attributeInsideTextFont = attributes.insidetextfont,
+    attributeOutsideTextFont = attributes.outsidetextfont;
+var helpers = require('./helpers');
 
 function style(gd, cd) {
     var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.bars');
@@ -50,21 +58,8 @@ function stylePoints(sel, trace, gd) {
 
     txs.each(function(d) {
         var tx = d3.select(this);
-        var textFont;
-
-        if(tx.classed('bartext-inside')) {
-            textFont = trace.insidetextfont;
-        } else if(tx.classed('bartext-outside')) {
-            textFont = trace.outsidetextfont;
-        }
-        if(!textFont) textFont = trace.textfont;
-
-        function cast(k) {
-            var cont = textFont[k];
-            return Array.isArray(cont) ? cont[d.i] : cont;
-        }
-
-        Drawing.font(tx, cast('family'), cast('size'), cast('color'));
+        var font = determineFont(tx, d, trace, gd);
+        Drawing.font(tx, font);
     });
 }
 
@@ -73,14 +68,105 @@ function styleOnSelect(gd, cd) {
     var trace = cd[0].trace;
 
     if(trace.selectedpoints) {
-        Drawing.selectedPointStyle(s.selectAll('path'), trace);
-        Drawing.selectedTextStyle(s.selectAll('text'), trace);
+        stylePointsInSelectionMode(s, trace, gd);
     } else {
         stylePoints(s, trace, gd);
     }
 }
 
+function stylePointsInSelectionMode(s, trace, gd) {
+    Drawing.selectedPointStyle(s.selectAll('path'), trace);
+    styleTextInSelectionMode(s.selectAll('text'), trace, gd);
+}
+
+function styleTextInSelectionMode(txs, trace, gd) {
+    txs.each(function(d) {
+        var tx = d3.select(this);
+        var font;
+
+        if(d.selected) {
+            font = Lib.extendFlat({}, determineFont(tx, d, trace, gd));
+
+            var selectedFontColor = trace.selected.textfont && trace.selected.textfont.color;
+            if(selectedFontColor) {
+                font.color = selectedFontColor;
+            }
+
+            Drawing.font(tx, font);
+        } else {
+            Drawing.selectedTextStyle(tx, trace);
+        }
+    });
+}
+
+function determineFont(tx, d, trace, gd) {
+    var layoutFont = gd._fullLayout.font;
+    var textFont = trace.textfont;
+
+    if(tx.classed('bartext-inside')) {
+        var barColor = getBarColor(d, trace);
+        textFont = getInsideTextFont(trace, d.i, layoutFont, barColor);
+    } else if(tx.classed('bartext-outside')) {
+        textFont = getOutsideTextFont(trace, d.i, layoutFont);
+    }
+
+    return textFont;
+}
+
+function getTextFont(trace, index, defaultValue) {
+    return getFontValue(
+      attributeTextFont, trace.textfont, index, defaultValue);
+}
+
+function getInsideTextFont(trace, index, layoutFont, barColor) {
+    var defaultFont = getTextFont(trace, index, layoutFont);
+
+    var wouldFallBackToLayoutFont =
+      (trace._input.textfont === undefined || trace._input.textfont.color === undefined) ||
+      (Array.isArray(trace.textfont.color) && trace.textfont.color[index] === undefined);
+    if(wouldFallBackToLayoutFont) {
+        defaultFont = {
+            color: Color.contrast(barColor),
+            family: defaultFont.family,
+            size: defaultFont.size
+        };
+    }
+
+    return getFontValue(
+      attributeInsideTextFont, trace.insidetextfont, index, defaultFont);
+}
+
+function getOutsideTextFont(trace, index, layoutFont) {
+    var defaultFont = getTextFont(trace, index, layoutFont);
+    return getFontValue(
+      attributeOutsideTextFont, trace.outsidetextfont, index, defaultFont);
+}
+
+function getFontValue(attributeDefinition, attributeValue, index, defaultValue) {
+    attributeValue = attributeValue || {};
+
+    var familyValue = helpers.getValue(attributeValue.family, index),
+        sizeValue = helpers.getValue(attributeValue.size, index),
+        colorValue = helpers.getValue(attributeValue.color, index);
+
+    return {
+        family: helpers.coerceString(
+          attributeDefinition.family, familyValue, defaultValue.family),
+        size: helpers.coerceNumber(
+          attributeDefinition.size, sizeValue, defaultValue.size),
+        color: helpers.coerceColor(
+          attributeDefinition.color, colorValue, defaultValue.color)
+    };
+}
+
+function getBarColor(cd, trace) {
+    return cd.mc || trace.marker.color;
+}
+
 module.exports = {
     style: style,
-    styleOnSelect: styleOnSelect
+    styleOnSelect: styleOnSelect,
+    getInsideTextFont: getInsideTextFont,
+    getOutsideTextFont: getOutsideTextFont,
+    getBarColor: getBarColor
 };
