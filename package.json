@@ -68,7 +68,7 @@
     "d3-force": "^1.0.6",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
-    "fast-isnumeric": "^1.1.1",
+    "fast-isnumeric": "git://github.com/plotly/fast-isnumeric.git#d4163ac7bd980b5d29a260380f128bf5c39ce899",
     "font-atlas-sdf": "^1.3.3",
     "gl-cone3d": "^1.1.0",
     "gl-contour2d": "^1.1.4",
