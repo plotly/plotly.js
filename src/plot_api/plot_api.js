@@ -261,8 +261,8 @@ exports.plot = function(gd, data, layout, config) {
             if(regl) {
                 // Unfortunately, this can happen when relayouting to large
                 // width/height on some browsers.
-                if(fullLayout.width !== regl._gl.drawingBufferWidth ||
-                    fullLayout.height !== regl._gl.drawingBufferHeight
+                if(Math.floor(fullLayout.width) !== regl._gl.drawingBufferWidth ||
+                    Math.floor(fullLayout.height) !== regl._gl.drawingBufferHeight
                  ) {
                     var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
                     if(drawFrameworkCalls) {

@@ -435,16 +435,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
     var dataScale = [1, 1, 1];
     for(j = 0; j < 3; ++j) {
-        if(dataBounds[0][j] > dataBounds[1][j]) {
+        if(dataBounds[1][j] === dataBounds[0][j]) {
             dataScale[j] = 1.0;
         }
         else {
-            if(dataBounds[1][j] === dataBounds[0][j]) {
-                dataScale[j] = 1.0;
-            }
-            else {
-                dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
-            }
+            dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
         }
     }
 
@@ -559,6 +554,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 var d = sceneBounds[1][i] - sceneBounds[0][i];
                 sceneBounds[0][i] -= d / 32.0;
                 sceneBounds[1][i] += d / 32.0;
+            }
+
+            if(axis.autorange === 'reversed') {
+                // swap bounds:
+                var tmp = sceneBounds[0][i];
+                sceneBounds[0][i] = sceneBounds[1][i];
+                sceneBounds[1][i] = tmp;
             }
         } else {
             var range = axis.range;

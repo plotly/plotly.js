@@ -72,9 +72,11 @@ module.exports = {
             '*inside* positions `text` inside, next to the bar end',
             '(rotated and scaled if needed).',
             '*outside* positions `text` outside, next to the bar end',
-            '(scaled if needed).',
-            '*auto* positions `text` inside or outside',
-            'so that `text` size is maximized.'
+            '(scaled if needed), unless there is another bar stacked on',
+            'this one, then the text gets pushed inside.',
+            '*auto* tries to position `text` inside the bar, but if',
+            'the bar is too small and no bar is stacked on this one',
+            'the text is moved outside.'
         ].join(' ')
     },
 
