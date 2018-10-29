@@ -309,15 +309,17 @@ function editStyle(gd, cd0) {
     var trace = cd0.trace;
     var scene = gd._fullLayout._splomScenes[trace.uid];
 
-    calcColorscales(trace);
+    if(scene) {
+        calcColorscales(trace);
 
-    Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(trace));
-    // TODO [un]selected styles?
+        Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(trace));
+        // TODO [un]selected styles?
 
-    var opts = Lib.extendFlat({}, scene.matrixOptions, scene.viewOpts);
+        var opts = Lib.extendFlat({}, scene.matrixOptions, scene.viewOpts);
 
-    // TODO this is too long for arrayOk attributes!
-    scene.matrix.update(opts, null);
+        // TODO this is too long for arrayOk attributes!
+        scene.matrix.update(opts, null);
+    }
 }
 
 function hoverPoints(pointData, xval, yval) {
