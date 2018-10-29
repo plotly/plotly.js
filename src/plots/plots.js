@@ -1125,6 +1125,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
     // we want even invisible traces to make their would-be subplots visible
     // so coerce the subplot id(s) now no matter what
     var _module = plots.getModule(traceOut);
+
     traceOut._module = _module;
     if(_module) {
         var basePlotModule = _module.basePlotModule;
@@ -1158,9 +1159,21 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         }
     }
 
+    function coerceUnlessPruned(attr, dflt, cb) {
+        if(_module && (attr in _module.attributes) && _module.attributes[attr] === undefined) {
+            // Pruned
+        } else {
+            if(cb && typeof cb === 'function') {
+                cb();
+            } else {
+                coerce(attr, dflt);
+            }
+        }
+    }
+
     if(visible) {
-        coerce('customdata');
-        coerce('ids');
+        coerceUnlessPruned('customdata');
+        coerceUnlessPruned('ids');
 
         if(Registry.traceIs(traceOut, 'showLegend')) {
             traceOut._dfltShowLegend = true;
@@ -1171,14 +1184,12 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             traceOut._dfltShowLegend = false;
         }
 
-        if(_module && ('hoverlabel' in _module.attributes) && _module.attributes.hoverlabel === undefined) {
-            // Do not coerce hoverlabel
-        } else {
+        coerceUnlessPruned('hoverlabel','',function() {
             Registry.getComponentMethod(
                 'fx',
                 'supplyDefaults'
             )(traceIn, traceOut, defaultColor, layout);
-        }
+        });
 
         // TODO add per-base-plot-module trace defaults step
 
