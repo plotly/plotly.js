@@ -397,7 +397,7 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         assertArrayField(cd[2][0], 't.poffset', [-0.4]);
     });
 
-    it('should guard against invalid width items', function() {
+    it('should work with *width* typed arrays', function() {
         var w = [0.1, 0.4, 0.7];
 
         var gd = mockBarPlot([{
@@ -417,7 +417,7 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         ]);
     });
 
-    it('should work with width typed arrays', function() {
+    it('should work with *offset* typed arrays', function() {
         var o = [0.1, 0.4, 0.7];
 
         var gd = mockBarPlot([{
