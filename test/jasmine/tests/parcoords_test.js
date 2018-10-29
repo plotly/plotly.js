@@ -913,7 +913,7 @@ describe('parcoords basic use', function() {
 
     });
 
-    it('@gl Calling `Plotly.restyle` with a string path should amend the preexisting parcoords', function(done) {
+    it('@gl Calling `Plotly.restyle` with a string path to colorscale should amend the preexisting parcoords', function(done) {
 
         expect(gd.data.length).toEqual(1);
 
