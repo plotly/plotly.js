@@ -995,19 +995,34 @@ describe('Test splom interactions:', function() {
         .then(function() {
             var fullData = gd._fullData;
             var fullLayout = gd._fullLayout;
+            var splomScenes = fullLayout._splomScenes;
+            var opts = splomScenes[fullData[1].uid].matrixOptions;
 
             expect(fullData[0].visible).toBe(false, 'trace 0 visible');
             expect(fullData[1].visible).toBe(true, 'trace 1 visible');
-            expect(Object.keys(fullLayout._splomScenes).length).toBe(1, '# of splom scenes');
-            expect(fullLayout._splomScenes[fullData[1].uid].matrixOptions.opacity).toBe(1, 'marker opacity');
+            expect(Object.keys(splomScenes).length).toBe(1, '# of splom scenes');
+
+            expect(opts.opacity).toBe(1, 'marker opacity');
+            expect(opts.color).toEqual(new Uint8Array([255, 127, 14, 255]), 'marker color');
+            expect(opts.colors).toBe(undefined, 'marker colors');
 
             return Plotly.restyle(gd, 'marker.opacity', [undefined, [0.2, 0.3, 0.4]]);
         })
         .then(function() {
             var fullData = gd._fullData;
             var fullLayout = gd._fullLayout;
+            var opts = fullLayout._splomScenes[fullData[1].uid].matrixOptions;
 
-            expect(fullLayout._splomScenes[fullData[1].uid].matrixOptions.opacity).toBe(1, 'marker opacity');
+            // ignored by regl-splom
+            expect(opts.opacity).toBe(1, 'marker opacity');
+            // ignored by regl-splom
+            expect(opts.color).toEqual(new Uint8Array([255, 127, 14, 255]), 'marker color');
+            // marker.opacity applied here
+            expect(opts.colors).toBeCloseTo2DArray([
+                [1, 0.498, 0.0549, 0.2],
+                [1, 0.498, 0.0549, 0.3],
+                [1, 0.498, 0.0549, 0.4]
+            ], 'marker colors');
         })
         .catch(failTest)
         .then(done);
