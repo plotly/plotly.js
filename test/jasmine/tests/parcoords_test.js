@@ -868,6 +868,90 @@ describe('parcoords basic use', function() {
 
     });
 
+
+    function _assertDataOnGraph(percentToBeGreen, msg) {
+        return function() {
+            var canvases = d3.selectAll('.gl-canvas');
+            expect(canvases.size()).toBe(3, msg);
+            canvases.each(function() {
+                var imageArray = readPixel(this, 0, 0, this.width, this.height);
+                var foundGreen = 0;
+                var n = imageArray.length;
+                for(var i = 0; i < n; i++) {
+                    var r = imageArray[i][0];
+                    var g = imageArray[i][1];
+                    var b = imageArray[i][2];
+                    if (g > 4 * r  &&
+                        g > 4 * b) {
+                        foundGreen++;
+                    }
+                }
+                expect(foundPixel).toBe(percentToBeGreen, msg + ' - ' + this.className);
+            });
+        };
+    }
+
+    fit('@gl displays focused and context data after relayout', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock2);
+
+        Plotly.plot(gd, mockCopy)
+        .then(_assertVisibleData(true, 'initial'))
+        .then(function() {
+            return Plotly.relayout(gd, 'paper_bgcolor', '#eef');
+        })
+        .then(_assertVisibleData(true, 'after relayout'))
+        .catch(failTest)
+        .then(done);
+    });
+
+
+    fit('@gl Calling `Plotly.restyle` with a string path to line color should redraw the preexisting parcoords', function(done) {
+
+
+        /*
+        spyOn(Plots, 'cleanPlot').and.callThrough();
+        spyOn(Lib, 'log').and.callThrough();
+        var w = 500.5;
+        var h = 400.5;
+        var w0 = Math.floor(w);
+        var h0 = Math.floor(h);
+         function assertDims(msg) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.width).toBe(w, msg);
+            expect(fullLayout.height).toBe(h, msg);
+             var canvas = fullLayout._glcanvas;
+            expect(canvas.node().width).toBe(w0, msg);
+            expect(canvas.node().height).toBe(h0, msg);
+             var gl = canvas.data()[0].regl._gl;
+            expect(gl.drawingBufferWidth).toBe(w0, msg);
+            expect(gl.drawingBufferHeight).toBe(h0, msg);
+        }
+         Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            y: [1, 2, 1]
+        }], {
+            width: w,
+            height: h
+        })
+        .then(function() {
+            assertDims('base state');
+             // once from supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(1);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+             return Plotly.restyle(gd, 'mode', 'markers');
+        })
+        .then(function() {
+            assertDims('after restyle');
+             // one more supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(2);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+        */
+    });
+
     it('@gl Calling `Plotly.restyle` with a string path to line color should amend the preexisting parcoords', function(done) {
 
         expect(gd.data.length).toEqual(1);
