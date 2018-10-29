@@ -873,67 +873,94 @@ describe('parcoords basic use', function() {
 
     function _getGrayRatio(msg) {
         var totalRGB;
-      
+
         var canvases = d3.selectAll('.gl-canvas');
-        
+
         canvases.each(function(element, index) {
-          
+
             if (index === 0) { // FIXME: we assumed here that the context is the first item but may be not.
-            
+
                 //console.log("index=", index);
                 //console.log("element=", element);
-            
+
                 var imageArray = readPixel(this, 0, 0, this.width, this.height);
-                
+
                 totalRGB = 0;
                 var n = imageArray.length;
                 for(var i = 0; i < n; i++) {
-                  
+
                     totalRGB += imageArray[i]
                 }
-                
+
                 //console.log("totalRGB=", totalRGB);
             }
         });
-        
+
         return totalRGB;
     }
 
-    it('@gl displays same context after react to constraintrange change', function(done) {
+    fit('@gl displays same context after react to constraintrange change', function(done) {
         var mockCopy = Lib.extendDeep({}, mock3);
 
         var totalRGB1 = 0;
         var totalRGB2 = 0;
-        
+
         Plotly.plot(gd, mock3)
-        .then(totalRGB1 = _getGrayRatio('initial'))
+        .then(function() {
+            totalRGB1 = _getGrayRatio()
+        })
         .then(function() {
             mockCopy.data[0].dimensions[1].constraintrange = [0.4, 0.6];
-            
+
             return Plotly.react(gd, mockCopy);
         })
-        .then(totalRGB2 = _getGrayRatio('after react'))
         .then(function() {
+            totalRGB2 = _getGrayRatio()
+        })
+        .then(function() {
+
+            console.log(totalRGB1, totalRGB2)
 
             expect(totalRGB2).toEqual(totalRGB1);
         })
         .catch(failTest)
         .then(done);
     });
-    
-    it('@gl Calling `Plotly.restyle` with a string path to line color should amend the preexisting parcoords', function(done) {
+
+    fit('@gl Calling `Plotly.restyle` with a string path to line color should amend the preexisting parcoords', function(done) {
+        function getAvgPixelByChannel() {
+            var canvas = d3.select('.gl-canvas-context').node();
+            var imgData = readPixel(canvas, 0, 0, canvas.width, canvas.height);
+            var r = 0;
+            var g = 0;
+            var b = 0;
+
+            for(var i = 0; i < imgData.length; i++) {
+                r += imgData[i++];
+                g += imgData[i++];
+                b += imgData[i++];
+            }
+
+            console.log(r, g, b, i, canvas.width * canvas.height, imgData.length / 4)
+
+            var n = imgData.length / 4;
+            r /= n;
+            g /= n;
+            b /= n;
+
+            return [r, g, b];
+        }
 
         expect(gd.data.length).toEqual(1);
+            console.log(getAvgPixelByChannel());
 
         Plotly.restyle(gd, 'line.color', 'red').then(function() {
 
+            console.log(getAvgPixelByChannel());
             expect(gd.data.length).toEqual(1);
-
-            expect(gd.data[0].line.color).toEqual('red');
         })
         .catch(failTest)
         .then(done);
-
     });
 
     it('@gl Calling `Plotly.restyle` with a string path to colorscale should amend the preexisting parcoords', function(done) {
