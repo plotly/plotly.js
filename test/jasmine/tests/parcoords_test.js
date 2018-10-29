@@ -790,6 +790,51 @@ describe('parcoords Lifecycle methods', function() {
                 .then(done);
         });
     });
+
+    it('@gl line.color `Plotly.restyle` should work', function(done) {
+        function getAvgPixelByChannel() {
+            var canvas = d3.select('.gl-canvas-focus').node();
+            var imgData = readPixel(canvas, 0, 0, canvas.width, canvas.height);
+            var n = imgData.length / 4;
+            var r = 0;
+            var g = 0;
+            var b = 0;
+
+            for(var i = 0; i < imgData.length; i++) {
+                r += imgData[i++];
+                g += imgData[i++];
+                b += imgData[i++];
+            }
+            return [r / n, g / n, b / n];
+        }
+
+        Plotly.plot(gd, [{
+            type: 'parcoords',
+            dimensions: [{
+                values: [1, 2]
+            }, {
+                values: [2, 4]
+            }],
+            line: {color: 'blue'}
+        }], {
+            width: 300,
+            height: 200
+        })
+        .then(function() {
+            var rbg = getAvgPixelByChannel();
+            expect(rbg[0]).toBe(0, 'no red');
+            expect(rbg[2]).not.toBe(0, 'all blue');
+
+            return Plotly.restyle(gd, 'line.color', 'red');
+        })
+        .then(function() {
+            var rbg = getAvgPixelByChannel();
+            expect(rbg[0]).not.toBe(0, 'all red');
+            expect(rbg[2]).toBe(0, 'no blue');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('parcoords basic use', function() {
@@ -868,7 +913,7 @@ describe('parcoords basic use', function() {
 
     });
 
-    it('@gl Calling `Plotly.restyle` with a string path should amend the preexisting parcoords', function(done) {
+    it('@gl Calling `Plotly.restyle` with a string path to colorscale should amend the preexisting parcoords', function(done) {
 
         expect(gd.data.length).toEqual(1);
 
