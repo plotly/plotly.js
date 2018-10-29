@@ -1171,10 +1171,12 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             traceOut._dfltShowLegend = false;
         }
 
-        Registry.getComponentMethod(
-            'fx',
-            'supplyDefaults'
-        )(traceIn, traceOut, defaultColor, layout);
+        if(_module && _module.attributes.hoverlabel !== undefined) {
+            Registry.getComponentMethod(
+                'fx',
+                'supplyDefaults'
+            )(traceIn, traceOut, defaultColor, layout);
+        }
 
         // TODO add per-base-plot-module trace defaults step
 
