@@ -1171,7 +1171,9 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             traceOut._dfltShowLegend = false;
         }
 
-        if(_module && _module.attributes.hoverlabel !== undefined) {
+        if(_module && ('hoverlabel' in _module.attributes) && _module.attributes.hoverlabel === undefined) {
+            // Do not coerce hoverlabel
+        } else {
             Registry.getComponentMethod(
                 'fx',
                 'supplyDefaults'
