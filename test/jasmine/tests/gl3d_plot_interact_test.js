@@ -510,6 +510,27 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
+
+    it('@gl should avoid passing blank texts to webgl', function(done) {
+        function assertIsFilled(msg) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.scene._scene.glplot.objects[0].glyphBuffer.length).not.toBe(0, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            mode: 'text',
+            x: [1, 2, 3],
+            y: [2, 3, 1],
+            z: [3, 1, 2]
+        }])
+        .then(function() {
+            assertIsFilled('not to be empty text');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
 });
 
 describe('Test gl3d modebar handlers', function() {
