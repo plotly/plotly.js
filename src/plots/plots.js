@@ -1184,7 +1184,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             traceOut._dfltShowLegend = false;
         }
 
-        coerceUnlessPruned('hoverlabel','',function() {
+        coerceUnlessPruned('hoverlabel', '', function() {
             Registry.getComponentMethod(
                 'fx',
                 'supplyDefaults'
