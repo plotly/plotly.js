@@ -871,26 +871,28 @@ describe('parcoords basic use', function() {
 
     });
 
-    function _getGrayRatio(pass, msg) {
+    function _getGrayRatio(msg) {
+        var totalRGB;
+      
         var canvases = d3.selectAll('.gl-canvas');
-        expect(canvases.size()).toBe(3, msg);
         
         canvases.each(function(element, index) {
           
             if (index === 0) { // FIXME: we assumed here that the context is the first item but may be not.
             
+                //console.log("index=", index);
+                //console.log("element=", element);
+            
                 var imageArray = readPixel(this, 0, 0, this.width, this.height);
-                var totalRGB = 0;
+                
+                totalRGB = 0;
                 var n = imageArray.length;
                 for(var i = 0; i < n; i++) {
-                    var r = imageArray[i][0];
-                    var g = imageArray[i][1];
-                    var b = imageArray[i][2];
-                    totalRGB += r + g + b;
+                  
+                    totalRGB += imageArray[i]
                 }
-                if(pass > 0) {
-                    expect(totalRGB).toBe(pass, msg + ' - ' + this.className);  
-                }
+                
+                //console.log("totalRGB=", totalRGB);
             }
         });
         
@@ -900,16 +902,21 @@ describe('parcoords basic use', function() {
     it('@gl displays same context after react to constraintrange change', function(done) {
         var mockCopy = Lib.extendDeep({}, mock3);
 
-        var totalRGB = 0;
+        var totalRGB1 = 0;
+        var totalRGB2 = 0;
         
         Plotly.plot(gd, mock3)
-        .then(totalRGB = _getGrayRatio(totalRGB, 'initial'))
+        .then(totalRGB1 = _getGrayRatio('initial'))
         .then(function() {
             mockCopy.data[0].dimensions[1].constraintrange = [0.4, 0.6];
             
             return Plotly.react(gd, mockCopy);
         })
-        .then(_getGrayRatio(totalRGB, 'after react'))
+        .then(totalRGB2 = _getGrayRatio('after react'))
+        .then(function() {
+
+            expect(totalRGB2).toEqual(totalRGB1);
+        })
         .catch(failTest)
         .then(done);
     });
