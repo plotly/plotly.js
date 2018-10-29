@@ -356,7 +356,7 @@ function applyAttributes(sieve) {
 
         if(isArrayOrTypedArray(offset)) {
             // if offset is an array, then clone it into t.poffset.
-            newPoffset = offset.slice(0, calcTrace.length);
+            newPoffset = Array.prototype.slice.call(offset, 0, calcTrace.length);
 
             // guard against non-numeric items
             for(j = 0; j < newPoffset.length; j++) {
@@ -377,12 +377,12 @@ function applyAttributes(sieve) {
             t.poffset = offset;
         }
 
-        var width = fullTrace._width || fullTrace.width,
-            initialBarwidth = t.barwidth;
+        var width = fullTrace._width || fullTrace.width;
+        var initialBarwidth = t.barwidth;
 
         if(isArrayOrTypedArray(width)) {
             // if width is an array, then clone it into t.barwidth.
-            var newBarwidth = width.slice(0, calcTrace.length);
+            var newBarwidth = Array.prototype.slice.call(width, 0, calcTrace.length);
 
             // guard against non-numeric items
             for(j = 0; j < newBarwidth.length; j++) {

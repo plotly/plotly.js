@@ -397,6 +397,46 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         assertArrayField(cd[2][0], 't.poffset', [-0.4]);
     });
 
+    it('should work with *width* typed arrays', function() {
+        var w = [0.1, 0.4, 0.7];
+
+        var gd = mockBarPlot([{
+            width: w,
+            y: [1, 2, 3]
+        }, {
+            width: new Float32Array(w),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', w);
+        assertArrayField(cd[1][0], 't.barwidth', w);
+        assertPointField(cd, 'x', [
+            [-0.2, 0.8, 1.8],
+            [0.2, 1.2, 2.2]
+        ]);
+    });
+
+    it('should work with *offset* typed arrays', function() {
+        var o = [0.1, 0.4, 0.7];
+
+        var gd = mockBarPlot([{
+            offset: o,
+            y: [1, 2, 3]
+        }, {
+            offset: new Float32Array(o),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.poffset', o);
+        assertArrayField(cd[1][0], 't.poffset', o);
+        assertPointField(cd, 'x', [
+            [0.5, 1.8, 3.1],
+            [0.5, 1.8, 3.099]
+        ]);
+    });
+
     it('should guard against invalid width items', function() {
         var gd = mockBarPlot([{
             width: [null, 1, 0.8],
