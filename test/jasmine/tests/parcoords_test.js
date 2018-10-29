@@ -871,50 +871,49 @@ describe('parcoords basic use', function() {
 
     });
 
-/*
-    function _getGrayRatio(
+    function _getGrayRatio(secondPass, msg)
         var canvases = d3.selectAll('.gl-canvas');
         expect(canvases.size()).toBe(3, msg);
-        canvases.each(function() {
+        
+        canvases.each(function(element, index) {
           
-          
-        canvas.gl-canvas.gl-canvas-context1: canvas.gl-canvas.gl-canvas-focus2: canvas.gl-canvas.gl-canvas-pickparentNode: htmllength: 3__proto__: Array(0)length: 1__proto__: Array(0)  
-          
-          
-            var imageArray = readPixel(this, 0, 0, this.width, this.height);
-            var foundGreen = 0;
-            var n = imageArray.length;
-            for(var i = 0; i < n; i++) {
-                var r = imageArray[i][0];
-                var g = imageArray[i][1];
-                var b = imageArray[i][2];
-                if (g > 4 * r  &&
-                    g > 4 * b) {
-                    foundGreen++;
+            if (index == 0) { // FIXME: we assumed here that the context is the first item but may be not.
+            
+                var imageArray = readPixel(this, 0, 0, this.width, this.height);
+                var totalRGB = 0;
+                var n = imageArray.length;
+                for(var i = 0; i < n; i++) {
+                    var r = imageArray[i][0];
+                    var g = imageArray[i][1];
+                    var b = imageArray[i][2];
+                    totalRGB += r + g + b;
+                }
+                if(secondPass > 0) {
+                    expect(totalRGB).toBe(secondPass, msg + ' - ' + this.className);  
                 }
             }
-            expect(foundPixel).toBe(percentToBeGreen, msg + ' - ' + this.className);
         });
+        
+        return totalRGB;
     }
 
-    fit('@gl displays focused and context data after relayout', function(done) {
+    it('@gl displays same context after react to constraintrange change', function(done) {
         var mockCopy = Lib.extendDeep({}, mock3);
 
+        var totalRGB = 0;
+        
         Plotly.plot(gd, mock3)
-        .then(_assertVisibleData(true, 'initial'))
+        .then(totalRGB = _getGrayRatio(totalRGB, 'initial'))
         .then(function() {
             mockCopy.data[0].dimensions[1].constraintrange = [0.4, 0.6];
             
             return Plotly.react(gd, mockCopy);
         })
-        .then(_assertVisibleData(true, 'after relayout'))
+        .then(_getGrayRatio(totalRGB, 'after react'))
         .catch(failTest)
         .then(done);
     });
-
-      */
-    });
-
+    
     it('@gl Calling `Plotly.restyle` with a string path to line color should amend the preexisting parcoords', function(done) {
 
         expect(gd.data.length).toEqual(1);
