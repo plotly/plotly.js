@@ -871,13 +871,13 @@ describe('parcoords basic use', function() {
 
     });
 
-    function _getGrayRatio(secondPass, msg)
+    function _getGrayRatio(pass, msg) {
         var canvases = d3.selectAll('.gl-canvas');
         expect(canvases.size()).toBe(3, msg);
         
         canvases.each(function(element, index) {
           
-            if (index == 0) { // FIXME: we assumed here that the context is the first item but may be not.
+            if (index === 0) { // FIXME: we assumed here that the context is the first item but may be not.
             
                 var imageArray = readPixel(this, 0, 0, this.width, this.height);
                 var totalRGB = 0;
@@ -888,8 +888,8 @@ describe('parcoords basic use', function() {
                     var b = imageArray[i][2];
                     totalRGB += r + g + b;
                 }
-                if(secondPass > 0) {
-                    expect(totalRGB).toBe(secondPass, msg + ' - ' + this.className);  
+                if(pass > 0) {
+                    expect(totalRGB).toBe(pass, msg + ' - ' + this.className);  
                 }
             }
         });
