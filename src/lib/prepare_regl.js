@@ -48,6 +48,17 @@ module.exports = function prepareRegl(gd, extensions) {
         } catch(e) {
             success = false;
         }
+
+        if(success) {
+            this.addEventListener('webglcontextlost', function(event) {
+                if(gd && gd.emit) {
+                    gd.emit('plotly_webglcontextlost', {
+                        event: event,
+                        layer: d.key
+                    });
+                }
+            }, false);
+        }
     });
 
     if(!success) {

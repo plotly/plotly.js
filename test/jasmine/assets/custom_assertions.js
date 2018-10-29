@@ -90,6 +90,9 @@ function count(selector) {
  *  - nums {string || array of strings}
  *  - name {string || array of strings}
  *  - axis {string}
+ *  - vOrder {array of number}
+ *  - hOrder {array of number}
+ *  - isRotated {boolean}
  * @param {string} msg
  */
 exports.assertHoverLabelContent = function(expectation, msg) {
@@ -103,17 +106,22 @@ exports.assertHoverLabelContent = function(expectation, msg) {
     var axMsg = 'common axis hover label';
     var axCnt = count(axSelector);
 
+    var reRotate = /(\brotate\(.*?\);?)/;
+
     if(ptCnt === 1) {
-        assertLabelContent(
-            d3.select(ptSelector + '> text.nums'),
-            expectation.nums,
-            ptMsg + ' (nums)'
-        );
-        assertLabelContent(
-            d3.select(ptSelector + '> text.name'),
-            expectation.name,
-            ptMsg + ' (name)'
-        );
+        var g = d3.select(ptSelector);
+        var numsSel = g.select('text.nums');
+        var nameSel = g.select('text.name');
+
+        assertLabelContent(numsSel, expectation.nums, ptMsg + ' (nums)');
+        assertLabelContent(nameSel, expectation.name, ptMsg + ' (name)');
+
+        if('isRotated' in expectation) {
+            expect(g.attr('transform').match(reRotate))
+                .negateIf(expectation.isRotated)
+                .toBe(null, ptMsg + ' should be rotated');
+
+        }
     } else if(ptCnt > 1) {
         if(!Array.isArray(expectation.nums) || !Array.isArray(expectation.name)) {
             fail(ptMsg + ': expecting more than 1 labels.');
@@ -124,16 +132,19 @@ exports.assertHoverLabelContent = function(expectation, msg) {
 
         var bboxes = [];
         d3.selectAll(ptSelector).each(function(_, i) {
-            assertLabelContent(
-                d3.select(this).select('text.nums'),
-                expectation.nums[i],
-                ptMsg + ' (nums ' + i + ')'
-            );
-            assertLabelContent(
-                d3.select(this).select('text.name'),
-                expectation.name[i],
-                ptMsg + ' (name ' + i + ')'
-            );
+            var g = d3.select(this);
+            var numsSel = g.select('text.nums');
+            var nameSel = g.select('text.name');
+
+            assertLabelContent(numsSel, expectation.nums[i], ptMsg + ' (nums ' + i + ')');
+            assertLabelContent(nameSel, expectation.name[i], ptMsg + ' (name ' + i + ')');
+
+            if('isRotated' in expectation) {
+                expect(g.attr('transform').match(reRotate))
+                    .negateIf(expectation.isRotated)
+                    .toBe(null, ptMsg + ' ' + i + ' should be rotated');
+            }
+
             bboxes.push({bbox: this.getBoundingClientRect(), index: i});
         });
         if(expectation.vOrder) {
@@ -235,9 +246,6 @@ exports.assertElemInside = function(elem, container, msg) {
  * quick plot area dimension check: test width and/or height of the inner
  * plot area (single subplot) to verify that the margins are as expected
  *
- * Note: if you use margin.pad on the plot, width and height will be larger
- * than you expected by twice that padding.
- *
  * opts can have keys (all optional):
  *   width (exact width match)
  *   height (exact height match)
@@ -250,7 +258,7 @@ exports.assertPlotSize = function(opts, msg) {
     var widthLessThan = opts.widthLessThan;
     var heightLessThan = opts.heightLessThan;
 
-    var plotBB = d3.select('.bglayer .bg').node().getBoundingClientRect();
+    var plotBB = d3.select('.plotclip > rect').node().getBoundingClientRect();
     var actualWidth = plotBB.width;
     var actualHeight = plotBB.height;
 
@@ -312,6 +320,22 @@ exports.assertNodeOrder = function(selectorBehind, selectorInFront, msg) {
     }
 };
 
+/**
+ * Ordering test for any number of nodes - calls assertNodeOrder n-1 times.
+ * Note that we only take the first matching node for each selector, and it's
+ * not necessary that the nodes be siblings or at the same level of nesting.
+ *
+ * @param {Array[string]} selectorArray: css selectors in the order they should
+ *     appear in the document, from back to front.
+ * @param {string} msg: context for debugging
+ */
+exports.assertMultiNodeOrder = function(selectorArray, msg) {
+    for(var i = 0; i < selectorArray.length - 1; i++) {
+        var msgi = (msg ? msg + ' - ' : '') + 'entries ' + i + ' and ' + (i + 1);
+        exports.assertNodeOrder(selectorArray[i], selectorArray[i + 1], msgi);
+    }
+};
+
 function getParents(node) {
     var parent = node.parentNode;
     if(parent) return getParents(parent).concat(node);
@@ -324,3 +348,9 @@ function collectionToArray(collection) {
     for(var i = 0; i < len; i++) a[i] = collection[i];
     return a;
 }
+
+exports.assertD3Data = function(selection, expectedData) {
+    var data = [];
+    selection.each(function(d) { data.push(d); });
+    expect(data).toEqual(expectedData);
+};

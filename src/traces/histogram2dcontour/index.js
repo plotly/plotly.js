@@ -13,6 +13,7 @@ var Histogram2dContour = {};
 
 Histogram2dContour.attributes = require('./attributes');
 Histogram2dContour.supplyDefaults = require('./defaults');
+Histogram2dContour.crossTraceDefaults = require('../histogram2d/cross_trace_defaults');
 Histogram2dContour.calc = require('../contour/calc');
 Histogram2dContour.plot = require('../contour/plot').plot;
 Histogram2dContour.layerName = 'contourlayer';

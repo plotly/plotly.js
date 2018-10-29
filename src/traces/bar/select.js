@@ -8,14 +8,14 @@
 
 'use strict';
 
-module.exports = function selectPoints(searchInfo, polygon) {
+module.exports = function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
     var selection = [];
     var i;
 
-    if(polygon === false) {
+    if(selectionTester === false) {
         // clear selection
         for(i = 0; i < cd.length; i++) {
             cd[i].selected = 0;
@@ -24,7 +24,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
         for(i = 0; i < cd.length; i++) {
             var di = cd[i];
 
-            if(polygon.contains(di.ct)) {
+            if(selectionTester.contains(di.ct, false, i, searchInfo)) {
                 selection.push({
                     pointNumber: i,
                     x: xa.c2d(di.x),

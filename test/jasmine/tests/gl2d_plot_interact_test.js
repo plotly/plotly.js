@@ -214,6 +214,104 @@ describe('Test gl plot side effects', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@noCI @gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
+        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_12.json'));
+
+        function _trigger(name) {
+            var ev = new window.WebGLContextEvent('webglcontextlost');
+            var canvas = gd.querySelector('.gl-canvas-' + name);
+            canvas.dispatchEvent(ev);
+        }
+
+        Plotly.plot(gd, _mock).then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_webglcontextlost', resolve);
+                setTimeout(reject, 10);
+                _trigger('context');
+            });
+        })
+        .then(function(eventData) {
+            expect((eventData || {}).event).toBeDefined();
+            expect((eventData || {}).layer).toBe('contextLayer');
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_webglcontextlost', resolve);
+                setTimeout(reject, 10);
+                _trigger('focus');
+            });
+        })
+        .then(function(eventData) {
+            expect((eventData || {}).event).toBeDefined();
+            expect((eventData || {}).layer).toBe('focusLayer');
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_webglcontextlost', reject);
+                setTimeout(resolve, 10);
+                _trigger('pick');
+            });
+        })
+        .then(function(eventData) {
+            // should add event listener on pick canvas which
+            // isn't used for scattergl traces
+            expect(eventData).toBeUndefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should not clear context when dimensions are not integers', function(done) {
+        spyOn(Plots, 'cleanPlot').and.callThrough();
+        spyOn(Lib, 'log').and.callThrough();
+
+        var w = 500.5;
+        var h = 400.5;
+        var w0 = Math.floor(w);
+        var h0 = Math.floor(h);
+
+        function assertDims(msg) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.width).toBe(w, msg);
+            expect(fullLayout.height).toBe(h, msg);
+
+            var canvas = fullLayout._glcanvas;
+            expect(canvas.node().width).toBe(w0, msg);
+            expect(canvas.node().height).toBe(h0, msg);
+
+            var gl = canvas.data()[0].regl._gl;
+            expect(gl.drawingBufferWidth).toBe(w0, msg);
+            expect(gl.drawingBufferHeight).toBe(h0, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            y: [1, 2, 1]
+        }], {
+            width: w,
+            height: h
+        })
+        .then(function() {
+            assertDims('base state');
+
+            // once from supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(1);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+
+            return Plotly.restyle(gd, 'mode', 'markers');
+        })
+        .then(function() {
+            assertDims('after restyle');
+
+            // one more supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(2);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl2d plots', function() {
@@ -1135,7 +1233,10 @@ describe('Test scattergl autorange:', function() {
 
     describe('should return the approximative values for ~big~ data', function() {
         beforeEach(function() {
-            spyOn(ScatterGl, 'plot');
+            // to avoid expansive draw calls (which could be problematic on CI)
+            spyOn(ScatterGl, 'plot').and.callFake(function(gd) {
+                gd._fullLayout._plots.xy._scene.scatter2d = {draw: function() {}};
+            });
         });
 
         // threshold for 'fast' axis expansion routine

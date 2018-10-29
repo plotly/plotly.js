@@ -10,6 +10,158 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.42.0] -- 2018-10-29
+
+### Added
+- Add `parcats` (aka parallel categories) trace type [#2963, #3072]
+- Add new gl3d tick and title auto-rotation algorithm that limits text
+  overlaps [#3084, #3104, #3131]
+- Add support for reversed-range axes on gl3d subplots [#3141]
+- Add modebar layout style attributes: `orientation`, `bgcolor`, `color`
+  and `activecolor` [#3068, #3091]
+- Add `title`, `titleposition` and `titlefont` attributes to `pie` traces [#2987]
+- Add `hoverlabel.split` attribute to `ohlc` and `candlestick` traces to split
+  hover labels into multiple pieces [#2959]
+- Add support for `line.shape` values 'hv', 'vh', 'hvh' and 'vhv'
+  in `scattergl` traces [#3087]
+- Add handler for `PlotlyConfig.MathJaxConfig: 'local'` to override our default
+  MathJax behavior which modifies the global MathJax config on load [#2994]
+- Add support for graph div as first argument for `Plotly.makeTemplate`
+  and `Plotly.validateTemplate` [#3111, #3118]
+- Implement trace, node and link hoverinfo for `sankey` traces [#3096, #3150]
+- Implement per-sector textfont settings in `pie` traces [#3130]
+
+## Changed
+- Use new Plotly logo in "Produced with Plotly" modebar button [#3068]
+- Improve `histogram` autobin algorithm: allow partial bin specification,
+  deprecate `autobin(x|y)` attributes, force stacked/grouped histograms to match size
+  and have compatible `start` value [#3044]
+- Count distinct values for category and date axis auto-type, which
+  improves the detection of "NaN" string values in numerical data [#3070]
+- Improve bar and pie textfont color inheritance [#3130]
+- Improve `splom` first-render, axis range relayout and marker restyle
+  performance [#3057, #3161]
+- Make `splom` `xaxes` and `yaxes` list always have same length as the trace
+  `dimensions` regardless of their partial visiblities [#3057]
+- Improve axis `overlaying` documentation [#3082]
+
+### Fixed
+- Fix `gl3d` subplots on tablets [#3088]
+- Fix responsive behavior under flexbox and grid CSS [#3056, #3090, #3122]
+- Fix relayout calls turning back `autosize` on [#3120]
+- Fix MathJax rendering (for recent versions of MathJax) [#2994]
+- Fix `scattergl` update on graphs with fractional computed dimensions [#3132]
+- Fix `scattergl` symbols in MS Edge [#2750]
+- Fix `scattergl` selections on overlaying axes [#3067]
+- Fix `scattergl` `tozero` fills with bad values [#3087, #3168]
+- Fix `scattergl` fill layer ordering [#3087]
+- Fix `scattergl` lines on reversed-range axes [#3078]
+- Fix axis auto-type routine for boolean data [#3070]
+- Fix `splom` axis placement when the diagonal is missing [#3057]
+- Fix line `restyle` calls on `parcoords` traces [#3178]
+- Fix `parcoods` rendering after `hovermode` relayout calls [#3123]
+- Fix WebGL warnings for `scatter3d` traces with blank text items [#3171, #3177]
+- Fix WebGL warnings for `scatter3d` trace with empty lines [#3174]
+- Fix rendering of `scatter3d` lines for certain scene angles [#3163]
+- Fix handling of large pad values in `sankey` traces [#3143]
+- Fix `scatterpolargl`  to `scatterpolar` toggling [#3098]
+- Fix `scatterpolargl` axis-autorange padding [#3098]
+- Fix `bar` text position for traces with set `base` [#3156]
+- Fix `bar` support for typed arrays for `width` and `offset` attributes [#3169]
+- Fix aggregate transforms with bad group values [#3093]
+- Fix transforms operating on auto-invisible traces [#3139]
+- Fix templating for polar and carpet axes [#3092, #3095]
+- Ignore invalid trace indices in restyle and update [#3114]
+- Fix grid style `relayout` calls on graph with large `splom` traces [#3067]
+- Fix logging on some old browsers [#3137]
+- Remove erroneous warning `WARN: unrecognized full object value` when
+  relayouting array containers [#3053]
+
+
+## [1.41.3] -- 2018-09-25
+
+### Fixed
+- Fix handling of hover `text` in `barpolar` traces [#3040]
+- Fix `scatterpolar[gl]` `text` placement in hover label [#3040]
+- Fix `pie` trace support for individual stroke width values [#3030]
+- Fix handling of CSS `max-width` and `max-height` in auto-size routine [#3033]
+- Rotate hover labels when `hovermode: 'y'` and a single trace produces multiple
+  labels [#3043]
+- Rotate hover labels when `hovermode: 'closest'` and multiple labels are
+  generated including one from an horizontal trace [#3043]
+- Fix hover label coloring on white bgcolor [#3048]
+- Do not coerce nor validate `polar?.bar*` attributes on
+  subplots w/o visible `barpolar` traces [#3023]
+- Fix legacy polar attribute descriptions [#3023]
+
+
+## [1.41.2] -- 2018-09-19
+
+### Fixed
+- Fix two-sided zoombox -> double-click -> one-sided zoombox behavior [#3028]
+
+
+## [1.41.1] -- 2018-09-18
+
+### Fixed
+- Bring back hover labels on "touch" hover (bug introduced in 1.29.0) [#2997]
+- Fix MathJax rendering in legends [#3018]
+- Fix fill and layering for multiple stack-groups and unstacked `scatter` traces [#3005]
+- Fix removal of `scatter` traces with set `stackgroup` [#3005]
+- Fix stacked area gap insertion edge case [#3017]
+- Fix zeroline logic for `splom`-generated axes [#3015]
+- Fix `error_x` and `error_y` on `scatter3d` w/o `error_z` [#3011]
+- Fix `scatter3d` error bars on log axes [#2992]
+- Fix `Plotly.react` when updating geo axis `dtick` [#3016]
+- Fix `polar.hole=1` case [#3021]
+- Fix handling of `polar.sector` that span more than 360 degrees [#3021]
+
+
+## [1.41.0] -- 2018-09-12
+
+### Added
+- Enable selection by clicking on points via new layout attribute `clickmode`
+  and flag `'select'` [#2944]
+- Add stacked area charts via new attributes `stackgroup` and `stackgaps` in
+  `scatter` traces [#2960]
+- Add `barpolar` traces - which replace and augment `area` traces [#2954]
+- Add `polar.hole` to punch hole at the middle of polar subplot offsetting the
+  start of the radial range [#2977, #2996]
+- Add an 'inner' radial axis drag box on polar subplots [#2977]
+- Add `{responsive: true}` plot config option [#2974]
+- Emit `plotly_webglcontextlost` event on WebGL context lost [#2986]
+- Support all numbered HTML entities (decimal and hex) in text elements [#2932]
+- Add Welsh (`cy`) locale [#2945]
+
+### Changed
+- Attribute meta information is now stripped be stripped out of bundles (made
+  with bundlers that support browserify transforms) by default [#1584]
+- Draw polar axis ticks above polar axis lines [#2977]
+- Improve ordering of trace hover labels for matching positions [#2960]
+- Speed polar subplot radial drag interactions [#2954]
+- Improve pseudo-html conversion performance [#2932]
+- Bump `regl-splom` requirement to `^1.0.4` [#2956]
+- Bump `glslify` requirement to `^6.3.1` [#2990]
+- Use `gl-text` instead of `@etpinard/gl-text` [#2956]
+
+### Fixed
+- Fix `scatter` ordering in inner SVG `<g>` on some restyle calls [#2978]
+- Fix cartesian axis autorange edge cases [#2960]
+- Fix double-decoding of some HTML entities in text nodes [#2927]
+- Fix `scattergl` line traces rendered after non-line traces [#2990]
+- Fix legend positioning on graphs with very large margins [#2983]
+- Fix rendering of ternary subplots fix with `showticklabels: false` [#2993]
+- Fix show/hide updates of tick and tick labels on ternary subplots [#2993]
+- Fix handling of multi-selections in ternary subplots [#2944]
+- Fix `sankey` hover under `hovermode: false` [#2949]
+- Fix `sankey` positioning for non-default `domain.x` values [#2984]
+- Fix `type: 'date'` polar radial axes [#2954]
+- Fix send-to-cloud modebar buttons on graphs with typed arrays [#2995]
+- Fix handling of custom transforms that make their own data arrays in
+  `Plotly.react`[#2973]
+- Fix missing violin and colorbar attributes in `gd._fullData` [#2850]
+
+
 ## [1.40.1] -- 2018-08-22
 
 ### Changed

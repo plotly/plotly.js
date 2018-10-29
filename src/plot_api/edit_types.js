@@ -15,7 +15,7 @@ var isPlainObject = Lib.isPlainObject;
 var traceOpts = {
     valType: 'flaglist',
     extras: ['none'],
-    flags: ['calc', 'clearAxisTypes', 'plot', 'style', 'colorbars'],
+    flags: ['calc', 'clearAxisTypes', 'plot', 'style', 'markerSize', 'colorbars'],
     description: [
         'trace attributes should include an `editType` string matching this flaglist.',
         '*calc* is the most extensive: a full `Plotly.plot` starting by clearing `gd.calcdata`',
@@ -24,7 +24,8 @@ var traceOpts = {
         'cause the automatic axis type detection to change. Log type will not be cleared, as that',
         'is never automatically chosen so must have been user-specified.',
         '*plot* calls `Plotly.plot` but without first clearing `gd.calcdata`.',
-        '*style* only calls `module.style` for all trace modules and redraws the legend.',
+        '*style* only calls `module.style` (or module.editStyle) for all trace modules and redraws the legend.',
+        '*markerSize* is like *style*, but propagate axis-range changes due to scatter `marker.size`',
         '*colorbars* only redraws colorbars.'
     ].join(' ')
 };

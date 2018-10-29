@@ -85,7 +85,11 @@ module.exports = {
             'stacked. Stacking also turns `fill` on by default, using *tonexty*',
             '(*tonextx*) if `orientation` is *h* (*v*) and sets the default',
             '`mode` to *lines* irrespective of point count.',
-            'You can only stack on a numeric (linear or log) axis.'
+            'You can only stack on a numeric (linear or log) axis.',
+            'Traces in a `stackgroup` will only fill to (or be filled to) other',
+            'traces in the same group. With multiple `stackgroup`s or some',
+            'traces stacked and some not, if fill-linked traces are not already',
+            'consecutive, the later ones will be pushed down in the drawing order.'
         ].join(' ')
     },
     orientation: {
@@ -299,7 +303,11 @@ module.exports = {
             '*tonext* fills the space between two traces if one completely',
             'encloses the other (eg consecutive contour lines), and behaves like',
             '*toself* if there is no trace before it. *tonext* should not be',
-            'used if one trace does not enclose the other.'
+            'used if one trace does not enclose the other.',
+            'Traces in a `stackgroup` will only fill to (or be filled to) other',
+            'traces in the same group. With multiple `stackgroup`s or some',
+            'traces stacked and some not, if fill-linked traces are not already',
+            'consecutive, the later ones will be pushed down in the drawing order.'
         ].join(' ')
     },
     fillcolor: {
@@ -536,18 +544,20 @@ module.exports = {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'For legacy polar chart only.',
-            'Please switch to *scatterpolar* trace type.',
-            'Sets the radial coordinates.'
+            'r coordinates in scatter traces are deprecated!',
+            'Please switch to the *scatterpolar* trace type.',
+            'Sets the radial coordinates',
+            'for legacy polar chart only.'
         ].join('')
     },
     t: {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'For legacy polar chart only.',
-            'Please switch to *scatterpolar* trace type.',
-            'Sets the angular coordinates.'
+            't coordinates in scatter traces are deprecated!',
+            'Please switch to the *scatterpolar* trace type.',
+            'Sets the angular coordinates',
+            'for legacy polar chart only.'
         ].join('')
     }
 };

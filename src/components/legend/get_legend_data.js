@@ -59,7 +59,8 @@ module.exports = function getLegendData(calcdata, opts) {
                         label: labelj,
                         color: cd[j].color,
                         i: cd[j].i,
-                        trace: trace
+                        trace: trace,
+                        pts: cd[j].pts
                     });
 
                     slicesShown[lgroup][labelj] = true;

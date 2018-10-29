@@ -654,6 +654,25 @@ describe('axis zoom/pan and main plot zoom', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('handles xy, x-only and y-only zoombox updates', function(done) {
+        function _assert(msg, xrng, yrng) {
+            expect(gd.layout.xaxis.range).toBeCloseToArray(xrng, 2, 'xrng - ' + msg);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(yrng, 2, 'yrng - ' + msg);
+        }
+
+        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        .then(doDrag('xy', 'nsew', 50, 50))
+        .then(function() { _assert('after xy drag', [1, 1.208], [1.287, 1.5]); })
+        .then(doDblClick('xy', 'nsew'))
+        .then(doDrag('xy', 'nsew', 50, 0))
+        .then(function() { _assert('after x-only drag', [1, 1.208], [0.926, 2.073]); })
+        .then(doDblClick('xy', 'nsew'))
+        .then(doDrag('xy', 'nsew', 0, 50))
+        .then(function() { _assert('after y-only drag', [-0.128, 2.128], [1.287, 1.5]); })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Event data:', function() {

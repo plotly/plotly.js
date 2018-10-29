@@ -198,13 +198,7 @@ drawing.fillGroupStyle = function(s) {
     s.style('stroke-width', 0)
     .each(function(d) {
         var shape = d3.select(this);
-        try {
-            shape.call(Color.fill, d[0].trace.fillcolor);
-        }
-        catch(e) {
-            Lib.error(e, s);
-            shape.remove();
-        }
+        shape.call(Color.fill, d[0].trace.fillcolor);
     });
 };
 

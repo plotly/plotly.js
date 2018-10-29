@@ -6,6 +6,7 @@ var Queue = require('@src/lib/queue');
 var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
+var Axes = require('@src/plots/cartesian/axes');
 var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
 var helpers = require('@src/plot_api/helpers');
@@ -509,6 +510,43 @@ describe('Test plot api', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('updates autosize/width/height correctly', function(done) {
+            function assertSizeAndThen(width, height, auto, msg, next) {
+                return function() {
+                    expect(gd._fullLayout.width).toBe(width, msg);
+                    expect(gd._fullLayout.height).toBe(height, msg);
+                    expect(gd._fullLayout.autosize).toBe(auto, msg);
+                    if(!auto) {
+                        expect(gd.layout.width).toBe(width, msg);
+                        expect(gd.layout.height).toBe(height, msg);
+                    }
+
+                    if(next) return Plotly.relayout(gd, next);
+                };
+            }
+
+            // give gd css sizing to be picked up by autosize
+            gd.style.width = '543px';
+            gd.style.height = '432px';
+
+            Plotly.newPlot(gd, [{y: [1, 3, 2]}])
+            .then(assertSizeAndThen(543, 432, true, 'initial',
+                {autosize: false}))
+            .then(assertSizeAndThen(543, 432, false, 'autosize false with no sizes',
+                {autosize: true}))
+            .then(assertSizeAndThen(543, 432, true, 'back to autosized',
+                {width: 600}))
+            .then(assertSizeAndThen(600, 432, false, 'explicit width causes explicit height',
+                {width: null}))
+            .then(assertSizeAndThen(543, 432, true, 'removed width',
+                {height: 500, width: 700}))
+            .then(assertSizeAndThen(700, 500, false, 'explicit height and width',
+                {autosize: true}))
+            .then(assertSizeAndThen(543, 432, true, 'final back to autosize'))
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('Plotly.relayout subroutines switchboard', function() {
@@ -531,14 +569,18 @@ describe('Test plot api', function() {
             mockedMethods.forEach(function(m) {
                 spyOn(subroutines, m);
             });
+            spyOn(Axes, 'doTicks');
+            spyOn(Plots, 'supplyDefaults').and.callThrough();
         });
 
         function mock(gd) {
             mockedMethods.forEach(function(m) {
                 subroutines[m].calls.reset();
             });
+            Axes.doTicks.calls.reset();
 
             supplyAllDefaults(gd);
+            Plots.supplyDefaults.calls.reset();
             Plots.doCalcdata(gd);
             gd.emit = function() {};
             return gd;
@@ -634,7 +676,7 @@ describe('Test plot api', function() {
         });
 
         it('should trigger minimal sequence for cartesian axis range updates', function() {
-            var seq = ['doAutoRangeAndConstraints', 'doTicksRelayout', 'drawData', 'finalDraw'];
+            var seq = ['doAutoRangeAndConstraints', 'drawData', 'finalDraw'];
 
             function _assert(msg) {
                 expect(gd.calcdata).toBeDefined();
@@ -644,6 +686,10 @@ describe('Test plot api', function() {
                         '# of ' + m + ' calls - ' + msg
                     );
                 });
+                expect(Axes.doTicks).toHaveBeenCalledTimes(1);
+                expect(Axes.doTicks.calls.allArgs()[0][1]).toEqual(['x']);
+                expect(Axes.doTicks.calls.allArgs()[0][2]).toBe(true, 'skip-axis-title argument');
+                expect(Plots.supplyDefaults).not.toHaveBeenCalled();
             }
 
             var specs = [
@@ -912,6 +958,18 @@ describe('Test plot api', function() {
             expect(gd._fullData[0].marker.color).toBe('blue');
         });
 
+        it('ignores invalid trace indices', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+
+            // Call restyle on an invalid trace indice
+            Plotly.restyle(gd, {'type': 'scatter', 'marker.color': 'red'}, [1]);
+        });
+
         it('restores null values to defaults', function() {
             var gd = {
                 data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
@@ -1119,17 +1177,30 @@ describe('Test plot api', function() {
         });
 
         it('turns off autobin when you edit bin specs', function(done) {
+            // test retained (modified) for backward compat with new autobin logic
             var start0 = 0.2;
             var end1 = 6;
             var size1 = 0.5;
 
             function check(auto, msg) {
-                expect(gd.data[0].autobinx).toBe(auto, msg);
-                expect(gd.data[0].xbins.start).negateIf(auto).toBe(start0, msg);
-                expect(gd.data[1].autobinx).toBe(auto, msg);
-                expect(gd.data[1].autobiny).toBe(auto, msg);
-                expect(gd.data[1].xbins.end).negateIf(auto).toBe(end1, msg);
-                expect(gd.data[1].ybins.size).negateIf(auto).toBe(size1, msg);
+                expect(gd.data[0].autobinx).toBeUndefined(msg);
+                expect(gd.data[1].autobinx).toBeUndefined(msg);
+                expect(gd.data[1].autobiny).toBeUndefined(msg);
+
+                if(auto) {
+                    expect(gd.data[0].xbins).toBeUndefined(msg);
+                    expect(gd.data[1].xbins).toBeUndefined(msg);
+                    expect(gd.data[1].ybins).toBeUndefined(msg);
+                }
+                else {
+                    // we can have - and use - partial autobin now
+                    expect(gd.data[0].xbins).toEqual({start: start0});
+                    expect(gd.data[1].xbins).toEqual({end: end1});
+                    expect(gd.data[1].ybins).toEqual({size: size1});
+                    expect(gd._fullData[0].xbins.start).toBe(start0, msg);
+                    expect(gd._fullData[1].xbins.end).toBe(end1, msg);
+                    expect(gd._fullData[1].ybins.size).toBe(size1, msg);
+                }
             }
 
             Plotly.plot(gd, [
@@ -2558,6 +2629,11 @@ describe('Test plot api', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('ignores invalid trace indices', function() {
+            // Call update on an invalid trace indice
+            Plotly.update(gd, {'type': 'scatter', 'marker.color': 'red'}, {}, [1]);
+        });
     });
 
     describe('@noCIdep Plotly.react', function() {
@@ -2588,6 +2664,7 @@ describe('Test plot api', function() {
             spyOn(annotations, 'drawOne').and.callThrough();
             spyOn(annotations, 'draw').and.callThrough();
             spyOn(images, 'draw').and.callThrough();
+            spyOn(Axes, 'doTicks').and.callThrough();
         });
 
         afterEach(destroyGraphDiv);
@@ -2784,6 +2861,37 @@ describe('Test plot api', function() {
             .then(done);
         });
 
+        it('picks up special dtick geo case', function(done) {
+            var data = [{type: 'scattergeo'}];
+            var layout = {};
+
+            function countLines() {
+                var path = d3.select(gd).select('.lataxis > path');
+                return path.attr('d').split('M').length;
+            }
+
+            Plotly.react(gd, data)
+            .then(countPlots)
+            .then(function() {
+                layout.geo = {lataxis: {showgrid: true, dtick: 10}};
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+                expect(countLines()).toBe(18);
+            })
+            .then(function() {
+                layout.geo.lataxis.dtick = 30;
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+                expect(countLines()).toBe(6);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('picks up minimal sequence for cartesian axis range updates', function(done) {
             var data = [{y: [1, 2, 1]}];
             var layout = {xaxis: {range: [1, 2]}};
@@ -2792,10 +2900,11 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, data, layout)
             .then(countPlots)
             .then(function() {
+                expect(Axes.doTicks).toHaveBeenCalledWith(gd, '');
                 return Plotly.react(gd, data, layout2);
             })
             .then(function() {
-                expect(subroutines.doTicksRelayout).toHaveBeenCalledTimes(1);
+                expect(Axes.doTicks).toHaveBeenCalledWith(gd, 'redraw');
                 expect(subroutines.layoutStyles).not.toHaveBeenCalled();
             })
             .catch(failTest)
@@ -2962,7 +3071,7 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, data, layout)
             .then(countPlots)
             .then(function() {
-                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
 
                 return Plotly.react(gd, data, layout, {staticPlot: true});
             })
@@ -2972,7 +3081,7 @@ describe('Test plot api', function() {
                 return Plotly.react(gd, data, layout, {});
             })
             .then(function() {
-                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
             })
             .catch(failTest)
             .then(done);

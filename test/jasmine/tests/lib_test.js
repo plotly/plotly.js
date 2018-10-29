@@ -1654,6 +1654,7 @@ describe('Test lib.js:', function() {
 
         function consoleFn(name, hasApply, messages) {
             var out = function() {
+                if(hasApply) expect(this).toBe(window.console);
                 var args = [];
                 for(var i = 0; i < arguments.length; i++) args.push(arguments[i]);
                 messages.push([name, args]);
@@ -1664,12 +1665,13 @@ describe('Test lib.js:', function() {
             return out;
         }
 
-        function mockConsole(hasApply, hasTrace) {
+        function mockConsole(hasApply, hasTrace, hasError) {
             var out = {
                 MESSAGES: []
             };
             out.log = consoleFn('log', hasApply, out.MESSAGES);
-            out.error = consoleFn('error', hasApply, out.MESSAGES);
+
+            if(hasError) out.error = consoleFn('error', hasApply, out.MESSAGES);
 
             if(hasTrace) out.trace = consoleFn('trace', hasApply, out.MESSAGES);
 
@@ -1687,7 +1689,7 @@ describe('Test lib.js:', function() {
         });
 
         it('emits one console message if apply is available', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 2;
 
             Lib.log('tick', 'tock', 'tick', 'tock', 1);
@@ -1702,7 +1704,7 @@ describe('Test lib.js:', function() {
         });
 
         it('falls back on console.log if no trace', function() {
-            var c = window.console = mockConsole(true, false);
+            var c = window.console = mockConsole(true, false, true);
             config.logging = 2;
 
             Lib.log('Hi');
@@ -1715,7 +1717,7 @@ describe('Test lib.js:', function() {
         });
 
         it('falls back on separate calls if no apply', function() {
-            var c = window.console = mockConsole(false, false);
+            var c = window.console = mockConsole(false, false, true);
             config.logging = 2;
 
             Lib.log('tick', 'tock', 'tick', 'tock', 1);
@@ -1744,7 +1746,7 @@ describe('Test lib.js:', function() {
         });
 
         it('omits .log at log level 1', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 1;
 
             Lib.log(1);
@@ -1758,7 +1760,7 @@ describe('Test lib.js:', function() {
         });
 
         it('logs nothing at log level 0', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 0;
 
             Lib.log(1);
@@ -1766,6 +1768,22 @@ describe('Test lib.js:', function() {
             Lib.error(3);
 
             expect(c.MESSAGES).toEqual([]);
+        });
+
+        it('falls back on simple log if there is no console.error', function() {
+            // TODO
+
+            var c = window.console = mockConsole(true, true, false);
+            config.logging = 2;
+
+            Lib.error('who are you', 'who who... are you', {a: 1, b: 2});
+
+            expect(c.MESSAGES).toEqual([
+                ['log', ['ERROR:']],
+                ['log', ['who are you']],
+                ['log', ['who who... are you']],
+                ['log', [{a: 1, b: 2}]]
+            ]);
         });
     });
 
@@ -2329,10 +2347,6 @@ describe('Test lib.js:', function() {
                 .toEqual(dupes());
 
             expect(callCount).toEqual(18);
-
-            callCount = 0;
-            dupes().sort(sortCounter);
-            expect(callCount).toBeGreaterThan(18);
         });
 
         it('still short-circuits reversed with duplicates', function() {
@@ -2340,10 +2354,6 @@ describe('Test lib.js:', function() {
                 .toEqual(dupes().reverse());
 
             expect(callCount).toEqual(18);
-
-            callCount = 0;
-            dupes().sort(sortCounterReversed);
-            expect(callCount).toBeGreaterThan(18);
         });
     });
 

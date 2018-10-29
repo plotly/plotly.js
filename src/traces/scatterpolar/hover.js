@@ -31,12 +31,12 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
-    newPointData.extraText = makeHoverPointText(cdi, trace, subplot);
+    makeHoverPointText(cdi, trace, subplot, newPointData);
 
     return scatterPointData;
 }
 
-function makeHoverPointText(cdi, trace, subplot) {
+function makeHoverPointText(cdi, trace, subplot, pointData) {
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
     var hoverinfo = cdi.hi || trace.hoverinfo;
@@ -50,7 +50,7 @@ function makeHoverPointText(cdi, trace, subplot) {
         text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
     }
 
-    if(parts.indexOf('all') !== -1) parts = ['r', 'theta'];
+    if(parts.indexOf('all') !== -1) parts = ['r', 'theta', 'text'];
     if(parts.indexOf('r') !== -1) {
         textPart(radialAxis, radialAxis.c2l(cdi.r));
     }
@@ -61,8 +61,12 @@ function makeHoverPointText(cdi, trace, subplot) {
             angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(theta) : theta
         );
     }
+    if(parts.indexOf('text') !== -1 && pointData.text) {
+        text.push(pointData.text);
+        delete pointData.text;
+    }
 
-    return text.join('<br>');
+    pointData.extraText = text.join('<br>');
 }
 
 module.exports = {

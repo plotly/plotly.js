@@ -14,7 +14,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Icons = require('../../../build/ploticon');
-
+var Parser = new DOMParser();
 
 /**
  * UI controller for interactive plots
@@ -45,12 +45,28 @@ var proto = ModeBar.prototype;
 proto.update = function(graphInfo, buttons) {
     this.graphInfo = graphInfo;
 
-    var context = this.graphInfo._context;
+    var context = this.graphInfo._context,
+        fullLayout = this.graphInfo._fullLayout,
+        modeBarId = 'modebar-' + fullLayout._uid;
+
+    this.element.setAttribute('id', modeBarId);
+    this._uid = modeBarId;
 
     if(context.displayModeBar === 'hover') {
         this.element.className = 'modebar modebar--hover';
     }
     else this.element.className = 'modebar';
+
+    if(fullLayout.modebar.orientation === 'v') {
+        this.element.className += ' vertical';
+        buttons = buttons.reverse();
+    }
+
+    Lib.deleteRelatedStyleRule(modeBarId);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId, 'background-color: ' + fullLayout.modebar.bgcolor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + fullLayout.modebar.color);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + fullLayout.modebar.activecolor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + fullLayout.modebar.activecolor);
 
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
@@ -65,7 +81,12 @@ proto.update = function(graphInfo, buttons) {
         this.updateButtons(buttons);
 
         if(context.displaylogo) {
-            this.element.appendChild(this.getLogo());
+            if(fullLayout.modebar.orientation === 'v') {
+                this.element.prepend(this.getLogo());
+            } else {
+                this.element.appendChild(this.getLogo());
+            }
+
             this.hasLogo = true;
         }
     }
@@ -173,6 +194,7 @@ proto.createButton = function(config) {
  * @Param {object} thisIcon
  * @Param {number} thisIcon.width
  * @Param {string} thisIcon.path
+ * @Param {string} thisIcon.color
  * @Return {HTMLelement}
  */
 proto.createIcon = function(thisIcon) {
@@ -180,24 +202,34 @@ proto.createIcon = function(thisIcon) {
             Number(thisIcon.height) :
             thisIcon.ascent - thisIcon.descent,
         svgNS = 'http://www.w3.org/2000/svg',
-        icon = document.createElementNS(svgNS, 'svg'),
-        path = document.createElementNS(svgNS, 'path');
+        icon;
+
+    if(thisIcon.path) {
+        icon = document.createElementNS(svgNS, 'svg');
+        icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
+        icon.setAttribute('class', 'icon');
+
+        var path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', thisIcon.path);
+
+        if(thisIcon.transform) {
+            path.setAttribute('transform', thisIcon.transform);
+        }
+        else if(thisIcon.ascent !== undefined) {
+            // Legacy icon transform calculation
+            path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
+        }
+
+        icon.appendChild(path);
+    }
+
+    if(thisIcon.svg) {
+        var svgDoc = Parser.parseFromString(thisIcon.svg, 'application/xml');
+        icon = svgDoc.childNodes[0];
+    }
 
     icon.setAttribute('height', '1em');
-    icon.setAttribute('width', (thisIcon.width / iconHeight) + 'em');
-    icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
-
-    path.setAttribute('d', thisIcon.path);
-
-    if(thisIcon.transform) {
-        path.setAttribute('transform', thisIcon.transform);
-    }
-    else if(thisIcon.ascent !== undefined) {
-        // Legacy icon transform calculation
-        path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
-    }
-
-    icon.appendChild(path);
+    icon.setAttribute('width', '1em');
 
     return icon;
 };
@@ -272,7 +304,7 @@ proto.getLogo = function() {
     a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly'));
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-    a.appendChild(this.createIcon(Icons.plotlylogo));
+    a.appendChild(this.createIcon(Icons.newplotlylogo));
 
     group.appendChild(a);
     return group;
@@ -288,6 +320,7 @@ proto.removeAllButtons = function() {
 
 proto.destroy = function() {
     Lib.removeElement(this.container.querySelector('.modebar'));
+    Lib.deleteRelatedStyleRule(this._uid);
 };
 
 function createModeBar(gd, buttons) {
