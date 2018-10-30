@@ -2387,7 +2387,7 @@ axes.drawTitle = function(gd, ax) {
 
     Titles.draw(gd, axId + 'title', {
         propContainer: ax,
-        propName: ax._name + '.title',
+        propName: ax._name + '.title.text',
         placeholder: fullLayout._dfltTitle[axLetter],
         avoid: avoid,
         transform: transform,

@@ -176,6 +176,23 @@ exports.cleanLayout = function(layout) {
         }
     }
 
+    // Check for old-style title definitions
+    if(!Lib.isPlainObject(layout.title)) {
+        layout.title = {
+            text: layout.title
+        };
+    }
+    if(layout.xaxis && !Lib.isPlainObject(layout.xaxis.title)) {
+        layout.xaxis.title = {
+            text: layout.xaxis.title
+        };
+    }
+    if(layout.yaxis && !Lib.isPlainObject(layout.yaxis.title)) {
+        layout.yaxis.title = {
+            text: layout.yaxis.title
+        };
+    }
+
     /*
      * Moved from rotate -> orbit for dragmode
      */

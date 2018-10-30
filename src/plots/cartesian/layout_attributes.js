@@ -41,10 +41,12 @@ module.exports = {
         ].join(' ')
     },
     title: {
-        valType: 'string',
-        role: 'info',
-        editType: 'ticks',
-        description: 'Sets the title of this axis.'
+        text: {
+            valType: 'string',
+            role: 'info',
+            editType: 'ticks',
+            description: 'Sets the title of this axis.'
+        }
     },
     titlefont: fontAttrs({
         editType: 'ticks',

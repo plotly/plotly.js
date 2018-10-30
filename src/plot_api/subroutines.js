@@ -452,7 +452,7 @@ exports.drawMainTitle = function(gd) {
 
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
-        propName: 'title',
+        propName: 'title.text',
         placeholder: fullLayout._dfltTitle.plot,
         attributes: {
             x: fullLayout.width / 2,

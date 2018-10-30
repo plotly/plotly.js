@@ -26,12 +26,14 @@ globalFont.color.dflt = colorAttrs.defaultLine;
 module.exports = {
     font: globalFont,
     title: {
-        valType: 'string',
-        role: 'info',
-        editType: 'layoutstyle',
-        description: [
-            'Sets the plot\'s title.'
-        ].join(' ')
+        text: {
+            valType: 'string',
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Sets the plot\'s title.'
+            ].join(' ')
+        }
     },
     titlefont: fontAttrs({
         editType: 'layoutstyle',

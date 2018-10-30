@@ -12,7 +12,11 @@ describe('Plot title', function() {
     'use strict';
 
     var data = [{x: [1, 2, 3], y: [1, 2, 3]}];
-    var layout = {title: 'Plotly line chart'};
+    var layout = {
+        title: {
+            text: 'Plotly line chart'
+        }
+    };
     var gd;
 
     beforeEach(function() {
@@ -24,11 +28,22 @@ describe('Plot title', function() {
     it('is centered horizontally and vertically above the plot by default', function() {
         Plotly.plot(gd, data, layout);
 
+        expectDefaultCenteredPosition();
+    });
+
+    it('can still be defined as `layout.title` to ensure backwards-compatibility', function() {
+        Plotly.plot(gd, data, {title: 'Plotly line chart'});
+
+        expect(titleSel().text()).toBe('Plotly line chart');
+        expectDefaultCenteredPosition();
+    });
+
+    function expectDefaultCenteredPosition() {
         var containerBB = gd.getBoundingClientRect();
 
         expect(titleX()).toBe(containerBB.width / 2);
         expect(titleY()).toBe(gd._fullLayout.margin.t / 2);
-    });
+    }
 
     function titleX() {
         return Number.parseFloat(titleSel().attr('x'));
@@ -39,7 +54,9 @@ describe('Plot title', function() {
     }
 
     function titleSel() {
-        return d3.select('.infolayer .g-gtitle .gtitle');
+        var titleSel = d3.select('.infolayer .g-gtitle .gtitle');
+        expect(titleSel.empty()).toBe(false, 'Title element missing');
+        return titleSel;
     }
 });
 
@@ -117,9 +134,9 @@ describe('editable titles', function() {
 
     it('has hover effects for blank titles', function(done) {
         Plotly.plot(gd, data, {
-            xaxis: {title: ''},
-            yaxis: {title: ''},
-            title: ''
+            xaxis: {title: {text: ''}},
+            yaxis: {title: {text: ''}},
+            title: {text: ''}
         }, {editable: true})
         .then(function() {
             return Promise.all([
@@ -133,18 +150,18 @@ describe('editable titles', function() {
 
     it('has no hover effects for titles that used to be blank', function(done) {
         Plotly.plot(gd, data, {
-            xaxis: {title: ''},
-            yaxis: {title: ''},
-            title: ''
+            xaxis: {title: {text: ''}},
+            yaxis: {title: {text: ''}},
+            title: {text: ''}
         }, {editable: true})
         .then(function() {
-            return editTitle('x', 'xaxis.title', 'XXX');
+            return editTitle('x', 'xaxis.title.text', 'XXX');
         })
         .then(function() {
-            return editTitle('y', 'yaxis.title', 'YYY');
+            return editTitle('y', 'yaxis.title.text', 'YYY');
         })
         .then(function() {
-            return editTitle('g', 'title', 'TTT');
+            return editTitle('g', 'title.text', 'TTT');
         })
         .then(function() {
             return Promise.all([
