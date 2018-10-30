@@ -152,4 +152,6 @@ attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {
     dflt: 'x+y+z+norm+text+name'
 });
 
+attrs.transforms = undefined;
+
 module.exports = attrs;
