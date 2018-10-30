@@ -713,7 +713,7 @@ lib.addRelatedStyleRule = function(uid, selector, styleString) {
 lib.deleteRelatedStyleRule = function(uid) {
     var id = 'plotly.js-style-' + uid,
         style = document.getElementById(id);
-    if(style) style.remove();
+    if(style) lib.removeElement(style);
 };
 
 lib.isIE = function() {
