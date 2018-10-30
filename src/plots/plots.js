@@ -1172,8 +1172,8 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
     }
 
     if(visible) {
-        coerceUnlessPruned('customdata');
-        coerceUnlessPruned('ids');
+        coerce('customdata');
+        coerce('ids');
 
         if(Registry.traceIs(traceOut, 'showLegend')) {
             traceOut._dfltShowLegend = true;
