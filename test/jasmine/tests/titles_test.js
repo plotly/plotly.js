@@ -7,6 +7,42 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
+
+describe('Plot title', function() {
+    'use strict';
+
+    var data = [{x: [1, 2, 3], y: [1, 2, 3]}];
+    var layout = {title: 'Plotly line chart'};
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('is centered horizontally and vertically above the plot by default', function() {
+        Plotly.plot(gd, data, layout);
+
+        var containerBB = gd.getBoundingClientRect();
+
+        expect(titleX()).toBe(containerBB.width / 2);
+        expect(titleY()).toBe(gd._fullLayout.margin.t / 2);
+    });
+
+    function titleX() {
+        return Number.parseFloat(titleSel().attr('x'));
+    }
+
+    function titleY() {
+        return Number.parseFloat(titleSel().attr('y'));
+    }
+
+    function titleSel() {
+        return d3.select('.infolayer .g-gtitle .gtitle');
+    }
+});
+
 describe('editable titles', function() {
     'use strict';
 
