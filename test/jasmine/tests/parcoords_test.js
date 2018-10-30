@@ -79,6 +79,14 @@ describe('parcoords initialization tests', function() {
             expect(gd._fullData[0].tickfont).toEqual(expected);
             expect(gd._fullData[0].rangefont).toEqual(expected);
         });
+
+        it('should not coerce hoverlabel', function() {
+            var gd = Lib.extendDeep({}, mock1);
+
+            supplyAllDefaults(gd);
+
+            expect(gd._fullData[0].hoverlabel).toBeUndefined();
+        });
     });
 
     describe('parcoords defaults', function() {
