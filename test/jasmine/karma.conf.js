@@ -106,6 +106,7 @@ var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
+var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 
 var reporters = (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'];
 if(argv.failFast) reporters.push('fail-fast');
@@ -142,7 +143,7 @@ func.defaultConfig = {
     // list of files / patterns to load in the browser
     //
     // N.B. the rest of this field is filled below
-    files: [pathToCustomMatchers],
+    files: [pathToCustomMatchers, pathToUnpolyfill],
 
     // list of files / pattern to exclude
     exclude: [],
