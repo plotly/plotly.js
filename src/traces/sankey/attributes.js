@@ -17,7 +17,7 @@ var domainAttrs = require('../../plots/domain').attributes;
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: [],
         arrayOk: false,
@@ -219,3 +219,4 @@ module.exports = overrideAll({
         description: 'The links of the Sankey plot.'
     }
 }, 'calc', 'nested');
+attrs.transforms = undefined;

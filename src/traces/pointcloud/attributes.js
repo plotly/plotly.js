@@ -141,5 +141,6 @@ module.exports = {
             editType: 'calc'
         },
         editType: 'calc'
-    }
+    },
+    transforms: undefined
 };
