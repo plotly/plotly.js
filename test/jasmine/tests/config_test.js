@@ -548,7 +548,7 @@ describe('config argument', function() {
         });
     });
 
-    describe('responsive figure', function() {
+    describe('@flaky responsive figure', function() {
         var gd, data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
         var width = 960, height = 800;
 
@@ -615,7 +615,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('@flaky should still be responsive if the plot is edited', function(done) {
+        it('should still be responsive if the plot is edited', function(done) {
             fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
