@@ -402,7 +402,7 @@ function plot(gd, subplot, cdata) {
                         firstptdef += 2;
                     }
                     var lastptdef = srcPos.length - 2;
-                    while(lastptdef > -1 && (isNaN(srcPos[lastptdef]) || isNaN(srcPos[lastptdef + 1]))) {
+                    while(lastptdef > firstptdef && (isNaN(srcPos[lastptdef]) || isNaN(srcPos[lastptdef + 1]))) {
                         lastptdef -= 2;
                     }
                     lineOptions.positions = srcPos.slice(firstptdef, lastptdef + 2);
@@ -446,7 +446,7 @@ function plot(gd, subplot, cdata) {
                         firstptdef += 2;
                     }
                     lastptdef = srcPos.length - 2;
-                    while(lastptdef > -1 && isNaN(srcPos[lastptdef + 1])) {
+                    while(lastptdef > firstptdef && isNaN(srcPos[lastptdef + 1])) {
                         lastptdef -= 2;
                     }
                     if(srcPos[firstptdef + 1] !== 0) {
@@ -463,7 +463,7 @@ function plot(gd, subplot, cdata) {
                         firstptdef += 2;
                     }
                     lastptdef = srcPos.length - 2;
-                    while(lastptdef > -1 && isNaN(srcPos[lastptdef])) {
+                    while(lastptdef > firstptdef && isNaN(srcPos[lastptdef])) {
                         lastptdef -= 2;
                     }
                     if(srcPos[firstptdef] !== 0) {
