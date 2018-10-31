@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.42.0
+* plotly.js (mapbox) v1.42.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -33577,7 +33577,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.42.0';
+exports.version = '1.42.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -36630,7 +36630,7 @@ lib.addRelatedStyleRule = function(uid, selector, styleString) {
 lib.deleteRelatedStyleRule = function(uid) {
     var id = 'plotly.js-style-' + uid,
         style = document.getElementById(id);
-    if(style) style.remove();
+    if(style) lib.removeElement(style);
 };
 
 lib.isIE = function() {
@@ -44632,6 +44632,7 @@ exports.get = function() {
  *          @param {String} attrName name string
  *          @param {object[]} attrs all the attributes
  *          @param {Number} level the recursion level, 0 at the root
+ *          @param {String} fullAttrString full attribute name (ie 'marker.line')
  * @param {Number} [specifiedLevel]
  *  The level in the tree, in order to let the callback function detect descend or backtrack,
  *  typically unsupplied (implied 0), just used by the self-recursive call.
@@ -44980,11 +44981,22 @@ function getTraceAttributes(type) {
     // make 'type' the first attribute in the object
     attributes.type = null;
 
+
+    var copyBaseAttributes = extendDeepAll({}, baseAttributes);
+    var copyModuleAttributes = extendDeepAll({}, _module.attributes);
+
+    // prune global-level trace attributes that are already defined in a trace
+    exports.crawl(copyModuleAttributes, function(attr, attrName, attrs, level, fullAttrString) {
+        Lib.nestedProperty(copyBaseAttributes, fullAttrString).set(undefined);
+        // Prune undefined attributes
+        if(attr === undefined) Lib.nestedProperty(copyModuleAttributes, fullAttrString).set(undefined);
+    });
+
     // base attributes (same for all trace types)
-    extendDeepAll(attributes, baseAttributes);
+    extendDeepAll(attributes, copyBaseAttributes);
 
     // module attributes
-    extendDeepAll(attributes, _module.attributes);
+    extendDeepAll(attributes, copyModuleAttributes);
 
     // subplot attributes
     if(basePlotModule.attributes) {
@@ -60083,6 +60095,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
     // we want even invisible traces to make their would-be subplots visible
     // so coerce the subplot id(s) now no matter what
     var _module = plots.getModule(traceOut);
+
     traceOut._module = _module;
     if(_module) {
         var basePlotModule = _module.basePlotModule;
@@ -60116,6 +60129,18 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         }
     }
 
+    function coerceUnlessPruned(attr, dflt, cb) {
+        if(_module && (attr in _module.attributes) && _module.attributes[attr] === undefined) {
+            // Pruned
+        } else {
+            if(cb && typeof cb === 'function') {
+                cb();
+            } else {
+                coerce(attr, dflt);
+            }
+        }
+    }
+
     if(visible) {
         coerce('customdata');
         coerce('ids');
@@ -60129,10 +60154,12 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             traceOut._dfltShowLegend = false;
         }
 
-        Registry.getComponentMethod(
-            'fx',
-            'supplyDefaults'
-        )(traceIn, traceOut, defaultColor, layout);
+        coerceUnlessPruned('hoverlabel', '', function() {
+            Registry.getComponentMethod(
+                'fx',
+                'supplyDefaults'
+            )(traceIn, traceOut, defaultColor, layout);
+        });
 
         // TODO add per-base-plot-module trace defaults step
 
