@@ -399,11 +399,11 @@ function plot(gd, subplot, cdata) {
                     var srcPos = lineOptions.positions;
 
                     var firstptdef = 0;
-                    while(isNaN(srcPos[firstptdef]) || isNaN(srcPos[firstptdef + 1])) {
+                    while(firstptdef < srcPos.length && (isNaN(srcPos[firstptdef]) || isNaN(srcPos[firstptdef + 1]))) {
                         firstptdef += 2;
                     }
                     var lastptdef = srcPos.length - 2;
-                    while(isNaN(srcPos[lastptdef]) || isNaN(srcPos[lastptdef + 1])) {
+                    while(lastptdef > -1 && (isNaN(srcPos[lastptdef]) || isNaN(srcPos[lastptdef + 1]))) {
                         lastptdef -= 2;
                     }
                     pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
@@ -443,12 +443,12 @@ function plot(gd, subplot, cdata) {
                 var firstptdef, lastptdef;
 
                 if(trace.fill === 'tozeroy') {
-                    while(isNaN(srcPos[firstpdef + 1])) {
                     firstptdef = 0;
+                    while(firstptdef < srcPos.length && isNaN(srcPos[firstptdef + 1])) {
                         firstptdef += 2;
                     }
-                    while(isNaN(srcPos[lastpdef + 1])) {
                     lastptdef = srcPos.length - 2;
+                    while(lastptdef > -1 && isNaN(srcPos[lastptdef + 1])) {
                         lastptdef -= 2;
                     }
                     if(srcPos[firstptdef + 1] !== 0) {
@@ -460,12 +460,12 @@ function plot(gd, subplot, cdata) {
                     }
                 }
                 else if(trace.fill === 'tozerox') {
-                    while(isNaN(srcPos[firstptdef])) {
                     firstptdef = 0;
+                    while(firstptdef < srcPos.length && isNaN(srcPos[firstptdef])) {
                         firstptdef += 2;
                     }
-                    while(isNaN(srcPos[lastptdef])) {
                     lastptdef = srcPos.length - 2;
+                    while(lastptdef > -1 && isNaN(srcPos[lastptdef])) {
                         lastptdef -= 2;
                     }
                     if(srcPos[firstptdef] !== 0) {
