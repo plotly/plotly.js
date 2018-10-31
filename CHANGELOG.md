@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.42.1] -- 2018-10-31
+
+### Fixed
+- Fix IE regression introduced in 1.42.0 [#3187]
+- Fix `parcats` text-shadowing on dark `plot_bgcolor` [#3191]
+- Fix `scatter3d` text alignment [#3180]
+- Fix `hoverinfo` flags in attribute descriptions [#3158]
+- No longer coerce unused `hoverlabel` attribute in `parcoods` [#3158]
+- No longer coerce `transforms` attributes in traces that don't support them [#3158]
+
+
 ## [1.42.0] -- 2018-10-29
 
 ### Added
