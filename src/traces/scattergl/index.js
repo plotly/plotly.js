@@ -395,18 +395,17 @@ function plot(gd, subplot, cdata) {
             scene.line2d.update(scene.lineOptions);
             scene.lineOptions = scene.lineOptions.map(function(lineOptions) {
                 if(lineOptions && lineOptions.positions) {
-                    var pos = [], srcPos = lineOptions.positions;
+                    var srcPos = lineOptions.positions;
 
                     var firstptdef = 0;
-                    while(isNaN(srcPos[firstptdef]) || isNaN(srcPos[firstptdef + 1])) {
+                    while(firstptdef < srcPos.length && (isNaN(srcPos[firstptdef]) || isNaN(srcPos[firstptdef + 1]))) {
                         firstptdef += 2;
                     }
                     var lastptdef = srcPos.length - 2;
-                    while(isNaN(srcPos[lastptdef]) || isNaN(srcPos[lastptdef + 1])) {
-                        lastptdef += -2;
+                    while(lastptdef > firstptdef && (isNaN(srcPos[lastptdef]) || isNaN(srcPos[lastptdef + 1]))) {
+                        lastptdef -= 2;
                     }
-                    pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
-                    lineOptions.positions = pos;
+                    lineOptions.positions = srcPos.slice(firstptdef, lastptdef + 2);
                 }
                 return lineOptions;
             });
@@ -437,36 +436,38 @@ function plot(gd, subplot, cdata) {
                 if(trace._nexttrace) fillData.push(i + 1);
                 if(fillData.length) scene.fillOrder[i] = fillData;
 
-                var pos = [], srcPos = (lineOptions && lineOptions.positions) || stash.positions;
+                var pos = [];
+                var srcPos = (lineOptions && lineOptions.positions) || stash.positions;
+                var firstptdef, lastptdef;
 
                 if(trace.fill === 'tozeroy') {
-                    var firstpdef = 0;
-                    while(isNaN(srcPos[firstpdef + 1])) {
-                        firstpdef += 2;
+                    firstptdef = 0;
+                    while(firstptdef < srcPos.length && isNaN(srcPos[firstptdef + 1])) {
+                        firstptdef += 2;
                     }
-                    var lastpdef = srcPos.length - 2;
-                    while(isNaN(srcPos[lastpdef + 1])) {
-                        lastpdef += -2;
+                    lastptdef = srcPos.length - 2;
+                    while(lastptdef > firstptdef && isNaN(srcPos[lastptdef + 1])) {
+                        lastptdef -= 2;
                     }
-                    if(srcPos[firstpdef + 1] !== 0) {
-                        pos = [ srcPos[firstpdef], 0 ];
+                    if(srcPos[firstptdef + 1] !== 0) {
+                        pos = [srcPos[firstptdef], 0];
                     }
-                    pos = pos.concat(srcPos.slice(firstpdef, lastpdef + 2));
-                    if(srcPos[lastpdef + 1] !== 0) {
-                        pos = pos.concat([ srcPos[lastpdef], 0 ]);
+                    pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
+                    if(srcPos[lastptdef + 1] !== 0) {
+                        pos = pos.concat([srcPos[lastptdef], 0]);
                     }
                 }
                 else if(trace.fill === 'tozerox') {
-                    var firstptdef = 0;
-                    while(isNaN(srcPos[firstptdef])) {
+                    firstptdef = 0;
+                    while(firstptdef < srcPos.length && isNaN(srcPos[firstptdef])) {
                         firstptdef += 2;
                     }
-                    var lastptdef = srcPos.length - 2;
-                    while(isNaN(srcPos[lastptdef])) {
-                        lastptdef += -2;
+                    lastptdef = srcPos.length - 2;
+                    while(lastptdef > firstptdef && isNaN(srcPos[lastptdef])) {
+                        lastptdef -= 2;
                     }
                     if(srcPos[firstptdef] !== 0) {
-                        pos = [ 0, srcPos[firstptdef + 1] ];
+                        pos = [0, srcPos[firstptdef + 1]];
                     }
                     pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
                     if(srcPos[lastptdef] !== 0) {
