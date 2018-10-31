@@ -46,7 +46,8 @@ module.exports = {
             role: 'info',
             editType: 'ticks',
             description: 'Sets the title of this axis.'
-        }
+        },
+        editType: 'ticks'
     },
     titlefont: fontAttrs({
         editType: 'ticks',

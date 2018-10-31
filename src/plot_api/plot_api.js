@@ -1687,6 +1687,28 @@ function _restyle(gd, aobj, traces) {
 }
 
 /**
+ * Maps deprecated layout "string attributes" to
+ * "string attributes" of the current API to ensure backwards compatibility.
+ *
+ * E.g. Maps {'xaxis.title': 'A chart'} to {'xaxis.title.text': 'A chart'}
+ *
+ * @param layoutObj
+ */
+function mapDeprecatedLayoutAttributeStrings(layoutObj) {
+    if(layoutObj.title && !Lib.isPlainObject(layoutObj.title)) {
+        layoutObj.title = {text: layoutObj.title};
+    }
+    if(layoutObj['xaxis.title'] !== undefined) {
+        layoutObj['xaxis.title.text'] = layoutObj['xaxis.title'];
+        delete layoutObj['xaxis.title'];
+    }
+    if(layoutObj['yaxis.title'] !== undefined) {
+        layoutObj['yaxis.title.text'] = layoutObj['yaxis.title'];
+        delete layoutObj['yaxis.title'];
+    }
+}
+
+/**
  * relayout: update layout attributes of an existing plot
  *
  * Can be called two ways:
@@ -1725,6 +1747,8 @@ exports.relayout = function relayout(gd, astr, val) {
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
+
+    mapDeprecatedLayoutAttributeStrings(aobj);
 
     var specs = _relayout(gd, aobj);
     var flags = specs.flags;
@@ -2202,6 +2226,8 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
 
     var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces);
     var restyleFlags = restyleSpecs.flags;
+
+    mapDeprecatedLayoutAttributeStrings(layoutUpdate);
 
     var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate));
     var relayoutFlags = relayoutSpecs.flags;

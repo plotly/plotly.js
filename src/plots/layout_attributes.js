@@ -33,7 +33,8 @@ module.exports = {
             description: [
                 'Sets the plot\'s title.'
             ].join(' ')
-        }
+        },
+        editType: 'layoutstyle'
     },
     titlefont: fontAttrs({
         editType: 'layoutstyle',

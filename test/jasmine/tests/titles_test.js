@@ -2,11 +2,11 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var interactConstants = require('@src/constants/interactions');
+var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
-
 
 describe('Plot title', function() {
     'use strict';
@@ -28,39 +28,164 @@ describe('Plot title', function() {
     it('is centered horizontally and vertically above the plot by default', function() {
         Plotly.plot(gd, data, layout);
 
-        expectDefaultCenteredPosition();
+        expectDefaultCenteredPosition(gd);
     });
 
     it('can still be defined as `layout.title` to ensure backwards-compatibility', function() {
         Plotly.plot(gd, data, {title: 'Plotly line chart'});
 
-        expect(titleSel().text()).toBe('Plotly line chart');
-        expectDefaultCenteredPosition();
+        expectTitle('Plotly line chart');
+        expectDefaultCenteredPosition(gd);
     });
 
-    function expectDefaultCenteredPosition() {
-        var containerBB = gd.getBoundingClientRect();
+    it('can be updated via `relayout`', function(done) {
+        Plotly.plot(gd, data, {title: 'Plotly line chart'})
+          .then(expectTitleFn('Plotly line chart'))
+          .then(function() {
+              return Plotly.relayout(gd, {title: {text: 'Some other title'}});
+          })
+          .then(expectTitleFn('Some other title'))
+          .catch(fail)
+          .then(done);
+    });
 
-        expect(titleX()).toBe(containerBB.width / 2);
-        expect(titleY()).toBe(gd._fullLayout.margin.t / 2);
+    it('preserves alignment when text is updated via `Plotly.relayout` using an attribute string', function() {
+        // TODO implement once alignment is implemented
+    });
+
+    it('preserves alignment when text is updated via `Plotly.update` using an attribute string', function() {
+        // TODO implement once alignment is implemented
+    });
+
+    it('discards alignment when text is updated via `Plotly.relayout` by passing a new title object', function() {
+        // TODO implement once alignment is implemented
+    });
+
+    it('discards alignment when text is updated via `Plotly.update` by passing a new title object', function() {
+        // TODO implement once alignment is implemented
+    });
+});
+
+describe('Titles can be updated', function() {
+    'use strict';
+
+    var data = [{x: [1, 2, 3], y: [1, 2, 3]}];
+    var NEW_TITLE = 'Weight over years';
+    var NEW_XTITLE = 'Age in years';
+    var NEW_YTITLE = 'Average weight';
+    var gd;
+
+    beforeEach(function() {
+        var layout = {
+            title: {text: 'Plotly line chart'},
+            xaxis: {title: {text: 'Age'}},
+            yaxis: {title: {text: 'Weight'}}
+        };
+        gd = createGraphDiv();
+        Plotly.plot(gd, data, Lib.extendDeep({}, layout));
+
+        expectTitles('Plotly line chart', 'Age', 'Weight');
+    });
+
+    afterEach(destroyGraphDiv);
+
+    [
+        {
+            desc: 'by replacing the entire title objects',
+            update: {
+                title: {text: NEW_TITLE},
+                xaxis: {title: {text: NEW_XTITLE}},
+                yaxis: {title: {text: NEW_YTITLE}}
+            }
+        },
+        {
+            desc: 'by using attribute strings',
+            update: {
+                'title.text': NEW_TITLE,
+                'xaxis.title.text': NEW_XTITLE,
+                'yaxis.title.text': NEW_YTITLE
+            }
+        },
+        {
+            desc: 'despite passing title only as a string (backwards-compatibility)',
+            update: {
+                title: NEW_TITLE,
+                xaxis: {title: NEW_XTITLE},
+                yaxis: {title: NEW_YTITLE}
+            }
+        },
+        {
+            desc: 'despite passing title only as a string using string attributes ' +
+            '(backwards-compatibility)',
+            update: {
+                'title': NEW_TITLE,
+                'xaxis.title': NEW_XTITLE,
+                'yaxis.title': NEW_YTITLE
+            }
+        }
+    ].forEach(function(testCase) {
+        it('via `Plotly.relayout` ' + testCase.desc, function() {
+            Plotly.relayout(gd, testCase.update);
+
+            expectChangedTitles();
+        });
+
+        it('via `Plotly.update` ' + testCase.desc, function() {
+            Plotly.update(gd, {}, testCase.update);
+
+            expectChangedTitles();
+        });
+    });
+
+    function expectChangedTitles() {
+        expectTitles(NEW_TITLE, NEW_XTITLE, NEW_YTITLE);
     }
 
-    function titleX() {
-        return Number.parseFloat(titleSel().attr('x'));
-    }
+    function expectTitles(expTitle, expXTitle, expYTitle) {
+        expectTitle(expTitle);
 
-    function titleY() {
-        return Number.parseFloat(titleSel().attr('y'));
-    }
+        var xTitleSel = d3.select('.xtitle');
+        expect(xTitleSel.empty()).toBe(false, 'X-axis title element missing');
+        expect(xTitleSel.text()).toBe(expXTitle);
 
-    function titleSel() {
-        var titleSel = d3.select('.infolayer .g-gtitle .gtitle');
-        expect(titleSel.empty()).toBe(false, 'Title element missing');
-        return titleSel;
+        var yTitleSel = d3.select('.ytitle');
+        expect(yTitleSel.empty()).toBe(false, 'Y-axis title element missing');
+        expect(yTitleSel.text()).toBe(expYTitle);
     }
 });
 
-describe('editable titles', function() {
+function expectTitle(expTitle) {
+    expectTitleFn(expTitle)();
+}
+
+function expectTitleFn(expTitle) {
+    return function() {
+        expect(titleSel().text()).toBe(expTitle);
+    };
+}
+
+function expectDefaultCenteredPosition(gd) {
+    var containerBB = gd.getBoundingClientRect();
+
+    expect(titleX()).toBe(containerBB.width / 2);
+    expect(titleY()).toBe(gd._fullLayout.margin.t / 2);
+}
+
+function titleX() {
+    return Number.parseFloat(titleSel().attr('x'));
+}
+
+function titleY() {
+    return Number.parseFloat(titleSel().attr('y'));
+}
+
+function titleSel() {
+    var titleSel = d3.select('.infolayer .g-gtitle .gtitle');
+    expect(titleSel.empty()).toBe(false, 'Title element missing');
+    return titleSel;
+}
+
+describe('Editable titles', function() {
     'use strict';
 
     var data = [{x: [1, 2, 3], y: [1, 2, 3]}];
