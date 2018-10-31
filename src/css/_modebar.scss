@@ -45,12 +45,14 @@
 }
 
 .modebar.vertical {
-    top: -1px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    height: 100%;
     align-content: flex-end;
+    max-height: 100%;
+    svg {
+      top: -1px;
+    }
     .modebar-group {
         display: block;
         float: none;
