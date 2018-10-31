@@ -1266,28 +1266,52 @@ describe('Test plot api', function() {
             .then(done);
         });
 
-        it('sets x/ytype scaled when editing heatmap x0/dx/y0/dy', function(done) {
-            var x0 = 3;
-            var dy = 5;
+        function checkScaling(xyType, xyTypeIn, iIn, iOut) {
+            expect(gd._fullData[iOut].xtype).toBe(xyType);
+            expect(gd._fullData[iOut].ytype).toBe(xyType);
+            expect(gd.data[iIn].xtype).toBe(xyTypeIn);
+            expect(gd.data[iIn].ytype).toBe(xyTypeIn);
+        }
 
-            function check(scaled, msg) {
-                expect(gd.data[0].x0).negateIf(!scaled).toBe(x0, msg);
-                expect(gd.data[0].xtype).toBe(scaled ? 'scaled' : undefined, msg);
-                expect(gd.data[0].dy).negateIf(!scaled).toBe(dy, msg);
-                expect(gd.data[0].ytype).toBe(scaled ? 'scaled' : undefined, msg);
-            }
-
-            Plotly.plot(gd, [{x: [1, 2, 4], y: [2, 3, 5], z: [[1, 2], [3, 4]], type: 'heatmap'}])
+        it('sets heatmap xtype/ytype when you edit x/y data or scaling params', function(done) {
+            Plotly.plot(gd, [{type: 'heatmap', z: [[0, 1], [2, 3]]}])
             .then(function() {
-                check(false, 'initial');
-                return Plotly.restyle(gd, {x0: x0, dy: dy});
+                // TODO would probably be better to actively default to 'array' here...
+                checkScaling(undefined, undefined, 0, 0);
+                return Plotly.restyle(gd, {x: [[2, 4]], y: [[3, 5]]}, [0]);
             })
             .then(function() {
-                check(true, 'set x0 & dy');
-                return Queue.undo(gd);
+                checkScaling('array', 'array', 0, 0);
+                return Plotly.restyle(gd, {x0: 1, dy: 3}, [0]);
             })
             .then(function() {
-                check(false, 'undo');
+                checkScaling('scaled', 'scaled', 0, 0);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('sets heatmap xtype/ytype even when data/fullData indices mismatch', function(done) {
+            Plotly.plot(gd, [
+                {
+                    // importantly, this is NOT a heatmap trace, so _fullData[1]
+                    // will not have the same attributes as data[1]
+                    x: [1, -1, -2, 0],
+                    y: [1, 2, 3, 1],
+                    transforms: [{type: 'groupby', groups: ['a', 'b', 'a', 'b']}]
+                },
+                {type: 'heatmap', z: [[0, 1], [2, 3]]}
+            ])
+            .then(function() {
+                checkScaling(undefined, undefined, 1, 2);
+                return Plotly.restyle(gd, {x: [[2, 4]], y: [[3, 5]]}, [1]);
+            })
+            .then(function() {
+                checkScaling('array', 'array', 1, 2);
+                return Plotly.restyle(gd, {x0: 1, dy: 3}, [1]);
+            })
+            .then(function() {
+                checkScaling('scaled', 'scaled', 1, 2);
             })
             .catch(failTest)
             .then(done);
