@@ -615,7 +615,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('should still be responsive if the plot is edited', function(done) {
+        it('@flaky should still be responsive if the plot is edited', function(done) {
             fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
