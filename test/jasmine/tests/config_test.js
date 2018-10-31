@@ -548,7 +548,7 @@ describe('config argument', function() {
         });
     });
 
-    describe('@flaky responsive figure', function() {
+    describe('responsive figure', function() {
         var gd, data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
         var width = 960, height = 800;
 
@@ -608,14 +608,14 @@ describe('config argument', function() {
             gd = parent.childNodes[0];
         }
 
-        it('should resize when the viewport width/height changes', function(done) {
+        it('@flaky should resize when the viewport width/height changes', function(done) {
             fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(testResponsive)
             .then(done);
         });
 
-        it('should still be responsive if the plot is edited', function(done) {
+        it('@flaky should still be responsive if the plot is edited', function(done) {
             fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
@@ -623,7 +623,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('should still be responsive if the plot is purged and replotted', function(done) {
+        it('@flaky should still be responsive if the plot is purged and replotted', function(done) {
             fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
@@ -631,7 +631,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('should only have one resize handler when plotted more than once', function(done) {
+        it('@flaky should only have one resize handler when plotted more than once', function(done) {
             fillParent(1, 1);
             var cntWindowResize = 0;
             window.addEventListener('resize', function() {cntWindowResize++;});
@@ -650,7 +650,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('should become responsive if configured as such via Plotly.react', function(done) {
+        it('@flaky should become responsive if configured as such via Plotly.react', function(done) {
             fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: false})
             .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
@@ -658,7 +658,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('should stop being responsive if configured as such via Plotly.react', function(done) {
+        it('@flaky should stop being responsive if configured as such via Plotly.react', function(done) {
             fillParent(1, 1);
             Plotly.plot(gd, data, {}, {responsive: true})
             // Check initial size
@@ -676,7 +676,7 @@ describe('config argument', function() {
         });
 
         // Testing fancier CSS layouts
-        it('should resize horizontally in a flexbox when responsive: true', function(done) {
+        it('@flaky should resize horizontally in a flexbox when responsive: true', function(done) {
             parent.style.display = 'flex';
             parent.style.flexDirection = 'row';
             fillParent(1, 2, function() {
@@ -688,7 +688,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('should resize vertically in a flexbox when responsive: true', function(done) {
+        it('@flaky should resize vertically in a flexbox when responsive: true', function(done) {
             parent.style.display = 'flex';
             parent.style.flexDirection = 'column';
             fillParent(2, 1, function() {
@@ -700,7 +700,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('should resize in both direction in a grid when responsive: true', function(done) {
+        it('@flaky should resize in both direction in a grid when responsive: true', function(done) {
             var numCols = 2, numRows = 2;
             parent.style.display = 'grid';
             parent.style.gridTemplateColumns = 'repeat(' + numCols + ', 1fr)';
@@ -712,7 +712,7 @@ describe('config argument', function() {
             .then(done);
         });
 
-        it('should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
+        it('@flaky should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
             fillParent(1, 1, function() {
                 this.style.display = 'inline-block';
                 this.style.width = null;
@@ -740,7 +740,7 @@ describe('config argument', function() {
 
         // The following test is to guarantee we're not breaking the existing (although maybe not ideal) behaviour.
         // In a future version, one may prefer responsive/autosize:true winning over an explicit width/height when embedded in a webpage.
-        it('should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
+        it('@flaky should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
             fillParent(1, 1, function() {
                 this.style.width = '1000px';
                 this.style.height = '500px';
