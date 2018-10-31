@@ -395,7 +395,6 @@ function plot(gd, subplot, cdata) {
             scene.line2d.update(scene.lineOptions);
             scene.lineOptions = scene.lineOptions.map(function(lineOptions) {
                 if(lineOptions && lineOptions.positions) {
-                    var pos = [];
                     var srcPos = lineOptions.positions;
 
                     var firstptdef = 0;
@@ -406,8 +405,7 @@ function plot(gd, subplot, cdata) {
                     while(lastptdef > -1 && (isNaN(srcPos[lastptdef]) || isNaN(srcPos[lastptdef + 1]))) {
                         lastptdef -= 2;
                     }
-                    pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
-                    lineOptions.positions = pos;
+                    lineOptions.positions = srcPos.slice(firstptdef, lastptdef + 2);
                 }
                 return lineOptions;
             });
