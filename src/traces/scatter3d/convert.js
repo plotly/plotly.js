@@ -133,14 +133,49 @@ function calculateErrorParams(errors) {
     return {capSize: capSize, color: color, lineWidth: lineWidth};
 }
 
+function parseAlignmentX(a) {
+    if (a === null || a === undefined) return 0;
+    else if (typeof(a) === 'number') return a;
+    else if (a.indexOf('left') > -1) return -1;
+    else if (a.indexOf('right') > -1) return 1;
+    return 0;
+}
+
+function parseAlignmentY(a) {
+    if (a === null || a === undefined) return 0;
+    else if (typeof(a) === 'number') return a;
+    else if (a.indexOf('top') > -1) return -1;
+    else if (a.indexOf('bottom') > -1) return 1;
+    return 0;
+}
+
 function calculateTextOffset(tp) {
     // Read out text properties
-    var textOffset = [0, 0];
-    if(Array.isArray(tp)) return [0, -1];
-    if(tp.indexOf('bottom') >= 0) textOffset[1] += 1;
-    if(tp.indexOf('top') >= 0) textOffset[1] -= 1;
-    if(tp.indexOf('left') >= 0) textOffset[0] -= 1;
-    if(tp.indexOf('right') >= 0) textOffset[0] += 1;
+
+    var defaultAlignmentX = 0; // center
+    var defaultAlignmentY = -1; // top
+
+    var textOffset = [
+        defaultAlignmentX,
+        defaultAlignmentY
+    ];
+
+    if(Array.isArray(tp)) {
+        for (var i = 0; i < tp.length; i++) {
+            textOffset[i] = [
+                defaultAlignmentX,
+                defaultAlignmentY
+            ];
+            if (tp[i]) {
+                textOffset[i][0] = parseAlignmentX(tp[i]);
+                textOffset[i][1] = parseAlignmentY(tp[i]);
+            }
+        }
+    } else {
+        textOffset[0] = parseAlignmentX(tp);
+        textOffset[1] = parseAlignmentY(tp);
+    }
+
     return textOffset;
 }
 
@@ -233,7 +268,7 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if('textposition' in data) {
-        params.textOffset = calculateTextOffset(data.textposition);  // arrayOk === false
+        params.textOffset = calculateTextOffset(data.textposition);
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
         params.textFont = data.textfont.family;  // arrayOk === false

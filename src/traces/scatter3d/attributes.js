@@ -160,7 +160,7 @@ var attrs = module.exports = overrideAll({
         colorAttributes('marker')
     ),
 
-    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center', arrayOk: false}),
+    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center', arrayOk: true}),
     textfont: {
         color: scatterAttrs.textfont.color,
         size: scatterAttrs.textfont.size,
