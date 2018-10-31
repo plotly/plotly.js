@@ -148,7 +148,7 @@ module.exports = function style(s, gd) {
 
         function boundVal(attrIn, arrayToValFn, bounds) {
             var valIn = Lib.nestedProperty(trace, attrIn).get();
-            var valToBound = (Array.isArray(valIn) && arrayToValFn) ?
+            var valToBound = (Lib.isArrayOrTypedArray(valIn) && arrayToValFn) ?
                 arrayToValFn(valIn) :
                 valIn;
 
