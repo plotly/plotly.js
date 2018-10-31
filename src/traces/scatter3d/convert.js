@@ -134,18 +134,18 @@ function calculateErrorParams(errors) {
 }
 
 function parseAlignmentX(a) {
-    if (a === null || a === undefined) return 0;
-    else if (typeof(a) === 'number') return a;
-    else if (a.indexOf('left') > -1) return -1;
-    else if (a.indexOf('right') > -1) return 1;
+    if(a === null || a === undefined) return 0;
+    else if(typeof(a) === 'number') return a;
+    else if(a.indexOf('left') > -1) return -1;
+    else if(a.indexOf('right') > -1) return 1;
     return 0;
 }
 
 function parseAlignmentY(a) {
-    if (a === null || a === undefined) return 0;
-    else if (typeof(a) === 'number') return a;
-    else if (a.indexOf('top') > -1) return -1;
-    else if (a.indexOf('bottom') > -1) return 1;
+    if(a === null || a === undefined) return 0;
+    else if(typeof(a) === 'number') return a;
+    else if(a.indexOf('top') > -1) return -1;
+    else if(a.indexOf('bottom') > -1) return 1;
     return 0;
 }
 
@@ -161,12 +161,12 @@ function calculateTextOffset(tp) {
     ];
 
     if(Array.isArray(tp)) {
-        for (var i = 0; i < tp.length; i++) {
+        for(var i = 0; i < tp.length; i++) {
             textOffset[i] = [
                 defaultAlignmentX,
                 defaultAlignmentY
             ];
-            if (tp[i]) {
+            if(tp[i]) {
                 textOffset[i][0] = parseAlignmentX(tp[i]);
                 textOffset[i][1] = parseAlignmentY(tp[i]);
             }
