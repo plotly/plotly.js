@@ -534,7 +534,6 @@ describe('Test violin hover:', function() {
 
             Plotly.plot(gd, fig).then(function() {
                 mouseEvent('mousemove', 300, 250);
-                // assertViolinHoverLine([299.35, 250, 250, 250]);
                 assertViolinHoverLine([178.67823028564453, 250, 80, 250]);
             })
             .catch(failTest)
@@ -546,7 +545,6 @@ describe('Test violin hover:', function() {
 
             Plotly.plot(gd, fig).then(function() {
                 mouseEvent('mousemove', 200, 250);
-                // assertViolinHoverLine([200.65, 250, 250, 250]);
                 assertViolinHoverLine([321.3217315673828, 250, 420, 250]);
             })
             .catch(failTest)
