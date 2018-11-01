@@ -106,20 +106,9 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
         // autoscale the x axis - including space for points if they're off the side
         // TODO: this will overdo it if the outermost boxes don't have
         // their points as far out as the other boxes
-        var vpadminus = 0;
-        var vpadplus = 0;
-        if(calcTrace[0].trace.side === 'positive') {
-            vpadminus = 0;
-            vpadplus = thisDPos + pad[1] * padfactor;
-        } else if(calcTrace[0].trace.side === 'negative') {
-            vpadminus = thisDPos + pad[0] * padfactor;
-            vpadplus = 0;
-        } else {
-            // if side === 'both'
-            vpadminus = thisDPos + pad[0] * padfactor;
-            vpadplus = thisDPos + pad[1] * padfactor;
-        }
-
+        var side = calcTrace[0].trace.side;
+        var vpadminus = (side === 'positive') ? 0 : (thisDPos + pad[0] * padfactor);
+        var vpadplus = (side === 'negative') ? 0 : (thisDPos + pad[1] * padfactor);
         var extremes = Axes.findExtremes(posAxis, positions, {
             vpadminus: vpadminus,
             vpadplus: vpadplus
