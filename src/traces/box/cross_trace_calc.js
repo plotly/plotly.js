@@ -100,16 +100,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
     var maxHalfWidth = dPos;
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
-
-        if(calcTrace[0].trace.width) {
-            if(calcTrace[0].trace.width / 2 > maxHalfWidth) {
-                maxHalfWidth = calcTrace[0].trace.width / 2;
-            }
-        }
-    }
-
-    for(i = 0; i < boxList.length; i++) {
-        calcTrace = calcdata[boxList[i]];
         // set the width of this box
         // override dPos with trace.width if present
         var thisDPos = calcTrace[0].t.dPos = (calcTrace[0].trace.width / 2) || dPos;
