@@ -97,7 +97,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
 
     // Find maximum trace width
     // we baseline this at dPos
-    var maxHalfWidth = dPos;
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
         // set the width of this box
