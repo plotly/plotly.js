@@ -45,6 +45,23 @@ function purgeGraphDiv(done) {
     return delay(50)().then(done);
 }
 
+function getAvgPixelByChannel(id) {
+    var canvas = d3.select(id).node();
+
+    var imgData = readPixel(canvas, 0, 0, canvas.width, canvas.height);
+    var n = imgData.length * 0.25;
+    var r = 0;
+    var g = 0;
+    var b = 0;
+
+    for(var i = 0; i < imgData.length; i++) {
+        r += imgData[i++];
+        g += imgData[i++];
+        b += imgData[i++];
+    }
+    return [r / n, g / n, b / n];
+}
+
 describe('parcoords initialization tests', function() {
 
     'use strict';
@@ -799,22 +816,39 @@ describe('parcoords Lifecycle methods', function() {
         });
     });
 
-    it('@gl line.color `Plotly.restyle` should work', function(done) {
-        function getAvgPixelByChannel() {
-            var canvas = d3.select('.gl-canvas-focus').node();
-            var imgData = readPixel(canvas, 0, 0, canvas.width, canvas.height);
-            var n = imgData.length / 4;
-            var r = 0;
-            var g = 0;
-            var b = 0;
+    it('@gl line.color `Plotly.restyle` should change focus layer', function(done) {
+        var testLayer = '.gl-canvas-focus';
+        Plotly.plot(gd, [{
+            type: 'parcoords',
+            dimensions: [{
+                values: [1, 2]
+            }, {
+                values: [2, 4]
+            }],
+            line: {color: 'blue'}
+        }], {
+            width: 300,
+            height: 200
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[2]).not.toBe(0, 'all blue');
 
-            for(var i = 0; i < imgData.length; i++) {
-                r += imgData[i++];
-                g += imgData[i++];
-                b += imgData[i++];
-            }
-            return [r / n, g / n, b / n];
-        }
+            return Plotly.restyle(gd, 'line.color', 'red');
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).not.toBe(0, 'all red');
+            expect(rgb[2]).toBe(0, 'no blue');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl line.color `Plotly.restyle` should not change context layer', function(done) {
+        var testLayer = '.gl-canvas-context';
+        var old_rgb, new_rgb;
 
         Plotly.plot(gd, [{
             type: 'parcoords',
@@ -829,16 +863,20 @@ describe('parcoords Lifecycle methods', function() {
             height: 200
         })
         .then(function() {
-            var rbg = getAvgPixelByChannel();
-            expect(rbg[0]).toBe(0, 'no red');
-            expect(rbg[2]).not.toBe(0, 'all blue');
+            var rgb = getAvgPixelByChannel(testLayer);
+            old_rgb = rgb[0] + rgb[1] + rgb[2] / 3.0;
+            expect(old_rgb).toBeGreaterThan(0, 'not all black');
+            expect(old_rgb).toBeLessThan(255, 'not all white');
 
             return Plotly.restyle(gd, 'line.color', 'red');
         })
         .then(function() {
-            var rbg = getAvgPixelByChannel();
-            expect(rbg[0]).not.toBe(0, 'all red');
-            expect(rbg[2]).toBe(0, 'no blue');
+            var rgb = getAvgPixelByChannel(testLayer);
+            new_rgb = rgb[0] + rgb[1] + rgb[2] / 3.0;
+            expect(new_rgb).toBeGreaterThan(0, 'not all black');
+            expect(new_rgb).toBeLessThan(255, 'not all white');
+
+            expect(new_rgb).toBe(old_rgb, 'no change to context');
         })
         .catch(failTest)
         .then(done);
