@@ -136,14 +136,14 @@ function calculateErrorParams(errors) {
 function parseAlignmentX(a) {
     if(a === null || a === undefined) return 0;
 
-    return (a.indexOf('left')  > -1) ? -1 :
+    return (a.indexOf('left') > -1) ? -1 :
            (a.indexOf('right') > -1) ? 1 : 0;
 }
 
 function parseAlignmentY(a) {
     if(a === null || a === undefined) return 0;
 
-    return (a.indexOf('top')    > -1) ? -1 :
+    return (a.indexOf('top') > -1) ? -1 :
            (a.indexOf('bottom') > -1) ? 1 : 0;
 }
 
