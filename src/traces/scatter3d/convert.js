@@ -135,25 +135,23 @@ function calculateErrorParams(errors) {
 
 function parseAlignmentX(a) {
     if(a === null || a === undefined) return 0;
-    else if(typeof(a) === 'number') return a;
-    else if(a.indexOf('left') > -1) return -1;
-    else if(a.indexOf('right') > -1) return 1;
-    return 0;
+
+    return (a.indexOf('left')  > -1) ? -1 :
+           (a.indexOf('right') > -1) ? 1 : 0;
 }
 
 function parseAlignmentY(a) {
     if(a === null || a === undefined) return 0;
-    else if(typeof(a) === 'number') return a;
-    else if(a.indexOf('top') > -1) return -1;
-    else if(a.indexOf('bottom') > -1) return 1;
-    return 0;
+
+    return (a.indexOf('top')    > -1) ? -1 :
+           (a.indexOf('bottom') > -1) ? 1 : 0;
 }
 
-function calculateTextOffset(tp) {
+function calculateTextOffset(tp, dflt) {
     // Read out text properties
 
-    var defaultAlignmentX = 0; // center
-    var defaultAlignmentY = -1; // top
+    var defaultAlignmentX = parseAlignmentX(dflt);
+    var defaultAlignmentY = parseAlignmentY(dflt);
 
     var textOffset = [
         defaultAlignmentX,
@@ -268,7 +266,7 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if('textposition' in data) {
-        params.textOffset = calculateTextOffset(data.textposition);
+        params.textOffset = calculateTextOffset(data.textposition, data.dflt);
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
         params.textFont = data.textfont.family;  // arrayOk === false
