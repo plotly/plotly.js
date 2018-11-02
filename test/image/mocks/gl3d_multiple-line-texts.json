@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "x": [3],
+      "y": [0],
+      "z": [2],
+      "text": ["This text was a long\nline. And now it is\npresented on\nfour lines!"],
+      "type": "scatter3d",
+      "mode":"markers+text",
+      "textposition": "middle center"
+    }
+  ],
+  "layout": {
+    "title":"Now texts could be displayed in 3D on multiple lines.",
+    "width": 800,
+    "height": 600,
+    "scene":{
+      "xaxis":{"title": "A short axis"},
+      "yaxis":{"title": "A very <br>long axis"},
+      "zaxis":{"title": "A very very<br>long long axis<br>Seriously!"},
+      "camera":{
+        "eye":{"x":-1.5,"y":1.5,"z":1.5},
+        "center":{"x":0,"y":0,"z":0},
+        "up":{"x":0,"y":0,"z":1}
+      }
+    }
+  }
+}
