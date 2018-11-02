@@ -17,14 +17,27 @@
     "scene":{
       "xaxis":{
         "titlefont": {
-          "color": "#f0f", 
-          "family": "italic Sans-Serif", 
-          "size": 20
-        }, 
-        "title": "An <i>Italic</i> axis"
+          "color": "#f00",
+          "family": "Sans-Serif",
+          "size": 24
+        },
+        "title": "An<i>Italic</i> axis"
       },
-      "yaxis":{"title": "A very <br>long axis"},
-      "zaxis":{"title": "A very <b>Bold</b><br>long axis<br>Seriously!"},
+      "yaxis":{
+        "titlefont": {
+          "color": "#0f0",
+          "family": "Times New Roman",
+          "size": 20
+        },
+        "title": "A very<br>long axis"
+      },
+      "zaxis":{
+        "titlefont": {
+          "color": "#00f",
+          "family": "Courier New",
+          "size": 16
+        },
+        "title": "A very <b>Bold</b><br>long axis<br>Seriously!"},
       "camera":{
         "eye":{"x":-1.5,"y":1.5,"z":1.5},
         "center":{"x":0,"y":0,"z":0},
