@@ -4,7 +4,7 @@
       "x": [3],
       "y": [0],
       "z": [2],
-      "text": ["This text was a long\nline. And now it is\npresented on\nfour lines!"],
+      "text": ["This text was a long\nline. And now it is<br>presented on<br>four lines!"],
       "type": "scatter3d",
       "mode":"markers+text",
       "textposition": "middle center"
