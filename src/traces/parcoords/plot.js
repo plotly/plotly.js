@@ -8,6 +8,8 @@
 
 'use strict';
 
+var Registry = require('../../registry');
+
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
 
@@ -22,12 +24,17 @@ module.exports = function plot(gd, cdparcoords) {
 
     var gdDimensions = {};
     var gdDimensionsOriginalOrder = {};
+    var fullIndices = {};
+    var inputIndices = {};
 
     var size = fullLayout._size;
 
     cdparcoords.forEach(function(d, i) {
-        gdDimensions[i] = gd.data[i].dimensions;
-        gdDimensionsOriginalOrder[i] = gd.data[i].dimensions.slice();
+        var trace = d[0].trace;
+        fullIndices[i] = trace.index;
+        var iIn = inputIndices[i] = trace._fullInput.index;
+        gdDimensions[i] = gd.data[iIn].dimensions;
+        gdDimensionsOriginalOrder[i] = gd.data[iIn].dimensions.slice();
     });
 
     var filterChanged = function(i, originalDimensionIndex, newRanges) {
@@ -48,10 +55,19 @@ module.exports = function plot(gd, cdparcoords) {
             newConstraints = [newConstraints];
         }
 
-        var restyleData = {};
         var aStr = 'dimensions[' + originalDimensionIndex + '].constraintrange';
+
+        var editData = {};
+        editData[aStr] = newConstraints && newConstraints[0];
+        Registry.call('_storeDirectGUIEdit',
+            gd.data[inputIndices[i]],
+            fullLayout._tracePreGUI[gd._fullData[fullIndices[i]]._fullInput.uid],
+            editData
+        );
+
+        var restyleData = {};
         restyleData[aStr] = newConstraints;
-        gd.emit('plotly_restyle', [restyleData, [i]]);
+        gd.emit('plotly_restyle', [restyleData, [inputIndices[i]]]);
     };
 
     var hover = function(eventData) {
@@ -103,7 +119,17 @@ module.exports = function plot(gd, cdparcoords) {
                 gdDimensions[i].splice(gdDimensionsOriginalOrder[i].indexOf(d), 0, d); // insert at original index
             });
 
-        gd.emit('plotly_restyle');
+        // TODO: we can't really store this part of the interaction state
+        // directly as below, since it incudes data arrays. If we want to
+        // persist column order we may have to do something special for this
+        // case to just store the order itself.
+        // Registry.call('_storeDirectGUIEdit',
+        //     gd.data[inputIndices[i]],
+        //     fullLayout._tracePreGUI[gd._fullData[fullIndices[i]]._fullInput.uid],
+        //     {dimensions: gdDimensions[i]}
+        // );
+
+        gd.emit('plotly_restyle', [{dimensions: [gdDimensions[i]]}, [inputIndices[i]]]);
     };
 
     parcoords(

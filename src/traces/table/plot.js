@@ -588,6 +588,9 @@ function columnMoved(gd, calcdata, indices) {
 
     calcdata.columnorder = indices;
 
+    // TODO: there's no data here, but also this reordering is not reflected
+    // in gd.data or even gd._fullData.
+    // For now I will not attempt to persist this in _preGUI
     gd.emit('plotly_restyle');
 }
 

@@ -222,6 +222,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
         var update = {};
         update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
+        Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, update);
         scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };

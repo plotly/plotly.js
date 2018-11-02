@@ -864,7 +864,7 @@ proto.updateMainDrag = function(fullLayout) {
             rl[0] + (r0 - innerRadius) * m,
             rl[0] + (r1 - innerRadius) * m
         ];
-        Registry.call('relayout', gd, _this.id + '.radialaxis.range', newRng);
+        Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.range', newRng);
     }
 
     function zoomClick(numClicks, evt) {
@@ -880,7 +880,7 @@ proto.updateMainDrag = function(fullLayout) {
             }
 
             gd.emit('plotly_doubleclick', null);
-            Registry.call('relayout', gd, updateObj);
+            Registry.call('_guiRelayout', gd, updateObj);
         }
 
         if(clickMode.indexOf('select') > -1 && numClicks === 1) {
@@ -1007,9 +1007,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
 
     function doneFn() {
         if(angle1 !== null) {
-            Registry.call('relayout', gd, _this.id + '.radialaxis.angle', angle1);
+            Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.angle', angle1);
         } else if(rprime !== null) {
-            Registry.call('relayout', gd, _this.id + '.radialaxis.range[' + rngIndex + ']', rprime);
+            Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.range[' + rngIndex + ']', rprime);
         }
     }
 
@@ -1221,7 +1221,7 @@ proto.updateAngularDrag = function(fullLayout) {
             updateObj[_this.id + '.radialaxis.angle'] = rrot1;
         }
 
-        Registry.call('relayout', gd, updateObj);
+        Registry.call('_guiRelayout', gd, updateObj);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {

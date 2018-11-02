@@ -286,7 +286,10 @@ function setDataRange(rangeSlider, gd, axisOpts, opts) {
         dataMax = clamp(opts.p2d(opts._pixelMax));
 
     window.requestAnimationFrame(function() {
-        Registry.call('relayout', gd, axisOpts._name + '.range', [dataMin, dataMax]);
+        var update = {};
+        update[axisOpts._name + '.range[0]'] = dataMin;
+        update[axisOpts._name + '.range[1]'] = dataMax;
+        Registry.call('_guiRelayout', gd, update);
     });
 }
 

@@ -313,27 +313,21 @@ proto.updateRefs = function(newFullLayout) {
 };
 
 proto.relayoutCallback = function() {
-    var graphDiv = this.graphDiv,
-        xaxis = this.xaxis,
-        yaxis = this.yaxis,
-        layout = graphDiv.layout;
+    var graphDiv = this.graphDiv;
+    var xaxis = this.xaxis;
+    var yaxis = this.yaxis;
 
-    // update user layout
-    layout.xaxis.autorange = xaxis.autorange;
-    layout.xaxis.range = xaxis.range.slice(0);
-    layout.yaxis.autorange = yaxis.autorange;
-    layout.yaxis.range = yaxis.range.slice(0);
+    // make a meaningful value to be passed on to possible 'plotly_relayout' subscriber(s)
+    var update = {};
+    update[xaxis._name + '.range'] = xaxis.range.slice();
+    update[yaxis._name + '.range'] = yaxis.range.slice();
+    update[xaxis._name + '.autorange'] = xaxis.autorange;
+    update[yaxis._name + '.autorange'] = yaxis.autorange;
 
-    // make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
-    // scene.camera has no many useful projection or scale information
-    // helps determine which one is the latest input (if async)
-    var update = {
-        lastInputTime: this.camera.lastInputTime
-    };
+    Registry.call('_storeDirectGUIEdit', graphDiv.layout, graphDiv._fullLayout._preGUI, update, true);
 
-    update[xaxis._name] = xaxis.range.slice(0);
-    update[yaxis._name] = yaxis.range.slice(0);
-
+    // lastInputTime helps determine which one is the latest input (if async)
+    update.lastInputTime = this.camera.lastInputTime;
     graphDiv.emit('plotly_relayout', update);
 };
 

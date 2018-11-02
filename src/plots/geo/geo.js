@@ -367,7 +367,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
             updateObj[_this.id + '.' + k] = viewInitial[k];
         }
 
-        Registry.call('relayout', gd, updateObj);
+        Registry.call('_guiRelayout', gd, updateObj);
         gd.emit('plotly_doubleclick', null);
     }
 

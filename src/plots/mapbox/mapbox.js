@@ -13,6 +13,7 @@ var mapboxgl = require('mapbox-gl');
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var Registry = require('../../registry');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
@@ -210,6 +211,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         for(var k in view) {
             evtData[id + '.' + k] = view[k];
         }
+        Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, evtData);
         gd.emit('plotly_relayout', evtData);
     }
 

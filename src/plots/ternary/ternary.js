@@ -527,18 +527,22 @@ proto.initInteractions = function() {
 
     var x0, y0, mins0, span0, mins, lum, path0, dimmed, zb, corners;
 
+    function makeUpdate(_mins) {
+        var attrs = {};
+        attrs[_this.id + '.aaxis.min'] = _mins.a;
+        attrs[_this.id + '.baxis.min'] = _mins.b;
+        attrs[_this.id + '.caxis.min'] = _mins.c;
+        return attrs;
+    }
+
     function clickZoomPan(numClicks, evt) {
         var clickMode = gd._fullLayout.clickmode;
 
         removeZoombox(gd);
 
         if(numClicks === 2) {
-            var attrs = {};
-            attrs[_this.id + '.aaxis.min'] = 0;
-            attrs[_this.id + '.baxis.min'] = 0;
-            attrs[_this.id + '.caxis.min'] = 0;
             gd.emit('plotly_doubleclick', null);
-            Registry.call('relayout', gd, attrs);
+            Registry.call('_guiRelayout', gd, makeUpdate({a: 0, b: 0, c: 0}));
         }
 
         if(clickMode.indexOf('select') > -1 && numClicks === 1) {
@@ -642,12 +646,7 @@ proto.initInteractions = function() {
 
         if(mins === mins0) return;
 
-        var attrs = {};
-        attrs[_this.id + '.aaxis.min'] = mins.a;
-        attrs[_this.id + '.baxis.min'] = mins.b;
-        attrs[_this.id + '.caxis.min'] = mins.c;
-
-        Registry.call('relayout', gd, attrs);
+        Registry.call('_guiRelayout', gd, makeUpdate(mins));
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
             Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long');
@@ -721,12 +720,7 @@ proto.initInteractions = function() {
     }
 
     function dragDone() {
-        var attrs = {};
-        attrs[_this.id + '.aaxis.min'] = mins.a;
-        attrs[_this.id + '.baxis.min'] = mins.b;
-        attrs[_this.id + '.caxis.min'] = mins.c;
-
-        Registry.call('relayout', gd, attrs);
+        Registry.call('_guiRelayout', gd, makeUpdate(mins));
     }
 
     // finally, set up hover and click
