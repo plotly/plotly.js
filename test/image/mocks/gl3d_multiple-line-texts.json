@@ -15,9 +15,16 @@
     "width": 800,
     "height": 600,
     "scene":{
-      "xaxis":{"title": "A short axis"},
+      "xaxis":{
+        "titlefont": {
+          "color": "#f0f", 
+          "family": "italic Sans-Serif", 
+          "size": 20
+        }, 
+        "title": "An <i>Italic</i> axis"
+      },
       "yaxis":{"title": "A very <br>long axis"},
-      "zaxis":{"title": "A very very<br>long long axis<br>Seriously!"},
+      "zaxis":{"title": "A very <b>Bold</b><br>long axis<br>Seriously!"},
       "camera":{
         "eye":{"x":-1.5,"y":1.5,"z":1.5},
         "center":{"x":0,"y":0,"z":0},
