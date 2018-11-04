@@ -11,6 +11,7 @@
 
 var Axes = require('../cartesian/axes');
 
+var convertHTMLToUnicode = require('../../lib/html2unicode');
 var str2RGBArray = require('../../lib/str2rgbarray');
 
 function Axes2DOptions(scene) {
@@ -117,7 +118,7 @@ proto.merge = function(options) {
 
         for(j = 0; j <= 2; j += 2) {
             this.labelEnable[i + j] = false;
-            this.labels[i + j] = axTitle;
+            this.labels[i + j] = convertHTMLToUnicode(axTitle);
             this.labelColor[i + j] = str2RGBArray(ax.titlefont.color);
             this.labelFont[i + j] = ax.titlefont.family;
             this.labelSize[i + j] = ax.titlefont.size;

@@ -20,6 +20,7 @@ var getContext = require('webgl-context');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
+var convertHTMLToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 var axisConstraints = require('../cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
@@ -278,7 +279,7 @@ proto.computeTickMarks = function() {
     for(var j = 0; j < 2; ++j) {
         for(var i = 0; i < nextTicks[j].length; ++i) {
             // coercing tick value (may not be a string) to a string
-            nextTicks[j][i].text = nextTicks[j][i].text + '';
+            nextTicks[j][i].text = convertHTMLToUnicode(nextTicks[j][i].text + '');
         }
     }
 
