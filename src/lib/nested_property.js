@@ -10,7 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 
 /**
  * convert a string s (such as 'xaxis.range[0]')

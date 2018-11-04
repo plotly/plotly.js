@@ -9,7 +9,7 @@
 
 'use strict';
 
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 var isPlainObject = require('./is_plain_object');
 
 /**

@@ -2459,6 +2459,58 @@ describe('Test lib.js:', function() {
             expect(toContainer).toEqual(expected);
         });
     });
+
+    describe('concat', function() {
+        var concat = Lib.concat;
+        it('works with multiple Arrays', function() {
+            expect(concat([1], [[2], 3], [{a: 4}, 5, 6]))
+                .toEqual([1, [2], 3, {a: 4}, 5, 6]);
+        });
+
+        it('works with some empty arrays', function() {
+            var a1 = [1];
+            expect(concat(a1, [], [2, 3])).toEqual([1, 2, 3]);
+            expect(a1).toEqual([1]); // did not mutate a1
+
+            var a1b = concat(a1, []);
+            var a1c = concat([], a1b);
+            var a1d = concat([], a1c, []);
+
+            expect(a1d).toEqual([1]);
+            // does not mutate a1, but *will* return it unchanged if it's the
+            // only one with data
+            expect(a1d).toBe(a1);
+
+            expect(concat([], [0], [1, 0], [2, 0, 0])).toEqual([0, 1, 0, 2, 0, 0]);
+
+            // a single typedArray will keep its identity (and type)
+            // even if other empty arrays don't match type.
+            var f1 = new Float32Array([1, 2]);
+            expect(concat([], f1, new Float64Array([]))).toBe(f1);
+            expect(f1).toEqual(new Float32Array([1, 2]));
+        });
+
+        it('works with all empty arrays', function() {
+            expect(concat()).toEqual([]);
+            expect(concat([])).toEqual([]);
+            expect(concat([], [])).toEqual([]);
+            expect(concat([], [], [], [])).toEqual([]);
+        });
+
+        it('converts mismatched types to Array', function() {
+            expect(concat([1, 2], new Float64Array([3, 4]))).toEqual([1, 2, 3, 4]);
+            expect(concat(new Float64Array([1, 2]), [3, 4])).toEqual([1, 2, 3, 4]);
+            expect(concat(new Float64Array([1, 2]), new Float32Array([3, 4]))).toEqual([1, 2, 3, 4]);
+        });
+
+        it('concatenates matching TypedArrays preserving type', function() {
+            [Float32Array, Float64Array, Int16Array, Int32Array].forEach(function(Type, i) {
+                var v = i * 10;
+                expect(concat([], new Type([v]), new Type([v + 1, v]), new Type([v + 2, v, v])))
+                    .toEqual(new Type([v, v + 1, v, v + 2, v, v]));
+            });
+        });
+    });
 });
 
 describe('Queue', function() {
