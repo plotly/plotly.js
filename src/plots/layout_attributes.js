@@ -173,7 +173,13 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         editType: 'legend',
-        description: 'Determines whether or not a legend is drawn.'
+        description: [
+            'Determines whether or not a legend is drawn.',
+            'Default is `true` if there is a trace to show and any of these:',
+            'a) Two or more traces would by default be shown in the legend.',
+            'b) One pie trace is shown in the legend.',
+            'c) One trace is explicitly given with `showlegend: true`.'
+        ].join(' ')
     },
     colorway: {
         valType: 'colorlist',
@@ -218,5 +224,34 @@ module.exports = {
             'or a logo image, for example. To omit one of these items on the plot,',
             'make an item with matching `templateitemname` and `visible: false`.'
         ].join(' ')
+    },
+    modebar: {
+        orientation: {
+            valType: 'enumerated',
+            values: ['v', 'h'],
+            dflt: 'h',
+            role: 'info',
+            editType: 'modebar',
+            description: 'Sets the orientation of the modebar.'
+        },
+        bgcolor: {
+            valType: 'color',
+            role: 'style',
+            editType: 'modebar',
+            description: 'Sets the background color of the modebar.'
+        },
+        color: {
+            valType: 'color',
+            role: 'style',
+            editType: 'modebar',
+            description: 'Sets the color of the icons in the modebar.'
+        },
+        activecolor: {
+            valType: 'color',
+            role: 'style',
+            editType: 'modebar',
+            description: 'Sets the color of the active or hovered on icons in the modebar.'
+        },
+        editType: 'modebar'
     }
 };

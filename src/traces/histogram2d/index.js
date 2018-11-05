@@ -13,6 +13,7 @@ var Histogram2D = {};
 
 Histogram2D.attributes = require('./attributes');
 Histogram2D.supplyDefaults = require('./defaults');
+Histogram2D.crossTraceDefaults = require('./cross_trace_defaults');
 Histogram2D.calc = require('../heatmap/calc');
 Histogram2D.plot = require('../heatmap/plot');
 Histogram2D.layerName = 'heatmaplayer';

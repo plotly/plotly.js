@@ -164,7 +164,7 @@ exports.supplyDefaults = function(transformIn, traceOut) {
     if(!Array.isArray(groups)) {
         if(!arrayAttrs[groups]) {
             transformOut.enabled = false;
-            return;
+            return transformOut;
         }
         arrayAttrs[groups] = 0;
     }

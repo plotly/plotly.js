@@ -1,0 +1,17 @@
+{
+    "data": [{
+        "type": "scatter3d",
+        "mode": "markers",
+        "x": [5, 10],
+        "y": [5, 10],
+        "z": [5, 10],
+        "error_x": {
+            "type": "sqrt",
+            "color": "red"
+        },
+        "error_y": {
+            "type": "sqrt"
+        }
+    }],
+    "layout": {}
+}

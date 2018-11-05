@@ -13,6 +13,9 @@ var doubleClick = require('../assets/double_click');
 var drag = require('../assets/drag');
 var delay = require('../assets/delay');
 
+var customAssertions = require('../assets/custom_assertions');
+var assertNodeDisplay = customAssertions.assertNodeDisplay;
+
 describe('Test legacy polar plots logs:', function() {
     var gd;
 
@@ -236,19 +239,19 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'radial-axis', 'radial-line',
+                'radial-line', 'radial-axis',
                 'frontplot',
-                'angular-axis', 'angular-line'
+                'angular-line', 'angular-axis'
             ]);
             return Plotly.relayout(gd, 'polar.angularaxis.layer', 'below traces');
         })
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'angular-axis',
-                'radial-axis',
                 'angular-line',
                 'radial-line',
+                'angular-axis',
+                'radial-axis',
                 'frontplot'
             ]);
             return Plotly.relayout(gd, 'polar.radialaxis.layer', 'above traces');
@@ -256,9 +259,9 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'angular-axis', 'angular-line',
+                'angular-line', 'angular-axis',
                 'frontplot',
-                'radial-axis', 'radial-line'
+                'radial-line', 'radial-axis'
             ]);
             return Plotly.relayout(gd, 'polar.angularaxis.layer', null);
         })
@@ -306,14 +309,14 @@ describe('Test relayout on polar subplots:', function() {
         var pos1 = [];
 
         Plotly.plot(gd, fig).then(function() {
-            d3.selectAll('.angulartick> text').each(function() {
+            d3.selectAll('.angularaxistick > text').each(function() {
                 var tx = d3.select(this);
                 pos0.push([tx.attr('x'), tx.attr('y')]);
             });
             return Plotly.relayout(gd, 'polar.angularaxis.rotation', 90);
         })
         .then(function() {
-            d3.selectAll('.angulartick> text').each(function() {
+            d3.selectAll('.angularaxistick > text').each(function() {
                 var tx = d3.select(this);
                 pos1.push([tx.attr('x'), tx.attr('y')]);
             });
@@ -330,7 +333,7 @@ describe('Test relayout on polar subplots:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
         function check(cnt, expected) {
-            var ticks = d3.selectAll('path.angulartick');
+            var ticks = d3.selectAll('path.angularaxistick');
 
             expect(ticks.size()).toBe(cnt, '# of ticks');
             ticks.each(function() {
@@ -381,75 +384,62 @@ describe('Test relayout on polar subplots:', function() {
         }
 
         function toggle(astr, vals, exps, selector, fn) {
-            return Plotly.relayout(gd, astr, vals[0]).then(function() {
-                fn(selector, exps[0], astr + ' ' + vals[0]);
-                return Plotly.relayout(gd, astr, vals[1]);
-            })
-            .then(function() {
-                fn(selector, exps[1], astr + ' ' + vals[1]);
-                return Plotly.relayout(gd, astr, vals[0]);
-            })
-            .then(function() {
-                fn(selector, exps[0], astr + ' ' + vals[0]);
-            });
+            return function() {
+                return Plotly.relayout(gd, astr, vals[0]).then(function() {
+                    fn(selector, exps[0], astr + ' ' + vals[0]);
+                    return Plotly.relayout(gd, astr, vals[1]);
+                })
+                .then(function() {
+                    fn(selector, exps[1], astr + ' ' + vals[1]);
+                    return Plotly.relayout(gd, astr, vals[0]);
+                })
+                .then(function() {
+                    fn(selector, exps[0], astr + ' ' + vals[0]);
+                });
+            };
         }
 
-        Plotly.plot(gd, fig).then(function() {
-            return toggle(
-                'polar.radialaxis.showline',
-                [true, false], [null, 'none'],
-                '.radial-line > line', assertDisplay
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.radialaxis.showgrid',
-                [true, false], [null, 'none'],
-                '.radial-grid', assertDisplay
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.radialaxis.showticklabels',
-                [true, false], [6, 0],
-                '.radial-axis > .xtick > text', assertCnt
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.radialaxis.ticks',
-                ['outside', ''], [6, 0],
-                '.radial-axis > path.xtick', assertCnt
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.angularaxis.showline',
-                [true, false], [null, 'none'],
-                '.angular-line > path', assertDisplay
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.angularaxis.showgrid',
-                [true, false], [8, 0],
-                '.angular-grid > .angular > path', assertCnt
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.angularaxis.showticklabels',
-                [true, false], [8, 0],
-                '.angular-axis > .angulartick > text', assertCnt
-            );
-        })
-        .then(function() {
-            return toggle(
-                'polar.angularaxis.ticks',
-                ['outside', ''], [8, 0],
-                '.angular-axis > path.angulartick', assertCnt
-            );
-        })
+        Plotly.plot(gd, fig)
+        .then(toggle(
+            'polar.radialaxis.showline',
+            [true, false], [null, 'none'],
+            '.radial-line > line', assertDisplay
+        ))
+        .then(toggle(
+            'polar.radialaxis.showgrid',
+            [true, false], [null, 'none'],
+            '.radial-grid', assertDisplay
+        ))
+        .then(toggle(
+            'polar.radialaxis.showticklabels',
+            [true, false], [6, 0],
+            '.radial-axis > .xtick > text', assertCnt
+        ))
+        .then(toggle(
+            'polar.radialaxis.ticks',
+            ['outside', ''], [6, 0],
+            '.radial-axis > path.xtick', assertCnt
+        ))
+        .then(toggle(
+            'polar.angularaxis.showline',
+            [true, false], [null, 'none'],
+            '.angular-line > path', assertDisplay
+        ))
+        .then(toggle(
+            'polar.angularaxis.showgrid',
+            [true, false], [8, 0],
+            '.angular-grid > .angularaxis > path', assertCnt
+        ))
+        .then(toggle(
+            'polar.angularaxis.showticklabels',
+            [true, false], [8, 0],
+            '.angular-axis > .angularaxistick > text', assertCnt
+        ))
+        .then(toggle(
+            'polar.angularaxis.ticks',
+            ['outside', ''], [8, 0],
+            '.angular-axis > path.angularaxistick', assertCnt
+        ))
         .catch(failTest)
         .then(done);
     });
@@ -558,7 +548,7 @@ describe('Test relayout on polar subplots:', function() {
             expect(gd._fullLayout.polar._subplot.angularAxis.range)
                 .toBeCloseToArray([0, exp.period], 2, 'range in mocked angular axis - ' + msg);
 
-            expect(d3.selectAll('path.angulartick').size())
+            expect(d3.selectAll('path.angularaxistick').size())
                 .toBe(exp.nTicks, '# of visible angular ticks - ' + msg);
 
             expect([gd.calcdata[0][5].x, gd.calcdata[0][5].y])
@@ -638,6 +628,35 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert('relayout -> circular', {letter: 'A', cnt: 2});
         })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not attempt to draw radial axis when *polar.hole* is set to 1', function(done) {
+        var gd = createGraphDiv();
+
+        var queries = [
+            '.radial-axis', '.radial-grid', '.radial-line > line',
+            '.radialdrag', '.radialdrag-inner'
+        ];
+
+        function _assert(msg, showing) {
+            var exp = showing ? null : 'none';
+            var sp3 = d3.select(gd).select('.polarlayer > .polar');
+            queries.forEach(function(q) {
+                assertNodeDisplay(sp3.selectAll(q), [exp], msg + ' ' + q);
+            });
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            r: ['a', 'b', 'c']
+        }])
+        .then(function() { _assert('base', true); })
+        .then(function() { return Plotly.relayout(gd, 'polar.hole', 1); })
+        .then(function() { _assert('hole=1', false); })
+        .then(function() { return Plotly.relayout(gd, 'polar.hole', 0.2); })
+        .then(function() { _assert('hole=0.2', true); })
         .catch(failTest)
         .then(done);
     });
@@ -924,6 +943,13 @@ describe('Test polar interactions:', function() {
             expect(eventCnts.plotly_relayout)
                 .toBe(relayoutNumber, 'no new relayout events after *not far enough* cases');
         })
+        .then(_reset)
+        .then(function() { return Plotly.relayout(gd, 'polar.hole', 0.2); })
+        .then(function() { relayoutNumber++; })
+        .then(function() { return _drag([mid[0] + 30, mid[0] - 30], [50, -50]); })
+        .then(function() {
+            _assertDrag([1.15, 7.70], 'with polar.hole>0, from quadrant #1 move top-right');
+        })
         .catch(failTest)
         .then(done);
     });
@@ -1012,6 +1038,45 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
+    it('should response to drag interactions on inner radial drag area', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        fig.layout.polar.hole = 0.2;
+        // to avoid dragging on hover labels
+        fig.layout.hovermode = false;
+        // adjust margins so that middle of plot area is at 300x300
+        // with its middle at [200,200]
+        fig.layout.width = 400;
+        fig.layout.height = 400;
+        fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+        var dragPos0 = [200, 200];
+
+        // use 'special' drag method - as we need two mousemove events
+        // to activate the radial drag mode
+        function _drag(p0, dp) {
+            var node = d3.select('.polar > .draglayer > .radialdrag-inner').node();
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+        }
+
+        function _assert(rng, msg) {
+            expect(gd._fullLayout.polar.radialaxis.range)
+                .toBeCloseToArray(rng, 1, msg + ' - range');
+        }
+
+        _plot(fig)
+        .then(function() { return _drag(dragPos0, [-50, 0]); })
+        .then(function() {
+            _assert([3.55, 11.36], 'move inward');
+        })
+        .then(function() { return Plotly.relayout(gd, 'polar.radialaxis.autorange', true); })
+        .then(function() { return _drag(dragPos0, [50, 0]); })
+        .then(function() {
+            _assert([-3.55, 11.36], 'move outward');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should response to drag interactions on angular drag area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
@@ -1075,6 +1140,101 @@ describe('Test polar interactions:', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    describe('should update scene during drag interactions on radial and angular drag area', function() {
+        var objs = ['scatter2d', 'line2d'];
+        var scene, gl, nTraces;
+
+        function _dragRadial() {
+            var node = d3.select('.polar > .draglayer > .radialdrag').node();
+            var p0 = [375, 200];
+            var dp = [-50, 0];
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+        }
+
+        function _dragAngular() {
+            var node = d3.select('.polar > .draglayer > .angulardrag').node();
+            var p0 = [350, 150];
+            var dp = [-20, 20];
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1]);
+        }
+
+        // once on drag, once on mouseup relayout
+        function _assert() {
+            expect(gl.clear).toHaveBeenCalledTimes(2);
+            gl.clear.calls.reset();
+
+            objs.forEach(function(o) {
+                if(scene[o]) {
+                    expect(scene[o].draw).toHaveBeenCalledTimes(2 * nTraces);
+                    scene[o].draw.calls.reset();
+                }
+            });
+        }
+
+        var specs = [{
+            desc: 'scatter marker case',
+            // mode: 'markers' by default
+        }, {
+            desc: 'line case',
+            // start with lines to lock down fix for #2888
+            patch: function(fig) {
+                fig.data.forEach(function(trace) { trace.mode = 'lines'; });
+            }
+        }, {
+            desc: 'line & markers case',
+            patch: function(fig) {
+                fig.data.forEach(function(trace) { trace.mode = 'markers+lines'; });
+            }
+        }, {
+            desc: 'gl and non-gl on same subplot case',
+            patch: function(fig) {
+                fig.data.forEach(function(trace, i) {
+                    trace.type = (i % 2) ? 'scatterpolar' : 'scatterpolargl';
+                });
+            }
+        }];
+
+        specs.forEach(function(s) {
+            it('@gl - ' + s.desc, function(done) {
+                var fig = Lib.extendDeep({}, require('@mocks/glpolar_scatter.json'));
+                scene = null;
+                gl = null;
+
+                fig.layout.hovermode = false;
+                fig.layout.width = 400;
+                fig.layout.height = 400;
+                fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+                if(s.patch) s.patch(fig);
+                nTraces = fig.data
+                    .filter(function(trace) { return trace.type === 'scatterpolargl'; })
+                    .length;
+
+                Plotly.newPlot(gd, fig).then(function() {
+                    scene = gd._fullLayout.polar._subplot._scene;
+
+                    objs.forEach(function(o) {
+                        if(scene[o]) {
+                            spyOn(scene[o], 'draw').and.callThrough();
+                            if(!gl) {
+                                // all objects have the same _gl ref,
+                                // spy on it just once
+                                gl = scene[o].regl._gl;
+                                spyOn(gl, 'clear').and.callThrough();
+                            }
+                        }
+                    });
+                })
+                .then(function() { return _dragRadial(); })
+                .then(_assert)
+                .then(function() { return _dragAngular(); })
+                .then(_assert)
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 });
 

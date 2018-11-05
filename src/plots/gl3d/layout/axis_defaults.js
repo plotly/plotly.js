@@ -39,7 +39,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
         containerOut._id = axName[0] + options.scene;
         containerOut._name = axName;
 
-        handleTypeDefaults(containerIn, containerOut, coerce, options.data);
+        handleTypeDefaults(containerIn, containerOut, coerce, options);
 
         handleAxisDefaults(
             containerIn,

@@ -7,16 +7,18 @@ var constants = require('../../tasks/util/constants');
 var isCI = !!process.env.CIRCLECI;
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
-    'boolean': ['info', 'nowatch', 'verbose', 'Chrome', 'Firefox'],
+    'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox'],
     alias: {
         'Chrome': 'chrome',
         'Firefox': ['firefox', 'FF'],
         'bundleTest': ['bundletest', 'bundle_test'],
-        'nowatch': 'no-watch'
+        'nowatch': 'no-watch',
+        'failFast': 'fail-fast'
     },
     'default': {
         info: false,
         nowatch: isCI,
+        failFast: false,
         verbose: false,
         width: '1035',
         height: '617'
@@ -53,6 +55,7 @@ if(argv.info) {
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
+        '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
         '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
         '  - `--width`(dflt: 1035): set width of the browser window',
@@ -100,10 +103,14 @@ if(isFullSuite) {
 
 var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
 var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d3.js');
-var pathToMain = path.join(__dirname, '..', '..', 'lib', 'index.js');
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
+var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
+
+var reporters = (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'];
+if(argv.failFast) reporters.push('fail-fast');
+if(argv.verbose) reporters.push('verbose');
 
 function func(config) {
     // level of logging
@@ -118,7 +125,7 @@ function func(config) {
     //
     // See https://github.com/karma-runner/karma/commit/89a7a1c#commitcomment-21009216
     func.defaultConfig.browserConsoleLogOptions = {
-        level: 'log'
+        level: 'debug'
     };
 
     config.set(func.defaultConfig);
@@ -131,12 +138,12 @@ func.defaultConfig = {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'jasmine-spec-tags', 'browserify'],
+    frameworks: ['jasmine', 'jasmine-spec-tags', 'browserify', 'viewport'],
 
     // list of files / patterns to load in the browser
     //
     // N.B. the rest of this field is filled below
-    files: [pathToCustomMatchers],
+    files: [pathToCustomMatchers, pathToUnpolyfill],
 
     // list of files / pattern to exclude
     exclude: [],
@@ -154,7 +161,7 @@ func.defaultConfig = {
     // See note in CONTRIBUTING.md about more verbose reporting via karma-verbose-reporter:
     // https://www.npmjs.com/package/karma-verbose-reporter ('verbose')
     //
-    reporters: (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'],
+    reporters: reporters,
 
     // web server port
     port: 9876,
@@ -235,16 +242,18 @@ func.defaultConfig = {
         suppressPassed: true,
         suppressSkipped: false,
         showSpecTiming: false,
+        // use 'karma-fail-fast-reporter' to fail fast w/o conflicting
+        // with other karma plugins
         failFast: false
-    }
+    },
+
+    // e.g. when a test file does not container a given spec tags
+    failOnEmptyTestSuite: false
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
 
-if(isFullSuite) {
-    func.defaultConfig.files.push(pathToJQuery);
-    func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
-} else if(isBundleTest) {
+if(isBundleTest) {
     switch(basename(testFileGlob)) {
         case 'requirejs':
             // browserified custom_matchers doesn't work with this route
@@ -255,6 +264,10 @@ if(isFullSuite) {
             ];
             delete func.defaultConfig.preprocessors[pathToCustomMatchers];
             break;
+        case 'minified_bundle':
+            func.defaultConfig.files.push(constants.pathToPlotlyDistMin);
+            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+            break;
         case 'ie9':
             // load ie9_mock.js before plotly.js+test bundle
             // to catch reference errors that could occur
@@ -262,19 +275,16 @@ if(isFullSuite) {
             func.defaultConfig.files.push(pathToIE9mock);
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
+        case 'plotschema':
+            func.defaultConfig.browserify.ignoreTransform = './tasks/compress_attributes.js';
+            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+            break;
         default:
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
     }
 } else {
-    // Add lib/index.js to non-full-suite runs,
-    // to make sure the registry is set-up correctly.
-    func.defaultConfig.files.push(
-        pathToJQuery,
-        pathToMain
-    );
-
-    func.defaultConfig.preprocessors[pathToMain] = ['browserify'];
+    func.defaultConfig.files.push(pathToJQuery);
     func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 }
 
@@ -286,10 +296,5 @@ var browsers = func.defaultConfig.browsers;
 if(argv.Chrome) browsers.push('_Chrome');
 if(argv.Firefox) browsers.push('_Firefox');
 if(browsers.length === 0) browsers.push('_Chrome');
-
-// add verbose reporter if specified
-if(argv.verbose) {
-    func.defaultConfig.reporters.push('verbose');
-}
 
 module.exports = func;

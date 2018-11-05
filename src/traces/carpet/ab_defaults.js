@@ -9,6 +9,7 @@
 'use strict';
 
 var handleAxisDefaults = require('./axis_defaults');
+var Template = require('../../plot_api/plot_template');
 
 module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce, dfltColor) {
     var a = coerce('a');
@@ -34,7 +35,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
     axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0);
         var axIn = traceIn[axName] || {};
-        var axOut = {};
+        var axOut = Template.newContainer(traceOut, axName);
 
         var defaultOptions = {
             tickfont: 'x',
@@ -50,10 +51,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
         };
 
         handleAxisDefaults(axIn, axOut, defaultOptions);
-
         axOut._categories = axOut._categories || [];
-
-        traceOut[axName] = axOut;
 
         // so we don't have to repeat autotype unnecessarily,
         // copy an autotype back to traceIn

@@ -25,8 +25,7 @@ function calc(gd, trace) {
 
     var cd = calcCommon(gd, trace, x, ya, ptFunc);
 
-    Axes.expand(xa, x, {vpad: minDiff / 2});
-
+    trace._extremes[xa._id] = Axes.findExtremes(xa, x, {vpad: minDiff / 2});
     if(cd.length) {
         Lib.extendFlat(cd[0].t, {
             wHover: minDiff / 2,
@@ -93,7 +92,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
         }
     }
 
-    Axes.expand(ya, l.concat(h), {padded: true});
+    trace._extremes[ya._id] = Axes.findExtremes(ya, l.concat(h), {padded: true});
 
     if(cd.length) {
         cd[0].t = {

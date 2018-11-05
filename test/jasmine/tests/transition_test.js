@@ -5,7 +5,7 @@ var plotApiHelpers = require('@src/plot_api/helpers');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var mock = require('@mocks/animation');
 
@@ -36,7 +36,7 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(Date.now() - t1).toBeGreaterThan(transitionDuration);
-                }).catch(fail).then(done);
+                }).catch(failTest).then(done);
         });
 
         it('emits plotly_transitioning on transition start', function(done) {
@@ -49,7 +49,7 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(beginTransitionCnt).toBe(1);
-                }).catch(fail).then(done);
+                }).catch(failTest).then(done);
         });
 
         it('emits plotly_transitioned on transition end', function(done) {
@@ -62,7 +62,7 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(trEndCnt).toEqual(1);
-                }).catch(fail).then(done);
+                }).catch(failTest).then(done);
         });
 
         it('transitions an annotation', function(done) {
@@ -90,7 +90,7 @@ function runTests(transitionDuration) {
                 expect(p1[0]).not.toEqual(p2[0]);
                 expect(p1[1]).not.toEqual(p2[1]);
 
-            }).catch(fail).then(done);
+            }).catch(failTest).then(done);
         });
 
         it('transitions an image', function(done) {
@@ -125,7 +125,7 @@ function runTests(transitionDuration) {
                 // Test that the image element identity has not:
                 expect(e1).toBe(e2);
 
-            }).catch(fail).then(done);
+            }).catch(failTest).then(done);
         });
 
         it('transitions a shape', function(done) {
@@ -182,7 +182,7 @@ function runTests(transitionDuration) {
 
                 expect(d3).toEqual(d2);
                 expect(s3).not.toEqual(s2);
-            }).catch(fail).then(done);
+            }).catch(failTest).then(done);
         });
 
 
@@ -218,7 +218,7 @@ function runTests(transitionDuration) {
                     target: 'x',
                     value: 10
                 })]);
-            }).catch(fail).then(done);
+            }).catch(failTest).then(done);
         });
 
         // This doesn't really test anything that the above tests don't cover, but it combines
@@ -252,7 +252,7 @@ function runTests(transitionDuration) {
                     expect(endCnt).toEqual(3);
                 })
                 .then(checkNoneRunning)
-                .catch(fail).then(done);
+                .catch(failTest).then(done);
         });
     });
 }

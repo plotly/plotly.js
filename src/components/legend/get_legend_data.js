@@ -41,12 +41,12 @@ module.exports = function getLegendData(calcdata, opts) {
 
     // build an { legendgroup: [cd0, cd0], ... } object
     for(i = 0; i < calcdata.length; i++) {
-        var cd = calcdata[i],
-            cd0 = cd[0],
-            trace = cd0.trace,
-            lgroup = trace.legendgroup;
+        var cd = calcdata[i];
+        var cd0 = cd[0];
+        var trace = cd0.trace;
+        var lgroup = trace.legendgroup;
 
-        if(!helpers.legendGetsTrace(trace) || !trace.showlegend) continue;
+        if(!trace.visible || !trace.showlegend) continue;
 
         if(Registry.traceIs(trace, 'pie')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
@@ -59,7 +59,8 @@ module.exports = function getLegendData(calcdata, opts) {
                         label: labelj,
                         color: cd[j].color,
                         i: cd[j].i,
-                        trace: trace
+                        trace: trace,
+                        pts: cd[j].pts
                     });
 
                     slicesShown[lgroup][labelj] = true;

@@ -60,14 +60,28 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
         if(hasInside || hasOutside) {
             var dfltFont = coerceFont(coerce, 'textfont', layout.font);
-            if(hasInside) coerceFont(coerce, 'insidetextfont', dfltFont);
+            if(hasInside) {
+                var insideTextFontDefault = Lib.extendFlat({}, dfltFont);
+                var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
+                var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
+                if(isColorInheritedFromLayoutFont) {
+                    delete insideTextFontDefault.color;
+                }
+                coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
+            }
             if(hasOutside) coerceFont(coerce, 'outsidetextfont', dfltFont);
         }
     }
 
     handleDomainDefaults(traceOut, layout, coerce);
 
-    coerce('hole');
+    var hole = coerce('hole');
+    var title = coerce('title');
+    if(title) {
+        var titlePosition = coerce('titleposition', hole ? 'middle center' : 'top center');
+        if(!hole && titlePosition === 'middle center') traceOut.titleposition = 'top center';
+        coerceFont(coerce, 'titlefont', layout.font);
+    }
 
     coerce('sort');
     coerce('direction');

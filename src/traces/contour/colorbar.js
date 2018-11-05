@@ -16,32 +16,25 @@ var endPlus = require('./end_plus');
 
 
 module.exports = function colorbar(gd, cd) {
-    var trace = cd[0].trace,
-        cbId = 'cb' + trace.uid;
+    var trace = cd[0].trace;
+    var cbId = 'cb' + trace.uid;
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
     if(!trace.showscale) return;
 
-    var cb = drawColorbar(gd, cbId);
-    cd[0].t.cb = cb;
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
 
-    var contours = trace.contours,
-        line = trace.line,
-        cs = contours.size || 1,
-        coloring = contours.coloring;
+    var contours = trace.contours;
+    var line = trace.line;
+    var cs = contours.size || 1;
+    var coloring = contours.coloring;
 
     var colorMap = makeColorMap(trace, {isColorbar: true});
 
-    if(coloring === 'heatmap') {
-        cb.filllevels({
-            start: trace.zmin,
-            end: trace.zmax,
-            size: (trace.zmax - trace.zmin) / 254
-        });
-    }
-
-    cb.fillcolor((coloring === 'fill' || coloring === 'heatmap') ? colorMap : '')
+    cb.fillgradient(coloring === 'heatmap' ? trace.colorscale : '')
+        .zrange(coloring === 'heatmap' ? [trace.zmin, trace.zmax] : '')
+        .fillcolor((coloring === 'fill') ? colorMap : '')
         .line({
             color: coloring === 'lines' ? colorMap : line.color,
             width: contours.showlines !== false ? line.width : 0,

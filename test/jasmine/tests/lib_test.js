@@ -1654,6 +1654,7 @@ describe('Test lib.js:', function() {
 
         function consoleFn(name, hasApply, messages) {
             var out = function() {
+                if(hasApply) expect(this).toBe(window.console);
                 var args = [];
                 for(var i = 0; i < arguments.length; i++) args.push(arguments[i]);
                 messages.push([name, args]);
@@ -1664,12 +1665,13 @@ describe('Test lib.js:', function() {
             return out;
         }
 
-        function mockConsole(hasApply, hasTrace) {
+        function mockConsole(hasApply, hasTrace, hasError) {
             var out = {
                 MESSAGES: []
             };
             out.log = consoleFn('log', hasApply, out.MESSAGES);
-            out.error = consoleFn('error', hasApply, out.MESSAGES);
+
+            if(hasError) out.error = consoleFn('error', hasApply, out.MESSAGES);
 
             if(hasTrace) out.trace = consoleFn('trace', hasApply, out.MESSAGES);
 
@@ -1687,7 +1689,7 @@ describe('Test lib.js:', function() {
         });
 
         it('emits one console message if apply is available', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 2;
 
             Lib.log('tick', 'tock', 'tick', 'tock', 1);
@@ -1702,7 +1704,7 @@ describe('Test lib.js:', function() {
         });
 
         it('falls back on console.log if no trace', function() {
-            var c = window.console = mockConsole(true, false);
+            var c = window.console = mockConsole(true, false, true);
             config.logging = 2;
 
             Lib.log('Hi');
@@ -1715,7 +1717,7 @@ describe('Test lib.js:', function() {
         });
 
         it('falls back on separate calls if no apply', function() {
-            var c = window.console = mockConsole(false, false);
+            var c = window.console = mockConsole(false, false, true);
             config.logging = 2;
 
             Lib.log('tick', 'tock', 'tick', 'tock', 1);
@@ -1744,7 +1746,7 @@ describe('Test lib.js:', function() {
         });
 
         it('omits .log at log level 1', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 1;
 
             Lib.log(1);
@@ -1758,7 +1760,7 @@ describe('Test lib.js:', function() {
         });
 
         it('logs nothing at log level 0', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 0;
 
             Lib.log(1);
@@ -1766,6 +1768,22 @@ describe('Test lib.js:', function() {
             Lib.error(3);
 
             expect(c.MESSAGES).toEqual([]);
+        });
+
+        it('falls back on simple log if there is no console.error', function() {
+            // TODO
+
+            var c = window.console = mockConsole(true, true, false);
+            config.logging = 2;
+
+            Lib.error('who are you', 'who who... are you', {a: 1, b: 2});
+
+            expect(c.MESSAGES).toEqual([
+                ['log', ['ERROR:']],
+                ['log', ['who are you']],
+                ['log', ['who who... are you']],
+                ['log', [{a: 1, b: 2}]]
+            ]);
         });
     });
 
@@ -2186,6 +2204,156 @@ describe('Test lib.js:', function() {
                 a.sort(Lib.subplotSort);
                 expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);
             });
+        });
+    });
+
+    describe('sort', function() {
+        var callCount;
+        beforeEach(function() {
+            callCount = 0;
+        });
+
+        function sortCounter(a, b) {
+            callCount++;
+            return a - b;
+        }
+
+        function sortCounterReversed(a, b) {
+            callCount++;
+            return b - a;
+        }
+
+        function ascending(n) {
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = i;
+            }
+            assertAscending(out);
+            return out;
+        }
+
+        function descending(n) {
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = n - 1 - i;
+            }
+            assertDescending(out);
+            return out;
+        }
+
+        function rand(n) {
+            Lib.seedPseudoRandom();
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = Lib.pseudoRandom();
+            }
+            return out;
+        }
+
+        function assertAscending(array) {
+            for(var i = 1; i < array.length; i++) {
+                if(array[i] < array[i - 1]) {
+                    // we already know this expect will fail,
+                    // just want to format the message nicely and then
+                    // quit so we don't get a million messages
+                    expect(array[i]).not.toBeLessThan(array[i - 1]);
+                    break;
+                }
+            }
+        }
+
+        function assertDescending(array) {
+            for(var i = 1; i < array.length; i++) {
+                if(array[i] < array[i - 1]) {
+                    expect(array[i]).not.toBeGreaterThan(array[i - 1]);
+                    break;
+                }
+            }
+        }
+
+        function _sort(array, sortFn) {
+            var arrayOut = Lib.sort(array, sortFn);
+            expect(arrayOut).toBe(array);
+            return array;
+        }
+
+        it('sorts ascending arrays ascending in N-1 calls', function() {
+            var arrayIn = _sort(ascending(100000), sortCounter);
+            expect(callCount).toBe(99999);
+            assertAscending(arrayIn);
+        });
+
+        it('sorts descending arrays ascending in N-1 calls', function() {
+            var arrayIn = _sort(descending(100000), sortCounter);
+            expect(callCount).toBe(99999);
+            assertAscending(arrayIn);
+        });
+
+        it('sorts ascending arrays descending in N-1 calls', function() {
+            var arrayIn = _sort(ascending(100000), sortCounterReversed);
+            expect(callCount).toBe(99999);
+            assertDescending(arrayIn);
+        });
+
+        it('sorts descending arrays descending in N-1 calls', function() {
+            var arrayIn = _sort(descending(100000), sortCounterReversed);
+            expect(callCount).toBe(99999);
+            assertDescending(arrayIn);
+        });
+
+        it('sorts random arrays ascending in a few more calls than bare sort', function() {
+            var arrayIn = _sort(rand(100000), sortCounter);
+            assertAscending(arrayIn);
+
+            var ourCallCount = callCount;
+            callCount = 0;
+            rand(100000).sort(sortCounter);
+            // in general this will be ~N*log_2(N)
+            expect(callCount).toBeGreaterThan(1e6);
+            // This number (2) is only repeatable because we used Lib.pseudoRandom
+            // should always be at least 2 and less than N - 1, and if
+            // the input array is really not sorted it will be close to 2. It will
+            // only be large if the array is sorted until near the end.
+            expect(ourCallCount - callCount).toBe(2);
+        });
+
+        it('sorts random arrays descending in a few more calls than bare sort', function() {
+            var arrayIn = _sort(rand(100000), sortCounterReversed);
+            assertDescending(arrayIn);
+
+            var ourCallCount = callCount;
+            callCount = 0;
+            rand(100000).sort(sortCounterReversed);
+            expect(callCount).toBeGreaterThan(1e6);
+            expect(ourCallCount - callCount).toBe(2);
+        });
+
+        it('supports short arrays', function() {
+            expect(_sort([], sortCounter)).toEqual([]);
+            expect(_sort([1], sortCounter)).toEqual([1]);
+            expect(callCount).toBe(0);
+
+            expect(_sort([1, 2], sortCounter)).toEqual([1, 2]);
+            expect(_sort([2, 3], sortCounterReversed)).toEqual([3, 2]);
+            expect(callCount).toBe(2);
+        });
+
+        function dupes() {
+            return [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 7, 8, 9];
+        }
+
+        it('still short-circuits in order with duplicates', function() {
+            expect(_sort(dupes(), sortCounter))
+                .toEqual(dupes());
+
+            expect(callCount).toEqual(18);
+        });
+
+        it('still short-circuits reversed with duplicates', function() {
+            expect(_sort(dupes(), sortCounterReversed))
+                .toEqual(dupes().reverse());
+
+            expect(callCount).toEqual(18);
         });
     });
 

@@ -19,8 +19,9 @@ Scatter.isBubble = subtypes.isBubble;
 
 Scatter.attributes = require('./attributes');
 Scatter.supplyDefaults = require('./defaults');
-Scatter.cleanData = require('./clean_data');
+Scatter.crossTraceDefaults = require('./cross_trace_defaults');
 Scatter.calc = require('./calc').calc;
+Scatter.crossTraceCalc = require('./cross_trace_calc');
 Scatter.arraysToCalcdata = require('./arrays_to_calcdata');
 Scatter.plot = require('./plot');
 Scatter.colorbar = require('./marker_colorbar');
@@ -33,7 +34,10 @@ Scatter.animatable = true;
 Scatter.moduleType = 'trace';
 Scatter.name = 'scatter';
 Scatter.basePlotModule = require('../../plots/cartesian');
-Scatter.categories = ['cartesian', 'svg', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like', 'zoomScale'];
+Scatter.categories = [
+    'cartesian', 'svg', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like',
+    'zoomScale'
+];
 Scatter.meta = {
     description: [
         'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',

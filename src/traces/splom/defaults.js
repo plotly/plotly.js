@@ -61,6 +61,8 @@ function dimensionDefaults(dimIn, dimOut) {
 
     if(!(values && values.length)) dimOut.visible = false;
     else coerce('visible');
+
+    coerce('axis.type');
 }
 
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
@@ -71,23 +73,78 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     var showDiag = traceOut.diagonal.visible;
     var i, j;
 
-    // N.B. one less x axis AND one less y axis when hiding one half and the diagonal
-    var axDfltLength = !showDiag && (!showUpper || !showLower) ? dimLength - 1 : dimLength;
+    var xAxesDflt = new Array(dimLength);
+    var yAxesDflt = new Array(dimLength);
 
-    var xaxes = coerce('xaxes', fillAxisIdArray('x', axDfltLength));
-    var yaxes = coerce('yaxes', fillAxisIdArray('y', axDfltLength));
+    for(i = 0; i < dimLength; i++) {
+        var suffix = i ? i + 1 : '';
+        xAxesDflt[i] = 'x' + suffix;
+        yAxesDflt[i] = 'y' + suffix;
+    }
 
-    // to avoid costly indexOf
-    traceOut._xaxes = arrayToHashObject(xaxes);
-    traceOut._yaxes = arrayToHashObject(yaxes);
+    var xaxes = coerce('xaxes', xAxesDflt);
+    var yaxes = coerce('yaxes', yAxesDflt);
 
-    // allow users to under-specify number of axes
-    var axLength = Math.min(axDfltLength, xaxes.length, yaxes.length);
+    // build list of [x,y] axis corresponding to each dimensions[i],
+    // very useful for passing options to regl-splom
+    var diag = traceOut._diag = new Array(dimLength);
+
+    // lookup for 'drawn' x|y axes, to avoid costly indexOf downstream
+    traceOut._xaxes = {};
+    traceOut._yaxes = {};
+
+    // list of 'drawn' x|y axes, use to generate list of subplots
+    var xList = [];
+    var yList = [];
+
+    function fillAxisStashes(axId, dim, list) {
+        if(!axId) return;
+
+        var axLetter = axId.charAt(0);
+        var stash = layout._splomAxes[axLetter];
+
+        traceOut['_' + axLetter + 'axes'][axId] = 1;
+        list.push(axId);
+
+        if(!(axId in stash)) {
+            var s = stash[axId] = {};
+            if(dim) {
+                s.label = dim.label || '';
+                if(dim.visible && dim.axis) {
+                    s.type = dim.axis.type;
+                }
+            }
+        }
+    }
+
+    // cases where showDiag and showLower or showUpper are false
+    // no special treatment as the 'drawn' x-axes and y-axes no longer match
+    // the dimensions items and xaxes|yaxes 1-to-1
+    var mustShiftX = !showDiag && !showLower;
+    var mustShiftY = !showDiag && !showUpper;
+
+    for(i = 0; i < dimLength; i++) {
+        var dim = dimensions[i];
+        var i0 = i === 0;
+        var iN = i === dimLength - 1;
+
+        var xaId = (i0 && mustShiftX) || (iN && mustShiftY) ?
+            undefined :
+            xaxes[i];
+
+        var yaId = (i0 && mustShiftY) || (iN && mustShiftX) ?
+            undefined :
+            yaxes[i];
+
+        fillAxisStashes(xaId, dim, xList);
+        fillAxisStashes(yaId, dim, yList);
+        diag[i] = [xaId, yaId];
+    }
 
     // fill in splom subplot keys
-    for(i = 0; i < axLength; i++) {
-        for(j = 0; j < axLength; j++) {
-            var id = [xaxes[i] + yaxes[j]];
+    for(i = 0; i < xList.length; i++) {
+        for(j = 0; j < yList.length; j++) {
+            var id = xList[i] + yList[j];
 
             if(i > j && showUpper) {
                 layout._splomSubplots[id] = 1;
@@ -101,61 +158,11 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
         }
     }
 
-    // build list of [x,y] axis corresponding to each dimensions[i],
-    // very useful for passing options to regl-splom
-    var diag = traceOut._diag = new Array(dimLength);
-
-    // cases where showDiag and showLower or showUpper are false
-    // no special treatment as the xaxes and yaxes items no longer match
-    // the dimensions items 1-to-1
-    var xShift = !showDiag && !showLower ? -1 : 0;
-    var yShift = !showDiag && !showUpper ? -1 : 0;
-
-    for(i = 0; i < dimLength; i++) {
-        var dim = dimensions[i];
-        var xa = xaxes[i + xShift];
-        var ya = yaxes[i + yShift];
-
-        fillAxisStash(layout, xa, dim);
-        fillAxisStash(layout, ya, dim);
-
-        // note that some the entries here may be undefined
-        diag[i] = [xa, ya];
-    }
-
-    // when lower half is omitted, override grid default
-    // to make sure axes remain on the left/bottom of the plot area
-    if(!showLower) {
+    // when lower half is omitted, or when just the diagonal is gone,
+    // override grid default to make sure axes remain on
+    // the left/bottom of the plot area
+    if(!showLower || (!showDiag && showUpper && showLower)) {
         layout._splomGridDflt.xside = 'bottom';
         layout._splomGridDflt.yside = 'left';
     }
-}
-
-function fillAxisIdArray(axLetter, len) {
-    var out = new Array(len);
-
-    for(var i = 0; i < len; i++) {
-        out[i] = axLetter + (i ? i + 1 : '');
-    }
-
-    return out;
-}
-
-function fillAxisStash(layout, axId, dim) {
-    if(!axId) return;
-
-    var axLetter = axId.charAt(0);
-    var stash = layout._splomAxes[axLetter];
-
-    if(!(axId in stash)) {
-        stash[axId] = (dim || {}).label || '';
-    }
-}
-
-function arrayToHashObject(arr) {
-    var obj = {};
-    for(var i = 0; i < arr.length; i++) {
-        obj[arr[i]] = 1;
-    }
-    return obj;
 }

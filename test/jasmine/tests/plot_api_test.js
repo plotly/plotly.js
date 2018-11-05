@@ -6,6 +6,7 @@ var Queue = require('@src/lib/queue');
 var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
+var Axes = require('@src/plots/cartesian/axes');
 var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
 var helpers = require('@src/plot_api/helpers');
@@ -20,6 +21,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
+var mockLists = require('../assets/mock_lists');
 
 describe('Test plot api', function() {
     'use strict';
@@ -508,6 +510,43 @@ describe('Test plot api', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('updates autosize/width/height correctly', function(done) {
+            function assertSizeAndThen(width, height, auto, msg, next) {
+                return function() {
+                    expect(gd._fullLayout.width).toBe(width, msg);
+                    expect(gd._fullLayout.height).toBe(height, msg);
+                    expect(gd._fullLayout.autosize).toBe(auto, msg);
+                    if(!auto) {
+                        expect(gd.layout.width).toBe(width, msg);
+                        expect(gd.layout.height).toBe(height, msg);
+                    }
+
+                    if(next) return Plotly.relayout(gd, next);
+                };
+            }
+
+            // give gd css sizing to be picked up by autosize
+            gd.style.width = '543px';
+            gd.style.height = '432px';
+
+            Plotly.newPlot(gd, [{y: [1, 3, 2]}])
+            .then(assertSizeAndThen(543, 432, true, 'initial',
+                {autosize: false}))
+            .then(assertSizeAndThen(543, 432, false, 'autosize false with no sizes',
+                {autosize: true}))
+            .then(assertSizeAndThen(543, 432, true, 'back to autosized',
+                {width: 600}))
+            .then(assertSizeAndThen(600, 432, false, 'explicit width causes explicit height',
+                {width: null}))
+            .then(assertSizeAndThen(543, 432, true, 'removed width',
+                {height: 500, width: 700}))
+            .then(assertSizeAndThen(700, 500, false, 'explicit height and width',
+                {autosize: true}))
+            .then(assertSizeAndThen(543, 432, true, 'final back to autosize'))
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('Plotly.relayout subroutines switchboard', function() {
@@ -530,14 +569,18 @@ describe('Test plot api', function() {
             mockedMethods.forEach(function(m) {
                 spyOn(subroutines, m);
             });
+            spyOn(Axes, 'doTicks');
+            spyOn(Plots, 'supplyDefaults').and.callThrough();
         });
 
         function mock(gd) {
             mockedMethods.forEach(function(m) {
                 subroutines[m].calls.reset();
             });
+            Axes.doTicks.calls.reset();
 
             supplyAllDefaults(gd);
+            Plots.supplyDefaults.calls.reset();
             Plots.doCalcdata(gd);
             gd.emit = function() {};
             return gd;
@@ -633,7 +676,7 @@ describe('Test plot api', function() {
         });
 
         it('should trigger minimal sequence for cartesian axis range updates', function() {
-            var seq = ['doTicksRelayout', 'drawData', 'finalDraw'];
+            var seq = ['doAutoRangeAndConstraints', 'drawData', 'finalDraw'];
 
             function _assert(msg) {
                 expect(gd.calcdata).toBeDefined();
@@ -643,13 +686,20 @@ describe('Test plot api', function() {
                         '# of ' + m + ' calls - ' + msg
                     );
                 });
+                expect(Axes.doTicks).toHaveBeenCalledTimes(1);
+                expect(Axes.doTicks.calls.allArgs()[0][1]).toEqual(['x']);
+                expect(Axes.doTicks.calls.allArgs()[0][2]).toBe(true, 'skip-axis-title argument');
+                expect(Plots.supplyDefaults).not.toHaveBeenCalled();
             }
 
             var specs = [
                 ['relayout', ['xaxis.range[0]', 0]],
                 ['relayout', ['xaxis.range[1]', 3]],
                 ['relayout', ['xaxis.range', [-1, 5]]],
-                ['update', [{}, {'xaxis.range': [-1, 10]}]]
+                ['update', [{}, {'xaxis.range': [-1, 10]}]],
+
+                ['relayout', ['xaxis.autorange', true]],
+                ['update', [{}, {'xaxis.autorange': true}]]
             ];
 
             specs.forEach(function(s) {
@@ -908,6 +958,18 @@ describe('Test plot api', function() {
             expect(gd._fullData[0].marker.color).toBe('blue');
         });
 
+        it('ignores invalid trace indices', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+
+            // Call restyle on an invalid trace indice
+            Plotly.restyle(gd, {'type': 'scatter', 'marker.color': 'red'}, [1]);
+        });
+
         it('restores null values to defaults', function() {
             var gd = {
                 data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
@@ -1115,17 +1177,30 @@ describe('Test plot api', function() {
         });
 
         it('turns off autobin when you edit bin specs', function(done) {
+            // test retained (modified) for backward compat with new autobin logic
             var start0 = 0.2;
             var end1 = 6;
             var size1 = 0.5;
 
             function check(auto, msg) {
-                expect(gd.data[0].autobinx).toBe(auto, msg);
-                expect(gd.data[0].xbins.start).negateIf(auto).toBe(start0, msg);
-                expect(gd.data[1].autobinx).toBe(auto, msg);
-                expect(gd.data[1].autobiny).toBe(auto, msg);
-                expect(gd.data[1].xbins.end).negateIf(auto).toBe(end1, msg);
-                expect(gd.data[1].ybins.size).negateIf(auto).toBe(size1, msg);
+                expect(gd.data[0].autobinx).toBeUndefined(msg);
+                expect(gd.data[1].autobinx).toBeUndefined(msg);
+                expect(gd.data[1].autobiny).toBeUndefined(msg);
+
+                if(auto) {
+                    expect(gd.data[0].xbins).toBeUndefined(msg);
+                    expect(gd.data[1].xbins).toBeUndefined(msg);
+                    expect(gd.data[1].ybins).toBeUndefined(msg);
+                }
+                else {
+                    // we can have - and use - partial autobin now
+                    expect(gd.data[0].xbins).toEqual({start: start0});
+                    expect(gd.data[1].xbins).toEqual({end: end1});
+                    expect(gd.data[1].ybins).toEqual({size: size1});
+                    expect(gd._fullData[0].xbins.start).toBe(start0, msg);
+                    expect(gd._fullData[1].xbins.end).toBe(end1, msg);
+                    expect(gd._fullData[1].ybins.size).toBe(size1, msg);
+                }
             }
 
             Plotly.plot(gd, [
@@ -2554,6 +2629,11 @@ describe('Test plot api', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('ignores invalid trace indices', function() {
+            // Call update on an invalid trace indice
+            Plotly.update(gd, {'type': 'scatter', 'marker.color': 'red'}, {}, [1]);
+        });
     });
 
     describe('@noCIdep Plotly.react', function() {
@@ -2584,6 +2664,7 @@ describe('Test plot api', function() {
             spyOn(annotations, 'drawOne').and.callThrough();
             spyOn(annotations, 'draw').and.callThrough();
             spyOn(images, 'draw').and.callThrough();
+            spyOn(Axes, 'doTicks').and.callThrough();
         });
 
         afterEach(destroyGraphDiv);
@@ -2780,6 +2861,37 @@ describe('Test plot api', function() {
             .then(done);
         });
 
+        it('picks up special dtick geo case', function(done) {
+            var data = [{type: 'scattergeo'}];
+            var layout = {};
+
+            function countLines() {
+                var path = d3.select(gd).select('.lataxis > path');
+                return path.attr('d').split('M').length;
+            }
+
+            Plotly.react(gd, data)
+            .then(countPlots)
+            .then(function() {
+                layout.geo = {lataxis: {showgrid: true, dtick: 10}};
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+                expect(countLines()).toBe(18);
+            })
+            .then(function() {
+                layout.geo.lataxis.dtick = 30;
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+                expect(countLines()).toBe(6);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('picks up minimal sequence for cartesian axis range updates', function(done) {
             var data = [{y: [1, 2, 1]}];
             var layout = {xaxis: {range: [1, 2]}};
@@ -2788,10 +2900,11 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, data, layout)
             .then(countPlots)
             .then(function() {
+                expect(Axes.doTicks).toHaveBeenCalledWith(gd, '');
                 return Plotly.react(gd, data, layout2);
             })
             .then(function() {
-                expect(subroutines.doTicksRelayout).toHaveBeenCalledTimes(1);
+                expect(Axes.doTicks).toHaveBeenCalledWith(gd, 'redraw');
                 expect(subroutines.layoutStyles).not.toHaveBeenCalled();
             })
             .catch(failTest)
@@ -2958,7 +3071,7 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, data, layout)
             .then(countPlots)
             .then(function() {
-                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
 
                 return Plotly.react(gd, data, layout, {staticPlot: true});
             })
@@ -2968,7 +3081,7 @@ describe('Test plot api', function() {
                 return Plotly.react(gd, data, layout, {});
             })
             .then(function() {
-                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
             })
             .catch(failTest)
             .then(done);
@@ -3230,63 +3343,6 @@ describe('Test plot api', function() {
             .then(done);
         });
 
-        var svgMockList = [
-            ['1', require('@mocks/1.json')],
-            ['4', require('@mocks/4.json')],
-            ['5', require('@mocks/5.json')],
-            ['10', require('@mocks/10.json')],
-            ['11', require('@mocks/11.json')],
-            ['17', require('@mocks/17.json')],
-            ['21', require('@mocks/21.json')],
-            ['22', require('@mocks/22.json')],
-            ['airfoil', require('@mocks/airfoil.json')],
-            ['annotations-autorange', require('@mocks/annotations-autorange.json')],
-            ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
-            ['axes_visible-false', require('@mocks/axes_visible-false.json')],
-            ['bar_and_histogram', require('@mocks/bar_and_histogram.json')],
-            ['basic_error_bar', require('@mocks/basic_error_bar.json')],
-            ['binding', require('@mocks/binding.json')],
-            ['cheater_smooth', require('@mocks/cheater_smooth.json')],
-            ['finance_style', require('@mocks/finance_style.json')],
-            ['geo_first', require('@mocks/geo_first.json')],
-            ['layout_image', require('@mocks/layout_image.json')],
-            ['layout-colorway', require('@mocks/layout-colorway.json')],
-            ['polar_categories', require('@mocks/polar_categories.json')],
-            ['polar_direction', require('@mocks/polar_direction.json')],
-            ['range_selector_style', require('@mocks/range_selector_style.json')],
-            ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
-            ['sankey_energy', require('@mocks/sankey_energy.json')],
-            ['scattercarpet', require('@mocks/scattercarpet.json')],
-            ['shapes', require('@mocks/shapes.json')],
-            ['splom_iris', require('@mocks/splom_iris.json')],
-            ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],
-            ['ternary_fill', require('@mocks/ternary_fill.json')],
-            ['text_chart_arrays', require('@mocks/text_chart_arrays.json')],
-            ['transforms', require('@mocks/transforms.json')],
-            ['updatemenus', require('@mocks/updatemenus.json')],
-            ['violin_side-by-side', require('@mocks/violin_side-by-side.json')],
-            ['world-cals', require('@mocks/world-cals.json')],
-            ['typed arrays', {
-                data: [{
-                    x: new Float32Array([1, 2, 3]),
-                    y: new Float32Array([1, 2, 1])
-                }]
-            }]
-        ];
-
-        var glMockList = [
-            ['gl2d_heatmapgl', require('@mocks/gl2d_heatmapgl.json')],
-            ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
-            ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
-            ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
-            ['gl3d_annotations', require('@mocks/gl3d_annotations.json')],
-            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
-            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
-            ['gl3d_cone-autorange', require('@mocks/gl3d_cone-autorange.json')],
-            ['gl3d_streamtube-simple', require('@mocks/gl3d_streamtube-simple.json')],
-            ['glpolar_style', require('@mocks/glpolar_style.json')],
-        ];
-
         // make sure we've included every trace type in this suite
         var typesTested = {};
         var itemType;
@@ -3385,24 +3441,25 @@ describe('Test plot api', function() {
             .then(done);
         }
 
-        svgMockList.forEach(function(mockSpec) {
+        mockLists.svg.forEach(function(mockSpec) {
             it('can redraw "' + mockSpec[0] + '" with no changes as a noop (svg mocks)', function(done) {
                 _runReactMock(mockSpec, done);
             });
         });
 
-        glMockList.forEach(function(mockSpec) {
+        mockLists.gl.forEach(function(mockSpec) {
             it('can redraw "' + mockSpec[0] + '" with no changes as a noop (gl mocks)', function(done) {
                 _runReactMock(mockSpec, done);
             });
         });
 
-        it('@noCI can redraw scattermapbox with no changes as a noop', function(done) {
-            Plotly.setPlotConfig({
-                mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        mockLists.mapbox.forEach(function(mockSpec) {
+            it('@noCI can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
+                Plotly.setPlotConfig({
+                    mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                });
+                _runReactMock(mockSpec, done);
             });
-
-            _runReactMock(['scattermapbox', require('@mocks/mapbox_bubbles-text.json')], done);
         });
 
         // since CI breaks up gl/svg types, and drops scattermapbox, this test won't work there

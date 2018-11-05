@@ -11,11 +11,11 @@
 var createLine = require('regl-line2d');
 
 var Registry = require('../../registry');
-var Lib = require('../../lib');
 var prepareRegl = require('../../lib/prepare_regl');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
-var AxisIDs = require('../../plots/cartesian/axis_ids');
+var getFromId = require('../../plots/cartesian/axis_ids').getFromId;
+var shouldShowZeroLine = require('../../plots/cartesian/axes').shouldShowZeroLine;
 
 var SPLOM = 'splom';
 
@@ -28,7 +28,7 @@ function plot(gd) {
     if(!success) return;
 
     if(fullLayout._hasOnlyLargeSploms) {
-        drawGrid(gd);
+        updateGrid(gd);
     }
 
     _module.plot(gd, {}, splomCalcData);
@@ -39,13 +39,13 @@ function drag(gd) {
     var fullLayout = gd._fullLayout;
 
     if(fullLayout._hasOnlyLargeSploms) {
-        drawGrid(gd);
+        updateGrid(gd);
     }
 
     for(var i = 0; i < cd.length; i++) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
-        var scene = cd0.t._scene;
+        var scene = fullLayout._splomScenes[trace.uid];
 
         if(trace.type === 'splom' && scene && scene.matrix) {
             dragOne(gd, trace, scene);
@@ -54,40 +54,35 @@ function drag(gd) {
 }
 
 function dragOne(gd, trace, scene) {
-    var dimensions = trace.dimensions;
     var visibleLength = scene.matrixOptions.data.length;
-    var ranges = new Array(visibleLength);
+    var visibleDims = trace._visibleDims;
+    var ranges = scene.viewOpts.ranges = new Array(visibleLength);
 
-    for(var i = 0, k = 0; i < dimensions.length; i++) {
-        if(dimensions[i].visible) {
-            var rng = ranges[k] = new Array(4);
+    for(var k = 0; k < visibleDims.length; k++) {
+        var i = visibleDims[k];
+        var rng = ranges[k] = new Array(4);
 
-            var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
-            if(xa) {
-                rng[0] = xa.r2l(xa.range[0]);
-                rng[2] = xa.r2l(xa.range[1]);
-            }
+        var xa = getFromId(gd, trace._diag[i][0]);
+        if(xa) {
+            rng[0] = xa.r2l(xa.range[0]);
+            rng[2] = xa.r2l(xa.range[1]);
+        }
 
-            var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
-            if(ya) {
-                rng[1] = ya.r2l(ya.range[0]);
-                rng[3] = ya.r2l(ya.range[1]);
-            }
-
-            k++;
+        var ya = getFromId(gd, trace._diag[i][1]);
+        if(ya) {
+            rng[1] = ya.r2l(ya.range[0]);
+            rng[3] = ya.r2l(ya.range[1]);
         }
     }
 
     if(scene.selectBatch) {
         scene.matrix.update({ranges: ranges}, {ranges: ranges});
-        scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
     } else {
         scene.matrix.update({ranges: ranges});
-        scene.matrix.draw();
     }
 }
 
-function drawGrid(gd) {
+function updateGrid(gd) {
     var fullLayout = gd._fullLayout;
     var regl = fullLayout._glcanvas.data()[0].regl;
     var splomGrid = fullLayout._splomGrid;
@@ -95,9 +90,7 @@ function drawGrid(gd) {
     if(!splomGrid) {
         splomGrid = fullLayout._splomGrid = createLine(regl);
     }
-
     splomGrid.update(makeGridData(gd));
-    splomGrid.draw();
 }
 
 function makeGridData(gd) {
@@ -146,17 +139,17 @@ function makeGridData(gd) {
                 push('grid', xa, x, yOffset, x, yOffset + ya._length);
             }
         }
-        if(showZeroLine(xa)) {
-            x = xa._offset + xa.l2p(0);
-            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
-        }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
                 y = yOffset + yb + ym * yVals[k].x;
                 push('grid', ya, xa._offset, y, xa._offset + xa._length, y);
             }
         }
-        if(showZeroLine(ya)) {
+        if(shouldShowZeroLine(gd, xa, ya)) {
+            x = xa._offset + xa.l2p(0);
+            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
+        }
+        if(shouldShowZeroLine(gd, ya, xa)) {
             y = yOffset + yb + 0;
             push('zeroline', ya, xa._offset, y, xa._offset + xa._length, y);
         }
@@ -170,63 +163,66 @@ function makeGridData(gd) {
     return gridBatches;
 }
 
-// just like in Axes.doTicks but without the loop over traces
-function showZeroLine(ax) {
-    var rng = Lib.simpleMap(ax.range, ax.r2l);
-    var p0 = ax.l2p(0);
-
-    return (
-        ax.zeroline &&
-        ax._vals && ax._vals.length &&
-        (rng[0] * rng[1] <= 0) &&
-        (ax.type === 'linear' || ax.type === '-') &&
-        ((p0 > 1 && p0 < ax._length - 1) || !ax.showline)
-    );
-}
-
-function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
-    var oldModules = oldFullLayout._modules || [];
-    var newModules = newFullLayout._modules || [];
-
-    var hadSplom, hasSplom;
+function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var lookup = {};
     var i;
 
-    for(i = 0; i < oldModules.length; i++) {
-        if(oldModules[i].name === 'splom') {
-            hadSplom = true;
-            break;
+    if(oldFullLayout._splomScenes) {
+        for(i = 0; i < newFullData.length; i++) {
+            var newTrace = newFullData[i];
+            if(newTrace.type === 'splom') {
+                lookup[newTrace.uid] = 1;
+            }
         }
-    }
-    for(i = 0; i < newModules.length; i++) {
-        if(newModules[i].name === 'splom') {
-            hasSplom = true;
-            break;
-        }
-    }
-
-    if(hadSplom && !hasSplom) {
-        for(i = 0; i < oldCalcdata.length; i++) {
-            var cd0 = oldCalcdata[i][0];
-            var trace = cd0.trace;
-            var scene = cd0.t._scene;
-
-            if(
-                trace.type === 'splom' &&
-                scene && scene.matrix && scene.matrix.destroy
-            ) {
-                scene.matrix.destroy();
-                cd0.t._scene = null;
+        for(i = 0; i < oldFullData.length; i++) {
+            var oldTrace = oldFullData[i];
+            if(!lookup[oldTrace.uid]) {
+                var scene = oldFullLayout._splomScenes[oldTrace.uid];
+                if(scene && scene.destroy) scene.destroy();
+                // must first set scene to null in order to get garbage collected
+                oldFullLayout._splomScenes[oldTrace.uid] = null;
+                delete oldFullLayout._splomScenes[oldTrace.uid];
             }
         }
     }
 
+    if(Object.keys(oldFullLayout._splomScenes || {}).length === 0) {
+        delete oldFullLayout._splomScenes;
+    }
+
     if(oldFullLayout._splomGrid &&
         (!newFullLayout._hasOnlyLargeSploms && oldFullLayout._hasOnlyLargeSploms)) {
+        // must first set scene to null in order to get garbage collected
         oldFullLayout._splomGrid.destroy();
         oldFullLayout._splomGrid = null;
+        delete oldFullLayout._splomGrid;
     }
 
     Cartesian.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
+}
+
+function updateFx(gd) {
+    Cartesian.updateFx(gd);
+
+    var fullLayout = gd._fullLayout;
+    var dragmode = fullLayout.dragmode;
+
+    // unset selection styles when coming out of a selection mode
+    if(dragmode === 'zoom' || dragmode === 'pan') {
+        var cd = gd.calcdata;
+
+        for(var i = 0; i < cd.length; i++) {
+            var cd0 = cd[i][0];
+            var trace = cd0.trace;
+
+            if(trace.type === 'splom') {
+                var scene = fullLayout._splomScenes[trace.uid];
+                if(scene.selectBatch === null) {
+                    scene.matrix.update(scene.matrixOptions, null);
+                }
+            }
+        }
+    }
 }
 
 module.exports = {
@@ -238,7 +234,8 @@ module.exports = {
     drawFramework: Cartesian.drawFramework,
     plot: plot,
     drag: drag,
+    updateGrid: updateGrid,
     clean: clean,
-    updateFx: Cartesian.updateFx,
+    updateFx: updateFx,
     toSVG: Cartesian.toSVG
 };

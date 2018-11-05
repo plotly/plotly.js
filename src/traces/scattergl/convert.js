@@ -15,7 +15,6 @@ var rgba = require('color-normalize');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
-var Axes = require('../../plots/cartesian/axes');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
 var formatColor = require('../../lib/gl_format_color').formatColor;
@@ -386,7 +385,8 @@ function getSymbolSdf(symbol) {
 }
 
 function convertLinePositions(gd, trace, positions) {
-    var count = positions.length / 2;
+    var len = positions.length;
+    var count = len / 2;
     var linePositions;
     var i;
 
@@ -395,38 +395,81 @@ function convertLinePositions(gd, trace, positions) {
             linePositions = [];
             for(i = 0; i < count - 1; i++) {
                 if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                }
-                else {
-                    linePositions.push(positions[i * 2]);
-                    linePositions.push(positions[i * 2 + 1]);
-                    linePositions.push(positions[i * 2 + 2]);
-                    linePositions.push(positions[i * 2 + 1]);
+                    linePositions.push(NaN, NaN, NaN, NaN);
+                } else {
+                    linePositions.push(positions[i * 2], positions[i * 2 + 1]);
+                    if(!isNaN(positions[i * 2 + 2]) && !isNaN(positions[i * 2 + 3])) {
+                        linePositions.push(positions[i * 2 + 2], positions[i * 2 + 1]);
+                    } else {
+                        linePositions.push(NaN, NaN);
+                    }
                 }
             }
-            linePositions.push(positions[positions.length - 2]);
-            linePositions.push(positions[positions.length - 1]);
+            linePositions.push(positions[len - 2], positions[len - 1]);
+        } else if(trace.line.shape === 'hvh') {
+            linePositions = [];
+            for(i = 0; i < count - 1; i++) {
+                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1]) || isNaN(positions[i * 2 + 2]) || isNaN(positions[i * 2 + 3])) {
+                    if(!isNaN(positions[i * 2]) && !isNaN(positions[i * 2 + 1])) {
+                        linePositions.push(positions[i * 2], positions[i * 2 + 1]);
+                    } else {
+                        linePositions.push(NaN, NaN);
+                    }
+                    linePositions.push(NaN, NaN);
+                }
+                else {
+                    var midPtX = (positions[i * 2] + positions[i * 2 + 2]) / 2;
+                    linePositions.push(
+                        positions[i * 2],
+                        positions[i * 2 + 1],
+                        midPtX,
+                        positions[i * 2 + 1],
+                        midPtX,
+                        positions[i * 2 + 3]
+                    );
+                }
+            }
+            linePositions.push(positions[len - 2], positions[len - 1]);
+        } else if(trace.line.shape === 'vhv') {
+            linePositions = [];
+            for(i = 0; i < count - 1; i++) {
+                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1]) || isNaN(positions[i * 2 + 2]) || isNaN(positions[i * 2 + 3])) {
+                    if(!isNaN(positions[i * 2]) && !isNaN(positions[i * 2 + 1])) {
+                        linePositions.push(positions[i * 2], positions[i * 2 + 1]);
+                    } else {
+                        linePositions.push(NaN, NaN);
+                    }
+                    linePositions.push(NaN, NaN);
+                }
+                else {
+                    var midPtY = (positions[i * 2 + 1] + positions[i * 2 + 3]) / 2;
+                    linePositions.push(
+                        positions[i * 2],
+                        positions[i * 2 + 1],
+                        positions[i * 2],
+                        midPtY,
+                        positions[i * 2 + 2],
+                        midPtY
+                    );
+                }
+            }
+            linePositions.push(positions[len - 2], positions[len - 1]);
         } else if(trace.line.shape === 'vh') {
             linePositions = [];
             for(i = 0; i < count - 1; i++) {
                 if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
+                    linePositions.push(NaN, NaN, NaN, NaN);
                 }
                 else {
-                    linePositions.push(positions[i * 2]);
-                    linePositions.push(positions[i * 2 + 1]);
-                    linePositions.push(positions[i * 2]);
-                    linePositions.push(positions[i * 2 + 3]);
+                    linePositions.push(positions[i * 2], positions[i * 2 + 1]);
+                    if(!isNaN(positions[i * 2 + 2]) && !isNaN(positions[i * 2 + 3])) {
+                        linePositions.push(positions[i * 2], positions[i * 2 + 3]);
+                    } else {
+                        linePositions.push(NaN, NaN);
+                    }
                 }
             }
-            linePositions.push(positions[positions.length - 2]);
-            linePositions.push(positions[positions.length - 1]);
+            linePositions.push(positions[len - 2], positions[len - 1]);
         } else {
             linePositions = positions;
         }
@@ -511,11 +554,10 @@ function convertErrorBarPositions(gd, trace, positions, x, y) {
                 }
             }
 
-            Axes.expand(ax, [minShoe, maxHat], {padded: true});
-
             out[axLetter] = {
                 positions: positions,
-                errors: errors
+                errors: errors,
+                _bnds: [minShoe, maxHat]
             };
         }
     }

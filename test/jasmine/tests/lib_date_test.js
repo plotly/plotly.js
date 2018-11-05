@@ -391,20 +391,22 @@ describe('dates', function() {
                 errors.push(msg);
             });
 
-            [
+            var cases = [
                 new Date(-20000, 0, 1),
                 new Date(20000, 0, 1),
                 new Date('fail'),
                 undefined, null, NaN,
                 [], {}, [0], {1: 2}, '',
                 '2001-02-29'  // not a leap year
-            ].forEach(function(v) {
+            ];
+            cases.forEach(function(v) {
                 expect(Lib.cleanDate(v)).toBeUndefined();
                 if(!isNumeric(+v)) expect(Lib.cleanDate(+v)).toBeUndefined();
                 expect(Lib.cleanDate(v, '2000-01-01')).toBe('2000-01-01');
             });
 
-            expect(errors.length).toBe(16);
+            // two errors for each case except `undefined`
+            expect(errors.length).toBe(2 * (cases.length - 1));
         });
 
         it('should not alter valid date strings, even to truncate them', function() {

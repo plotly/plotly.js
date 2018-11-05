@@ -20,6 +20,8 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 module.exports = {
     domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
 
+    hoverlabel: undefined,
+
     labelfont: fontAttrs({
         editType: 'calc',
         description: 'Sets the font for the `dimension` labels.'

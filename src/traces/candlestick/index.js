@@ -32,12 +32,12 @@ module.exports = {
     attributes: require('./attributes'),
     layoutAttributes: require('../box/layout_attributes'),
     supplyLayoutDefaults: require('../box/layout_defaults').supplyLayoutDefaults,
-    setPositions: require('../box/set_positions').setPositions,
+    crossTraceCalc: require('../box/cross_trace_calc').crossTraceCalc,
     supplyDefaults: require('./defaults'),
     calc: require('./calc'),
     plot: require('../box/plot').plot,
     layerName: 'boxlayer',
     style: require('../box/style').style,
-    hoverPoints: require('../ohlc/hover'),
+    hoverPoints: require('../ohlc/hover').hoverPoints,
     selectPoints: require('../ohlc/select')
 };

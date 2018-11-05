@@ -61,7 +61,7 @@ describe('Test streamtube defaults', function() {
     });
 });
 
-describe('@gl Test streamtube autorange', function() {
+describe('Test streamtube autorange', function() {
     var gd;
 
     beforeEach(function() {
@@ -80,7 +80,7 @@ describe('@gl Test streamtube autorange', function() {
         expect(sceneLayout.zaxis.range).toBeCloseToArray(zrng, 2, 'zaxis range - ' + msg);
     }
 
-    it('should add pad around tubes to make sure they fit on the scene', function(done) {
+    it('@gl should add pad around tubes to make sure they fit on the scene', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-first'));
 
         Plotly.plot(gd, fig).then(function() {
@@ -105,7 +105,7 @@ describe('@gl Test streamtube autorange', function() {
     });
 });
 
-describe('@gl Test streamtube starting positions defaults:', function() {
+describe('Test streamtube starting positions defaults:', function() {
     var gd;
 
     beforeEach(function() {
@@ -147,7 +147,7 @@ describe('@gl Test streamtube starting positions defaults:', function() {
         expect(exp.cellsLength).toBe(obj.cells.length, 'cells length');
     }
 
-    it('should cut xz at min-y and take all x/y/z pts on that plane except those on the edges', function(done) {
+    it('@gl should cut xz at min-y and take all x/y/z pts on that plane except those on the edges', function(done) {
         Plotly.plot(gd, makeFigure(3, 3, 3)).then(function() {
             _assert({
                 positionsLength: 1536,
@@ -158,7 +158,7 @@ describe('@gl Test streamtube starting positions defaults:', function() {
         .then(done);
     });
 
-    it('should take middle pt if mesh vector has length 2', function(done) {
+    it('@gl should take middle pt if mesh vector has length 2', function(done) {
         Plotly.plot(gd, makeFigure(3, 3, 2)).then(function() {
             _assert({
                 positionsLength: 1200,
@@ -169,7 +169,7 @@ describe('@gl Test streamtube starting positions defaults:', function() {
         .then(done);
     });
 
-    it('should take pt if mesh vector has length 1', function(done) {
+    it('@gl should take pt if mesh vector has length 1', function(done) {
         Plotly.plot(gd, makeFigure(1, 3, 2)).then(function() {
             _assert({
                 positionsLength: 720,
@@ -181,7 +181,7 @@ describe('@gl Test streamtube starting positions defaults:', function() {
     });
 });
 
-describe('@gl Test streamtube interactions', function() {
+describe('Test streamtube interactions', function() {
     var gd;
 
     beforeEach(function() {
@@ -193,7 +193,7 @@ describe('@gl Test streamtube interactions', function() {
         destroyGraphDiv();
     });
 
-    it('overspecified meshgrid should return blank mesh grid', function(done) {
+    it('@gl overspecified meshgrid should return blank mesh grid', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
         var trace = fig.data[0];
         var x = trace.x.slice();
@@ -228,7 +228,7 @@ describe('@gl Test streamtube interactions', function() {
         .then(done);
     });
 
-    it('should add/clear gl objects correctly', function(done) {
+    it('@gl should add/clear gl objects correctly', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
         var trace = Lib.extendDeep({}, fig.data[0]);
 
@@ -261,7 +261,7 @@ describe('@gl Test streamtube interactions', function() {
         .then(done);
     });
 
-    it('should be able to restyle to a cone trace and back', function(done) {
+    it('@gl should be able to restyle to a cone trace and back', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-autorange.json'));
         var trace1 = Lib.extendDeep({}, fig.data[0]);
         trace1.type = 'streamtube';
@@ -295,7 +295,7 @@ describe('@gl Test streamtube interactions', function() {
     });
 });
 
-describe('@gl Test streamtube hover', function() {
+describe('@noCI Test streamtube hover', function() {
     var gd;
 
     beforeEach(function() {
@@ -307,7 +307,7 @@ describe('@gl Test streamtube hover', function() {
         destroyGraphDiv();
     });
 
-    it('should display hover labels', function(done) {
+    it('@gl should display hover labels', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
         fig.data[0].showscale = false;
         fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
@@ -364,7 +364,7 @@ describe('@gl Test streamtube hover', function() {
         .then(done);
     });
 
-    it('should display hover labels (multi-trace case)', function(done) {
+    it('@gl should display hover labels (multi-trace case)', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
         var trace0 = fig.data[0];
         trace0.showscale = false;
@@ -400,7 +400,7 @@ describe('@gl Test streamtube hover', function() {
         .then(done);
     });
 
-    it('should emit correct event data', function(done) {
+    it('@gl should emit correct event data', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
         fig.data[0].showscale = false;
         fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};

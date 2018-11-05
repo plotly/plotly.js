@@ -122,7 +122,8 @@ module.exports = function calc(gd, trace) {
     }
 
     calcSelection(cd, trace);
-    Axes.expand(valAxis, val, {padded: true});
+    var extremes = Axes.findExtremes(valAxis, val, {padded: true});
+    trace._extremes[valAxis._id] = extremes;
 
     if(cd.length > 0) {
         cd[0].t = {

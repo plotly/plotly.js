@@ -14,7 +14,7 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'table', trace: true}),
 
     columnwidth: {
@@ -198,3 +198,4 @@ module.exports = overrideAll({
         font: extendFlat({}, fontAttrs({arrayOk: true}))
     }
 }, 'calc', 'from-root');
+attrs.transforms = undefined;

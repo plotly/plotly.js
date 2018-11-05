@@ -5,7 +5,6 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var failTest = require('../assets/fail_test');
 
@@ -153,26 +152,6 @@ describe('Test Plots', function() {
             };
 
             testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
-        });
-
-        it('should sort base plot modules on fullLayout object', function() {
-            var gd = Lib.extendDeep({}, require('@mocks/plot_types.json'));
-            gd.data.unshift({type: 'scattergl'});
-            gd.data.push({type: 'splom'});
-
-            supplyAllDefaults(gd);
-            var names = gd._fullLayout._basePlotModules.map(function(m) {
-                return m.name;
-            });
-
-            expect(names).toEqual([
-                'splom',
-                'cartesian',
-                'gl3d',
-                'geo',
-                'pie',
-                'ternary'
-            ]);
         });
     });
 
@@ -501,6 +480,13 @@ describe('Test Plots', function() {
     });
 
     describe('Plots.graphJson', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
 
         it('should serialize data, layout and frames', function(done) {
             var mock = {
@@ -534,7 +520,7 @@ describe('Test Plots', function() {
                 }]
             };
 
-            Plotly.plot(createGraphDiv(), mock).then(function(gd) {
+            Plotly.plot(gd, mock).then(function() {
                 var str = Plots.graphJson(gd, false, 'keepdata');
                 var obj = JSON.parse(str);
 
@@ -548,10 +534,38 @@ describe('Test Plots', function() {
                     name: 'garbage'
                 });
             })
-            .then(function() {
-                destroyGraphDiv();
-                done();
-            });
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should convert typed arrays to regular arrays', function(done) {
+            var trace = {
+                x: new Float32Array([1, 2, 3]),
+                y: new Float32Array([1, 2, 1]),
+                marker: {
+                    size: new Float32Array([20, 30, 10]),
+                    color: new Float32Array([10, 30, 20]),
+                    cmin: 10,
+                    cmax: 30,
+                    colorscale: [
+                        [0, 'rgb(255, 0, 0)'],
+                        [0.5, 'rgb(0, 255, 0)'],
+                        [1, 'rgb(0, 0, 255)']
+                    ]
+                }
+            };
+
+            Plotly.plot(gd, [trace]).then(function() {
+                var str = Plots.graphJson(gd, false, 'keepdata');
+                var obj = JSON.parse(str);
+
+                expect(obj.data[0].x).toEqual([1, 2, 3]);
+                expect(obj.data[0].y).toEqual([1, 2, 1]);
+                expect(obj.data[0].marker.size).toEqual([20, 30, 10]);
+                expect(obj.data[0].marker.color).toEqual([10, 30, 20]);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -763,7 +777,7 @@ describe('Test Plots', function() {
                 // some special Plots.style logic.
                 expect(Drawing.pointStyle).toHaveBeenCalledTimes(3);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -829,7 +843,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy']}, 'totally blank');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -838,7 +852,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['x3y4']}, 'blank with axis objects');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -856,7 +870,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'visible components');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -874,7 +888,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'invisible components');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -893,7 +907,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });

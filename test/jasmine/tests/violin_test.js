@@ -124,8 +124,8 @@ describe('Test violin defaults', function() {
                 color: 'red'
             }
         });
-        expect(traceOut.box).toBeUndefined();
-        expect(traceOut.meanline).toBeUndefined();
+        expect(traceOut.box).toEqual({visible: false});
+        expect(traceOut.meanline).toEqual({visible: false});
     });
 
     it('should use violin style settings to default inner style attribute', function() {
@@ -431,6 +431,64 @@ describe('Test violin hover:', function() {
         nums: 'x: 42.43046, kde: 0.083',
         name: '',
         axis: 'Saturday'
+    }, {
+        desc: 'single horizontal violin',
+        mock: require('@mocks/violin_non-linear.json'),
+        pos: [310, 160],
+        nums: ['median: C', 'min: A', 'q1: B', 'q3: D', 'max: G', 'upper fence: D', 'x: C, kde: 1.005'],
+        name: ['categories', '', '', '', '', '', ''],
+        axis: 'categories',
+        hOrder: [4, 5, 3, 6, 0, 2, 1],
+        isRotated: true
+    }, {
+        desc: 'multiple horizontal violins',
+        mock: require('@mocks/box_grouped_horz.json'),
+        patch: function(fig) {
+            fig.data.forEach(function(t) {
+                t.type = 'violin';
+                t.hoveron = 'violins';
+            });
+            fig.layout.violinmode = 'group';
+            return fig;
+        },
+        nums: ['median: 0.4', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'max: 0.9'],
+        name: ['kale', '', '', '', ''],
+        axis: 'day 2',
+        hOrder: [4, 3, 0, 2, 1],
+        isRotated: true
+    }, {
+        desc: 'multiple horizontal violins (under hovermode:closest)',
+        mock: require('@mocks/box_grouped_horz.json'),
+        patch: function(fig) {
+            fig.data.forEach(function(t) {
+                t.type = 'violin';
+                t.hoveron = 'violins';
+            });
+            fig.layout.violinmode = 'group';
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        pos: [200, 175],
+        nums: [
+            '(median: 0.7, day 2)', '(min: 0.2, day 2)', '(q1: 0.5, day 2)',
+            '(q3: 0.8, day 2)', '(max: 0.9, day 2)'
+        ],
+        name: ['radishes', '', '', '', ''],
+        hOrder: [4, 3, 0, 2, 1],
+        isRotated: true
+    }, {
+        desc: 'hovering over single pt on horizontal violin should not rotate labels',
+        mock: require('@mocks/violin_old-faithful.json'),
+        patch: function(fig) {
+            fig.data[0].x = fig.data[0].y;
+            delete fig.data[0].y;
+            fig.layout = {hovermode: 'closest'};
+            return fig;
+        },
+        pos: [539, 293],
+        nums: '(96, Old Faithful)',
+        name: '',
+        isRotated: false
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {

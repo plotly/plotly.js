@@ -13,6 +13,7 @@ var Histogram2dContour = {};
 
 Histogram2dContour.attributes = require('./attributes');
 Histogram2dContour.supplyDefaults = require('./defaults');
+Histogram2dContour.crossTraceDefaults = require('../histogram2d/cross_trace_defaults');
 Histogram2dContour.calc = require('../contour/calc');
 Histogram2dContour.plot = require('../contour/plot').plot;
 Histogram2dContour.layerName = 'contourlayer';
@@ -23,7 +24,7 @@ Histogram2dContour.hoverPoints = require('../contour/hover');
 Histogram2dContour.moduleType = 'trace';
 Histogram2dContour.name = 'histogram2dcontour';
 Histogram2dContour.basePlotModule = require('../../plots/cartesian');
-Histogram2dContour.categories = ['cartesian', 'svg', '2dMap', 'contour', 'histogram'];
+Histogram2dContour.categories = ['cartesian', 'svg', '2dMap', 'contour', 'histogram', 'showLegend'];
 Histogram2dContour.meta = {
     hrName: 'histogram_2d_contour',
     description: [

@@ -7,7 +7,7 @@ var convert = require('@src/traces/scattermapbox/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mouseEvent = require('../assets/mouse_event');
@@ -773,7 +773,7 @@ describe('@noCI scattermapbox hover', function() {
         .then(function() {
             check('(10°, 10°)<br>Apple');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

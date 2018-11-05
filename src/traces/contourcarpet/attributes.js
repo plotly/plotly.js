@@ -90,7 +90,8 @@ module.exports = extendFlat({
             ].join(' ')
         }),
         editType: 'plot'
-    }
+    },
+    transforms: undefined
 },
 
     colorscaleAttrs('', {

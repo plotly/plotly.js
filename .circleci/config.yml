@@ -10,7 +10,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: circleci/node:8.9.4
+      - image: circleci/node:10.9.0
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -47,16 +47,12 @@ jobs:
   test-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:10.9.0-browsers
     working_directory: ~/plotly.js
     steps:
       - checkout
       - attach_workspace:
           at: ~/plotly.js
-      - run:
-          name: Set timezone to Alaska time (arbitrary timezone to test date logic)
-          command: |
-            sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
       - run:
           name: Run jasmine tests (batch 1)
           command: ./.circleci/test.sh jasmine
@@ -64,16 +60,12 @@ jobs:
   test-jasmine2:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:10.9.0-browsers
     working_directory: ~/plotly.js
     steps:
       - checkout
       - attach_workspace:
           at: ~/plotly.js
-      - run:
-          name: Set timezone to Alaska time (arbitrary timezone to test date logic)
-          command: |
-            sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
       - run:
           name: Run jasmine tests (batch 2)
           command: ./.circleci/test.sh jasmine2
@@ -96,6 +88,7 @@ jobs:
           command: ./.circleci/test.sh image
       - store_artifacts:
           path: build
+          destination: /
 
   test-image2:
     docker:
@@ -115,10 +108,11 @@ jobs:
           command: ./.circleci/test.sh image2
       - store_artifacts:
           path: build
+          destination: /
 
   test-syntax:
     docker:
-      - image: circleci/node:8.9.4
+      - image: circleci/node:10.9.0
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -127,6 +121,34 @@ jobs:
       - run:
           name: Run syntax tests
           command: ./.circleci/test.sh syntax
+
+  publish:
+    docker:
+      - image: circleci/node:10.9.0
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/plotly.js
+      - run:
+          name: Update plot-schema.json
+          command: node tasks/bundle_plot_schema.js
+      - store_artifacts:
+          path: build/plotly.js
+          destination: /plotly.js
+      - store_artifacts:
+          path: dist/plotly.min.js
+          destination: /plotly.min.js
+      - store_artifacts:
+          path: dist/plot-schema.json
+          destination: /plot-schema.json
+      - run:
+          name: Show URLs to build files
+          command: |
+            PROJECT_NUM=45646037
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plotly.js
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plotly.min.js
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plot-schema.json
 
 workflows:
   version: 2
@@ -146,5 +168,8 @@ workflows:
           requires:
             - build
       - test-syntax:
+          requires:
+            - build
+      - publish:
           requires:
             - build

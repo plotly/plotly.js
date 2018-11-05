@@ -51,7 +51,7 @@ $successColor: hsl(121, 32%, 40%) !default;
         opacity: 1;
     }
 
-    // Arrow
+    // Top arrow
     &:before {
         content: '';
         position: absolute;
@@ -77,4 +77,19 @@ $successColor: hsl(121, 32%, 40%) !default;
         margin-right: -1 * $arrowOffsetX;
         border-radius: 2px;
     }
+}
+
+.vertical [data-title] {
+  &:before, &:after {
+    top: 0%;
+    right: 200%;
+  }
+
+  // Right arrow
+  &:before {
+    border: $arrowBorderWidth solid transparent;
+    border-left-color: $defaultColor;
+    margin-top: $verticalPadding;
+    margin-right: -1 * ($arrowOffsetX + 2 *  $arrowBorderWidth);
+  }
 }

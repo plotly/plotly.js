@@ -111,6 +111,7 @@ module.exports = extendFlat({
             'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
         ].join(' ')
     },
+    transforms: undefined
 },
     colorscaleAttrs('', {
         cLetter: 'z',

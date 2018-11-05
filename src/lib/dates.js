@@ -13,7 +13,7 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Loggers = require('./loggers');
-var mod = require('./mod');
+var mod = require('./mod').mod;
 
 var constants = require('../constants/numerical');
 var BADNUM = constants.BADNUM;
@@ -345,7 +345,9 @@ function includeTime(dateStr, h, m, s, msec10) {
 // a Date object or milliseconds
 // optional dflt is the return value if cleaning fails
 exports.cleanDate = function(v, dflt, calendar) {
-    if(exports.isJSDate(v) || typeof v === 'number') {
+    // let us use cleanDate to provide a missing default without an error
+    if(v === BADNUM) return dflt;
+    if(exports.isJSDate(v) || (typeof v === 'number' && isFinite(v))) {
         // do not allow milliseconds (old) or jsdate objects (inherently
         // described as gregorian dates) with world calendars
         if(isWorldCalendar(calendar)) {

@@ -7,6 +7,7 @@ var Drawing = require('@src/components/drawing');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var assertD3Data = require('../assets/custom_assertions').assertD3Data;
 
 describe('restyle', function() {
     describe('scatter traces', function() {
@@ -21,37 +22,35 @@ describe('restyle', function() {
         it('reuses SVG fills', function(done) {
             var fills, firstToZero, secondToZero, firstToNext, secondToNext;
             var mock = Lib.extendDeep({}, require('@mocks/basic_area.json'));
+            function getFills() {
+                return d3.selectAll('g.trace.scatter .fills>g');
+            }
 
             Plotly.plot(gd, mock.data, mock.layout).then(function() {
-                // Assert there are two fills:
-                fills = d3.selectAll('g.trace.scatter .js-fill')[0];
+                fills = getFills();
 
-                // First is tozero, second is tonext:
-                expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(2);
-                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
-                expect(fills[1]).toBeClassed(['js-fill', 'js-tonext']);
+                // Assert there are two fills, first is tozero, second is tonext
+                assertD3Data(fills, ['_ownFill', '_nextFill']);
 
-                firstToZero = fills[0];
-                firstToNext = fills[1];
-            }).then(function() {
+                firstToZero = fills[0][0];
+                firstToNext = fills[0][1];
+
                 return Plotly.restyle(gd, {visible: [false]}, [1]);
             }).then(function() {
+                fills = getFills();
                 // Trace 1 hidden leaves only trace zero's tozero fill:
-                expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(1);
-                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
-            }).then(function() {
+                assertD3Data(fills, ['_ownFill']);
+
                 return Plotly.restyle(gd, {visible: [true]}, [1]);
             }).then(function() {
-                // Reshow means two fills again AND order is preserved:
-                fills = d3.selectAll('g.trace.scatter .js-fill')[0];
+                fills = getFills();
 
+                // Reshow means two fills again AND order is preserved
                 // First is tozero, second is tonext:
-                expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(2);
-                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
-                expect(fills[1]).toBeClassed(['js-fill', 'js-tonext']);
+                assertD3Data(fills, ['_ownFill', '_nextFill']);
 
-                secondToZero = fills[0];
-                secondToNext = fills[1];
+                secondToZero = fills[0][0];
+                secondToNext = fills[0][1];
 
                 // The identity of the first is retained:
                 expect(firstToZero).toBe(secondToZero);
@@ -61,8 +60,7 @@ describe('restyle', function() {
 
                 return Plotly.restyle(gd, 'visible', false);
             }).then(function() {
-                expect(d3.selectAll('g.trace.scatter').size()).toEqual(0);
-
+                expect(d3.selectAll('g.trace.scatter').size()).toBe(0);
             })
             .catch(failTest)
             .then(done);
@@ -197,7 +195,7 @@ describe('restyle', function() {
                 return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
             })
             .then(function() {
-                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(false);
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
                 return Plotly.restyle(gd, {visible: true}, 1);
             })
             .then(function() {
@@ -522,7 +520,8 @@ describe('subplot creation / deletion:', function() {
             yaxis2: {domain: [0.5, 1], anchor: 'x2'},
             yaxis3: {overlaying: 'y'},
             // legend makes its own .bg rect - delete so we can ignore that here
-            showlegend: false
+            showlegend: false,
+            plot_bgcolor: '#d3d3d3'
         })
         .then(function() {
             // touching but not overlapping: all backgrounds are in back
@@ -549,6 +548,74 @@ describe('subplot creation / deletion:', function() {
             });
         })
         .then(function() {
+            checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('puts not have backgrounds nodes when plot and paper color match', function(done) {
+        Plotly.plot(gd, [
+            {y: [1, 2, 3]},
+            {y: [2, 3, 1], xaxis: 'x2', yaxis: 'y2'},
+            {y: [3, 1, 2], yaxis: 'y3'}
+        ], {
+            xaxis: {domain: [0, 0.5]},
+            xaxis2: {domain: [0.5, 1], anchor: 'y2'},
+            yaxis: {domain: [0, 1]},
+            yaxis2: {domain: [0.5, 1], anchor: 'x2'},
+            yaxis3: {overlaying: 'y'},
+            // legend makes its own .bg rect - delete so we can ignore that here
+            showlegend: false,
+            plot_bgcolor: 'white',
+            paper_bgcolor: 'white'
+        })
+        .then(function() {
+            // touching but not overlapping, matching colors -> no <rect.bg>
+            checkBGLayers(0, 0, ['xy', 'x2y2', 'xy3']);
+
+            // now add a slight overlap: that's enough to put x2y2 in front
+            return Plotly.relayout(gd, {'xaxis2.domain': [0.49, 1]});
+        })
+        .then(function() {
+            // need to draw one backgroud <rect>
+            checkBGLayers(0, 1, ['xy', 'x2y2', 'xy3']);
+
+            // x ranges overlap, but now y ranges are disjoint
+            return Plotly.relayout(gd, {'xaxis2.domain': [0, 1], 'yaxis.domain': [0, 0.5]});
+        })
+        .then(function() {
+            // disjoint, matching colors -> no <rect.bg>
+            checkBGLayers(0, 0, ['xy', 'x2y2', 'xy3']);
+
+            // regular inset
+            return Plotly.relayout(gd, {
+                'xaxis.domain': [0, 1],
+                'yaxis.domain': [0, 1],
+                'xaxis2.domain': [0.6, 0.9],
+                'yaxis2.domain': [0.6, 0.9]
+            });
+        })
+        .then(function() {
+            // need to draw one backgroud <rect>
+            checkBGLayers(0, 1, ['xy', 'x2y2', 'xy3']);
+
+            // change paper color
+            return Plotly.relayout(gd, 'paper_bgcolor', 'black');
+        })
+        .then(function() {
+            // need a backgroud <rect> on main subplot to distinguish plot from
+            // paper color
+            checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
+
+            // change bg colors to same semi-transparent color
+            return Plotly.relayout(gd, {
+                'paper_bgcolor': 'rgba(255,0,0,0.2)',
+                'plot_bgcolor': 'rgba(255,0,0,0.2)'
+            });
+        })
+        .then(function() {
+            // still need a <rect.bg> to get correct semi-transparent look
             checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
         })
         .catch(failTest)
@@ -654,6 +721,88 @@ describe('subplot creation / deletion:', function() {
                 [false, 0],
                 [false, 0]
             );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should clear obsolete content out of axis layers when changing overlaying configuation', function(done) {
+        function data() {
+            return [
+                {x: [1, 2], y: [1, 2]},
+                {x: [1, 2], y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
+            ];
+        }
+
+        function fig0() {
+            return {
+                data: data(),
+                layout: {
+                    xaxis2: {side: 'top', overlaying: 'x'},
+                    yaxis2: {side: 'right', overlaying: 'y'}
+                }
+            };
+        }
+
+        function fig1() {
+            return {
+                data: data(),
+                layout: {
+                    xaxis2: {side: 'top', domain: [0.37, 1]},
+                    yaxis2: {side: 'right', overlaying: 'y'}
+                }
+            };
+        }
+
+        function getParentClassName(query, level) {
+            level = level || 1;
+            var cl = gd.querySelector('g.cartesianlayer');
+            var node = cl.querySelector(query);
+            while(level--) node = node.parentNode;
+            return node.getAttribute('class');
+        }
+
+        function _assert(msg, exp) {
+            expect(getParentClassName('.xtick'))
+                .toBe(exp.xtickParent, 'xitck parent - ' + msg);
+            expect(getParentClassName('.x2tick'))
+                .toBe(exp.x2tickParent, 'x2tick parent - ' + msg);
+            expect(getParentClassName('.trace' + gd._fullData[0].uid, 2))
+                .toBe(exp.trace0Parent, 'data[0] parent - ' + msg);
+            expect(getParentClassName('.trace' + gd._fullData[1].uid, 2))
+                .toBe(exp.trace1Parent, 'data[1] parent - ' + msg);
+        }
+
+        Plotly.react(gd, fig0())
+        .then(function() {
+            _assert('x2/y2 both overlays', {
+                xtickParent: 'xaxislayer-above',
+                x2tickParent: 'x2y2-x',
+                trace0Parent: 'plot',
+                trace1Parent: 'x2y2'
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, fig1());
+        })
+        .then(function() {
+            _assert('x2 free / y2 overlaid', {
+                xtickParent: 'xaxislayer-above',
+                x2tickParent: 'xaxislayer-above',
+                trace0Parent: 'plot',
+                trace1Parent: 'plot'
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, fig0());
+        })
+        .then(function() {
+            _assert('back to x2/y2 both overlays', {
+                xtickParent: 'xaxislayer-above',
+                x2tickParent: 'x2y2-x',
+                trace0Parent: 'plot',
+                trace1Parent: 'x2y2'
+            });
         })
         .catch(failTest)
         .then(done);

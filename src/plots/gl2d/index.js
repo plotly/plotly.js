@@ -138,7 +138,8 @@ exports.toSVG = function(gd) {
     }
 };
 
-exports.updateFx = function(fullLayout) {
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {
