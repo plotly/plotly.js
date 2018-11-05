@@ -34,12 +34,12 @@ module.exports = {
                 'Sets the plot\'s title.'
             ].join(' ')
         },
+        font: fontAttrs({
+            editType: 'layoutstyle',
+            description: 'Sets the title font.'
+        }),
         editType: 'layoutstyle'
     },
-    titlefont: fontAttrs({
-        editType: 'layoutstyle',
-        description: 'Sets the title font.'
-    }),
     autosize: {
         valType: 'boolean',
         role: 'info',

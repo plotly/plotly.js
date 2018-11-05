@@ -47,14 +47,14 @@ module.exports = {
             editType: 'ticks',
             description: 'Sets the title of this axis.'
         },
+        font: fontAttrs({
+            editType: 'ticks',
+            description: [
+                'Sets this axis\' title font.'
+            ].join(' ')
+        }),
         editType: 'ticks'
     },
-    titlefont: fontAttrs({
-        editType: 'ticks',
-        description: [
-            'Sets this axis\' title font.'
-        ].join(' ')
-    }),
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data

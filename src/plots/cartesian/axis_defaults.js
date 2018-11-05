@@ -69,7 +69,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
     coerce('title.text', dfltTitle);
-    Lib.coerceFont(coerce, 'titlefont', {
+    Lib.coerceFont(coerce, 'title.font', {
         family: font.family,
         size: Math.round(font.size * 1.2),
         color: dfltFontColor

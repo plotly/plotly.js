@@ -2337,7 +2337,7 @@ axes.drawTitle = function(gd, ax) {
     var axLetter = axId.charAt(0);
     var offsetBase = 1.5;
     var gs = fullLayout._size;
-    var fontSize = ax.titlefont.size;
+    var fontSize = ax.title.font.size;
 
     var transform, counterAxis, x, y;
 

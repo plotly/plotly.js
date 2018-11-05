@@ -1687,6 +1687,34 @@ function _restyle(gd, aobj, traces) {
 }
 
 /**
+ * Maps deprecated layout attributes that need to be converted
+ * to the current API at this stage to ensure backwards compatibility.
+ *
+ * @param layoutObj
+ */
+function mapDeprecatedLayoutAttributes(layoutObj) {
+
+    // Support old-style update of the title's font
+    var isTitlefontSet = layoutObj.titlefont;
+    var isFontInTitleSet = layoutObj.title && layoutObj.title.font;
+    var isFontInTitleNotSet = !isFontInTitleSet;
+    if(isTitlefontSet && isFontInTitleNotSet) {
+
+        // Use string attribute because initiating a new title object
+        // to be able to specify a font property on it would require to
+        // know the potentially existing `title.text` property.
+        layoutObj['title.font'] = layoutObj.titlefont;
+        delete layoutObj.titlefont;
+    }
+
+    // Note, that updating x-axis and y-axis title fonts
+    // was never supported unless (i) using string
+    // attributes or (ii) passing `xaxis.title` / `yaxis.title`
+    // again. And these cases are covered by
+    // helpers.cleanLayout anyways.
+}
+
+/**
  * Maps deprecated layout "string attributes" to
  * "string attributes" of the current API to ensure backwards compatibility.
  *
@@ -1698,13 +1726,32 @@ function mapDeprecatedLayoutAttributeStrings(layoutObj) {
     if(layoutObj.title && !Lib.isPlainObject(layoutObj.title)) {
         layoutObj.title = {text: layoutObj.title};
     }
-    if(layoutObj['xaxis.title'] !== undefined) {
-        layoutObj['xaxis.title.text'] = layoutObj['xaxis.title'];
-        delete layoutObj['xaxis.title'];
-    }
-    if(layoutObj['yaxis.title'] !== undefined) {
-        layoutObj['yaxis.title.text'] = layoutObj['yaxis.title'];
-        delete layoutObj['yaxis.title'];
+    replace('xaxis.title', 'xaxis.title.text');
+    replace('yaxis.title', 'yaxis.title.text');
+
+    // Note: Only "nested" (dot notation) attributes
+    // need to be converted. For example 'titlefont'
+    // was a top-level attribute and thus is covered by
+    // the general compatibility layer.
+    replace('titlefont.color', 'title.font.color');
+    replace('titlefont.family', 'title.font.family');
+    replace('titlefont.size', 'title.font.size');
+
+    replace('xaxis.titlefont', 'xaxis.title.font');
+    replace('xaxis.titlefont.color', 'xaxis.title.font.color');
+    replace('xaxis.titlefont.family', 'xaxis.title.font.family');
+    replace('xaxis.titlefont.size', 'xaxis.title.font.size');
+
+    replace('yaxis.titlefont', 'yaxis.title.font');
+    replace('yaxis.titlefont.color', 'yaxis.title.font.color');
+    replace('yaxis.titlefont.family', 'yaxis.title.font.family');
+    replace('yaxis.titlefont.size', 'yaxis.title.font.size');
+
+    function replace(oldKey, newKey) {
+        if(layoutObj[oldKey] !== undefined) {
+            layoutObj[newKey] = layoutObj[oldKey];
+            delete layoutObj[oldKey];
+        }
     }
 }
 
@@ -1748,6 +1795,7 @@ exports.relayout = function relayout(gd, astr, val) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
+    mapDeprecatedLayoutAttributes(aobj);
     mapDeprecatedLayoutAttributeStrings(aobj);
 
     var specs = _relayout(gd, aobj);
@@ -2227,6 +2275,7 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces);
     var restyleFlags = restyleSpecs.flags;
 
+    mapDeprecatedLayoutAttributes(layoutUpdate);
     mapDeprecatedLayoutAttributeStrings(layoutUpdate);
 
     var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate));

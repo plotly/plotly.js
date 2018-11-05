@@ -184,7 +184,6 @@ module.exports = function draw(gd, id) {
                 showticksuffix: opts.showticksuffix,
                 ticksuffix: opts.ticksuffix,
                 title: opts.title,
-                titlefont: opts.titlefont,
                 showline: true,
                 anchor: 'free',
                 side: 'right',
@@ -290,7 +289,7 @@ module.exports = function draw(gd, id) {
             // when we squish the axis. This one only applies to
             // top or bottom titles, not right side.
             var x = gs.l + (opts.x + xpadFrac) * gs.w,
-                fontSize = cbAxisOut.titlefont.size,
+                fontSize = cbAxisOut.title.font.size,
                 y;
 
             if(opts.titleside === 'top') {
@@ -460,7 +459,7 @@ module.exports = function draw(gd, id) {
                 },
                 function() {
                     if(['top', 'bottom'].indexOf(opts.titleside) === -1) {
-                        var fontSize = cbAxisOut.titlefont.size,
+                        var fontSize = cbAxisOut.title.font.size,
                             y = cbAxisOut._offset + cbAxisOut._length / 2,
                             x = gs.l + (cbAxisOut.position || 0) * gs.w + ((cbAxisOut.side === 'right') ?
                                 10 + fontSize * ((cbAxisOut.showticklabels ? 1 : 0.5)) :

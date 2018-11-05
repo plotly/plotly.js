@@ -193,6 +193,22 @@ exports.cleanLayout = function(layout) {
         };
     }
 
+    // Check for old-style title font definitions
+    if(Lib.isPlainObject(layout.titlefont) && !Lib.isPlainObject(layout.title.font)) {
+        layout.title.font = layout.titlefont;
+        delete layout.titlefont;
+    }
+    if(layout.xaxis &&
+      Lib.isPlainObject(layout.xaxis.titlefont) && !Lib.isPlainObject(layout.xaxis.title.font)) {
+        layout.xaxis.title.font = layout.xaxis.titlefont;
+        delete layout.xaxis.titlefont;
+    }
+    if(layout.yaxis &&
+      Lib.isPlainObject(layout.yaxis.titlefont) && !Lib.isPlainObject(layout.yaxis.title.font)) {
+        layout.yaxis.title.font = layout.yaxis.titlefont;
+        delete layout.yaxis.titlefont;
+    }
+
     /*
      * Moved from rotate -> orbit for dragmode
      */
