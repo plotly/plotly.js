@@ -1140,6 +1140,13 @@ describe('finance trace hover:', function() {
             exp: {
                 extraText: 'A'
             }
+        }, {
+            type: type,
+            desc: 'just array text with array hoverinfo',
+            traces: [{hoverinfo: ['text', 'text'], text: ['A', 'B']}],
+            exp: {
+                extraText: 'A'
+            }
         }]
         .forEach(function(specs) {
             it('should generate correct hover labels ' + type + ' - ' + specs.desc, function(done) {
