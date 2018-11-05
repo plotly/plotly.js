@@ -2466,6 +2466,8 @@ function diffData(gd, oldFullData, newFullData, immutable) {
 function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
     var flags = editTypes.layoutFlags();
     flags.arrays = {};
+    flags.rangesAltered = {};
+    flags.autorangedAxes = {};
 
     function getLayoutValObject(parts) {
         return PlotSchema.getLayoutValObject(newFullLayout, parts);
@@ -2503,6 +2505,11 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             return;
         }
         editTypes.update(flags, valObject);
+
+        // track cartesian axes with altered ranges
+        if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
+            flags.rangesAltered[outerparts[0]] = 1;
+        }
     }
 
     function valObjectCanBeDataArray(valObject) {
@@ -2515,6 +2522,13 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
 
         var oldVal = oldContainer[key];
         var newVal = newContainer[key];
+        var parts = outerparts.concat(key);
+        astr = parts.join('.');
+
+        // track auto-ranged cartesian axes, changed or not
+        if(AX_AUTORANGE_RE.test(astr) && newVal === true) {
+            flags.autorangedAxes[outerparts[0]] = 1;
+        }
 
         if(key.charAt(0) === '_' || typeof oldVal === 'function' || oldVal === newVal) continue;
 
@@ -2530,7 +2544,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         if(key === 'range' && newContainer.autorange) continue;
         if((key === 'zmin' || key === 'zmax') && newContainer.type === 'contourcarpet') continue;
 
-        var parts = outerparts.concat(key);
         valObject = getValObject(parts);
 
         // in case type changed, we may not even *have* a valObject.
