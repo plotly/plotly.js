@@ -41,7 +41,8 @@ module.exports = {
     domain: domainAttrs({name: 'parcats', trace: true, editType: 'calc'}),
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['count', 'probability'],
-        editType: 'plot'
+        editType: 'plot',
+        arrayOk: false
         // plotAttrs.hoverinfo description is appropriate
     }),
     hoveron: {
