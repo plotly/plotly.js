@@ -13,7 +13,6 @@ var axesAttrs = require('../../cartesian/layout_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
-
 module.exports = overrideAll({
     visible: axesAttrs.visible,
     showspikes: {
@@ -77,7 +76,13 @@ module.exports = overrideAll({
     type: axesAttrs.type,
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
-    range: axesAttrs.range,
+    range: extendFlat({}, axesAttrs.range, {
+        items: [
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+        ],
+        anim: false
+    }),
     // ticks
     tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
