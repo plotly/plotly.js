@@ -536,6 +536,16 @@ describe('Test histogram', function() {
             expect(calcPositions(trace3)).toBeCloseToArray([1.1, 1.3], 5);
         });
 
+        it('can handle TypedArrays', function() {
+            var trace1 = {x: new Float32Array([1, 2, 3, 4])};
+            var trace2 = {x: new Float32Array([5, 5.5, 6, 6.5])};
+            var trace3 = {x: new Float64Array([1, 1.1, 1.2, 1.3]), xaxis: 'x2'};
+            var trace4 = {x: new Float64Array([1, 1.2, 1.4, 1.6]), yaxis: 'y2'};
+
+            expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 3, 5]);
+            expect(calcPositions(trace3)).toBeCloseToArray([1.1, 1.3], 5);
+        });
+
         describe('cumulative distribution functions', function() {
             var base = {
                 x: [0, 5, 10, 15, 5, 10, 15, 10, 15, 15],
