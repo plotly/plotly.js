@@ -1371,6 +1371,12 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('modebar.color', Color.addOpacity(modebarDefaultColor, 0.3));
     coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
 
+    // do not include defaults in fullLayout when users do not set transition
+    if(Lib.isPlainObject(layoutIn.transition)) {
+        coerce('transition.duration');
+        coerce('transition.easing');
+    }
+
     Registry.getComponentMethod(
         'calendars',
         'handleDefaults'
@@ -2415,6 +2421,209 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
     }
 
     var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, plots.rehover, executeTransitions];
+
+    var transitionStarting = Lib.syncOrAsync(seq, gd);
+
+    if(!transitionStarting || !transitionStarting.then) {
+        transitionStarting = Promise.resolve();
+    }
+
+    return transitionStarting.then(function() {
+        return gd;
+    });
+};
+
+/**
+ * Transition used in Plotly.react
+ */
+plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
+    var aborted = false;
+    var redraw = true;
+    var edits;
+
+    function prepareTransitions() {
+        var fullLayout = gd._fullLayout;
+        var subplots = fullLayout._plots;
+        var rangesAltered = relayoutFlags.rangesAltered;
+        var autorangedAxes = relayoutFlags.autorangedAxes;
+
+        // no need to redraw at end of transition,
+        // if all changes are animatable
+        redraw = false;
+        if(restyleFlags.anim === 'some') redraw = true;
+        if(relayoutFlags.anim === 'some') redraw = true;
+
+        edits = {};
+        for(var k in subplots) {
+            var plotinfo = subplots[k];
+            var xa = plotinfo.xaxis;
+            var ya = plotinfo.yaxis;
+
+            if(rangesAltered[xa._name] || rangesAltered[ya._name] ||
+                autorangedAxes[xa._name] || autorangedAxes[ya._name]
+            ) {
+                edits[k] = {
+                    plotinfo: plotinfo,
+                    xr0: oldFullLayout[xa._name].range.slice(),
+                    yr0: oldFullLayout[ya._name].range.slice(),
+                    xr1: xa.range.slice(),
+                    yr1: ya.range.slice()
+                };
+            }
+        }
+
+        return Promise.resolve();
+    }
+
+    function executeCallbacks(list) {
+        var p = Promise.resolve();
+        if(!list) return p;
+        while(list.length) {
+            p = p.then((list.shift()));
+        }
+        return p;
+    }
+
+    function flushCallbacks(list) {
+        if(!list) return;
+        while(list.length) {
+            list.shift();
+        }
+    }
+
+    function executeTransitions() {
+        gd.emit('plotly_transitioning', []);
+
+        return new Promise(function(resolve) {
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+            var transitionOpts = fullLayout.transition;
+            var basePlotModules = fullLayout._basePlotModules;
+            var i;
+
+            // This flag is used to disabled things like autorange:
+            gd._transitioning = true;
+
+            // When instantaneous updates are coming through quickly, it's too much to simply disable
+            // all interaction, so store this flag so we can disambiguate whether mouse interactions
+            // should be fully disabled or not:
+            if(transitionOpts.duration > 0) {
+                gd._transitioningWithDuration = true;
+            }
+
+            // If another transition is triggered, this callback will be executed simply because it's
+            // in the interruptCallbacks queue. If this transition completes, it will instead flush
+            // that queue and forget about this callback.
+            gd._transitionData._interruptCallbacks.push(function() {
+                aborted = true;
+            });
+
+            if(redraw) {
+                gd._transitionData._interruptCallbacks.push(function() {
+                    return Registry.call('redraw', gd);
+                });
+            }
+
+            // Emit this and make sure it happens last:
+            gd._transitionData._interruptCallbacks.push(function() {
+                gd.emit('plotly_transitioninterrupted', []);
+            });
+
+            // Construct callbacks that are executed on transition end. This ensures the d3 transitions
+            // are *complete* before anything else is done.
+            var numCallbacks = 0;
+            var numCompleted = 0;
+            function makeCallback() {
+                numCallbacks++;
+                return function() {
+                    numCompleted++;
+                    // When all are complete, perform a redraw:
+                    if(!aborted && numCompleted === numCallbacks) {
+                        completeTransition(resolve);
+                    }
+                };
+            }
+
+            // Here handle the exception that we refuse to animate traces and axes at the same
+            // time. In other words, if there's an axis transition, then set the data transition
+            // to instantaneous.
+            var traceTransitionOpts;
+            var transitionedTraces = [];
+
+            if(Object.keys(edits).length) {
+                for(i = 0; i < basePlotModules.length; i++) {
+                    if(basePlotModules[i].transitionAxes2) {
+                        basePlotModules[i].transitionAxes2(gd, edits, transitionOpts, makeCallback);
+                    }
+                }
+
+                traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
+                traceTransitionOpts.duration = 0;
+                // This means do not transition traces,
+                // this happens on layout-only (e.g. axis range) animations
+                transitionedTraces = null;
+            } else {
+                traceTransitionOpts = transitionOpts;
+                for(i = 0; i < fullData.length; i++) {
+                    transitionedTraces.push(i);
+                }
+            }
+
+            // Note that we pass a callback to *create* the callback that must be invoked on completion.
+            // This is since not all traces know about transitions, so it greatly simplifies matters if
+            // the trace is responsible for creating a callback, if needed, and then executing it when
+            // the time is right.
+            for(i = 0; i < basePlotModules.length; i++) {
+                basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+            }
+
+            // If nothing else creates a callback, then this will trigger the completion in the next tick:
+            setTimeout(makeCallback());
+        });
+    }
+
+    function completeTransition(callback) {
+        // This a simple workaround for tests which purge the graph before animations
+        // have completed. That's not a very common case, so this is the simplest
+        // fix.
+        if(!gd._transitionData) return;
+
+        flushCallbacks(gd._transitionData._interruptCallbacks);
+
+        return Promise.resolve().then(function() {
+            if(redraw) {
+                return Registry.call('redraw', gd);
+            }
+        }).then(function() {
+            // Set transitioning false again once the redraw has occurred. This is used, for example,
+            // to prevent the trailing redraw from autoranging:
+            gd._transitioning = false;
+            gd._transitioningWithDuration = false;
+
+            gd.emit('plotly_transitioned', []);
+        }).then(callback);
+    }
+
+    function interruptPreviousTransitions() {
+        // Fail-safe against purged plot:
+        if(!gd._transitionData) return;
+
+        // If a transition is interrupted, set this to false. At the moment, the only thing that would
+        // interrupt a transition is another transition, so that it will momentarily be set to true
+        // again, but this determines whether autorange or dragbox work, so it's for the sake of
+        // cleanliness:
+        gd._transitioning = false;
+
+        return executeCallbacks(gd._transitionData._interruptCallbacks);
+    }
+
+    var seq = [
+        plots.previousPromises,
+        interruptPreviousTransitions,
+        prepareTransitions,
+        plots.rehover,
+        executeTransitions
+    ];
 
     var transitionStarting = Lib.syncOrAsync(seq, gd);
 

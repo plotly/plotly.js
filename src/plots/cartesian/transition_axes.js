@@ -15,7 +15,7 @@ var Drawing = require('../../components/drawing');
 var Axes = require('./axes');
 var axisRegex = require('./constants').attrRegex;
 
-module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
+function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var axes = [];
 
@@ -323,4 +323,189 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     raf = window.requestAnimationFrame(doFrame);
 
     return Promise.resolve();
+}
+
+function transitionAxes2(gd, edits, transitionOpts, makeOnCompleteCallback) {
+    var fullLayout = gd._fullLayout;
+
+    function ticksAndAnnotations(xa, ya) {
+        var activeAxIds = [xa._id, ya._id];
+        var i;
+
+        for(i = 0; i < activeAxIds.length; i++) {
+            Axes.doTicksSingle(gd, activeAxIds[i], true);
+        }
+
+        function redrawObjs(objArray, method, shortCircuit) {
+            for(i = 0; i < objArray.length; i++) {
+                var obji = objArray[i];
+
+                if((activeAxIds.indexOf(obji.xref) !== -1) ||
+                    (activeAxIds.indexOf(obji.yref) !== -1)) {
+                    method(gd, i);
+                }
+
+                // once is enough for images (which doesn't use the `i` arg anyway)
+                if(shortCircuit) return;
+            }
+        }
+
+        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
+        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
+        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+    }
+
+    function unsetSubplotTransform(plotinfo) {
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
+
+        fullLayout._defs.select('#' + plotinfo.clipId + '> rect')
+            .call(Drawing.setTranslate, 0, 0)
+            .call(Drawing.setScale, 1, 1);
+
+        plotinfo.plot
+            .call(Drawing.setTranslate, xa._offset, ya._offset)
+            .call(Drawing.setScale, 1, 1);
+
+        var traceGroups = plotinfo.plot.selectAll('.scatterlayer .trace');
+
+        // This is specifically directed at scatter traces, applying an inverse
+        // scale to individual points to counteract the scale of the trace
+        // as a whole:
+        traceGroups.selectAll('.point')
+            .call(Drawing.setPointGroupScale, 1, 1);
+        traceGroups.selectAll('.textpoint')
+            .call(Drawing.setTextPointsScale, 1, 1);
+        traceGroups
+            .call(Drawing.hideOutsideRangePoints, plotinfo);
+    }
+
+    function updateSubplot(edit, progress) {
+        var plotinfo = edit.plotinfo;
+        var xa1 = plotinfo.xaxis;
+        var ya1 = plotinfo.yaxis;
+
+        var xr0 = edit.xr0;
+        var xr1 = edit.xr1;
+        var xlen = xa1._length;
+        var yr0 = edit.yr0;
+        var yr1 = edit.yr1;
+        var ylen = ya1._length;
+
+        var editX = xr0[0] !== xr1[0] || xr0[1] !== xr1[1];
+        var editY = yr0[0] !== yr1[0] || yr0[1] !== yr1[1];
+        var viewBox = [];
+
+        if(editX) {
+            var dx0 = xr0[1] - xr0[0];
+            var dx1 = xr1[1] - xr1[0];
+            viewBox[0] = (xr0[0] * (1 - progress) + progress * xr1[0] - xr0[0]) / (xr0[1] - xr0[0]) * xlen;
+            viewBox[2] = xlen * ((1 - progress) + progress * dx1 / dx0);
+            xa1.range[0] = xr0[0] * (1 - progress) + progress * xr1[0];
+            xa1.range[1] = xr0[1] * (1 - progress) + progress * xr1[1];
+        } else {
+            viewBox[0] = 0;
+            viewBox[2] = xlen;
+        }
+
+        if(editY) {
+            var dy0 = yr0[1] - yr0[0];
+            var dy1 = yr1[1] - yr1[0];
+            viewBox[1] = (yr0[1] * (1 - progress) + progress * yr1[1] - yr0[1]) / (yr0[0] - yr0[1]) * ylen;
+            viewBox[3] = ylen * ((1 - progress) + progress * dy1 / dy0);
+            ya1.range[0] = yr0[0] * (1 - progress) + progress * yr1[0];
+            ya1.range[1] = yr0[1] * (1 - progress) + progress * yr1[1];
+        } else {
+            viewBox[1] = 0;
+            viewBox[3] = ylen;
+        }
+
+        ticksAndAnnotations(plotinfo.xaxis, plotinfo.yaxis);
+
+        var xScaleFactor = editX ? xlen / viewBox[2] : 1;
+        var yScaleFactor = editY ? ylen / viewBox[3] : 1;
+        var clipDx = editX ? viewBox[0] : 0;
+        var clipDy = editY ? viewBox[1] : 0;
+        var fracDx = editX ? (viewBox[0] / viewBox[2] * xlen) : 0;
+        var fracDy = editY ? (viewBox[1] / viewBox[3] * ylen) : 0;
+        var plotDx = xa1._offset - fracDx;
+        var plotDy = ya1._offset - fracDy;
+
+        plotinfo.clipRect
+            .call(Drawing.setTranslate, clipDx, clipDy)
+            .call(Drawing.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
+
+        plotinfo.plot
+            .call(Drawing.setTranslate, plotDx, plotDy)
+            .call(Drawing.setScale, xScaleFactor, yScaleFactor);
+
+        // apply an inverse scale to individual points to counteract
+        // the scale of the trace group.
+        Drawing.setPointGroupScale(plotinfo.zoomScalePts, 1 / xScaleFactor, 1 / yScaleFactor);
+        Drawing.setTextPointsScale(plotinfo.zoomScaleTxt, 1 / xScaleFactor, 1 / yScaleFactor);
+    }
+
+    var onComplete;
+    if(makeOnCompleteCallback) {
+        // This module makes the choice whether or not it notifies Plotly.transition
+        // about completion:
+        onComplete = makeOnCompleteCallback();
+    }
+
+    function transitionComplete() {
+        var aobj = {};
+        var k;
+
+        for(k in edits) {
+            var edit = edits[k];
+            aobj[edit.plotinfo.xaxis._name + '.range'] = edit.xr1.slice();
+            aobj[edit.plotinfo.yaxis._name + '.range'] = edit.yr1.slice();
+        }
+
+        // Signal that this transition has completed:
+        onComplete && onComplete();
+
+        return Registry.call('relayout', gd, aobj).then(function() {
+            for(k in edits) {
+                unsetSubplotTransform(edits[k].plotinfo);
+            }
+        });
+    }
+
+    var t1, t2, raf;
+    var easeFn = d3.ease(transitionOpts.easing);
+
+    gd._transitionData._interruptCallbacks.push(function() {
+        window.cancelAnimationFrame(raf);
+        raf = null;
+        return transitionComplete();
+    });
+
+    function doFrame() {
+        t2 = Date.now();
+
+        var tInterp = Math.min(1, (t2 - t1) / transitionOpts.duration);
+        var progress = easeFn(tInterp);
+
+        for(var k in edits) {
+            updateSubplot(edits[k], progress);
+        }
+
+        if(t2 - t1 > transitionOpts.duration) {
+            transitionComplete();
+            raf = window.cancelAnimationFrame(doFrame);
+        } else {
+            raf = window.requestAnimationFrame(doFrame);
+        }
+    }
+
+    t1 = Date.now();
+    raf = window.requestAnimationFrame(doFrame);
+
+    return Promise.resolve();
+}
+
+module.exports = {
+    transitionAxes: transitionAxes,
+    transitionAxes2: transitionAxes2
 };

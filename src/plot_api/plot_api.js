@@ -2336,9 +2336,11 @@ exports.react = function(gd, data, layout, config) {
         var newFullData = gd._fullData;
         var newFullLayout = gd._fullLayout;
         var immutable = newFullLayout.datarevision === undefined;
+        var transition = newFullLayout.transition;
 
-        var restyleFlags = diffData(gd, oldFullData, newFullData, immutable);
-        var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable);
+        var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition);
+        var newDataRevision = relayoutFlags.newDataRevision;
+        var restyleFlags = diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision);
 
         // TODO: how to translate this part of relayout to Plotly.react?
         // // Setting width or height to null must reset the graph's width / height
@@ -2368,7 +2370,19 @@ exports.react = function(gd, data, layout, config) {
             seq.push(addFrames);
         }
 
-        if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
+        // Transition pathway,
+        // only used when 'transition' is set by user and
+        // when at least one animatable attribute has changed,
+        // N.B. config changed aren't animatable
+        if(newFullLayout.transition && !configChanged && (restyleFlags.anim || relayoutFlags.anim)) {
+            Plots.doCalcdata(gd);
+            subroutines.doAutoRangeAndConstraints(gd);
+
+            seq.push(function() {
+                return Plots.transition2(gd, restyleFlags, relayoutFlags, oldFullLayout);
+            });
+        }
+        else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
             gd._fullLayout._skipDefaults = true;
             seq.push(exports.plot);
         }
@@ -2421,7 +2435,7 @@ exports.react = function(gd, data, layout, config) {
 
 };
 
-function diffData(gd, oldFullData, newFullData, immutable) {
+function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
     if(oldFullData.length !== newFullData.length) {
         return {
             fullReplot: true,
@@ -2441,9 +2455,10 @@ function diffData(gd, oldFullData, newFullData, immutable) {
         getValObject: getTraceValObject,
         flags: flags,
         immutable: immutable,
+        transition: transition,
+        newDataRevision: newDataRevision,
         gd: gd
     };
-
 
     var seenUIDs = {};
 
@@ -2463,7 +2478,7 @@ function diffData(gd, oldFullData, newFullData, immutable) {
     return flags;
 }
 
-function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
+function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
     var flags = editTypes.layoutFlags();
     flags.arrays = {};
     flags.rangesAltered = {};
@@ -2477,6 +2492,7 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
         getValObject: getLayoutValObject,
         flags: flags,
         immutable: immutable,
+        transition: transition,
         gd: gd
     };
 
@@ -2490,7 +2506,7 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
 }
 
 function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
-    var valObject, key;
+    var valObject, key, astr;
 
     var getValObject = opts.getValObject;
     var flags = opts.flags;
@@ -2506,9 +2522,23 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         }
         editTypes.update(flags, valObject);
 
+        // track animatable changes
+        if(opts.transition) {
+            if(flags.anim === 'all' && !valObject.anim) {
+                flags.anim = 'some';
+            } else if(!flags.anim && valObject.anim) {
+                flags.anim = 'all';
+            }
+        }
+
         // track cartesian axes with altered ranges
         if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
             flags.rangesAltered[outerparts[0]] = 1;
+        }
+
+        // track datarevision changes
+        if(key === 'datarevision') {
+            flags.newDataRevision = 1;
         }
     }
 
@@ -2518,7 +2548,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
 
     for(key in oldContainer) {
         // short-circuit based on previous calls or previous keys that already maximized the pathway
-        if(flags.calc) return;
+        if(flags.calc && !opts.transition) return;
 
         var oldVal = oldContainer[key];
         var newVal = newContainer[key];
@@ -2613,6 +2643,11 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
                 if(immutable) {
                     flags.calc = true;
+                }
+
+                // look for animatable attributes when the data changed
+                if(immutable || opts.newDataRevision) {
+                    changed();
                 }
             }
             else if(wasArray !== nowArray) {
