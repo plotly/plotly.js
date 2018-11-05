@@ -9,7 +9,9 @@
 'use strict';
 
 var fontAttrs = require('./font_attributes');
+var animationAttrs = require('./animation_attributes');
 var colorAttrs = require('../components/color/attributes');
+var extendFlat = require('../lib/extend').extendFlat;
 
 var globalFont = fontAttrs({
     editType: 'calc',
@@ -253,5 +255,12 @@ module.exports = {
             description: 'Sets the color of the active or hovered on icons in the modebar.'
         },
         editType: 'modebar'
-    }
+    },
+
+    transition: extendFlat({}, animationAttrs.transition, {
+        description: [
+            'Sets transition options used during Plotly.react updates.'
+        ].join(' '),
+        editType: 'none'
+    })
 };

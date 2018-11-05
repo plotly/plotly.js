@@ -69,6 +69,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 500,
+            editType: 'none',
             description: [
                 'The duration of the transition, in milliseconds. If equal to zero,',
                 'updates are synchronous.'
@@ -116,6 +117,7 @@ module.exports = {
                 'bounce-in-out'
             ],
             role: 'info',
+            editType: 'none',
             description: 'The easing function used for the transition'
         },
     }
