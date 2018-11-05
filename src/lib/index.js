@@ -1048,7 +1048,10 @@ lib.hovertemplateString = function(string, labels) {
             if(value !== undefined) break;
         }
 
-        if(value === undefined) value = match;
+        if(value === undefined) {
+            lib.warn('Variable \'' + key + '\' in hovertemplate could not be found!');
+            value = match;
+        }
 
         if(format) {
             value = d3.format(format.replace(/^:/, ''))(value);
