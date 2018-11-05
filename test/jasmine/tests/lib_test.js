@@ -2124,10 +2124,6 @@ describe('Test lib.js:', function() {
             expect(Lib.templateString('foo %{bar}', {bar: 'baz'})).toEqual('foo baz');
         });
 
-        it('evaluates attributes with a dot in their name', function() {
-            expect(Lib.templateString('%{marker.size}', {'marker.size': 12}, {marker: {size: 14}})).toEqual('12');
-        });
-
         it('evaluates nested properties', function() {
             expect(Lib.templateString('foo %{bar.baz}', {bar: {baz: 'asdf'}})).toEqual('foo asdf');
         });
@@ -2147,24 +2143,54 @@ describe('Test lib.js:', function() {
         it('replaces empty key with empty string', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
         });
+    });
+
+    describe('hovertemplateString', function() {
+        it('evaluates attributes', function() {
+            expect(Lib.hovertemplateString('foo %{bar}', {}, {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('evaluates attributes with a dot in their name', function() {
+            expect(Lib.hovertemplateString('%{marker.size}', {}, {'marker.size': 12}, {marker: {size: 14}})).toEqual('12');
+        });
+
+        it('evaluates nested properties', function() {
+            expect(Lib.hovertemplateString('foo %{bar.baz}', {}, {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        });
+
+        it('evaluates array nested properties', function() {
+            expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('subtitutes multiple matches', function() {
+            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        });
+
+        it('replaces missing matches with template string', function() {
+            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, {group: 1})).toEqual('foo 1 %{trace}');
+        });
 
         it('uses the value from the first object with the specified key', function() {
             var obj1 = {a: 'first'}, obj2 = {a: 'second', foo: {bar: 'bar'}};
 
             // Simple key
-            expect(Lib.templateString('foo %{a}', obj1, obj2)).toEqual('foo first');
-            expect(Lib.templateString('foo %{a}', obj2, obj1)).toEqual('foo second');
+            expect(Lib.hovertemplateString('foo %{a}', {}, obj1, obj2)).toEqual('foo first');
+            expect(Lib.hovertemplateString('foo %{a}', {}, obj2, obj1)).toEqual('foo second');
 
             // Nested Keys
-            expect(Lib.templateString('foo %{foo.bar}', obj1, obj2)).toEqual('foo bar');
+            expect(Lib.hovertemplateString('foo %{foo.bar}', {}, obj1, obj2)).toEqual('foo bar');
 
             // Nested keys with 0
-            expect(Lib.templateString('y: %{y}', {y: 0}, {y: 1})).toEqual('y: 0');
+            expect(Lib.hovertemplateString('y: %{y}', {}, {y: 0}, {y: 1})).toEqual('y: 0');
         });
 
         it('formats value using d3 mini-language', function() {
-            expect(Lib.templateString('a: %{a:.0%}', {a: 0.123})).toEqual('a: 12%');
-            expect(Lib.templateString('b: %{b:2.2f}', {b: 43})).toEqual('b: 43.00');
+            expect(Lib.hovertemplateString('a: %{a:.0%}', {}, {a: 0.123})).toEqual('a: 12%');
+            expect(Lib.hovertemplateString('b: %{b:2.2f}', {}, {b: 43})).toEqual('b: 43.00');
+        });
+
+        it('looks for default label if no format is provided', function() {
+            expect(Lib.hovertemplateString('y: %{y}', {yLabel: '0.1'}, {y: 0.123})).toEqual('y: 0.1');
         });
     });
 

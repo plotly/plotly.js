@@ -982,7 +982,35 @@ var TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)(:[^}]*)?}/g;
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
 /*
- * Substitute values from an object into a string and optionally formats them using d3-format
+ * Substitute values from an object into a string
+ *
+ * Examples:
+ *  Lib.templateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
+ *  Lib.templateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
+ *
+ * @param {string}  input string containing %{...} template strings
+ * @param {obj}     data object containing substitution values
+ *
+ * @return {string} templated string
+ */
+
+lib.templateString = function(string, obj) {
+    // Not all that useful, but cache nestedProperty instantiation
+    // just in case it speeds things up *slightly*:
+    var getterCache = {};
+
+    return string.replace(TEMPLATE_STRING_REGEX, function(dummy, key) {
+        if(SIMPLE_PROPERTY_REGEX.test(key)) {
+            return obj[key] || '';
+        }
+        getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
+        return getterCache[key]() || '';
+    });
+};
+
+/*
+ * Substitute values from an object into a string and optionally formats them using d3-format,
+ * or fallback to associated labels.
  *
  * Examples:
  *  Lib.templateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
@@ -990,20 +1018,21 @@ var SIMPLE_PROPERTY_REGEX = /^\w*$/;
  *  Lib.templateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
  *
  * @param {string}  input string containing %{...:...} template strings
+ * @param {obj}     data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
  * @param {obj}     data objects containing substitution values
  *
  * @return {string} templated string
  */
 
-lib.templateString = function(string) {
+lib.hovertemplateString = function(string, labels) {
     var args = arguments;
     // Not all that useful, but cache nestedProperty instantiation
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-    return string.replace(TEMPLATE_STRING_REGEX, function(dummy, key, format) {
+    return string.replace(TEMPLATE_STRING_REGEX, function(match, key, format) {
         var obj, value, i;
-        for(i = 1; i < args.length; i++) {
+        for(i = 2; i < args.length; i++) {
             obj = args[i];
             if(obj.hasOwnProperty(key)) {
                 value = obj[key];
@@ -1019,10 +1048,12 @@ lib.templateString = function(string) {
             if(value !== undefined) break;
         }
 
-        if(value === undefined) value = '';
+        if(value === undefined) value = match;
 
         if(format) {
             value = d3.format(format.replace(/^:/, ''))(value);
+        } else {
+            if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
         }
         return value;
     });
