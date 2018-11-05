@@ -21,6 +21,7 @@ module.exports = {
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         description: 'Sets the x coordinates.'
     },
     x0: {
@@ -28,6 +29,7 @@ module.exports = {
         dflt: 0,
         role: 'info',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         description: [
             'Alternate to `x`.',
             'Builds a linear space of x coordinates.',
@@ -40,6 +42,7 @@ module.exports = {
         dflt: 1,
         role: 'info',
         editType: 'calc',
+        anim: true,
         description: [
             'Sets the x coordinate step.',
             'See `x0` for more info.'
@@ -48,6 +51,7 @@ module.exports = {
     y: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         description: 'Sets the y coordinates.'
     },
     y0: {
@@ -55,6 +59,7 @@ module.exports = {
         dflt: 0,
         role: 'info',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         description: [
             'Alternate to `y`.',
             'Builds a linear space of y coordinates.',
@@ -67,6 +72,7 @@ module.exports = {
         dflt: 1,
         role: 'info',
         editType: 'calc',
+        anim: true,
         description: [
             'Sets the y coordinate step.',
             'See `y0` for more info.'
@@ -208,6 +214,7 @@ module.exports = {
             valType: 'color',
             role: 'style',
             editType: 'style',
+            anim: true,
             description: 'Sets the line color.'
         },
         width: {
@@ -216,6 +223,7 @@ module.exports = {
             dflt: 2,
             role: 'style',
             editType: 'style',
+            anim: true,
             description: 'Sets the line width (in px).'
         },
         shape: {
@@ -314,6 +322,7 @@ module.exports = {
         valType: 'color',
         role: 'style',
         editType: 'style',
+        anim: true,
         description: [
             'Sets the fill color.',
             'Defaults to a half-transparent variant of the line color,',
@@ -343,6 +352,7 @@ module.exports = {
             arrayOk: true,
             role: 'style',
             editType: 'style',
+            anim: true,
             description: 'Sets the marker opacity.'
         },
         size: {
@@ -352,6 +362,7 @@ module.exports = {
             arrayOk: true,
             role: 'style',
             editType: 'calc',
+            anim: true,
             description: 'Sets the marker size (in px).'
         },
         maxdisplayed: {
@@ -409,11 +420,12 @@ module.exports = {
                 arrayOk: true,
                 role: 'style',
                 editType: 'style',
+                anim: true,
                 description: 'Sets the width (in px) of the lines bounding the marker points.'
             },
             editType: 'calc'
         },
-            colorAttributes('marker.line')
+            colorAttributes('marker.line', {anim: true})
         ),
         gradient: {
             type: {
@@ -442,7 +454,7 @@ module.exports = {
         },
         editType: 'calc'
     },
-        colorAttributes('marker')
+        colorAttributes('marker', {anim: true})
     ),
     selected: {
         marker: {

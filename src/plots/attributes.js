@@ -79,6 +79,7 @@ module.exports = {
     ids: {
         valType: 'data_array',
         editType: 'calc',
+        anim: true,
         description: [
             'Assigns id labels to each datum.',
             'These ids for object constancy of data points during animation.',
