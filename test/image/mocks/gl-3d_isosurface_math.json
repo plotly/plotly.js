@@ -1698,6 +1698,11 @@
     ],
     "layout": {
         "width": 1200,
-        "height": 900
+        "height": 900,
+        "scene": {
+            "zaxis": {
+                "autorange": "reversed"
+            }
+        }
     }
 }
