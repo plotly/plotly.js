@@ -691,6 +691,62 @@ describe('Pie traces', function() {
               .then(done);
         });
     });
+
+    it('should be able to restyle title color', function(done) {
+        function _assert(msg, exp) {
+            var title = d3.select('.titletext > text').node();
+            expect(title.style.fill).toBe(exp.color, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: 'yo',
+            titlefont: {color: 'blue'}
+        }])
+        .then(function() {
+            _assert('base', {color: 'rgb(0, 0, 255)'});
+            return Plotly.restyle(gd, 'titlefont.color', 'red');
+        })
+        .then(function() {
+            _assert('base', {color: 'rgb(255, 0, 0)'});
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to react with new text colors', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside'
+        }])
+        .then(_checkFontColors(['rgb(255, 255, 255)', 'rgb(68, 68, 68)', 'rgb(255, 255, 255)']))
+        .then(function() {
+            gd.data[0].insidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .then(function() {
+            delete gd.data[0].insidetextfont.color;
+            gd.data[0].textfont = {color: 'blue'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].textposition = 'outside';
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].outsidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {
