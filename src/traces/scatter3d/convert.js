@@ -147,11 +147,11 @@ function parseAlignmentY(a) {
            (a.indexOf('bottom') > -1) ? 1 : 0;
 }
 
-function calculateTextOffset(tp, dflt) {
+function calculateTextOffset(tp) {
     // Read out text properties
 
-    var defaultAlignmentX = parseAlignmentX(dflt);
-    var defaultAlignmentY = parseAlignmentY(dflt);
+    var defaultAlignmentX = 0;
+    var defaultAlignmentY = 0;
 
     var textOffset = [
         defaultAlignmentX,
@@ -266,7 +266,7 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if('textposition' in data) {
-        params.textOffset = calculateTextOffset(data.textposition, data.dflt);
+        params.textOffset = calculateTextOffset(data.textposition);
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
         params.textFont = data.textfont.family;  // arrayOk === false
