@@ -136,18 +136,13 @@ module.exports = {
         ].join(' ')
     }),
 
-    width: {
-        valType: 'number',
-        min: 0,
-        role: 'info',
-        dflt: 0,
-        editType: 'calc',
+    width: extendFlat({}, boxAttrs.width, {
         description: [
             'Sets the width of the violin.',
             'If *0* (default value) the width is automatically selected based on the positions',
             'of other violin traces in the same subplot.',
         ].join(' ')
-    },
+    }),
 
     marker: boxAttrs.marker,
     text: boxAttrs.text,
