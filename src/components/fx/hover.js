@@ -959,6 +959,12 @@ function createHoverText(hoverData, opts, gd) {
         var hovertemplate = opts.hovertemplate || hoverData[curveNumber].hovertemplate || false;
         if(hovertemplate) {
             text = Lib.hovertemplateString(hovertemplate, d, gd._hoverdata[curveNumber], trace);
+
+            var EXTRA_STRING_REGEX = /<extra>(.*)<\/extra>/;
+            text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {
+                name = extra; // Assign name for secondary text label
+                return ''; // Remove from main text label
+            });
         }
 
         // main label
