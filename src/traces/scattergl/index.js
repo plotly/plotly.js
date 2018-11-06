@@ -830,7 +830,9 @@ function calcHover(pointData, x, y, trace) {
 
         cd: fakeCd,
         distance: minDist,
-        spikeDistance: dxy
+        spikeDistance: dxy,
+
+        hovertemplate: trace.hovertemplate
     });
 
     if(di.htx) pointData.text = di.htx;

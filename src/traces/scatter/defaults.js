@@ -38,6 +38,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lines+markers' : 'lines';
     coerce('text');
     coerce('hovertext');
+    coerce('hovertemplate');
     coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {

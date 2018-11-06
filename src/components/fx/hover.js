@@ -765,11 +765,13 @@ function createHoverText(hoverData, opts, gd) {
             if(allHaveZ && hoverData[i].zLabel === undefined) allHaveZ = false;
 
             traceHoverinfo = hoverData[i].hoverinfo || hoverData[i].trace.hoverinfo;
-            var parts = Array.isArray(traceHoverinfo) ? traceHoverinfo : traceHoverinfo.split('+');
-            if(parts.indexOf('all') === -1 &&
-                parts.indexOf(hovermode) === -1) {
-                showCommonLabel = false;
-                break;
+            if(traceHoverinfo) {
+                var parts = Array.isArray(traceHoverinfo) ? traceHoverinfo : traceHoverinfo.split('+');
+                if(parts.indexOf('all') === -1 &&
+                    parts.indexOf(hovermode) === -1) {
+                    showCommonLabel = false;
+                    break;
+                }
             }
         }
 
@@ -953,7 +955,8 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         // hovertemplate
-        var trace = d.trace, hovertemplate = opts.hovertemplate || trace.hovertemplate || false;
+        var trace = d.trace;
+        var hovertemplate = opts.hovertemplate || hoverData[curveNumber].hovertemplate || false;
         if(hovertemplate) {
             text = Lib.hovertemplateString(hovertemplate, d, gd._hoverdata[curveNumber], trace);
         }
@@ -1356,7 +1359,7 @@ function cleanPoint(d, hovermode) {
 
     var infomode = d.hoverinfo || d.trace.hoverinfo;
 
-    if(infomode !== 'all') {
+    if(infomode && infomode !== 'all') {
         infomode = Array.isArray(infomode) ? infomode : infomode.split('+');
         if(infomode.indexOf('x') === -1) d.xLabel = undefined;
         if(infomode.indexOf('y') === -1) d.yLabel = undefined;

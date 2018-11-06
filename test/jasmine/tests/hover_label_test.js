@@ -1572,6 +1572,7 @@ describe('hover info', function() {
 
                 assertHoverLabelContent({
                     nums: '$1.00',
+                    name: 'PV learning ...',
                     axis: '0.388'
                 });
             })

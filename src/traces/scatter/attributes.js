@@ -8,6 +8,7 @@
 
 'use strict';
 
+var plotAttrs = require('../../plots/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
@@ -203,6 +204,7 @@ module.exports = {
             'or text, then the default is *fills*, otherwise it is *points*.'
         ].join(' ')
     },
+    hovertemplate: extendFlat({}, plotAttrs.hovertemplate),
     line: {
         color: {
             valType: 'color',
