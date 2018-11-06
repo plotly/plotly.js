@@ -230,6 +230,8 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('class', 'catlabel')
         .attr('pointer-events', 'none');
 
+    var paperColor = graphDiv._fullLayout.paper_bgcolor;
+
     // Update category label
     categorySelection.select('text.catlabel')
         .attr('text-anchor',
@@ -245,10 +247,10 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('alignment-baseline', 'middle')
 
         .style('text-shadow',
-            'rgb(255, 255, 255) -1px  1px 2px, ' +
-            'rgb(255, 255, 255)  1px  1px 2px, ' +
-            'rgb(255, 255, 255)  1px -1px 2px, ' +
-            'rgb(255, 255, 255) -1px -1px 2px')
+            paperColor + ' -1px  1px 2px, ' +
+            paperColor + ' 1px  1px 2px, ' +
+            paperColor + '  1px -1px 2px, ' +
+            paperColor + ' -1px -1px 2px')
         .style('fill', 'rgb(0, 0, 0)')
         .attr('x',
             function(d) {

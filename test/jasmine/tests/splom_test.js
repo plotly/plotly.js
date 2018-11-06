@@ -983,6 +983,50 @@ describe('Test splom interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should not fail when editing graph with visible:false traces', function(done) {
+        Plotly.plot(gd, [{
+            type: 'splom',
+            dimensions: [{values: []}, {values: []}]
+        }, {
+            type: 'splom',
+            dimensions: [{values: [1, 2, 3]}, {values: [2, 3, 4]}]
+        }])
+        .then(function() {
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+            var splomScenes = fullLayout._splomScenes;
+            var opts = splomScenes[fullData[1].uid].matrixOptions;
+
+            expect(fullData[0].visible).toBe(false, 'trace 0 visible');
+            expect(fullData[1].visible).toBe(true, 'trace 1 visible');
+            expect(Object.keys(splomScenes).length).toBe(1, '# of splom scenes');
+
+            expect(opts.opacity).toBe(1, 'marker opacity');
+            expect(opts.color).toEqual(new Uint8Array([255, 127, 14, 255]), 'marker color');
+            expect(opts.colors).toBe(undefined, 'marker colors');
+
+            return Plotly.restyle(gd, 'marker.opacity', [undefined, [0.2, 0.3, 0.4]]);
+        })
+        .then(function() {
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+            var opts = fullLayout._splomScenes[fullData[1].uid].matrixOptions;
+
+            // ignored by regl-splom
+            expect(opts.opacity).toBe(1, 'marker opacity');
+            // ignored by regl-splom
+            expect(opts.color).toEqual(new Uint8Array([255, 127, 14, 255]), 'marker color');
+            // marker.opacity applied here
+            expect(opts.colors).toBeCloseTo2DArray([
+                [1, 0.498, 0.0549, 0.2],
+                [1, 0.498, 0.0549, 0.3],
+                [1, 0.498, 0.0549, 0.4]
+            ], 'marker colors');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test splom update switchboard:', function() {
@@ -1129,6 +1173,31 @@ describe('Test splom update switchboard:', function() {
             expect(toPlainArray(scene.matrixOptions.colors[2]))
                 .toBeCloseToArray([0, 0, 1, 1], 1, msg + '- 2');
 
+            return Plotly.restyle(gd, {
+                'marker.cmin': -3,
+                'marker.cmax': 3,
+                'marker.color': [[1, 2, 3]]
+            });
+        })
+        .then(function() {
+            var msg = 'after colorscale marker.color restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['doTicks', 0],
+                ['clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(toPlainArray(scene.matrixOptions.colors[0]))
+                .toBeCloseToArray([0.890, 0.6, 0.4078, 1], 1, msg + '- 0');
+            expect(toPlainArray(scene.matrixOptions.colors[1]))
+                .toBeCloseToArray([0.81176, 0.3333, 0.2431, 1], 1, msg + '- 1');
+            expect(toPlainArray(scene.matrixOptions.colors[2]))
+                .toBeCloseToArray([0.6980, 0.0392, 0.1098, 1], 1, msg + '- 2');
+
             return Plotly.restyle(gd, 'marker.size', 20);
         })
         .then(function() {
@@ -1164,6 +1233,22 @@ describe('Test splom update switchboard:', function() {
             expect(scene.matrixOptions.sizes).toBeCloseToArray([2, 5, 10], 1, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
+
+            return Plotly.restyle(gd, 'marker.symbol', 'square');
+        })
+        .then(function() {
+            var msg = 'after scalar marker.symbol restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['doTicks', 0],
+                ['clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(scene.matrixOptions.marker).not.toBeNull(msg);
         })
         .catch(failTest)
         .then(done);

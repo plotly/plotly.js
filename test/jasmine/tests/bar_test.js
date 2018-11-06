@@ -397,6 +397,46 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         assertArrayField(cd[2][0], 't.poffset', [-0.4]);
     });
 
+    it('should work with *width* typed arrays', function() {
+        var w = [0.1, 0.4, 0.7];
+
+        var gd = mockBarPlot([{
+            width: w,
+            y: [1, 2, 3]
+        }, {
+            width: new Float32Array(w),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', w);
+        assertArrayField(cd[1][0], 't.barwidth', w);
+        assertPointField(cd, 'x', [
+            [-0.2, 0.8, 1.8],
+            [0.2, 1.2, 2.2]
+        ]);
+    });
+
+    it('should work with *offset* typed arrays', function() {
+        var o = [0.1, 0.4, 0.7];
+
+        var gd = mockBarPlot([{
+            offset: o,
+            y: [1, 2, 3]
+        }, {
+            offset: new Float32Array(o),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.poffset', o);
+        assertArrayField(cd[1][0], 't.poffset', o);
+        assertPointField(cd, 'x', [
+            [0.5, 1.8, 3.1],
+            [0.5, 1.8, 3.099]
+        ]);
+    });
+
     it('should guard against invalid width items', function() {
         var gd = mockBarPlot([{
             width: [null, 1, 0.8],
@@ -1043,6 +1083,7 @@ describe('A bar plot', function() {
         .catch(failTest)
         .then(done);
     });
+
     it('should show bar texts (outside case)', function(done) {
         var data = [{
             y: [10, -20, 30],
@@ -1693,6 +1734,39 @@ describe('A bar plot', function() {
         .then(function() {
             _assertNumberOfBarTextNodes(3);
         })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to react with new text colors', function(done) {
+        Plotly.react(gd, [{
+            type: 'bar',
+            y: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside'
+        }])
+        .then(assertTextFontColors(['rgb(255, 255, 255)', 'rgb(255, 255, 255)', 'rgb(255, 255, 255)']))
+        .then(function() {
+            gd.data[0].insidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .then(function() {
+            delete gd.data[0].insidetextfont.color;
+            gd.data[0].textfont = {color: 'blue'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].textposition = 'outside';
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].outsidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
         .catch(failTest)
         .then(done);
     });

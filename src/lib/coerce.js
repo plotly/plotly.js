@@ -19,7 +19,7 @@ var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
 var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 var modHalf = require('./mod').modHalf;
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 
 exports.valObjectMeta = {
     data_array: {

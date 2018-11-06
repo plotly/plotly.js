@@ -987,6 +987,19 @@ describe('end-to-end scatter tests', function() {
                 ['rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 0)'],
                 [40, 30, 20]
             );
+
+            return Plotly.relayout(gd, 'showlegend', true);
+        })
+        .then(function() {
+            _assert(
+                ['rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 0)'],
+                [40, 30, 20]
+            );
+
+            var legendPts = d3.select('.legend').selectAll('.scatterpts');
+            expect(legendPts.size()).toBe(1, '# legend items');
+            expect(getColor(legendPts.node())).toBe('rgb(0, 0, 0)', 'legend pt color');
+            expect(getMarkerSize(legendPts.node())).toBe(16, 'legend pt size');
         })
         .catch(failTest)
         .then(done);

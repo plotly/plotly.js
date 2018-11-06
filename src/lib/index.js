@@ -24,16 +24,17 @@ lib.relativeAttr = require('./relative_attr');
 lib.isPlainObject = require('./is_plain_object');
 lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
-lib.ensureArray = require('./ensure_array');
+
+var arrayModule = require('./array');
+lib.isTypedArray = arrayModule.isTypedArray;
+lib.isArrayOrTypedArray = arrayModule.isArrayOrTypedArray;
+lib.isArray1D = arrayModule.isArray1D;
+lib.ensureArray = arrayModule.ensureArray;
+lib.concat = arrayModule.concat;
 
 var modModule = require('./mod');
 lib.mod = modModule.mod;
 lib.modHalf = modModule.modHalf;
-
-var isArrayModule = require('./is_array');
-lib.isTypedArray = isArrayModule.isTypedArray;
-lib.isArrayOrTypedArray = isArrayModule.isArrayOrTypedArray;
-lib.isArray1D = isArrayModule.isArray1D;
 
 var coerceModule = require('./coerce');
 lib.valObjectMeta = coerceModule.valObjectMeta;
@@ -713,7 +714,7 @@ lib.addRelatedStyleRule = function(uid, selector, styleString) {
 lib.deleteRelatedStyleRule = function(uid) {
     var id = 'plotly.js-style-' + uid,
         style = document.getElementById(id);
-    if(style) style.remove();
+    if(style) lib.removeElement(style);
 };
 
 lib.isIE = function() {

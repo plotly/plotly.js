@@ -510,6 +510,54 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
+
+    it('@gl should avoid passing blank texts to webgl', function(done) {
+        function assertIsFilled(msg) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.scene._scene.glplot.objects[0].glyphBuffer.length).not.toBe(0, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            mode: 'text',
+            x: [1, 2, 3],
+            y: [2, 3, 1],
+            z: [3, 1, 2]
+        }])
+        .then(function() {
+            assertIsFilled('not to be empty text');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should avoid passing empty lines to webgl', function(done) {
+        var obj;
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            mode: 'lines',
+            x: [1],
+            y: [2],
+            z: [3]
+        }])
+        .then(function() {
+            obj = gd._fullLayout.scene._scene.glplot.objects[0];
+            spyOn(obj.vao, 'draw').and.callThrough();
+
+            expect(obj.vertexCount).toBe(0, '# of vertices');
+
+            return Plotly.restyle(gd, 'line.color', 'red');
+        })
+        .then(function() {
+            expect(obj.vertexCount).toBe(0, '# of vertices');
+            // calling this with no vertex causes WebGL warnings,
+            // see https://github.com/plotly/plotly.js/issues/1976
+            expect(obj.vao.draw).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl3d modebar handlers', function() {
