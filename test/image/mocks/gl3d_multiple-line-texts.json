@@ -21,7 +21,7 @@
           "family": "Sans-Serif",
           "size": 18
         },
-        "title": "An axis with<br><i>Italic</i> & <b>bold</b> info!"
+        "title": "An axis with<br><i>Italic</i> & <b>bold</b> info! &\nSay no to '\\n'.<br>Only use <'br'> for line breaks."
       },
       "yaxis":{
         "titlefont": {
@@ -29,12 +29,12 @@
           "family": "Times New Roman",
           "size": 36
         },
-        "title": "I<sub>x</sub> + z<sup>(2<sub>n</sub>+Log[y<sub>x</sub>])</sup>"
+        "title": "I<sub>x</sub> + z<sup>(n<sub>i</sub>+Log[y<sub>x</sub>])</sup>"
       },
       "zaxis":{
         "titlefont": {
           "color": "#0f0",
-          "family": "Times New Roman",
+          "family": "Courier New",
           "size": 18
         },
         "title": "A <b>long</b><br>axis presented<br>on <i>multiple</i> lines."},
