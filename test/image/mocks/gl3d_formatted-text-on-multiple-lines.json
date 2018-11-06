@@ -4,7 +4,7 @@
       "x": [3],
       "y": [0],
       "z": [2],
-      "text": ["This <i>text</i> was <b>too</b> long.<br>But <i><b>right now</b></i> it is <br>presented on<br>multiple <b><i>lines!<br>It is now<br>also possible</i></b> to use <sup>Super</sup> and <sub>Sub</sub><br>texts either <i>lower</i> or <b>UPPER</b> cases."],
+      "text": ["This <i>text</i> was <b>too</b> long.<br>But <i><b>right now</b></i> it is <br>presented on<br>multiple <b><i>lines!<br>It is now<br>also possible</i></b> to use <sup>Super</sup> and <sub>Sub</sub><br>texts either <i>lower</i> or <b>UPPER</b> cases.<br><br>Aa<sup>Xx<sup>23.5<sup>Ab</sup></sup></sup><br>Aa<sub>Xx<sub>23.5<sub>Ab</sub></sub></sub>"],
       "type": "scatter3d",
       "mode":"markers+text",
       "textposition": "middle center"
@@ -27,9 +27,9 @@
         "titlefont": {
           "color": "#00f",
           "family": "Times New Roman",
-          "size": 36
+          "size": 32
         },
-        "title": "I<sub>x</sub> + z<sup>(n<sub>i</sub>+Log[y<sub>x</sub>])</sup>"
+        "title": "I<sub>x<sub>2<sub>n<sup>3</sup></sub></sub></sub> + z<sup>(n<sup>i</sup>+Log[y<sub>x<sup>2</sup></sub>])</sup>"
       },
       "zaxis":{
         "titlefont": {
