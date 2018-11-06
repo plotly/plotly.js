@@ -158,6 +158,7 @@ module.exports = {
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
+    hovertemplate: extendFlat({}, plotAttrs.hovertemplate),
     textposition: {
         valType: 'enumerated',
         role: 'info',

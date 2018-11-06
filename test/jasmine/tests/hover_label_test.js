@@ -1559,7 +1559,7 @@ describe('hover info', function() {
 
         it('should format labels according to a template string', function(done) {
             var gd = document.getElementById('graph');
-            Plotly.restyle(gd, 'hovertemplate', '%{y:$.2f}')
+            Plotly.restyle(gd, 'hovertemplate', '%{y:$.2f}<extra>trace 0</extra>')
             .then(function() {
                 Fx.hover('graph', evt, 'xy');
 
@@ -1572,7 +1572,7 @@ describe('hover info', function() {
 
                 assertHoverLabelContent({
                     nums: '$1.00',
-                    name: 'PV learning ...',
+                    name: 'trace 0',
                     axis: '0.388'
                 });
             })
