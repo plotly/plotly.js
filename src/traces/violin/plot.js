@@ -20,6 +20,10 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
+    var numViolins = fullLayout._numViolins;
+    var group = (fullLayout.violinmode === 'group' && numViolins > 1);
+    var groupFraction = 1 - fullLayout.violingap;
+    var groupGapFraction = 1 - fullLayout.violingroupgap;
 
     function makePath(pts) {
         var segments = linePoints(pts, {
@@ -39,16 +43,30 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var t = cd0.t;
         var trace = cd0.trace;
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
-        var numViolins = fullLayout._numViolins;
-        var group = (fullLayout.violinmode === 'group' && numViolins > 1);
-        var groupFraction = 1 - fullLayout.violingap;
+
+        // position coordinate delta
+        var dPos = t.dPos;
         // violin max half width
-        var bdPos = t.bdPos = t.dPos * groupFraction * (1 - fullLayout.violingroupgap) / (group ? numViolins : 1);
+        var bdPos;
         // violin center offset
-        var bPos = t.bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numViolins) * groupFraction : 0;
+        var bPos;
         // half-width within which to accept hover for this violin
         // always split the distance to the closest violin
-        t.wHover = t.dPos * (group ? groupFraction / numViolins : 1);
+        var wHover;
+
+        if(trace.width) {
+            bdPos = dPos;
+            bPos = 0;
+            wHover = dPos;
+        } else {
+            bdPos = dPos * groupFraction * groupGapFraction / (group ? numViolins : 1);
+            bPos = group ? 2 * dPos * (-0.5 + (t.num + 0.5) / numViolins) * groupFraction : 0;
+            wHover = dPos * (group ? groupFraction / numViolins : 1);
+        }
+
+        t.bdPos = bdPos;
+        t.bPos = bPos;
+        t.wHover = wHover;
 
         if(trace.visible !== true || t.empty) {
             plotGroup.remove();
