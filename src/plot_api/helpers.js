@@ -439,11 +439,14 @@ function commonPrefix(name1, name2, show1, show2) {
 function cleanTextPosition(textposition) {
     var posY = 'middle',
         posX = 'center';
-    if(textposition.indexOf('top') !== -1) posY = 'top';
-    else if(textposition.indexOf('bottom') !== -1) posY = 'bottom';
 
-    if(textposition.indexOf('left') !== -1) posX = 'left';
-    else if(textposition.indexOf('right') !== -1) posX = 'right';
+    if(textposition !== undefined && textposition !== null) {
+        if(textposition.indexOf('top') !== -1) posY = 'top';
+        else if(textposition.indexOf('bottom') !== -1) posY = 'bottom';
+
+        if(textposition.indexOf('left') !== -1) posX = 'left';
+        else if(textposition.indexOf('right') !== -1) posX = 'right';
+    }
 
     return posY + ' ' + posX;
 }
