@@ -138,7 +138,7 @@ module.exports = {
 
     width: extendFlat({}, boxAttrs.width, {
         description: [
-            'Sets the width of the violin.',
+            'Sets the width of the violin in data coordinates.',
             'If *0* (default value) the width is automatically selected based on the positions',
             'of other violin traces in the same subplot.',
         ].join(' ')
