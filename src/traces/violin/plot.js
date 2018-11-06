@@ -78,7 +78,6 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var hasBothSides = trace.side === 'both';
         var hasPositiveSide = hasBothSides || trace.side === 'positive';
         var hasNegativeSide = hasBothSides || trace.side === 'negative';
-        var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
 
         var violins = plotGroup.selectAll('path.violin').data(Lib.identity);
 
@@ -94,15 +93,15 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             var len = density.length;
             var posCenter = d.pos + bPos;
             var posCenterPx = posAxis.c2p(posCenter);
-            var scale;
 
-            switch(trace.scalemode) {
-                case 'width':
-                    scale = groupStats.maxWidth / bdPos;
-                    break;
-                case 'count':
-                    scale = (groupStats.maxWidth / bdPos) * (groupStats.maxCount / d.pts.length);
-                    break;
+            var scale;
+            if(trace.width) {
+                scale = t.maxKDE / bdPos;
+            } else {
+                var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
+                scale = trace.scalemode === 'count' ?
+                    (groupStats.maxKDE / bdPos) * (groupStats.maxCount / d.pts.length) :
+                    groupStats.maxKDE / bdPos;
             }
 
             var pathPos, pathNeg, path;

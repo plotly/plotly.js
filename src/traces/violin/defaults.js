@@ -27,13 +27,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('bandwidth');
     coerce('side');
+
     var width = coerce('width');
     if(!width) {
         coerce('scalegroup', traceOut.name);
         coerce('scalemode');
-    } else {
-        traceOut.scalegroup = '';
-        traceOut.scalemode = 'width';
     }
 
     var span = coerce('span');
