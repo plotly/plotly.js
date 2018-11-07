@@ -363,6 +363,15 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
         .attr('y2', function(d) {
             return d.scrollbarState.scrollableAreaHeight;
         });
+
+    // Remove scroll glyph and capture zone on static plots
+    // as they don't render properly when converted to PDF
+    // in the Chrome PDF viewer
+    // https://github.com/plotly/streambed/issues/11618
+    if(gd._context.staticPlot) {
+        scrollbarGlyph.remove();
+        scrollbarCaptureZone.remove();
+    }
 }
 
 function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock) {
@@ -720,7 +729,7 @@ function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages,
     }
 }
 
-function wrapTextMaker(columnBlock, element, tableControlView) {
+function wrapTextMaker(columnBlock, element, tableControlView, gd) {
     return function wrapText() {
         var cellTextHolder = d3.select(element.parentNode);
         cellTextHolder
@@ -758,7 +767,7 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
         cellTextHolder.selectAll('tspan.line').remove();
 
         // resupply text, now wrapped
-        populateCellText(cellTextHolder.select('.' + c.cn.cellText), tableControlView, columnBlock);
+        populateCellText(cellTextHolder.select('.' + c.cn.cellText), tableControlView, columnBlock, gd);
         d3.select(element.parentNode.parentNode).call(setCellHeightAndPositionY);
     };
 }
