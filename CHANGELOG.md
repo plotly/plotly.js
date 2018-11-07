@@ -10,6 +10,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.42.4] -- 2018-11-07
+
+### Fixed
+- Remove rendering artifacts from `table` orca PDF exports [#3220]
+
+
 ## [1.42.3] -- 2018-11-06
 
 ### Fixed
