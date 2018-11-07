@@ -142,6 +142,23 @@ describe('Test violin defaults', function() {
         expect(traceOut.meanline.color).toBe('blue');
         expect(traceOut.meanline.width).toBe(10);
     });
+
+    it('should not coerce *scalegroup* and *scalemode* when *width* is set', function() {
+        _supply({
+            y: [1, 2, 1],
+            width: 1
+        });
+        expect(traceOut.scalemode).toBeUndefined();
+        expect(traceOut.scalegroup).toBeUndefined();
+
+        _supply({
+            y: [1, 2, 1],
+            // width=0 is ignored during calc
+            width: 0
+        });
+        expect(traceOut.scalemode).toBe('width');
+        expect(traceOut.scalegroup).toBe('');
+    });
 });
 
 describe('Test violin calc:', function() {
@@ -236,7 +253,7 @@ describe('Test violin calc:', function() {
             name: 'one',
             y: [0, 0, 0, 0, 10, 10, 10, 10]
         });
-        expect(fullLayout._violinScaleGroupStats.one.maxWidth).toBeCloseTo(0.055);
+        expect(fullLayout._violinScaleGroupStats.one.maxKDE).toBeCloseTo(0.055);
         expect(fullLayout._violinScaleGroupStats.one.maxCount).toBe(8);
     });
 
