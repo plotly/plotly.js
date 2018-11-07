@@ -1332,6 +1332,13 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         color: globalFont.color
     });
 
+    coerce('title.xref');
+    coerce('title.yref');
+    coerce('title.x'); // TODO restrict to [-2, 3]?
+    coerce('title.y'); // TODO restrict to [-2, 3]?
+    coerce('title.xanchor');
+    coerce('title.yanchor');
+
     // Make sure that autosize is defaulted to *true*
     // on layouts with no set width and height for backward compatibly,
     // in particular https://plot.ly/javascript/responsive-fluid-layout/

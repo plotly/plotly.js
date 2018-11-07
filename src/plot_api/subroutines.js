@@ -449,18 +449,60 @@ function findCounterAxisLineWidth(ax, side, counterAx, axList) {
 
 exports.drawMainTitle = function(gd) {
     var fullLayout = gd._fullLayout;
+    var textAnchorDict = {
+        'left': 'start',
+        'center': 'middle',
+        'right': 'end',
+        'auto': 'middle' // TODO That needs to be calculated based on x
+    };
+    var dyDict = {
+        'top': alignmentConstants.CAP_SHIFT + 'em',
+        'middle': alignmentConstants.MID_SHIFT + 'em',
+        'bottom': '0em',
+    };
 
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
         propName: 'title.text',
         placeholder: fullLayout._dfltTitle.plot,
         attributes: {
-            x: fullLayout.width / 2,
-            y: fullLayout._size.t / 2,
-            'text-anchor': 'middle'
+            x: getMainTitleX(fullLayout),
+            y: getMainTitleY(fullLayout),
+            'text-anchor': textAnchorDict[fullLayout.title.xanchor],
+            dy: dyDict[fullLayout.title.yanchor]
         }
     });
 };
+
+function getMainTitleX(fullLayout) {
+    var title = fullLayout.title;
+    var _size = fullLayout._size;
+
+    switch(title.xref) {
+        case 'paper':
+            return _size.l + _size.w * title.x;
+        case 'container':
+        default:
+            return fullLayout.width * title.x;
+    }
+}
+
+function getMainTitleY(fullLayout) {
+    var title = fullLayout.title;
+    var _size = fullLayout._size;
+
+    if(title.y === 'auto') {
+        return _size.t / 2;
+    } else {
+        switch(title.yref) {
+            case 'paper':
+                return _size.t + _size.h - _size.h * title.y;
+            case 'container':
+            default:
+                return fullLayout.height - fullLayout.height * title.y;
+        }
+    }
+}
 
 exports.doTraceStyle = function(gd) {
     var calcdata = gd.calcdata;

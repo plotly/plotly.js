@@ -38,6 +38,70 @@ module.exports = {
             editType: 'layoutstyle',
             description: 'Sets the title font.'
         }),
+        xref: {
+            valType: 'enumerated',
+            dflt: 'container',
+            values: ['container', 'paper'],
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Some',
+                'docu', // TODO document
+            ].join(' ')
+        },
+        yref: {
+            valType: 'enumerated',
+            dflt: 'container',
+            values: ['container', 'paper'],
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Some',
+                'docu', // TODO document
+            ].join(' ')
+        },
+        x: {
+            valType: 'number',
+            dflt: '0.5',
+            role: 'style',
+            editType: 'layoutstyle',
+            description: [
+                'Some',
+                'docu', // TODO document
+            ].join(' ')
+        },
+        y: {
+            valType: 'any',
+            dflt: 'auto',
+            role: 'style',
+            editType: 'layoutstyle',
+            description: [
+                'Some',
+                'docu',
+            ].join(' ')
+        },
+        xanchor: {
+            valType: 'enumerated',
+            dflt: 'auto',
+            values: ['auto', 'left', 'center', 'right'],
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Some',
+                'docu', // TODO document
+            ].join(' ')
+        },
+        yanchor: {
+            valType: 'enumerated',
+            dflt: 'auto',
+            values: ['auto', 'top', 'middle', 'bottom'],
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Some',
+                'docu', // TODO document
+            ].join(' ')
+        },
         editType: 'layoutstyle'
     },
     autosize: {
