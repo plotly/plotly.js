@@ -774,6 +774,16 @@ describe('pie hovering', function() {
                     null,
                     'hovertemplate %{percent}'
                 );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{label}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['4'].join('\n'),
+                    null,
+                    'hovertemplate %{label}'
+                );
             })
             .catch(fail)
             .then(done);
