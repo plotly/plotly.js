@@ -440,7 +440,7 @@ function cleanTextPosition(textposition) {
     var posY = 'middle',
         posX = 'center';
 
-    if(textposition !== undefined && textposition !== null) {
+    if(typeof textposition === "string") {
         if(textposition.indexOf('top') !== -1) posY = 'top';
         else if(textposition.indexOf('bottom') !== -1) posY = 'bottom';
 
