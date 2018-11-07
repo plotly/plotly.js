@@ -70,7 +70,7 @@
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.2",
     "font-atlas-sdf": "^1.3.3",
-    "gl-isosurface3d": "git://github.com/gl-vis/gl-isosurface3d.git#1cb8d0a05f062f6cb427eca4b725166fe9885662",
+    "gl-isosurface3d": "git://github.com/gl-vis/gl-isosurface3d.git#b7110064c82898f5287b54734cfaf3434ca24f75",
     "gl-cone3d": "^1.2.0",
     "gl-contour2d": "^1.1.4",
     "gl-error3d": "^1.0.8",
