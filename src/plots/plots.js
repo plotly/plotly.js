@@ -2573,8 +2573,10 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
             // This is since not all traces know about transitions, so it greatly simplifies matters if
             // the trace is responsible for creating a callback, if needed, and then executing it when
             // the time is right.
-            for(i = 0; i < basePlotModules.length; i++) {
-                basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+            if(restyleFlags.anim) {
+                for(i = 0; i < basePlotModules.length; i++) {
+                    basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+                }
             }
 
             // If nothing else creates a callback, then this will trigger the completion in the next tick:
