@@ -185,6 +185,8 @@ module.exports = {
         ].join(' ')
     },
 
+    hovertemplate: barAttrs.hovertemplate,
+
     marker: barAttrs.marker,
 
     selected: barAttrs.selected,
