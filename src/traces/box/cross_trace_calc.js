@@ -108,7 +108,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
         // their points as far out as the other boxes
         var trace = calcTrace[0].trace;  // for ease of use
         var widthMultiplier = (trace.width) ? trace.width : 1;
-        var alt_padminus = Math.max(Math.abs(calcTrace[0].trace.pointpos) * padfactor * widthMultiplier * fullLayout[numKey], 0);
+        var alt_vpadminus = Math.max(Math.abs(calcTrace[0].trace.pointpos) * padfactor * widthMultiplier * fullLayout[numKey], 0);
         var alt_vpadplus =Math.max(Math.abs(calcTrace[0].trace.pointpos) * padfactor * widthMultiplier * fullLayout[numKey], 0);
 
         var side = calcTrace[0].trace.side;
