@@ -22,8 +22,9 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var numBoxes = fullLayout._numBoxes;
-    var groupFraction = (1 - fullLayout.boxgap);
     var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
+    var groupFraction = (1 - fullLayout.boxgap);
+    var groupGapFraction = 1 - fullLayout.boxgroupgap;
 
     Lib.makeTraceGroups(boxLayer, cdbox, 'trace boxes').each(function(cd) {
         var plotGroup = d3.select(this);
@@ -31,10 +32,22 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         var t = cd0.t;
         var trace = cd0.trace;
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
-        // box half width
-        var bdPos = t.dPos * groupFraction * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
+
+        // position coordinate delta
+        var dPos = t.dPos;
+        // box half width;
+        var bdPos;
         // box center offset
-        var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * groupFraction : 0;
+        var bPos;
+
+        if(trace.width) {
+            bdPos = dPos;
+            bPos = 0;
+        } else {
+            bdPos = dPos * groupFraction * groupGapFraction / (group ? numBoxes : 1);
+            bPos = group ? 2 * dPos * (-0.5 + (t.num + 0.5) / numBoxes) * groupFraction : 0;
+        }
+
         // whisker width
         var wdPos = bdPos * trace.whiskerwidth;
 

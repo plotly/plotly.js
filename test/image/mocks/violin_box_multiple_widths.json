@@ -1,64 +1,44 @@
 {
     "data": [{
             "type": "violin",
-            "width": 0.315,
+            "width": 0.4,
+            "name": "width: 0.4",
             "x": [0, 5, 7, 8],
-            "points": "none",
             "side": "positive",
-            "box": {
-              "visible": false
-            },
-            "boxpoints": false,
             "line": {
                 "color": "black"
             },
             "fillcolor": "#8dd3c7",
             "opacity": 0.6,
-            "meanline": {
-                "visible": false
-            },
             "y0": 0.0
         }, {
             "type": "violin",
+            "name": "auto",
             "x": [0, 5, 7, 8],
-            "points": "none",
             "side": "positive",
-            "box": {
-              "visible": false
-            },
-            "boxpoints": false,
             "line": {
                 "color": "black"
             },
             "fillcolor": "#d3c78d",
             "opacity": 0.6,
-            "meanline": {
-                "visible": false
-            },
             "y0": 0.1
         }, {
             "type": "box",
-            "width": 0.5421,
+            "width": 0.6,
+            "name": "width: 0.6",
             "x": [0, 5, 7, 8],
-            "points": "none",
             "side": "positive",
-            "box": {
-              "visible": false
-            },
-            "boxpoints": false,
             "line": {
                 "color": "black"
             },
             "fillcolor": "#c78dd3",
             "opacity": 0.6,
-            "meanline": {
-                "visible": false
-            },
             "y0": 0.2
     }],
     "layout": {
         "title": "Joyplot - Violin with multiple widths",
+        "legend": {"x": 0},
         "xaxis": {"zeroline": false},
-        "violingap": 0
+        "yaxis": {"dtick": 0.1, "gridcolor": "black"}
     }
 }
