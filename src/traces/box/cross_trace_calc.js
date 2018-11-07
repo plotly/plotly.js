@@ -109,10 +109,10 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
         var trace = calcTrace[0].trace;  // for ease of use
         var widthMultiplier = (trace.width) ? trace.width : 1;
         var alt_vpadminus = Math.max(Math.abs(calcTrace[0].trace.pointpos) * padfactor * widthMultiplier * fullLayout[numKey], 0);
-        var alt_vpadplus =Math.max(Math.abs(calcTrace[0].trace.pointpos) * padfactor * widthMultiplier * fullLayout[numKey], 0);
+        var alt_vpadplus = Math.max(Math.abs(calcTrace[0].trace.pointpos) * padfactor * widthMultiplier * fullLayout[numKey], 0);
 
         var side = calcTrace[0].trace.side;
-        var vpadminus = (side === 'positive') ? alt_vpadminus: (thisDPos + pad[0] * padfactor);
+        var vpadminus = (side === 'positive') ? alt_vpadminus : (thisDPos + pad[0] * padfactor);
         var vpadplus = (side === 'negative') ? alt_vpadplus : (thisDPos + pad[1] * padfactor);
         var extremes = Axes.findExtremes(posAxis, positions, {
             vpadminus: vpadminus,
