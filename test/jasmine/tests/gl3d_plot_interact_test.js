@@ -567,17 +567,17 @@ describe('Test gl3d plots', function() {
             y: [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15, -16],
             z: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
             text: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'],
-            textposition: ["left top", "right top", "left bottom", "right bottom", null, undefined, , true, false, [], {}, NaN, Infinity, 0]
+            textposition: ['left top', 'right top', 'left bottom', 'right bottom', null, undefined, true, false, [], {}, NaN, Infinity, 0, 1.2]
         }])
         .then(function() {
-            var AllTextpositions = gd._fullData[0].textposition
+            var AllTextpositions = gd._fullData[0].textposition;
 
-            expect(AllTextpositions[0]).toBe("top left", 'is not top left');
-            expect(AllTextpositions[1]).toBe("top right", 'is not top right');
-            expect(AllTextpositions[2]).toBe("bottom left", 'is not bottom left');
-            expect(AllTextpositions[3]).toBe("bottom right", 'is not bottom right');
+            expect(AllTextpositions[0]).toBe('top left', 'is not top left');
+            expect(AllTextpositions[1]).toBe('top right', 'is not top right');
+            expect(AllTextpositions[2]).toBe('bottom left', 'is not bottom left');
+            expect(AllTextpositions[3]).toBe('bottom right', 'is not bottom right');
             for(var i = 4; i < AllTextpositions.length; i++) {
-                expect(AllTextpositions[i]).toBe("middle center", 'is not middle center');
+                expect(AllTextpositions[i]).toBe('middle center', 'is not middle center');
             }
         })
         .catch(failTest)
