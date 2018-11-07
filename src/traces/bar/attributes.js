@@ -59,6 +59,7 @@ module.exports = {
 
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
+    hovertemplate: scatterAttrs.hovertemplate,
 
     textposition: {
         valType: 'enumerated',

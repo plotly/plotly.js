@@ -16,6 +16,8 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var customAssertions = require('../assets/custom_assertions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
 
@@ -1598,6 +1600,34 @@ describe('bar hover', function() {
             .then(function() {
                 var out = _hover(gd, -0.25, 0.5, 'closest');
                 expect(out.text).toEqual('apple', 'hover text');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should use hovertemplate if specified', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) {
+                t.type = 'bar';
+                t.hovertemplate = '%{y}<extra></extra>';
+            });
+
+            function _hover() {
+                var evt = { xpx: 125, ypx: 150 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.plot(gd, mock)
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: ['1', '2', '1.5'],
+                    name: ['', '', ''],
+                    axis: '0'
+                });
+                // return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
             })
             .catch(failTest)
             .then(done);
