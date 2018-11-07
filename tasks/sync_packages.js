@@ -7,6 +7,18 @@ var common = require('./util/common');
 var constants = require('./util/constants');
 var pkg = require('../package.json');
 
+var year = (new Date()).getFullYear();
+
+var copyrightAndLicense = [
+    '## Copyright and license',
+    '',
+    'Code and documentation copyright ' + year + ' Plotly, Inc.',
+    '',
+    'Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).',
+    '',
+    'Docs released under the [Creative Commons license](https://github.com/plotly/documentation/blob/source/LICENSE).',
+    ''
+].join('\n');
 var packagesSpecs = constants.partialBundlePaths
     .map(function(d) {
         return {
@@ -88,14 +100,7 @@ packagesSpecs.forEach(function(d) {
             'var Plotly = require(\'' + d.name + '\');',
             '```',
             '',
-            '## Copyright and license',
-            '',
-            'Code and documentation copyright 2018 Plotly, Inc.',
-            '',
-            'Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).',
-            '',
-            'Docs released under the [Creative Commons license](https://github.com/plotly/documentation/blob/source/LICENSE).',
-            ''
+            copyrightAndLicense
         ];
 
         fs.writeFile(
