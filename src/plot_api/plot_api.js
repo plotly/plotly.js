@@ -2445,6 +2445,9 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
 
     var flags = editTypes.traceFlags();
     flags.arrays = {};
+    flags.nChanges = 0;
+    flags.nChangesAnim = 0;
+
     var i, trace;
 
     function getTraceValObject(parts) {
@@ -2456,6 +2459,8 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
         flags: flags,
         immutable: immutable,
         transition: transition,
+        nChanges: 0,
+        nChangesAnim: 0,
         newDataRevision: newDataRevision,
         gd: gd
     };
@@ -2475,6 +2480,10 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
         flags.fullReplot = true;
     }
 
+    if(transition && flags.nChanges && flags.nChangesAnim) {
+        flags.anim = flags.nChanges === flags.nChangesAnim ? 'all' : 'some';
+    }
+
     return flags;
 }
 
@@ -2483,6 +2492,8 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
     flags.arrays = {};
     flags.rangesAltered = {};
     flags.autorangedAxes = {};
+    flags.nChanges = 0;
+    flags.nChangesAnim = 0;
 
     function getLayoutValObject(parts) {
         return PlotSchema.getLayoutValObject(newFullLayout, parts);
@@ -2500,6 +2511,10 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
 
     if(flags.plot || flags.calc) {
         flags.layoutReplot = true;
+    }
+
+    if(transition && flags.nChanges && flags.nChangesAnim) {
+        flags.anim = flags.nChanges === flags.nChangesAnim ? 'all' : 'some';
     }
 
     return flags;
@@ -2521,14 +2536,11 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             return;
         }
         editTypes.update(flags, valObject);
+        flags.nChanges++;
 
         // track animatable changes
-        if(opts.transition) {
-            if(flags.anim === 'all' && !valObject.anim) {
-                flags.anim = 'some';
-            } else if(!flags.anim && valObject.anim) {
-                flags.anim = 'all';
-            }
+        if(opts.transition && valObject.anim) {
+            flags.nChangesAnim++;
         }
 
         // track cartesian axes with altered ranges
