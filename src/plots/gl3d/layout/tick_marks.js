@@ -47,7 +47,9 @@ function computeTickMarks(scene) {
         axes._length = (glRange[i].hi - glRange[i].lo) *
             glRange[i].pixelsPerDataUnit / scene.dataScale[i];
 
-        if(Math.abs(axes._length) === Infinity) {
+        if(Math.abs(axes._length) === Infinity ||
+           Math.abs(axes._length) === -Infinity ||
+           Number.isNaN(axes._length)) {
             ticks[i] = [];
         } else {
             axes._input_range = axes.range.slice();
@@ -66,10 +68,8 @@ function computeTickMarks(scene) {
             var tickModeCached = axes.tickmode;
             if(axes.tickmode === 'auto') {
                 axes.tickmode = 'linear';
-                if(!Number.isNaN(axes._length)) {
-                    var nticks = axes.nticks || Lib.constrain((axes._length / 40), 4, 9);
-                    Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
-                }
+                var nticks = axes.nticks || Lib.constrain((axes._length / 40), 4, 9);
+                Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
             }
             var dataTicks = Axes.calcTicks(axes);
             for(var j = 0; j < dataTicks.length; ++j) {

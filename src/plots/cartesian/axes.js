@@ -492,8 +492,7 @@ axes.prepTicks = function(ax) {
             }
             else {
                 minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
-                if(Number.isNaN(ax._length)) nt = 1; // or whatever default it should be
-                else nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
+                nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
 
             // radial axes span half their domain,
