@@ -202,6 +202,38 @@ module.exports = {
             'different identity from its predecessor contains new data.'
         ].join(' ')
     },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Used to allow user interactions with the plot to persist after',
+            '`Plotly.react` calls that are unaware of these interactions.',
+            'If `uirevision` is omitted, or if it is given and it changed from',
+            'the previous `Plotly.react` call, the exact new figure is used.',
+            'If `uirevision` is truthy and did NOT change, any attribute',
+            'that has been affected by user interactions and did not receive a',
+            'different value in the new figure will keep the interaction value.',
+            '`layout.uirevision` attribute serves as the default for',
+            '`uirevision` attributes in various sub-containers. For finer',
+            'control you can set these sub-attributes directly. For example,',
+            'if your app separately controls the data on the x and y axes you',
+            'might set `xaxis.uirevision=*time*` and `yaxis.uirevision=*cost*`.',
+            'Then if only the y data is changed, you can update',
+            '`yaxis.uirevision=*quantity*` and the y axis range will reset but',
+            'the x axis range will retain any user-driven zoom.'
+        ].join(' ')
+    },
+    editrevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in `editable: true`',
+            'configuration, other than trace names and axis titles.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
     template: {
         valType: 'any',
         role: 'info',
@@ -251,6 +283,16 @@ module.exports = {
             role: 'style',
             editType: 'modebar',
             description: 'Sets the color of the active or hovered on icons in the modebar.'
+        },
+        uirevision: {
+            valType: 'any',
+            role: 'info',
+            editType: 'none',
+            description: [
+                'Controls persistence of user-driven changes related to the modebar,',
+                'including `hovermode`, `dragmode`, and `showspikes` at both the',
+                'root level and inside subplots. Defaults to `layout.uirevision`.'
+            ].join(' ')
         },
         editType: 'modebar'
     }

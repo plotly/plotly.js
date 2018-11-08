@@ -164,5 +164,17 @@ module.exports = {
             'An array of operations that manipulate the trace data,',
             'for example filtering or sorting the data arrays.'
         ].join(' ')
+    },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes to the trace:',
+            'interactions like `selectedpoints` and type-specific ones such as',
+            '`constraintrange` in `parcoords` traces, as well as some',
+            '`editable: true` modifications such as `name` and `colorbar.title`.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
     }
 };

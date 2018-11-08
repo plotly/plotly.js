@@ -120,5 +120,14 @@ module.exports = {
             'or *bottom* of the legend.'
         ].join(' ')
     },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of legend-driven changes in trace and pie label',
+            'visibility. Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
     editType: 'legend'
 };

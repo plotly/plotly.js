@@ -66,6 +66,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         var visible = coerceAxis('visible');
         setConvert(axOut, contOut, layoutOut);
 
+        coerceAxis('uirevision', contOut.uirevision);
+
         var dfltColor;
         var dfltFontColor;
 

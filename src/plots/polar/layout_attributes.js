@@ -118,6 +118,17 @@ var radialAxisAttrs = {
 
     hoverformat: axesAttrs.hoverformat,
 
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis `range`,',
+            '`autorange`, `angle`, and `title` if in `editable: true` configuration.',
+            'Defaults to `polar<N>.uirevision`.'
+        ].join(' ')
+    },
+
     editType: 'calc'
 };
 
@@ -215,6 +226,16 @@ var angularAxisAttrs = {
 
     hoverformat: axesAttrs.hoverformat,
 
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis `rotation`.',
+            'Defaults to `polar<N>.uirevision`.'
+        ].join(' ')
+    },
+
     editType: 'calc'
 };
 
@@ -293,6 +314,17 @@ module.exports = {
 
     // TODO maybe?
     // annotations:
+
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis attributes,',
+            'if not overridden in the individual axes.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
 
     editType: 'calc'
 };

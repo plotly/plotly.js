@@ -176,6 +176,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
         };
 
+        coerce('uirevision', layoutOut.uirevision);
+
         handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 

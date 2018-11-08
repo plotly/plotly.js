@@ -766,6 +766,16 @@ module.exports = {
             'Used with `categoryorder`.'
         ].join(' ')
     },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis `range`,',
+            '`autorange`, and `title` if in `editable: true` configuration.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
     editType: 'calc',
 
     _deprecated: {
