@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.42.5] -- 2018-11-08
+
+### Fixed
+- Fix `scattergl` / `scatterpolargl` with `mode: lines` and
+  more than 1e5 pts (bug introduced in 1.42.0) [#3228]
+
+
 ## [1.42.4] -- 2018-11-07
 
 ### Fixed
