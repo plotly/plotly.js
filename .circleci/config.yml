@@ -188,3 +188,6 @@ workflows:
       - publish:
           requires:
             - build
+      - test-image-orca:
+          requires:
+            - build
