@@ -118,7 +118,7 @@
   },
   "devDependencies": {
     "brfs": "^2.0.0",
-    "browserify": "^16.2.2",
+    "browserify": "^16.2.3",
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^3.2.0",
     "deep-equal": "^1.0.1",
