@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.42.4
+* plotly.js (cartesian) v1.42.5
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -33699,7 +33699,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.42.4';
+exports.version = '1.42.5';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
