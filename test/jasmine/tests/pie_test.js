@@ -765,7 +765,7 @@ describe('pie hovering', function() {
                     'hovertemplate %{text}'
                 );
 
-                return Plotly.restyle(gd, 'hovertemplate', '%{percent:.1%}<extra></extra>');
+                return Plotly.restyle(gd, 'hovertemplate', '%{percent}<extra></extra>');
             })
             .then(_hover)
             .then(function() {

@@ -111,9 +111,12 @@ module.exports = function plot(gd, cdpie) {
                             var texti = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
                             if(texti) thisText.push(texti);
                         }
-                        if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
+                        pt.value = pt.v;
+                        pt.valueLabel = helpers.formatPieValue(pt.v, separators);
+                        if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
                         pt.percent = pt.v / cd0.vTotal;
-                        if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.percent, separators));
+                        pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
+                        if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
 
                         var hoverLabel = trace.hoverlabel;
                         var hoverFont = hoverLabel.font;
@@ -135,6 +138,7 @@ module.exports = function plot(gd, cdpie) {
                             outerContainer: fullLayout2._paper.node(),
                             gd: gd,
                             hovertemplate: trace2.hovertemplate,
+                            hovertemplateLabels: pt,
                             eventData: [eventData(pt, trace2)]
                         });
 

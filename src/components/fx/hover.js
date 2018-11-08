@@ -146,6 +146,7 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         container: container3,
         outerContainer: outerContainer3,
         hovertemplate: opts.hovertemplate || false,
+        hovertemplateLabels: opts.hovertemplateLabels || false,
         eventData: opts.eventData || {}
     };
     var hoverLabel = createHoverText([pointData], fullOpts, opts.gd);
@@ -203,6 +204,7 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
         container: container3,
         outerContainer: outerContainer3,
         hovertemplate: opts.hovertemplate || false,
+        hovertemplateLabels: opts.hovertemplateLabels || false,
         eventData: opts.eventData || {}
     };
 
@@ -959,9 +961,9 @@ function createHoverText(hoverData, opts, gd) {
         // hovertemplate
         var trace = d.trace;
         var hovertemplate = opts.hovertemplate || hoverData[curveNumber].hovertemplate || false;
-
+        var hovertemplateLabels = opts.hovertemplateLabels || d;
         if(hovertemplate) {
-            text = Lib.hovertemplateString(hovertemplate, d, opts.eventData[curveNumber] || {}, trace);
+            text = Lib.hovertemplateString(hovertemplate, hovertemplateLabels, opts.eventData[curveNumber] || {}, trace);
 
             var EXTRA_STRING_REGEX = /<extra>(.*)<\/extra>/;
             text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {
