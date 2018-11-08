@@ -132,7 +132,11 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         },
         xa: {_offset: 0},
         ya: {_offset: 0},
-        index: 0
+        index: 0,
+
+        hovertemplate: hoverItem.hovertemplate || false,
+        eventData: hoverItem.eventData || false,
+        hovertemplateLabels: hoverItem.hovertemplateLabels || false,
     };
 
     var container3 = d3.select(opts.container);
@@ -144,10 +148,7 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         rotateLabels: false,
         bgColor: opts.bgColor || Color.background,
         container: container3,
-        outerContainer: outerContainer3,
-        hovertemplate: opts.hovertemplate || false,
-        hovertemplateLabels: opts.hovertemplateLabels || false,
-        eventData: opts.eventData || {}
+        outerContainer: outerContainer3
     };
     var hoverLabel = createHoverText([pointData], fullOpts, opts.gd);
     alignHoverText(hoverLabel, fullOpts.rotateLabels);
@@ -188,7 +189,11 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
             },
             xa: {_offset: 0},
             ya: {_offset: 0},
-            index: 0
+            index: 0,
+
+            hovertemplate: hoverItem.hovertemplate || false,
+            eventData: opts.eventData || {},
+            hovertemplateLabels: opts.hovertemplateLabels || false,
         };
     });
 
@@ -202,10 +207,7 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
         rotateLabels: false,
         bgColor: opts.bgColor || Color.background,
         container: container3,
-        outerContainer: outerContainer3,
-        hovertemplate: opts.hovertemplate || false,
-        hovertemplateLabels: opts.hovertemplateLabels || false,
-        eventData: opts.eventData || {}
+        outerContainer: outerContainer3
     };
 
     var hoverLabel = createHoverText(pointsData, fullOpts, opts.gd);
@@ -667,7 +669,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     // other people and send it to the event
     for(itemnum = 0; itemnum < hoverData.length; itemnum++) {
         var pt = hoverData[itemnum];
-        newhoverdata.push(helpers.makeEventData(pt, pt.trace, pt.cd));
+        var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
+        newhoverdata.push(eventData);
+
+        hoverData[itemnum].hovertemplate = pt.trace.hovertemplate || false;
+        hoverData[itemnum].eventData = [eventData];
     }
 
     gd._hoverdata = newhoverdata;
@@ -689,8 +695,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         container: fullLayout._hoverlayer,
         outerContainer: fullLayout._paperdiv,
         commonLabelOpts: fullLayout.hoverlabel,
-        hoverdistance: fullLayout.hoverdistance,
-        eventData: gd._hoverdata
+        hoverdistance: fullLayout.hoverdistance
     };
 
     var hoverLabels = createHoverText(hoverData, labelOpts, gd);
@@ -960,10 +965,11 @@ function createHoverText(hoverData, opts, gd) {
 
         // hovertemplate
         var trace = d.trace;
-        var hovertemplate = opts.hovertemplate || hoverData[curveNumber].hovertemplate || false;
-        var hovertemplateLabels = opts.hovertemplateLabels || d;
+        var hovertemplate = d.hovertemplate || false;
+        var hovertemplateLabels = d.hovertemplateLabels || d;
+        var eventData = d.eventData[0] || {};
         if(hovertemplate) {
-            text = Lib.hovertemplateString(hovertemplate, hovertemplateLabels, opts.eventData[curveNumber] || {}, trace);
+            text = Lib.hovertemplateString(hovertemplate, hovertemplateLabels, eventData, trace);
 
             var EXTRA_STRING_REGEX = /<extra>(.*)<\/extra>/;
             text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {

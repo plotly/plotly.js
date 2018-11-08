@@ -107,8 +107,9 @@ module.exports = function plot(gd, cdpie) {
                         var thisText = [];
 
                         if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+                        pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
                         if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
-                            var texti = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+                            var texti = pt.text;
                             if(texti) thisText.push(texti);
                         }
                         pt.value = pt.v;
@@ -133,13 +134,14 @@ module.exports = function plot(gd, cdpie) {
                             fontFamily: helpers.castOption(hoverFont.family, pt.pts),
                             fontSize: helpers.castOption(hoverFont.size, pt.pts),
                             fontColor: helpers.castOption(hoverFont.color, pt.pts),
-                        }, {
-                            container: fullLayout2._hoverlayer.node(),
-                            outerContainer: fullLayout2._paper.node(),
-                            gd: gd,
+
                             hovertemplate: trace2.hovertemplate,
                             hovertemplateLabels: pt,
                             eventData: [eventData(pt, trace2)]
+                        }, {
+                            container: fullLayout2._hoverlayer.node(),
+                            outerContainer: fullLayout2._paper.node(),
+                            gd: gd
                         });
 
                         hasHoverLabel = true;
