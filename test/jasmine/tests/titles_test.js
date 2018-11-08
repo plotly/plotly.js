@@ -147,7 +147,22 @@ describe('Plot title', function() {
         });
     });
 
-    // TODO y set to `auto` to ensure current behavior is still supported
+    it('provides a y \'auto\' value putting title baseline in middle ' +
+      'of top margin irrespective of `yref`', function() {
+
+        // yref: 'container'
+        Plotly.plot(gd, data, extendLayout({
+            yref: 'container',
+            y: 'auto'
+        }));
+
+        expectBaselineInMiddleOfTopMargin(gd);
+
+        // yref: 'paper'
+        Plotly.relayout(gd, {'title.yref': 'paper'});
+
+        expectBaselineInMiddleOfTopMargin(gd);
+    });
 
     // TODO x-anchor auto
 
@@ -229,57 +244,6 @@ describe('Plot title', function() {
 
         var msg = 'Title baseline sits on the bottom of ' + elemSelector.desc;
         expect(baselineY).toBeWithin(refElemBB.bottom, 1.1, msg);
-    }
-
-    function calcTextCapLineY(textSel) {
-        var baselineY = calcTextBaselineY(textSel);
-        var fontSize = textSel.node().style.fontSize;
-        var fontSizeVal = parseFontSizeAttr(fontSize).val;
-
-        // CAP_SHIFT is assuming a cap height of an average font.
-        // One would have to analyze the font metrics of the
-        // used font to determine an accurate cap shift factor.
-        return baselineY - fontSizeVal * alignmentConstants.CAP_SHIFT;
-    }
-
-    function calcTextBaselineY(textSel) {
-        var y = Number.parseFloat(textSel.attr('y'));
-        var dy = textSel.attr('dy');
-        var parsedDy = /^([0-9.]*)(\w*)$/.exec(dy);
-        var dyNumValue, dyUnit;
-        var fontSize, parsedFontSize;
-        var yShift;
-
-        if(parsedDy) {
-            dyUnit = parsedDy[2];
-            dyNumValue = Number.parseFloat(parsedDy[1]);
-
-            if(dyUnit === 'em') {
-                fontSize = textSel.node().style.fontSize;
-                parsedFontSize = parseFontSizeAttr(fontSize);
-
-                yShift = dyNumValue * Number.parseFloat(parsedFontSize.val);
-            } else if(dyUnit === '') {
-                yShift = dyNumValue;
-            } else {
-                fail('Calculating y-shift for unit ' + dyUnit + ' not implemented in test');
-            }
-        } else {
-            fail('dy value \'' + dy + '\' could not be parsed by test');
-        }
-
-        return y + yShift;
-    }
-
-    function parseFontSizeAttr(fontSizeAttr) {
-        var parsedFontSize = /^([0-9.]*)px$/.exec(fontSizeAttr);
-        var isFontSizeInPx = !!parsedFontSize;
-        expect(isFontSizeInPx).toBe(true, 'Tests assumes font-size is set in pixel');
-
-        return {
-            val: parsedFontSize[1],
-            unit: parsedFontSize[2]
-        };
     }
 
     function expectCenteredWithin(elemSelector) {
@@ -657,15 +621,71 @@ function expectDefaultCenteredPosition(gd) {
     var containerBB = gd.getBoundingClientRect();
 
     expect(titleX()).toBe(containerBB.width / 2);
-    expect(titleY()).toBe(gd._fullLayout.margin.t / 2);
+    expectBaselineInMiddleOfTopMargin(gd);
+}
+
+function expectBaselineInMiddleOfTopMargin(gd) {
+    var baselineY = calcTextBaselineY(titleSel());
+    var topMarginHeight = gd._fullLayout.margin.t;
+
+    expect(baselineY).toBe(topMarginHeight / 2);
 }
 
 function titleX() {
     return Number.parseFloat(titleSel().attr('x'));
 }
 
-function titleY() {
-    return Number.parseFloat(titleSel().attr('y'));
+function calcTextBaselineY(textSel) {
+    var y = Number.parseFloat(textSel.attr('y'));
+    var yShift = 0;
+    var dy = textSel.attr('dy');
+    var parsedDy, dyNumValue, dyUnit;
+    var fontSize, parsedFontSize;
+
+    if(dy) {
+        parsedDy = /^([0-9.]*)(\w*)$/.exec(dy);
+        if(parsedDy) {
+            dyUnit = parsedDy[2];
+            dyNumValue = Number.parseFloat(parsedDy[1]);
+
+            if(dyUnit === 'em') {
+                fontSize = textSel.node().style.fontSize;
+                parsedFontSize = parseFontSizeAttr(fontSize);
+
+                yShift = dyNumValue * Number.parseFloat(parsedFontSize.val);
+            } else if(dyUnit === '') {
+                yShift = dyNumValue;
+            } else {
+                fail('Calculating y-shift for unit ' + dyUnit + ' not implemented in test');
+            }
+        } else {
+            fail('dy value \'' + dy + '\' could not be parsed by test');
+        }
+    }
+
+    return y + yShift;
+}
+
+function calcTextCapLineY(textSel) {
+    var baselineY = calcTextBaselineY(textSel);
+    var fontSize = textSel.node().style.fontSize;
+    var fontSizeVal = parseFontSizeAttr(fontSize).val;
+
+    // CAP_SHIFT is assuming a cap height of an average font.
+    // One would have to analyze the font metrics of the
+    // used font to determine an accurate cap shift factor.
+    return baselineY - fontSizeVal * alignmentConstants.CAP_SHIFT;
+}
+
+function parseFontSizeAttr(fontSizeAttr) {
+    var parsedFontSize = /^([0-9.]*)px$/.exec(fontSizeAttr);
+    var isFontSizeInPx = !!parsedFontSize;
+    expect(isFontSizeInPx).toBe(true, 'Tests assumes font-size is set in pixel');
+
+    return {
+        val: parsedFontSize[1],
+        unit: parsedFontSize[2]
+    };
 }
 
 function titleSel() {
