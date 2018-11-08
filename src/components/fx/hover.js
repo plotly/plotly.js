@@ -971,7 +971,7 @@ function createHoverText(hoverData, opts, gd) {
         if(hovertemplate) {
             text = Lib.hovertemplateString(hovertemplate, hovertemplateLabels, eventData, trace);
 
-            var EXTRA_STRING_REGEX = /<extra>(.*)<\/extra>/;
+            var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
             text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {
                 name = extra; // Assign name for secondary text label
                 return ''; // Remove from main text label
