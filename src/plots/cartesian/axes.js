@@ -755,6 +755,9 @@ axes.autoTicks = function(ax, roughDTick) {
     // prevent infinite loops
     if(ax.dtick === 0) ax.dtick = 1;
 
+    // prevent issue https://github.com/plotly/plotly.js/issues/3224
+    if (Number.isNaN(ax.dtick)) ax.dtick = 1;
+
     // TODO: this is from log axis histograms with autorange off
     if(!isNumeric(ax.dtick) && typeof ax.dtick !== 'string') {
         var olddtick = ax.dtick;
