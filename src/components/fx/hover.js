@@ -126,7 +126,7 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         fontColor: hoverItem.fontColor,
 
         // filler to make createHoverText happy
-        trace: {
+        trace: hoverItem.trace || {
             index: 0,
             hoverinfo: ''
         },
@@ -183,7 +183,7 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
             fontColor: hoverItem.fontColor,
 
             // filler to make createHoverText happy
-            trace: {
+            trace: hoverItem.trace || {
                 index: 0,
                 hoverinfo: ''
             },

@@ -135,6 +135,7 @@ module.exports = function plot(gd, cdpie) {
                             fontSize: helpers.castOption(hoverFont.size, pt.pts),
                             fontColor: helpers.castOption(hoverFont.color, pt.pts),
 
+                            trace: trace2,
                             hovertemplate: trace2.hovertemplate,
                             hovertemplateLabels: pt,
                             eventData: [eventData(pt, trace2)]
