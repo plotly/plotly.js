@@ -895,7 +895,7 @@ function createHoverText(hoverData, opts, gd) {
 
     // then put the text in, position the pointer to the data,
     // and figure out sizes
-    hoverLabels.each(function(d, curveNumber) {
+    hoverLabels.each(function(d) {
         var g = d3.select(this).attr('transform', '');
         var name = '';
         var text = '';
