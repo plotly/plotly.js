@@ -192,8 +192,8 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
             index: 0,
 
             hovertemplate: hoverItem.hovertemplate || false,
-            eventData: opts.eventData || {},
-            hovertemplateLabels: opts.hovertemplateLabels || false,
+            eventData: hoverItem.eventData || false,
+            hovertemplateLabels: hoverItem.hovertemplateLabels || false,
         };
     });
 
