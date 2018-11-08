@@ -492,7 +492,8 @@ axes.prepTicks = function(ax) {
             }
             else {
                 minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
-                nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
+                if(Number.isNaN(ax._length)) nt = 1; // or whatever default it should be
+                else nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
 
             // radial axes span half their domain,
@@ -754,9 +755,6 @@ axes.autoTicks = function(ax, roughDTick) {
 
     // prevent infinite loops
     if(ax.dtick === 0) ax.dtick = 1;
-
-    // prevent issue https://github.com/plotly/plotly.js/issues/3224
-    if(Number.isNaN(ax.dtick)) ax.dtick = 1;
 
     // TODO: this is from log axis histograms with autorange off
     if(!isNumeric(ax.dtick) && typeof ax.dtick !== 'string') {

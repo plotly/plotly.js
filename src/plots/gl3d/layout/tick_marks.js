@@ -66,8 +66,10 @@ function computeTickMarks(scene) {
             var tickModeCached = axes.tickmode;
             if(axes.tickmode === 'auto') {
                 axes.tickmode = 'linear';
-                var nticks = axes.nticks || Lib.constrain((axes._length / 40), 4, 9);
-                Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
+                if(!Number.isNaN(axes._length)) {
+                    var nticks = axes.nticks || Lib.constrain((axes._length / 40), 4, 9);
+                    Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
+                }
             }
             var dataTicks = Axes.calcTicks(axes);
             for(var j = 0; j < dataTicks.length; ++j) {
