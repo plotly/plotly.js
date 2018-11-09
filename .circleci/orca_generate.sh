@@ -20,17 +20,23 @@ deterministic_shuffle()
   shuf --random-source=<(get_seeded_random "0")
 }
 
-if [ -z "$CIRCLECI" ]
+if [ "$CIRCLECI" = true ];
 then
-  echo "Work split accross $CIRCLE_NODE_TOTAL nodes"
-  echo "Currently $CIRCLE_NODE_INDEX"
+  echo "Work split across $CIRCLE_NODE_TOTAL nodes"
+  echo "Node index $CIRCLE_NODE_INDEX"
   sleep 1
 else
   echo "Running locally"
+  CIRCLE_NODE_TOTAL=1
+  CIRCLE_NODE_INDEX=0
 fi
 
+ls $MOCKS/*.json | deterministic_shuffle > /tmp/all
+split -d -a1 -n l/$CIRCLE_NODE_TOTAL /tmp/all /tmp/queue
+
+echo ""
 echo "Generating test images"
-ls $MOCKS/*.json | awk '!/mapbox/' | \
+cat /tmp/queue$CIRCLE_NODE_INDEX | awk '!/mapbox/' | \
     # Shuffle to distribute randomly slow and fast mocks
     deterministic_shuffle | \
     # head -n 10 | \
