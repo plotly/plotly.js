@@ -558,6 +558,36 @@ describe('Test gl3d plots', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl axis ticks should not be set when axis _length is NaN', function(done) {
+        Plotly.plot(gd,
+            {
+                data: [{
+                    type: 'scatter3d',
+                    mode: 'markers',
+                    x: [1, 2],
+                    y: [3, 4],
+                    z: [5, 6]
+                }],
+                layout: {
+                    scene: {
+                        camera: {
+                            eye: {x: 1, y: 1, z: 0},
+                            center: {x: 0.5, y: 0.5, z: 1},
+                            up: {x: 0, y: 0, z: 1}
+                        }
+                    }
+                }
+            }
+        )
+        .then(function() {
+            var zaxis = gd._fullLayout.scene.zaxis;
+            expect(isNaN(zaxis._length)).toBe(true);
+            expect(zaxis.dtick === undefined).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl3d modebar handlers', function() {
