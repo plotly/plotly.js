@@ -49,7 +49,7 @@ find $TEST_IMAGES -type f -name "*.png" -printf "%f\n" | \
   # sort | \
   # head -n 20 | \
   # xargs -n1 -P16 -I {} bash -c "echo {} && ./node_modules/.bin/pixelmatch $1/{} $2/{} diff/{} 0 true" | tee results.txt
-  xargs -n1 -P8 -I {} bash -c "compare -verbose -metric AE $TEST_IMAGES/{} $BASELINES/{} $DIFF_IMAGES/{} 2> $DIFF_IMAGES/{}.txt"
+  xargs -n1 -P`nproc` -I {} bash -c "compare -verbose -metric AE $TEST_IMAGES/{} $BASELINES/{} $DIFF_IMAGES/{} 2> $DIFF_IMAGES/{}.txt"
 
 CODE=$(grep -R "all: [^0]" $DIFF_IMAGES/ | wc -l)
 grep -l -R "all: [^0]" $DIFF_IMAGES/ | gawk '{match($0, /diff\/([^.]*)/, arr); print arr[1]}'

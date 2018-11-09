@@ -122,6 +122,7 @@ jobs:
       - run:
           name: Run image tests
           command: ./.circleci/orca_generate.sh
+          no_output_timeout: 2m
       - store_artifacts:
           path: build
           destination: /
