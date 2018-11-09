@@ -20,7 +20,7 @@ deterministic_shuffle()
   shuf --random-source=<(get_seeded_random "0")
 }
 
-if [ -z "$CI"]
+if [ -z "$CI" ]
 then
   echo "Work split accross $CIRCLE_NODE_TOTAL nodes"
   echo "Currently $CIRCLE_NODE_INDEX"
@@ -37,7 +37,6 @@ ls $MOCKS/*.json | awk '!/mapbox/' | \
     # Split in chunks of 20
     xargs -P1 -n20 xvfb-run -a orca graph --verbose --output-dir $TEST_IMAGES
 
-# Call compare.sh#
 echo "Comparing with baselines"
 find $TEST_IMAGES -type f -name "*.png" -printf "%f\n" | \
   # shuf | \
