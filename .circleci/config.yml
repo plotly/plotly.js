@@ -176,12 +176,6 @@ workflows:
       - test-jasmine2:
           requires:
             - build
-      - test-image:
-          requires:
-            - build
-      - test-image2:
-          requires:
-            - build
       - test-syntax:
           requires:
             - build
