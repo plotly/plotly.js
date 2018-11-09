@@ -113,6 +113,7 @@ jobs:
   test-image-orca:
     docker:
       - image: antoinerg/orca-reproducible:latest
+    parallelism: 4
     working_directory: ~/plotly.js
     steps:
       - checkout
