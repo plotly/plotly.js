@@ -47,7 +47,8 @@ function computeTickMarks(scene) {
         axes._length = (glRange[i].hi - glRange[i].lo) *
             glRange[i].pixelsPerDataUnit / scene.dataScale[i];
 
-        if(Math.abs(axes._length) === Infinity) {
+        if(Math.abs(axes._length) === Infinity ||
+           isNaN(axes._length)) {
             ticks[i] = [];
         } else {
             axes._input_range = axes.range.slice();

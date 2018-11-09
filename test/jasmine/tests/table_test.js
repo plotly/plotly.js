@@ -4,8 +4,10 @@ var Table = require('@src/traces/table');
 var attributes = require('@src/traces/table/attributes');
 var cn = require('@src/traces/table/constants').cn;
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mockMulti = require('@mocks/table_latex_multitrace_scatter.json');
@@ -203,6 +205,35 @@ describe('table', function() {
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
                 done();
             });
+        });
+
+        it('should remove scroll glyph and capture zone when *staticPlot:true*', function(done) {
+            var mockCopy = Lib.extendDeep({}, require('@mocks/table_plain_birds.json'));
+            var gd = createGraphDiv();
+
+            function _assert(msg, exp) {
+                expect(d3.selectAll('.' + cn.scrollbarCaptureZone).size()).toBe(exp.captureZone, msg);
+                expect(d3.selectAll('.' + cn.scrollbarGlyph).size()).toBe(exp.glyph, msg);
+            }
+
+            // more info in: https://github.com/plotly/streambed/issues/11618
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                _assert('staticPlot:false (base)', {
+                    captureZone: 1,
+                    glyph: 1
+                });
+            })
+            .then(function() { return Plotly.purge(gd); })
+            .then(function() { return Plotly.plot(gd, mockCopy.data, mockCopy.layout, {staticPlot: true}); })
+            .then(function() {
+                _assert('staticPlot:true', {
+                    captureZone: 0,
+                    glyph: 0
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 

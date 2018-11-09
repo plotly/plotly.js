@@ -1186,6 +1186,79 @@ describe('Test gl2d plots', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should not cause infinite loops when coordinate arrays start/end with NaN', function(done) {
+        function _assertPositions(msg, cont, exp) {
+            var pos = gd._fullLayout._plots.xy._scene[cont]
+                .map(function(opt) { return opt.positions; });
+            expect(pos).toBeCloseTo2DArray(exp, 2, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            x: [1, 2, 3],
+            y: [null, null, null]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            x: [1, 2, 3],
+            y: [1, 2, null]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            x: [null, 2, 3],
+            y: [1, 2, 3]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            x: [null, null, null],
+            y: [1, 2, 3]
+        }, {
+        }])
+        .then(function() {
+            _assertPositions('base', 'lineOptions', [
+                [],
+                [1, 1, 2, 2],
+                [2, 2, 3, 3],
+                []
+            ]);
+
+            return Plotly.restyle(gd, 'fill', 'tozerox');
+        })
+        .then(function() {
+            _assertPositions('tozerox', 'lineOptions', [
+                [],
+                [1, 1, 2, 2],
+                [2, 2, 3, 3],
+                []
+            ]);
+            _assertPositions('tozerox', 'fillOptions', [
+                [0, undefined, 0, undefined],
+                [0, 1, 1, 1, 2, 2, 0, 2],
+                [0, 2, 2, 2, 3, 3, 0, 3],
+                [0, undefined, 0, undefined]
+            ]);
+
+            return Plotly.restyle(gd, 'fill', 'tozeroy');
+        })
+        .then(function() {
+            _assertPositions('tozeroy', 'lineOptions', [
+                [],
+                [1, 1, 2, 2],
+                [2, 2, 3, 3],
+                []
+            ]);
+            _assertPositions('tozeroy', 'fillOptions', [
+                [undefined, 0, undefined, 0],
+                [1, 0, 1, 1, 2, 2, 2, 0],
+                [2, 0, 2, 2, 3, 3, 3, 0],
+                [undefined, 0, undefined, 0]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test scattergl autorange:', function() {
@@ -1232,10 +1305,14 @@ describe('Test scattergl autorange:', function() {
     });
 
     describe('should return the approximative values for ~big~ data', function() {
+        var gd;
+
         beforeEach(function() {
+            gd = createGraphDiv();
             // to avoid expansive draw calls (which could be problematic on CI)
             spyOn(ScatterGl, 'plot').and.callFake(function(gd) {
                 gd._fullLayout._plots.xy._scene.scatter2d = {draw: function() {}};
+                gd._fullLayout._plots.xy._scene.line2d = {draw: function() {}};
             });
         });
 
@@ -1254,8 +1331,6 @@ describe('Test scattergl autorange:', function() {
         }
 
         it('@gl - case scalar marker.size', function(done) {
-            var gd = createGraphDiv();
-
             Plotly.newPlot(gd, [{
                 type: 'scattergl',
                 mode: 'markers',
@@ -1272,8 +1347,6 @@ describe('Test scattergl autorange:', function() {
         });
 
         it('@gl - case array marker.size', function(done) {
-            var gd = createGraphDiv();
-
             Plotly.newPlot(gd, [{
                 type: 'scattergl',
                 mode: 'markers',
@@ -1284,6 +1357,20 @@ describe('Test scattergl autorange:', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.119, 1.119], 2, 'x range');
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.199, 1.199], 2, 'y range');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl - case mode:lines', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scattergl',
+                mode: 'lines',
+                y: y,
+            }])
+            .then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0, N - 1], 2, 'x range');
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.0555, 1.0555], 2, 'y range');
             })
             .catch(failTest)
             .then(done);

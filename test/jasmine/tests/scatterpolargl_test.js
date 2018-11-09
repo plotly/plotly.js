@@ -1,5 +1,6 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var ScatterPolarGl = require('@src/traces/scatterpolargl');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -249,5 +250,122 @@ describe('Test scatterpolargl interactions:', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+});
+
+describe('Test scatterpolargl autorange:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    describe('should return the same value as SVG scatter for ~small~ data', function() {
+        var specs = [
+            {name: 'markers', fig: require('@mocks/polar_scatter.json')},
+            {name: 'lines', fig: require('@mocks/polar_line.json')},
+        ];
+
+        specs.forEach(function(s) {
+            it('@gl - case ' + s.name, function(done) {
+                var svgRange;
+
+                // ensure the mocks have auto-range turned on
+                var svgFig = Lib.extendDeep({}, s.fig);
+                Lib.extendDeep(svgFig.layout.polar, {radialaxis: {autorange: true}});
+
+                var glFig = Lib.extendDeep({}, svgFig);
+                glFig.data.forEach(function(t) { t.type = 'scatterpolargl'; });
+
+                Plotly.newPlot(gd, svgFig).then(function() {
+                    svgRange = gd._fullLayout.polar.radialaxis.range;
+                })
+                .then(function() {
+                    return Plotly.newPlot(gd, glFig);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.polar.radialaxis.range)
+                        .toBeCloseToArray(svgRange, 'gl radial range');
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
+    describe('should return the approximative values for ~big~ data', function() {
+        var cnt;
+
+        beforeEach(function() {
+            // to avoid expansive draw calls (which could be problematic on CI)
+            cnt = 0;
+            spyOn(ScatterPolarGl, 'plot').and.callFake(function() {
+                cnt++;
+            });
+        });
+
+        // threshold for 'fast' axis expansion routine
+        var N = 1e5;
+        var r = new Array(N);
+        var ms = new Array(N);
+
+        Lib.seedPseudoRandom();
+
+        for(var i = 0; i < N; i++) {
+            r[i] = Lib.pseudoRandom();
+            ms[i] = 20 * Lib.pseudoRandom() + 20;
+        }
+
+        it('@gl - case scalar marker.size', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatterpolargl',
+                mode: 'markers',
+                r: r,
+                marker: {size: 10}
+            }])
+            .then(function() {
+                expect(gd._fullLayout.polar.radialaxis.range)
+                    .toBeCloseToArray([0, 1.0799], 2, 'radial range');
+                expect(cnt).toBe(1, '# of plot call');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl - case array marker.size', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatterpolargl',
+                mode: 'markers',
+                r: r,
+                marker: ms
+            }])
+            .then(function() {
+                expect(gd._fullLayout.polar.radialaxis.range)
+                    .toBeCloseToArray([0, 1.0465], 2, 'radial range');
+                expect(cnt).toBe(1, '# of plot call');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl - case mode:lines', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatterpolargl',
+                mode: 'lines',
+                r: r,
+            }])
+            .then(function() {
+                expect(gd._fullLayout.polar.radialaxis.range)
+                    .toBeCloseToArray([0, 0.9999], 2, 'radial range');
+                expect(cnt).toBe(1, '# of plot call');
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

@@ -2785,3 +2785,31 @@ describe('touch devices', function() {
         });
     });
 });
+
+describe('dragmode: false', function() {
+    var data = [{x: [1, 2, 3], y: [1, 3, 2], type: 'bar'}];
+    var layout = {width: 600, height: 400, dragmode: false};
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.plot(gd, data, layout).then(done);
+    });
+    afterEach(destroyGraphDiv);
+
+    it('should emit hover events on mousemove', function(done) {
+        var hoverHandler = jasmine.createSpy('hover');
+        gd.on('plotly_hover', hoverHandler);
+        Promise.resolve()
+            .then(function() {
+                mouseEvent('mousemove', 105, 300);
+                mouseEvent('mousemove', 108, 303);
+            })
+            .then(delay(HOVERMINTIME * 1.1))
+            .then(function() {
+                expect(hoverHandler).toHaveBeenCalled();
+            })
+            .catch(failTest)
+            .then(done);
+    });
+});

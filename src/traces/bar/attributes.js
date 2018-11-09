@@ -18,6 +18,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var textFontAttrs = fontAttrs({
     editType: 'calc',
     arrayOk: true,
+    colorEditType: 'style',
     description: ''
 });
 

@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.42.5] -- 2018-11-08
+
+### Fixed
+- Fix `scattergl` / `scatterpolargl` with `mode: lines` and
+  more than 1e5 pts (bug introduced in 1.42.0) [#3228]
+
+
+## [1.42.4] -- 2018-11-07
+
+### Fixed
+- Remove rendering artifacts from `table` orca PDF exports [#3220]
+
+
+## [1.42.3] -- 2018-11-06
+
+### Fixed
+- Fix `histogram` binning for typed array inputs (bug introduced in 1.42.0) [#3211]
+- Fix textfont color `restyle` calls for `pie` traces [#3214]
+- Fix textfont color `editType` for `bar` traces [#3214]
+- Fix array `hoverinfo` support for `ohlc` and `candelestick` [#3213]
+- Correctly list `parcats` hoverinfo attributes which does not support array inputs [#3213]
+
+
+## [1.42.2] -- 2018-11-01
+
+### Fixed
+- Fix runaway loops for `scattergl` lines and fill traces
+  (bug introduced in 1.42.0) [#3199]
+- Fix size and alignment vertical modebar [#3193]
+- Fix legend item rendering for traces with typed array marker
+  settings [#3192]
+
+
 ## [1.42.1] -- 2018-10-31
 
 ### Fixed
