@@ -4,6 +4,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var touchEvent = require('../assets/touch_event');
 
 
 describe('dragElement', function() {
@@ -204,6 +205,30 @@ describe('dragElement', function() {
         mouseEvent('mouseup', this.x, this.y);
 
         expect(mockObj.dummy).not.toHaveBeenCalled();
+    });
+
+    it('should not register move event handler when dragmode is false', function() {
+        var moveCalls = 0;
+        var options = {
+            element: this.element,
+            gd: this.gd,
+            dragmode: false,
+            moveFn: function() {
+                moveCalls++;
+            }
+        };
+        dragElement.init(options);
+        mouseEvent('mousedown', this.x, this.y);
+        mouseEvent('mousemove', this.x + 10, this.y + 10);
+        mouseEvent('mouseup', this.x, this.y);
+
+        expect(moveCalls).toBe(0);
+
+        touchEvent('touchstart', this.x, this.y);
+        touchEvent('touchmove', this.x + 10, this.y + 10);
+        touchEvent('touchend', this.x, this.y);
+
+        expect(moveCalls).toBe(0);
     });
 });
 
