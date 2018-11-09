@@ -48,7 +48,6 @@ function computeTickMarks(scene) {
             glRange[i].pixelsPerDataUnit / scene.dataScale[i];
 
         if(Math.abs(axes._length) === Infinity ||
-           Math.abs(axes._length) === -Infinity ||
            isNaN(axes._length)) {
             ticks[i] = [];
         } else {
