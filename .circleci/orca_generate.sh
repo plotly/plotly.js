@@ -20,7 +20,7 @@ deterministic_shuffle()
   shuf --random-source=<(get_seeded_random "0")
 }
 
-if [ -z "$CI" ]
+if [ -z "$CIRCLECI" ]
 then
   echo "Work split accross $CIRCLE_NODE_TOTAL nodes"
   echo "Currently $CIRCLE_NODE_INDEX"
