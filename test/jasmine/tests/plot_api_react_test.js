@@ -13,6 +13,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var mockLists = require('../assets/mock_lists');
+var drag = require('../assets/drag');
 
 describe('@noCIdep Plotly.react', function() {
     var mockedMethods = [
@@ -882,6 +883,493 @@ describe('resizing with Plotly.relayout and Plotly.react', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([-0.53448, 1.53448], 3);
             expect(gd.layout.yaxis.range).toBeCloseToArray([0.46552, 2.53448], 3);
         })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+
+describe('Plotly.react and uirevision attributes', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function checkState(dataKeys, layoutKeys, msg) {
+        var np = Lib.nestedProperty;
+        return function() {
+            dataKeys.forEach(function(traceKeys, i) {
+                var trace = gd.data[i];
+                var fullTrace = gd._fullData.filter(function(ft) {
+                    return ft._fullInput.index === i;
+                })[0]._fullInput;
+
+                for(var key in traceKeys) {
+                    var val = traceKeys[key];
+                    var valIn = Array.isArray(val) ? val[0] : val;
+                    var valOut = Array.isArray(val) ? val[val.length - 1] : val;
+                    expect(np(trace, key).get()).toEqual(valIn, msg + ': data[' + i + '].' + key);
+                    expect(np(fullTrace, key).get()).toEqual(valOut, msg + ': _fullData[' + i + '].' + key);
+                }
+            });
+
+            for(var key in (layoutKeys || {})) {
+                var val = layoutKeys[key];
+                var valIn = Array.isArray(val) ? val[0] : val;
+                var valOut = Array.isArray(val) ? val[val.length - 1] : val;
+                expect(np(gd.layout, key).get()).toEqual(valIn, msg + ': layout.' + key);
+                expect(np(gd._fullLayout, key).get()).toEqual(valOut, msg + ': _fullLayout.' + key);
+            }
+        };
+    }
+
+    function _react(fig) {
+        return function() {
+            return Plotly.react(gd, fig);
+        };
+    }
+
+    it('preserves zoom and trace visibility state until uirevision changes', function(done) {
+        var checkNoEdits = checkState([{
+        }, {
+            visible: [undefined, true]
+        }], {
+            'xaxis.autorange': true,
+            'yaxis.autorange': true
+        }, 'initial');
+
+        var checkHasEdits = checkState([{
+        }, {
+            visible: 'legendonly'
+        }], {
+            'xaxis.range[0]': 0,
+            'xaxis.range[1]': 1,
+            'xaxis.autorange': false,
+            'yaxis.range[0]': 1,
+            'yaxis.range[1]': 2,
+            'yaxis.autorange': false
+        }, 'with GUI edits');
+
+        var i = 0;
+        function fig(rev) {
+            i++;
+            return {
+                data: [{y: [1, 3, i]}, {y: [2, 1, i + 1]}],
+                layout: {uirevision: rev}
+            };
+        }
+
+        function setEdits() {
+            return Registry.call('_guiRelayout', gd, {
+                'xaxis.range': [0, 1],
+                'yaxis.range': [1, 2]
+            })
+            .then(function() {
+                return Registry.call('_guiRestyle', gd, 'visible', 'legendonly', [1]);
+            });
+        }
+
+        Plotly.newPlot(gd, fig('something'))
+        .then(checkNoEdits)
+        .then(setEdits)
+        .then(checkHasEdits)
+        .then(_react(fig('something')))
+        .then(checkHasEdits)
+        .then(_react(fig('something else!')))
+        .then(checkNoEdits)
+        .then(_react(fig('something')))
+        // back to the first uirevision, but the changes are gone forever
+        .then(checkNoEdits)
+        // falsy uirevision - does not preserve edits
+        .then(_react(fig(false)))
+        .then(checkNoEdits)
+        .then(setEdits)
+        .then(checkHasEdits)
+        .then(_react(fig(false)))
+        .then(checkNoEdits)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('moves trace visibility with uid', function(done) {
+        Plotly.newPlot(gd,
+            [{y: [1, 3, 1], uid: 'a'}, {y: [2, 1, 2], uid: 'b'}],
+            {uirevision: 'something'}
+        )
+        .then(function() {
+            return Registry.call('_guiRestyle', gd, 'visible', 'legendonly', [1]);
+        })
+        // we hid the second trace, with uid b
+        .then(checkState([{visible: [undefined, true]}, {visible: 'legendonly'}]))
+        .then(_react({
+            data: [{y: [1, 3, 1], uid: 'b'}, {y: [2, 1, 2], uid: 'a'}],
+            layout: {uirevision: 'something'}
+        }))
+        // now the first trace is hidden, because it has uid b now!
+        .then(checkState([{visible: 'legendonly'}, {visible: [undefined, true]}]))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('controls axis edits with axis.uirevision', function(done) {
+        function fig(mainRev, xRev, yRev, x2Rev, y2Rev) {
+            return {
+                data: [{y: [1, 2, 1]}, {y: [3, 4, 3], xaxis: 'x2', yaxis: 'y2'}],
+                layout: {
+                    uirevision: mainRev,
+                    grid: {columns: 2, pattern: 'independent'},
+                    xaxis: {uirevision: xRev},
+                    yaxis: {uirevision: yRev},
+                    xaxis2: {uirevision: x2Rev},
+                    yaxis2: {uirevision: y2Rev}
+                }
+            };
+        }
+
+        function checkAutoRange(x, y, x2, y2, msg) {
+            return checkState([], {
+                'xaxis.autorange': x,
+                'yaxis.autorange': y,
+                'xaxis2.autorange': x2,
+                'yaxis2.autorange': y2
+            }, msg);
+        }
+
+        function setExplicitRanges() {
+            return Registry.call('_guiRelayout', gd, {
+                'xaxis.range': [1, 2],
+                'yaxis.range': [2, 3],
+                'xaxis2.range': [3, 4],
+                'yaxis2.range': [4, 5]
+            });
+        }
+
+        Plotly.newPlot(gd, fig('a', 'x1a', 'y1a', 'x2a', 'y2a'))
+        .then(checkAutoRange(true, true, true, true))
+        .then(setExplicitRanges)
+        .then(checkAutoRange(false, false, false, false))
+        // change main rev (no effect) and y1 and x2
+        .then(_react(fig('b', 'x1a', 'y1b', 'x2b', 'y2a')))
+        .then(checkAutoRange(false, true, true, false))
+        // now reset with falsy revisions for x2 & y2 but undefined for x1 & y1
+        // to show that falsy says "never persist changes here" but undefined
+        // will be inherited
+        .then(_react(fig('a', undefined, undefined, false, '')))
+        .then(checkAutoRange(true, true, true, true))
+        .then(setExplicitRanges)
+        .then(checkAutoRange(false, false, false, false))
+        .then(_react(fig('a', undefined, undefined, false, '')))
+        .then(checkAutoRange(false, false, true, true))
+        .then(_react(fig('b', undefined, undefined, false, '')))
+        .then(checkAutoRange(true, true, true, true))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('controls trace and pie label visibility from legend.uirevision', function(done) {
+        function checkVisible(traces, hiddenlabels, msg) {
+            return checkState(
+                traces.map(function(v) {
+                    return {visible: v ? [undefined, true] : 'legendonly'};
+                }),
+                {hiddenlabels: hiddenlabels},
+                msg
+            );
+        }
+
+        function fig(mainRev, legendRev) {
+            return {
+                data: [
+                    {y: [1, 2]},
+                    {y: [2, 1]},
+                    {type: 'pie', labels: ['a', 'b', 'c'], values: [1, 2, 3]}
+                ],
+                layout: {
+                    uirevision: mainRev,
+                    legend: {uirevision: legendRev}
+                }
+            };
+        }
+
+        Plotly.newPlot(gd, fig('main a', 'legend a'))
+        .then(checkVisible([true, true], undefined, 'initial'))
+        .then(function() {
+            return Registry.call('_guiUpdate', gd,
+                {visible: 'legendonly'},
+                {hiddenlabels: ['b', 'c']},
+                [0]
+            );
+        })
+        // wrap [b, c] in another array to distinguish it from
+        // [layout, fullLayout]
+        .then(checkVisible([false, true], [['b', 'c']], 'gui'))
+        .then(_react(fig('main b', 'legend a')))
+        .then(checkVisible([false, true], [['b', 'c']], 'change main rev'))
+        .then(_react(fig('main b', 'legend b')))
+        .then(checkVisible([true, true], undefined, 'change legend rev'))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves groupby group visibility', function(done) {
+        // TODO: there's a known problem if the groups change... unlike
+        // traces we will keep visibility by group in order, not by group value
+
+        function checkVisible(groups, extraTrace) {
+            var trace0edits = {};
+            groups.forEach(function(visi, i) {
+                var attr = 'transforms[0].styles[' + i + '].value.visible';
+                trace0edits[attr] = visi ? undefined : 'legendonly';
+            });
+            return checkState([
+                trace0edits,
+                {visible: extraTrace ? [undefined, true] : 'legendonly'}
+            ]);
+        }
+
+        function fig(mainRev, legendRev) {
+            return {
+                data: [{
+                    y: [1, 2, 3, 4, 5, 6],
+                    transforms: [{
+                        type: 'groupby',
+                        groups: ['a', 'b', 'c', 'a', 'b', 'c']
+                    }]
+                }, {
+                    y: [7, 8]
+                }],
+                layout: {
+                    uirevision: mainRev,
+                    legend: {uirevision: legendRev}
+                }
+            };
+        }
+
+        Plotly.newPlot(gd, fig('main a', 'legend a'))
+        .then(checkVisible([true, true, true], true))
+        .then(function() {
+            return Registry.call('_guiRestyle', gd, {
+                'transforms[0].styles[0].value.visible': 'legendonly',
+                'transforms[0].styles[2].value.visible': 'legendonly'
+            }, [0])
+            .then(function() {
+                return Registry.call('_guiRestyle', gd, 'visible', 'legendonly', [1]);
+            });
+        })
+        .then(checkVisible([false, true, false], false))
+        .then(_react(fig('main b', 'legend a')))
+        .then(checkVisible([false, true, false], false))
+        .then(_react(fig('main b', 'legend b')))
+        .then(checkVisible([true, true, true], true))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl preserves modebar interactions using modebar.uirevision', function(done) {
+        function fig(mainRev, modebarRev) {
+            return {
+                data: [
+                    {type: 'surface', z: [[1, 2], [3, 4]]},
+                    {y: [1, 2]}
+                ],
+                layout: {
+                    scene: {
+                        domain: {x: [0, 0.4]},
+                        hovermode: 'closest',
+                        dragmode: 'zoom'
+                    },
+                    xaxis: {domain: [0.6, 1], showspikes: true},
+                    yaxis: {showspikes: true},
+                    uirevision: mainRev,
+                    modebar: {uirevision: modebarRev},
+                    hovermode: 'closest',
+                    dragmode: 'zoom'
+                }
+            };
+        }
+
+        function editModes() {
+            return Registry.call('_guiRelayout', gd, {
+                dragmode: 'pan',
+                hovermode: false,
+                'xaxis.showspikes': false,
+                'yaxis.showspikes': false,
+                'scene.dragmode': 'pan',
+                'scene.hovermode': false,
+                'scene.xaxis.showspikes': false,
+                'scene.yaxis.showspikes': false,
+                'scene.zaxis.showspikes': false
+            });
+        }
+
+        function _checkModes(original) {
+            var dragmode = original ? 'zoom' : 'pan';
+            var hovermode = original ? 'closest' : false;
+            var spikes = original ? true : false;
+            var spikes3D = original ? [undefined, true] : false;
+            return checkState([], {
+                dragmode: dragmode,
+                hovermode: hovermode,
+                'xaxis.showspikes': spikes,
+                'yaxis.showspikes': spikes,
+                'scene.dragmode': dragmode,
+                'scene.hovermode': hovermode,
+                'scene.xaxis.showspikes': spikes3D,
+                'scene.yaxis.showspikes': spikes3D,
+                'scene.zaxis.showspikes': spikes3D
+            });
+        }
+        var checkOriginalModes = _checkModes(true);
+        var checkEditedModes = _checkModes(false);
+
+        Plotly.newPlot(gd, fig('main a', 'modebar a'))
+        .then(checkOriginalModes)
+        .then(editModes)
+        .then(checkEditedModes)
+        .then(_react(fig('main b', 'modebar a')))
+        .then(checkEditedModes)
+        .then(_react(fig('main b', 'modebar b')))
+        .then(checkOriginalModes)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves geo viewport changes using geo.uirevision', function(done) {
+        function fig(mainRev, geoRev) {
+            return {
+                data: [{
+                    type: 'scattergeo', lon: [0, -75], lat: [0, 45]
+                }],
+                layout: {
+                    uirevision: mainRev,
+                    geo: {uirevision: geoRev}
+                }
+            };
+        }
+
+        function editView() {
+            return Registry.call('_guiRelayout', gd, {
+                'geo.projection.scale': 3,
+                'geo.projection.rotation.lon': -45,
+                'geo.center.lat': 22,
+                'geo.center.lon': -45
+            });
+        }
+
+        function _checkView(original) {
+            return checkState([], {
+                'geo.projection.scale': original ? [undefined, 1] : 3,
+                'geo.projection.rotation.lon': original ? [undefined, 0] : -45,
+                'geo.center.lat': original ? [undefined, 0] : 22,
+                'geo.center.lon': original ? [undefined, 0] : -45
+            });
+        }
+        var checkOriginalView = _checkView(true);
+        var checkEditedView = _checkView(false);
+
+        Plotly.newPlot(gd, fig('main a', 'geo a'))
+        .then(checkOriginalView)
+        .then(editView)
+        .then(checkEditedView)
+        .then(_react(fig('main b', 'geo a')))
+        .then(checkEditedView)
+        .then(_react(fig('main b', 'geo b')))
+        .then(checkOriginalView)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl preserves 3d camera changes using scene.uirevision', function(done) {
+        function fig(mainRev, sceneRev) {
+            return {
+                data: [{type: 'surface', z: [[1, 2], [3, 4]]}],
+                layout: {
+                    uirevision: mainRev,
+                    scene: {uirevision: sceneRev}
+                }
+            };
+        }
+
+        function editCamera() {
+            return Registry.call('_guiRelayout', gd, {
+                'scene.camera': {
+                    center: {x: 1, y: 2, z: 3},
+                    eye: {x: 2, y: 3, z: 4},
+                    up: {x: 0, y: 0, z: 1}
+                }
+            });
+        }
+
+        function _checkCamera(original) {
+            return checkState([], {
+                'scene.camera.center.x': original ? [undefined, 0] : 1,
+                'scene.camera.center.y': original ? [undefined, 0] : 2,
+                'scene.camera.center.z': original ? [undefined, 0] : 3,
+                'scene.camera.eye.x': original ? [undefined, 1.25] : 2,
+                'scene.camera.eye.y': original ? [undefined, 1.25] : 3,
+                'scene.camera.eye.z': original ? [undefined, 1.25] : 4,
+                'scene.camera.up.x': original ? [undefined, 0] : 0,
+                'scene.camera.up.y': original ? [undefined, 0] : 0,
+                'scene.camera.up.z': original ? [undefined, 1] : 1
+            });
+        }
+        var checkOriginalCamera = _checkCamera(true);
+        var checkEditedCamera = _checkCamera(false);
+
+        Plotly.newPlot(gd, fig('main a', 'scene a'))
+        .then(checkOriginalCamera)
+        .then(editCamera)
+        .then(checkEditedCamera)
+        .then(_react(fig('main b', 'scene a')))
+        .then(checkEditedCamera)
+        .then(_react(fig('main b', 'scene b')))
+        .then(checkOriginalCamera)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves selectedpoints using selectionrevision', function(done) {
+        function fig(mainRev, selectionRev) {
+            return {
+                data: [{y: [1, 3, 1]}, {y: [2, 1, 3]}],
+                layout: {
+                    uirevision: mainRev,
+                    selectionrevision: selectionRev,
+                    dragmode: 'select',
+                    width: 400,
+                    height: 400,
+                    margin: {l: 100, t: 100, r: 100, b: 100}
+                }
+            };
+        }
+
+        function editSelection() {
+            // drag across the upper right quadrant, so we'll select
+            // curve 0 point 1 and curve 1 point 2
+            return drag(document.querySelector('.nsewdrag'),
+                148, 100, '', 150, 102);
+        }
+
+        var checkNoSelection = checkState([
+            {selectedpoints: undefined},
+            {selectedpoints: undefined}
+        ]);
+        var checkSelection = checkState([
+            {selectedpoints: [[1]]},
+            {selectedpoints: [[2]]}
+        ]);
+
+        Plotly.newPlot(gd, fig('main a', 'selection a'))
+        .then(checkNoSelection)
+        .then(editSelection)
+        .then(checkSelection)
+        .then(_react(fig('main b', 'selection a')))
+        .then(checkSelection)
+        .then(_react(fig('main b', 'selection b')))
+        .then(checkNoSelection)
         .catch(failTest)
         .then(done);
     });
