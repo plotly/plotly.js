@@ -32,11 +32,13 @@ else
 fi
 
 ls $MOCKS/*.json | deterministic_shuffle > /tmp/all
-split -d -a1 -n l/$CIRCLE_NODE_TOTAL /tmp/all /tmp/queue
+split -d -a3 -n l/$CIRCLE_NODE_TOTAL /tmp/all /tmp/queue
+
+NODE_QUEUE="/tmp/queue$(printf "%03d" $CIRCLE_NODE_INDEX)"
 
 echo ""
 echo "Generating test images"
-cat /tmp/queue$CIRCLE_NODE_INDEX | awk '!/mapbox/' | \
+cat $NODE_QUEUE | awk '!/mapbox/' | \
     # Shuffle to distribute randomly slow and fast mocks
     deterministic_shuffle | \
     # head -n 10 | \
