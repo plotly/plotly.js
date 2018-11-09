@@ -10,7 +10,7 @@ DIFF_IMAGES=$ROOT/build/test_images_diff
 echo "Generating test images"
 ls $MOCKS/*.json | awk '!/mapbox/' | \
     # Shuffle to distribute randomly slow and fast mocks
-    # shuf | \
+    shuf | \
     # head -n 10 | \
     # Split in chunks of 20
     xargs -P1 -n20 xvfb-run -a orca graph --verbose --output-dir $TEST_IMAGES
