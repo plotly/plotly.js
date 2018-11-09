@@ -234,6 +234,15 @@ module.exports = {
             'Defaults to `layout.uirevision`.'
         ].join(' ')
     },
+    selectionrevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in selected points',
+            'from all traces.'
+        ].join(' ')
+    },
     template: {
         valType: 'any',
         role: 'info',

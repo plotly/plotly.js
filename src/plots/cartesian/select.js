@@ -666,6 +666,15 @@ function isOnlyOnePointSelected(searchTraces) {
 function updateSelectedState(gd, searchTraces, eventData) {
     var i, searchInfo, cd, trace;
 
+    // before anything else, update preGUI if necessary
+    for(i = 0; i < searchTraces.length; i++) {
+        var fullInputTrace = searchTraces[i].cd[0].trace._fullInput;
+        var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid];
+        if(tracePreGUI.selectedpoints === undefined) {
+            tracePreGUI.selectedpoints = fullInputTrace._input.selectedpoints || null;
+        }
+    }
+
     if(eventData) {
         var pts = eventData.points || [];
 

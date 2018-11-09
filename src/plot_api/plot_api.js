@@ -2387,6 +2387,7 @@ var layoutUIControlPatterns = [
 // same for trace attributes: if `attr` is given it's in layout,
 // or with no `attr` we use `trace.uirevision`
 var traceUIControlPatterns = [
+    {pattern: /^selectedpoints$/, attr: 'selectionrevision'},
     // "visible" includes trace.transforms[i].styles[j].value.visible
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
