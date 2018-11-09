@@ -571,7 +571,7 @@ describe('Test gl3d plots', function() {
                 }],
                 layout: {
                     scene: {
-                        camera:{
+                        camera: {
                             eye: {x: 1, y: 1, z: 0},
                             center: {x: 0.5, y: 0.5, z: 1},
                             up: {x: 0, y: 0, z: 1}
