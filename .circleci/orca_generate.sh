@@ -20,6 +20,15 @@ deterministic_shuffle()
   shuf --random-source=<(get_seeded_random "0")
 }
 
+if [ -z "$CI"]
+then
+  echo "Work split accross $CIRCLE_NODE_TOTAL nodes"
+  echo "Currently $CIRCLE_NODE_INDEX"
+  sleep 1
+else
+  echo "Running locally"
+fi
+
 echo "Generating test images"
 ls $MOCKS/*.json | awk '!/mapbox/' | \
     # Shuffle to distribute randomly slow and fast mocks
