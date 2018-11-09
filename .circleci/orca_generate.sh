@@ -7,10 +7,23 @@ BASELINES=$ROOT/test/image/baselines
 TEST_IMAGES=$ROOT/build/test_images
 DIFF_IMAGES=$ROOT/build/test_images_diff
 
+# Deterministic shuffling (https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html)
+get_seeded_random()
+{
+  seed="$1"
+  openssl enc -aes-256-ctr -pass pass:"$seed" -nosalt \
+    </dev/zero 2>/dev/null
+}
+
+deterministic_shuffle()
+{
+  shuf --random-source=<(get_seeded_random "0")
+}
+
 echo "Generating test images"
 ls $MOCKS/*.json | awk '!/mapbox/' | \
     # Shuffle to distribute randomly slow and fast mocks
-    shuf | \
+    deterministic_shuffle | \
     # head -n 10 | \
     # Split in chunks of 20
     xargs -P1 -n20 xvfb-run -a orca graph --verbose --output-dir $TEST_IMAGES
