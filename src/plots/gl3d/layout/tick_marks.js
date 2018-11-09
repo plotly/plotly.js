@@ -49,7 +49,7 @@ function computeTickMarks(scene) {
 
         if(Math.abs(axes._length) === Infinity ||
            Math.abs(axes._length) === -Infinity ||
-           Number.isNaN(axes._length)) {
+           isNaN(axes._length)) {
             ticks[i] = [];
         } else {
             axes._input_range = axes.range.slice();
