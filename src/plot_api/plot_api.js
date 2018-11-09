@@ -2362,6 +2362,193 @@ exports._guiRestyle = guiEdit(restyle);
 exports._guiRelayout = guiEdit(relayout);
 exports._guiUpdate = guiEdit(update);
 
+// For connecting edited layout attributes to uirevision attrs
+// If no `attr` we use `match[1] + '.uirevision'`
+// Ordered by most common edits first, to minimize our search time
+var layoutUIControlPatterns = [
+    {pattern: /^hiddenlabels/, attr: 'legend.uirevision'},
+    {pattern: /^((x|y)axis\d*)\.((auto)?range|title)/, autofill: true},
+
+    // showspikes and modes include those nested inside scenes
+    {pattern: /axis\d*\.showspikes$/, attr: 'modebar.uirevision'},
+    {pattern: /(hover|drag)mode$/, attr: 'modebar.uirevision'},
+
+    {pattern: /^(scene\d*)\.camera/},
+    {pattern: /^(geo\d*)\.(projection|center)/},
+    {pattern: /^(ternary\d*\.[abc]axis)\.(min|title)$/},
+    {pattern: /^(polar\d*\.(radial|angular)axis)\./},
+    {pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/},
+
+    {pattern: /^legend\.(x|y)$/, attr: 'editrevision'},
+    {pattern: /^(shapes|annotations)/, attr: 'editrevision'},
+    {pattern: /^title$/, attr: 'editrevision'}
+];
+
+// same for trace attributes: if `attr` is given it's in layout,
+// or with no `attr` we use `trace.uirevision`
+var traceUIControlPatterns = [
+    // "visible" includes trace.transforms[i].styles[j].value.visible
+    {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
+    {pattern: /^dimensions\[\d+\]\.constraintrange/},
+
+    // below this you must be in editable: true mode
+    // TODO: I still put name and title with `trace.uirevision`
+    // reasonable or should these be `editrevision`?
+    // Also applies to axis titles up in the layout section
+
+    // "name" also includes transform.styles
+    {pattern: /(^|value\.)name$/},
+    // including nested colorbar attributes (ie marker.colorbar)
+    {pattern: /colorbar\.title$/},
+    {pattern: /colorbar\.(x|y)$/, attr: 'editrevision'}
+];
+
+function findUIPattern(key, patternSpecs) {
+    for(var i = 0; i < patternSpecs.length; i++) {
+        var spec = patternSpecs[i];
+        var match = key.match(spec.pattern);
+        if(match) {
+            return {head: match[1], attr: spec.attr, autofill: spec.autofill};
+        }
+    }
+}
+
+// We're finding the new uirevision before supplyDefaults, so do the
+// inheritance manually. Note that only `undefined` inherits - other
+// falsy values are returned.
+function getNewRev(revAttr, container) {
+    var newRev = nestedProperty(container, revAttr).get();
+    if(newRev !== undefined) return newRev;
+
+    var parts = revAttr.split('.');
+    parts.pop();
+    while(parts.length > 1) {
+        parts.pop();
+        newRev = nestedProperty(container, parts.join('.') + '.uirevision').get();
+        if(newRev !== undefined) return newRev;
+    }
+
+    return container.uirevision;
+}
+
+function getFullTraceIndexFromUid(uid, fullData) {
+    for(var i = 0; i < fullData.length; i++) {
+        if(fullData[i]._fullInput.uid === uid) return i;
+    }
+    return -1;
+}
+
+function getTraceIndexFromUid(uid, data, tracei) {
+    for(var i = 0; i < data.length; i++) {
+        if(data[i].uid === uid) return i;
+    }
+    // fall back on trace order, but only if user didn't provide a uid for that trace
+    return data[tracei].uid ? -1 : tracei;
+}
+
+function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
+    var layoutPreGUI = oldFullLayout._preGUI;
+    var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal;
+    for(key in layoutPreGUI) {
+        match = findUIPattern(key, layoutUIControlPatterns);
+        if(match) {
+            revAttr = match.attr || (match.head + '.uirevision');
+            oldRev = nestedProperty(oldFullLayout, revAttr).get();
+            newRev = oldRev && getNewRev(revAttr, layout);
+            if(newRev && (newRev === oldRev)) {
+                preGUIVal = layoutPreGUI[key];
+                if(preGUIVal === null) preGUIVal = undefined;
+                newNP = nestedProperty(layout, key);
+                newVal = newNP.get();
+                // TODO: This test for undefined is to account for the case where
+                // the value was filled in automatically in gd.layout,
+                // like axis.range/autorange. In principle though, if the initial
+                // plot had a value and the new plot removed that value, we would
+                // want the removal to override the GUI edit and generate a new
+                // auto value. But that would require figuring out what value was
+                // in gd.layout *before* the auto values were filled in, and
+                // storing *that* in preGUI... oh well, for now at least I limit
+                // this to attributes that get autofilled, which AFAICT among
+                // the GUI-editable attributes is just axis.range/autorange.
+                if(newVal === preGUIVal || (match.autofill && newVal === undefined)) {
+                    newNP.set(nestedProperty(oldFullLayout, key).get());
+                    continue;
+                }
+            }
+        }
+        else {
+            Lib.warn('unrecognized GUI edit: ' + key);
+        }
+        // if we got this far, the new value was accepted as the new starting
+        // point (either because it changed or revision changed)
+        // so remove it from _preGUI for next time.
+        delete layoutPreGUI[key];
+    }
+
+    // Now traces - try to match them up by uid (in case we added/deleted in
+    // the middle), then fall back on index.
+    // var tracei = -1;
+    // for(var fulli = 0; fulli < oldFullData.length; fulli++) {
+    var allTracePreGUI = oldFullLayout._tracePreGUI;
+    for(var uid in allTracePreGUI) {
+        var tracePreGUI = allTracePreGUI[uid];
+        var newTrace = null;
+        var fullInput;
+        for(key in tracePreGUI) {
+            // wait until we know we have preGUI values to look for traces
+            // but if we don't find both, stop looking at this uid
+            if(!newTrace) {
+                var fulli = getFullTraceIndexFromUid(uid, oldFullData);
+                if(fulli < 0) {
+                    // Somehow we didn't even have this trace in oldFullData...
+                    // I guess this could happen with `deleteTraces` or something
+                    delete allTracePreGUI[uid];
+                    break;
+                }
+                var fullTrace = oldFullData[fulli];
+                fullInput = fullTrace._fullInput;
+
+                var newTracei = getTraceIndexFromUid(uid, data, fullInput.index);
+                if(newTracei < 0) {
+                    // No match in new data
+                    delete allTracePreGUI[uid];
+                    break;
+                }
+                newTrace = data[newTracei];
+            }
+
+            match = findUIPattern(key, traceUIControlPatterns);
+            if(match) {
+                if(match.attr) {
+                    oldRev = nestedProperty(oldFullLayout, match.attr).get();
+                    newRev = oldRev && getNewRev(match.attr, layout);
+                }
+                else {
+                    oldRev = fullInput.uirevision;
+                    // inheritance for trace.uirevision is simple, just layout.uirevision
+                    newRev = newTrace.uirevision;
+                    if(newRev === undefined) newRev = layout.uirevision;
+                }
+
+                if(newRev && newRev === oldRev) {
+                    preGUIVal = tracePreGUI[key];
+                    if(preGUIVal === null) preGUIVal = undefined;
+                    newNP = nestedProperty(newTrace, key);
+                    newVal = newNP.get();
+                    if(newVal === preGUIVal || (match.autofill && newVal === undefined)) {
+                        newNP.set(nestedProperty(fullInput, key).get());
+                        continue;
+                    }
+                }
+            }
+            else {
+                Lib.warn('unrecognized GUI edit: ' + key + ' in trace uid ' + uid);
+            }
+            delete tracePreGUI[key];
+        }
+    }
+}
+
 /**
  * Plotly.react:
  * A plot/update method that takes the full plot state (same API as plot/newPlot)
@@ -2423,6 +2610,8 @@ exports.react = function(gd, data, layout, config) {
         helpers.cleanData(gd.data);
         gd.layout = layout || {};
         helpers.cleanLayout(gd.layout);
+
+        applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
 
         // "true" skips updating calcdata and remapping arrays from calcTransforms,
         // which supplyDefaults usually does at the end, but we may need to NOT do
