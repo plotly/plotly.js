@@ -1390,4 +1390,52 @@ describe('Plotly.react and uirevision attributes', function() {
         })
         .then(done);
     });
+
+    it('preserves ternary view changes using ternary.uirevision', function(done) {
+        function fig(mainRev, ternaryRev) {
+            return {
+                data: [{a: [1, 2, 3], b: [2, 3, 1], c: [3, 1, 2], type: 'scatterternary'}],
+                layout: {
+                    uirevision: mainRev,
+                    ternary: {uirevision: ternaryRev}
+                }
+            };
+        }
+
+        function fig2(mainRev, ternaryRev) {
+            return {
+                data: [{a: [1, 2, 3], b: [2, 3, 1], c: [3, 1, 2], type: 'scatterternary'}],
+                layout: {
+                    uirevision: mainRev,
+                    ternary: {
+                        aaxis: {uirevision: ternaryRev},
+                        baxis: {uirevision: ternaryRev},
+                        caxis: {uirevision: ternaryRev}
+                    }
+                }
+            };
+        }
+
+        function editTernary() {
+            return Registry.call('_guiRelayout', gd, {
+                'ternary.aaxis.min': 0.1,
+                'ternary.baxis.min': 0.2,
+                'ternary.caxis.min': 0.3
+            });
+        }
+
+        function checkTernary(original) {
+            return checkState([], {
+                'ternary.aaxis.min': original ? [undefined, 0] : 0.1,
+                'ternary.baxis.min': original ? [undefined, 0] : 0.2,
+                'ternary.caxis.min': original ? [undefined, 0] : 0.3,
+            });
+        }
+
+        _run(fig, editTernary, checkTernary(true), checkTernary())
+        .then(function() {
+            return _run(fig2, editTernary, checkTernary(true), checkTernary());
+        })
+        .then(done);
+    });
 });
