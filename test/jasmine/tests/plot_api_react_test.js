@@ -15,6 +15,8 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var mockLists = require('../assets/mock_lists');
 var drag = require('../assets/drag');
 
+var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
+
 describe('@noCIdep Plotly.react', function() {
     var mockedMethods = [
         'doTraceStyle',
@@ -835,7 +837,7 @@ describe('@noCIdep Plotly.react', function() {
     mockLists.mapbox.forEach(function(mockSpec) {
         it('@noCI can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
             Plotly.setPlotConfig({
-                mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                mapboxAccessToken: MAPBOX_ACCESS_TOKEN
             });
             _runReactMock(mockSpec, done);
         });
@@ -1437,5 +1439,43 @@ describe('Plotly.react and uirevision attributes', function() {
             return _run(fig2, editTernary, checkTernary(true), checkTernary());
         })
         .then(done);
+    });
+
+    it('@gl preserves mapbox view changes using mapbox.uirevision', function(done) {
+        function fig(mainRev, mapboxRev) {
+            return {
+                data: [{lat: [1, 2], lon: [1, 2], type: 'scattermapbox'}],
+                layout: {
+                    uirevision: mainRev,
+                    mapbox: {uirevision: mapboxRev}
+                }
+            };
+        }
+
+        function editMap() {
+            return Registry.call('_guiRelayout', gd, {
+                'mapbox.center.lat': 1,
+                'mapbox.center.lon': 2,
+                'mapbox.zoom': 3,
+                'mapbox.bearing': 4,
+                'mapbox.pitch': 5
+            });
+        }
+
+        function checkMapbox(original) {
+            return checkState([], {
+                'mapbox.center.lat': original ? [undefined, 0] : 1,
+                'mapbox.center.lon': original ? [undefined, 0] : 2,
+                'mapbox.zoom': original ? [undefined, 1] : 3,
+                'mapbox.bearing': original ? [undefined, 0] : 4,
+                'mapbox.pitch': original ? [undefined, 0] : 5
+            });
+        }
+
+        Plotly.setPlotConfig({
+            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+        });
+
+        _run(fig, editMap, checkMapbox(true), checkMapbox()).then(done);
     });
 });
