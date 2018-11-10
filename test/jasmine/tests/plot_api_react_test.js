@@ -1069,17 +1069,23 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(done);
     });
 
-    it('controls trace and pie label visibility from legend.uirevision', function(done) {
-        function checkVisible(traces, hiddenlabels, msg) {
-            return checkState(
-                traces.map(function(v) {
-                    return {visible: v ? [undefined, true] : 'legendonly'};
-                }),
-                {hiddenlabels: hiddenlabels},
-                msg
-            );
-        }
+    function _run(figFn, editFn, checkInitial, checkEdited, done) {
+        // figFn should take 2 args (main uirevision and partial uirevision)
+        // and return a figure {data, layout}
+        // editFn, checkInitial, checkEdited are functions of no args
+        Plotly.newPlot(gd, figFn('main a', 'part a'))
+        .then(checkInitial)
+        .then(editFn)
+        .then(checkEdited)
+        .then(_react(figFn('main b', 'part a')))
+        .then(checkEdited)
+        .then(_react(figFn('main b', 'part b')))
+        .then(checkInitial)
+        .catch(failTest)
+        .then(done);
+    }
 
+    it('controls trace and pie label visibility from legend.uirevision', function(done) {
         function fig(mainRev, legendRev) {
             return {
                 data: [
@@ -1094,41 +1100,33 @@ describe('Plotly.react and uirevision attributes', function() {
             };
         }
 
-        Plotly.newPlot(gd, fig('main a', 'legend a'))
-        .then(checkVisible([true, true], undefined, 'initial'))
-        .then(function() {
+        function hideSome() {
             return Registry.call('_guiUpdate', gd,
                 {visible: 'legendonly'},
                 {hiddenlabels: ['b', 'c']},
                 [0]
             );
-        })
+        }
+
+        function checkVisible(traces, hiddenlabels) {
+            return checkState(
+                traces.map(function(v) {
+                    return {visible: v ? [undefined, true] : 'legendonly'};
+                }),
+                {hiddenlabels: hiddenlabels}
+            );
+        }
+        var checkAllVisible = checkVisible([true, true], undefined);
         // wrap [b, c] in another array to distinguish it from
         // [layout, fullLayout]
-        .then(checkVisible([false, true], [['b', 'c']], 'gui'))
-        .then(_react(fig('main b', 'legend a')))
-        .then(checkVisible([false, true], [['b', 'c']], 'change main rev'))
-        .then(_react(fig('main b', 'legend b')))
-        .then(checkVisible([true, true], undefined, 'change legend rev'))
-        .catch(failTest)
-        .then(done);
+        var checkSomeHidden = checkVisible([false, true], [['b', 'c']]);
+
+        _run(fig, hideSome, checkAllVisible, checkSomeHidden, done);
     });
 
     it('preserves groupby group visibility', function(done) {
         // TODO: there's a known problem if the groups change... unlike
         // traces we will keep visibility by group in order, not by group value
-
-        function checkVisible(groups, extraTrace) {
-            var trace0edits = {};
-            groups.forEach(function(visi, i) {
-                var attr = 'transforms[0].styles[' + i + '].value.visible';
-                trace0edits[attr] = visi ? undefined : 'legendonly';
-            });
-            return checkState([
-                trace0edits,
-                {visible: extraTrace ? [undefined, true] : 'legendonly'}
-            ]);
-        }
 
         function fig(mainRev, legendRev) {
             return {
@@ -1148,9 +1146,7 @@ describe('Plotly.react and uirevision attributes', function() {
             };
         }
 
-        Plotly.newPlot(gd, fig('main a', 'legend a'))
-        .then(checkVisible([true, true, true], true))
-        .then(function() {
+        function hideSome() {
             return Registry.call('_guiRestyle', gd, {
                 'transforms[0].styles[0].value.visible': 'legendonly',
                 'transforms[0].styles[2].value.visible': 'legendonly'
@@ -1158,14 +1154,23 @@ describe('Plotly.react and uirevision attributes', function() {
             .then(function() {
                 return Registry.call('_guiRestyle', gd, 'visible', 'legendonly', [1]);
             });
-        })
-        .then(checkVisible([false, true, false], false))
-        .then(_react(fig('main b', 'legend a')))
-        .then(checkVisible([false, true, false], false))
-        .then(_react(fig('main b', 'legend b')))
-        .then(checkVisible([true, true, true], true))
-        .catch(failTest)
-        .then(done);
+        }
+
+        function checkVisible(groups, extraTrace) {
+            var trace0edits = {};
+            groups.forEach(function(visi, i) {
+                var attr = 'transforms[0].styles[' + i + '].value.visible';
+                trace0edits[attr] = visi ? undefined : 'legendonly';
+            });
+            return checkState([
+                trace0edits,
+                {visible: extraTrace ? [undefined, true] : 'legendonly'}
+            ]);
+        }
+        var checkAllVisible = checkVisible([true, true, true], true);
+        var checkSomeHidden = checkVisible([false, true, false], false);
+
+        _run(fig, hideSome, checkAllVisible, checkSomeHidden, done);
     });
 
     it('@gl preserves modebar interactions using modebar.uirevision', function(done) {
@@ -1225,16 +1230,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalModes = _checkModes(true);
         var checkEditedModes = _checkModes(false);
 
-        Plotly.newPlot(gd, fig('main a', 'modebar a'))
-        .then(checkOriginalModes)
-        .then(editModes)
-        .then(checkEditedModes)
-        .then(_react(fig('main b', 'modebar a')))
-        .then(checkEditedModes)
-        .then(_react(fig('main b', 'modebar b')))
-        .then(checkOriginalModes)
-        .catch(failTest)
-        .then(done);
+        _run(fig, editModes, checkOriginalModes, checkEditedModes, done);
     });
 
     it('preserves geo viewport changes using geo.uirevision', function(done) {
@@ -1270,16 +1266,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalView = _checkView(true);
         var checkEditedView = _checkView(false);
 
-        Plotly.newPlot(gd, fig('main a', 'geo a'))
-        .then(checkOriginalView)
-        .then(editView)
-        .then(checkEditedView)
-        .then(_react(fig('main b', 'geo a')))
-        .then(checkEditedView)
-        .then(_react(fig('main b', 'geo b')))
-        .then(checkOriginalView)
-        .catch(failTest)
-        .then(done);
+        _run(fig, editView, checkOriginalView, checkEditedView, done);
     });
 
     it('@gl preserves 3d camera changes using scene.uirevision', function(done) {
@@ -1319,16 +1306,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalCamera = _checkCamera(true);
         var checkEditedCamera = _checkCamera(false);
 
-        Plotly.newPlot(gd, fig('main a', 'scene a'))
-        .then(checkOriginalCamera)
-        .then(editCamera)
-        .then(checkEditedCamera)
-        .then(_react(fig('main b', 'scene a')))
-        .then(checkEditedCamera)
-        .then(_react(fig('main b', 'scene b')))
-        .then(checkOriginalCamera)
-        .catch(failTest)
-        .then(done);
+        _run(fig, editCamera, checkOriginalCamera, checkEditedCamera, done);
     });
 
     it('preserves selectedpoints using selectionrevision', function(done) {
@@ -1362,15 +1340,6 @@ describe('Plotly.react and uirevision attributes', function() {
             {selectedpoints: [[2]]}
         ]);
 
-        Plotly.newPlot(gd, fig('main a', 'selection a'))
-        .then(checkNoSelection)
-        .then(editSelection)
-        .then(checkSelection)
-        .then(_react(fig('main b', 'selection a')))
-        .then(checkSelection)
-        .then(_react(fig('main b', 'selection b')))
-        .then(checkNoSelection)
-        .catch(failTest)
-        .then(done);
+        _run(fig, editSelection, checkNoSelection, checkSelection, done);
     });
 });
