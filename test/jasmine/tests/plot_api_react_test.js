@@ -1069,11 +1069,11 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(done);
     });
 
-    function _run(figFn, editFn, checkInitial, checkEdited, done) {
+    function _run(figFn, editFn, checkInitial, checkEdited) {
         // figFn should take 2 args (main uirevision and partial uirevision)
         // and return a figure {data, layout}
         // editFn, checkInitial, checkEdited are functions of no args
-        Plotly.newPlot(gd, figFn('main a', 'part a'))
+        return Plotly.newPlot(gd, figFn('main a', 'part a'))
         .then(checkInitial)
         .then(editFn)
         .then(checkEdited)
@@ -1081,8 +1081,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(checkEdited)
         .then(_react(figFn('main b', 'part b')))
         .then(checkInitial)
-        .catch(failTest)
-        .then(done);
+        .catch(failTest);
     }
 
     it('controls trace and pie label visibility from legend.uirevision', function(done) {
@@ -1121,7 +1120,7 @@ describe('Plotly.react and uirevision attributes', function() {
         // [layout, fullLayout]
         var checkSomeHidden = checkVisible([false, true], [['b', 'c']]);
 
-        _run(fig, hideSome, checkAllVisible, checkSomeHidden, done);
+        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done);
     });
 
     it('preserves groupby group visibility', function(done) {
@@ -1170,7 +1169,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkAllVisible = checkVisible([true, true, true], true);
         var checkSomeHidden = checkVisible([false, true, false], false);
 
-        _run(fig, hideSome, checkAllVisible, checkSomeHidden, done);
+        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done);
     });
 
     it('@gl preserves modebar interactions using modebar.uirevision', function(done) {
@@ -1230,7 +1229,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalModes = _checkModes(true);
         var checkEditedModes = _checkModes(false);
 
-        _run(fig, editModes, checkOriginalModes, checkEditedModes, done);
+        _run(fig, editModes, checkOriginalModes, checkEditedModes).then(done);
     });
 
     it('preserves geo viewport changes using geo.uirevision', function(done) {
@@ -1266,7 +1265,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalView = _checkView(true);
         var checkEditedView = _checkView(false);
 
-        _run(fig, editView, checkOriginalView, checkEditedView, done);
+        _run(fig, editView, checkOriginalView, checkEditedView).then(done);
     });
 
     it('@gl preserves 3d camera changes using scene.uirevision', function(done) {
@@ -1306,7 +1305,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalCamera = _checkCamera(true);
         var checkEditedCamera = _checkCamera(false);
 
-        _run(fig, editCamera, checkOriginalCamera, checkEditedCamera, done);
+        _run(fig, editCamera, checkOriginalCamera, checkEditedCamera).then(done);
     });
 
     it('preserves selectedpoints using selectionrevision', function(done) {
@@ -1340,6 +1339,55 @@ describe('Plotly.react and uirevision attributes', function() {
             {selectedpoints: [[2]]}
         ]);
 
-        _run(fig, editSelection, checkNoSelection, checkSelection, done);
+        _run(fig, editSelection, checkNoSelection, checkSelection).then(done);
+    });
+
+    it('preserves polar view changes using polar.uirevision', function(done) {
+        // polar you can control either at the subplot or the axis level
+        function fig(mainRev, polarRev) {
+            return {
+                data: [{r: [1, 2], theta: [1, 2], type: 'scatterpolar', mode: 'lines'}],
+                layout: {
+                    uirevision: mainRev,
+                    polar: {uirevision: polarRev}
+                }
+            };
+        }
+
+        function fig2(mainRev, polarRev) {
+            return {
+                data: [{r: [1, 2], theta: [1, 2], type: 'scatterpolar', mode: 'lines'}],
+                layout: {
+                    uirevision: mainRev,
+                    polar: {
+                        angularaxis: {uirevision: polarRev},
+                        radialaxis: {uirevision: polarRev}
+                    }
+                }
+            };
+        }
+
+        function editPolar() {
+            return Registry.call('_guiRelayout', gd, {
+                'polar.radialaxis.range': [-2, 4],
+                'polar.radialaxis.angle': 45,
+                'polar.angularaxis.rotation': -90
+            });
+        }
+
+        function checkPolar(original) {
+            return checkState([], {
+                'polar.radialaxis.range[0]': original ? 0 : -2,
+                'polar.radialaxis.range[1]': original ? 2 : 4,
+                'polar.radialaxis.angle': original ? [undefined, 0] : 45,
+                'polar.angularaxis.rotation': original ? [undefined, 0] : -90
+            });
+        }
+
+        _run(fig, editPolar, checkPolar(true), checkPolar())
+        .then(function() {
+            return _run(fig2, editPolar, checkPolar(true), checkPolar());
+        })
+        .then(done);
     });
 });

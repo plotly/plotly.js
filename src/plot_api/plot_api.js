@@ -2375,7 +2375,9 @@ var layoutUIControlPatterns = [
     {pattern: /^(scene\d*)\.camera/},
     {pattern: /^(geo\d*)\.(projection|center)/},
     {pattern: /^(ternary\d*\.[abc]axis)\.(min|title)$/},
-    {pattern: /^(polar\d*\.(radial|angular)axis)\./},
+    {pattern: /^(polar\d*\.radialaxis)\.(auto)?range/, autofill: true},
+    {pattern: /^(polar\d*\.radialaxis)\.angle/},
+    {pattern: /^(polar\d*\.angularaxis)\.rotation/},
     {pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/},
 
     {pattern: /^legend\.(x|y)$/, attr: 'editrevision'},
