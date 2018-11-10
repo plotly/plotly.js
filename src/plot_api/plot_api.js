@@ -1438,22 +1438,21 @@ function storeCurrent(attr, val, newVal, preGUI) {
     }
 }
 
-/*
+/**
  * storeDirectGUIEdit: for routines that skip restyle/relayout and mock it
  * by emitting a plotly_restyle or plotly_relayout event, this routine
- * applies the changes to the input objects and keeps track of the initial state
- * in _preGUI for use by uirevision
+ * keeps track of the initial state in _preGUI for use by uirevision
+ * Does *not* apply these changes to data/layout - that's the responsibility
+ * of the calling routine.
  *
  * @param {object} container: the input attributes container (eg `layout` or a `trace`)
  * @param {object} fullContainer: the full partner to `container`
  * @param {object} edits: the {attr: val} object as normally passed to `relayout` etc
- * @param {boolean} apply: should we apply these changes to the input object?
  */
-exports._storeDirectGUIEdit = function(container, preGUI, edits, apply) {
+exports._storeDirectGUIEdit = function(container, preGUI, edits) {
     for(var attr in edits) {
         var np = nestedProperty(container, attr);
         storeCurrent(attr, np.get(), edits[attr], preGUI);
-        if(apply) np.set(edits[attr]);
     }
 };
 

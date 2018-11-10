@@ -316,15 +316,25 @@ proto.relayoutCallback = function() {
     var graphDiv = this.graphDiv;
     var xaxis = this.xaxis;
     var yaxis = this.yaxis;
+    var layout = graphDiv.layout;
 
     // make a meaningful value to be passed on to possible 'plotly_relayout' subscriber(s)
     var update = {};
-    update[xaxis._name + '.range'] = xaxis.range.slice();
-    update[yaxis._name + '.range'] = yaxis.range.slice();
+    var xrange = update[xaxis._name + '.range'] = xaxis.range.slice();
+    var yrange = update[yaxis._name + '.range'] = yaxis.range.slice();
     update[xaxis._name + '.autorange'] = xaxis.autorange;
     update[yaxis._name + '.autorange'] = yaxis.autorange;
 
-    Registry.call('_storeDirectGUIEdit', graphDiv.layout, graphDiv._fullLayout._preGUI, update, true);
+    Registry.call('_storeDirectGUIEdit', graphDiv.layout, graphDiv._fullLayout._preGUI, update);
+
+    // update the input layout
+    var xaIn = layout[xaxis._name];
+    xaIn.range = xrange;
+    xaIn.autorange = xaxis.autorange;
+
+    var yaIn = layout[yaxis._name];
+    yaIn.range = yrange;
+    yaIn.autorange = yaxis.autorange;
 
     // lastInputTime helps determine which one is the latest input (if async)
     update.lastInputTime = this.camera.lastInputTime;
