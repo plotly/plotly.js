@@ -1197,26 +1197,12 @@ describe('Plotly.react and uirevision attributes', function() {
             };
         }
 
-        function editModes() {
-            return Registry.call('_guiRelayout', gd, {
-                dragmode: 'pan',
-                hovermode: false,
-                'xaxis.showspikes': false,
-                'yaxis.showspikes': false,
-                'scene.dragmode': 'pan',
-                'scene.hovermode': false,
-                'scene.xaxis.showspikes': false,
-                'scene.yaxis.showspikes': false,
-                'scene.zaxis.showspikes': false
-            });
-        }
-
-        function _checkModes(original) {
+        function attrs(original) {
             var dragmode = original ? 'zoom' : 'pan';
             var hovermode = original ? 'closest' : false;
             var spikes = original ? true : false;
             var spikes3D = original ? [undefined, true] : false;
-            return checkState([], {
+            return {
                 dragmode: dragmode,
                 hovermode: hovermode,
                 'xaxis.showspikes': spikes,
@@ -1226,10 +1212,15 @@ describe('Plotly.react and uirevision attributes', function() {
                 'scene.xaxis.showspikes': spikes3D,
                 'scene.yaxis.showspikes': spikes3D,
                 'scene.zaxis.showspikes': spikes3D
-            });
+            };
         }
-        var checkOriginalModes = _checkModes(true);
-        var checkEditedModes = _checkModes(false);
+
+        function editModes() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkOriginalModes = checkState([], attrs(true));
+        var checkEditedModes = checkState([], attrs());
 
         _run(fig, editModes, checkOriginalModes, checkEditedModes).then(done);
     });
@@ -1247,25 +1238,21 @@ describe('Plotly.react and uirevision attributes', function() {
             };
         }
 
-        function editView() {
-            return Registry.call('_guiRelayout', gd, {
-                'geo.projection.scale': 3,
-                'geo.projection.rotation.lon': -45,
-                'geo.center.lat': 22,
-                'geo.center.lon': -45
-            });
-        }
-
-        function _checkView(original) {
-            return checkState([], {
+        function attrs(original) {
+            return {
                 'geo.projection.scale': original ? [undefined, 1] : 3,
                 'geo.projection.rotation.lon': original ? [undefined, 0] : -45,
                 'geo.center.lat': original ? [undefined, 0] : 22,
                 'geo.center.lon': original ? [undefined, 0] : -45
-            });
+            };
         }
-        var checkOriginalView = _checkView(true);
-        var checkEditedView = _checkView(false);
+
+        function editView() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkOriginalView = checkState([], attrs(true));
+        var checkEditedView = checkState([], attrs());
 
         _run(fig, editView, checkOriginalView, checkEditedView).then(done);
     });
@@ -1369,26 +1356,25 @@ describe('Plotly.react and uirevision attributes', function() {
             };
         }
 
-        function editPolar() {
-            return Registry.call('_guiRelayout', gd, {
-                'polar.radialaxis.range': [-2, 4],
-                'polar.radialaxis.angle': 45,
-                'polar.angularaxis.rotation': -90
-            });
-        }
-
-        function checkPolar(original) {
-            return checkState([], {
+        function attrs(original) {
+            return {
                 'polar.radialaxis.range[0]': original ? 0 : -2,
                 'polar.radialaxis.range[1]': original ? 2 : 4,
                 'polar.radialaxis.angle': original ? [undefined, 0] : 45,
                 'polar.angularaxis.rotation': original ? [undefined, 0] : -90
-            });
+            };
         }
 
-        _run(fig, editPolar, checkPolar(true), checkPolar())
+        function editPolar() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkInitial = checkState([], attrs(true));
+        var checkEdited = checkState([], attrs());
+
+        _run(fig, editPolar, checkInitial, checkEdited)
         .then(function() {
-            return _run(fig2, editPolar, checkPolar(true), checkPolar());
+            return _run(fig2, editPolar, checkInitial, checkEdited);
         })
         .then(done);
     });
@@ -1418,25 +1404,24 @@ describe('Plotly.react and uirevision attributes', function() {
             };
         }
 
-        function editTernary() {
-            return Registry.call('_guiRelayout', gd, {
-                'ternary.aaxis.min': 0.1,
-                'ternary.baxis.min': 0.2,
-                'ternary.caxis.min': 0.3
-            });
-        }
-
-        function checkTernary(original) {
-            return checkState([], {
+        function attrs(original) {
+            return {
                 'ternary.aaxis.min': original ? [undefined, 0] : 0.1,
                 'ternary.baxis.min': original ? [undefined, 0] : 0.2,
                 'ternary.caxis.min': original ? [undefined, 0] : 0.3,
-            });
+            };
         }
 
-        _run(fig, editTernary, checkTernary(true), checkTernary())
+        function editTernary() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkInitial = checkState([], attrs(true));
+        var checkEdited = checkState([], attrs());
+
+        _run(fig, editTernary, checkInitial, checkEdited)
         .then(function() {
-            return _run(fig2, editTernary, checkTernary(true), checkTernary());
+            return _run(fig2, editTernary, checkInitial, checkEdited);
         })
         .then(done);
     });
@@ -1452,31 +1437,28 @@ describe('Plotly.react and uirevision attributes', function() {
             };
         }
 
-        function editMap() {
-            return Registry.call('_guiRelayout', gd, {
-                'mapbox.center.lat': 1,
-                'mapbox.center.lon': 2,
-                'mapbox.zoom': 3,
-                'mapbox.bearing': 4,
-                'mapbox.pitch': 5
-            });
-        }
-
-        function checkMapbox(original) {
-            return checkState([], {
+        function attrs(original) {
+            return {
                 'mapbox.center.lat': original ? [undefined, 0] : 1,
                 'mapbox.center.lon': original ? [undefined, 0] : 2,
                 'mapbox.zoom': original ? [undefined, 1] : 3,
                 'mapbox.bearing': original ? [undefined, 0] : 4,
                 'mapbox.pitch': original ? [undefined, 0] : 5
-            });
+            };
         }
+
+        function editMap() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkInitial = checkState([], attrs(true));
+        var checkEdited = checkState([], attrs());
 
         Plotly.setPlotConfig({
             mapboxAccessToken: MAPBOX_ACCESS_TOKEN
         });
 
-        _run(fig, editMap, checkMapbox(true), checkMapbox()).then(done);
+        _run(fig, editMap, checkInitial, checkEdited).then(done);
     });
 
     it('preserves editable: true shape & annotation edits using editrevision', function(done) {
