@@ -8,8 +8,6 @@
 
 'use strict';
 
-var Registry = require('../../registry');
-
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
 
@@ -44,26 +42,32 @@ module.exports = function plot(gd, cdparcoords) {
 
         var gdDimension = gdDimensionsOriginalOrder[i][originalDimensionIndex];
         var newConstraints = newRanges.map(function(r) { return r.slice(); });
+
+        // Store constraint range in preGUI
+        // This one doesn't work if it's stored in pieces in _storeDirectGUIEdit
+        // because it's an array of variable dimensionality. So store the whole
+        // thing at once manually.
+        var aStr = 'dimensions[' + originalDimensionIndex + '].constraintrange';
+        var preGUI = fullLayout._tracePreGUI[gd._fullData[fullIndices[i]]._fullInput.uid];
+        if(preGUI[aStr] === undefined) {
+            var initialVal = gdDimension.constraintrange;
+            preGUI[aStr] = initialVal || null;
+        }
+
+        var fullDimension = gd._fullData[fullIndices[i]].dimensions[originalDimensionIndex];
+
         if(!newConstraints.length) {
             delete gdDimension.constraintrange;
+            delete fullDimension.constraintrange;
             newConstraints = null;
         }
         else {
             if(newConstraints.length === 1) newConstraints = newConstraints[0];
             gdDimension.constraintrange = newConstraints;
+            fullDimension.constraintrange = newConstraints.slice();
             // wrap in another array for restyle event data
             newConstraints = [newConstraints];
         }
-
-        var aStr = 'dimensions[' + originalDimensionIndex + '].constraintrange';
-
-        var editData = {};
-        editData[aStr] = newConstraints && newConstraints[0];
-        Registry.call('_storeDirectGUIEdit',
-            gd.data[inputIndices[i]],
-            fullLayout._tracePreGUI[gd._fullData[fullIndices[i]]._fullInput.uid],
-            editData
-        );
 
         var restyleData = {};
         restyleData[aStr] = newConstraints;

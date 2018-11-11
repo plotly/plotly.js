@@ -900,6 +900,20 @@ describe('Plotly.react and uirevision attributes', function() {
 
     afterEach(destroyGraphDiv);
 
+    function checkCloseIfArray(val1, val2, msg) {
+        if(Array.isArray(val1) && Array.isArray(val2)) {
+            if(Array.isArray(val1[0]) && Array.isArray(val2[0])) {
+                expect(val1).toBeCloseTo2DArray(val2, 2, msg);
+            }
+            else {
+                expect(val1).toBeCloseToArray(val2, 2, msg);
+            }
+        }
+        else {
+            expect(val1).toBe(val2, msg);
+        }
+    }
+
     function checkState(dataKeys, layoutKeys, msg) {
         var np = Lib.nestedProperty;
         return function() {
@@ -913,8 +927,10 @@ describe('Plotly.react and uirevision attributes', function() {
                     var val = traceKeys[key];
                     var valIn = Array.isArray(val) ? val[0] : val;
                     var valOut = Array.isArray(val) ? val[val.length - 1] : val;
-                    expect(np(trace, key).get()).toEqual(valIn, msg + ': data[' + i + '].' + key);
-                    expect(np(fullTrace, key).get()).toEqual(valOut, msg + ': _fullData[' + i + '].' + key);
+                    checkCloseIfArray(np(trace, key).get(), valIn, msg + ': data[' + i + '].' + key);
+                    checkCloseIfArray(np(fullTrace, key).get(), valOut, msg + ': _fullData[' + i + '].' + key);
+                    checkCloseIfArray(np(trace, key).get(), valIn, msg + ': data[' + i + '].' + key);
+                    checkCloseIfArray(np(fullTrace, key).get(), valOut, msg + ': _fullData[' + i + '].' + key);
                 }
             });
 
@@ -922,8 +938,8 @@ describe('Plotly.react and uirevision attributes', function() {
                 var val = layoutKeys[key];
                 var valIn = Array.isArray(val) ? val[0] : val;
                 var valOut = Array.isArray(val) ? val[val.length - 1] : val;
-                expect(np(gd.layout, key).get()).toEqual(valIn, msg + ': layout.' + key);
-                expect(np(gd._fullLayout, key).get()).toEqual(valOut, msg + ': _fullLayout.' + key);
+                checkCloseIfArray(np(gd.layout, key).get(), valIn, msg + ': layout.' + key);
+                checkCloseIfArray(np(gd._fullLayout, key).get(), valOut, msg + ': _fullLayout.' + key);
             }
         };
     }
@@ -1487,6 +1503,139 @@ describe('Plotly.react and uirevision attributes', function() {
                 'annotations[1].ax': original ? -20 : -30,
                 'annotations[1].ay': original ? 20 : 30,
                 'annotations[1].text': original ? 'bye' : 'buy'
+            };
+        }
+
+        function editComponents() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkInitial = checkState([], attrs(true));
+        var checkEdited = checkState([], attrs());
+
+        _run(fig, editComponents, checkInitial, checkEdited).then(done);
+    });
+
+    it('preserves editable: true plot title and legend & colorbar positions using editrevision', function(done) {
+        function fig(mainRev, editRev) {
+            return {
+                data: [{y: [1, 2]}, {y: [2, 1]}, {z: [[1, 2], [3, 4]], type: 'heatmap'}],
+                layout: {
+                    uirevision: mainRev,
+                    editrevision: editRev
+                },
+                config: {editable: true}
+            };
+        }
+
+        function editEditable() {
+            return Registry.call('_guiUpdate', gd,
+                {'colorbar.x': 0.8, 'colorbar.y': 0.6},
+                {title: 'yep', 'legend.x': 1.1, 'legend.y': 0.9},
+                [2]
+            );
+        }
+
+        function checkAttrs(original) {
+            return checkState([{}, {}, {
+                'colorbar.x': original ? [undefined, 1.02] : 0.8,
+                'colorbar.y': original ? [undefined, 0.5] : 0.6
+            }], {
+                title: original ? [undefined, 'Click to enter Plot title'] : 'yep',
+                'legend.x': original ? [undefined, 1.02] : 1.1,
+                'legend.y': original ? [undefined, 1] : 0.9
+            });
+        }
+
+        _run(fig, editEditable, checkAttrs(true), checkAttrs).then(done);
+    });
+
+    it('preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
+        function fig(mainRev, traceRev) {
+            return {
+                data: [{
+                    type: 'parcoords',
+                    dimensions: [
+                        {label: 'a', values: [1, 2, 3, 5], constraintrange: [2.5, 3.5]},
+                        {label: 'b', values: [7, 9, 5, 6]}
+                    ],
+                    line: {showscale: true, color: [1, 2, 3, 4]},
+                    uirevision: traceRev
+                }],
+                layout: {
+                    uirevision: mainRev,
+                    width: 400,
+                    height: 400,
+                    margin: {l: 100, r: 100, t: 100, b: 100}
+                },
+                config: {editable: true}
+            };
+        }
+
+        function attrs(original) {
+            return {
+                'dimensions[0].constraintrange': original ? [[2.5, 3.5]] : [[[1.5, 2.5], [2.938, 3.979]]],
+                'dimensions[1].constraintrange': original ? undefined : [[6.937, 7.979]],
+                'line.colorbar.title': original ? [undefined, 'Click to enter Colorscale title'] : 'color',
+                name: original ? [undefined, 'trace 0'] : 'name'
+            };
+        }
+
+        function axisDragNode(i) {
+            return document.querySelectorAll('.axis-brush .background')[i];
+        }
+
+        function editTrace() {
+            var _;
+            return Registry.call('_guiRestyle', gd,
+                {'line.colorbar.title': 'color', name: 'name'},
+                [0]
+            )
+            .then(function() {
+                return drag(axisDragNode(0), 0, 50, _, _, _, _, true);
+            })
+            .then(function() {
+                return drag(axisDragNode(0), 0, -50, _, _, _, _, true);
+            })
+            .then(function() {
+                return drag(axisDragNode(1), 0, -50, _, _, _, _, true);
+            });
+        }
+
+        _run(fig, editTrace, checkState([attrs(true)]), checkState([attrs()])).then(done);
+    });
+
+    it('preserves editable: true axis titles using the axis uirevisions', function(done) {
+        function fig(mainRev, axRev) {
+            return {
+                data: [
+                    {y: [1, 2]},
+                    {a: [1, 2], b: [2, 1], c: [1, 1], type: 'scatterternary'},
+                    {r: [1, 2], theta: [1, 2], type: 'scatterpolar'}
+                ],
+                layout: {
+                    uirevision: mainRev,
+                    xaxis: {uirevision: axRev},
+                    yaxis: {uirevision: axRev},
+                    ternary: {
+                        aaxis: {uirevision: axRev},
+                        baxis: {uirevision: axRev},
+                        caxis: {uirevision: axRev}
+                    },
+                    polar: {radialaxis: {uirevision: axRev}}
+                },
+                config: {editable: true}
+            };
+        }
+
+        function attrs(original) {
+            return {
+                'xaxis.title': original ? [undefined, 'Click to enter X axis title'] : 'XXX',
+                'yaxis.title': original ? [undefined, 'Click to enter Y axis title'] : 'YYY',
+                'ternary.aaxis.title': original ? [undefined, 'Component A'] : 'AAA',
+                'ternary.baxis.title': original ? [undefined, 'Component B'] : 'BBB',
+                'ternary.caxis.title': original ? [undefined, 'Component C'] : 'CCC',
+                'polar.radialaxis.title': original ? [undefined, ''] : 'RRR'
             };
         }
 

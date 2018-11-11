@@ -2377,7 +2377,7 @@ var layoutUIControlPatterns = [
     {pattern: /^(geo\d*)\.(projection|center)/},
     {pattern: /^(ternary\d*\.[abc]axis)\.(min|title)$/},
     {pattern: /^(polar\d*\.radialaxis)\.(auto)?range/, autofill: true},
-    {pattern: /^(polar\d*\.radialaxis)\.angle/},
+    {pattern: /^(polar\d*\.radialaxis)\.(angle|title)/},
     {pattern: /^(polar\d*\.angularaxis)\.rotation/},
     {pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/},
 
@@ -2449,6 +2449,18 @@ function getTraceIndexFromUid(uid, data, tracei) {
     return data[tracei].uid ? -1 : tracei;
 }
 
+function valsMatch(v1, v2) {
+    var v1IsObj = Lib.isPlainObject(v1);
+    var v1IsArray = Array.isArray(v1);
+    if(v1IsObj || v1IsArray) {
+        return (
+            (v1IsObj && Lib.isPlainObject(v2)) ||
+            (v1IsArray && Array.isArray(v2))
+        ) && JSON.stringify(v1) === JSON.stringify(v2);
+    }
+    return v1 === v2;
+}
+
 function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
     var layoutPreGUI = oldFullLayout._preGUI;
     var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal;
@@ -2473,7 +2485,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                 // storing *that* in preGUI... oh well, for now at least I limit
                 // this to attributes that get autofilled, which AFAICT among
                 // the GUI-editable attributes is just axis.range/autorange.
-                if(newVal === preGUIVal || (match.autofill && newVal === undefined)) {
+                if(valsMatch(newVal, preGUIVal) || (match.autofill && newVal === undefined)) {
                     newNP.set(nestedProperty(oldFullLayout, key).get());
                     continue;
                 }
@@ -2538,7 +2550,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     if(preGUIVal === null) preGUIVal = undefined;
                     newNP = nestedProperty(newTrace, key);
                     newVal = newNP.get();
-                    if(newVal === preGUIVal || (match.autofill && newVal === undefined)) {
+                    if(valsMatch(newVal, preGUIVal) || (match.autofill && newVal === undefined)) {
                         newNP.set(nestedProperty(fullInput, key).get());
                         continue;
                     }
