@@ -1478,4 +1478,43 @@ describe('Plotly.react and uirevision attributes', function() {
 
         _run(fig, editMap, checkMapbox(true), checkMapbox()).then(done);
     });
+
+    it('preserves editable: true shape & annotation edits using editrevision', function(done) {
+        function fig(mainRev, editRev) {
+            return {layout: {
+                shapes: [{x0: 0, x1: 0.5, y0: 0, y1: 0.5}],
+                annotations: [
+                    {x: 1, y: 0, text: 'hi'},
+                    {x: 1, y: 1, text: 'bye', showarrow: true, ax: -20, ay: 20}
+                ],
+                xaxis: {range: [0, 1]},
+                yaxis: {range: [0, 1]},
+                uirevision: mainRev,
+                editrevision: editRev
+            }};
+        }
+
+        function attrs(original) {
+            return {
+                'shapes[0].x0': original ? 0 : 0.1,
+                'shapes[0].x1': original ? 0.5 : 0.2,
+                'shapes[0].y0': original ? 0 : 0.3,
+                'shapes[0].y1': original ? 0.5 : 0.4,
+                'annotations[1].x': original ? 1 : 0.5,
+                'annotations[1].y': original ? 1 : 0.6,
+                'annotations[1].ax': original ? -20 : -30,
+                'annotations[1].ay': original ? 20 : 30,
+                'annotations[1].text': original ? 'bye' : 'buy'
+            };
+        }
+
+        function editComponents() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkInitial = checkState([], attrs(true));
+        var checkEdited = checkState([], attrs());
+
+        _run(fig, editComponents, checkInitial, checkEdited).then(done);
+    });
 });

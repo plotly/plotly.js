@@ -1396,24 +1396,23 @@ function undefinedToNull(val) {
 }
 
 /**
- * modified Lib.nestedProperty to also record GUI edits
+ * Factory function to wrap nestedProperty with GUI edits if necessary
+ * with GUI edits we add an optional prefix to the nestedProperty constructor
+ * to prepend to the attribute string in the preGUI store.
  */
-function npWithGuiEdits(container, attr, preGUI, guiEditFlag) {
-    var np = nestedProperty(container, attr);
+function makeNP(preGUI, guiEditFlag) {
+    if(!guiEditFlag) return nestedProperty;
 
-    var npSet = np.set;
-    function setWithGuiEdits(val) {
-        // preGUI is not nested, it's flat with attribute strings
-        // flatten it the rest of the way, even if currentVal is nested
-        storeCurrent(attr, np.get(), val, preGUI);
-        npSet(val);
-    }
-
-    if(guiEditFlag) {
-        np.set = setWithGuiEdits;
-    }
-
-    return np;
+    return function(container, attr, prefix) {
+        var np = nestedProperty(container, attr);
+        var npSet = np.set;
+        np.set = function(val) {
+            var fullAttr = (prefix || '') + attr;
+            storeCurrent(fullAttr, np.get(), val, preGUI);
+            npSet(val);
+        };
+        return np;
+    };
 }
 
 function storeCurrent(attr, val, newVal, preGUI) {
@@ -1461,6 +1460,7 @@ function _restyle(gd, aobj, traces) {
     var fullData = gd._fullData;
     var data = gd.data;
     var guiEditFlag = fullLayout._guiEditing;
+    var layoutNP = makeNP(fullLayout._preGUI, guiEditFlag);
     var i;
 
     // initialize flags
@@ -1510,11 +1510,11 @@ function _restyle(gd, aobj, traces) {
 
         var extraparam;
         if(attr.substr(0, 6) === 'LAYOUT') {
-            extraparam = npWithGuiEdits(gd.layout, attr.replace('LAYOUT', ''), fullLayout._preGUI, guiEditFlag);
+            extraparam = layoutNP(gd.layout, attr.replace('LAYOUT', ''));
         } else {
             var tracei = traces[i];
             var preGUI = fullLayout._tracePreGUI[getFullTrace(tracei)._fullInput.uid];
-            extraparam = npWithGuiEdits(data[tracei], attr, preGUI, guiEditFlag);
+            extraparam = makeNP(preGUI, guiEditFlag)(data[tracei], attr);
         }
 
         if(!(attr in undoit)) {
@@ -1569,7 +1569,7 @@ function _restyle(gd, aobj, traces) {
         redoit[ai] = vi;
 
         if(ai.substr(0, 6) === 'LAYOUT') {
-            param = npWithGuiEdits(gd.layout, ai.replace('LAYOUT', ''), fullLayout._preGUI, guiEditFlag);
+            param = layoutNP(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [undefinedToNull(param.get())];
             // since we're allowing val to be an array, allow it here too,
             // even though that's meaningless
@@ -1586,7 +1586,7 @@ function _restyle(gd, aobj, traces) {
             cont = data[traces[i]];
             contFull = getFullTrace(traces[i]);
             var preGUI = fullLayout._tracePreGUI[contFull._fullInput.uid];
-            param = npWithGuiEdits(cont, ai, preGUI, guiEditFlag);
+            param = makeNP(preGUI, guiEditFlag)(cont, ai);
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
 
@@ -1896,6 +1896,7 @@ function _relayout(gd, aobj) {
     var layout = gd.layout;
     var fullLayout = gd._fullLayout;
     var guiEditFlag = fullLayout._guiEditing;
+    var layoutNP = makeNP(fullLayout._preGUI, guiEditFlag);
     var keys = Object.keys(aobj);
     var axes = Axes.list(gd);
     var arrayEdits = {};
@@ -1940,7 +1941,7 @@ function _relayout(gd, aobj) {
         // via a parent) do not override with this auto-generated extra
         if(attr in aobj || helpers.hasParent(aobj, attr)) return;
 
-        var p = npWithGuiEdits(layout, attr, fullLayout._preGUI, guiEditFlag);
+        var p = layoutNP(layout, attr);
         if(!(attr in undoit)) {
             undoit[attr] = undefinedToNull(p.get());
         }
@@ -1965,7 +1966,7 @@ function _relayout(gd, aobj) {
             throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
         }
 
-        var p = npWithGuiEdits(layout, ai, fullLayout._preGUI, guiEditFlag);
+        var p = layoutNP(layout, ai);
         var vi = aobj[ai];
         var plen = p.parts.length;
         // p.parts may end with an index integer if the property is an array
@@ -2183,7 +2184,7 @@ function _relayout(gd, aobj) {
     // now we've collected component edits - execute them all together
     for(arrayStr in arrayEdits) {
         var finished = manageArrays.applyContainerArrayChanges(gd,
-            nestedProperty(layout, arrayStr), arrayEdits[arrayStr], flags);
+            layoutNP(layout, arrayStr), arrayEdits[arrayStr], flags, layoutNP);
         if(!finished) flags.plot = true;
     }
 
