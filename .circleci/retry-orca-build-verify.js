@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-const timeout = 60; // in seconds
 var spawn = require('child_process').spawn;
 
-function retry(cmd, args, trials) {
+// retry a given command if no standard output is produced within a given timeout
+function retry(cmd, args, timeout, trials) {
     if(trials === 0) {process.exit(1)}
     var timer
     function retryAfterTimeout() {
@@ -38,4 +38,4 @@ function retry(cmd, args, trials) {
 
 var args = process.argv
 args.splice(0,2);
-retry('.circleci/orca-build-verify.sh', args, 5)
+retry('.circleci/orca-build-verify.sh', args, 60, 5)
