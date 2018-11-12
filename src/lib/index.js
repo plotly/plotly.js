@@ -1038,8 +1038,6 @@ lib.hovertemplateString = function(string, labels) {
             }
 
             if(!SIMPLE_PROPERTY_REGEX.test(key)) {
-                // getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
-                // value = getterCache[key]();
                 value = getterCache[key] || lib.nestedProperty(obj, key).get();
                 if(value) getterCache[key] = value;
             }
