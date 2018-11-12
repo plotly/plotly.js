@@ -670,6 +670,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     for(itemnum = 0; itemnum < hoverData.length; itemnum++) {
         var pt = hoverData[itemnum];
         var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
+
+        // Add axis information to eventData
+        eventData.xaxis = gd._fullLayout[pt.trace.xaxis + 'axis'];
+        eventData.yaxis = gd._fullLayout[pt.trace.yaxis + 'axis'];
         newhoverdata.push(eventData);
 
         var ht = false;

@@ -1652,6 +1652,29 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should contain the axis names', function(done) {
+            var gd = document.getElementById('graph');
+            Plotly.restyle(gd, 'hovertemplate', '%{yaxis.title}:%{y:$.2f}<br>%{xaxis.title}:%{x:0.4f}<extra></extra>')
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                var hoverTrace = gd._hoverdata[0];
+
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(17);
+                expect(hoverTrace.x).toEqual(0.388);
+                expect(hoverTrace.y).toEqual(1);
+
+                assertHoverLabelContent({
+                    nums: 'Cost ($/W​<tspan style="font-size:70%" dy="0.3em">P</tspan><tspan dy="-0.21em">​</tspan>):$1.00\nCumulative Production (GW):0.3880',
+                    name: '',
+                    axis: '0.388'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 
