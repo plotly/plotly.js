@@ -30,4 +30,4 @@ module.exports = function(opts, extra) {
     };
 
     return hovertemplate;
-}
+};
