@@ -4,20 +4,24 @@ var spawn = require('child_process').spawn;
 
 function retry(cmd, args, trials) {
     if(trials === 0) {process.exit(1)}
-
-    console.log(trials + ' trials left');
-
+    var timer
     function retryAfterTimeout() {
+      console.log(trials + ' trials left');
       console.log('Retrying after no output for ' + timeout + ' seconds');
       child.kill();
       retry(cmd,args, --trials)
     }
 
-    const child = spawn(cmd,args);
+    function setTimer() {
+      timer = setTimeout(retryAfterTimeout, timeout * 1000)
+    }
 
-    setTimeout(retryAfterTimeout, timeout * 1000)
+    const child = spawn(cmd,args);
+    setTimer();
+
     child.stdout.on('data', function(data) {
-        clearTimeout(retryAfterTimeout);
+        clearTimeout(timer);
+        setTimer()
         console.log(data.toString());
     })
 
@@ -27,7 +31,7 @@ function retry(cmd, args, trials) {
     })
 
     child.on('close', function(code) {
-        console.log('Excit with code ' + code);
+        console.log('Exit with code ' + code);
         process.exit(code)
     })
 }
