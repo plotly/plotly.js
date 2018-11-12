@@ -31,7 +31,17 @@ else
   CIRCLE_NODE_INDEX=0
 fi
 
-ls $MOCKS/*.json | deterministic_shuffle > /tmp/all
+if [[ $# -eq 0 ]]; then
+  echo "No arguments provided"
+  FIGURE=$(ls $MOCKS/*.json)
+else
+  for var in "$@"
+  do
+      FIGURE="$FIGURE $MOCKS/$var.json "
+  done
+fi
+
+echo $FIGURE | tr " " "\n" | deterministic_shuffle > /tmp/all
 split -d -a3 -n l/$CIRCLE_NODE_TOTAL /tmp/all /tmp/queue
 
 NODE_QUEUE="/tmp/queue$(printf "%03d" $CIRCLE_NODE_INDEX)"
