@@ -731,6 +731,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     });
 }
 
+var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
+
 function createHoverText(hoverData, opts, gd) {
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -971,7 +973,6 @@ function createHoverText(hoverData, opts, gd) {
         if(hovertemplate) {
             text = Lib.hovertemplateString(hovertemplate, hovertemplateLabels, eventData, trace);
 
-            var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
             text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {
                 name = extra; // Assign name for secondary text label
                 return ''; // Remove from main text label
