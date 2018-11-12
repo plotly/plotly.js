@@ -205,6 +205,7 @@ function syncLocalesPkg(d) {
             '',
             '// then',
             'Plotly.register(locale);',
+            'Plotly.setPlotConfig({locale: \'fr\'})',
             '```',
             '',
             copyrightAndLicense
