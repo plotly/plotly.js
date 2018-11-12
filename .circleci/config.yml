@@ -121,7 +121,7 @@ jobs:
           at: ~/plotly.js
       - run:
           name: Run image tests
-          command: ./.circleci/orca_generate.sh
+          command: ./.circleci/retry-orca-build-verify.js
           no_output_timeout: 2m
       - store_artifacts:
           path: build
