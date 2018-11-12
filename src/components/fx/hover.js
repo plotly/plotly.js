@@ -671,15 +671,18 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var pt = hoverData[itemnum];
         var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
 
-        // Add axis information to eventData
-        eventData.xaxis = gd._fullLayout[pt.trace.xaxis + 'axis'];
-        eventData.yaxis = gd._fullLayout[pt.trace.yaxis + 'axis'];
-        newhoverdata.push(eventData);
-
         var ht = false;
         if(pt.cd[pt.index] && pt.cd[pt.index].ht) ht = pt.cd[pt.index].ht;
         hoverData[itemnum].hovertemplate = ht || pt.trace.hovertemplate || false;
         hoverData[itemnum].eventData = [eventData];
+
+        // Add axis information to eventData if hovertemplate
+        if(hoverData[itemnum].hovertemplate) {
+            eventData.xaxis = gd._fullLayout[pt.trace.xaxis + 'axis'];
+            eventData.yaxis = gd._fullLayout[pt.trace.yaxis + 'axis'];
+        }
+
+        newhoverdata.push(eventData);
     }
 
     gd._hoverdata = newhoverdata;
