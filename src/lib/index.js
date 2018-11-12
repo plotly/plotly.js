@@ -1007,6 +1007,7 @@ lib.templateString = function(string, obj) {
     });
 };
 
+var TEMPLATE_STRING_FORMAT_SEPARATOR = /^:/;
 /**
  * Substitute values from an object into a string and optionally formats them using d3-format,
  * or fallback to associated labels.
@@ -1050,7 +1051,7 @@ lib.hovertemplateString = function(string, labels) {
         }
 
         if(format) {
-            value = d3.format(format.replace(/^:/, ''))(value);
+            value = d3.format(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
         } else {
             if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
         }
