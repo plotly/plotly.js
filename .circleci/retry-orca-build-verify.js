@@ -32,4 +32,4 @@ function retry(cmd, args, trials) {
     })
 }
 
-retry('.circleci/orca_generate.sh',[], 5)
+retry('.circleci/orca-build-verify.sh',[], 5)
