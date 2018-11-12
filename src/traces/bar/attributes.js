@@ -9,6 +9,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
@@ -59,7 +60,7 @@ module.exports = {
 
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
-    hovertemplate: scatterAttrs.hovertemplate,
+    hovertemplate: hovertemplateAttrs(),
 
     textposition: {
         valType: 'enumerated',

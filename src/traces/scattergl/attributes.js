@@ -9,6 +9,7 @@
 'use strict';
 
 var plotAttrs = require('../../plots/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterAttrs = require('../scatter/attributes');
 var colorAttrs = require('../../components/colorscale/attributes');
 
@@ -97,4 +98,4 @@ var attrs = module.exports = overrideAll({
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
-attrs.hovertemplate = extendFlat({}, plotAttrs.hovertemplate);
+attrs.hovertemplate = hovertemplateAttrs();

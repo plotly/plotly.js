@@ -11,6 +11,7 @@
 var colorAttrs = require('../../components/color/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var plotAttrs = require('../../plots/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -158,7 +159,7 @@ module.exports = {
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
-    hovertemplate: extendFlat({}, plotAttrs.hovertemplate),
+    hovertemplate: hovertemplateAttrs(),
     textposition: {
         valType: 'enumerated',
         role: 'info',
