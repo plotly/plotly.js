@@ -80,7 +80,7 @@ function compare()
     # sort | \
     # head -n 20 | \
     # xargs -n1 -P16 -I {} bash -c "echo {} && ./node_modules/.bin/pixelmatch $1/{} $2/{} diff/{} 0 true" | tee results.txt
-    xargs -n1 -P`nproc` -I {} bash -c "compare -verbose -metric AE $TEST_IMAGES/{} $BASELINES/{} $DIFF_IMAGES/{} 2> $DIFF_IMAGES/{}.txt"
+    xargs -n1 -P`nproc` -I {} bash -c "compare -verbose -metric AE $TEST_IMAGES/{}.png $BASELINES/{}.png $DIFF_IMAGES/{}.png 2> $DIFF_IMAGES/{}.txt"
 }
 compare $NODE_QUEUE
 
