@@ -38,7 +38,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lines+markers' : 'lines';
     coerce('text');
     coerce('hovertext');
-    coerce('hovertemplate');
     coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {
@@ -76,7 +75,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         dfltHoverOn.push('fills');
     }
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
-
+    if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
