@@ -2192,6 +2192,17 @@ describe('Test lib.js:', function() {
         it('looks for default label if no format is provided', function() {
             expect(Lib.hovertemplateString('y: %{y}', {yLabel: '0.1'}, {y: 0.123})).toEqual('y: 0.1');
         });
+
+        it('warns user up to 10 times if a variable cannot be found', function() {
+            spyOn(Lib, 'warn').and.callThrough();
+            Lib.hovertemplateString('%{idontexist}', {});
+            expect(Lib.warn.calls.count()).toBe(1);
+
+            for(var i = 0; i < 15; i++) {
+                Lib.hovertemplateString('%{idontexist}', {});
+            }
+            expect(Lib.warn.calls.count()).toBe(10);
+        });
     });
 
     describe('relativeAttr()', function() {

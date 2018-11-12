@@ -1008,6 +1008,8 @@ lib.templateString = function(string, obj) {
 };
 
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^:/;
+var numberOfHoverTemplateWarnings = 0;
+var maximumNumberOfHoverTemplateWarnings = 10;
 /**
  * Substitute values from an object into a string and optionally formats them using d3-format,
  * or fallback to associated labels.
@@ -1046,8 +1048,15 @@ lib.hovertemplateString = function(string, labels) {
         }
 
         if(value === undefined) {
-            lib.warn('Variable \'' + key + '\' in hovertemplate could not be found!');
-            value = match;
+            if(numberOfHoverTemplateWarnings < maximumNumberOfHoverTemplateWarnings) {
+                lib.warn('Variable \'' + key + '\' in hovertemplate could not be found!');
+                value = match;
+            }
+
+            if(numberOfHoverTemplateWarnings === maximumNumberOfHoverTemplateWarnings) {
+                lib.warn('Too many hovertemplate warnings - additional warnings will be suppressed');
+            }
+            numberOfHoverTemplateWarnings++;
         }
 
         if(format) {
