@@ -1579,6 +1579,52 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should format secondary label with extra tag', function(done) {
+            var gd = document.getElementById('graph');
+            Plotly.restyle(gd, 'hovertemplate', '<extra>trace 20 %{y:$.2f}</extra>')
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                var hoverTrace = gd._hoverdata[0];
+
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(17);
+                expect(hoverTrace.x).toEqual(0.388);
+                expect(hoverTrace.y).toEqual(1);
+
+                assertHoverLabelContent({
+                    nums: '',
+                    name: 'trace 20 $1.00',
+                    axis: '0.388'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should support pseudo-html', function(done) {
+            var gd = document.getElementById('graph');
+            Plotly.restyle(gd, 'hovertemplate', '<b>%{y:$.2f}</b><br>%{name}<extra></extra>')
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                var hoverTrace = gd._hoverdata[0];
+
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(17);
+                expect(hoverTrace.x).toEqual(0.388);
+                expect(hoverTrace.y).toEqual(1);
+
+                assertHoverLabelContent({
+                    nums: '<tspan style="font-weight:bold">$1.00</tspan>\nPV learning curve.txt',
+                    name: '',
+                    axis: '0.388'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 
