@@ -1,0 +1,35 @@
+{
+    "data": [{
+            "type": "violin",
+            "points": "all",
+            "pointpos": -0.3,
+            "jitter": 0,
+            "x": [0, 5, 7, 8],
+            "side": "positive",
+            "line": {
+                "color": "black"
+            },
+            "fillcolor": "#d3c78d",
+            "opacity": 0.6,
+            "y0": 0.0
+        },{
+            "type": "violin",
+            "points": "all",
+            "pointpos": 0,
+            "jitter": 0,
+            "x": [20, 25, 27, 28],
+            "side": "negative",
+            "line": {
+                "color": "black"
+            },
+            "fillcolor": "#d3c78d",
+            "opacity": 0.6,
+            "y0": 0.0
+        }],
+    "layout": {
+        "title": "Joyplot - positive and negative",
+        "showlegend": false,
+        "xaxis": {"zeroline": false},
+        "yaxis": {"dtick": 0.1, "gridcolor": "black"}
+    }
+}
