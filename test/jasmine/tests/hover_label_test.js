@@ -1625,6 +1625,33 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should support array', function(done) {
+            var gd = document.getElementById('graph');
+            var templates = [];
+            for(var i = 0; i < mockCopy.data[0].y.length; i++) {
+                templates[i] = 'hovertemplate ' + i + ':%{y:$.2f}<extra></extra>';
+            }
+            Plotly.restyle(gd, 'hovertemplate', [templates])
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                var hoverTrace = gd._hoverdata[0];
+
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(17);
+                expect(hoverTrace.x).toEqual(0.388);
+                expect(hoverTrace.y).toEqual(1);
+
+                assertHoverLabelContent({
+                    nums: 'hovertemplate 17:$1.00',
+                    name: '',
+                    axis: '0.388'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 

@@ -18,6 +18,7 @@ module.exports = function(opts, extra) {
         valType: 'string',
         role: 'info',
         dflt: '',
+        arrayOk: true,
         editType: 'none',
         description: [
             'Template string used for rendering the information that appear on hover box.',
