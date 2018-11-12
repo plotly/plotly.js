@@ -449,17 +449,6 @@ function findCounterAxisLineWidth(ax, side, counterAx, axList) {
 
 exports.drawMainTitle = function(gd) {
     var fullLayout = gd._fullLayout;
-    var textAnchorDict = {
-        'left': 'start',
-        'center': 'middle',
-        'right': 'end',
-        'auto': 'middle' // TODO That needs to be calculated based on x
-    };
-    var dyDict = {
-        'top': alignmentConstants.CAP_SHIFT + 'em',
-        'middle': alignmentConstants.MID_SHIFT + 'em',
-        'bottom': '0em',
-    };
 
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
@@ -468,8 +457,8 @@ exports.drawMainTitle = function(gd) {
         attributes: {
             x: getMainTitleX(fullLayout),
             y: getMainTitleY(fullLayout),
-            'text-anchor': textAnchorDict[fullLayout.title.xanchor],
-            dy: dyDict[fullLayout.title.yanchor]
+            'text-anchor': getMainTitleTextAnchor(fullLayout),
+            dy: getMainTitleDy(fullLayout)
         }
     });
 };
@@ -501,6 +490,65 @@ function getMainTitleY(fullLayout) {
             default:
                 return fullLayout.height - fullLayout.height * title.y;
         }
+    }
+}
+
+function getMainTitleTextAnchor(fullLayout) {
+    var xanchor = fullLayout.title.xanchor;
+
+    switch(xanchor) {
+        case 'auto':
+            return calcTextAnchor(fullLayout.title.x);
+        case 'left':
+            return 'start';
+        case 'right':
+            return 'end';
+        case 'center':
+        default:
+            return 'middle';
+    }
+
+    function calcTextAnchor(x) {
+        if(x < 1 / 3) {
+            return 'start';
+        } else if(x > 2 / 3) {
+            return 'end';
+        }
+
+        return 'middle';
+    }
+}
+
+function getMainTitleDy(fullLayout) {
+    var yanchor = fullLayout.title.yanchor;
+    switch(yanchor) {
+        case 'auto':
+            return calcDy(fullLayout.title.y);
+        case 'middle':
+            return alignmentConstants.MID_SHIFT + 'em';
+        case 'top':
+            return alignmentConstants.CAP_SHIFT + 'em';
+        case 'bottom':
+        default:
+            return '0em';
+    }
+
+    function calcDy(y) {
+
+        // Imitate behavior before "chart title alignment" was introduced
+        if(y === 'auto') {
+            return '0em';
+        } else if(typeof y === 'number') {
+            if(y < 1 / 3) {
+                return '0em';
+            } else if(y > 2 / 3) {
+                return alignmentConstants.CAP_SHIFT + 'em';
+            } else {
+                return alignmentConstants.MID_SHIFT + 'em';
+            }
+        }
+
+        return 0;
     }
 }
 

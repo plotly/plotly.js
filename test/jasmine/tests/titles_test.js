@@ -147,6 +147,7 @@ describe('Plot title', function() {
         });
     });
 
+    // y 'auto' value
     it('provides a y \'auto\' value putting title baseline in middle ' +
       'of top margin irrespective of `yref`', function() {
 
@@ -164,9 +165,76 @@ describe('Plot title', function() {
         expectBaselineInMiddleOfTopMargin(gd);
     });
 
-    // TODO x-anchor auto
+    // xanchor 'auto' test
+    [
+        {x: -0.5, expAlignment: 'start'},
+        {x: 0, expAlignment: 'start'},
+        {x: 0.3, expAlignment: 'start'},
+        {x: 0.4, expAlignment: 'middle'},
+        {x: 0.5, expAlignment: 'middle'},
+        {x: 0.6, expAlignment: 'middle'},
+        {x: 0.7, expAlignment: 'end'},
+        {x: 1, expAlignment: 'end'},
+        {x: 1.5, expAlignment: 'end'}
+    ].forEach(function(testCase) {
+        runXAnchorAutoTest(testCase, 'container');
+        runXAnchorAutoTest(testCase, 'paper');
+    });
 
-    // TODO y-anchor auto
+    function runXAnchorAutoTest(testCase, xref) {
+        var testDesc = 'with {xanchor: \'auto\', x: ' + testCase.x + ', xref: \'' + xref +
+          '\'} expected to be aligned ' + testCase.expAlignment;
+        it(testDesc, function() {
+            Plotly.plot(gd, data, extendLayout({
+                xref: xref,
+                x: testCase.x,
+                xanchor: 'auto'
+            }));
+
+            var textAnchor = titleSel().attr('text-anchor');
+            expect(textAnchor).toBe(testCase.expAlignment, testDesc);
+        });
+    }
+
+    // yanchor 'auto' test
+    //
+    // Note: in contrast to xanchor, there's no SVG attribute like
+    // text-anchor we can safely assume to work in all browsers. Thus the
+    // dy attribute has to be used and as a consequence it's much harder to test
+    // arbitrary vertical alignment options. Because of that only the
+    // most common use cases are tested in this regard.
+    [
+        {y: 0, expAlignment: 'bottom', expFn: expectBaselineAlignsWithBottomEdgeOf},
+        {y: 0.5, expAlignment: 'middle', expFn: expectCenteredVerticallyWithin},
+        {y: 1, expAlignment: 'top', expFn: expectCapLineAlignsWithTopEdgeOf},
+    ].forEach(function(testCase) {
+        runYAnchorAutoTest(testCase, 'container', containerElemSelector);
+        runYAnchorAutoTest(testCase, 'paper', paperElemSelector);
+    });
+
+    function runYAnchorAutoTest(testCase, yref, elemSelector) {
+        var testDesc = 'with {yanchor: \'auto\', y: ' + testCase.y + ', yref: \'' + yref +
+          '\'} expected to be aligned ' + testCase.expAlignment;
+        it(testDesc, function() {
+            Plotly.plot(gd, data, extendLayout({
+                yref: yref,
+                y: testCase.y,
+                yanchor: 'auto'
+            }));
+
+            testCase.expFn(elemSelector);
+        });
+    }
+
+    it('{y: \'auto\'} overrules {yanchor: \'auto\'} to support behavior ' +
+      'before chart title alignment was introduced', function() {
+        Plotly.plot(gd, data, extendLayout({
+            y: 'auto',
+            yanchor: 'auto'
+        }));
+
+        expectDefaultCenteredPosition(gd);
+    });
 
     // TODO padding
 
