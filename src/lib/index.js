@@ -981,7 +981,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
 var TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)(:[^}]*)?}/g;
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
-/*
+/**
  * Substitute values from an object into a string
  *
  * Examples:
@@ -993,7 +993,6 @@ var SIMPLE_PROPERTY_REGEX = /^\w*$/;
  *
  * @return {string} templated string
  */
-
 lib.templateString = function(string, obj) {
     // Not all that useful, but cache nestedProperty instantiation
     // just in case it speeds things up *slightly*:
@@ -1008,7 +1007,7 @@ lib.templateString = function(string, obj) {
     });
 };
 
-/*
+/**
  * Substitute values from an object into a string and optionally formats them using d3-format,
  * or fallback to associated labels.
  *
@@ -1023,7 +1022,6 @@ lib.templateString = function(string, obj) {
  *
  * @return {string} templated string
  */
-
 lib.hovertemplateString = function(string, labels) {
     var args = arguments;
     // Not all that useful, but cache nestedProperty instantiation
