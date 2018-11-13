@@ -13,6 +13,8 @@ var failTest = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
 
+var checkEventData = require('../assets/check_event_data');
+
 var customAssertions = require('../assets/custom_assertions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
@@ -1855,6 +1857,11 @@ describe('bar hover', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/stacked_bar');
+    checkEventData(mock, 0, 309, []);
 });
 
 function mockBarPlot(dataWithoutTraceType, layout) {

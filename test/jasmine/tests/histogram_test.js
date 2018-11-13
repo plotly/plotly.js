@@ -13,6 +13,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var failTest = require('../assets/fail_test');
 
+var checkEventData = require('../assets/check_event_data');
 
 describe('Test histogram', function() {
     'use strict';
@@ -1059,4 +1060,9 @@ describe('getBinSpanLabelRound', function() {
             Lib.dateTime2ms('2009-08-01', cn), Lib.dateTime2ms('2019-07-01', cn)
         ]);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/hist_category');
+    checkEventData(mock, 100, 200, ['binNumber']);
 });

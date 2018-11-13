@@ -14,7 +14,7 @@ var transitions = require('../assets/transitions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
-var hover = require('../assets/hover');
+var checkEventData = require('../assets/check_event_data');
 
 var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
@@ -1812,39 +1812,5 @@ describe('Test scatter *clipnaxis*:', function() {
 
 describe('event data', function() {
     var mock = require('@mocks/12');
-    var mockCopy = Lib.extendDeep({}, mock),
-        gd;
-
-    beforeEach(function(done) {
-        gd = createGraphDiv();
-
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-            .then(done);
-    });
-
-    afterEach(destroyGraphDiv);
-
-    it('should contain the correct fields', function() {
-
-        var hoverData;
-
-        gd.on('plotly_hover', function(data) {
-            hoverData = data;
-        });
-
-        hover(130, 350);
-
-        expect(hoverData.points.length).toEqual(1);
-
-        var fields = [
-            'curveNumber', 'pointNumber',
-            'data', 'fullData',
-            'xaxis', 'yaxis', 'x', 'y',
-            'marker.size'
-        ];
-
-        fields.forEach(function(field) {
-            expect(Object.keys(hoverData.points[0])).toContain(field);
-        });
-    });
+    checkEventData(mock, 130, 350, ['marker.size']);
 });
