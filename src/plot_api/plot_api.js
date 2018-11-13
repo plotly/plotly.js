@@ -1723,29 +1723,30 @@ function mapDeprecatedLayoutAttributes(layoutObj) {
  * @param layoutObj
  */
 function mapDeprecatedLayoutAttributeStrings(layoutObj) {
-    if(layoutObj.title && !Lib.isPlainObject(layoutObj.title)) {
+    var oldAxisTitleRegExp = /axis\d{0,2}.title$/;
+    var keys, i, key, value;
+
+    if(typeof layoutObj.title === 'string') {
         layoutObj.title = {text: layoutObj.title};
     }
-    replace('xaxis.title', 'xaxis.title.text');
-    replace('yaxis.title', 'yaxis.title.text');
 
     // Note: Only "nested" (dot notation) attributes
-    // need to be converted. For example 'titlefont'
+    // need to be converted. For example 'layout.titlefont'
     // was a top-level attribute and thus is covered by
     // the general compatibility layer.
-    replace('titlefont.color', 'title.font.color');
-    replace('titlefont.family', 'title.font.family');
-    replace('titlefont.size', 'title.font.size');
+    keys = Object.keys(layoutObj);
+    for(i = 0; i < keys.length; i++) {
+        key = keys[i];
+        value = layoutObj[key];
 
-    replace('xaxis.titlefont', 'xaxis.title.font');
-    replace('xaxis.titlefont.color', 'xaxis.title.font.color');
-    replace('xaxis.titlefont.family', 'xaxis.title.font.family');
-    replace('xaxis.titlefont.size', 'xaxis.title.font.size');
+        if(key.indexOf('titlefont') > -1) {
+            replace(key, key.replace('titlefont', 'title.font'));
+        }
 
-    replace('yaxis.titlefont', 'yaxis.title.font');
-    replace('yaxis.titlefont.color', 'yaxis.title.font.color');
-    replace('yaxis.titlefont.family', 'yaxis.title.font.family');
-    replace('yaxis.titlefont.size', 'yaxis.title.font.size');
+        if(typeof value === 'string' && oldAxisTitleRegExp.test(key)) {
+            replace(key, key.replace('title', 'title.text'));
+        }
+    }
 
     function replace(oldKey, newKey) {
         if(layoutObj[oldKey] !== undefined) {

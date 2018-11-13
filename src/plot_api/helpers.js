@@ -91,6 +91,19 @@ exports.cleanLayout = function(layout) {
                 }
                 delete ax.autotick;
             }
+
+            // title -> title.text
+            if(!Lib.isPlainObject(ax.title)) {
+                ax.title = {
+                    text: ax.title
+                };
+            }
+
+            // titlefont -> title.font
+            if(Lib.isPlainObject(ax.titlefont) && !Lib.isPlainObject(ax.title.font)) {
+                ax.title.font = ax.titlefont;
+                delete ax.titlefont;
+            }
         }
 
         // modifications for 3D scenes
@@ -176,20 +189,10 @@ exports.cleanLayout = function(layout) {
         }
     }
 
-    // Check for old-style title definitions
+    // Check for old-style title definition
     if(!Lib.isPlainObject(layout.title)) {
         layout.title = {
             text: layout.title
-        };
-    }
-    if(layout.xaxis && !Lib.isPlainObject(layout.xaxis.title)) {
-        layout.xaxis.title = {
-            text: layout.xaxis.title
-        };
-    }
-    if(layout.yaxis && !Lib.isPlainObject(layout.yaxis.title)) {
-        layout.yaxis.title = {
-            text: layout.yaxis.title
         };
     }
 
@@ -197,16 +200,6 @@ exports.cleanLayout = function(layout) {
     if(Lib.isPlainObject(layout.titlefont) && !Lib.isPlainObject(layout.title.font)) {
         layout.title.font = layout.titlefont;
         delete layout.titlefont;
-    }
-    if(layout.xaxis &&
-      Lib.isPlainObject(layout.xaxis.titlefont) && !Lib.isPlainObject(layout.xaxis.title.font)) {
-        layout.xaxis.title.font = layout.xaxis.titlefont;
-        delete layout.xaxis.titlefont;
-    }
-    if(layout.yaxis &&
-      Lib.isPlainObject(layout.yaxis.titlefont) && !Lib.isPlainObject(layout.yaxis.title.font)) {
-        layout.yaxis.title.font = layout.yaxis.titlefont;
-        delete layout.yaxis.titlefont;
     }
 
     /*

@@ -656,6 +656,93 @@ describe('Title fonts can be updated', function() {
     }
 });
 
+describe('Titles for multiple axes', function() {
+    'use strict';
+
+    var data = [
+      {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x', yaxis: 'y'},
+      {x: [1, 2, 3], y: [3, 2, 1], xaxis: 'x2', yaxis: 'y2'}
+    ];
+    var multiAxesLayout = {
+        xaxis: {
+            title: 'X-Axis 1',
+            titlefont: {
+                size: 30
+            }
+        },
+        xaxis2: {
+            title: 'X-Axis 2',
+            titlefont: {
+                family: 'serif'
+            },
+            side: 'top'
+        },
+        yaxis: {
+            title: 'Y-Axis 1',
+            titlefont: {
+                family: 'Roboto'
+            },
+        },
+        yaxis2: {
+            title: 'Y-Axis 2',
+            titlefont: {
+                color: 'blue'
+            },
+            side: 'right'
+        }
+    };
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('still support deprecated `title` and `titlefont` syntax (backwards-compatibility)', function() {
+        Plotly.plot(gd, data, multiAxesLayout);
+
+        expect(xTitleSel(1).text()).toBe('X-Axis 1');
+        expect(xTitleSel(1).node().style.fontSize).toBe('30px');
+
+        expect(xTitleSel(2).text()).toBe('X-Axis 2');
+        expect(xTitleSel(2).node().style.fontFamily).toBe('serif');
+
+        expect(yTitleSel(1).text()).toBe('Y-Axis 1');
+        expect(yTitleSel(1).node().style.fontFamily).toBe('Roboto');
+
+        expect(yTitleSel(2).text()).toBe('Y-Axis 2');
+        expect(yTitleSel(2).node().style.fill).toBe(rgb('blue'));
+    });
+
+    it('can be updated using deprecated `title` and `titlefont` syntax (backwards-compatibility)', function() {
+        Plotly.plot(gd, data, multiAxesLayout);
+
+        Plotly.relayout(gd, {
+            'xaxis2.title': '2nd X-Axis',
+            'xaxis2.titlefont.color': 'pink',
+            'xaxis2.titlefont.family': 'sans-serif',
+            'xaxis2.titlefont.size': '14',
+            'yaxis2.title': '2nd Y-Axis',
+            'yaxis2.titlefont.color': 'yellow',
+            'yaxis2.titlefont.family': 'monospace',
+            'yaxis2.titlefont.size': '5'
+        });
+
+        var x2Style = xTitleSel(2).node().style;
+        expect(xTitleSel(2).text()).toBe('2nd X-Axis');
+        expect(x2Style.fill).toBe(rgb('pink'));
+        expect(x2Style.fontFamily).toBe('sans-serif');
+        expect(x2Style.fontSize).toBe('14px');
+
+        var y2Style = yTitleSel(2).node().style;
+        expect(yTitleSel(2).text()).toBe('2nd Y-Axis');
+        expect(y2Style.fill).toBe(rgb('yellow'));
+        expect(y2Style.fontFamily).toBe('monospace');
+        expect(y2Style.fontSize).toBe('5px');
+    });
+});
+
 function expectTitle(expTitle) {
     expectTitleFn(expTitle)();
 }
@@ -762,15 +849,17 @@ function titleSel() {
     return titleSel;
 }
 
-function xTitleSel() {
-    var xTitleSel = d3.select('.xtitle');
-    expect(xTitleSel.empty()).toBe(false, 'X-axis title element missing');
+function xTitleSel(num) {
+    var axIdx = num === 1 ? '' : (num || '');
+    var xTitleSel = d3.select('.x' + axIdx + 'title');
+    expect(xTitleSel.empty()).toBe(false, 'X-axis ' + axIdx + ' title element missing');
     return xTitleSel;
 }
 
-function yTitleSel() {
-    var yTitleSel = d3.select('.ytitle');
-    expect(yTitleSel.empty()).toBe(false, 'Y-axis title element missing');
+function yTitleSel(num) {
+    var axIdx = num === 1 ? '' : (num || '');
+    var yTitleSel = d3.select('.y' + axIdx + 'title');
+    expect(yTitleSel.empty()).toBe(false, 'Y-axis ' + axIdx + ' title element missing');
     return yTitleSel;
 }
 
