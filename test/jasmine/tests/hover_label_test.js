@@ -1605,7 +1605,7 @@ describe('hover info', function() {
 
         it('should support pseudo-html', function(done) {
             var gd = document.getElementById('graph');
-            Plotly.restyle(gd, 'hovertemplate', '<b>%{y:$.2f}</b><br>%{name}<extra></extra>')
+            Plotly.restyle(gd, 'hovertemplate', '<b>%{y:$.2f}</b><br>%{fullData.name}<extra></extra>')
             .then(function() {
                 Fx.hover('graph', evt, 'xy');
 
