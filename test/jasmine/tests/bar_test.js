@@ -1861,7 +1861,7 @@ describe('bar hover', function() {
 
 describe('event data', function() {
     var mock = require('@mocks/stacked_bar');
-    checkEventData(mock, 0, 309, []);
+    checkEventData(mock, 216, 309, []);
 });
 
 function mockBarPlot(dataWithoutTraceType, layout) {
