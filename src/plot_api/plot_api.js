@@ -2477,16 +2477,6 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                 if(preGUIVal === null) preGUIVal = undefined;
                 newNP = nestedProperty(layout, key);
                 newVal = newNP.get();
-                // TODO: This test for undefined is to account for the case where
-                // the value was filled in automatically in gd.layout,
-                // like axis.range/autorange. In principle though, if the initial
-                // plot had a value and the new plot removed that value, we would
-                // want the removal to override the GUI edit and generate a new
-                // auto value. But that would require figuring out what value was
-                // in gd.layout *before* the auto values were filled in, and
-                // storing *that* in preGUI... oh well, for now at least I limit
-                // this to attributes that get autofilled, which AFAICT among
-                // the GUI-editable attributes is just axis.range/autorange.
                 if(valsMatch(newVal, preGUIVal)) {
                     if(newVal === undefined && key.substr(key.length - 9) === 'autorange') {
                         bothInheritAutorange.push(key.substr(0, key.length - 10));
