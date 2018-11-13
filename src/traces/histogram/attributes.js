@@ -9,6 +9,7 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var makeBinAttrs = require('./bin_attributes');
 
 module.exports = {
@@ -185,7 +186,9 @@ module.exports = {
         ].join(' ')
     },
 
-    hovertemplate: barAttrs.hovertemplate,
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: ['binNumber']
+    }),
 
     marker: barAttrs.marker,
 
