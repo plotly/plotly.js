@@ -183,7 +183,15 @@ module.exports = function draw(gd, id) {
                 tickprefix: opts.tickprefix,
                 showticksuffix: opts.showticksuffix,
                 ticksuffix: opts.ticksuffix,
-                title: opts.title,
+
+                // Plot and axes titles have a different, nested attribute structure
+                // for defining title attributes. Since the `titles` component
+                // assumes that nested structure, let's adapt to it without breaking
+                // the existing colorbar API.
+                title: {
+                    text: opts.title,
+                    font: opts.titlefont
+                },
                 showline: true,
                 anchor: 'free',
                 side: 'right',
