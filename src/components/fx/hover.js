@@ -969,7 +969,6 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         // hovertemplate
-        var trace = d.trace;
         var hovertemplate = d.hovertemplate || false;
         var hovertemplateLabels = d.hovertemplateLabels || d;
         var eventData = d.eventData[0] || {};
