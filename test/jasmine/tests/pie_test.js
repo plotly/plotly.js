@@ -785,6 +785,15 @@ describe('pie hovering', function() {
                     'hovertemplate %{label}'
                 );
             })
+            .then(function() { return Plotly.restyle(gd, 'hovertemplate', [['', '', '', '', 'ht 5 %{percent:0.2%}<extra></extra>']]); })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['ht 5 33.33%'].join('\n'),
+                    null,
+                    'hovertemplate arrayOK'
+                );
+            })
             .catch(fail)
             .then(done);
         });
