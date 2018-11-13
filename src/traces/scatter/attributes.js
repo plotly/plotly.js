@@ -204,7 +204,9 @@ module.exports = {
             'or text, then the default is *fills*, otherwise it is *points*.'
         ].join(' ')
     },
-    hovertemplate: hovertemplateAttrs(),
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: ['marker.size', 'marker.color']
+    }),
     line: {
         color: {
             valType: 'color',
