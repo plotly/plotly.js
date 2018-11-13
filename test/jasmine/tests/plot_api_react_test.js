@@ -1418,6 +1418,47 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editSelection, checkNoSelection, checkSelection).then(done);
     });
 
+    it('preserves selectedpoints using selectedrevision (groupby case)', function(done) {
+        function fig(mainRev, selectionRev) {
+            return {
+                data: [{
+                    x: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+                    y: [1, 1, 1, 2, 2, 2, 3, 3, 3],
+                    mode: 'markers',
+                    marker: {size: 20},
+                    transforms: [{
+                        type: 'groupby',
+                        groups: [1, 2, 3, 2, 3, 1, 3, 1, 2]
+                    }]
+                }],
+                layout: {
+                    uirevision: mainRev,
+                    selectionrevision: selectionRev,
+                    dragmode: 'select',
+                    width: 400,
+                    height: 400,
+                    margin: {l: 100, t: 100, r: 100, b: 100}
+                }
+            };
+        }
+
+        function editSelection() {
+            // drag across the upper right quadrant, so we'll select
+            // curve 0 point 1 and curve 1 point 2
+            return drag(document.querySelector('.nsewdrag'),
+                148, 148, '', 150, 102);
+        }
+
+        var checkNoSelection = checkState([{selectedpoints: undefined}]);
+        // the funny point order here is from the grouping:
+        // points 5 & 7 come first as they're in group 1
+        // point 8 is next, in group 2
+        // point 4 is last, in group 3
+        var checkSelection = checkState([{selectedpoints: [[5, 7, 8, 4]]}]);
+
+        _run(fig, editSelection, checkNoSelection, checkSelection).then(done);
+    });
+
     it('preserves polar view changes using polar.uirevision', function(done) {
         // polar you can control either at the subplot or the axis level
         function fig(mainRev, polarRev) {

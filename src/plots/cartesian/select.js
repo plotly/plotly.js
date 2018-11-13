@@ -680,8 +680,8 @@ function updateSelectedState(gd, searchTraces, eventData) {
 
         for(i = 0; i < searchTraces.length; i++) {
             trace = searchTraces[i].cd[0].trace;
-            trace.selectedpoints = [];
-            trace._input.selectedpoints = [];
+            trace._input.selectedpoints = trace._fullInput.selectedpoints = [];
+            if(trace._fullInput !== trace) trace.selectedpoints = [];
         }
 
         for(i = 0; i < pts.length; i++) {
@@ -691,10 +691,14 @@ function updateSelectedState(gd, searchTraces, eventData) {
 
             if(pt.pointIndices) {
                 [].push.apply(data.selectedpoints, pt.pointIndices);
-                [].push.apply(fullData.selectedpoints, pt.pointIndices);
+                if(trace._fullInput !== trace) {
+                    [].push.apply(fullData.selectedpoints, pt.pointIndices);
+                }
             } else {
                 data.selectedpoints.push(pt.pointIndex);
-                fullData.selectedpoints.push(pt.pointIndex);
+                if(trace._fullInput !== trace) {
+                    fullData.selectedpoints.push(pt.pointIndex);
+                }
             }
         }
     }
@@ -703,6 +707,9 @@ function updateSelectedState(gd, searchTraces, eventData) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
+            if(trace._fullInput !== trace) {
+                delete trace._fullInput.selectedpoints;
+            }
         }
     }
 
