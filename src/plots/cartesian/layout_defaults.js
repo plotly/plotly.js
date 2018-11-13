@@ -158,7 +158,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut._shapeIndices = [];
 
         // set up some private properties
-        axLayoutOut._name = axName;
+        axLayoutOut._name = axLayoutOut._attr = axName;
         var id = axLayoutOut._id = name2id(axName);
 
         var overlayableAxes = getOverlayableAxes(axLetter, axName);

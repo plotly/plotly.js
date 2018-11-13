@@ -1087,6 +1087,77 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(done);
     });
 
+    it('respects reverting an explicit cartesian axis range to auto', function(done) {
+        function fig(xRange, yRange) {
+            return {
+                data: [{z: [[1, 2], [3, 4]], type: 'heatmap', x: [0, 1, 2], y: [3, 4, 5]}],
+                layout: {
+                    xaxis: {range: xRange},
+                    yaxis: {range: yRange},
+                    uirevision: 'a'
+                }
+            };
+        }
+
+        function setRanges(xRange, yRange) {
+            return function() {
+                return Registry.call('_guiRelayout', gd, {
+                    'xaxis.range': xRange,
+                    'yaxis.range': yRange
+                });
+            };
+        }
+
+        function checkRanges(xRange, yRange) {
+            return checkState([], {
+                'xaxis.range': [xRange],
+                'yaxis.range': [yRange]
+            });
+        }
+
+        Plotly.newPlot(gd, fig([1, 3], [4, 6]))
+        .then(checkRanges([1, 3], [4, 6]))
+        .then(setRanges([2, 4], [5, 7]))
+        .then(checkRanges([2, 4], [5, 7]))
+        .then(_react(fig(undefined, undefined)))
+        .then(checkRanges([0, 2], [3, 5]))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('respects reverting an explicit polar axis range to auto', function(done) {
+        function fig(range) {
+            return {
+                data: [{type: 'barpolar', r: [1, 1], theta: [0, 90]}],
+                layout: {
+                    polar: {radialaxis: {range: range}},
+                    uirevision: 'a'
+                }
+            };
+        }
+
+        function setRange(range) {
+            return function() {
+                return Registry.call('_guiRelayout', gd, {
+                    'polar.radialaxis.range': range
+                });
+            };
+        }
+
+        function checkRange(range) {
+            return checkState([], {'polar.radialaxis.range': [range]});
+        }
+
+        Plotly.newPlot(gd, fig([1, 3]))
+        .then(checkRange([1, 3]))
+        .then(setRange([2, 4]))
+        .then(checkRange([2, 4]))
+        .then(_react(fig(undefined)))
+        .then(checkRange([0, 1.05263]))
+        .catch(failTest)
+        .then(done);
+    });
+
     function _run(figFn, editFn, checkInitial, checkEdited) {
         // figFn should take 2 args (main uirevision and partial uirevision)
         // and return a figure {data, layout}

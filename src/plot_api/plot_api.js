@@ -1445,7 +1445,8 @@ function storeCurrent(attr, val, newVal, preGUI) {
  * of the calling routine.
  *
  * @param {object} container: the input attributes container (eg `layout` or a `trace`)
- * @param {object} fullContainer: the full partner to `container`
+ * @param {object} preGUI: where original values should be stored, either
+ *     `layout._preGUI` or `layout._tracePreGUI[uid]`
  * @param {object} edits: the {attr: val} object as normally passed to `relayout` etc
  */
 exports._storeDirectGUIEdit = function(container, preGUI, edits) {
@@ -2367,7 +2368,7 @@ exports._guiUpdate = guiEdit(update);
 // Ordered by most common edits first, to minimize our search time
 var layoutUIControlPatterns = [
     {pattern: /^hiddenlabels/, attr: 'legend.uirevision'},
-    {pattern: /^((x|y)axis\d*)\.((auto)?range|title)/, autofill: true},
+    {pattern: /^((x|y)axis\d*)\.((auto)?range|title)/},
 
     // showspikes and modes include those nested inside scenes
     {pattern: /axis\d*\.showspikes$/, attr: 'modebar.uirevision'},
@@ -2376,8 +2377,7 @@ var layoutUIControlPatterns = [
     {pattern: /^(scene\d*)\.camera/},
     {pattern: /^(geo\d*)\.(projection|center)/},
     {pattern: /^(ternary\d*\.[abc]axis)\.(min|title)$/},
-    {pattern: /^(polar\d*\.radialaxis)\.(auto)?range/, autofill: true},
-    {pattern: /^(polar\d*\.radialaxis)\.(angle|title)/},
+    {pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title)/},
     {pattern: /^(polar\d*\.angularaxis)\.rotation/},
     {pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/},
 
@@ -2411,7 +2411,7 @@ function findUIPattern(key, patternSpecs) {
         var spec = patternSpecs[i];
         var match = key.match(spec.pattern);
         if(match) {
-            return {head: match[1], attr: spec.attr, autofill: spec.autofill};
+            return {head: match[1], attr: spec.attr};
         }
     }
 }
@@ -2464,6 +2464,8 @@ function valsMatch(v1, v2) {
 function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
     var layoutPreGUI = oldFullLayout._preGUI;
     var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal;
+    var bothInheritAutorange = [];
+    var newRangeAccepted = {};
     for(key in layoutPreGUI) {
         match = findUIPattern(key, layoutUIControlPatterns);
         if(match) {
@@ -2485,8 +2487,11 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                 // storing *that* in preGUI... oh well, for now at least I limit
                 // this to attributes that get autofilled, which AFAICT among
                 // the GUI-editable attributes is just axis.range/autorange.
-                if(valsMatch(newVal, preGUIVal) || (match.autofill && newVal === undefined)) {
-                    newNP.set(nestedProperty(oldFullLayout, key).get());
+                if(valsMatch(newVal, preGUIVal)) {
+                    if(newVal === undefined && key.substr(key.length - 9) === 'autorange') {
+                        bothInheritAutorange.push(key.substr(0, key.length - 10));
+                    }
+                    newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
                     continue;
                 }
             }
@@ -2498,12 +2503,26 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
         // point (either because it changed or revision changed)
         // so remove it from _preGUI for next time.
         delete layoutPreGUI[key];
+
+        if(key.substr(key.length - 8, 6) === 'range[') {
+            newRangeAccepted[key.substr(0, key.length - 9)] = 1;
+        }
+    }
+
+    // Special logic for `autorange`, since it interacts with `range`:
+    // If the new figure's matching `range` was kept, and `autorange`
+    // wasn't supplied explicitly in either the original or the new figure,
+    // we shouldn't alter that - but we may just have done that, so fix it.
+    for(var i = 0; i < bothInheritAutorange.length; i++) {
+        var axAttr = bothInheritAutorange[i];
+        if(newRangeAccepted[axAttr]) {
+            var newAx = nestedProperty(layout, axAttr).get();
+            if(newAx) delete newAx.autorange;
+        }
     }
 
     // Now traces - try to match them up by uid (in case we added/deleted in
     // the middle), then fall back on index.
-    // var tracei = -1;
-    // for(var fulli = 0; fulli < oldFullData.length; fulli++) {
     var allTracePreGUI = oldFullLayout._tracePreGUI;
     for(var uid in allTracePreGUI) {
         var tracePreGUI = allTracePreGUI[uid];
@@ -2550,8 +2569,8 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     if(preGUIVal === null) preGUIVal = undefined;
                     newNP = nestedProperty(newTrace, key);
                     newVal = newNP.get();
-                    if(valsMatch(newVal, preGUIVal) || (match.autofill && newVal === undefined)) {
-                        newNP.set(nestedProperty(fullInput, key).get());
+                    if(valsMatch(newVal, preGUIVal)) {
+                        newNP.set(undefinedToNull(nestedProperty(fullInput, key).get()));
                         continue;
                     }
                 }
