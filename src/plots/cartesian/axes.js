@@ -1825,8 +1825,8 @@ axes.drawOne = function(gd, ax, opts) {
             push[s] += ax._boundingBox.width;
         }
 
-        if(ax.title !== fullLayout._dfltTitle[axLetter]) {
-            push[s] += ax.titlefont.size;
+        if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
+            push[s] += ax.title.font.size;
         }
 
         Plots.autoMargin(gd, pushKey, push);
