@@ -2640,11 +2640,11 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
         i;
     if(key === 'title') {
         // special handling of placeholder titles
-        if(xVal === dfltTitle.x) {
-            xVal = dfltTitle.y;
+        if(xVal && xVal.text === dfltTitle.x) {
+            xVal.text = dfltTitle.y;
         }
-        if(yVal === dfltTitle.y) {
-            yVal = dfltTitle.x;
+        if(yVal && yVal.text === dfltTitle.y) {
+            yVal.text = dfltTitle.x;
         }
     }
 

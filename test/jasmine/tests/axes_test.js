@@ -29,7 +29,9 @@ describe('Test axes', function() {
                 data: [{x: [1, 2, 3], y: [1, 2, 3]}],
                 layout: {
                     xaxis: {
-                        title: 'A Title!!!',
+                        title: {
+                            text: 'A Title!!!'
+                        },
                         type: 'log',
                         autorange: 'reversed',
                         rangemode: 'tozero',
@@ -42,14 +44,18 @@ describe('Test axes', function() {
                         tickcolor: '#f00'
                     },
                     yaxis: {
-                        title: 'Click to enter Y axis title',
+                        title: {
+                            text: 'Click to enter Y axis title'
+                        },
                         type: 'date'
                     }
                 }
             };
             var expectedYaxis = Lib.extendDeep({}, gd.layout.xaxis),
                 expectedXaxis = {
-                    title: 'Click to enter X axis title',
+                    title: {
+                        text: 'Click to enter X axis title'
+                    },
                     type: 'date'
                 };
 
