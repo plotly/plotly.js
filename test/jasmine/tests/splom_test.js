@@ -1079,7 +1079,7 @@ describe('Test splom update switchboard:', function() {
 
             methods = [
                 [Plots, 'supplyDefaults'],
-                [Axes, 'doTicks'],
+                [Axes, 'draw'],
                 [regl, 'clear'],
                 [splomGrid, 'update']
             ];
@@ -1094,7 +1094,7 @@ describe('Test splom update switchboard:', function() {
 
             assertSpies(msg, [
                 ['supplyDefaults', 0],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['splom grid update', 1],
                 ['splom grid draw', 1],
@@ -1123,7 +1123,7 @@ describe('Test splom update switchboard:', function() {
             methods = [
                 [Plots, 'supplyDefaults'],
                 [Plots, 'doCalcdata'],
-                [Axes, 'doTicks'],
+                [Axes, 'draw'],
                 [regl, 'clear'],
                 [matrix, 'update'],
                 [matrix, 'draw']
@@ -1143,7 +1143,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1160,7 +1160,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1185,7 +1185,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1206,7 +1206,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 1],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1224,7 +1224,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 1],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1242,7 +1242,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['clear', 1],
                 ['update', 1],
                 ['draw', 1]

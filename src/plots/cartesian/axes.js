@@ -1532,24 +1532,25 @@ axes.makeClipPaths = function(gd) {
  *
  * @param {DOM element} gd : graph div
  * @param {string or array of strings} arg : polymorphic argument
- * @param {boolean} skipTitle : optional flag to skip axis title draw/update
+ * @param {object} opts:
+ * - @param {boolean} skipTitle : optional flag to skip axis title draw/update
  *
- * Signature 1: Axes.doTicks(gd, 'redraw')
+ * Signature 1: Axes.draw(gd, 'redraw')
  *   use this to clear and redraw all axes on graph
  *
- * Signature 2: Axes.doTicks(gd, '')
+ * Signature 2: Axes.draw(gd, '')
  *   use this to draw all axes on graph w/o the selectAll().remove()
  *   of the 'redraw' signature
  *
- * Signature 3: Axes.doTicks(gd, [axId, axId2, ...])
+ * Signature 3: Axes.draw(gd, [axId, axId2, ...])
  *   where the items are axis id string,
  *   use this to update multiple axes in one call
  *
- * N.B doTicks updates:
+ * N.B draw updates:
  * - ax._r (stored range for use by zoom/pan)
  * - ax._rl (stored linearized range for use by zoom/pan)
  */
-axes.doTicks = function(gd, arg, skipTitle) {
+axes.draw = function(gd, arg, opts) {
     var fullLayout = gd._fullLayout;
 
     if(arg === 'redraw') {
@@ -1570,13 +1571,13 @@ axes.doTicks = function(gd, arg, skipTitle) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    Lib.syncOrAsync(axList.map(function(axid) {
+    Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
-            if(!axid) return;
+            if(!axId) return;
 
-            var axDone = axes.doTicksSingle(gd, axid, skipTitle);
+            var ax = axes.getFromId(gd, axId);
+            var axDone = axes.drawOne(gd, ax, opts);
 
-            var ax = axes.getFromId(gd, axid);
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
 

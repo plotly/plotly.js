@@ -350,7 +350,7 @@ exports.plot = function(gd, data, layout, config) {
 
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
-        return Axes.doTicks(gd, graphWasEmpty ? '' : 'redraw');
+        return Axes.draw(gd, graphWasEmpty ? '' : 'redraw');
     }
 
     var seq = [
@@ -1797,13 +1797,13 @@ function addAxRangeSequence(seq, rangesAltered) {
     // N.B. leave as sequence of subroutines (for now) instead of
     // subroutine of its own so that finalDraw always gets
     // executed after drawData
-    var doTicks = rangesAltered ?
-        function(gd) { return Axes.doTicks(gd, Object.keys(rangesAltered), true); } :
-        function(gd) { return Axes.doTicks(gd, 'redraw'); };
+    var drawAxes = rangesAltered ?
+        function(gd) { return Axes.draw(gd, Object.keys(rangesAltered), {skipTitle: true}); } :
+        function(gd) { return Axes.draw(gd, 'redraw'); };
 
     seq.push(
         subroutines.doAutoRangeAndConstraints,
-        doTicks,
+        drawAxes,
         subroutines.drawData,
         subroutines.finalDraw
     );
