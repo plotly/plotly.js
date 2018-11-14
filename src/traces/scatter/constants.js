@@ -23,5 +23,5 @@ module.exports = {
     // at which we clip all lines to the perimeter
     maxScreensAway: 20,
 
-    eventDataKeys: ['marker.size', 'marker.color']
+    eventDataKeys: ['marker.size', 'marker.color', 'marker.symbol', 'marker.opacity']
 };

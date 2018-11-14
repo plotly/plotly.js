@@ -1813,5 +1813,14 @@ describe('Test scatter *clipnaxis*:', function() {
 
 describe('event data', function() {
     var mock = require('@mocks/scatter-colorscale-colorbar');
-    checkEventData(mock, 540, 260, constants.eventDataKeys);
+    var mockCopy = Lib.extendDeep({}, mock);
+
+    var marker = mockCopy.data[0].marker;
+    marker.opacity = [];
+    marker.symbol = [];
+    for(var i = 0; i < mockCopy.data[0].y.length; ++i) {
+        marker.opacity.push(0.5);
+        marker.symbol.push('square');
+    }
+    checkEventData(mockCopy, 540, 260, constants.eventDataKeys);
 });
