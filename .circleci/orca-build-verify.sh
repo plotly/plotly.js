@@ -84,6 +84,14 @@ function compare()
 }
 compare $NODE_QUEUE
 
+function delete_perfect_matches()
+{
+  grep -l -R "all: 0" $DIFF_IMAGES/ | gawk '{match($0, /diff\/([^.]*)/, arr); print arr[1]}' > /tmp/succeeded
+  cat /tmp/succeeded | \
+  xargs -n1 -I {} rm $DIFF_IMAGES/{}.png $DIFF_IMAGES/{}.txt
+}
+delete_perfect_matches
+
 CODE=$(grep -R "all: [^0]" $DIFF_IMAGES/ | wc -l)
 
 # If there are different images, retry
@@ -93,7 +101,9 @@ if [ "$CODE" -ne "0" ]; then
   cat /tmp/failed
   generate /tmp/failed
   compare /tmp/failed
+  delete_perfect_matches
   CODE=$(grep -R "all: [^0]" $DIFF_IMAGES/ | wc -l)
 fi
+
 echo "$CODE different images"
 exit $CODE
