@@ -11,6 +11,7 @@
 var barAttrs = require('../bar/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var makeBinAttrs = require('./bin_attributes');
+var constants = require('./constants');
 
 module.exports = {
     x: {
@@ -187,7 +188,7 @@ module.exports = {
     },
 
     hovertemplate: hovertemplateAttrs({}, {
-        keys: ['binNumber']
+        keys: constants.eventDataKeys
     }),
 
     marker: barAttrs.marker,

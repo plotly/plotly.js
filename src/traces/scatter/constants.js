@@ -21,5 +21,7 @@ module.exports = {
 
     // number of viewport sizes away from the visible region
     // at which we clip all lines to the perimeter
-    maxScreensAway: 20
+    maxScreensAway: 20,
+
+    eventDataKeys: ['marker.size', 'marker.color']
 };

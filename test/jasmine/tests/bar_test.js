@@ -14,6 +14,7 @@ var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/bar/constants');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertClip = customAssertions.assertClip;
@@ -1861,7 +1862,7 @@ describe('bar hover', function() {
 
 describe('event data', function() {
     var mock = require('@mocks/stacked_bar');
-    checkEventData(mock, 216, 309, []);
+    checkEventData(mock, 216, 309, constants.eventDataKeys);
 });
 
 function mockBarPlot(dataWithoutTraceType, layout) {

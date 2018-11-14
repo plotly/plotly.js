@@ -15,14 +15,15 @@ module.exports = function(opts, extra) {
     var descPart = extra.description ? ' ' + extra.description : '';
     var keys = extra.keys || [];
     if(keys.length > 0) {
+        var quotedKeys = [];
         for(var i = 0; i < keys.length; i++) {
-            keys[i] = '`' + keys[i] + '`';
+            quotedKeys[i] = '`' + keys[i] + '`';
         }
         descPart = descPart + 'This trace supports the additional ';
         if(keys.length === 1) {
-            descPart = 'variable ' + keys[0];
+            descPart = 'variable ' + quotedKeys[0];
         } else {
-            descPart = 'variables ' + keys.slice(0, -1).join(', ') + ' and ' + keys.slice(-1) + '.';
+            descPart = 'variables ' + quotedKeys.slice(0, -1).join(', ') + ' and ' + quotedKeys.slice(-1) + '.';
         }
     }
 

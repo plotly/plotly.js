@@ -15,6 +15,7 @@ var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
 var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/scatter/constants');
 
 var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
@@ -1812,5 +1813,5 @@ describe('Test scatter *clipnaxis*:', function() {
 
 describe('event data', function() {
     var mock = require('@mocks/scatter-colorscale-colorbar');
-    checkEventData(mock, 540, 260, ['marker.size', 'marker.color']);
+    checkEventData(mock, 540, 260, constants.eventDataKeys);
 });

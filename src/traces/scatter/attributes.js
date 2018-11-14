@@ -205,7 +205,7 @@ module.exports = {
         ].join(' ')
     },
     hovertemplate: hovertemplateAttrs({}, {
-        keys: ['marker.size', 'marker.color']
+        keys: constants.eventDataKeys
     }),
     line: {
         color: {

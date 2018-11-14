@@ -14,6 +14,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var failTest = require('../assets/fail_test');
 
 var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/histogram/constants');
 
 describe('Test histogram', function() {
     'use strict';
@@ -1064,5 +1065,5 @@ describe('getBinSpanLabelRound', function() {
 
 describe('event data', function() {
     var mock = require('@mocks/hist_category');
-    checkEventData(mock, 100, 200, ['binNumber']);
+    checkEventData(mock, 100, 200, constants.eventDataKeys);
 });
