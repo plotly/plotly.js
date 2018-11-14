@@ -67,7 +67,7 @@ function generate()
   cat $1 | awk '!/mapbox/' | \
       xargs -n1 -I{} echo "$MOCKS/{}.json" | \
       # Split in chunks of 20
-      xargs -P1 -n20 xvfb-run -a orca graph --plotly $ROOT/build/plotly.js --verbose --output-dir $TEST_IMAGES
+      xargs -P1 -n20 xvfb-run -a orca graph --mathjax $ROOT/dist/extras/mathjax/MathJax.js --plotly $ROOT/build/plotly.js --verbose --output-dir $TEST_IMAGES
 }
 generate $NODE_QUEUE
 

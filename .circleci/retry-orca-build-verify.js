@@ -9,7 +9,7 @@ function retry(cmd, args, timeout, trials) {
       console.log(trials + ' trials left');
       console.log('Retrying after no output for ' + timeout + ' seconds');
       child.kill();
-      retry(cmd,args, --trials)
+      retry(cmd, args, timeout, --trials)
     }
 
     function setTimer() {
