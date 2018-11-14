@@ -1472,14 +1472,14 @@ axes.findSubplotsWithAxis = function(subplots, ax) {
     var axMatch = new RegExp(
         (ax._id.charAt(0) === 'x') ? ('^' + ax._id + 'y') : (ax._id + '$')
     );
-    var subplotsWithAxis = [];
+    var subplotsWithAx = [];
 
     for(var i = 0; i < subplots.length; i++) {
         var sp = subplots[i];
-        if(axMatch.test(sp)) subplotsWithAxis.push(sp);
+        if(axMatch.test(sp)) subplotsWithAx.push(sp);
     }
 
-    return subplotsWithAxis;
+    return subplotsWithAx;
 };
 
 // makeClipPaths: prepare clipPaths for all single axes and all possible xy pairings
