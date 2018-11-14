@@ -1811,6 +1811,6 @@ describe('Test scatter *clipnaxis*:', function() {
 });
 
 describe('event data', function() {
-    var mock = require('@mocks/12');
-    checkEventData(mock, 130, 350, ['marker.size']);
+    var mock = require('@mocks/scatter-colorscale-colorbar');
+    checkEventData(mock, 540, 260, ['marker.size', 'marker.color']);
 });
