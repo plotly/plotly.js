@@ -2284,7 +2284,7 @@ axes.drawOne = function(gd, ax, opts) {
     var vals = ax._vals = axes.calcTicks(ax);
     // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
     // The key case here is removing zero lines when the axis bound is zero
-    var valsClipped = ax._valsClipped = vals.filter(function(d) { return clipEnds(ax, d.x); });
+    var valsClipped = ax._valsClipped = axes.clipEnds(ax, vals);
 
     if(!ax.visible) return;
 
@@ -2398,6 +2398,7 @@ axes.makeTransFn = function(ax) {
 };
 
 // counterangle ??
+// incorporate sng logic here!
 
 axes.makeTickPath = function(ax, shift, sgn) {
     var axLetter = ax._id.charAt(0);
@@ -2965,6 +2966,10 @@ axes.shouldShowZeroLine = function(gd, ax, counterAxis) {
             hasBarsOrFill(gd, ax)
         )
     );
+};
+
+axes.clipEnds = function(ax, vals) {
+    return vals.filter(function(d) { return clipEnds(ax, d.x); });
 };
 
 function clipEnds(ax, l) {
