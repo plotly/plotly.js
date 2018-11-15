@@ -157,7 +157,7 @@ exports.plot = function(gd, data, layout, config) {
     // Legacy polar plots
     if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
         Lib.log('Legacy polar charts are deprecated!');
-        return plotPolar(gd, data, layout);
+        return plotLegacyPolar(gd, data, layout);
     }
 
     // so we don't try to re-call Plotly.plot from inside
@@ -494,7 +494,7 @@ function setPlotContext(gd, config) {
     context._hasZeroWidth = context._hasZeroWidth || gd.clientWidth === 0;
 }
 
-function plotPolar(gd, data, layout) {
+function plotLegacyPolar(gd, data, layout) {
     // build or reuse the container skeleton
     var plotContainer = d3.select(gd).selectAll('.plot-container')
         .data([0]);
@@ -535,7 +535,7 @@ function plotPolar(gd, data, layout) {
 
     // editable title
     var opacity = 1;
-    var txt = gd._fullLayout.title;
+    var txt = gd._fullLayout.title ? gd._fullLayout.title.text : '';
     if(txt === '' || !txt) opacity = 0;
 
     var titleLayout = function() {
@@ -569,7 +569,7 @@ function plotPolar(gd, data, layout) {
         var setContenteditable = function() {
             this.call(svgTextUtils.makeEditable, {gd: gd})
                 .on('edit', function(text) {
-                    gd.framework({layout: {title: text}});
+                    gd.framework({layout: {title: {text: text}}});
                     this.text(text)
                         .call(titleLayout);
                     this.call(setContenteditable);
