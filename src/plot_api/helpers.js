@@ -34,7 +34,7 @@ exports.clearPromiseQueue = function(gd) {
 // before it gets used for anything
 // backward compatibility and cleanup of nonstandard options
 exports.cleanLayout = function(layout) {
-    var i, j, k;
+    var i, j;
 
     if(!layout) layout = {};
 
@@ -94,75 +94,21 @@ exports.cleanLayout = function(layout) {
                 delete ax.autotick;
             }
 
-            // TODO Should this be done with typeof as well (see radialaxes)?
-            // At least code would be more obvious!
-
-            // title -> title.text
-            if(!Lib.isPlainObject(ax.title)) {
-                ax.title = {
-                    text: ax.title
-                };
-            }
-
-            // titlefont -> title.font
-            if(Lib.isPlainObject(ax.titlefont) && !Lib.isPlainObject(ax.title.font)) {
-                ax.title.font = ax.titlefont;
-                delete ax.titlefont;
-            }
+            cleanTitle(ax);
         }
 
-        // modifications for radial axes
+        // modifications for polar
         else if(polarAttrRegex && polarAttrRegex.test(key)) {
             var polar = layout[key];
-
-            if(polar.radialaxis) {
-
-                // title -> title.text
-                if(typeof polar.radialaxis.title === 'string') {
-                    polar.radialaxis.title = {
-                        text: polar.radialaxis.title
-                    };
-                }
-
-                // titlefont -> title.font
-                if(Lib.isPlainObject(polar.radialaxis.titlefont) &&
-                  !Lib.isPlainObject(polar.radialaxis.title.font)) {
-                    polar.radialaxis.title.font = polar.radialaxis.titlefont;
-                    delete polar.radialaxis.titlefont;
-                }
-            }
+            cleanTitle(polar.radialaxis);
         }
 
         // modifications for ternary
         else if(ternaryAttrRegex && ternaryAttrRegex.test(key)) {
             var ternary = layout[key];
-
-            var ternaryKeys = Object.keys(ternary);
-            for(k = 0; k < ternaryKeys.length; k++) {
-                var ternaryKey = ternaryKeys[k];
-                if(
-                  ternaryKey === 'aaxis' ||
-                  ternaryKey === 'baxis' ||
-                  ternaryKey === 'caxis'
-                ) {
-                    var ternaryAxis = ternary[ternaryKey];
-
-                    // TODO 882 DRY that up with polar, axes and main title
-                    // title -> title.text
-                    if(typeof ternaryAxis.title === 'string') {
-                        ternaryAxis.title = {
-                            text: ternaryAxis.title
-                        };
-                    }
-
-                    // titlefont -> title.font
-                    if(Lib.isPlainObject(ternaryAxis.titlefont) &&
-                      !Lib.isPlainObject(ternaryAxis.title.font)) {
-                        ternaryAxis.title.font = ternaryAxis.titlefont;
-                        delete ternaryAxis.titlefont;
-                    }
-                }
-            }
+            cleanTitle(ternary.aaxis);
+            cleanTitle(ternary.baxis);
+            cleanTitle(ternary.caxis);
         }
 
         // modifications for 3D scenes
@@ -249,17 +195,7 @@ exports.cleanLayout = function(layout) {
     }
 
     // Check for old-style title definition
-    if(!Lib.isPlainObject(layout.title)) {
-        layout.title = {
-            text: layout.title
-        };
-    }
-
-    // Check for old-style title font definitions
-    if(Lib.isPlainObject(layout.titlefont) && !Lib.isPlainObject(layout.title.font)) {
-        layout.title.font = layout.titlefont;
-        delete layout.titlefont;
-    }
+    cleanTitle(layout);
 
     /*
      * Moved from rotate -> orbit for dragmode
@@ -278,6 +214,24 @@ function cleanAxRef(container, attr) {
         axLetter = attr.charAt(0);
     if(valIn && valIn !== 'paper') {
         container[attr] = cleanId(valIn, axLetter);
+    }
+}
+
+function cleanTitle(titleContainer) {
+    if(titleContainer) {
+        if(typeof titleContainer.title === 'string') {
+            titleContainer.title = {
+                text: titleContainer.title
+            };
+        }
+
+        // titlefont -> title.font
+        if(titleContainer.title &&
+          Lib.isPlainObject(titleContainer.titlefont) &&
+          !Lib.isPlainObject(titleContainer.title.font)) {
+            titleContainer.title.font = titleContainer.titlefont;
+            delete titleContainer.titlefont;
+        }
     }
 }
 
