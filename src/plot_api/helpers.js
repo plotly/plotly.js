@@ -34,7 +34,7 @@ exports.clearPromiseQueue = function(gd) {
 // before it gets used for anything
 // backward compatibility and cleanup of nonstandard options
 exports.cleanLayout = function(layout) {
-    var i, j;
+    var i, j, k;
 
     if(!layout) layout = {};
 
@@ -54,6 +54,7 @@ exports.cleanLayout = function(layout) {
 
     var axisAttrRegex = (Plots.subplotsRegistry.cartesian || {}).attrRegex;
     var polarAttrRegex = (Plots.subplotsRegistry.polar || {}).attrRegex;
+    var ternaryAttrRegex = (Plots.subplotsRegistry.ternary || {}).attrRegex;
     var sceneAttrRegex = (Plots.subplotsRegistry.gl3d || {}).attrRegex;
 
     var keys = Object.keys(layout);
@@ -128,6 +129,38 @@ exports.cleanLayout = function(layout) {
                   !Lib.isPlainObject(polar.radialaxis.title.font)) {
                     polar.radialaxis.title.font = polar.radialaxis.titlefont;
                     delete polar.radialaxis.titlefont;
+                }
+            }
+        }
+
+        // modifications for ternary
+        else if(ternaryAttrRegex && ternaryAttrRegex.test(key)) {
+            var ternary = layout[key];
+
+            var ternaryKeys = Object.keys(ternary);
+            for(k = 0; k < ternaryKeys.length; k++) {
+                var ternaryKey = ternaryKeys[k];
+                if(
+                  ternaryKey === 'aaxis' ||
+                  ternaryKey === 'baxis' ||
+                  ternaryKey === 'caxis'
+                ) {
+                    var ternaryAxis = ternary[ternaryKey];
+
+                    // TODO 882 DRY that up with polar, axes and main title
+                    // title -> title.text
+                    if(typeof ternaryAxis.title === 'string') {
+                        ternaryAxis.title = {
+                            text: ternaryAxis.title
+                        };
+                    }
+
+                    // titlefont -> title.font
+                    if(Lib.isPlainObject(ternaryAxis.titlefont) &&
+                      !Lib.isPlainObject(ternaryAxis.title.font)) {
+                        ternaryAxis.title.font = ternaryAxis.titlefont;
+                        delete ternaryAxis.titlefont;
+                    }
                 }
             }
         }

@@ -81,7 +81,7 @@ function draw(gd, titleClass, options) {
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
     var editAttr;
-    // TODO 882 Probably compare against 'title.text'
+    // TODO 882 Probably compare against 'title.text' and may also adapt calling code?
     if(prop === 'title') editAttr = 'titleText';
     else if(prop.indexOf('axis') !== -1) editAttr = 'axisTitleText';
     else if(prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';

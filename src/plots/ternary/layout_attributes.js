@@ -17,7 +17,6 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var ternaryAxesAttrs = {
     title: axesAttrs.title,
-    titlefont: axesAttrs.titlefont,
     color: axesAttrs.color,
     // ticks
     tickmode: axesAttrs.tickmode,
