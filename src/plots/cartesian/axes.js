@@ -2409,38 +2409,47 @@ axes.makeTickPath = function(ax, shift, sgn) {
         'M' + (shift + pad * sgn) + ',0h' + (len * sgn);
 };
 
-// labelStandoff, labelShift ???
-
-axes.makeLabelFns = function(ax, shift) {
+axes.makeLabelFns = function(ax, shift, angle) {
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
 
     var labelStandoff = ax.ticks === 'outside' ? ax.ticklen : 0;
+    var labelShift = 0;
+
+    if(angle && ax.ticks === 'outside') {
+        var rad = Lib.deg2rad(angle);
+        labelStandoff = ax.ticklen * Math.cos(rad) + 1;
+        labelShift = ax.ticklen * Math.sin(rad);
+    }
+
     if(ax.showticklabels && (ax.ticks === 'outside' || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
 
     var out = {};
+    var x0, y0, ff, flipIt;
     if(axLetter === 'x') {
-        var flipX = (ax.side === 'bottom') ? 1 : -1;
-        var y0 = shift + (labelStandoff + pad) * flipX;
-        var xf = ax.side === 'bottom' ? 1 : -0.2;
+        flipIt = ax.side === 'bottom' ? 1 : -1;
+        x0 = labelShift * flipIt;
+        y0 = shift + (labelStandoff + pad) * flipIt;
+        ff = ax.side === 'bottom' ? 1 : -0.2;
 
-        out.labelXFn = function(d) { return d.dx; };
-        out.labelYFn = function(d) { return d.dy + y0 + d.fontSize * xf; };
+        out.labelXFn = function(d) { return d.dx + x0; };
+        out.labelYFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
         out.labelAnchorFn = function(a) {
             if(!isNumeric(a) || a === 0 || a === 180) {
                 return 'middle';
             }
-            return (a * flipX < 0) ? 'end' : 'start';
+            return (a * flipIt < 0) ? 'end' : 'start';
         };
     } else {
-        var flipY = (ax.side === 'right') ? 1 : -1;
-        var x0 = labelStandoff + pad;
-        var yf = Math.abs(ax.tickangle) === 90 ? 0.5 : 0;
+        flipIt = ax.side === 'right' ? 1 : -1;
+        x0 = labelStandoff + pad;
+        y0 = -labelShift * flipIt;
+        ff = Math.abs(ax.tickangle) === 90 ? 0.5 : 0;
 
-        out.labelXFn = function(d) { return d.dx + shift + (x0 + d.fontSize * yf) * flipY; };
-        out.labelYFn = function(d) { return d.dy + d.fontSize * MID_SHIFT; };
+        out.labelXFn = function(d) { return d.dx + shift + (x0 + d.fontSize * ff) * flipIt; };
+        out.labelYFn = function(d) { return d.dy + y0 + d.fontSize * MID_SHIFT; };
         out.labelAnchorFn = function(a) {
             if(isNumeric(a) && Math.abs(a) === 90) {
                 return 'middle';
