@@ -12,10 +12,10 @@
         "yaxis":"y2"
     }],
     "layout": {
-        "xaxis":{"title":"linear","range":[0,1],"domain":[0.35,0.65],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
-        "yaxis":{"title":"log","range":[0,1],"domain":[0.6,1],"type":"log","showgrid":false,"zeroline":false,"showticklabels":false},
-        "xaxis2":{"title":"date","range":["2000-01-01","2000-01-02"],"domain":[0.7,1],"anchor":"y2","type":"date","showgrid":false,"zeroline":false,"showticklabels":false},
-        "yaxis2":{"title":"category","range":[0,1],"domain":[0.6,1],"anchor":"x2","type":"category","showgrid":false,"zeroline":false,"showticklabels":false},
+        "xaxis":{"title":{"text":"linear"},"range":[0,1],"domain":[0.35,0.65],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
+        "yaxis":{"title":{"text":"log"},"range":[0,1],"domain":[0.6,1],"type":"log","showgrid":false,"zeroline":false,"showticklabels":false},
+        "xaxis2":{"title":{"text":"date"},"range":["2000-01-01","2000-01-02"],"domain":[0.7,1],"anchor":"y2","type":"date","showgrid":false,"zeroline":false,"showticklabels":false},
+        "yaxis2":{"title":{"text":"category"},"range":[0,1],"domain":[0.6,1],"anchor":"x2","type":"category","showgrid":false,"zeroline":false,"showticklabels":false},
         "height":400,
         "width":800,
         "margin": {"l":20,"r":20,"pad":0},
