@@ -73,7 +73,6 @@ module.exports = overrideAll({
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
     title: axesAttrs.title,
-    titlefont: axesAttrs.titlefont,
     type: axesAttrs.type,
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,

@@ -83,11 +83,11 @@ proto.merge = function(sceneLayout) {
         }
 
         // Axes labels
-        opts.labels[i] = axes.title;
-        if('titlefont' in axes) {
-            if(axes.titlefont.color) opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
-            if(axes.titlefont.family) opts.labelFont[i] = axes.titlefont.family;
-            if(axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
+        opts.labels[i] = axes.title.text;
+        if('title' in axes && 'font' in axes.title) {
+            if(axes.title.font.color) opts.labelColor[i] = str2RgbaArray(axes.title.font.color);
+            if(axes.title.font.family) opts.labelFont[i] = axes.title.font.family;
+            if(axes.title.font.size) opts.labelSize[i] = axes.title.font.size;
         }
 
         // Lines

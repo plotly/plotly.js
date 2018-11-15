@@ -56,7 +56,15 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
             options.fullLayout);
 
         coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
-        coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
+        coerce('title.text', axName[0]);  // shouldn't this be on-par with 2D?
+
+        // TODO 882 coercing old 'titlefont' was missing. Why? Activating the below would break a lot image tests...
+        // Lib.coerceFont(coerce, 'title.font', {
+        //     family: options.font.family,
+        //     size: Math.round(options.font.size),
+        //     color: options.font.color
+        // });
+
 
         containerOut.setScale = Lib.noop;
 
