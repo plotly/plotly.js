@@ -2397,7 +2397,6 @@ axes.makeTransFn = function(ax) {
         function(d) { return 'translate(0,' + (offset + ax.l2p(d.x)) + ')'; };
 };
 
-// counterangle ??
 // incorporate sng logic here!
 
 axes.makeTickPath = function(ax, shift, sgn) {
