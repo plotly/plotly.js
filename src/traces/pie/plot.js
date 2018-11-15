@@ -99,20 +99,25 @@ module.exports = function plot(gd, cdpie) {
 
                     // in case we dragged over the pie from another subplot,
                     // or if hover is turned off
-                    if(hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo) {
+                    if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
                         var rInscribed = getInscribedRadiusFraction(pt, cd0);
                         var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
                         var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
                         var separators = fullLayout.separators;
                         var thisText = [];
 
-                        if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
-                        if(hoverinfo.indexOf('text') !== -1) {
-                            var texti = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+                        if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+                        pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+                        if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
+                            var texti = pt.text;
                             if(texti) thisText.push(texti);
                         }
-                        if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
-                        if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
+                        pt.value = pt.v;
+                        pt.valueLabel = helpers.formatPieValue(pt.v, separators);
+                        if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
+                        pt.percent = pt.v / cd0.vTotal;
+                        pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
+                        if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
 
                         var hoverLabel = trace.hoverlabel;
                         var hoverFont = hoverLabel.font;
@@ -122,13 +127,18 @@ module.exports = function plot(gd, cdpie) {
                             x1: hoverCenterX + rInscribed * cd0.r,
                             y: hoverCenterY,
                             text: thisText.join('<br>'),
-                            name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
+                            name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                             idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
                             color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
                             borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
                             fontFamily: helpers.castOption(hoverFont.family, pt.pts),
                             fontSize: helpers.castOption(hoverFont.size, pt.pts),
-                            fontColor: helpers.castOption(hoverFont.color, pt.pts)
+                            fontColor: helpers.castOption(hoverFont.color, pt.pts),
+
+                            trace: trace2,
+                            hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
+                            hovertemplateLabels: pt,
+                            eventData: [eventData(pt, trace2)]
                         }, {
                             container: fullLayout2._hoverlayer.node(),
                             outerContainer: fullLayout2._paper.node(),

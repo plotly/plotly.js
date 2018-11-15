@@ -816,6 +816,11 @@ function calcHover(pointData, x, y, trace) {
         di.hi = Array.isArray(hoverinfo) ? hoverinfo[id] : hoverinfo;
     }
 
+    var hovertemplate = trace.hovertemplate;
+    if(hovertemplate) {
+        di.ht = Array.isArray(hovertemplate) ? hovertemplate[id] : hovertemplate;
+    }
+
     var fakeCd = {};
     fakeCd[pointData.index] = di;
 
@@ -832,7 +837,9 @@ function calcHover(pointData, x, y, trace) {
 
         cd: fakeCd,
         distance: minDist,
-        spikeDistance: dxy
+        spikeDistance: dxy,
+
+        hovertemplate: di.ht
     });
 
     if(di.htx) pointData.text = di.htx;
