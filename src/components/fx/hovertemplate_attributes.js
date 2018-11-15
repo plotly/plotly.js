@@ -19,7 +19,7 @@ module.exports = function(opts, extra) {
         for(var i = 0; i < keys.length; i++) {
             quotedKeys[i] = '`' + keys[i] + '`';
         }
-        descPart = descPart + 'This trace supports the additional ';
+        descPart = descPart + 'Finally, this trace also supports ';
         if(keys.length === 1) {
             descPart = 'variable ' + quotedKeys[0];
         } else {
@@ -40,6 +40,7 @@ module.exports = function(opts, extra) {
             'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
             'See https://github.com/d3/d3-format/blob/master/README.md#locale_format for details on the formatting syntax.',
             'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plot.ly/javascript/plotlyjs-events/#event-data.',
+            'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.'
             descPart
         ].join(' ')
     };
