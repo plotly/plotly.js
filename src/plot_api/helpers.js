@@ -53,6 +53,7 @@ exports.cleanLayout = function(layout) {
     }
 
     var axisAttrRegex = (Plots.subplotsRegistry.cartesian || {}).attrRegex;
+    var polarAttrRegex = (Plots.subplotsRegistry.polar || {}).attrRegex;
     var sceneAttrRegex = (Plots.subplotsRegistry.gl3d || {}).attrRegex;
 
     var keys = Object.keys(layout);
@@ -92,6 +93,9 @@ exports.cleanLayout = function(layout) {
                 delete ax.autotick;
             }
 
+            // TODO Should this be done with typeof as well (see radialaxes)?
+            // At least code would be more obvious!
+
             // title -> title.text
             if(!Lib.isPlainObject(ax.title)) {
                 ax.title = {
@@ -103,6 +107,28 @@ exports.cleanLayout = function(layout) {
             if(Lib.isPlainObject(ax.titlefont) && !Lib.isPlainObject(ax.title.font)) {
                 ax.title.font = ax.titlefont;
                 delete ax.titlefont;
+            }
+        }
+
+        // modifications for radial axes
+        else if(polarAttrRegex && polarAttrRegex.test(key)) {
+            var polar = layout[key];
+
+            if(polar.radialaxis) {
+
+                // title -> title.text
+                if(typeof polar.radialaxis.title === 'string') {
+                    polar.radialaxis.title = {
+                        text: polar.radialaxis.title
+                    };
+                }
+
+                // titlefont -> title.font
+                if(Lib.isPlainObject(polar.radialaxis.titlefont) &&
+                  !Lib.isPlainObject(polar.radialaxis.title.font)) {
+                    polar.radialaxis.title.font = polar.radialaxis.titlefont;
+                    delete polar.radialaxis.titlefont;
+                }
             }
         }
 
