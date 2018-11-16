@@ -1694,8 +1694,6 @@ axes.drawOne = function(gd, ax, opts) {
             layer: mainPlotinfo[axLetter + 'axislayer'],
             // TODO shouldn't need this
             shift: ax._mainLinePosition,
-            // TODO calcBoundingBox should be taken out of drawLabels
-            subplotsWithAx: subplotsWithAx,
             transFn: transFn,
             labelXFn: labelFns.labelXFn,
             labelYFn: labelFns.labelYFn,
@@ -1710,6 +1708,121 @@ axes.drawOne = function(gd, ax, opts) {
             return axes.drawTitle(gd, ax);
         });
     }
+
+    function extendRange(range, newRange) {
+        range[0] = Math.min(range[0], newRange[0]);
+        range[1] = Math.max(range[1], newRange[1]);
+    }
+
+    seq.push(function calcBoundingBox() {
+        if(ax.showticklabels) {
+            var gdBB = gd.getBoundingClientRect();
+            var bBox = mainPlotinfo[axLetter + 'axislayer'].node().getBoundingClientRect();
+
+            /*
+             * the way we're going to use this, the positioning that matters
+             * is relative to the origin of gd. This is important particularly
+             * if gd is scrollable, and may have been scrolled between the time
+             * we calculate this and the time we use it
+             */
+
+            ax._boundingBox = {
+                width: bBox.width,
+                height: bBox.height,
+                left: bBox.left - gdBB.left,
+                right: bBox.right - gdBB.left,
+                top: bBox.top - gdBB.top,
+                bottom: bBox.bottom - gdBB.top
+            };
+        } else {
+            var gs = fullLayout._size;
+            var pos;
+
+            // set dummy bbox for ticklabel-less axes
+
+            if(axLetter === 'x') {
+                pos = ax.anchor === 'free' ?
+                    gs.t + gs.h * (1 - ax.position) :
+                    gs.t + gs.h * (1 - ax._anchorAxis.domain[{bottom: 0, top: 1}[ax.side]]);
+
+                ax._boundingBox = {
+                    top: pos,
+                    bottom: pos,
+                    left: ax._offset,
+                    right: ax._offset + ax._length,
+                    width: ax._length,
+                    height: 0
+                };
+            } else {
+                pos = ax.anchor === 'free' ?
+                    gs.l + gs.w * ax.position :
+                    gs.l + gs.w * ax._anchorAxis.domain[{left: 0, right: 1}[ax.side]];
+
+                ax._boundingBox = {
+                    left: pos,
+                    right: pos,
+                    bottom: ax._offset + ax._length,
+                    top: ax._offset,
+                    height: ax._length,
+                    width: 0
+                };
+            }
+        }
+
+        /*
+         * for spikelines: what's the full domain of positions in the
+         * opposite direction that are associated with this axis?
+         * This means any axes that we make a subplot with, plus the
+         * position of the axis itself if it's free.
+         */
+        if(subplotsWithAx) {
+            var fullRange = ax._counterSpan = [Infinity, -Infinity];
+
+            for(var i = 0; i < subplotsWithAx.length; i++) {
+                var plotinfo = fullLayout._plots[subplotsWithAx[i]];
+                var counterAxis = plotinfo[(axLetter === 'x') ? 'yaxis' : 'xaxis'];
+
+                extendRange(fullRange, [
+                    counterAxis._offset,
+                    counterAxis._offset + counterAxis._length
+                ]);
+            }
+
+            if(ax.anchor === 'free') {
+                extendRange(fullRange, (axLetter === 'x') ?
+                    [ax._boundingBox.bottom, ax._boundingBox.top] :
+                    [ax._boundingBox.right, ax._boundingBox.left]);
+            }
+        }
+    });
+
+    seq.push(function doAutoMargins() {
+        var pushKey = ax._name + '.automargin';
+
+        if(!ax.automargin) {
+            Plots.autoMargin(gd, pushKey);
+            return;
+        }
+
+        var s = ax.side.charAt(0);
+        var push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+
+        if(axLetter === 'x') {
+            push.y = (ax.anchor === 'free' ? ax.position :
+                ax._anchorAxis.domain[s === 't' ? 1 : 0]);
+            push[s] += ax._boundingBox.height;
+        } else {
+            push.x = (ax.anchor === 'free' ? ax.position :
+                ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
+            push[s] += ax._boundingBox.width;
+        }
+
+        if(ax.title !== fullLayout._dfltTitle[axLetter]) {
+            push[s] += ax.titlefont.size;
+        }
+
+        Plots.autoMargin(gd, pushKey, push);
+    });
 
     return Lib.syncOrAsync(seq);
 };
@@ -1909,7 +2022,6 @@ axes.drawZeroLine = function(gd, ax, opts) {
 axes.drawLabels = function(gd, ax, opts) {
     opts = opts || {};
 
-    var fullLayout = gd._fullLayout;
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var cls = axId + 'tick';
@@ -1921,13 +2033,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var tickLabels = opts.layer.selectAll('g.' + cls)
         .data(vals, makeDataFn(ax));
 
-    if(!isNumeric(opts.shift)) {
+    if(!isNumeric(opts.shift) || !ax.showticklabels) {
         tickLabels.remove();
-        return;
-    }
-    if(!ax.showticklabels) {
-        tickLabels.remove();
-        calcBoundingBox();
         return;
     }
 
@@ -2099,129 +2206,7 @@ axes.drawLabels = function(gd, ax, opts) {
         }
     }
 
-    function calcBoundingBox() {
-        if(ax.showticklabels) {
-            var gdBB = gd.getBoundingClientRect();
-            var bBox = opts.layer.node().getBoundingClientRect();
-
-            /*
-             * the way we're going to use this, the positioning that matters
-             * is relative to the origin of gd. This is important particularly
-             * if gd is scrollable, and may have been scrolled between the time
-             * we calculate this and the time we use it
-             */
-
-            ax._boundingBox = {
-                width: bBox.width,
-                height: bBox.height,
-                left: bBox.left - gdBB.left,
-                right: bBox.right - gdBB.left,
-                top: bBox.top - gdBB.top,
-                bottom: bBox.bottom - gdBB.top
-            };
-        } else {
-            var gs = fullLayout._size;
-            var pos;
-
-            // set dummy bbox for ticklabel-less axes
-
-            if(axLetter === 'x') {
-                pos = ax.anchor === 'free' ?
-                    gs.t + gs.h * (1 - ax.position) :
-                    gs.t + gs.h * (1 - ax._anchorAxis.domain[{bottom: 0, top: 1}[ax.side]]);
-
-                ax._boundingBox = {
-                    top: pos,
-                    bottom: pos,
-                    left: ax._offset,
-                    right: ax._offset + ax._length,
-                    width: ax._length,
-                    height: 0
-                };
-            } else {
-                pos = ax.anchor === 'free' ?
-                    gs.l + gs.w * ax.position :
-                    gs.l + gs.w * ax._anchorAxis.domain[{left: 0, right: 1}[ax.side]];
-
-                ax._boundingBox = {
-                    left: pos,
-                    right: pos,
-                    bottom: ax._offset + ax._length,
-                    top: ax._offset,
-                    height: ax._length,
-                    width: 0
-                };
-            }
-        }
-
-        var subplotsWithAx = opts.subplotsWithAx;
-
-        function extendRange(range, newRange) {
-            range[0] = Math.min(range[0], newRange[0]);
-            range[1] = Math.max(range[1], newRange[1]);
-        }
-
-        /*
-         * for spikelines: what's the full domain of positions in the
-         * opposite direction that are associated with this axis?
-         * This means any axes that we make a subplot with, plus the
-         * position of the axis itself if it's free.
-         */
-        if(subplotsWithAx) {
-            var fullRange = ax._counterSpan = [Infinity, -Infinity];
-
-            for(var i = 0; i < subplotsWithAx.length; i++) {
-                var plotinfo = fullLayout._plots[subplotsWithAx[i]];
-                var counterAxis = plotinfo[(axLetter === 'x') ? 'yaxis' : 'xaxis'];
-
-                extendRange(fullRange, [
-                    counterAxis._offset,
-                    counterAxis._offset + counterAxis._length
-                ]);
-            }
-
-            if(ax.anchor === 'free') {
-                extendRange(fullRange, (axLetter === 'x') ?
-                    [ax._boundingBox.bottom, ax._boundingBox.top] :
-                    [ax._boundingBox.right, ax._boundingBox.left]);
-            }
-        }
-    }
-
-    function doAutoMargins() {
-        var pushKey = ax._name + '.automargin';
-
-        if(!ax.automargin) {
-            Plots.autoMargin(gd, pushKey);
-            return;
-        }
-
-        var s = ax.side.charAt(0);
-        var push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
-
-        if(axLetter === 'x') {
-            push.y = (ax.anchor === 'free' ? ax.position :
-                ax._anchorAxis.domain[s === 't' ? 1 : 0]);
-            push[s] += ax._boundingBox.height;
-        } else {
-            push.x = (ax.anchor === 'free' ? ax.position :
-                ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
-            push[s] += ax._boundingBox.width;
-        }
-
-        if(ax.title !== fullLayout._dfltTitle[axLetter]) {
-            push[s] += ax.titlefont.size;
-        }
-
-        Plots.autoMargin(gd, pushKey, push);
-    }
-
-    var done = Lib.syncOrAsync([
-        allLabelsReady,
-        fixLabelOverlaps,
-        calcBoundingBox,
-        doAutoMargins
-    ]);
+    var done = Lib.syncOrAsync([allLabelsReady, fixLabelOverlaps]);
     if(done && done.then) gd._promises.push(done);
     return done;
 };
