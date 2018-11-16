@@ -296,10 +296,6 @@ proto.updateLayout = function(fullLayout, polarLayout) {
         .attr('d', dPath)
         .attr('transform', strTranslate(cx, cy))
         .call(Color.fill, polarLayout.bgcolor);
-
-    // remove crispEdges - all the off-square angles in polar plots
-    // make these counterproductive.
-    _this.framework.selectAll('.crisp').classed('crisp', 0);
 };
 
 proto.mockAxis = function(fullLayout, polarLayout, axLayout, opts) {
@@ -420,14 +416,16 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             vals: vals,
             layer: layers['radial-axis'],
             path: Axes.makeTickPath(ax, 0, tickSign[2]),
-            transFn: transFn
+            transFn: transFn,
+            noCrisp: true
         });
 
         Axes.drawGrid(gd, ax, {
             vals: valsClipped,
             layer: layers['radial-grid'],
             path: gridPathFn,
-            transFn: Lib.noop
+            transFn: Lib.noop,
+            noCrisp: true
         });
 
         Axes.drawLabels(gd, ax, {
@@ -638,14 +636,16 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             vals: vals,
             layer: layers['angular-axis'],
             path: 'M' + (tickSign[2] * pad) + ',0h' + (tickSign[2] * ax.ticklen),
-            transFn: transFn2
+            transFn: transFn2,
+            noCrisp: true
         });
 
         Axes.drawGrid(gd, ax, {
             vals: vals,
             layer: layers['angular-grid'],
             path: gridPathFn,
-            transFn: Lib.noop
+            transFn: Lib.noop,
+            noCrisp: true
         });
 
         Axes.drawLabels(gd, ax, {

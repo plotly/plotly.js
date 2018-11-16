@@ -323,10 +323,6 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 
     _this.drawAxes(true);
 
-    // remove crispEdges - all the off-square angles in ternary plots
-    // make these counterproductive.
-    _this.plotContainer.selectAll('.crisp').classed('crisp', false);
-
     _this.layers.aline.select('path')
         .attr('d', aaxis.showline ?
             'M' + x0 + ',' + (y0 + h) + 'l' + (w / 2) + ',-' + h : 'M0,0')
@@ -454,14 +450,16 @@ proto.drawAx = function(ax) {
         vals: ax.ticks === 'inside' ? valsClipped : vals,
         layer: axLayer,
         path: tickPath,
-        transFn: transFn
+        transFn: transFn,
+        noCrisp: true
     });
 
     Axes.drawGrid(gd, ax, {
         vals: valsClipped,
         layer: _this.layers[axLetter + 'grid'],
         path: gridPath,
-        transFn: transFn
+        transFn: transFn,
+        noCrisp: true
     });
 
     var labelFns = Axes.makeLabelFns(ax, 0, counterAngle);
@@ -731,7 +729,6 @@ proto.initInteractions = function() {
         _this.caxis.range = [_this.sum - mins.a - mins.b, mins.c];
 
         _this.drawAxes(false);
-        _this.plotContainer.selectAll('.crisp').classed('crisp', false);
 
         if(_this._hasClipOnAxisFalse) {
             _this.plotContainer
