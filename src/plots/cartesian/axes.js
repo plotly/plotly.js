@@ -2425,12 +2425,13 @@ axes.makeLabelFns = function(ax, shift, angle) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
 
-    // TODO get rid of!
-    ax._pad = pad;
-    ax._labelStandoff = labelStandoff;
-    ax._labelShift = labelShift;
+    // Used in polar angular label x/y functions
+    // TODO generalize makeLabelFns so that it just work for angular axes
+    var out = {
+        labelStandoff: labelStandoff,
+        labelShift: labelShift
+    };
 
-    var out = {};
     var x0, y0, ff, flipIt;
     if(axLetter === 'x') {
         flipIt = ax.side === 'bottom' ? 1 : -1;
@@ -2446,7 +2447,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
             }
             return (a * flipIt < 0) ? 'end' : 'start';
         };
-    } else {
+    } else if(axLetter === 'y') {
         flipIt = ax.side === 'right' ? 1 : -1;
         x0 = labelStandoff + pad;
         y0 = -labelShift * flipIt;
@@ -2461,6 +2462,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
             return ax.side === 'right' ? 'start' : 'end';
         };
     }
+
     return out;
 };
 

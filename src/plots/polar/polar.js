@@ -417,7 +417,6 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         }
 
         Axes.drawTicks(gd, ax, {
-            // TODO right? No need to clip here ever?
             vals: vals,
             layer: layers['radial-axis'],
             path: Axes.makeTickPath(ax, 0, tickSign[2]),
@@ -428,7 +427,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             vals: valsClipped,
             layer: layers['radial-grid'],
             path: gridPathFn,
-            transFn: transFn
+            transFn: Lib.noop
         });
 
         Axes.drawLabels(gd, ax, {
@@ -448,23 +447,20 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         rad2deg(snapToVertexAngle(deg2rad(radialLayout.angle), _this.vangles)) :
         radialLayout.angle;
 
-    // TODO no more "draw-and-then-tweak" !!!
-    var trans = strTranslate(cx, cy) + strRotate(-angle);
+    var tLayer = strTranslate(cx, cy);
+    var tLayer2 = tLayer + strRotate(-angle);
 
     updateElement(
         layers['radial-axis'],
         hasRoomForIt && (radialLayout.showticklabels || radialLayout.ticks),
-        {transform: trans}
+        {transform: tLayer2}
     );
 
-    // TODO !!
-    // move all grid paths to about circle center,
-    // undo individual grid lines translations
     updateElement(
         layers['radial-grid'],
         hasRoomForIt && radialLayout.showgrid,
-        {transform: strTranslate(cx, cy)}
-    ).selectAll('path').attr('transform', null);
+        {transform: tLayer}
+    );
 
     updateElement(
         layers['radial-line'].select('line'),
@@ -474,7 +470,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             y1: 0,
             x2: radius,
             y2: 0,
-            transform: trans
+            transform: tLayer2
         }
     )
     .attr('stroke-width', radialLayout.linewidth)
@@ -531,6 +527,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     _this.fillViewInitialKey('angularaxis.rotation', angularLayout.rotation);
 
     ax.setGeometry();
+    ax.setScale();
 
     // 't'ick to 'g'eometric radians is used all over the place here
     var t2g = function(d) { return ax.t2g(d.x); };
@@ -541,23 +538,17 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         ax.dtick = rad2deg(ax.dtick);
     }
 
-    // TODO break up into two functions!
+    var _transFn = function(rad) {
+        return strTranslate(cx + radius * Math.cos(rad), cy - radius * Math.sin(rad));
+    };
+
     var transFn = function(d) {
-        var sel = d3.select(this);
-        var hasElement = sel && sel.node();
+        return _transFn(t2g(d));
+    };
 
-        // don't translate grid lines
-        if(hasElement && sel.classed('angularaxisgrid')) return '';
-
+    var transFn2 = function(d) {
         var rad = t2g(d);
-        var out = strTranslate(cx + radius * Math.cos(rad), cy - radius * Math.sin(rad));
-
-        // must also rotate ticks, but don't rotate labels
-        if(hasElement && sel.classed('ticks')) {
-            out += strRotate(-rad2deg(rad));
-        }
-
-        return out;
+        return _transFn(rad) + strRotate(-rad2deg(rad));
     };
 
     var gridPathFn = function(d) {
@@ -568,13 +559,14 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             'L' + [cx + radius * cosRad, cy - radius * sinRad];
     };
 
-    Axes.makeLabelFns(ax, 0);
+    var out = Axes.makeLabelFns(ax, 0);
+    var labelStandoff = out.labelStandoff;
+    var labelShift = out.labelShift;
     var offset4fontsize = (angularLayout.ticks !== 'outside' ? 0.7 : 0.5);
+    var pad = (ax.linewidth || 1) / 2;
 
     var labelXFn = function(d) {
         var rad = t2g(d);
-        var labelStandoff = ax._labelStandoff;
-        var pad = ax._pad;
 
         var offset4tx = signSin(rad) === 0 ?
             0 :
@@ -586,9 +578,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     var labelYFn = function(d) {
         var rad = t2g(d);
-        var labelStandoff = ax._labelStandoff;
-        var labelShift = ax._labelShift;
-        var pad = ax._pad;
 
         var offset4tx = d.dy + d.fontSize * MID_SHIFT - labelShift;
         var offset4tick = -Math.sin(rad) * (labelStandoff + pad + offset4fontsize * d.fontSize);
@@ -610,52 +599,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         _this.angularTickLayout = newTickLayout;
     }
 
-    ax.setScale();
-
     var vals = Axes.calcTicks(ax);
-    // Use tickval filter for category axes instead of tweaking
-    // the range w.r.t sector, so that sectors that cross 360 can
-    // show all their ticks.
-    var tickVals = ax.type === 'category' ?
-        vals.filter(function(d) { return Lib.isAngleInsideSector(t2g(d), _this.sectorInRad); }) :
-        vals;
-
-    if(ax.visible) {
-        // TODO dry!!
-        var sideOpposite = 'right';
-        var tickSign = [-1, 1, ax.side === sideOpposite ? 1 : -1];
-        if((ax.ticks !== 'inside') === false) {
-            tickSign = tickSign.map(function(v) { return -v; });
-        }
-
-        var pad = tickSign[2] * (ax.linewidth || 1) / 2;
-        var len = tickSign[2] * ax.ticklen;
-
-        Axes.drawTicks(gd, ax, {
-            vals: tickVals,
-            layer: layers['angular-axis'],
-            path: 'M' + pad + ',0h' + len,
-            transFn: transFn
-        });
-
-        Axes.drawGrid(gd, ax, {
-            vals: tickVals,
-            layer: layers['angular-grid'],
-            path: gridPathFn,
-            transFn: transFn
-        });
-
-        Axes.drawLabels(gd, ax, {
-            vals: tickVals,
-            layer: layers['angular-axis'],
-            shift: 0,
-            transFn: transFn,
-            labelXFn: labelXFn,
-            labelYFn: labelYFn,
-            labelAnchorFn: labelAnchorFn,
-            skipTitle: true
-        });
-    }
 
     // angle of polygon vertices in geometric radians (null means circles)
     // TODO what to do when ax.period > ax._categories ??
@@ -672,6 +616,49 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         vangles = null;
     }
     _this.vangles = vangles;
+
+    // Use tickval filter for category axes instead of tweaking
+    // the range w.r.t sector, so that sectors that cross 360 can
+    // show all their ticks.
+    if(ax.type === 'category') {
+        vals = vals.filter(function(d) {
+            return Lib.isAngleInsideSector(t2g(d), _this.sectorInRad);
+        });
+    }
+
+    if(ax.visible) {
+        // TODO dry!!
+        var sideOpposite = 'right';
+        var tickSign = [-1, 1, ax.side === sideOpposite ? 1 : -1];
+        if((ax.ticks !== 'inside') === false) {
+            tickSign = tickSign.map(function(v) { return -v; });
+        }
+
+        Axes.drawTicks(gd, ax, {
+            vals: vals,
+            layer: layers['angular-axis'],
+            path: 'M' + (tickSign[2] * pad) + ',0h' + (tickSign[2] * ax.ticklen),
+            transFn: transFn2
+        });
+
+        Axes.drawGrid(gd, ax, {
+            vals: vals,
+            layer: layers['angular-grid'],
+            path: gridPathFn,
+            transFn: Lib.noop
+        });
+
+        Axes.drawLabels(gd, ax, {
+            vals: vals,
+            layer: layers['angular-axis'],
+            shift: 0,
+            transFn: transFn,
+            labelXFn: labelXFn,
+            labelYFn: labelYFn,
+            labelAnchorFn: labelAnchorFn,
+            skipTitle: true
+        });
+    }
 
     // TODO maybe two arcs is better here?
     // maybe split style attributes between inner and outer angular axes?
