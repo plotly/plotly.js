@@ -211,6 +211,11 @@ exports.cleanLayout = function(layout) {
     // supported, but new tinycolor does not because they're not valid css
     Color.clean(layout);
 
+    // also clean the layout container in layout.template
+    if(layout.template && layout.template.layout) {
+        exports.cleanLayout(layout.template.layout);
+    }
+
     return layout;
 };
 
