@@ -462,7 +462,6 @@ proto.drawAx = function(ax) {
     Axes.drawLabels(gd, ax, {
         vals: vals,
         layer: axLayer,
-        shift: 0,
         transFn: transFn,
         labelXFn: labelFns.labelXFn,
         labelYFn: labelFns.labelYFn,

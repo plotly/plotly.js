@@ -426,7 +426,6 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         Axes.drawLabels(gd, ax, {
             vals: vals,
             layer: layers['radial-axis'],
-            shift: 0,
             transFn: transFn,
             labelXFn: labelFns.labelXFn,
             labelYFn: labelFns.labelYFn,
@@ -640,7 +639,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         Axes.drawLabels(gd, ax, {
             vals: vals,
             layer: layers['angular-axis'],
-            shift: 0,
             transFn: transFn,
             labelXFn: labelXFn,
             labelYFn: labelYFn,

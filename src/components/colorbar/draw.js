@@ -452,7 +452,6 @@ module.exports = function draw(gd, id) {
                     return Axes.drawLabels(gd, cbAxisOut, {
                         vals: vals,
                         layer: axisLayer,
-                        shift: shift,
                         transFn: transFn,
                         labelXFn: labelFns.labelXFn,
                         labelYFn: labelFns.labelYFn,

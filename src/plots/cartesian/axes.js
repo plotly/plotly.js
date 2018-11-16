@@ -1688,18 +1688,18 @@ axes.drawOne = function(gd, ax, opts) {
 
     // tick labels - for now just the main labels.
     // TODO: mirror labels, esp for subplots
-    seq.push(function() {
-        return axes.drawLabels(gd, ax, {
-            vals: vals,
-            layer: mainPlotinfo[axLetter + 'axislayer'],
-            // TODO shouldn't need this
-            shift: ax._mainLinePosition,
-            transFn: transFn,
-            labelXFn: labelFns.labelXFn,
-            labelYFn: labelFns.labelYFn,
-            labelAnchorFn: labelFns.labelAnchorFn,
+    if(ax._mainLinePosition) {
+        seq.push(function() {
+            return axes.drawLabels(gd, ax, {
+                vals: vals,
+                layer: mainPlotinfo[axLetter + 'axislayer'],
+                transFn: transFn,
+                labelXFn: labelFns.labelXFn,
+                labelYFn: labelFns.labelYFn,
+                labelAnchorFn: labelFns.labelAnchorFn,
+            });
         });
-    });
+    }
 
     if(!opts.skipTitle &&
         !((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
@@ -2031,12 +2031,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var labelAnchorFn = opts.labelAnchorFn;
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
-        .data(vals, makeDataFn(ax));
-
-    if(!isNumeric(opts.shift) || !ax.showticklabels) {
-        tickLabels.remove();
-        return;
-    }
+        .data(ax.showticklabels ? vals : [], makeDataFn(ax));
 
     var maxFontSize = 0;
     var autoangle = 0;
