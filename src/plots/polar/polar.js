@@ -430,8 +430,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             transFn: transFn,
             labelXFn: labelFns.labelXFn,
             labelYFn: labelFns.labelYFn,
-            labelAnchorFn: labelFns.labelAnchorFn,
-            skipTitle: true
+            labelAnchorFn: labelFns.labelAnchorFn
         });
     }
 
@@ -645,8 +644,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             transFn: transFn,
             labelXFn: labelXFn,
             labelYFn: labelYFn,
-            labelAnchorFn: labelAnchorFn,
-            skipTitle: true
+            labelAnchorFn: labelAnchorFn
         });
     }
 

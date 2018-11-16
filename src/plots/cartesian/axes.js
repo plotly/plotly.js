@@ -1679,27 +1679,39 @@ axes.drawOne = function(gd, ax, opts) {
         });
     }
 
+    var labelFns = axes.makeLabelFns(ax, ax._mainLinePosition);
     // stash tickLabels selection, so that drawTitle can use it
     // to scoot title w/o having to query the axis layer again
     ax._tickLabels = null;
-    var labelFns = axes.makeLabelFns(ax, ax._mainLinePosition);
+
+    var seq = [];
 
     // tick labels - for now just the main labels.
     // TODO: mirror labels, esp for subplots
-    return axes.drawLabels(gd, ax, {
-        vals: vals,
-        layer: mainPlotinfo[axLetter + 'axislayer'],
-        // TODO shouldn't need this
-        shift: ax._mainLinePosition,
-        // TODO calcBoundingBox should be taken out of drawLabels
-        subplotsWithAx: subplotsWithAx,
-        transFn: transFn,
-        labelXFn: labelFns.labelXFn,
-        labelYFn: labelFns.labelYFn,
-        labelAnchorFn: labelFns.labelAnchorFn,
-        // TODO call drawTitle after drawLabels
-        skipTitle: opts.skipTitle
+    seq.push(function() {
+        return axes.drawLabels(gd, ax, {
+            vals: vals,
+            layer: mainPlotinfo[axLetter + 'axislayer'],
+            // TODO shouldn't need this
+            shift: ax._mainLinePosition,
+            // TODO calcBoundingBox should be taken out of drawLabels
+            subplotsWithAx: subplotsWithAx,
+            transFn: transFn,
+            labelXFn: labelFns.labelXFn,
+            labelYFn: labelFns.labelYFn,
+            labelAnchorFn: labelFns.labelAnchorFn,
+        });
     });
+
+    if(!opts.skipTitle &&
+        !((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
+    ) {
+        seq.push(function() {
+            return axes.drawTitle(gd, ax);
+        });
+    }
+
+    return Lib.syncOrAsync(seq);
 };
 
 /**
@@ -1911,12 +1923,10 @@ axes.drawLabels = function(gd, ax, opts) {
 
     if(!isNumeric(opts.shift)) {
         tickLabels.remove();
-        axes.drawTitle(gd, ax, opts);
         return;
     }
     if(!ax.showticklabels) {
         tickLabels.remove();
-        axes.drawTitle(gd, ax, opts);
         calcBoundingBox();
         return;
     }
@@ -2087,13 +2097,6 @@ axes.drawLabels = function(gd, ax, opts) {
             }
             ax._lastangle = autoangle;
         }
-
-        // update the axis title
-        // (so it can move out of the way if needed)
-        // TODO: separate out scoot so we don't need to do
-        // a full redraw of the title (mostly relevant for MathJax)
-        axes.drawTitle(gd, ax, opts);
-        return axId + ' done';
     }
 
     function calcBoundingBox() {
@@ -2223,18 +2226,7 @@ axes.drawLabels = function(gd, ax, opts) {
     return done;
 };
 
-axes.drawTitle = function(gd, ax, opts) {
-    opts = opts || {};
-
-    // Now this only applies to regular cartesian axes; colorbars and
-    // others ALWAYS call doTicksSingle with skipTitle=true so they can
-    // configure their own titles.
-    //
-    // Rangeslider takes over a bottom title so drop it here
-    if(opts.skipTitle ||
-        ((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
-    ) return;
-
+axes.drawTitle = function(gd, ax) {
     var fullLayout = gd._fullLayout;
     var tickLabels = ax._tickLabels;
 

@@ -456,8 +456,7 @@ module.exports = function draw(gd, id) {
                         transFn: transFn,
                         labelXFn: labelFns.labelXFn,
                         labelYFn: labelFns.labelYFn,
-                        labelAnchorFn: labelFns.labelAnchorFn,
-                        skipTitle: true
+                        labelAnchorFn: labelFns.labelAnchorFn
                     });
                 },
                 function() {

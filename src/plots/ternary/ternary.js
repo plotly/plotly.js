@@ -466,8 +466,7 @@ proto.drawAx = function(ax) {
         transFn: transFn,
         labelXFn: labelFns.labelXFn,
         labelYFn: labelFns.labelYFn,
-        labelAnchorFn: labelFns.labelAnchorFn,
-        skipTitle: true
+        labelAnchorFn: labelFns.labelAnchorFn
     });
 };
 
