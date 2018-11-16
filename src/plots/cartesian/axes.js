@@ -2425,6 +2425,11 @@ axes.makeLabelFns = function(ax, shift, angle) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
 
+    // TODO get rid of!
+    ax._pad = pad;
+    ax._labelStandoff = labelStandoff;
+    ax._labelShift = labelShift;
+
     var out = {};
     var x0, y0, ff, flipIt;
     if(axLetter === 'x') {
@@ -2620,6 +2625,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
     ax._tickLabels = tickLabels;
 
+    // TODO ??
     if(isAngular(ax)) {
         tickLabels.each(function(d) {
             d3.select(this).select('text')
