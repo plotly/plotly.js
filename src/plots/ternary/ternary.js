@@ -419,20 +419,15 @@ proto.drawAx = function(ax) {
     }
 
     ax.setScale();
+
     var vals = Axes.calcTicks(ax);
     var valsClipped = Axes.clipEnds(ax, vals);
     var transFn = Axes.makeTransFn(ax);
-
-    // TODO dry!!
-    var sideOpposite = {x: 'top', y: 'right'}[axId];
-    var tickSign = [-1, 1, ax.side === sideOpposite ? 1 : -1];
-    if((ax.ticks !== 'inside') === (axId === 'x')) {
-        tickSign = tickSign.map(function(v) { return -v; });
-    }
+    var tickSign = Axes.getTickSigns(ax)[2];
 
     var caRad = Lib.deg2rad(counterAngle);
-    var pad = tickSign[2] * (ax.linewidth || 1) / 2;
-    var len = tickSign[2] * ax.ticklen;
+    var pad = tickSign * (ax.linewidth || 1) / 2;
+    var len = tickSign * ax.ticklen;
     var w = _this.w;
     var h = _this.h;
 

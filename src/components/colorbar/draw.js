@@ -437,22 +437,15 @@ module.exports = function draw(gd, id) {
                     var shift = xLeft + thickPx +
                         (opts.outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
-                    // TODO dry!
-                    var sideOpposite = 'right';
-                    var axLetter = 'y';
-                    var tickSign = [-1, 1, cbAxisOut.side === sideOpposite ? 1 : -1];
-                    if((cbAxisOut.ticks !== 'inside') === (axLetter === 'x')) {
-                        tickSign = tickSign.map(function(v) { return -v; });
-                    }
-
                     var vals = Axes.calcTicks(cbAxisOut);
                     var transFn = Axes.makeTransFn(cbAxisOut);
                     var labelFns = Axes.makeLabelFns(cbAxisOut, shift);
+                    var tickSign = Axes.getTickSigns(cbAxisOut)[2];
 
                     Axes.drawTicks(gd, cbAxisOut, {
                         vals: cbAxisOut.ticks === 'inside' ? Axes.clipEnds(cbAxisOut, vals) : vals,
                         layer: axisLayer,
-                        path: Axes.makeTickPath(cbAxisOut, shift, tickSign[2]),
+                        path: Axes.makeTickPath(cbAxisOut, shift, tickSign),
                         transFn: transFn
                     });
 

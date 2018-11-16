@@ -1643,21 +1643,14 @@ axes.drawOne = function(gd, ax, opts) {
         }
     }
 
-    // Which direction do the 'ax.side' values, and free ticks go?
-    // then we flip if outside XOR y axis
-    var sideOpposite = {x: 'top', y: 'right'}[axLetter];
-    var tickSign = [-1, 1, ax.side === sideOpposite ? 1 : -1];
-    if((ax.ticks !== 'inside') === (axLetter === 'x')) {
-        tickSign = tickSign.map(function(v) { return -v; });
-    }
-
+    var tickSigns = axes.getTickSigns(ax);
     var tickVals = ax.ticks === 'inside' ? valsClipped : vals;
     var tickSubplots = [];
 
     if(ax.ticks) {
-        var mainTickPath = axes.makeTickPath(ax, ax._mainLinePosition, tickSign[2]);
+        var mainTickPath = axes.makeTickPath(ax, ax._mainLinePosition, tickSigns[2]);
         if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
-            mainTickPath += axes.makeTickPath(ax, ax._mainMirrorPosition, -tickSign[2]);
+            mainTickPath += axes.makeTickPath(ax, ax._mainMirrorPosition, tickSigns[3]);
         }
 
         axes.drawTicks(gd, ax, {
@@ -1675,8 +1668,8 @@ axes.drawOne = function(gd, ax, opts) {
         plotinfo = fullLayout._plots[sp];
         // [bottom or left, top or right], free and main are handled above
         var linepositions = ax._linepositions[sp] || [];
-        var spTickPath = axes.makeTickPath(ax, linepositions[0], tickSign[0]) +
-            axes.makeTickPath(ax, linepositions[1], tickSign[1]);
+        var spTickPath = axes.makeTickPath(ax, linepositions[0], tickSigns[0]) +
+            axes.makeTickPath(ax, linepositions[1], tickSigns[1]);
 
         axes.drawTicks(gd, ax, {
             vals: tickVals,
@@ -1709,6 +1702,31 @@ axes.drawOne = function(gd, ax, opts) {
     });
 };
 
+/**
+ * Which direction do the 'ax.side' values, and free ticks go?
+ *
+ * @param {object} ax (full) axis object
+ *  - @param {string} _id (starting with 'x' or 'y')
+ *  - @param {string} side
+ *  - @param {string} ticks
+ * @return {array} all entries are either -1 or 1
+ *  - [0]: sign for top/right ticks (i.e. negative SVG direction)
+ *  - [1]: sign for bottom/left ticks (i.e. positive SVG direction)
+ *  - [2]: sign for ticks corresponding to 'ax.side'
+ *  - [3]: sign for ticks mirroring 'ax.side'
+ */
+axes.getTickSigns = function(ax) {
+    var axLetter = ax._id.charAt(0);
+    var sideOpposite = {x: 'top', y: 'right'}[axLetter];
+    var main = ax.side === sideOpposite ? 1 : -1;
+    var out = [-1, 1, main, -main];
+    // then we flip if outside XOR y axis
+    if((ax.ticks !== 'inside') === (axLetter === 'x')) {
+        out = out.map(function(v) { return -v; });
+    }
+    return out;
+};
+
 axes.makeTransFn = function(ax) {
     var axLetter = ax._id.charAt(0);
     var offset = ax._offset;
@@ -1716,8 +1734,6 @@ axes.makeTransFn = function(ax) {
         function(d) { return 'translate(' + (offset + ax.l2p(d.x)) + ',0)'; } :
         function(d) { return 'translate(0,' + (offset + ax.l2p(d.x)) + ')'; };
 };
-
-// incorporate sng logic here!
 
 axes.makeTickPath = function(ax, shift, sgn) {
     var axLetter = ax._id.charAt(0);

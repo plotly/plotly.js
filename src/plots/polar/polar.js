@@ -405,17 +405,12 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         var vals = Axes.calcTicks(ax);
         var valsClipped = Axes.clipEnds(ax, vals);
         var labelFns = Axes.makeLabelFns(ax, 0);
-
-        var sideOpposite = {x: 'top', y: 'right'}[ax._id];
-        var tickSign = [-1, 1, ax.side === sideOpposite ? 1 : -1];
-        if((ax.ticks !== 'inside') === (ax._id === 'x')) {
-            tickSign = tickSign.map(function(v) { return -v; });
-        }
+        var tickSign = Axes.getTickSigns(ax)[2];
 
         Axes.drawTicks(gd, ax, {
             vals: vals,
             layer: layers['radial-axis'],
-            path: Axes.makeTickPath(ax, 0, tickSign[2]),
+            path: Axes.makeTickPath(ax, 0, tickSign),
             transFn: transFn,
             noCrisp: true
         });
@@ -625,17 +620,12 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     }
 
     if(ax.visible) {
-        // TODO dry!!
-        var sideOpposite = 'right';
-        var tickSign = [-1, 1, ax.side === sideOpposite ? 1 : -1];
-        if((ax.ticks !== 'inside') === false) {
-            tickSign = tickSign.map(function(v) { return -v; });
-        }
+        var tickSign = ax.ticks === 'inside' ? -1 : 1;
 
         Axes.drawTicks(gd, ax, {
             vals: vals,
             layer: layers['angular-axis'],
-            path: 'M' + (tickSign[2] * pad) + ',0h' + (tickSign[2] * ax.ticklen),
+            path: 'M' + (tickSign * pad) + ',0h' + (tickSign * ax.ticklen),
             transFn: transFn2,
             noCrisp: true
         });
