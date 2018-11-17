@@ -111,7 +111,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     if(overwrite === true) {
         sceneLayoutIn.dragmode = 'orbit';
     } else {
-        if(sceneLayoutIn.dragmode === 'turntable')  {
+        if(sceneLayoutIn.dragmode === 'turntable') {
             sceneLayoutIn.camera.up = [0, 0, 1];
         }
     }
