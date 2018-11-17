@@ -739,7 +739,6 @@ proto.updateFx = function(dragmode, hovermode) {
             camera.keyBindingMode = 'rotate';
 
         } else if(dragmode === 'turntable') {
-            camera.up = [0, 0, 1];
             camera.mode = 'turntable';
             camera.keyBindingMode = 'rotate';
 

@@ -97,6 +97,25 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
     }
 
+    var overwrite = false;
+    if(sceneLayoutIn.camera &&
+        sceneLayoutIn.camera.up &&
+        sceneLayoutIn.camera.up.z !== 1) {
+        overwrite = true;
+    }
+
+    if(sceneLayoutIn.dragmode === 'turntable') {
+        overwrite = false;
+    }
+
+    if(overwrite === true) {
+        sceneLayoutIn.dragmode = 'orbit';
+    } else {
+        if(sceneLayoutIn.dragmode === 'turntable')  {
+            sceneLayoutIn.camera.up = [0, 0, 1];
+        }
+    }
+
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
