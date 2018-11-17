@@ -51,6 +51,14 @@ exports.plot = function plotGl3d(gd) {
             scene = sceneLayout._scene;
 
         if(!scene) {
+            if(fullLayout[sceneId].camera.up.z !== 1 &&
+                fullLayout[sceneId].dragmode === 'turntable') {
+                fullLayout[sceneId].dragmode = 'orbit';
+
+                sceneLayout = fullLayout[sceneId];
+                // we may also call updateActiveButton to display the button change
+            }
+
             scene = new Scene({
                 id: sceneId,
                 graphDiv: gd,
