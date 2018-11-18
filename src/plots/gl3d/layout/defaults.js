@@ -97,17 +97,6 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
     }
 
-    var overwriteIn = false;
-    if(sceneLayoutIn.camera &&
-        sceneLayoutIn.camera.up &&
-        sceneLayoutIn.camera.up.z !== 1) {
-        overwriteIn = (sceneLayoutIn.dragmode !== 'turntable') ? true : false;
-    }
-
-    if(overwriteIn === true) {
-        sceneLayoutIn.dragmode = 'orbit';
-    }
-
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
@@ -116,10 +105,6 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         calendar: opts.calendar,
         fullLayout: opts.fullLayout
     });
-
-    if(sceneLayoutOut.dragmode === 'turntable') {
-        sceneLayoutOut.camera.up = [0, 0, 1];
-    }
 
     Registry.getComponentMethod('annotations3d', 'handleDefaults')(
         sceneLayoutIn, sceneLayoutOut, opts
