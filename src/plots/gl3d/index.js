@@ -69,6 +69,7 @@ exports.plot = function plotGl3d(gd) {
         if(!scene.cameraInitial) {
             scene.cameraInitial = Lib.extendDeep({}, sceneLayout.camera);
         }
+
         scene.plot(fullSceneData, fullLayout, gd.layout);
     }
 };
