@@ -769,7 +769,7 @@ describe('Test gl3d modebar handlers', function() {
         buttonDefault.click();
     });
 
-    it('@gl button resetCameraLastSave3d should reset camera to default', function(done) {
+    fit('@gl button resetCameraLastSave3d should reset camera to default', function(done) {
         var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
         var buttonLastSave = selectButton(modeBar, 'resetCameraLastSave3d');
 
@@ -807,6 +807,8 @@ describe('Test gl3d modebar handlers', function() {
         .then(function() {
             assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 1);
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 2.5);
+
+            console.log("gd._fullLayout.scene._scene.cameraInitial=", gd._fullLayout.scene._scene.cameraInitial);
 
             delete gd._fullLayout.scene._scene.cameraInitial;
             delete gd._fullLayout.scene2._scene.cameraInitial;
