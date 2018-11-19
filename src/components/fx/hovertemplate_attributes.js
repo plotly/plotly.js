@@ -41,7 +41,8 @@ module.exports = function(opts, extra) {
             'See https://github.com/d3/d3-format/blob/master/README.md#locale_format for details on the formatting syntax.',
             'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plot.ly/javascript/plotlyjs-events/#event-data.',
             'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
-            descPart
+            descPart,
+            'Anything contained in tag `<extra>` is displayed in the secondary box, for example "<extra>{fullData.name}</extra>".'
         ].join(' ')
     };
 
