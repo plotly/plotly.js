@@ -178,7 +178,7 @@ describe('Test Gl3d layout defaults', function() {
             layoutIn = { scene: {}, dragmode: 'orbit' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
-                .toBe('orbit', 'to user layout val if valid and 3d only');
+                .toBe('turntable', 'to turntable if valid and 3d only');
 
             layoutIn = { scene: {}, dragmode: 'invalid' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -230,14 +230,15 @@ describe('Test Gl3d layout defaults', function() {
                 .toBe('closest', 'to default if not valid');
         });
 
-        it('should add data-only scenes into layoutIn', function() {
+        it('should add data-only scenes into layoutIn and also enable turntable', function() {
             layoutIn = {};
             fullData = [{ type: 'scatter3d', scene: 'scene' }];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutIn.scene).toEqual({
                 aspectratio: { x: 1, y: 1, z: 1 },
-                aspectmode: 'auto'
+                aspectmode: 'auto',
+                dragmode: 'turntable'
             });
         });
 
