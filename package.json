@@ -96,7 +96,7 @@
     "mouse-wheel": "^1.0.2",
     "ndarray": "^1.0.18",
     "ndarray-fill": "git://github.com/archmoj/ndarray-fill.git#d61a638a550c83f4fc2add00de34b2848bd5ce9b",
-    "ndarray-homography": "^1.0.0",
+    "ndarray-homography": "git://github.com/archmoj/ndarray-homography.git#423590db51cba0d30eaa5b6f34b4b3f27a53d3f8",
     "ndarray-ops": "^1.2.2",
     "point-cluster": "^3.1.4",
     "polybooljs": "^1.2.0",
