@@ -101,7 +101,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.dragmode = 'turntable';
     }
 
-    if(!sceneLayoutIn.dragmode) {
+    if(sceneLayoutIn.dragmode !== undefined) {
         // Because the default is now set to orbit mode
         // (i.e. in order to apply camera.z.up at init time)
         // we set turnable our disarable option here.
