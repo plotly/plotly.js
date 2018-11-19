@@ -37,6 +37,6 @@ module.exports = function plot(gd, plotinfoproxy, data, layer) {
         // separately to all scattercarpet traces, but that would require
         // lots of reorganization of scatter traces that is otherwise not
         // necessary. That makes this a potential optimization.
-        Drawing.setClipUrl(node, carpet._clipPathId);
+        Drawing.setClipUrl(node, carpet._clipPathId, gd);
     }
 };

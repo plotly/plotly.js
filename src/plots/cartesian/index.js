@@ -262,7 +262,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
 
         // layers that allow `cliponaxis: false`
         if(className !== 'scatterlayer' && className !== 'barlayer') {
-            Drawing.setClipUrl(sel, plotinfo.layerClipId);
+            Drawing.setClipUrl(sel, plotinfo.layerClipId, gd);
         }
     });
 

@@ -77,6 +77,7 @@ proto.plot = function(ternaryCalcData, fullLayout) {
 
 proto.makeFramework = function(fullLayout) {
     var _this = this;
+    var gd = _this.graphDiv;
     var ternaryLayout = fullLayout[_this.id];
 
     var clipId = _this.clipId = 'clip' + _this.layoutId + _this.id;
@@ -96,8 +97,8 @@ proto.makeFramework = function(fullLayout) {
     _this.plotContainer = Lib.ensureSingle(_this.container, 'g', _this.id);
     _this.updateLayers(ternaryLayout);
 
-    Drawing.setClipUrl(_this.layers.backplot, clipId);
-    Drawing.setClipUrl(_this.layers.grids, clipId);
+    Drawing.setClipUrl(_this.layers.backplot, clipId, gd);
+    Drawing.setClipUrl(_this.layers.grids, clipId, gd);
 };
 
 proto.updateLayers = function(ternaryLayout) {
@@ -345,7 +346,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 
     Drawing.setClipUrl(
         _this.layers.frontplot,
-        _this._hasClipOnAxisFalse ? null : _this.clipId
+        _this._hasClipOnAxisFalse ? null : _this.clipId,
+        _this.graphDiv
     );
 };
 

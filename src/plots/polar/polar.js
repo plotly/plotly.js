@@ -290,7 +290,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 
     layers.frontplot
         .attr('transform', strTranslate(xOffset2, yOffset2))
-        .call(Drawing.setClipUrl, _this._hasClipOnAxisFalse ? null : _this.clipIds.forTraces);
+        .call(Drawing.setClipUrl, _this._hasClipOnAxisFalse ? null : _this.clipIds.forTraces, _this.gd);
 
     layers.bg
         .attr('d', dPath)
