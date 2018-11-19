@@ -536,6 +536,7 @@ function computeTextDimensions(g, gd) {
         // to avoid getBoundingClientRect
         var textY = lineHeight * (0.3 + (1 - textLines) / 2);
         svgTextUtils.positionText(text, constants.textOffsetX, textY);
+        legendItem.lineHeight = lineHeight;
     }
 
     height = Math.max(height, 16) + 3;

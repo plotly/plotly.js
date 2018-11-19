@@ -120,5 +120,15 @@ module.exports = {
             'or *bottom* of the legend.'
         ].join(' ')
     },
-    editType: 'legend'
+    editType: 'legend',
+    valign: {
+        valType: 'enumerated',
+        values: ['top', 'middle', 'bottom'],
+        dflt: 'middle',
+        role: 'style',
+        editType: 'legend',
+        description: [
+            'Sets the vertical alignment of the symbol with respect to the `text`.',
+        ].join(' ')
+    }
 };

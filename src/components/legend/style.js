@@ -25,6 +25,13 @@ module.exports = function style(s, gd) {
         var layers = Lib.ensureSingle(traceGroup, 'g', 'layers');
         layers.style('opacity', d[0].trace.opacity);
 
+        // Marker vertical alignment
+        var valignFactor = 0;
+        if(gd._fullLayout.legend.valign === 'top') valignFactor = 1.0;
+        if(gd._fullLayout.legend.valign === 'bottom') valignFactor = -1.0;
+        var markerOffsetY = valignFactor * (0.5 * (d[0].lineHeight - d[0].height + 3));
+        if(markerOffsetY) layers.attr('transform', 'translate(0,' + markerOffsetY + ')');
+
         var fill = layers
             .selectAll('g.legendfill')
                 .data([d]);
