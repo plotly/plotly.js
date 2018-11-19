@@ -1586,6 +1586,14 @@ axes.draw = function(gd, arg, opts) {
     }));
 };
 
+/**
+ * Draw one cartesian axis
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ * @param {object} opts
+ * - @param {boolean} skipTitle (set to true to skip axis title draw call)
+ */
 axes.drawOne = function(gd, ax, opts) {
     opts = opts || {};
 
@@ -1831,9 +1839,9 @@ axes.drawOne = function(gd, ax, opts) {
  * Which direction do the 'ax.side' values, and free ticks go?
  *
  * @param {object} ax (full) axis object
- *  - @param {string} _id (starting with 'x' or 'y')
- *  - @param {string} side
- *  - @param {string} ticks
+ *  - {string} _id (starting with 'x' or 'y')
+ *  - {string} side
+ *  - {string} ticks
  * @return {array} all entries are either -1 or 1
  *  - [0]: sign for top/right ticks (i.e. negative SVG direction)
  *  - [1]: sign for bottom/left ticks (i.e. positive SVG direction)
@@ -1852,6 +1860,15 @@ axes.getTickSigns = function(ax) {
     return out;
 };
 
+/**
+ * Make axis translate transform function
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {number} _offset
+ *  - {fn} l2p
+ * @return {fn} function of calcTicks items
+ */
 axes.makeTransFn = function(ax) {
     var axLetter = ax._id.charAt(0);
     var offset = ax._offset;
@@ -1860,6 +1877,17 @@ axes.makeTransFn = function(ax) {
         function(d) { return 'translate(0,' + (offset + ax.l2p(d.x)) + ')'; };
 };
 
+/**
+ * Make axis tick path string
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {number} ticklen
+ *  - {number} linewidth
+ * @param {number} shift along direction of ticklen
+ * @param {1 or -1} sng tick sign
+ * @return {string}
+ */
 axes.makeTickPath = function(ax, shift, sgn) {
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
@@ -1869,6 +1897,26 @@ axes.makeTickPath = function(ax, shift, sgn) {
         'M' + (shift + pad * sgn) + ',0h' + (len * sgn);
 };
 
+/**
+ * Make axis tick label x, y and anchor functions
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {string} ticks
+ *  - {number} ticklen
+ *  - {string} side
+ *  - {number} linewidth
+ *  - {number} tickfont.size
+ *  - {boolean} showline
+ * @param {number} shift
+ * @param {number} angle [in degrees] ...
+ * @return {object}
+ *  - {fn} labelXFn
+ *  - {fn} labelYFn
+ *  - {fn} labelAnchorFn
+ *  - {number} labelStandoff
+ *  - {number} labelShift
+ */
 axes.makeLabelFns = function(ax, shift, angle) {
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
@@ -1933,6 +1981,22 @@ function makeDataFn(ax) {
     };
 }
 
+/**
+ * Draw axis ticks
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {string} ticks
+ *  - {number} linewidth
+ *  - {string} tickcolor
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {string or fn} path
+ * - {fn} transFn
+ * - {boolean} crisp (set to false to unset crisp-edge SVG rendering)
+ */
 axes.drawTicks = function(gd, ax, opts) {
     opts = opts || {};
 
@@ -1954,6 +2018,26 @@ axes.drawTicks = function(gd, ax, opts) {
     ticks.attr('transform', opts.transFn);
 };
 
+
+/**
+ * Draw axis grid
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {boolean} showgrid
+ *  - {string} gridcolor
+ *  - {string} gridwidth
+ *  - {boolean} zeroline
+ *  - {string} type
+ *  - {string} dtick
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {string or fn} path
+ * - {fn} transFn
+ * - {boolean} crisp (set to false to unset crisp-edge SVG rendering)
+ */
 axes.drawGrid = function(gd, ax, opts) {
     opts = opts || {};
 
@@ -1984,6 +2068,24 @@ axes.drawGrid = function(gd, ax, opts) {
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
 
+/**
+ * Draw axis zero-line
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {boolean} zeroline
+ *  - {number} zerolinewidth
+ *  - {string} zerolinecolor
+ *  - {number (optional)} _gridWidthCrispRound
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {object} counterAxis (full axis object corresponding to counter axis)
+ * - {string or fn} path
+ * - {fn} transFn
+ * - {boolean} crisp (set to false to unset crisp-edge SVG rendering)
+ */
 axes.drawZeroLine = function(gd, ax, opts) {
     opts = opts || opts;
 
@@ -2019,6 +2121,22 @@ axes.drawZeroLine = function(gd, ax, opts) {
         .style('stroke-width', strokeWidth + 'px');
 };
 
+/**
+ * Draw axis tick labels
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {boolean} showticklabels
+ *  - {number} tickangle
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {fn} transFn
+ * - {fn} labelXFn
+ * - {fn} labelYFn
+ * - {fn} labelAnchorFn
+ */
 axes.drawLabels = function(gd, ax, opts) {
     opts = opts || {};
 
