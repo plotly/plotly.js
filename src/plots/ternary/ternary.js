@@ -446,7 +446,7 @@ proto.drawAx = function(ax) {
         layer: axLayer,
         path: tickPath,
         transFn: transFn,
-        noCrisp: true
+        crisp: false
     });
 
     Axes.drawGrid(gd, ax, {
@@ -454,7 +454,7 @@ proto.drawAx = function(ax) {
         layer: _this.layers[axLetter + 'grid'],
         path: gridPath,
         transFn: transFn,
-        noCrisp: true
+        crisp: false
     });
 
     var labelFns = Axes.makeLabelFns(ax, 0, counterAngle);

@@ -1946,7 +1946,7 @@ axes.drawTicks = function(gd, ax, opts) {
     ticks.enter().append('path')
         .classed(cls, 1)
         .classed('ticks', 1)
-        .classed('crisp', !opts.noCrisp)
+        .classed('crisp', opts.crisp !== false)
         .call(Color.stroke, ax.tickcolor)
         .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
         .attr('d', opts.path);
@@ -1966,7 +1966,7 @@ axes.drawGrid = function(gd, ax, opts) {
 
     grid.enter().append('path')
         .classed(cls, 1)
-        .classed('crisp', !opts.noCrisp)
+        .classed('crisp', opts.crisp !== false)
         .attr('d', opts.path)
         .each(function(d) {
             if(ax.zeroline && (ax.type === 'linear' || ax.type === '-') &&
@@ -1998,7 +1998,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
     zl.enter().append('path')
         .classed(cls, 1)
         .classed('zl', 1)
-        .classed('crisp', !opts.noCrisp)
+        .classed('crisp', opts.crisp !== false)
         .attr('d', opts.path)
         .each(function() {
             // use the fact that only one element can enter to trigger a sort.

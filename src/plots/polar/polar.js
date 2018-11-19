@@ -412,7 +412,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             layer: layers['radial-axis'],
             path: Axes.makeTickPath(ax, 0, tickSign),
             transFn: transFn,
-            noCrisp: true
+            crisp: false
         });
 
         Axes.drawGrid(gd, ax, {
@@ -420,7 +420,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             layer: layers['radial-grid'],
             path: gridPathFn,
             transFn: Lib.noop,
-            noCrisp: true
+            crisp: false
         });
 
         Axes.drawLabels(gd, ax, {
@@ -625,7 +625,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             layer: layers['angular-axis'],
             path: 'M' + (tickSign * pad) + ',0h' + (tickSign * ax.ticklen),
             transFn: transFn2,
-            noCrisp: true
+            crisp: false
         });
 
         Axes.drawGrid(gd, ax, {
@@ -633,7 +633,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             layer: layers['angular-grid'],
             path: gridPathFn,
             transFn: Lib.noop,
-            noCrisp: true
+            crisp: false
         });
 
         Axes.drawLabels(gd, ax, {
