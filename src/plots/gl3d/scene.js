@@ -222,7 +222,6 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
         var update = {};
         update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
-        Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, update);
         scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
@@ -702,10 +701,10 @@ proto.setCamera = function setCamera(cameraData) {
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
-    var cameraData = this.getCamera(),
-        cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera'),
-        cameraDataLastSave = cameraNestedProp.get(),
-        hasChanged = false;
+    var cameraData = this.getCamera();
+    var cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
+    var cameraDataLastSave = cameraNestedProp.get();
+    var hasChanged = false;
 
     function same(x, y, i, j) {
         var vectors = ['up', 'center', 'eye'],
@@ -725,7 +724,14 @@ proto.saveCamera = function saveCamera(layout) {
         }
     }
 
-    if(hasChanged) cameraNestedProp.set(cameraData);
+    if(hasChanged) {
+        cameraNestedProp.set(cameraData);
+
+        var fullLayout = this.fullLayout;
+        var cameraFullNP = Lib.nestedProperty(fullLayout, this.id + '.camera');
+        cameraFullNP.set(cameraData);
+        Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, cameraData);
+    }
 
     return hasChanged;
 };
@@ -744,6 +750,19 @@ proto.updateFx = function(dragmode, hovermode) {
             camera.mode = 'turntable';
             camera.keyBindingMode = 'rotate';
 
+            // The setter for camera.mode animates the transition to z-up,
+            // but only if we *don't* explicitly set z-up earlier via the
+            // relayout. So push `up` back to layout & fullLayout manually now.
+            var gd = this.graphDiv;
+            var layout = gd.layout;
+            var fullLayout = gd._fullLayout;
+            var attr = this.id + '.camera.up';
+            var edits = {};
+            var zUp = {x: 0, y: 0, z: 1};
+            edits[attr] = zUp;
+            Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
+            this.fullSceneLayout.camera.up = zUp;
+            Lib.nestedProperty(gd.layout, attr).set(zUp);
         } else {
 
             // none rotation modes [pan or zoom]
