@@ -1005,7 +1005,7 @@ function nodeHash(node) {
  * note! We'd better not be exporting from a page
  * with a <base> or the svg will not be portable!
  */
-drawing.setClipUrl = function(s, localId) {
+drawing.setClipUrl = function(s, localId, gd) {
     if(!localId) {
         s.attr('clip-path', null);
         return;
@@ -1025,7 +1025,9 @@ drawing.setClipUrl = function(s, localId) {
         }
     }
 
-    s.attr('clip-path', 'url(' + drawing.baseUrl + '#' + localId + ')');
+    var baseUrl = gd._context.staticPlot ? '' : drawing.baseUrl;
+
+    s.attr('clip-path', 'url(' + baseUrl + '#' + localId + ')');
 };
 
 drawing.getTranslate = function(element) {
