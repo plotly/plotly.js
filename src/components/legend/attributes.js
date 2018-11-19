@@ -128,7 +128,7 @@ module.exports = {
         role: 'style',
         editType: 'legend',
         description: [
-            'Sets the vertical alignment of the symbol with respect to the `text`.',
+            'Sets the vertical alignment of the symbols with respect to their associated text.',
         ].join(' ')
     }
 };
