@@ -168,33 +168,33 @@ describe('Test Gl3d layout defaults', function() {
             layoutIn = { scene: {} };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
-                .toBe('orbit', 'to orbit by default');
+                .toBe('turntable', 'to turntable by default');
 
-            layoutIn = { scene: { dragmode: 'turntable' } };
+            layoutIn = { scene: { dragmode: 'orbit' } };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
-                .toBe('turntable', 'to user val if valid');
+                .toBe('orbit', 'to user val if valid');
 
-            layoutIn = { scene: {}, dragmode: 'turntable' };
+            layoutIn = { scene: {}, dragmode: 'orbit' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
-                .toBe('turntable', 'to user layout val if valid and 3d only');
+                .toBe('orbit', 'to user layout val if valid and 3d only');
 
             layoutIn = { scene: {}, dragmode: 'invalid' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
-                .toBe('orbit', 'to orbit if invalid and 3d only');
+                .toBe('turntable', 'to turntable if invalid and 3d only');
 
             layoutIn = { scene: {}, dragmode: 'orbit' };
             layoutOut._basePlotModules.push({ name: 'cartesian' });
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
-                .toBe('orbit', 'to default if not 3d only');
+                .toBe('turntable', 'to default if not 3d only');
 
             layoutIn = { scene: {}, dragmode: 'not gonna work' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
-                .toBe('orbit', 'to default if not valid');
+                .toBe('turntable', 'to default if not valid');
         });
 
         it('should coerce hovermode', function() {

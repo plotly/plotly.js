@@ -115,7 +115,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
 
             if(!x || !y || !z) {
                 enableTurnTable();
-            } else if(z / Math.sqrt(x*x + y*y + z*z) > 0.999) {
+            } else if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) {
                 enableTurnTable();
             }
         } else {
