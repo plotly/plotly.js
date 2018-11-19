@@ -1195,7 +1195,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
 
         if(_module) {
             _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            Lib.coerceHoverinfo(traceIn, traceOut, layout);
+            if(!traceOut.hovertemplate) Lib.coerceHoverinfo(traceIn, traceOut, layout);
         }
 
         if(!Registry.traceIs(traceOut, 'noOpacity')) coerce('opacity');

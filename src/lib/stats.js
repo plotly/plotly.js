@@ -10,7 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 
 /**
  * aggNums() returns the result of an aggregate function applied to an array of

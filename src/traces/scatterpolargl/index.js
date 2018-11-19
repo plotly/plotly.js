@@ -46,9 +46,12 @@ function calc(gd, trace) {
 
     // For graphs with very large number of points and array marker.size,
     // use average marker size instead to speed things up.
-    var ppad = len < TOO_MANY_POINTS ?
-        calcMarkerSize(trace, len) :
-        2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+    var ppad;
+    if(len < TOO_MANY_POINTS) {
+        ppad = calcMarkerSize(trace, len);
+    } else if(opts.marker) {
+        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+    }
     trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {ppad: ppad});
 
     return [{x: false, y: false, t: stash, trace: trace}];

@@ -2163,6 +2163,66 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('hovertemplateString', function() {
+        it('evaluates attributes', function() {
+            expect(Lib.hovertemplateString('foo %{bar}', {}, {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('evaluates attributes with a dot in their name', function() {
+            expect(Lib.hovertemplateString('%{marker.size}', {}, {'marker.size': 12}, {marker: {size: 14}})).toEqual('12');
+        });
+
+        it('evaluates nested properties', function() {
+            expect(Lib.hovertemplateString('foo %{bar.baz}', {}, {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        });
+
+        it('evaluates array nested properties', function() {
+            expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('subtitutes multiple matches', function() {
+            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        });
+
+        it('replaces missing matches with template string', function() {
+            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, {group: 1})).toEqual('foo 1 %{trace}');
+        });
+
+        it('uses the value from the first object with the specified key', function() {
+            var obj1 = {a: 'first'}, obj2 = {a: 'second', foo: {bar: 'bar'}};
+
+            // Simple key
+            expect(Lib.hovertemplateString('foo %{a}', {}, obj1, obj2)).toEqual('foo first');
+            expect(Lib.hovertemplateString('foo %{a}', {}, obj2, obj1)).toEqual('foo second');
+
+            // Nested Keys
+            expect(Lib.hovertemplateString('foo %{foo.bar}', {}, obj1, obj2)).toEqual('foo bar');
+
+            // Nested keys with 0
+            expect(Lib.hovertemplateString('y: %{y}', {}, {y: 0}, {y: 1})).toEqual('y: 0');
+        });
+
+        it('formats value using d3 mini-language', function() {
+            expect(Lib.hovertemplateString('a: %{a:.0%}', {}, {a: 0.123})).toEqual('a: 12%');
+            expect(Lib.hovertemplateString('b: %{b:2.2f}', {}, {b: 43})).toEqual('b: 43.00');
+        });
+
+        it('looks for default label if no format is provided', function() {
+            expect(Lib.hovertemplateString('y: %{y}', {yLabel: '0.1'}, {y: 0.123})).toEqual('y: 0.1');
+        });
+
+        it('warns user up to 10 times if a variable cannot be found', function() {
+            spyOn(Lib, 'warn').and.callThrough();
+            Lib.hovertemplateString('%{idontexist}', {});
+            expect(Lib.warn.calls.count()).toBe(1);
+
+            for(var i = 0; i < 15; i++) {
+                Lib.hovertemplateString('%{idontexist}', {});
+            }
+            expect(Lib.warn.calls.count()).toBe(10);
+        });
+    });
+
     describe('relativeAttr()', function() {
         it('replaces the last part always', function() {
             expect(Lib.relativeAttr('annotations[3].x', 'y')).toBe('annotations[3].y');
@@ -2457,6 +2517,88 @@ describe('Test lib.js:', function() {
             };
 
             expect(toContainer).toEqual(expected);
+        });
+    });
+
+    describe('concat', function() {
+        var concat = Lib.concat;
+
+        beforeEach(function() {
+            spyOn(Array.prototype, 'concat').and.callThrough();
+        });
+
+        it('works with multiple Arrays', function() {
+            var res = concat([1], [[2], 3], [{a: 4}, 5, 6]);
+            expect(Array.prototype.concat.calls.count()).toBe(1);
+
+            // note: can't `concat` in the `expect` if we want to count native
+            // `Array.concat calls`, because `toEqual` calls `Array.concat`
+            // profusely itself.
+            expect(res).toEqual([1, [2], 3, {a: 4}, 5, 6]);
+        });
+
+        it('works with some empty arrays', function() {
+            var a1 = [1];
+            var res = concat(a1, [], [2, 3]);
+            expect(Array.prototype.concat.calls.count()).toBe(1);
+            expect(res).toEqual([1, 2, 3]);
+            expect(a1).toEqual([1]); // did not mutate a1
+
+            Array.prototype.concat.calls.reset();
+            var a1b = concat(a1, []);
+            var a1c = concat([], a1b);
+            var a1d = concat([], a1c, []);
+            expect(Array.prototype.concat.calls.count()).toBe(0);
+
+            expect(a1d).toEqual([1]);
+            // does not mutate a1, but *will* return it unchanged if it's the
+            // only one with data
+            expect(a1d).toBe(a1);
+
+            expect(concat([], [0], [1, 0], [2, 0, 0])).toEqual([0, 1, 0, 2, 0, 0]);
+
+            // a single typedArray will keep its identity (and type)
+            // even if other empty arrays don't match type.
+            var f1 = new Float32Array([1, 2]);
+            Array.prototype.concat.calls.reset();
+            res = concat([], f1, new Float64Array([]));
+            expect(Array.prototype.concat.calls.count()).toBe(0);
+            expect(res).toBe(f1);
+            expect(f1).toEqual(new Float32Array([1, 2]));
+        });
+
+        it('works with all empty arrays', function() {
+            [[], [[]], [[], []], [[], [], [], []]].forEach(function(empties) {
+                Array.prototype.concat.calls.reset();
+                var res = concat.apply(null, empties);
+                expect(Array.prototype.concat.calls.count()).toBe(0);
+                expect(res).toEqual([]);
+            });
+        });
+
+        it('converts mismatched types to Array', function() {
+            [
+                [[1, 2], new Float64Array([3, 4])],
+                [new Float64Array([1, 2]), [3, 4]],
+                [new Float64Array([1, 2]), new Float32Array([3, 4])]
+            ].forEach(function(mismatch) {
+                Array.prototype.concat.calls.reset();
+                var res = concat.apply(null, mismatch);
+                // no concat - all entries moved over individually
+                expect(Array.prototype.concat.calls.count()).toBe(0);
+                expect(res).toEqual([1, 2, 3, 4]);
+            });
+        });
+
+        it('concatenates matching TypedArrays preserving type', function() {
+            [Float32Array, Float64Array, Int16Array, Int32Array].forEach(function(Type, i) {
+                var v = i * 10;
+                Array.prototype.concat.calls.reset();
+                var res = concat([], new Type([v]), new Type([v + 1, v]), new Type([v + 2, v, v]));
+                // no concat - uses `TypedArray.set`
+                expect(Array.prototype.concat.calls.count()).toBe(0);
+                expect(res).toEqual(new Type([v, v + 1, v, v + 2, v, v]));
+            });
         });
     });
 });

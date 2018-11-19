@@ -14,6 +14,8 @@ var transitions = require('../assets/transitions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
+var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/scatter/constants');
 
 var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
@@ -1820,4 +1822,18 @@ describe('Test scatter *clipnaxis*:', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/scatter-colorscale-colorbar');
+    var mockCopy = Lib.extendDeep({}, mock);
+
+    var marker = mockCopy.data[0].marker;
+    marker.opacity = [];
+    marker.symbol = [];
+    for(var i = 0; i < mockCopy.data[0].y.length; ++i) {
+        marker.opacity.push(0.5);
+        marker.symbol.push('square');
+    }
+    checkEventData(mockCopy, 540, 260, constants.eventDataKeys);
 });

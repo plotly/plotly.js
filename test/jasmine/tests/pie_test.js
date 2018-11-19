@@ -691,6 +691,62 @@ describe('Pie traces', function() {
               .then(done);
         });
     });
+
+    it('should be able to restyle title color', function(done) {
+        function _assert(msg, exp) {
+            var title = d3.select('.titletext > text').node();
+            expect(title.style.fill).toBe(exp.color, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: 'yo',
+            titlefont: {color: 'blue'}
+        }])
+        .then(function() {
+            _assert('base', {color: 'rgb(0, 0, 255)'});
+            return Plotly.restyle(gd, 'titlefont.color', 'red');
+        })
+        .then(function() {
+            _assert('base', {color: 'rgb(255, 0, 0)'});
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to react with new text colors', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside'
+        }])
+        .then(_checkFontColors(['rgb(255, 255, 255)', 'rgb(68, 68, 68)', 'rgb(255, 255, 255)']))
+        .then(function() {
+            gd.data[0].insidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .then(function() {
+            delete gd.data[0].insidetextfont.color;
+            gd.data[0].textfont = {color: 'blue'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].textposition = 'outside';
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].outsidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {
@@ -789,7 +845,7 @@ describe('pie hovering', function() {
                 'curveNumber', 'pointNumber', 'pointNumbers',
                 'data', 'fullData',
                 'label', 'color', 'value',
-                'i', 'v'
+                'i', 'v', 'percent', 'text'
             ];
 
             expect(Object.keys(hoverData.points[0]).sort()).toEqual(fields.sort());
@@ -955,6 +1011,72 @@ describe('pie hovering', function() {
             .then(function() {
                 assertLabel('0\n12|345|678@91\n99@9%');
             })
+            .then(done);
+        });
+
+        it('should use hovertemplate if specified', function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['4', '5', '33.3%'].join('\n'),
+                    ['rgb(31, 119, 180)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)'],
+                    'initial'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{value}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['5'].join('\n'),
+                    null,
+                    'hovertemplate %{value}'
+                );
+
+                return Plotly.restyle(gd, {
+                    'text': [['A', 'B', 'C', 'D', 'E']],
+                    'hovertemplate': '%{text}<extra></extra>'
+                });
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['E'].join('\n'),
+                    null,
+                    'hovertemplate %{text}'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{percent}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['33.3%'].join('\n'),
+                    null,
+                    'hovertemplate %{percent}'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{label}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['4'].join('\n'),
+                    null,
+                    'hovertemplate %{label}'
+                );
+            })
+            .then(function() { return Plotly.restyle(gd, 'hovertemplate', [['', '', '', '', 'ht 5 %{percent:0.2%}<extra></extra>']]); })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['ht 5 33.33%'].join('\n'),
+                    null,
+                    'hovertemplate arrayOK'
+                );
+            })
+            .catch(fail)
             .then(done);
         });
     });

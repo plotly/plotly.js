@@ -1305,10 +1305,14 @@ describe('Test scattergl autorange:', function() {
     });
 
     describe('should return the approximative values for ~big~ data', function() {
+        var gd;
+
         beforeEach(function() {
+            gd = createGraphDiv();
             // to avoid expansive draw calls (which could be problematic on CI)
             spyOn(ScatterGl, 'plot').and.callFake(function(gd) {
                 gd._fullLayout._plots.xy._scene.scatter2d = {draw: function() {}};
+                gd._fullLayout._plots.xy._scene.line2d = {draw: function() {}};
             });
         });
 
@@ -1327,8 +1331,6 @@ describe('Test scattergl autorange:', function() {
         }
 
         it('@gl - case scalar marker.size', function(done) {
-            var gd = createGraphDiv();
-
             Plotly.newPlot(gd, [{
                 type: 'scattergl',
                 mode: 'markers',
@@ -1345,8 +1347,6 @@ describe('Test scattergl autorange:', function() {
         });
 
         it('@gl - case array marker.size', function(done) {
-            var gd = createGraphDiv();
-
             Plotly.newPlot(gd, [{
                 type: 'scattergl',
                 mode: 'markers',
@@ -1357,6 +1357,20 @@ describe('Test scattergl autorange:', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.119, 1.119], 2, 'x range');
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.199, 1.199], 2, 'y range');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl - case mode:lines', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scattergl',
+                mode: 'lines',
+                y: y,
+            }])
+            .then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0, N - 1], 2, 'x range');
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.0555, 1.0555], 2, 'y range');
             })
             .catch(failTest)
             .then(done);

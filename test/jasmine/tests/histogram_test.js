@@ -13,6 +13,8 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var failTest = require('../assets/fail_test');
 
+var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/histogram/constants');
 
 describe('Test histogram', function() {
     'use strict';
@@ -531,6 +533,16 @@ describe('Test histogram', function() {
             var trace2 = {x: [5, 5.5, 6, 6.5]};
             var trace3 = {x: [1, 1.1, 1.2, 1.3], xaxis: 'x2'};
             var trace4 = {x: [1, 1.2, 1.4, 1.6], yaxis: 'y2'};
+
+            expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 3, 5]);
+            expect(calcPositions(trace3)).toBeCloseToArray([1.1, 1.3], 5);
+        });
+
+        it('can handle TypedArrays', function() {
+            var trace1 = {x: new Float32Array([1, 2, 3, 4])};
+            var trace2 = {x: new Float32Array([5, 5.5, 6, 6.5])};
+            var trace3 = {x: new Float64Array([1, 1.1, 1.2, 1.3]), xaxis: 'x2'};
+            var trace4 = {x: new Float64Array([1, 1.2, 1.4, 1.6]), yaxis: 'y2'};
 
             expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 3, 5]);
             expect(calcPositions(trace3)).toBeCloseToArray([1.1, 1.3], 5);
@@ -1059,4 +1071,9 @@ describe('getBinSpanLabelRound', function() {
             Lib.dateTime2ms('2009-08-01', cn), Lib.dateTime2ms('2019-07-01', cn)
         ]);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/hist_category');
+    checkEventData(mock, 100, 200, constants.eventDataKeys);
 });

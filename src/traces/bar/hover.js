@@ -137,6 +137,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     fillHoverText(di, trace, pointData);
     Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
+    pointData.hovertemplate = trace.hovertemplate;
     return [pointData];
 }
 
