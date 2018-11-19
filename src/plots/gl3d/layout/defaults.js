@@ -97,6 +97,32 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
     }
 
+    function enableTurnTable() {
+        sceneLayoutIn.dragmode = 'turntable';
+    }
+
+    if(!sceneLayoutIn.dragmode) {
+        // Because the default is now set to orbit mode
+        // (i.e. in order to apply camera.z.up at init time)
+        // we set turnable our disarable option here.
+
+        if(sceneLayoutIn.camera &&
+            sceneLayoutIn.camera.up) {
+
+            var x = sceneLayoutIn.camera.up.x;
+            var y = sceneLayoutIn.camera.up.y;
+            var z = sceneLayoutIn.camera.up.z;
+
+            if(!x || !y || !z) {
+                enableTurnTable();
+            } else if(z / Math.sqrt(x*x + y*y + z*z) > 0.999) {
+                enableTurnTable();
+            }
+        } else {
+            enableTurnTable();
+        }
+    }
+
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
