@@ -1011,21 +1011,8 @@ drawing.setClipUrl = function(s, localId, gd) {
         return;
     }
 
-    if(drawing.baseUrl === undefined) {
-        var base = d3.select('base');
-
-        // Stash base url once and for all!
-        // We may have to stash this elsewhere when
-        // we'll try to support for child windows
-        // more info -> https://github.com/plotly/plotly.js/issues/702
-        if(base.size() && base.attr('href')) {
-            drawing.baseUrl = window.location.href.split('#')[0];
-        } else {
-            drawing.baseUrl = '';
-        }
-    }
-
-    var baseUrl = gd._context.staticPlot ? '' : drawing.baseUrl;
+    var context = gd._context;
+    var baseUrl = context.staticPlot ? '' : (context.baseUrl || '');
 
     s.attr('clip-path', 'url(' + baseUrl + '#' + localId + ')');
 };

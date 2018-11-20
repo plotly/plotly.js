@@ -110,9 +110,6 @@ exports.plot = function(gd, data, layout, config) {
     // so we can share cached text across tabs
     Drawing.makeTester();
 
-    // clear stashed base url
-    delete Drawing.baseUrl;
-
     // collect promises for any async actions during plotting
     // any part of the plotting code can push to gd._promises, then
     // before we move to the next step, we check that they're all
@@ -419,7 +416,16 @@ function opaqueSetBackground(gd, bgColor) {
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Lib.extendDeep({}, defaultConfig);
+    if(!gd._context) {
+        gd._context = Lib.extendDeep({}, defaultConfig);
+
+        // stash <base> href, used to make robust clipPath URLs
+        var base = d3.select('base');
+        gd._context.baseUrl = base.size() && base.attr('href') ?
+            window.location.href.split('#')[0] :
+            '';
+    }
+
     var context = gd._context;
 
     var i, keys, key;

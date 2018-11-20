@@ -19,15 +19,12 @@ describe('Drawing', function() {
         afterEach(function() {
             this.svg.remove();
             this.g.remove();
-
-            // unstash base url from Drawing module object
-            delete Drawing.baseUrl;
         });
 
         it('should set the clip-path attribute', function() {
             expect(this.g.attr('clip-path')).toBe(null);
 
-            Drawing.setClipUrl(this.g, 'id1');
+            Drawing.setClipUrl(this.g, 'id1', {_context: {}});
 
             expect(this.g.attr('clip-path')).toEqual('url(#id1)');
         });
@@ -49,7 +46,7 @@ describe('Drawing', function() {
             // grab window URL
             var href = window.location.href;
 
-            Drawing.setClipUrl(this.g, 'id3');
+            Drawing.setClipUrl(this.g, 'id3', {_context: {baseUrl: href}});
 
             expect(this.g.attr('clip-path'))
                 .toEqual('url(' + href + '#id3)');
@@ -63,10 +60,12 @@ describe('Drawing', function() {
                 .attr('href', 'https://plot.ly/#hash');
 
             window.location.hash = 'hash';
+            var href = window.location.href;
+            var href2 = href.split('#')[0];
 
-            Drawing.setClipUrl(this.g, 'id4');
+            Drawing.setClipUrl(this.g, 'id4', {_context: {baseUrl: href2}});
 
-            var expected = 'url(' + window.location.href.split('#')[0] + '#id4)';
+            var expected = 'url(' + href2 + '#id4)';
 
             expect(this.g.attr('clip-path')).toEqual(expected);
 

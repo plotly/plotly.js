@@ -1,6 +1,5 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -370,7 +369,6 @@ describe('Plotly.Snapshot', function() {
         });
 
         it('should work on pages with <base>', function(done) {
-            delete Drawing.baseUrl;
             var base = d3.select('body')
                 .append('base')
                 .attr('href', 'https://plot.ly');
@@ -396,7 +394,6 @@ describe('Plotly.Snapshot', function() {
             .catch(failTest)
             .then(function() {
                 base.remove();
-                delete Drawing.baseUrl;
                 done();
             });
         });
