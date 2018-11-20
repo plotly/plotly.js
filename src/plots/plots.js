@@ -1362,6 +1362,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('hidesources');
 
     coerce('colorway');
+    coerce('colorscale.sequential');
+    coerce('colorscale.sequentialminus');
+    coerce('colorscale.diverging');
 
     coerce('datarevision');
 

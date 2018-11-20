@@ -84,9 +84,9 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     doUpdate(autoAttr, (auto !== false || (min === undefined && max === undefined)));
 
     if(container.autocolorscale) {
-        if(min * max < 0) scl = scales.RdBu;
-        else if(min >= 0) scl = scales.Reds;
-        else scl = scales.Blues;
+        if(min * max < 0) scl = container.diverging || scales.RdBu;
+        else if(min >= 0) scl = container.sequential || scales.Reds;
+        else scl = container.sequentialminus || scales.Blues;
 
         // reversescale is handled at the containerOut level
         doUpdate('colorscale', scl, container.reversescale ? flipScale(scl) : scl);

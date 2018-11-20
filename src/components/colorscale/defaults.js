@@ -18,7 +18,6 @@ var colorbarDefaults = require('../colorbar/defaults');
 var isValidScale = require('./is_valid_scale');
 var flipScale = require('./flip_scale');
 
-
 module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, opts) {
     var prefix = opts.prefix,
         cLetter = opts.cLetter,
@@ -43,7 +42,13 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     var autoColorscaleDflt;
     if(sclIn !== undefined) autoColorscaleDflt = !isValidScale(sclIn);
     coerce(prefix + 'autocolorscale', autoColorscaleDflt);
-    var sclOut = coerce(prefix + 'colorscale');
+
+    var layoutColorscale = layout.colorscale || {};
+    containerOut.diverging = layoutColorscale.diverging;
+    containerOut.sequential = layoutColorscale.sequential;
+    containerOut.sequentialminus = layoutColorscale.sequentialminus;
+    var dfltScl = containerOut.diverging;
+    var sclOut = coerce(prefix + 'colorscale', dfltScl);
 
     // reversescale is handled at the containerOut level
     var reverseScale = coerce(prefix + 'reversescale');

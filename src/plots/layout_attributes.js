@@ -188,6 +188,29 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the default trace colors.'
     },
+    colorscale: {
+        sequential: {
+            valType: 'colorscale',
+            dflt: false,
+            role: 'style',
+            editType: 'calc',
+            description: 'Sets the default sequential colorscale for positive values.'
+        },
+        sequentialminus: {
+            valType: 'colorscale',
+            dflt: false,
+            role: 'style',
+            editType: 'calc',
+            description: 'Sets the default sequential colorscale for negative values.'
+        },
+        diverging: {
+            valType: 'colorscale',
+            dflt: false,
+            role: 'style',
+            editType: 'calc',
+            description: 'Sets the default diverging colorscale.'
+        }
+    },
     datarevision: {
         valType: 'any',
         role: 'info',

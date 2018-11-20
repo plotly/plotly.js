@@ -296,6 +296,41 @@ describe('Test colorscale:', function() {
             handleDefaults(traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.showscale).toBe(false);
         });
+
+        it('should use global colorscale.diverging if no colorscale is specified', function() {
+            traceIn = {
+                zmin: -10,
+                zmax: 10
+            };
+            var divergingScale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            var layout2 = {
+                colorscale: {
+                    diverging: divergingScale
+                },
+                _dfltTitle: {colorbar: 'cb'}
+            };
+            handleDefaults(traceIn, traceOut, layout2, coerce, opts);
+            expect(traceOut.colorscale).toBe(divergingScale);
+        });
+
+        it('should not use layout colorscale.diverging if colorscale is specified', function() {
+            var divergingScale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            var traceColorscale = [[0, 'rgb(128,128,128)'], [1, 'rgb(255,255,255)']];
+            traceIn = {
+                zmin: -10,
+                zmax: 10,
+                colorscale: traceColorscale
+            };
+
+            var layout2 = {
+                colorscale: {
+                    diverging: divergingScale
+                },
+                _dfltTitle: {colorbar: 'cb'}
+            };
+            handleDefaults(traceIn, traceOut, layout2, coerce, opts);
+            expect(traceOut.colorscale).toBe(traceColorscale);
+        });
     });
 
     describe('handleDefaults (scatter-like version)', function() {
@@ -348,6 +383,41 @@ describe('Test colorscale:', function() {
             handleDefaults(traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.showscale).toBe(true);
         });
+
+        it('should use layout colorscale.diverging if no colorscale is specified', function() {
+            traceIn = {
+                zmin: -10,
+                zmax: 10
+            };
+            var divergingScale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            var layout2 = {
+                colorscale: {
+                    diverging: divergingScale
+                },
+                _dfltTitle: {colorbar: 'cb'}
+            };
+            handleDefaults(traceIn, traceOut, layout2, coerce, opts);
+            expect(traceOut.marker.colorscale).toBe(divergingScale);
+        });
+
+        it('should not use layout colorscale.diverging if colorscale is specified', function() {
+            var divergingScale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            var traceColorscale = [[0, 'rgb(128,128,128)'], [1, 'rgb(255,255,255)']];
+            traceIn = {
+                marker: {
+                    colorscale: traceColorscale
+                }
+            };
+
+            var layout2 = {
+                colorscale: {
+                    diverging: divergingScale
+                },
+                _dfltTitle: {colorbar: 'cb'}
+            };
+            handleDefaults(traceIn, traceOut, layout2, coerce, opts);
+            expect(traceOut.marker.colorscale).toBe(traceColorscale);
+        });
     });
 
     describe('calc', function() {
@@ -366,6 +436,7 @@ describe('Test colorscale:', function() {
                 autocolorscale: true,
                 _input: {autocolorscale: true}
             };
+
             z = [[0, -1.5], [-2, -10]];
             calcColorscale(trace, z, '', 'z');
             expect(trace.autocolorscale).toBe(true);
@@ -376,6 +447,8 @@ describe('Test colorscale:', function() {
             trace = {
                 type: 'heatmap',
                 z: [[0, -1.5], [-2, -10]],
+                zmin: -10,
+                zmax: 0,
                 autocolorscale: true,
                 _input: {}
             };
