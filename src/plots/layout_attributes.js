@@ -10,6 +10,8 @@
 
 var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
+var padAttrs = require('./pad_attributes');
+var extendFlat = require('../lib/extend').extendFlat;
 
 var globalFont = fontAttrs({
     editType: 'calc',
@@ -102,6 +104,16 @@ module.exports = {
                 'docu', // TODO document
             ].join(' ')
         },
+        pad: extendFlat(padAttrs({editType: 'layoutstyle'}), {
+            description: [
+                'Sets the padding of the title.',
+                'Each padding value only applies when the corresponding',
+                'xanchor / yanchor value is set accordingly. E.g. for left',
+                'padding to take effect, xanchor must be set to left.',
+                'The same rule applies if xanchor/yanchor is determined automatically.',
+                'Padding is muted if respective anchor value is middle/center.'
+            ].join(' ')
+        }),
         editType: 'layoutstyle'
     },
     autosize: {

@@ -14,6 +14,7 @@ describe('Plot title', function() {
     'use strict';
 
     var data = [{x: [1, 2, 3], y: [1, 2, 3]}];
+    var titlePad = {t: 10, r: 10, b: 10, l: 10};
     var gd;
 
     beforeEach(function() {
@@ -26,7 +27,8 @@ describe('Plot title', function() {
         desc: 'container',
         select: function() {
             return d3.selectAll('.svg-container').node();
-        }
+        },
+        ref: 'container'
     };
 
     var paperElemSelector = {
@@ -36,7 +38,8 @@ describe('Plot title', function() {
             expect(bgLayer.empty()).toBe(false,
               'No background layer found representing the size of the plot area');
             return bgLayer.node();
-        }
+        },
+        ref: 'paper'
     };
 
     it('is centered horizontally and vertically above the plot by default', function() {
@@ -236,22 +239,196 @@ describe('Plot title', function() {
         expectDefaultCenteredPosition(gd);
     });
 
-    // TODO padding
+    // Horizontal padding
+    [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
+        it('can be placed x pixels away from left ' + refSelector.desc + ' edge', function() {
+            Plotly.plot(gd, data, extendLayout({
+                xref: refSelector.ref,
+                xanchor: 'left',
+                x: 0,
+                pad: titlePad
+            }));
 
-    it('preserves alignment when text is updated via `Plotly.relayout` using an attribute string', function() {
-        // TODO implement once alignment is implemented
+            expect(titleSel().attr('text-anchor')).toBe('start');
+            expect(titleX() - 10).toBe(leftOf(refSelector));
+        });
     });
 
-    it('preserves alignment when text is updated via `Plotly.update` using an attribute string', function() {
-        // TODO implement once alignment is implemented
+    [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
+        it('can be placed x pixels away from right ' + refSelector.desc + ' edge', function() {
+            Plotly.plot(gd, data, extendLayout({
+                xref: refSelector.ref,
+                xanchor: 'right',
+                x: 1,
+                pad: titlePad
+            }));
+
+            expect(titleSel().attr('text-anchor')).toBe('end');
+            expect(titleX() + 10).toBe(rightOf(refSelector));
+        });
     });
 
-    it('discards alignment when text is updated via `Plotly.relayout` by passing a new title object', function() {
-        // TODO implement once alignment is implemented
+    [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
+        it('figures out for itself which horizontal padding applies when {xanchor: \'auto\'}' +
+          refSelector.desc + ' edge', function() {
+            Plotly.plot(gd, data, extendLayout({
+                xref: refSelector.ref,
+                xanchor: 'auto',
+                x: 1,
+                pad: titlePad
+            }));
+
+            expect(titleSel().attr('text-anchor')).toBe('end');
+            expect(titleX() + 10).toBe(rightOf(refSelector));
+
+            Plotly.relayout(gd, 'title.x', 0);
+
+            expect(titleSel().attr('text-anchor')).toBe('start');
+            expect(titleX() - 10).toBe(leftOf(refSelector));
+
+            Plotly.relayout(gd, 'title.x', 0.5);
+            expectCenteredWithin(refSelector);
+        });
     });
 
-    it('discards alignment when text is updated via `Plotly.update` by passing a new title object', function() {
-        // TODO implement once alignment is implemented
+    // Cases when horizontal padding is ignored
+    // (just testing with paper is sufficient)
+    [
+        {pad: {l: 20}, dir: 'left'},
+        {pad: {r: 20}, dir: 'right'}
+    ].forEach(function(testCase) {
+        it('mutes ' + testCase.dir + ' padding for {xanchor: \'center\'}', function() {
+            Plotly.plot(gd, data, extendLayout({
+                xref: 'paper',
+                xanchor: 'middle',
+                x: 0.5,
+                pad: testCase.pad
+            }));
+
+            expectCenteredWithin(paperElemSelector);
+        });
+    });
+
+    it('mutes left padding when xanchor is right', function() {
+        Plotly.plot(gd, data, extendLayout({
+            xref: 'paper',
+            x: 1,
+            xanchor: 'right',
+            pad: {
+                l: 1000
+            }
+        }));
+
+        expectRightEdgeAlignedTo(paperElemSelector);
+    });
+
+    it('mutes right padding when xanchor is left', function() {
+        Plotly.plot(gd, data, extendLayout({
+            xref: 'paper',
+            x: 0,
+            xanchor: 'left',
+            pad: {
+                r: 1000
+            }
+        }));
+
+        expectLeftEdgeAlignedTo(paperElemSelector);
+    });
+
+    // Vertical padding
+    [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
+        it('can be placed x pixels below top ' + refSelector.desc + ' edge', function() {
+            Plotly.plot(gd, data, extendLayout({
+                yref: refSelector.ref,
+                yanchor: 'top',
+                y: 1,
+                pad: titlePad
+            }));
+
+            var capLineY = calcTextCapLineY(titleSel());
+            expect(capLineY).toBe(topOf(refSelector) + 10);
+        });
+    });
+
+    [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
+        it('can be placed x pixels above bottom ' + refSelector.desc + ' edge', function() {
+            Plotly.plot(gd, data, extendLayout({
+                yref: refSelector.ref,
+                yanchor: 'bottom',
+                y: 0,
+                pad: titlePad
+            }));
+
+            var baselineY = calcTextBaselineY(titleSel());
+            expect(baselineY).toBe(bottomOf(refSelector) - 10);
+        });
+    });
+
+    [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
+        it('figures out for itself which vertical padding applies when {yanchor: \'auto\'}' +
+          refSelector.desc + ' edge', function() {
+            Plotly.plot(gd, data, extendLayout({
+                yref: refSelector.ref,
+                yanchor: 'auto',
+                y: 1,
+                pad: titlePad
+            }));
+
+            var capLineY = calcTextCapLineY(titleSel());
+            expect(capLineY).toBe(topOf(refSelector) + 10);
+
+            Plotly.relayout(gd, 'title.y', 0);
+
+            var baselineY = calcTextBaselineY(titleSel());
+            expect(baselineY).toBe(bottomOf(refSelector) - 10);
+
+            Plotly.relayout(gd, 'title.y', 0.5);
+            expectCenteredVerticallyWithin(refSelector);
+        });
+    });
+
+    // Cases when vertical padding is ignored
+    // (just testing with paper is sufficient)
+    [
+        {pad: {t: 20}, dir: 'top'},
+        {pad: {b: 20}, dir: 'bottom'}
+    ].forEach(function(testCase) {
+        it('mutes ' + testCase.dir + ' padding for {yanchor: \'middle\'}', function() {
+            Plotly.plot(gd, data, extendLayout({
+                yref: 'paper',
+                yanchor: 'middle',
+                y: 0.5,
+                pad: testCase.pad
+            }));
+
+            expectCenteredVerticallyWithin(paperElemSelector);
+        });
+    });
+
+    it('mutes top padding when yanchor is bottom', function() {
+        Plotly.plot(gd, data, extendLayout({
+            yref: 'paper',
+            y: 0,
+            yanchor: 'bottom',
+            pad: {
+                t: 1000
+            }
+        }));
+
+        expectBaselineAlignsWithBottomEdgeOf(paperElemSelector);
+    });
+
+    it('mutes bottom padding when yanchor is top', function() {
+        Plotly.plot(gd, data, extendLayout({
+            yref: 'paper',
+            y: 1,
+            yanchor: 'top',
+            pad: {
+                b: 1000
+            }
+        }));
+
+        expectCapLineAlignsWithTopEdgeOf(paperElemSelector);
     });
 
     function extendLayout(titleAttrs) {
@@ -262,6 +439,22 @@ describe('Plot title', function() {
             // exact size of the plot area.
             plot_bgcolor: '#f9f9f9',
         };
+    }
+
+    function topOf(elemSelector) {
+        return elemSelector.select().getBoundingClientRect().top;
+    }
+
+    function rightOf(elemSelector) {
+        return elemSelector.select().getBoundingClientRect().right;
+    }
+
+    function bottomOf(elemSelector) {
+        return elemSelector.select().getBoundingClientRect().bottom;
+    }
+
+    function leftOf(elemSelector) {
+        return elemSelector.select().getBoundingClientRect().left;
     }
 
     function expectLeftEdgeAlignedTo(elemSelector) {
