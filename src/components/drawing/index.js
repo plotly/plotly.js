@@ -1012,7 +1012,7 @@ drawing.setClipUrl = function(s, localId, gd) {
     }
 
     var context = gd._context;
-    var baseUrl = context.staticPlot ? '' : (context.baseUrl || '');
+    var baseUrl = context.exportedPlot ? '' : (context.baseUrl || '');
 
     s.attr('clip-path', 'url(' + baseUrl + '#' + localId + ')');
 };

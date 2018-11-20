@@ -373,7 +373,7 @@ describe('Plotly.Snapshot', function() {
                 .append('base')
                 .attr('href', 'https://plot.ly');
 
-            Plotly.plot(gd, [{ y: [1, 2, 1] }], {}, {staticPlot: true})
+            Plotly.plot(gd, [{ y: [1, 2, 1] }], {}, {exportedPlot: true})
             .then(function() { return Plotly.Snapshot.toSVG(gd); })
             .then(function(svg) {
                 var svgDOM = parser.parseFromString(svg, 'image/svg+xml');

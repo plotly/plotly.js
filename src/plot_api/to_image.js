@@ -138,6 +138,7 @@ function toImage(gd, opts) {
     // extend config for static plot
     var configImage = Lib.extendFlat({}, config, {
         staticPlot: true,
+        exportedPlot: true,
         setBackground: setBackground
     });
 
