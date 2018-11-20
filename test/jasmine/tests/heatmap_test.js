@@ -298,6 +298,11 @@ describe('heatmap calc', function() {
 
         fullTrace._extremes = {};
 
+        // clearCalc used to be (oddly enough) part of supplyDefaults.
+        // Now it's in doCalcData, which we don't include in this partial pathway.
+        fullLayout.xaxis.clearCalc();
+        fullLayout.yaxis.clearCalc();
+
         var out = Heatmap.calc(gd, fullTrace)[0];
         out._xcategories = fullLayout.xaxis._categories;
         out._ycategories = fullLayout.yaxis._categories;

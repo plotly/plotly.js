@@ -445,6 +445,11 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         var xa = mockFigure._fullLayout.xaxis;
         var ya = mockFigure._fullLayout[oppAxisName];
 
+        xa.clearCalc();
+        xa.setScale();
+        ya.clearCalc();
+        ya.setScale();
+
         var plotinfo = {
             id: id,
             plotgroup: plotgroup,
