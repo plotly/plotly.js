@@ -394,19 +394,23 @@ describe('Test gl3d plots', function() {
 
     it('@gl should set the camera dragmode to orbit if the camera.up.z vector is set to be tilted', function(done) {
         Plotly.plot(gd, {
-          data: [{
-            type: 'scatter3d',
-            x: [1, 2, 3],
-            y: [2, 3, 1],
-            z: [3, 1, 2]
-          }],
-          layout: {
-            scene: {
-              camera: {
-                up: { x:-0.5777, y:-0.5777, z:0.5777 }
-              }
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        up: {
+                            x: -0.5777,
+                            y: -0.5777,
+                            z: 0.5777
+                        }
+                    }
+                }
             }
-          }
         })
         .then(delay(20))
         .then(function() {
@@ -417,19 +421,23 @@ describe('Test gl3d plots', function() {
 
     it('@gl should set the camera dragmode to turntable if the camera.up.z vector is set to be upwards', function(done) {
         Plotly.plot(gd, {
-          data: [{
-            type: 'scatter3d',
-            x: [1, 2, 3],
-            y: [2, 3, 1],
-            z: [3, 1, 2]
-          }],
-          layout: {
-            scene: {
-              camera: {
-                up: { x:0, y:0, z:100 }
-              }
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        up: {
+                            x: -0.0001,
+                            y: 0,
+                            z: 123.45
+                        }
+                    }
+                }
             }
-          }
         })
         .then(delay(20))
         .then(function() {
@@ -440,20 +448,18 @@ describe('Test gl3d plots', function() {
 
     it('@gl should set the camera dragmode to turntable if the camera.up is not set', function(done) {
         Plotly.plot(gd, {
-          data: [{
-            type: 'scatter3d',
-            x: [1, 2, 3],
-            y: [2, 3, 1],
-            z: [3, 1, 2]
-          }],
-          layout: {
-            scene: {
-              camera: {
-                eye: { x:1, y:1, z:1 },
-                center: { x:0, y:0, z:0 }
-              }
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                    }
+                }
             }
-          }
         })
         .then(delay(20))
         .then(function() {
@@ -464,19 +470,22 @@ describe('Test gl3d plots', function() {
 
     it('@gl should set the camera dragmode to turntable if any of camera.up.[x|y|z] is missing', function(done) {
         Plotly.plot(gd, {
-          data: [{
-            type: 'scatter3d',
-            x: [1, 2, 3],
-            y: [2, 3, 1],
-            z: [3, 1, 2]
-          }],
-          layout: {
-            scene: {
-              camera: {
-                up: { x:null, z:0 }
-              }
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        up: {
+                            x: null,
+                            z: 0
+                        }
+                    }
+                }
             }
-          }
         })
         .then(delay(20))
         .then(function() {
@@ -487,19 +496,23 @@ describe('Test gl3d plots', function() {
 
     it('@gl should set the camera dragmode to turntable if all camera.up.[x|y|z] are zero or missing', function(done) {
         Plotly.plot(gd, {
-          data: [{
-            type: 'scatter3d',
-            x: [1, 2, 3],
-            y: [2, 3, 1],
-            z: [3, 1, 2]
-          }],
-          layout: {
-            scene: {
-              camera: {
-                up: { x:0, y:0, z:0 }
-              }
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        up: {
+                            x: 0,
+                            y: 0,
+                            z: 0
+                        }
+                    }
+                }
             }
-          }
         })
         .then(delay(20))
         .then(function() {
