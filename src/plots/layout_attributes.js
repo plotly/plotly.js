@@ -189,6 +189,7 @@ module.exports = {
         description: 'Sets the default trace colors.'
     },
     colorscale: {
+        editType: 'calc',
         sequential: {
             valType: 'colorscale',
             dflt: false,
