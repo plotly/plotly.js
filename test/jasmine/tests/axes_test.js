@@ -3099,6 +3099,80 @@ describe('Test axes', function() {
             .then(done);
         });
     });
+
+    describe('*tickson*:', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        function getPositions(query) {
+            var pos = [];
+            d3.selectAll(query).each(function() {
+                pos.push(this.getBoundingClientRect().x);
+            });
+            return pos;
+        }
+
+        function _assert(msg, exp) {
+            var ticks = getPositions('path.xtick');
+            var gridLines = getPositions('path.xgrid');
+            var tickLabels = getPositions('.xtick > text');
+
+            expect(ticks).toBeCloseToArray(exp.ticks, 1, msg + '- ticks');
+            expect(gridLines).toBeCloseToArray(exp.gridLines, 1, msg + '- grid lines');
+            expect(tickLabels.length).toBe(exp.tickLabels.length, msg + '- # of tick labels');
+            tickLabels.forEach(function(tl, i) {
+                expect(tl).toBeWithin(exp.tickLabels[i], 2, msg + '- tick label ' + i);
+            });
+        }
+
+        it('should respond to relayout', function(done) {
+            Plotly.plot(gd, [{
+                x: ['a', 'b', 'c'],
+                y: [1, 2, 1]
+            }], {
+                xaxis: {
+                    ticks: 'inside',
+                    showgrid: true
+                }
+            })
+            .then(function() {
+                _assert('on labels (defaults)', {
+                    ticks: [110.75, 350, 589.25],
+                    gridLines: [110.75, 350, 589.25],
+                    tickLabels: [106.421, 345.671, 585.25]
+                });
+                return Plotly.relayout(gd, 'xaxis.tickson', 'boundaries');
+            })
+            .then(function() {
+                _assert('inside on boundaries', {
+                    ticks: [230.369, 469.619], // N.B. first and last tick are clipped
+                    gridLines: [230.369, 469.619],
+                    tickLabels: [106.421875, 345.671875, 585.25]
+                });
+                return Plotly.relayout(gd, 'xaxis.ticks', 'outside');
+            })
+            .then(function() {
+                _assert('outside on boundaries', {
+                    ticks: [-8.869, 230.369, 469.619, 708.869],
+                    gridLines: [230.369, 469.619],
+                    tickLabels: [106.421875, 345.671875, 585.25]
+                });
+                return Plotly.restyle(gd, 'x', [[1, 2, 1]]);
+            })
+            .then(function() {
+                _assert('fallback to *labels* on non-category axes', {
+                    ticks: [110.75, 206.449, 302.149, 397.85, 493.549, 589.25],
+                    gridLines: [110.75, 206.449, 302.149, 397.85, 493.549, 589.25],
+                    tickLabels: [106.421, 197.121, 292.821, 388.521, 484.221, 584.921]
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 function getZoomInButton(gd) {

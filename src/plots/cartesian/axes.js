@@ -1610,13 +1610,40 @@ axes.drawOne = function(gd, ax, opts) {
     var subplotsWithAx = axes.getSubplots(gd, ax);
 
     var vals = ax._vals = axes.calcTicks(ax);
-    // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
-    // The key case here is removing zero lines when the axis bound is zero
-    var valsClipped = ax._valsClipped = axes.clipEnds(ax, vals);
 
     if(!ax.visible) return;
 
     var transFn = axes.makeTransFn(ax);
+
+    // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
+    // The key case here is removing zero lines when the axis bound is zero
+    var valsClipped;
+    var tickVals;
+    var gridVals;
+
+    if(ax.tickson === 'boundaries') {
+        // draw ticks and grid lines 1/2 a 'category' to the left,
+        // add one item at axis tail
+        var valsBoundaries = vals.map(function(d) {
+            var d2 = Lib.extendFlat({}, d);
+            d2.x -= 0.5;
+            return d2;
+        });
+        // not used for labels; no need to worry about the other tickTextObj keys
+        var d2 = Lib.extendFlat({}, vals[vals.length - 1]);
+        d2.x += 0.5;
+        valsBoundaries.push(d2);
+
+        valsClipped = axes.clipEnds(ax, valsBoundaries);
+        tickVals = ax.ticks === 'inside' ? valsClipped : valsBoundaries;
+        gridVals = valsClipped;
+    } else {
+        valsClipped = axes.clipEnds(ax, vals);
+        tickVals = ax.ticks === 'inside' ? valsClipped : vals;
+        gridVals = valsClipped;
+    }
+
+    ax._valsClipped = valsClipped;
 
     if(!fullLayout._hasOnlyLargeSploms) {
         // keep track of which subplots (by main conteraxis) we've already
@@ -1637,7 +1664,7 @@ axes.drawOne = function(gd, ax, opts) {
                 'M' + counterAxis._offset + ',0h' + counterAxis._length;
 
             axes.drawGrid(gd, ax, {
-                vals: valsClipped,
+                vals: gridVals,
                 layer: plotinfo.gridlayer.select('.' + axId),
                 path: gridPath,
                 transFn: transFn
@@ -1652,7 +1679,6 @@ axes.drawOne = function(gd, ax, opts) {
     }
 
     var tickSigns = axes.getTickSigns(ax);
-    var tickVals = ax.ticks === 'inside' ? valsClipped : vals;
     var tickSubplots = [];
 
     if(ax.ticks) {
