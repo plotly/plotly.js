@@ -178,7 +178,7 @@ describe('Test Gl3d layout defaults', function() {
             layoutIn = { scene: {}, dragmode: 'orbit' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
-                .toBe('orbit', 'to turntable if valid and 3d only');
+                .toBe('orbit', 'to user layout val if valid and 3d only');
 
             layoutIn = { scene: {}, dragmode: 'invalid' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
