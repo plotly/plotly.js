@@ -170,15 +170,13 @@ describe('Plot title', function() {
 
     // xanchor 'auto' test
     [
-        {x: -0.5, expAlignment: 'start'},
         {x: 0, expAlignment: 'start'},
         {x: 0.3, expAlignment: 'start'},
         {x: 0.4, expAlignment: 'middle'},
         {x: 0.5, expAlignment: 'middle'},
         {x: 0.6, expAlignment: 'middle'},
         {x: 0.7, expAlignment: 'end'},
-        {x: 1, expAlignment: 'end'},
-        {x: 1.5, expAlignment: 'end'}
+        {x: 1, expAlignment: 'end'}
     ].forEach(function(testCase) {
         runXAnchorAutoTest(testCase, 'container');
         runXAnchorAutoTest(testCase, 'paper');

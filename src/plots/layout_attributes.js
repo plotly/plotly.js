@@ -64,7 +64,9 @@ module.exports = {
         },
         x: {
             valType: 'number',
-            dflt: '0.5',
+            min: 0,
+            max: 1,
+            dflt: 0.5,
             role: 'style',
             editType: 'layoutstyle',
             description: [
@@ -78,7 +80,7 @@ module.exports = {
             role: 'style',
             editType: 'layoutstyle',
             description: [
-                'Some',
+                'Some', // TODO document
                 'docu',
             ].join(' ')
         },
