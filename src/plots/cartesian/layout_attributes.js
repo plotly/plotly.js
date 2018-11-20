@@ -304,6 +304,19 @@ module.exports = {
             'the axis lines.'
         ].join(' ')
     },
+    tickson: {
+        valType: 'enumerated',
+        values: ['labels', 'boundaries'],
+        role: 'info',
+        editType: 'ticks',
+        description: [
+            'Determines where ticks and grid lines are drawn with respect to their',
+            'corresponding tick labels.',
+            'Only has an effect for axes of `type` *category*.',
+            'When set to *boundaries*, ticks and grid lines are drawn half a category',
+            'to the left/bottom of labels.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],

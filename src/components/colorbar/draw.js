@@ -198,6 +198,7 @@ module.exports = function draw(gd, id) {
                 letter: 'y',
                 font: fullLayout.font,
                 noHover: true,
+                noTickson: true,
                 calendar: fullLayout.calendar  // not really necessary (yet?)
             };
 
