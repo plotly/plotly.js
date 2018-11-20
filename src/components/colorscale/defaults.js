@@ -48,7 +48,9 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     containerOut.sequential = layoutColorscale.sequential;
     containerOut.sequentialminus = layoutColorscale.sequentialminus;
     var dfltScl = containerOut.diverging;
-    var sclOut = coerce(prefix + 'colorscale', dfltScl);
+    var sclOut;
+    if(dfltScl) sclOut = coerce(prefix + 'colorscale', dfltScl);
+    else sclOut = coerce(prefix + 'colorscale');
 
     // reversescale is handled at the containerOut level
     var reverseScale = coerce(prefix + 'reversescale');
