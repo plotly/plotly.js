@@ -665,6 +665,43 @@ describe('legend relayout update', function() {
         .catch(failTest)
         .then(done);
     });
+
+    describe('should update legend valign', function() {
+        var mock = require('@mocks/legend_valign_top.json');
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        function markerOffsetY() {
+            var translateY = d3.select('.legend .traces .layers').attr('transform').match(/translate\(\d+,(-?\d+)\)/)[1];
+            return parseFloat(translateY);
+        }
+
+        it('it should translate markers', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            var top, middle, bottom;
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                top = markerOffsetY();
+                return Plotly.relayout(gd, 'legend.valign', 'middle');
+            })
+            .then(function() {
+                middle = markerOffsetY();
+                expect(middle).toBeGreaterThan(top);
+                return Plotly.relayout(gd, 'legend.valign', 'bottom');
+            })
+            .then(function() {
+                bottom = markerOffsetY();
+                expect(bottom).toBeGreaterThan(middle);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('legend orientation change:', function() {
