@@ -18,7 +18,7 @@ require('es6-promise').polyfill();
 require('../build/plotcss');
 
 // inject default MathJax config
-require('./fonts/mathjax_config');
+require('./fonts/mathjax_config')();
 
 // include registry module and expose register method
 var Registry = require('./registry');

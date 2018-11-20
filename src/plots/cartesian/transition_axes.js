@@ -119,14 +119,11 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     }
 
     function ticksAndAnnotations(xa, ya) {
-        var activeAxIds = [],
-            i;
+        var activeAxIds = [xa._id, ya._id];
+        var i;
 
-        activeAxIds = [xa._id, ya._id];
-
-        for(i = 0; i < activeAxIds.length; i++) {
-            Axes.doTicksSingle(gd, activeAxIds[i], true);
-        }
+        Axes.drawOne(gd, xa, {skipTitle: true});
+        Axes.drawOne(gd, ya, {skipTitle: true});
 
         function redrawObjs(objArray, method, shortCircuit) {
             for(i = 0; i < objArray.length; i++) {

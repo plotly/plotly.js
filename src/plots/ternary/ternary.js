@@ -158,9 +158,6 @@ proto.updateLayers = function(ternaryLayout) {
             } else if(d === 'grids') {
                 grids.forEach(function(d) {
                     layers[d] = s.append('g').classed('grid ' + d, true);
-
-                    var fictID = (d === 'bgrid') ? 'x' : 'y';
-                    layers[d].append('g').classed(fictID, true);
                 });
             }
         });
@@ -250,23 +247,16 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     // fictitious angles and domain, but then rotate and translate
     // it into place at the end
     var aaxis = _this.aaxis = extendFlat({}, ternaryLayout.aaxis, {
-        visible: true,
         range: [amin, sum - bmin - cmin],
         side: 'left',
-        _counterangle: 30,
         // tickangle = 'auto' means 0 anyway for a y axis, need to coerce to 0 here
         // so we can shift by 30.
         tickangle: (+ternaryLayout.aaxis.tickangle || 0) - 30,
         domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
-        _axislayer: _this.layers.aaxis,
-        _gridlayer: _this.layers.agrid,
         anchor: 'free',
         position: 0,
-        _pos: 0, // _this.xaxis.domain[0] * graphSize.w,
         _id: 'y',
-        _length: w,
-        _gridpath: 'M0,0l' + h + ',-' + (w / 2),
-        automargin: false // don't use automargins routine for labels
+        _length: w
     });
     setConvert(aaxis, _this.graphDiv._fullLayout);
     aaxis.setScale();
@@ -274,45 +264,28 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     // baxis goes across the bottom (backward). We can set it up as an x axis
     // without any enclosing transformation.
     var baxis = _this.baxis = extendFlat({}, ternaryLayout.baxis, {
-        visible: true,
         range: [sum - amin - cmin, bmin],
         side: 'bottom',
-        _counterangle: 30,
         domain: _this.xaxis.domain,
-        _axislayer: _this.layers.baxis,
-        _gridlayer: _this.layers.bgrid,
-        _counteraxis: _this.aaxis,
         anchor: 'free',
         position: 0,
-        _pos: 0, // (1 - yDomain0) * graphSize.h,
         _id: 'x',
-        _length: w,
-        _gridpath: 'M0,0l-' + (w / 2) + ',-' + h,
-        automargin: false // don't use automargins routine for labels
+        _length: w
     });
     setConvert(baxis, _this.graphDiv._fullLayout);
     baxis.setScale();
-    aaxis._counteraxis = baxis;
 
     // caxis goes down the right side. Set it up as a y axis, with
     // post-transformation similar to aaxis
     var caxis = _this.caxis = extendFlat({}, ternaryLayout.caxis, {
-        visible: true,
         range: [sum - amin - bmin, cmin],
         side: 'right',
-        _counterangle: 30,
         tickangle: (+ternaryLayout.caxis.tickangle || 0) + 30,
         domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
-        _axislayer: _this.layers.caxis,
-        _gridlayer: _this.layers.cgrid,
-        _counteraxis: _this.baxis,
         anchor: 'free',
         position: 0,
-        _pos: 0, // _this.xaxis.domain[1] * graphSize.w,
         _id: 'y',
-        _length: w,
-        _gridpath: 'M0,0l-' + h + ',' + (w / 2),
-        automargin: false // don't use automargins routine for labels
+        _length: w
     });
     setConvert(caxis, _this.graphDiv._fullLayout);
     caxis.setScale();
@@ -350,10 +323,6 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 
     _this.drawAxes(true);
 
-    // remove crispEdges - all the off-square angles in ternary plots
-    // make these counterproductive.
-    _this.plotContainer.selectAll('.crisp').classed('crisp', false);
-
     _this.layers.aline.select('path')
         .attr('d', aaxis.showline ?
             'M' + x0 + ',' + (y0 + h) + 'l' + (w / 2) + ',-' + h : 'M0,0')
@@ -388,37 +357,19 @@ proto.drawAxes = function(doTitles) {
     var aaxis = _this.aaxis;
     var baxis = _this.baxis;
     var caxis = _this.caxis;
-    var newTickLayout;
 
-    newTickLayout = strTickLayout(aaxis);
-    if(_this.aTickLayout !== newTickLayout) {
-        layers.aaxis.selectAll('.ytick').remove();
-        _this.aTickLayout = newTickLayout;
-    }
-
-    newTickLayout = strTickLayout(baxis);
-    if(_this.bTickLayout !== newTickLayout) {
-        layers.baxis.selectAll('.xtick').remove();
-        _this.bTickLayout = newTickLayout;
-    }
-
-    newTickLayout = strTickLayout(caxis);
-    if(_this.cTickLayout !== newTickLayout) {
-        layers.caxis.selectAll('.ytick').remove();
-        _this.cTickLayout = newTickLayout;
-    }
-
-    // 3rd arg true below skips titles, so we can configure them
-    // correctly later on.
-    Axes.doTicksSingle(gd, aaxis, true);
-    Axes.doTicksSingle(gd, baxis, true);
-    Axes.doTicksSingle(gd, caxis, true);
+    _this.drawAx(aaxis);
+    _this.drawAx(baxis);
+    _this.drawAx(caxis);
 
     if(doTitles) {
         var apad = Math.max(aaxis.showticklabels ? aaxis.tickfont.size / 2 : 0,
             (caxis.showticklabels ? caxis.tickfont.size * 0.75 : 0) +
             (caxis.ticks === 'outside' ? caxis.ticklen * 0.87 : 0));
-        _this.layers['a-title'] = Titles.draw(gd, 'a' + titlesuffix, {
+        var bpad = (baxis.showticklabels ? baxis.tickfont.size : 0) +
+            (baxis.ticks === 'outside' ? baxis.ticklen : 0) + 3;
+
+        layers['a-title'] = Titles.draw(gd, 'a' + titlesuffix, {
             propContainer: aaxis,
             propName: _this.id + '.aaxis.title',
             placeholder: _(gd, 'Click to enter Component A title'),
@@ -428,12 +379,7 @@ proto.drawAxes = function(doTitles) {
                 'text-anchor': 'middle'
             }
         });
-
-
-        var bpad = (baxis.showticklabels ? baxis.tickfont.size : 0) +
-            (baxis.ticks === 'outside' ? baxis.ticklen : 0) + 3;
-
-        _this.layers['b-title'] = Titles.draw(gd, 'b' + titlesuffix, {
+        layers['b-title'] = Titles.draw(gd, 'b' + titlesuffix, {
             propContainer: baxis,
             propName: _this.id + '.baxis.title',
             placeholder: _(gd, 'Click to enter Component B title'),
@@ -443,8 +389,7 @@ proto.drawAxes = function(doTitles) {
                 'text-anchor': 'middle'
             }
         });
-
-        _this.layers['c-title'] = Titles.draw(gd, 'c' + titlesuffix, {
+        layers['c-title'] = Titles.draw(gd, 'c' + titlesuffix, {
             propContainer: caxis,
             propName: _this.id + '.caxis.title',
             placeholder: _(gd, 'Click to enter Component C title'),
@@ -457,10 +402,76 @@ proto.drawAxes = function(doTitles) {
     }
 };
 
+proto.drawAx = function(ax) {
+    var _this = this;
+    var gd = _this.graphDiv;
+    var axName = ax._name;
+    var axLetter = axName.charAt(0);
+    var axId = ax._id;
+    var axLayer = _this.layers[axName];
+    var counterAngle = 30;
+
+    var stashKey = axLetter + 'tickLayout';
+    var newTickLayout = strTickLayout(ax);
+    if(_this[stashKey] !== newTickLayout) {
+        axLayer.selectAll('.' + axId + 'tick').remove();
+        _this[stashKey] = newTickLayout;
+    }
+
+    ax.setScale();
+
+    var vals = Axes.calcTicks(ax);
+    var valsClipped = Axes.clipEnds(ax, vals);
+    var transFn = Axes.makeTransFn(ax);
+    var tickSign = Axes.getTickSigns(ax)[2];
+
+    var caRad = Lib.deg2rad(counterAngle);
+    var pad = tickSign * (ax.linewidth || 1) / 2;
+    var len = tickSign * ax.ticklen;
+    var w = _this.w;
+    var h = _this.h;
+
+    var tickPath = axLetter === 'b' ?
+        'M0,' + pad + 'l' + (Math.sin(caRad) * len) + ',' + (Math.cos(caRad) * len) :
+        'M' + pad + ',0l' + (Math.cos(caRad) * len) + ',' + (-Math.sin(caRad) * len);
+
+    var gridPath = {
+        a: 'M0,0l' + h + ',-' + (w / 2),
+        b: 'M0,0l-' + (w / 2) + ',-' + h,
+        c: 'M0,0l-' + h + ',' + (w / 2)
+    }[axLetter];
+
+    Axes.drawTicks(gd, ax, {
+        vals: ax.ticks === 'inside' ? valsClipped : vals,
+        layer: axLayer,
+        path: tickPath,
+        transFn: transFn,
+        crisp: false
+    });
+
+    Axes.drawGrid(gd, ax, {
+        vals: valsClipped,
+        layer: _this.layers[axLetter + 'grid'],
+        path: gridPath,
+        transFn: transFn,
+        crisp: false
+    });
+
+    var labelFns = Axes.makeLabelFns(ax, 0, counterAngle);
+
+    Axes.drawLabels(gd, ax, {
+        vals: vals,
+        layer: axLayer,
+        transFn: transFn,
+        labelXFn: labelFns.labelXFn,
+        labelYFn: labelFns.labelYFn,
+        labelAnchorFn: labelFns.labelAnchorFn
+    });
+};
+
 function strTickLayout(axLayout) {
     return axLayout.ticks + String(axLayout.ticklen) + String(axLayout.showticklabels);
 }
-
 
 // hard coded paths for zoom corners
 // uses the same sizing as cartesian, length is MINZOOM/2, width is 3px
@@ -711,7 +722,6 @@ proto.initInteractions = function() {
         _this.caxis.range = [_this.sum - mins.a - mins.b, mins.c];
 
         _this.drawAxes(false);
-        _this.plotContainer.selectAll('.crisp').classed('crisp', false);
 
         if(_this._hasClipOnAxisFalse) {
             _this.plotContainer

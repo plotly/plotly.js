@@ -569,7 +569,7 @@ describe('Test plot api', function() {
             mockedMethods.forEach(function(m) {
                 spyOn(subroutines, m);
             });
-            spyOn(Axes, 'doTicks');
+            spyOn(Axes, 'draw');
             spyOn(Plots, 'supplyDefaults').and.callThrough();
         });
 
@@ -577,7 +577,7 @@ describe('Test plot api', function() {
             mockedMethods.forEach(function(m) {
                 subroutines[m].calls.reset();
             });
-            Axes.doTicks.calls.reset();
+            Axes.draw.calls.reset();
 
             supplyAllDefaults(gd);
             Plots.supplyDefaults.calls.reset();
@@ -686,9 +686,9 @@ describe('Test plot api', function() {
                         '# of ' + m + ' calls - ' + msg
                     );
                 });
-                expect(Axes.doTicks).toHaveBeenCalledTimes(1);
-                expect(Axes.doTicks.calls.allArgs()[0][1]).toEqual(['x']);
-                expect(Axes.doTicks.calls.allArgs()[0][2]).toBe(true, 'skip-axis-title argument');
+                expect(Axes.draw).toHaveBeenCalledTimes(1);
+                expect(Axes.draw.calls.allArgs()[0][1]).toEqual(['x']);
+                expect(Axes.draw.calls.allArgs()[0][2]).toEqual({skipTitle: true}, 'skip-axis-title argument');
                 expect(Plots.supplyDefaults).not.toHaveBeenCalled();
             }
 
@@ -2664,7 +2664,7 @@ describe('Test plot api', function() {
             spyOn(annotations, 'drawOne').and.callThrough();
             spyOn(annotations, 'draw').and.callThrough();
             spyOn(images, 'draw').and.callThrough();
-            spyOn(Axes, 'doTicks').and.callThrough();
+            spyOn(Axes, 'draw').and.callThrough();
         });
 
         afterEach(destroyGraphDiv);
@@ -2900,11 +2900,11 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, data, layout)
             .then(countPlots)
             .then(function() {
-                expect(Axes.doTicks).toHaveBeenCalledWith(gd, '');
+                expect(Axes.draw).toHaveBeenCalledWith(gd, '');
                 return Plotly.react(gd, data, layout2);
             })
             .then(function() {
-                expect(Axes.doTicks).toHaveBeenCalledWith(gd, 'redraw');
+                expect(Axes.draw).toHaveBeenCalledWith(gd, 'redraw');
                 expect(subroutines.layoutStyles).not.toHaveBeenCalled();
             })
             .catch(failTest)

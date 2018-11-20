@@ -88,7 +88,7 @@ var isFullSuite = !isBundleTest && argv._.length === 0;
 var testFileGlob;
 
 if(isFullSuite) {
-    testFileGlob = path.join('tests', '*' + SUFFIX);
+    testFileGlob = path.join(__dirname, 'tests', '*' + SUFFIX);
 } else if(isBundleTest) {
     var _ = merge(argv.bundleTest);
 
@@ -96,9 +96,9 @@ if(isFullSuite) {
         console.warn('Can only run one bundle test suite at a time, ignoring ', _.slice(1));
     }
 
-    testFileGlob = path.join('bundle_tests', glob([basename(_[0])]));
+    testFileGlob = path.join(__dirname, 'bundle_tests', glob([basename(_[0])]));
 } else {
-    testFileGlob = path.join('tests', glob(merge(argv._).map(basename)));
+    testFileGlob = path.join(__dirname, 'tests', glob(merge(argv._).map(basename)));
 }
 
 var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
@@ -107,6 +107,7 @@ var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
+var pathToMathJax = path.join(constants.pathToDist, 'extras', 'mathjax');
 
 var reporters = (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'];
 if(argv.failFast) reporters.push('fail-fast');
@@ -134,7 +135,7 @@ function func(config) {
 func.defaultConfig = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '.',
+    basePath: constants.pathToRoot,
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -143,7 +144,13 @@ func.defaultConfig = {
     // list of files / patterns to load in the browser
     //
     // N.B. the rest of this field is filled below
-    files: [pathToCustomMatchers, pathToUnpolyfill],
+    files: [
+        pathToCustomMatchers,
+        pathToUnpolyfill,
+        // available to fetch from /base/path/to/mathjax
+        // more info: http://karma-runner.github.io/3.0/config/files.html
+        {pattern: pathToMathJax + '/**', included: false, watched: false, served: true}
+    ],
 
     // list of files / pattern to exclude
     exclude: [],

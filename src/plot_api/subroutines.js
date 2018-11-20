@@ -539,7 +539,7 @@ exports.doLegend = function(gd) {
 };
 
 exports.doTicksRelayout = function(gd) {
-    Axes.doTicks(gd, 'redraw');
+    Axes.draw(gd, 'redraw');
 
     if(gd._fullLayout._hasOnlyLargeSploms) {
         Registry.subplotsRegistry.splom.updateGrid(gd);

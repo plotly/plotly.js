@@ -187,6 +187,7 @@ module.exports = function draw(gd, id) {
                 titlefont: opts.titlefont,
                 showline: true,
                 anchor: 'free',
+                side: 'right',
                 position: 1
             },
             cbAxisOut = {
@@ -281,7 +282,8 @@ module.exports = function draw(gd, id) {
                 Math.round(gs.l) + ',-' +
                 Math.round(gs.t) + ')');
 
-        cbAxisOut._axislayer = container.select('.cbaxis');
+        var axisLayer = container.select('.cbaxis');
+
         var titleHeight = 0;
         if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
             // draw the title so we know how much room it needs
@@ -357,8 +359,7 @@ module.exports = function draw(gd, id) {
                 .attr('transform', 'translate(0,' +
                     Math.round(gs.h * (1 - cbAxisOut.domain[1])) + ')');
 
-            cbAxisOut._axislayer.attr('transform', 'translate(0,' +
-                Math.round(-gs.t) + ')');
+            axisLayer.attr('transform', 'translate(0,' + Math.round(-gs.t) + ')');
 
             var fills = container.select('.cbfills')
                 .selectAll('rect.cbfill')
@@ -425,12 +426,7 @@ module.exports = function draw(gd, id) {
             });
 
             // force full redraw of labels and ticks
-            cbAxisOut._axislayer.selectAll('g.' + cbAxisOut._id + 'tick,path')
-                .remove();
-
-            cbAxisOut._pos = xLeft + thickPx +
-                (opts.outlinewidth||0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
-            cbAxisOut.side = 'right';
+            axisLayer.selectAll('g.' + cbAxisOut._id + 'tick,path').remove();
 
             // separate out axis and title drawing,
             // so we don't need such complicated logic in Titles.draw
@@ -438,7 +434,29 @@ module.exports = function draw(gd, id) {
             // this title call only handles side=right
             return Lib.syncOrAsync([
                 function() {
-                    return Axes.doTicksSingle(gd, cbAxisOut, true);
+                    var shift = xLeft + thickPx +
+                        (opts.outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
+
+                    var vals = Axes.calcTicks(cbAxisOut);
+                    var transFn = Axes.makeTransFn(cbAxisOut);
+                    var labelFns = Axes.makeLabelFns(cbAxisOut, shift);
+                    var tickSign = Axes.getTickSigns(cbAxisOut)[2];
+
+                    Axes.drawTicks(gd, cbAxisOut, {
+                        vals: cbAxisOut.ticks === 'inside' ? Axes.clipEnds(cbAxisOut, vals) : vals,
+                        layer: axisLayer,
+                        path: Axes.makeTickPath(cbAxisOut, shift, tickSign),
+                        transFn: transFn
+                    });
+
+                    return Axes.drawLabels(gd, cbAxisOut, {
+                        vals: vals,
+                        layer: axisLayer,
+                        transFn: transFn,
+                        labelXFn: labelFns.labelXFn,
+                        labelYFn: labelFns.labelYFn,
+                        labelAnchorFn: labelFns.labelAnchorFn
+                    });
                 },
                 function() {
                     if(['top', 'bottom'].indexOf(opts.titleside) === -1) {
@@ -499,7 +517,7 @@ module.exports = function draw(gd, id) {
             // TODO: why are we redrawing multiple times now with this?
             // I guess autoMargin doesn't like being post-promise?
             var innerWidth = thickPx + opts.outlinewidth / 2 +
-                    Drawing.bBox(cbAxisOut._axislayer.node()).width;
+                    Drawing.bBox(axisLayer.node()).width;
             titleEl = titleCont.select('text');
             if(titleEl.node() && !titleEl.classed(cn.jsPlaceholder)) {
                 var mathJaxNode = titleCont
