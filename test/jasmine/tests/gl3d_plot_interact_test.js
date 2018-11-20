@@ -523,7 +523,7 @@ describe('Test gl3d plots', function() {
 
     it('@gl should be able to reversibly change trace type', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
-        var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 }, dragmode: 'turntable' };
+        var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
 
         Plotly.plot(gd, _mock)
         .then(delay(20))
