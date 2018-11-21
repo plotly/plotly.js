@@ -100,12 +100,14 @@ exports.cleanLayout = function(layout) {
         // modifications for polar
         else if(polarAttrRegex && polarAttrRegex.test(key)) {
             var polar = layout[key];
+
             cleanTitle(polar.radialaxis);
         }
 
         // modifications for ternary
         else if(ternaryAttrRegex && ternaryAttrRegex.test(key)) {
             var ternary = layout[key];
+
             cleanTitle(ternary.aaxis);
             cleanTitle(ternary.baxis);
             cleanTitle(ternary.caxis);
@@ -199,7 +201,7 @@ exports.cleanLayout = function(layout) {
         }
     }
 
-    // Check for old-style title definition
+    // clean plot title
     cleanTitle(layout);
 
     /*
@@ -211,7 +213,7 @@ exports.cleanLayout = function(layout) {
     // supported, but new tinycolor does not because they're not valid css
     Color.clean(layout);
 
-    // also clean the layout container in layout.template
+    // clean the layout container in layout.template
     if(layout.template && layout.template.layout) {
         exports.cleanLayout(layout.template.layout);
     }
@@ -229,6 +231,8 @@ function cleanAxRef(container, attr) {
 
 function cleanTitle(titleContainer) {
     if(titleContainer) {
+
+        // title -> title.text
         if(typeof titleContainer.title === 'string') {
             titleContainer.title = {
                 text: titleContainer.title
@@ -236,9 +240,13 @@ function cleanTitle(titleContainer) {
         }
 
         // titlefont -> title.font
-        if(titleContainer.title &&
-          Lib.isPlainObject(titleContainer.titlefont) &&
-          !Lib.isPlainObject(titleContainer.title.font)) {
+        var oldFontAttrSet = Lib.isPlainObject(titleContainer.titlefont);
+        var newFontAttrSet = titleContainer.title && Lib.isPlainObject(titleContainer.title.font);
+        if(oldFontAttrSet && !newFontAttrSet) {
+            if(!titleContainer.title) {
+                titleContainer.title = {};
+            }
+
             titleContainer.title.font = titleContainer.titlefont;
             delete titleContainer.titlefont;
         }
