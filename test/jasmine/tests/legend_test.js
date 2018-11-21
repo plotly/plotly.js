@@ -16,6 +16,8 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
+var Drawing = require('@src/components/drawing');
+
 describe('legend defaults', function() {
     'use strict';
 
@@ -676,8 +678,8 @@ describe('legend relayout update', function() {
         afterEach(destroyGraphDiv);
 
         function markerOffsetY() {
-            var translateY = d3.select('.legend .traces .layers').attr('transform').match(/translate\(\d+,(-?\d+)\)/)[1];
-            return parseFloat(translateY);
+            var translate = Drawing.getTranslate(d3.select('.legend .traces .layers'));
+            return translate.y;
         }
 
         it('it should translate markers', function(done) {

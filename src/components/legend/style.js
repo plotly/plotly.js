@@ -26,11 +26,17 @@ module.exports = function style(s, gd) {
         layers.style('opacity', d[0].trace.opacity);
 
         // Marker vertical alignment
-        var valignFactor = 0;
-        if(gd._fullLayout.legend.valign === 'top') valignFactor = 1.0;
-        if(gd._fullLayout.legend.valign === 'bottom') valignFactor = -1.0;
-        var markerOffsetY = valignFactor * (0.5 * (d[0].lineHeight - d[0].height + 3));
-        if(!isNaN(markerOffsetY)) layers.attr('transform', 'translate(0,' + markerOffsetY + ')');
+        var valign = gd._fullLayout.legend.valign;
+        var lineHeight = d[0].lineHeight;
+        var height = d[0].height;
+
+        if(valign === 'middle' || !lineHeight || !height) {
+            layers.attr('transform', null); // this here is a fun d3 trick to unset DOM attributes
+        } else {
+            var factor = {top: 1, bottom: -1}[valign];
+            var markerOffsetY = factor * (0.5 * (lineHeight - height + 3));
+            layers.attr('transform', 'translate(0,' + markerOffsetY + ')');
+        }
 
         var fill = layers
             .selectAll('g.legendfill')
