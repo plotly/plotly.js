@@ -141,10 +141,7 @@ describe('parcoords initialization tests', function() {
                 cauto: true,
                 autocolorscale: false,
                 reversescale: false,
-                showscale: false,
-                diverging: undefined,
-                sequential: undefined,
-                sequentialminus: undefined
+                showscale: false
             });
         });
 
@@ -281,9 +278,6 @@ describe('parcoords initialization tests', function() {
                 ]
             }));
 
-            delete(fullTrace.line.diverging);
-            delete(fullTrace.line.sequential);
-            delete(fullTrace.line.sequentialminus);
             expect(fullTrace.line).toEqual({
                 color: [35, 63, 21, 42],
                 colorscale: attributes.line.colorscale.dflt,
