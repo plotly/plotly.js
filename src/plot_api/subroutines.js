@@ -564,9 +564,9 @@ function getMainTitleDy(fullLayout) {
                 return '0em';
             } else if(y > 2 / 3) {
                 return alignmentConstants.CAP_SHIFT + 'em';
-            } else {
-                return alignmentConstants.MID_SHIFT + 'em';
             }
+
+            return alignmentConstants.MID_SHIFT + 'em';
         }
 
         return 0;
