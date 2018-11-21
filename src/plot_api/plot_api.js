@@ -421,7 +421,7 @@ function setPlotContext(gd, config) {
 
         // stash <base> href, used to make robust clipPath URLs
         var base = d3.select('base');
-        gd._context.baseUrl = base.size() && base.attr('href') ?
+        gd._context._baseUrl = base.size() && base.attr('href') ?
             window.location.href.split('#')[0] :
             '';
     }

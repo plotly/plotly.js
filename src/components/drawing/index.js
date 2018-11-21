@@ -1000,10 +1000,17 @@ function nodeHash(node) {
         node.getAttribute('style');
 }
 
-/*
- * make a robust clipPath url from a local id
- * note! We'd better not be exporting from a page
- * with a <base> or the svg will not be portable!
+/**
+ * Set clipPath URL in a way that work for all situations.
+ *
+ * In details, graphs on pages with <base> HTML tags need to prepend
+ * the clip path ids with the page's base url EXCEPT during toImage exports.
+ *
+ * @param {d3 selection} s : node to add clip-path attribute
+ * @param {string} localId : local clip-path (w/o base url) id
+ * @param {DOM element || object} gd
+ * - context._baseUrl {string}
+ * - context._exportedPlot {boolean}
  */
 drawing.setClipUrl = function(s, localId, gd) {
     if(!localId) {
@@ -1012,7 +1019,7 @@ drawing.setClipUrl = function(s, localId, gd) {
     }
 
     var context = gd._context;
-    var baseUrl = context._exportedPlot ? '' : (context.baseUrl || '');
+    var baseUrl = context._exportedPlot ? '' : (context._baseUrl || '');
 
     s.attr('clip-path', 'url(' + baseUrl + '#' + localId + ')');
 };
