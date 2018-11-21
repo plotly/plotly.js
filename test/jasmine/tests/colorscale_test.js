@@ -4,6 +4,18 @@ var Plots = require('@src/plots/plots');
 var Heatmap = require('@src/traces/heatmap');
 var Scatter = require('@src/traces/scatter');
 
+var supplyAllDefaults = require('../assets/supply_defaults');
+
+function _supply(trace, layout) {
+    var gd = {
+        data: [trace],
+        layout: layout || {}
+    };
+
+    supplyAllDefaults(gd);
+
+    return gd;
+}
 
 describe('Test colorscale:', function() {
     'use strict';
@@ -296,41 +308,6 @@ describe('Test colorscale:', function() {
             handleDefaults(traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.showscale).toBe(false);
         });
-
-        it('should use global colorscale.diverging if no colorscale is specified', function() {
-            traceIn = {
-                zmin: -10,
-                zmax: 10
-            };
-            var divergingScale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
-            var layout2 = {
-                colorscale: {
-                    diverging: divergingScale
-                },
-                _dfltTitle: {colorbar: 'cb'}
-            };
-            handleDefaults(traceIn, traceOut, layout2, coerce, opts);
-            expect(traceOut.colorscale).toBe(divergingScale);
-        });
-
-        it('should not use layout colorscale.diverging if colorscale is specified', function() {
-            var divergingScale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
-            var traceColorscale = [[0, 'rgb(128,128,128)'], [1, 'rgb(255,255,255)']];
-            traceIn = {
-                zmin: -10,
-                zmax: 10,
-                colorscale: traceColorscale
-            };
-
-            var layout2 = {
-                colorscale: {
-                    diverging: divergingScale
-                },
-                _dfltTitle: {colorbar: 'cb'}
-            };
-            handleDefaults(traceIn, traceOut, layout2, coerce, opts);
-            expect(traceOut.colorscale).toBe(traceColorscale);
-        });
     });
 
     describe('handleDefaults (scatter-like version)', function() {
@@ -384,61 +361,28 @@ describe('Test colorscale:', function() {
             expect(traceOut.marker.showscale).toBe(true);
         });
 
-        it('should use layout colorscale.diverging if no colorscale is specified', function() {
-            traceIn = {
-                zmin: -10,
-                zmax: 10
-            };
-            var divergingScale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
-            var layout2 = {
-                colorscale: {
-                    diverging: divergingScale
-                },
-                _dfltTitle: {colorbar: 'cb'}
-            };
-            handleDefaults(traceIn, traceOut, layout2, coerce, opts);
-            expect(traceOut.marker.colorscale).toBe(divergingScale);
-        });
-
-        it('should not use layout colorscale.diverging if colorscale is specified', function() {
-            var divergingScale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
-            var traceColorscale = [[0, 'rgb(128,128,128)'], [1, 'rgb(255,255,255)']];
-            traceIn = {
-                marker: {
-                    colorscale: traceColorscale
-                }
-            };
-
-            var layout2 = {
-                colorscale: {
-                    diverging: divergingScale
-                },
-                _dfltTitle: {colorbar: 'cb'}
-            };
-            handleDefaults(traceIn, traceOut, layout2, coerce, opts);
-            expect(traceOut.marker.colorscale).toBe(traceColorscale);
-        });
     });
 
     describe('calc', function() {
         var calcColorscale = Colorscale.calc;
         var trace, z;
+        var gd;
 
         beforeEach(function() {
             trace = {};
             z = {};
+            gd = {};
         });
 
         it('should be RdBuNeg when autocolorscale and z <= 0', function() {
             trace = {
                 type: 'heatmap',
-                z: [[0, -1.5], [-2, -10]],
+                z: [[-0, -1.5], [-2, -10]],
                 autocolorscale: true,
                 _input: {autocolorscale: true}
             };
-
-            z = [[0, -1.5], [-2, -10]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
         });
@@ -452,8 +396,8 @@ describe('Test colorscale:', function() {
                 autocolorscale: true,
                 _input: {}
             };
-            z = [[0, -1.5], [-2, -10]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(false);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
         });
@@ -466,7 +410,8 @@ describe('Test colorscale:', function() {
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [-0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
         });
@@ -479,7 +424,8 @@ describe('Test colorscale:', function() {
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[0]).toEqual([0, 'rgb(220,220,220)']);
         });
@@ -493,7 +439,8 @@ describe('Test colorscale:', function() {
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[trace.colorscale.length - 1])
                 .toEqual([1, 'rgb(220,220,220)']);

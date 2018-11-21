@@ -2,6 +2,10 @@
 
 var Plots = require('@src/plots/plots');
 
+// The following is used to fill up the Registry module
+/* eslint-ignore */
+var Plotly = require('@lib');
+
 /**
  * supplyDefaults that fills in necessary _context
  */
