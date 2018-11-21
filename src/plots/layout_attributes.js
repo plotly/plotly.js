@@ -47,8 +47,9 @@ module.exports = {
             role: 'info',
             editType: 'layoutstyle',
             description: [
-                'Some',
-                'docu', // TODO document
+                'Sets the container `x` refers to.',
+                '*container* spans the entire `width` of the plot.',
+                '*paper* refers to the width of the plotting area only.'
             ].join(' ')
         },
         yref: {
@@ -58,8 +59,9 @@ module.exports = {
             role: 'info',
             editType: 'layoutstyle',
             description: [
-                'Some',
-                'docu', // TODO document
+                'Sets the container `y` refers to.',
+                '*container* spans the entire `height` of the plot.',
+                '*paper* refers to the height of the plotting area only.'
             ].join(' ')
         },
         x: {
@@ -70,8 +72,8 @@ module.exports = {
             role: 'style',
             editType: 'layoutstyle',
             description: [
-                'Some',
-                'docu', // TODO document
+                'Sets the x position with respect to `xref` in normalized',
+                'coordinates from *0* (left) to *1* (right).'
             ].join(' ')
         },
         y: {
@@ -80,8 +82,10 @@ module.exports = {
             role: 'style',
             editType: 'layoutstyle',
             description: [
-                'Some', // TODO document
-                'docu',
+                'Sets the y position with respect to `yref` in normalized',
+                'coordinates from *0* (bottom) to *1* (top).',
+                '*auto* places the baseline of the title onto the',
+                'vertical center of the top margin.'
             ].join(' ')
         },
         xanchor: {
@@ -91,8 +95,12 @@ module.exports = {
             role: 'info',
             editType: 'layoutstyle',
             description: [
-                'Some',
-                'docu', // TODO document
+                'Sets the title\'s horizontal alignment with respect to its x position.',
+                '*left* means that the title starts at x,',
+                '*right* means that the title ends at x',
+                'and *center* means that the title\'s center is at x.',
+                '*auto* divides `xref` by three and calculates the `xanchor`',
+                'value automatically based on the value of `x`.'
             ].join(' ')
         },
         yanchor: {
@@ -102,18 +110,22 @@ module.exports = {
             role: 'info',
             editType: 'layoutstyle',
             description: [
-                'Some',
-                'docu', // TODO document
+                'Sets the title\'s vertical alignment with respect to its y position.',
+                '*top* means that the title\'s cap line is at y,',
+                '*bottom* means that the title\'s baseline is at y',
+                'and *middle* means that the title\'s midline is at y.',
+                '*auto* divides `yref` by three and calculates the `yanchor`',
+                'value automatically based on the value of `y`.'
             ].join(' ')
         },
         pad: extendFlat(padAttrs({editType: 'layoutstyle'}), {
             description: [
                 'Sets the padding of the title.',
                 'Each padding value only applies when the corresponding',
-                'xanchor / yanchor value is set accordingly. E.g. for left',
-                'padding to take effect, xanchor must be set to left.',
-                'The same rule applies if xanchor/yanchor is determined automatically.',
-                'Padding is muted if respective anchor value is middle/center.'
+                '`xanchor`/`yanchor` value is set accordingly. E.g. for left',
+                'padding to take effect, `xanchor` must be set to *left*.',
+                'The same rule applies if `xanchor`/`yanchor` is determined automatically.',
+                'Padding is muted if the respective anchor value is *middle*/*center*.'
             ].join(' ')
         }),
         editType: 'layoutstyle'
