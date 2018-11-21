@@ -15,6 +15,8 @@ exports.defaultScale = require('./default_scale');
 
 exports.attributes = require('./attributes');
 
+exports.layoutAttributes = require('./layout_attributes');
+
 exports.handleDefaults = require('./defaults');
 
 exports.calc = require('./calc');
