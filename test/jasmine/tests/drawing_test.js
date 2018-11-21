@@ -46,7 +46,7 @@ describe('Drawing', function() {
             // grab window URL
             var href = window.location.href;
 
-            Drawing.setClipUrl(this.g, 'id3', {_context: {baseUrl: href}});
+            Drawing.setClipUrl(this.g, 'id3', {_context: {_baseUrl: href}});
 
             expect(this.g.attr('clip-path'))
                 .toEqual('url(' + href + '#id3)');
@@ -63,7 +63,7 @@ describe('Drawing', function() {
             var href = window.location.href;
             var href2 = href.split('#')[0];
 
-            Drawing.setClipUrl(this.g, 'id4', {_context: {baseUrl: href2}});
+            Drawing.setClipUrl(this.g, 'id4', {_context: {_baseUrl: href2}});
 
             var expected = 'url(' + href2 + '#id4)';
 
