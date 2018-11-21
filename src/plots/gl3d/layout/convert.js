@@ -84,7 +84,7 @@ proto.merge = function(sceneLayout) {
 
         // Axes labels
         opts.labels[i] = axes.title.text;
-        if('title' in axes && 'font' in axes.title) {
+        if('font' in axes.title) {
             if(axes.title.font.color) opts.labelColor[i] = str2RgbaArray(axes.title.font.color);
             if(axes.title.font.family) opts.labelFont[i] = axes.title.font.family;
             if(axes.title.font.size) opts.labelSize[i] = axes.title.font.size;
