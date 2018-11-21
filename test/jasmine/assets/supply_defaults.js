@@ -3,7 +3,7 @@
 var Plots = require('@src/plots/plots');
 
 // The following is used to fill up the Registry module
-/* eslint-ignore */
+/* eslint-disable-next-line */
 var Plotly = require('@lib');
 
 /**
