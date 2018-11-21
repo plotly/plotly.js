@@ -11,27 +11,37 @@
 
 var scales = require('./scales');
 
+var msg = 'Note that `autocolorscale` must be true for this attribute to work.';
 module.exports = {
     editType: 'calc',
     sequential: {
         valType: 'colorscale',
-        dflt: scales.Reds,
+        dflt: 'Reds',
         role: 'style',
         editType: 'calc',
-        description: 'Sets the default sequential colorscale for positive values.'
+        description: [
+            'Sets the default sequential colorscale for positive values.',
+            msg
+        ].join(' ')
     },
     sequentialminus: {
         valType: 'colorscale',
-        dflt: scales.Blues,
+        dflt: 'Blues',
         role: 'style',
         editType: 'calc',
-        description: 'Sets the default sequential colorscale for negative values.'
+        description: [
+            'Sets the default sequential colorscale for negative values.',
+            msg
+        ].join(' ')
     },
     diverging: {
         valType: 'colorscale',
-        dflt: scales.RdBu,
+        dflt: 'RdBu',
         role: 'style',
         editType: 'calc',
-        description: 'Sets the default diverging colorscale.'
+        description: [
+            'Sets the default diverging colorscale.',
+            msg
+        ].join(' ')
     }
 };
