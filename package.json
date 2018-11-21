@@ -78,7 +78,7 @@
     "gl-mat4": "^1.2.0",
     "gl-mesh3d": "git://github.com/gl-vis/gl-mesh3d.git#931cbec5e8ce019c71fa526921b66471343cf8a8",
     "gl-plot2d": "git://github.com/gl-vis/gl-plot2d.git#8fec110a96ba4bde9581abae43dac27dcc8c19b1",
-    "gl-plot3d": "git://github.com/gl-vis/gl-plot3d.git#98560ce6bd25cff9c002dd6c310b61ca5d6b5413",
+    "gl-plot3d": "git://github.com/gl-vis/gl-plot3d.git#15a740eff949399b5e99d5432769e86c0bc70ece",
     "gl-pointcloud2d": "^1.0.1",
     "gl-scatter3d": "git://github.com/gl-vis/gl-scatter3d.git#ca2b4e2789a174eb47b8b67f1351e14ac1c14dfe",
     "gl-select-box": "^1.0.2",
