@@ -1687,12 +1687,12 @@ function _restyle(gd, aobj, traces) {
 }
 
 /**
- * Maps deprecated layout attributes that need to be converted
- * to the current API at this stage to ensure backwards compatibility.
+ * Converts deprecated layout attributes to the current API
+ * to ensure backwards compatibility.
  *
  * @param layoutObj
  */
-function mapDeprecatedLayoutAttributes(layoutObj) {
+function cleanDeprecatedLayoutAttributes(layoutObj) {
 
     // Support old-style update of the title's font
     var isTitlefontSet = layoutObj.titlefont;
@@ -1715,14 +1715,14 @@ function mapDeprecatedLayoutAttributes(layoutObj) {
 }
 
 /**
- * Maps deprecated layout "string attributes" to
+ * Converts deprecated layout "string attributes" to
  * "string attributes" of the current API to ensure backwards compatibility.
  *
  * E.g. Maps {'xaxis.title': 'A chart'} to {'xaxis.title.text': 'A chart'}
  *
  * @param layoutObj
  */
-function mapDeprecatedLayoutAttributeStrings(layoutObj) {
+function cleanDeprecatedLayoutAttributeStrings(layoutObj) {
     var oldAxisTitleRegExp = /axis\d{0,2}.title$/;
     var keys, i, key, value;
 
@@ -1748,11 +1748,9 @@ function mapDeprecatedLayoutAttributeStrings(layoutObj) {
         }
     }
 
-    function replace(oldKey, newKey) {
-        if(layoutObj[oldKey] !== undefined) {
-            layoutObj[newKey] = layoutObj[oldKey];
-            delete layoutObj[oldKey];
-        }
+    function replace(oldAttrStr, newAttrStr) {
+        layoutObj[newAttrStr] = layoutObj[oldAttrStr];
+        delete layoutObj[oldAttrStr];
     }
 }
 
@@ -1796,8 +1794,8 @@ exports.relayout = function relayout(gd, astr, val) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    mapDeprecatedLayoutAttributes(aobj);
-    mapDeprecatedLayoutAttributeStrings(aobj);
+    cleanDeprecatedLayoutAttributes(aobj);
+    cleanDeprecatedLayoutAttributeStrings(aobj);
 
     var specs = _relayout(gd, aobj);
     var flags = specs.flags;
@@ -2276,8 +2274,8 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces);
     var restyleFlags = restyleSpecs.flags;
 
-    mapDeprecatedLayoutAttributes(layoutUpdate);
-    mapDeprecatedLayoutAttributeStrings(layoutUpdate);
+    cleanDeprecatedLayoutAttributes(layoutUpdate);
+    cleanDeprecatedLayoutAttributeStrings(layoutUpdate);
 
     var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate));
     var relayoutFlags = relayoutSpecs.flags;
