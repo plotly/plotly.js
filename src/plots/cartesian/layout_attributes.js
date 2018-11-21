@@ -308,6 +308,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['labels', 'boundaries'],
         role: 'info',
+        dflt: 'labels',
         editType: 'ticks',
         description: [
             'Determines where ticks and grid lines are drawn with respect to their',
