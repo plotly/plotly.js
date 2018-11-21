@@ -9,6 +9,10 @@
 
 'use strict';
 
+exports.moduleType = 'component';
+
+exports.name = 'colorscale';
+
 exports.scales = require('./scales');
 
 exports.defaultScale = require('./default_scale');
@@ -16,6 +20,8 @@ exports.defaultScale = require('./default_scale');
 exports.attributes = require('./attributes');
 
 exports.layoutAttributes = require('./layout_attributes');
+
+exports.supplyLayoutDefaults = require('./layout_defaults');
 
 exports.handleDefaults = require('./defaults');
 

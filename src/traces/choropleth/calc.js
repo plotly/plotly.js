@@ -30,7 +30,11 @@ module.exports = function calc(gd, trace) {
     }
 
     arraysToCalcdata(calcTrace, trace);
-    colorscaleCalc(trace, trace.z, '', 'z');
+    colorscaleCalc(gd, trace, {
+        vals: trace.z,
+        containerStr: '',
+        cLetter: 'z'
+    });
     calcSelection(calcTrace, trace);
 
     return calcTrace;

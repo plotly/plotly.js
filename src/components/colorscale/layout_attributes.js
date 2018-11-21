@@ -8,12 +8,14 @@
 
 'use strict';
 
+var scales = require('./scales');
+
 var msg = 'Note that `autocolorscale` must be true for this attribute to work.';
 module.exports = {
     editType: 'calc',
     sequential: {
         valType: 'colorscale',
-        dflt: 'Reds',
+        dflt: scales.Reds,
         role: 'style',
         editType: 'calc',
         description: [
@@ -23,7 +25,7 @@ module.exports = {
     },
     sequentialminus: {
         valType: 'colorscale',
-        dflt: 'Blues',
+        dflt: scales.Blues,
         role: 'style',
         editType: 'calc',
         description: [
@@ -33,7 +35,7 @@ module.exports = {
     },
     diverging: {
         valType: 'colorscale',
-        dflt: 'RdBu',
+        dflt: scales.RdBu,
         role: 'style',
         editType: 'calc',
         description: [

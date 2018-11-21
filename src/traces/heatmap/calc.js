@@ -146,7 +146,11 @@ module.exports = function calc(gd, trace) {
 
     // auto-z and autocolorscale if applicable
     if(!isContour || trace.contours.type !== 'constraint') {
-        colorscaleCalc(trace, z, '', 'z');
+        colorscaleCalc(gd, trace, {
+            vals: z,
+            containerStr: '',
+            cLetter: 'z'
+        });
     }
 
     if(isContour && trace.contours && trace.contours.coloring === 'heatmap') {
