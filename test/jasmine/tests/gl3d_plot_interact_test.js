@@ -66,7 +66,7 @@ describe('Test gl3d plots', function() {
         gd = createGraphDiv();
         ptData = {};
 
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 4000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 8000;
     });
 
     afterEach(function() {
