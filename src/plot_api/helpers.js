@@ -233,7 +233,9 @@ function cleanTitle(titleContainer) {
     if(titleContainer) {
 
         // title -> title.text
-        if(typeof titleContainer.title === 'string') {
+        // (although title used to be a string attribute,
+        // numbers are accepted as well)
+        if(typeof titleContainer.title === 'string' || typeof titleContainer.title === 'number') {
             titleContainer.title = {
                 text: titleContainer.title
             };
