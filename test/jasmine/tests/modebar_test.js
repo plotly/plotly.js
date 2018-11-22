@@ -756,6 +756,16 @@ describe('ModeBar', function() {
             expect(countLogo(gd._fullLayout._modeBar)).toEqual(0);
         });
 
+        it('always displays the logo if watermark config arg is true', function() {
+            var gd = getMockGraphInfo();
+            gd._context.displaylogo = false;
+            gd._context.displayModeBar = false;
+            gd._context.watermark = true;
+            manageModeBar(gd);
+            expect(countLogo(gd._fullLayout._modeBar)).toEqual(1);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(1);
+        });
+
         // gives 11 buttons in 5 groups by default
         function setupGraphInfo() {
             var gd = getMockGraphInfo(['x'], ['y']);
