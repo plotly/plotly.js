@@ -198,7 +198,11 @@ drawing.fillGroupStyle = function(s) {
     s.style('stroke-width', 0)
     .each(function(d) {
         var shape = d3.select(this);
-        shape.call(Color.fill, d[0].trace.fillcolor);
+        // N.B. 'd' won't be a calcdata item when
+        // fill !== 'none' on a segment-less and marker-less trace
+        if(d[0].trace) {
+            shape.call(Color.fill, d[0].trace.fillcolor);
+        }
     });
 };
 
