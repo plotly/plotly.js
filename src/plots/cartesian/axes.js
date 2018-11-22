@@ -2059,7 +2059,6 @@ axes.drawTicks = function(gd, ax, opts) {
     ticks.attr('transform', opts.transFn);
 };
 
-
 /**
  * Draw axis grid
  *
@@ -2318,6 +2317,7 @@ axes.drawLabels = function(gd, ax, opts) {
             (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')
         ) {
             var lbbArray = [];
+            var i;
 
             tickLabels.each(function(d) {
                 var s = d3.select(this);
@@ -2339,11 +2339,23 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
             });
 
-            for(var i = 0; i < lbbArray.length - 1; i++) {
+            for(i = 0; i < lbbArray.length - 1; i++) {
                 if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
                     // any overlap at all - set 30 degrees
                     autoangle = 30;
                     break;
+                }
+            }
+
+            if(ax.tickson === 'boundaries') {
+                for(i = 0; i < lbbArray.length; i++) {
+                    if(
+                        (vals[i].xl !== null && (lbbArray[i].left - ax.l2p(vals[i].xbnd[0])) < 2) ||
+                        (vals[i].xr !== null && (ax.l2p(vals[i].xbnd[1]) - lbbArray[i].right) < 2)
+                    ) {
+                        autoangle = 90;
+                        break;
+                    }
                 }
             }
 
