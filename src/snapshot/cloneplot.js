@@ -85,8 +85,6 @@ module.exports = function clonePlot(graphObj, options) {
             }
         }
 
-        // TODO 882 Shouldn't ternary and polar axis titles be thrown away as well?
-
         // kill colorbar and pie labels
         for(i = 0; i < newData.length; i++) {
             var trace = newData[i];
