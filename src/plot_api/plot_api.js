@@ -1687,53 +1687,26 @@ function _restyle(gd, aobj, traces) {
 }
 
 /**
- * Converts deprecated layout attributes to the current API
- * to ensure backwards compatibility.
+ * Converts deprecated layout attributes and "string attributes" alike to
+ * the current API to ensure backwards compatibility.
+ *
+ * This is needed for the relayout mechanism to determine which
+ * subroutines to run based on the actual layout attribute
+ * definitions (that don't include the deprecated ones).
+ *
+ * E.g. Maps {'xaxis.title': 'A chart'} to {'xaxis.title.text': 'A chart'}
+ * and {titlefont: {...}} to {'title.font': {...}}.
  *
  * @param layoutObj
  */
 function cleanDeprecatedLayoutAttributes(layoutObj) {
-
-    // Support old-style update of the title's font
-    var isTitlefontSet = layoutObj.titlefont;
-    var isFontInTitleSet = layoutObj.title && layoutObj.title.font;
-    var isFontInTitleNotSet = !isFontInTitleSet;
-    if(isTitlefontSet && isFontInTitleNotSet) {
-
-        // Use string attribute because initiating a new title object
-        // to be able to specify a font property on it would require to
-        // know the potentially existing `title.text` property.
-        layoutObj['title.font'] = layoutObj.titlefont;
-        delete layoutObj.titlefont;
-    }
-
-    // Note, that updating x-axis and y-axis title fonts
-    // was never supported unless (i) using string
-    // attributes or (ii) passing `xaxis.title` / `yaxis.title`
-    // again. And these cases are covered by
-    // helpers.cleanLayout anyways.
-}
-
-/**
- * Converts deprecated layout "string attributes" to
- * "string attributes" of the current API to ensure backwards compatibility.
- *
- * E.g. Maps {'xaxis.title': 'A chart'} to {'xaxis.title.text': 'A chart'}
- *
- * @param layoutObj
- */
-function cleanDeprecatedLayoutAttributeStrings(layoutObj) {
-    var oldAxisTitleRegExp = /axis\d{0,2}.title$/;
+    var oldAxisTitleRegExp = /axis\d{0,2}\.title$/;
     var keys, i, key, value;
 
     if(typeof layoutObj.title === 'string') {
         layoutObj.title = {text: layoutObj.title};
     }
 
-    // Note: Only "nested" (dot notation) attributes
-    // need to be converted. For example 'layout.titlefont'
-    // was a top-level attribute and thus is covered by
-    // the general compatibility layer.
     keys = Object.keys(layoutObj);
     for(i = 0; i < keys.length; i++) {
         key = keys[i];
@@ -1743,7 +1716,8 @@ function cleanDeprecatedLayoutAttributeStrings(layoutObj) {
             replace(key, key.replace('titlefont', 'title.font'));
         }
 
-        if(typeof value === 'string' && oldAxisTitleRegExp.test(key)) {
+        if((typeof value === 'string' || typeof value === 'number') &&
+          oldAxisTitleRegExp.test(key)) {
             replace(key, key.replace('title', 'title.text'));
         }
     }
@@ -1793,9 +1767,6 @@ exports.relayout = function relayout(gd, astr, val) {
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
-
-    cleanDeprecatedLayoutAttributes(aobj);
-    cleanDeprecatedLayoutAttributeStrings(aobj);
 
     var specs = _relayout(gd, aobj);
     var flags = specs.flags;
@@ -1887,12 +1858,15 @@ var AX_DOMAIN_RE = /^[xyz]axis[0-9]*\.domain(\[[0|1]\])?$/;
 function _relayout(gd, aobj) {
     var layout = gd.layout,
         fullLayout = gd._fullLayout,
-        keys = Object.keys(aobj),
         axes = Axes.list(gd),
         arrayEdits = {},
+        keys,
         arrayStr,
         i,
         j;
+
+    cleanDeprecatedLayoutAttributes(aobj);
+    keys = Object.keys(aobj);
 
     // look for 'allaxes', split out into all axes
     // in case of 3D the axis are nested within a scene which is held in _id
@@ -2273,9 +2247,6 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
 
     var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces);
     var restyleFlags = restyleSpecs.flags;
-
-    cleanDeprecatedLayoutAttributes(layoutUpdate);
-    cleanDeprecatedLayoutAttributeStrings(layoutUpdate);
 
     var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate));
     var relayoutFlags = relayoutSpecs.flags;
