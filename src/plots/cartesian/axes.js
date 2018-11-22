@@ -1163,6 +1163,20 @@ function formatCategory(ax, out) {
     var tt = ax._categories[Math.round(out.x)];
     if(tt === undefined) tt = '';
     out.text = String(tt);
+
+    // Setup ticks and grid lines boundaries
+    // at 1/2 a 'category' to the left/bottom
+    if(ax.tickson === 'boundaries') {
+        var inbounds = function(v) {
+            var p = ax.l2p(v);
+            return p >= 0 && p <= ax._length ? v : null;
+        };
+
+        out.xbnd = [
+            inbounds(out.x - 0.5),
+            inbounds(out.x + ax.dtick - 0.5)
+        ];
+    }
 }
 
 function formatLinear(ax, out, hover, extraPrecision, hideexp) {
@@ -1621,18 +1635,18 @@ axes.drawOne = function(gd, ax, opts) {
     var tickVals;
     var gridVals;
 
-    if(ax.tickson === 'boundaries') {
-        // draw ticks and grid lines 1/2 a 'category' to the left,
-        // add one item at axis tail
-        var valsBoundaries = vals.map(function(d) {
-            var d2 = Lib.extendFlat({}, d);
-            d2.x -= 0.5;
-            return d2;
-        });
-        // not used for labels; no need to worry about the other tickTextObj keys
-        var d2 = Lib.extendFlat({}, vals[vals.length - 1]);
-        d2.x += 0.5;
-        valsBoundaries.push(d2);
+    if(ax.tickson === 'boundaries' && vals.length) {
+        // valsBoundaries is not used for labels;
+        // no need to worry about the other tickTextObj keys
+        var valsBoundaries = [];
+        var _push = function(d, bndIndex) {
+            var xb = d.xbnd[bndIndex];
+            if(xb !== null) {
+                valsBoundaries.push(Lib.extendFlat({}, d, {x: xb}));
+            }
+        };
+        for(i = 0; i < vals.length; i++) _push(vals[i], 0);
+        _push(vals[i - 1], 1);
 
         valsClipped = axes.clipEnds(ax, valsBoundaries);
         tickVals = ax.ticks === 'inside' ? valsClipped : valsBoundaries;

@@ -3156,7 +3156,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 _assert('outside on boundaries', {
-                    ticks: [-8.869, 230.369, 469.619, 708.869],
+                    ticks: [230.369, 469.619],
                     gridLines: [230.369, 469.619],
                     tickLabels: [106.421875, 345.671875, 585.25]
                 });
