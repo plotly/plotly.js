@@ -1946,8 +1946,9 @@ axes.makeTickPath = function(ax, shift, sgn) {
 axes.makeLabelFns = function(ax, shift, angle) {
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
+    var ticksOnOutsideLabels = ax.tickson !== 'boundaries' && ax.ticks === 'outside';
 
-    var labelStandoff = ax.ticks === 'outside' ? ax.ticklen : 0;
+    var labelStandoff = ticksOnOutsideLabels ? ax.ticklen : 0;
     var labelShift = 0;
 
     if(angle && ax.ticks === 'outside') {
@@ -1956,7 +1957,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
         labelShift = ax.ticklen * Math.sin(rad);
     }
 
-    if(ax.showticklabels && (ax.ticks === 'outside' || ax.showline)) {
+    if(ax.showticklabels && (ticksOnOutsideLabels || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
 
