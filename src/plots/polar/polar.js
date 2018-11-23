@@ -485,7 +485,8 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     var pad = 0;
 
     // Hint: no need to check if there is in fact a title.text set
-    // because if plot is editable, pad needs to be calculated anyways.
+    // because if plot is editable, pad needs to be calculated anyways
+    // to properly show placeholder text when title is empty.
     if(radialLayout.title) {
         var h = Drawing.bBox(_this.layers['radial-axis'].node()).height;
         var ts = radialLayout.title.font.size;
