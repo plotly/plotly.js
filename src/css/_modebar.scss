@@ -5,12 +5,12 @@
     z-index: 1001;
 }
 
-.modebar--hover {
+.modebar--hover > :not(.watermark) {
     opacity: 0;
     @include vendor('transition', opacity 0.3s ease 0s);
 }
 
-&:hover .modebar--hover {
+&:hover .modebar--hover .modebar-group {
     opacity: 1;
 }
 
