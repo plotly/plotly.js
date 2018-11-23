@@ -105,12 +105,23 @@ function isColormapCircular(colormap) {
     );
 }
 
-
 var highlyComposites = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720, 840, 1260];
 
 var MIN_RESOLUTION = highlyComposites[9];
 /*
-var shortPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
+var shortPrimes = [
+    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+    101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
+    211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293,
+    307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397,
+    401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
+    503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599,
+    601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
+    701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797,
+    809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887,
+    907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997
+];
+
 function getPow(a, b) {
     var n = 0;
     while(Math.floor(a % b) === 0) {
@@ -120,26 +131,52 @@ function getPow(a, b) {
     return n;
 }
 
-function getCandidate(a) {
-    var n = 1;
+function getFactors(a) {
+    var powers = [];
     for(var i = 0; i < shortPrimes.length; i++) {
         var b = shortPrimes[i];
-        n *= Math.pow(b, getPow(a, b));
+        powers.push(
+            Math.pow(b, getPow(a, b))
+        );
     }
 
-    return n;
+    return powers;
+}
+
+function calcDegreeX(xlen) {
+    var maxDist = this.getXat(0, 0) - this.getXat(xlen, 0)
+    var minDist = Infinity;
+    for(var i = 1; i < this.xlen; i++) {
+        var dist = this.getXat(i, 0) - this.getXat(i - 1, 0);
+        if(minDist > dist) {
+            minDist = dist;
+        }
+    }
+
+    return (minDist === Infinity || maxDist === 0) ? 1 : minDist / maxDist;
+}
+
+function calcDegreeY(ylen) {
+    var maxDist = this.getXat(0, 0) - this.getXat(0, ylen)
+    var minDist = Infinity;
+    for(var i = 1; i < this.ylen; i++) {
+        var dist = this.getXat(0, i) - this.getXat(0, i - 1);
+        if(minDist > dist) {
+            minDist = dist;
+        }
+    }
+
+    return (minDist === Infinity || maxDist === 0) ? 1 : minDist / maxDist;
 }
 */
-function estimateScale(coords) {
 
-    var width = coords[0].shape[0];
-    var height = coords[0].shape[1];
+proto.estimateScale = function(width, height) {
 
-    var coordsRes = Math.max(width, height);
+    var res = Math.max(width, height);
 
-    var scale = MIN_RESOLUTION / coordsRes;
+    var scale = MIN_RESOLUTION / res;
     return (scale > 1) ? scale : 1;
-}
+};
 
 proto.refineCoords = function(coords) {
 
@@ -303,7 +340,7 @@ proto.update = function(data) {
         params.intensityBounds[1] *= scaleFactor[2];
     }
 
-    this.dataScale = estimateScale(coords);
+    this.dataScale = this.estimateScale(coords[0].shape[0], coords[0].shape[1]);
     if(this.dataScale !== 1) {
         this.refineCoords(coords);
     }
