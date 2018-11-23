@@ -18,13 +18,8 @@ var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
 function plot(gd, plotinfo, cdbox, boxLayer) {
-    var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var numBoxes = fullLayout._numBoxes;
-    var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
-    var groupFraction = (1 - fullLayout.boxgap);
-    var groupGapFraction = 1 - fullLayout.boxgroupgap;
 
     Lib.makeTraceGroups(boxLayer, cdbox, 'trace boxes').each(function(cd) {
         var plotGroup = d3.select(this);
@@ -33,23 +28,8 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         var trace = cd0.trace;
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
-        // position coordinate delta
-        var dPos = t.dPos;
-        // box half width;
-        var bdPos;
-        // box center offset
-        var bPos;
-
-        if(trace.width) {
-            bdPos = dPos;
-            bPos = 0;
-        } else {
-            bdPos = dPos * groupFraction * groupGapFraction / (group ? numBoxes : 1);
-            bPos = group ? 2 * dPos * (-0.5 + (t.num + 0.5) / numBoxes) * groupFraction : 0;
-        }
-
         // whisker width
-        var wdPos = bdPos * trace.whiskerwidth;
+        t.wdPos = t.bdPos * trace.whiskerwidth;
 
         if(trace.visible !== true || t.empty) {
             plotGroup.remove();
@@ -65,14 +45,6 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
             posAxis = xa;
             valAxis = ya;
         }
-
-        // save the box size and box position for use by hover
-        t.bPos = bPos;
-        t.bdPos = bdPos;
-        t.wdPos = wdPos;
-        // half-width within which to accept hover for this box
-        // always split the distance to the closest box
-        t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
         plotBoxAndWhiskers(plotGroup, {pos: posAxis, val: valAxis}, trace, t);
         plotPoints(plotGroup, {x: xa, y: ya}, trace, t);
