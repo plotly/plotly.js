@@ -38,7 +38,7 @@ function calc(gd, trace) {
     stash.r = rArray;
     stash.theta = thetaArray;
 
-    calcColorscales(trace);
+    calcColorscales(gd, trace);
 
     // only compute 'style' options in calc, as position options
     // depend on the radial range and must be set in plot

@@ -84,7 +84,7 @@ function calc(gd, trace) {
     }
 
     // create scene options and scene
-    calcColorscales(trace);
+    calcColorscales(gd, trace);
     var opts = sceneOptions(gd, subplot, trace, positions, x, y);
     var scene = sceneUpdate(gd, subplot);
 
