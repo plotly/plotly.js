@@ -107,8 +107,8 @@ function isColormapCircular(colormap) {
 
 var highlyComposites = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720, 840, 1260];
 
-var MIN_RESOLUTION = highlyComposites[9];
-/*
+var MIN_RESOLUTION = 140; //35; //highlyComposites[9];
+
 var shortPrimes = [
     2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
     101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
@@ -143,33 +143,60 @@ function getFactors(a) {
     return powers;
 }
 
-function calcDegreeX(xlen) {
-    var maxDist = this.getXat(0, 0) - this.getXat(xlen, 0)
+proto.calcXstep = function(xlen) {
+    var maxDist = this.getXat(0, 0) - this.getXat(xlen - 1, 0)
     var minDist = Infinity;
-    for(var i = 1; i < this.xlen; i++) {
+    for(var i = 1; i < xlen; i++) {
         var dist = this.getXat(i, 0) - this.getXat(i - 1, 0);
         if(minDist > dist) {
             minDist = dist;
         }
     }
 
+    console.log("minDist=", minDist);
+    console.log("maxDist=", maxDist);
+
     return (minDist === Infinity || maxDist === 0) ? 1 : minDist / maxDist;
 }
 
-function calcDegreeY(ylen) {
-    var maxDist = this.getXat(0, 0) - this.getXat(0, ylen)
+proto.calcYstep = function(ylen) {
+    var maxDist = this.getYat(0, 0) - this.getYat(0, ylen - 1)
     var minDist = Infinity;
-    for(var i = 1; i < this.ylen; i++) {
-        var dist = this.getXat(0, i) - this.getXat(0, i - 1);
+    for(var i = 1; i < ylen; i++) {
+        var dist = this.getYat(0, i) - this.getYat(0, i - 1);
         if(minDist > dist) {
             minDist = dist;
         }
     }
 
+    console.log("minDist=", minDist);
+    console.log("maxDist=", maxDist);
+
     return (minDist === Infinity || maxDist === 0) ? 1 : minDist / maxDist;
 }
-*/
 
+proto.estimateScale = function(width, height) {
+
+    var res = Math.max(width, height);
+
+    console.log("width=", width);
+    console.log("height=", height);
+
+    var xStep = this.calcXstep(width);
+    var yStep = this.calcYstep(height);
+    console.log("xStep=", xStep);
+    console.log("yStep=", yStep);
+
+    console.log("1/xStep=", 1/xStep);
+    console.log("1/yStep=", 1/yStep);
+
+    var scale = MIN_RESOLUTION / res;
+    return (scale > 1) ? scale : 1;
+};
+
+
+
+/*
 proto.estimateScale = function(width, height) {
 
     var res = Math.max(width, height);
@@ -177,6 +204,7 @@ proto.estimateScale = function(width, height) {
     var scale = MIN_RESOLUTION / res;
     return (scale > 1) ? scale : 1;
 };
+*/
 
 proto.refineCoords = function(coords) {
 
