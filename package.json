@@ -144,7 +144,7 @@
     "karma-spec-reporter": "0.0.32",
     "karma-verbose-reporter": "0.0.6",
     "karma-viewport": "^1.0.2",
-    "madge": "^3.2.0",
+    "madge": "^3.3.0",
     "minify-stream": "^1.2.0",
     "minimist": "^1.2.0",
     "node-sass": "^4.9.3",
