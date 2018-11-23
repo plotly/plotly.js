@@ -138,11 +138,15 @@
       4.238752,
       4.299876
     ],
-    "type": "heatmap",
-    "autocolorscale": true
+    "type": "heatmap"
   }],
   "layout": {
     "template": {
+      "data": {
+        "heatmap": [{
+          "autocolorscale": true
+        }]
+      },
       "layout": {
         "title": "heatmap template",
         "colorscale": {
