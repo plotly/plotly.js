@@ -4,7 +4,7 @@ var path = require('path');
 var minimist = require('minimist');
 var constants = require('../../tasks/util/constants');
 
-var isCI = !!process.env.CIRCLECI;
+var isCI = !!process.env.CI;
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
     'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox', 'IE11'],
