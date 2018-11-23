@@ -128,7 +128,7 @@
     "falafel": "^2.0.0",
     "fs-extra": "^2.0.0",
     "fuse.js": "^3.3.0",
-    "glob": "^7.0.0",
+    "glob": "^7.1.3",
     "gzip-size": "^5.0.0",
     "image-size": "^0.6.3",
     "into-stream": "^3.1.0",
