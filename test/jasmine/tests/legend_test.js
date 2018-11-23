@@ -6,7 +6,6 @@ var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
 var helpers = require('@src/components/legend/helpers');
-var anchorUtils = require('@src/components/legend/anchor_utils');
 
 var d3 = require('d3');
 var failTest = require('../assets/fail_test');
@@ -501,7 +500,7 @@ describe('legend anchor utils:', function() {
     'use strict';
 
     describe('isRightAnchor', function() {
-        var isRightAnchor = anchorUtils.isRightAnchor;
+        var isRightAnchor = Lib.isRightAnchor;
         var threshold = 2 / 3;
 
         it('should return true when \'xanchor\' is set to \'right\'', function() {
@@ -522,7 +521,7 @@ describe('legend anchor utils:', function() {
     });
 
     describe('isCenterAnchor', function() {
-        var isCenterAnchor = anchorUtils.isCenterAnchor;
+        var isCenterAnchor = Lib.isCenterAnchor;
         var threshold0 = 1 / 3;
         var threshold1 = 2 / 3;
 
@@ -544,7 +543,7 @@ describe('legend anchor utils:', function() {
     });
 
     describe('isBottomAnchor', function() {
-        var isBottomAnchor = anchorUtils.isBottomAnchor;
+        var isBottomAnchor = Lib.isBottomAnchor;
         var threshold = 1 / 3;
 
         it('should return true when \'yanchor\' is set to \'right\'', function() {
@@ -565,7 +564,7 @@ describe('legend anchor utils:', function() {
     });
 
     describe('isMiddleAnchor', function() {
-        var isMiddleAnchor = anchorUtils.isMiddleAnchor;
+        var isMiddleAnchor = Lib.isMiddleAnchor;
         var threshold0 = 1 / 3;
         var threshold1 = 2 / 3;
 

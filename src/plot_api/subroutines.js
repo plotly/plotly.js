@@ -515,62 +515,29 @@ function getMainTitleY(fullLayout, dy) {
 }
 
 function getMainTitleTextAnchor(fullLayout) {
-    var xanchor = fullLayout.title.xanchor;
+    var title = fullLayout.title;
 
-    switch(xanchor) {
-        case 'auto':
-            return calcTextAnchor(fullLayout.title.x);
-        case 'left':
-            return SVG_TEXT_ANCHOR_START;
-        case 'right':
-            return SVG_TEXT_ANCHOR_END;
-        case 'center':
-        default:
-            return SVG_TEXT_ANCHOR_MIDDLE;
+    var textAnchor = SVG_TEXT_ANCHOR_MIDDLE;
+    if(Lib.isRightAnchor(title)) {
+        textAnchor = SVG_TEXT_ANCHOR_END;
+    } else if(Lib.isLeftAnchor(title)) {
+        textAnchor = SVG_TEXT_ANCHOR_START;
     }
 
-    function calcTextAnchor(x) {
-        if(x < 1 / 3) {
-            return SVG_TEXT_ANCHOR_START;
-        } else if(x > 2 / 3) {
-            return SVG_TEXT_ANCHOR_END;
-        }
-
-        return SVG_TEXT_ANCHOR_MIDDLE;
-    }
+    return textAnchor;
 }
 
 function getMainTitleDy(fullLayout) {
-    var yanchor = fullLayout.title.yanchor;
-    switch(yanchor) {
-        case 'auto':
-            return calcDy(fullLayout.title.y);
-        case 'middle':
-            return alignmentConstants.MID_SHIFT + 'em';
-        case 'top':
-            return alignmentConstants.CAP_SHIFT + 'em';
-        case 'bottom':
-        default:
-            return '0em';
+    var title = fullLayout.title;
+
+    var dy = '0em';
+    if(Lib.isTopAnchor(title)) {
+        dy = alignmentConstants.CAP_SHIFT + 'em';
+    } else if(Lib.isMiddleAnchor(title)) {
+        dy = alignmentConstants.MID_SHIFT + 'em';
     }
 
-    function calcDy(y) {
-
-        // Imitate behavior before "chart title alignment" was introduced
-        if(y === 'auto') {
-            return '0em';
-        } else if(typeof y === 'number') {
-            if(y < 1 / 3) {
-                return '0em';
-            } else if(y > 2 / 3) {
-                return alignmentConstants.CAP_SHIFT + 'em';
-            }
-
-            return alignmentConstants.MID_SHIFT + 'em';
-        }
-
-        return 0;
-    }
+    return dy;
 }
 
 exports.doTraceStyle = function(gd) {
