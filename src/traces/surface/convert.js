@@ -19,7 +19,7 @@ var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 
-var MIN_RESOLUTION = 1024;
+var MIN_RESOLUTION = 120;
 
 function SurfaceTrace(scene, surface, uid) {
     this.scene = scene;
