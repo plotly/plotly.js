@@ -30,6 +30,22 @@ function SurfaceTrace(scene, surface, uid) {
 
 var proto = SurfaceTrace.prototype;
 
+proto.getXat = function(a, b) {
+    return (!isArrayOrTypedArray(this.data.x)) ?
+                a :
+           (isArrayOrTypedArray(this.data.x[0])) ?
+                this.data.x[b][a] :
+                this.data.x[a];
+};
+
+proto.getYat = function(a, b) {
+    return (!isArrayOrTypedArray(this.data.y)) ?
+                b :
+           (isArrayOrTypedArray(this.data.y[0])) ?
+                this.data.y[b][a] :
+                this.data.y[b];
+};
+
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
         var selectIndex = selection.index = [
@@ -44,21 +60,8 @@ proto.handlePick = function(selection) {
         ];
         var traceCoordinate = [0, 0, 0];
 
-        if(!isArrayOrTypedArray(this.data.x)) {
-            traceCoordinate[0] = selectIndex[0];
-        } else if(isArrayOrTypedArray(this.data.x[0])) {
-            traceCoordinate[0] = this.data.x[selectIndex[1]][selectIndex[0]];
-        } else {
-            traceCoordinate[0] = this.data.x[selectIndex[0]];
-        }
-
-        if(!isArrayOrTypedArray(this.data.y)) {
-            traceCoordinate[1] = selectIndex[1];
-        } else if(isArrayOrTypedArray(this.data.y[0])) {
-            traceCoordinate[1] = this.data.y[selectIndex[1]][selectIndex[0]];
-        } else {
-            traceCoordinate[1] = this.data.y[selectIndex[1]];
-        }
+        traceCoordinate[0] = this.getXat(selectIndex[0], selectIndex[1]);
+        traceCoordinate[1] = this.getYat(selectIndex[0], selectIndex[1]);
 
         traceCoordinate[2] = this.data.z[selectIndex[1]][selectIndex[0]];
         selection.traceCoordinate = traceCoordinate;
@@ -133,7 +136,7 @@ function padField(field) {
 var shortPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
 var highlyComposites = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720, 840, 1260];
 
-var MIN_RESOLUTION = highlyComposites[9]; //highlyComposites[9];
+var MIN_RESOLUTION = highlyComposites[9];
 
 function getPow(a, b) {
     var n = 0;
@@ -154,15 +157,14 @@ function getCandidate(a) {
     return n;
 }
 
-
-function getScale(coords) {
+function estimateScale(coords) {
 
     var width = coords[0].shape[0];
     var height = coords[0].shape[1];
 
     var coordsRes = Math.max(width, height);
 
-    var scale = MIN_RESOLUTION / coordsRes
+    var scale = MIN_RESOLUTION / coordsRes;
     return (scale > 1) ? scale : 1;
 }
 
@@ -301,7 +303,7 @@ proto.update = function(data) {
 
     params.intensityBounds = [data.cmin, data.cmax];
 
-    // Refine if necessary
+    // Refine surface color if necessary
     if(data.surfacecolor) {
         var intensity = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]);
 
@@ -318,7 +320,7 @@ proto.update = function(data) {
         params.intensityBounds[1] *= scaleFactor[2];
     }
 
-    this.dataScale = getScale(coords);
+    this.dataScale = estimateScale(coords);
     if(this.dataScale !== 1) {
         refineCoords(coords, this.dataScale, this.dataScale);
     }
