@@ -472,7 +472,7 @@ exports.drawMainTitle = function(gd) {
 
 function getMainTitleX(fullLayout, textAnchor) {
     var title = fullLayout.title;
-    var _size = fullLayout._size;
+    var gs = fullLayout._size;
     var hPadShift = 0;
 
     if(textAnchor === SVG_TEXT_ANCHOR_START) {
@@ -483,7 +483,7 @@ function getMainTitleX(fullLayout, textAnchor) {
 
     switch(title.xref) {
         case 'paper':
-            return _size.l + _size.w * title.x + hPadShift;
+            return gs.l + gs.w * title.x + hPadShift;
         case 'container':
         default:
             return fullLayout.width * title.x + hPadShift;
@@ -492,7 +492,7 @@ function getMainTitleX(fullLayout, textAnchor) {
 
 function getMainTitleY(fullLayout, dy) {
     var title = fullLayout.title;
-    var _size = fullLayout._size;
+    var gs = fullLayout._size;
     var vPadShift = 0;
 
     if(dy === '0em' || !dy) {
@@ -502,11 +502,11 @@ function getMainTitleY(fullLayout, dy) {
     }
 
     if(title.y === 'auto') {
-        return _size.t / 2;
+        return gs.t / 2;
     } else {
         switch(title.yref) {
             case 'paper':
-                return _size.t + _size.h - _size.h * title.y + vPadShift;
+                return gs.t + gs.h - gs.h * title.y + vPadShift;
             case 'container':
             default:
                 return fullLayout.height - fullLayout.height * title.y + vPadShift;
