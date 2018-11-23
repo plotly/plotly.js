@@ -10,10 +10,10 @@
 'use strict';
 
 var createSurface = require('gl-surface3d');
+
 var ndarray = require('ndarray');
 var homography = require('ndarray-homography');
 var fill = require('ndarray-fill');
-var ops = require('ndarray-ops');
 
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
@@ -105,39 +105,12 @@ function isColormapCircular(colormap) {
     );
 }
 
-// Pad coords by +1
-function padField(field) {
-    var shape = field.shape;
-    var nshape = [shape[0] + 2, shape[1] + 2];
-    var nfield = ndarray(new Float32Array(nshape[0] * nshape[1]), nshape);
 
-    // Center
-    ops.assign(nfield.lo(1, 1).hi(shape[0], shape[1]), field);
-
-    // Edges
-    ops.assign(nfield.lo(1).hi(shape[0], 1),
-                field.hi(shape[0], 1));
-    ops.assign(nfield.lo(1, nshape[1] - 1).hi(shape[0], 1),
-                field.lo(0, shape[1] - 1).hi(shape[0], 1));
-    ops.assign(nfield.lo(0, 1).hi(1, shape[1]),
-                field.hi(1));
-    ops.assign(nfield.lo(nshape[0] - 1, 1).hi(1, shape[1]),
-                field.lo(shape[0] - 1));
-
-    // Corners
-    nfield.set(0, 0, field.get(0, 0));
-    nfield.set(0, nshape[1] - 1, field.get(0, shape[1] - 1));
-    nfield.set(nshape[0] - 1, 0, field.get(shape[0] - 1, 0));
-    nfield.set(nshape[0] - 1, nshape[1] - 1, field.get(shape[0] - 1, shape[1] - 1));
-
-    return nfield;
-}
-
-var shortPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
 var highlyComposites = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720, 840, 1260];
 
 var MIN_RESOLUTION = highlyComposites[9];
-
+/*
+var shortPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
 function getPow(a, b) {
     var n = 0;
     while(Math.floor(a % b) === 0) {
@@ -156,7 +129,7 @@ function getCandidate(a) {
 
     return n;
 }
-
+*/
 function estimateScale(coords) {
 
     var width = coords[0].shape[0];
@@ -168,17 +141,27 @@ function estimateScale(coords) {
     return (scale > 1) ? scale : 1;
 }
 
-function refineCoords(coords, scaleW, scaleH) {
+proto.refineCoords = function(coords) {
 
-    var nshape = [
-        Math.floor((coords[0].shape[0]) * scaleW + 1)|0,
-        Math.floor((coords[0].shape[1]) * scaleH + 1)|0
-    ];
-    var nsize = nshape[0] * nshape[1];
+    var scaleW = this.dataScale;
+    var scaleH = this.dataScale;
+
+    var width = coords[0].shape[0];
+    var height = coords[0].shape[1];
+
+    var newWidth = Math.floor(coords[0].shape[0] * scaleW + 1) | 0;
+    var newHeight = Math.floor(coords[0].shape[1] * scaleH + 1) | 0;
+
+    // Pad coords by +1
+    var padWidth = 1 + width + 1;
+    var padHeight = 1 + height + 1;
+    var padImg = ndarray(new Float32Array(padWidth * padHeight), [padWidth, padHeight]);
 
     for(var i = 0; i < coords.length; ++i) {
-        var padImg = padField(coords[i]);
-        var scaledImg = ndarray(new Float32Array(nsize), nshape);
+
+        this.surface.padField(padImg, coords[i]);
+
+        var scaledImg = ndarray(new Float32Array(newWidth * newHeight), [newWidth, newHeight]);
         homography(scaledImg, padImg,
             [
                 scaleW, 0, 0,
@@ -188,7 +171,7 @@ function refineCoords(coords, scaleW, scaleH) {
         );
         coords[i] = scaledImg;
     }
-}
+};
 
 proto.setContourLevels = function() {
     var nlevels = [[], [], []];
@@ -322,7 +305,7 @@ proto.update = function(data) {
 
     this.dataScale = estimateScale(coords);
     if(this.dataScale !== 1) {
-        refineCoords(coords, this.dataScale, this.dataScale);
+        this.refineCoords(coords);
     }
 
     if(data.surfacecolor) {
