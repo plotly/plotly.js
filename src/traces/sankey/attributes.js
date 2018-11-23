@@ -13,6 +13,7 @@ var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -146,6 +147,9 @@ var attrs = module.exports = overrideAll({
             ].join(' ')
         },
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
+        hovertemplate: hovertemplateAttrs({}, {
+            keys: []
+        }),
         description: 'The nodes of the Sankey plot.'
     },
 
@@ -216,6 +220,9 @@ var attrs = module.exports = overrideAll({
             ].join(' ')
         },
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
+        hovertemplate: hovertemplateAttrs({}, {
+            keys: []
+        }),
         description: 'The links of the Sankey plot.'
     }
 }, 'calc', 'nested');

@@ -744,8 +744,12 @@ describe('sankey tests', function() {
                 _assert(d, {
                     curveNumber: 0,
                     pointNumber: 4,
-                    label: 'Solid'
+                    label: 'Solid',
+                    value: 447.48
                 });
+                var pt = d.points[0];
+                expect(pt.sourceLinks.length).toBe(3);
+                expect(pt.targetLinks.length).toBe(4);
             })
             .then(function() { return _hover('link'); })
             .then(function(d) {
@@ -754,6 +758,9 @@ describe('sankey tests', function() {
                     pointNumber: 61,
                     value: 46.477
                 });
+                var pt = d.points[0];
+                expect(pt.hasOwnProperty('source')).toBeTruthy();
+                expect(pt.hasOwnProperty('target')).toBeTruthy();
             })
             .then(function() { return _unhover('node'); })
             .then(function(d) {
