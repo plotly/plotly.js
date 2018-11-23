@@ -229,7 +229,7 @@ module.exports = {
         values: ['both', 'positive', 'negative'],
         dflt: 'both',
         role: 'info',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Determines on which side of the position value the density function making up',
             'one half of a violin is plotted.',
