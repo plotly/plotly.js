@@ -117,7 +117,12 @@ var radialAxisAttrs = {
 
     hoverformat: axesAttrs.hoverformat,
 
-    editType: 'calc'
+    editType: 'calc',
+
+    _deprecated: {
+        title: overrideAll(axesAttrs._deprecated.title, 'plot', 'from-root'),
+        titlefont: overrideAll(axesAttrs._deprecated.titlefont, 'plot', 'from-root')
+    }
 };
 
 extendFlat(

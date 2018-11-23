@@ -33,12 +33,19 @@ module.exports = {
             role: 'info',
             editType: 'layoutstyle',
             description: [
-                'Sets the plot\'s title.'
+                'Sets the plot\'s title.',
+                'Note that before the existence of `title.text`, the title\'s',
+                'contents used to be defined as the `title` attribute itself.',
+                'This behavior has been deprecated.'
             ].join(' ')
         },
         font: fontAttrs({
             editType: 'layoutstyle',
-            description: 'Sets the title font.'
+            description: [
+                'Sets the title font.',
+                'Note that the title\'s font used to be customized',
+                'by the now deprecated `titlefont` attribute.'
+            ].join(' ')
         }),
         xref: {
             valType: 'enumerated',
@@ -346,5 +353,23 @@ module.exports = {
             description: 'Sets the color of the active or hovered on icons in the modebar.'
         },
         editType: 'modebar'
+    },
+    _deprecated: {
+        title: {
+            valType: 'string',
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
+                'To set the contents of the title, please use `title.text` now.'
+            ].join(' ')
+        },
+        titlefont: fontAttrs({
+            editType: 'layoutstyle',
+            description: [
+                'Former `titlefont` is now the sub-attribute `font` of `title`.',
+                'To customize title font properties, please use `title.font` now.'
+            ].join(' ')
+        })
     }
 };
