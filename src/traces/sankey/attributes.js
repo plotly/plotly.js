@@ -148,7 +148,8 @@ var attrs = module.exports = overrideAll({
         },
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         hovertemplate: hovertemplateAttrs({}, {
-            keys: []
+            description: 'Variables `sourceLinks` and `targetLinks` are arrays of link objects.',
+            keys: ['value', 'label']
         }),
         description: 'The nodes of the Sankey plot.'
     },
@@ -221,7 +222,8 @@ var attrs = module.exports = overrideAll({
         },
         hoverlabel: fxAttrs.hoverlabel, // needs editType override,
         hovertemplate: hovertemplateAttrs({}, {
-            keys: []
+            description: 'Variables `source` and `target` are node objects.',
+            keys: ['value', 'label']
         }),
         description: 'The links of the Sankey plot.'
     }
