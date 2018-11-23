@@ -7,10 +7,11 @@ var constants = require('../../tasks/util/constants');
 var isCI = !!process.env.CIRCLECI;
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
-    'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox'],
+    'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox', 'IE11'],
     alias: {
         'Chrome': 'chrome',
         'Firefox': ['firefox', 'FF'],
+        'IE11': ['ie11'],
         'bundleTest': ['bundletest', 'bundle_test'],
         'nowatch': 'no-watch',
         'failFast': 'fail-fast'
@@ -54,6 +55,7 @@ if(argv.info) {
         '  - `--info`: show this info message',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
+        '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
         '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
@@ -302,6 +304,7 @@ func.defaultConfig.files.push(testFileGlob);
 var browsers = func.defaultConfig.browsers;
 if(argv.Chrome) browsers.push('_Chrome');
 if(argv.Firefox) browsers.push('_Firefox');
+if(argv.IE11) browsers.push('IE');
 if(browsers.length === 0) browsers.push('_Chrome');
 
 module.exports = func;
