@@ -156,7 +156,7 @@
     "requirejs": "^2.3.1",
     "run-series": "^1.1.8",
     "through2": "^2.0.3",
-    "true-case-path": "^1.0.2",
+    "true-case-path": "^1.0.3",
     "watchify": "^3.11.0",
     "xml2js": "^0.4.16"
   }
