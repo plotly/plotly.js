@@ -19,15 +19,13 @@ var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 
-var MIN_RESOLUTION = 120;
-
 function SurfaceTrace(scene, surface, uid) {
     this.scene = scene;
     this.uid = uid;
     this.surface = surface;
     this.data = null;
     this.showContour = [false, false, false];
-    this.dataScale = 1.0;
+    this.dataScale = 1.0; // Note we could have two different scales for width & height
 }
 
 var proto = SurfaceTrace.prototype;
@@ -132,29 +130,62 @@ function padField(field) {
     return nfield;
 }
 
-function refine(coords) {
-    var minScale = Math.max(coords[0].shape[0], coords[0].shape[1]);
+var shortPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
+var highlyComposites = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720, 840, 1260];
 
-    if(minScale < MIN_RESOLUTION) {
-        var scaleF = MIN_RESOLUTION / minScale;
-        var nshape = [
-            Math.floor((coords[0].shape[0]) * scaleF + 1)|0,
-            Math.floor((coords[0].shape[1]) * scaleF + 1)|0 ];
-        var nsize = nshape[0] * nshape[1];
+var MIN_RESOLUTION = highlyComposites[9]; //highlyComposites[9];
 
-        for(var i = 0; i < coords.length; ++i) {
-            var padImg = padField(coords[i]);
-            var scaledImg = ndarray(new Float32Array(nsize), nshape);
-            homography(scaledImg, padImg, [scaleF, 0, 0,
-                0, scaleF, 0,
-                0, 0, 1]);
-            coords[i] = scaledImg;
-        }
+function getPow(a, b) {
+    var n = 0;
+    while(Math.floor(a % b) === 0) {
+        a /= b;
+        n++;
+    }
+    return n;
+}
 
-        return scaleF;
+function getCandidate(a) {
+    var n = 1;
+    for(var i = 0; i < shortPrimes.length; i++) {
+        var b = shortPrimes[i];
+        n *= Math.pow(b, getPow(a, b));
     }
 
-    return 1.0;
+    return n;
+}
+
+
+function getScale(coords) {
+
+    var width = coords[0].shape[0];
+    var height = coords[0].shape[1];
+
+    var coordsRes = Math.max(width, height);
+
+    var scale = MIN_RESOLUTION / coordsRes
+    return (scale > 1) ? scale : 1;
+}
+
+function refineCoords(coords, scaleW, scaleH) {
+
+    var nshape = [
+        Math.floor((coords[0].shape[0]) * scaleW + 1)|0,
+        Math.floor((coords[0].shape[1]) * scaleH + 1)|0
+    ];
+    var nsize = nshape[0] * nshape[1];
+
+    for(var i = 0; i < coords.length; ++i) {
+        var padImg = padField(coords[i]);
+        var scaledImg = ndarray(new Float32Array(nsize), nshape);
+        homography(scaledImg, padImg,
+            [
+                scaleW, 0, 0,
+                0, scaleH, 0,
+                0, 0, 1
+            ]
+        );
+        coords[i] = scaledImg;
+    }
 }
 
 proto.setContourLevels = function() {
@@ -287,7 +318,10 @@ proto.update = function(data) {
         params.intensityBounds[1] *= scaleFactor[2];
     }
 
-    this.dataScale = refine(coords);
+    this.dataScale = getScale(coords);
+    if(this.dataScale !== 1) {
+        refineCoords(coords, this.dataScale, this.dataScale);
+    }
 
     if(data.surfacecolor) {
         params.intensity = coords.pop();
