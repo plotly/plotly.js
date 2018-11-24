@@ -132,97 +132,114 @@ function getFactors(a) {
     for(var i = 0; i < shortPrimes.length; i++) {
         var b = shortPrimes[i];
         powers.push(
-            Math.pow(b, getPow(a, b))
+            getPow(a, b)
         );
     }
-
     return powers;
 }
 
-function greatestCommonDivisor(a, b) {
+function smallestDivisor(a) {
     var A = getFactors(a);
-    var B = getFactors(b);
-
-    var n = 1;
     for(var i = 0; i < shortPrimes.length; i++) {
-        n *= Math.min(A[i], B[i]);
-    }
-
-    return n;
-}
-
-function leastCommonMultiple(a, b) {
-    return (a * b) / greatestCommonDivisor(a, b);
-}
-
-function leastSingleDivisor(a) {
-    var A = getFactors(a);
-
-    for(var i = shortPrimes.length - 1; i >= 0; i--) {
-        if (A[i] > 1) {
-            return A[i]
+        if(A[i] > 0) {
+            return shortPrimes[i];
         }
     }
     return a;
 }
 
-proto.calcXstep = function(xlen) {
-    var maxDist = Math.abs(this.getXat(0, 0) - this.getXat(xlen - 1, 0));
-    var minDist = Infinity;
+function leastCommonMultiple(a, b) {
+    var A = getFactors(a);
+    var B = getFactors(b);
+    var n = 1;
+    for(var i = 0; i < shortPrimes.length; i++) {
+        n *= Math.pow(
+            shortPrimes[i], Math.max(A[i], B[i])
+        );
+    }
+    return n;
+}
+
+function ayyarLCM(A) {
+    if(A.length === 0) return undefined;
+    var n = 1;
+    for(var i = 0; i < A.length; i++) {
+        n = leastCommonMultiple(n, A[i]);
+    }
+    return n;
+}
+
+proto.calcXnums = function(xlen) {
+    var maxDist = Math.abs(
+        this.getXat(0, 0) -
+        this.getXat(xlen - 1, 0)
+    );
+    var nums = [];
     for(var i = 1; i < xlen; i++) {
-        var dist = Math.abs(this.getXat(i, 0) - this.getXat(i - 1, 0));
-        if(minDist > dist) {
-            minDist = dist;
-        }
+        nums[i - 1] = Math.round(
+            maxDist / Math.abs(
+                this.getXat(i, 0) -
+                this.getXat(i - 1, 0)
+            )
+        );
     }
+    return nums;
+};
 
-    return (minDist === Infinity || maxDist === 0) ? 1 : minDist / maxDist;
-}
-
-proto.calcYstep = function(ylen) {
-    var maxDist = Math.abs(this.getYat(0, 0) - this.getYat(0, ylen - 1));
-    var minDist = Infinity;
+proto.calcYnums = function(ylen) {
+    var maxDist = Math.abs(
+        this.getYat(0, 0) -
+        this.getYat(0, ylen - 1)
+    );
+    var nums = [];
     for(var i = 1; i < ylen; i++) {
-        var dist = Math.abs(this.getYat(0, i) - this.getYat(0, i - 1));
-        if(minDist > dist) {
-            minDist = dist;
-        }
+        nums[i - 1] = Math.round(
+            maxDist / Math.abs(
+                this.getYat(0, i) -
+                this.getYat(0, i - 1)
+            )
+        );
     }
-
-    return (minDist === Infinity || maxDist === 0) ? 1 : minDist / maxDist;
-}
+    return nums;
+};
 
 var highlyComposites = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720, 840, 1260];
 
-var MIN_RESOLUTION = highlyComposites[7];
-var MAX_RESOLUTION = highlyComposites[14];
+var MIN_RESOLUTION = highlyComposites[9];
+var MAX_RESOLUTION = highlyComposites[13];
 
 proto.estimateScale = function(width, height) {
 
     var resSrc = Math.max(width, height);
 
-    var xStep = this.calcXstep(width);
-    var yStep = this.calcYstep(height);
+    var xNums = this.calcXnums(width);
+    var yNums = this.calcYnums(height);
 
-    var xSegs = Math.round(1.0 / xStep);
-    var ySegs = Math.round(1.0 / yStep);
+    // console.log("xNums=", xNums);
+    // console.log("yNums=", yNums);
 
-    console.log("xSegs=", xSegs);
-    console.log("ySegs=", ySegs);
+    var xLCM = ayyarLCM(xNums);
+    var yLCM = ayyarLCM(yNums);
 
-    var resDst = leastCommonMultiple(xSegs, ySegs);
+    // console.log("xLCM=", xLCM);
+    // console.log("yLCM=", yLCM);
 
-    console.log("BEFORE: resDst=", resDst);
+    var resDst = 1 + leastCommonMultiple(xLCM, yLCM);
+
+    // console.log("BEFORE: resDst=", resDst);
 
     while(resDst < MIN_RESOLUTION) {
-        resDst *= leastSingleDivisor(resDst);
+        resDst *= 2;
     }
-
     while(resDst > MAX_RESOLUTION) {
-        resDst *= 2
+
+        resDst /= smallestDivisor(resDst);
+
+        // option 2:
+        // resDst = MAX_RESOLUTION;
     }
 
-    console.log("AFTER: resDst=", resDst);
+    // console.log("AFTER: resDst=", resDst);
 
     var scale = resDst / resSrc;
     return (scale > 1) ? scale : 1;
