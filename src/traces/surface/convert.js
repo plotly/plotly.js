@@ -247,7 +247,7 @@ proto.estimateScale = function(width, height) {
         resDst /= smallestDivisor(resDst);
         resDst++;
 
-        if (resDst < MIN_RESOLUTION) {
+        if(resDst < MIN_RESOLUTION) {
             resDst = MIN_RESOLUTION;
         }
     }
