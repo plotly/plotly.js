@@ -248,7 +248,8 @@ proto.estimateScale = function(width, height) {
         resDst++;
 
         if(resDst < MIN_RESOLUTION) {
-            resDst = MIN_RESOLUTION;
+         // resDst = MIN_RESOLUTION; // option 1: use min resolution
+            resDst = MAX_RESOLUTION; // option 2: use max resolution
         }
     }
     // console.log("AFTER: resDst=", resDst);
