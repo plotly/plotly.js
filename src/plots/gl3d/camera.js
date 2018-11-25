@@ -243,8 +243,13 @@ function createCamera(element, options) {
 
         if((zoom && left && !ctrl && !alt && !shift) || middle || (left && !ctrl && alt && !shift)) {
             // Zoom
-            var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100;
-            view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1));
+            var orthographic = true;
+            if(orthographic) {
+                view.setDistance(t, camera.translateSpeed * dy * distance);
+            } else {
+                var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100;
+                view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1));
+            }
         }
 
         lastX = x;
