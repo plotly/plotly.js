@@ -38,6 +38,7 @@ function createCamera(element, options) {
         up: options.up || [0, 1, 0],
         eye: options.eye || [0, 0, 10],
         mode: options.mode || 'orbit',
+        ortho: options.ortho || false,
         distanceLimits: limits
     });
 
