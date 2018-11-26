@@ -2337,33 +2337,37 @@ axes.drawLabels = function(gd, ax, opts) {
             });
 
             var autoangle = 0;
-            for(i = 0; i < lbbArray.length - 1; i++) {
-                if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
-                    // any overlap at all - set 30 degrees
-                    autoangle = 30;
-                    break;
-                }
-            }
 
             if(ax.tickson === 'boundaries') {
+                var gap = 2;
+                if(ax.ticks) gap += ax.tickwidth / 2;
+
                 for(i = 0; i < lbbArray.length; i++) {
+                    var xbnd = vals[i].xbnd;
+                    var lbb = lbbArray[i];
                     if(
-                        (vals[i].xl !== null && (lbbArray[i].left - ax.l2p(vals[i].xbnd[0])) < 2) ||
-                        (vals[i].xr !== null && (ax.l2p(vals[i].xbnd[1]) - lbbArray[i].right) < 2)
+                        (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
+                        (xbnd[1] !== null && (ax.l2p(xbnd[1]) - lbb.right) < gap)
                     ) {
                         autoangle = 90;
+                        break;
+                    }
+                }
+            } else {
+                var vLen = vals.length;
+                var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
+                var fitBetweenTicks = tickSpacing < maxFontSize * 2.5;
+
+                // any overlap at all - set 30 degrees or 90 degrees
+                for(i = 0; i < lbbArray.length - 1; i++) {
+                    if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
+                        autoangle = fitBetweenTicks ? 90 : 30;
                         break;
                     }
                 }
             }
 
             if(autoangle) {
-                var tickspacing = Math.abs(
-                        (vals[vals.length - 1].x - vals[0].x) * ax._m
-                    ) / (vals.length - 1);
-                if(tickspacing < maxFontSize * 2.5) {
-                    autoangle = 90;
-                }
                 positionLabels(tickLabels, autoangle);
             }
             ax._lastangle = autoangle;
