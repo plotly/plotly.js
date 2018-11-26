@@ -141,12 +141,12 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
             var jitter = trace.jitter;
             var ms = trace.marker.size / 2;
 
-            if((pointpos + jitter) > 0) {
+            if((pointpos + jitter) >= 0) {
                 ppadplus = ms;
                 var pp = bPos + bdPos * (pointpos + jitter);
                 if(pp > vpadplus) vpadplus = pp;
             }
-            if((pointpos - jitter) < 0) {
+            if((pointpos - jitter) <= 0) {
                 ppadminus = ms;
                 var pm = -bPos - bdPos * (pointpos - jitter);
                 if(pm > vpadminus) vpadminus = pm;
