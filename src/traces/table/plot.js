@@ -83,8 +83,9 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('width', function(d) {return d.width;})
         .attr('height', function(d) {return d.height;});
 
-    tableControlView
-        .each(function(d) {Drawing.setClipUrl(d3.select(this), scrollAreaBottomClipKey(gd, d));});
+    tableControlView.each(function(d) {
+        Drawing.setClipUrl(d3.select(this), scrollAreaBottomClipKey(gd, d), gd);
+    });
 
     var yColumn = tableControlView.selectAll('.' + c.cn.yColumn)
         .data(function(vm) {return vm.columns;}, gup.keyFun);
@@ -137,7 +138,9 @@ module.exports = function plot(gd, wrappedTraceHolders) {
             })
         );
 
-    yColumn.each(function(d) {Drawing.setClipUrl(d3.select(this), columnBoundaryClipKey(gd, d));});
+    yColumn.each(function(d) {
+        Drawing.setClipUrl(d3.select(this), columnBoundaryClipKey(gd, d), gd);
+    });
 
     var columnBlock = yColumn.selectAll('.' + c.cn.columnBlock)
         .data(splitData.splitToPanels, gup.keyFun);
