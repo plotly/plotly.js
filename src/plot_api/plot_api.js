@@ -1859,6 +1859,7 @@ function _relayout(gd, aobj) {
     var layout = gd.layout,
         fullLayout = gd._fullLayout,
         axes = Axes.list(gd),
+        eventData = Lib.extendDeepAll({}, aobj),
         arrayEdits = {},
         keys,
         arrayStr,
@@ -2194,7 +2195,7 @@ function _relayout(gd, aobj) {
         rangesAltered: rangesAltered,
         undoit: undoit,
         redoit: redoit,
-        eventData: Lib.extendDeep({}, redoit)
+        eventData: eventData
     };
 }
 

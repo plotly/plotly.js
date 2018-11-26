@@ -1431,7 +1431,7 @@ describe('legend interaction', function() {
                     });
                     gd.on('plotly_relayout', function(d) {
                         expect(typeof d).toBe('object');
-                        expect(d.title.text).toBe('just clicked on trace #2');
+                        expect(d.title).toBe('just clicked on trace #2');
                         done();
                     });
                     gd.on('plotly_restyle', function() {
@@ -1451,7 +1451,7 @@ describe('legend interaction', function() {
                     });
                     gd.on('plotly_relayout', function(d) {
                         expect(typeof d).toBe('object');
-                        expect(d.title.text).toBe('just double clicked on trace #0');
+                        expect(d.title).toBe('just double clicked on trace #0');
                         done();
                     });
                     gd.on('plotly_restyle', function() {
