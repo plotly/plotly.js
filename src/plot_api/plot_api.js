@@ -1700,7 +1700,7 @@ function _restyle(gd, aobj, traces) {
  * @param layoutObj
  */
 function cleanDeprecatedLayoutAttributes(layoutObj) {
-    var oldAxisTitleRegExp = /axis\d{0,2}\.title$/;
+    var oldAxisTitleRegExp = Lib.counterRegex('axis', '\.title', false, false);
     var keys, i, key, value;
 
     if(typeof layoutObj.title === 'string') {
