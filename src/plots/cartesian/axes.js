@@ -2191,8 +2191,6 @@ axes.drawLabels = function(gd, ax, opts) {
     var tickLabels = opts.layer.selectAll('g.' + cls)
         .data(ax.showticklabels ? vals : [], makeDataFn(ax));
 
-    var maxFontSize = 0;
-    var autoangle = 0;
     var labelsReady = [];
 
     tickLabels.enter().append('g')
@@ -2226,10 +2224,6 @@ axes.drawLabels = function(gd, ax, opts) {
             });
 
     tickLabels.exit().remove();
-
-    tickLabels.each(function(d) {
-        maxFontSize = Math.max(maxFontSize, d.fontSize);
-    });
 
     ax._tickLabels = tickLabels;
 
@@ -2313,9 +2307,10 @@ axes.drawLabels = function(gd, ax, opts) {
         // check for auto-angling if x labels overlap
         // don't auto-angle at all for log axes with
         // base and digit format
-        if(axLetter === 'x' && !isNumeric(ax.tickangle) &&
+        if(vals.length && axLetter === 'x' && !isNumeric(ax.tickangle) &&
             (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')
         ) {
+            var maxFontSize = 0;
             var lbbArray = [];
             var i;
 
@@ -2323,6 +2318,8 @@ axes.drawLabels = function(gd, ax, opts) {
                 var s = d3.select(this);
                 var thisLabel = s.select('.text-math-group');
                 if(thisLabel.empty()) thisLabel = s.select('text');
+
+                maxFontSize = Math.max(maxFontSize, d.fontSize);
 
                 var x = ax.l2p(d.x);
                 var bb = Drawing.bBox(thisLabel.node());
@@ -2339,6 +2336,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
             });
 
+            var autoangle = 0;
             for(i = 0; i < lbbArray.length - 1; i++) {
                 if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
                     // any overlap at all - set 30 degrees
