@@ -27,6 +27,7 @@ function SurfaceTrace(scene, surface, uid) {
     this.showContour = [false, false, false];
     this.dataScaleX = 1.0;
     this.dataScaleY = 1.0;
+    this.refineData = true;
 }
 
 var proto = SurfaceTrace.prototype;
@@ -223,22 +224,18 @@ var MIN_RESOLUTION = highlyComposites[9];
 var MAX_RESOLUTION = highlyComposites[13];
 
 proto.estimateScale = function(resSrc, axis) {
-
-     console.log("axis=", axis);
+    // console.log("axis=", axis);
+    // console.log("resSrc=", resSrc);
 
     var nums = (axis === 0) ?
         this.calcXnums(resSrc) :
         this.calcYnums(resSrc);
 
-     console.log("nums=", nums);
+    // console.log("nums=", nums);
 
-    var LCM = ayyarLCM(nums);
+    var resDst = 1 + ayyarLCM(nums);
 
-     console.log("LCM=", LCM);
-
-    var resDst = 1 + LCM;
-
-     console.log("BEFORE: resDst=", resDst);
+    // console.log("BEFORE: resDst=", resDst);
     while(resDst < MIN_RESOLUTION) {
         resDst *= 2;
     }
@@ -252,9 +249,12 @@ proto.estimateScale = function(resSrc, axis) {
             resDst = MAX_RESOLUTION; // option 2: use max resolution
         }
     }
-     console.log("AFTER: resDst=", resDst);
+    // console.log("AFTER: resDst=", resDst);
 
-    var scale = resDst / resSrc;
+    var scale = Math.round(resDst / resSrc);
+
+    // console.log("scale=", resDst, "/", resSrc, "=", scale);
+
     return (scale > 1) ? scale : 1;
 };
 
@@ -420,10 +420,12 @@ proto.update = function(data) {
         params.intensityBounds[1] *= scaleFactor[2];
     }
 
-    this.dataScaleX = this.estimateScale(coords[0].shape[0], 0);
-    this.dataScaleY = this.estimateScale(coords[0].shape[1], 1);
-    if(this.dataScaleX !== 1 || this.dataScaleY !== 1) {
-        this.refineCoords(coords);
+    if(this.refineData === true) {
+        this.dataScaleX = this.estimateScale(coords[0].shape[0], 0);
+        this.dataScaleY = this.estimateScale(coords[0].shape[1], 1);
+        if(this.dataScaleX !== 1 || this.dataScaleY !== 1) {
+            this.refineCoords(coords);
+        }
     }
 
     if(data.surfacecolor) {
