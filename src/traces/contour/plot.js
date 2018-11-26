@@ -255,17 +255,37 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
             .attr('data-notex', 1)
             .call(Drawing.font, contours.labelfont);
 
-        var xLen = pathinfo[0].xaxis._length;
-        var yLen = pathinfo[0].yaxis._length;
+        var xa = pathinfo[0].xaxis;
+        var ya = pathinfo[0].yaxis;
+        var xLen = xa._length;
+        var yLen = ya._length;
+        var xRng = xa.range;
+        var yRng = ya.range;
+        var x0 = Math.max(perimeter[0][0], 0);
+        var x1 = Math.min(perimeter[2][0], xLen);
+        var y0 = Math.max(perimeter[0][1], 0);
+        var y1 = Math.min(perimeter[2][1], yLen);
 
         // visible bounds of the contour trace (and the midpoints, to
         // help with cost calculations)
-        var bounds = {
-            left: Math.max(perimeter[0][0], 0),
-            right: Math.min(perimeter[2][0], xLen),
-            top: Math.max(perimeter[0][1], 0),
-            bottom: Math.min(perimeter[2][1], yLen)
-        };
+        var bounds = {};
+
+        if(xRng[0] < xRng[1]) {
+            bounds.left = x0;
+            bounds.right = x1;
+        } else {
+            bounds.left = x1;
+            bounds.right = x0;
+        }
+
+        if(yRng[0] < yRng[1]) {
+            bounds.top = y0;
+            bounds.bottom = y1;
+        } else {
+            bounds.top = y1;
+            bounds.bottom = y0;
+        }
+
         bounds.middle = (bounds.top + bounds.bottom) / 2;
         bounds.center = (bounds.left + bounds.right) / 2;
 
