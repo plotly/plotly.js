@@ -25,7 +25,8 @@ function SurfaceTrace(scene, surface, uid) {
     this.surface = surface;
     this.data = null;
     this.showContour = [false, false, false];
-    this.dataScale = 1.0; // Note we could have two different scales for width & height
+    this.dataScaleX = 1.0;
+    this.dataScaleY = 1.0;
 }
 
 var proto = SurfaceTrace.prototype;
@@ -50,11 +51,11 @@ proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
         var selectIndex = selection.index = [
             Math.min(
-                Math.round(selection.data.index[0] / this.dataScale - 1)|0,
+                Math.round(selection.data.index[0] / this.dataScaleX - 1)|0,
                 this.data.z[0].length - 1
             ),
             Math.min(
-                Math.round(selection.data.index[1] / this.dataScale - 1)|0,
+                Math.round(selection.data.index[1] / this.dataScaleY - 1)|0,
                 this.data.z.length - 1
             )
         ];
@@ -161,6 +162,7 @@ function smallestDivisor(a) {
 }
 
 function leastCommonMultiple(a, b) {
+    if(a < 1 || b < 1) return undefined;
     var A = getFactors(a);
     var B = getFactors(b);
     var n = 1;
@@ -220,25 +222,23 @@ var highlyComposites = [1, 2, 4, 6, 12, 24, 36, 48, 60, 120, 180, 240, 360, 720,
 var MIN_RESOLUTION = highlyComposites[9];
 var MAX_RESOLUTION = highlyComposites[13];
 
-proto.estimateScale = function(width, height) {
+proto.estimateScale = function(resSrc, axis) {
 
-    var resSrc = Math.max(width, height);
+     console.log("axis=", axis);
 
-    var xNums = this.calcXnums(width);
-    var yNums = this.calcYnums(height);
+    var nums = (axis === 0) ?
+        this.calcXnums(resSrc) :
+        this.calcYnums(resSrc);
 
-    // console.log("xNums=", xNums);
-    // console.log("yNums=", yNums);
+     console.log("nums=", nums);
 
-    var xLCM = ayyarLCM(xNums);
-    var yLCM = ayyarLCM(yNums);
+    var LCM = ayyarLCM(nums);
 
-    // console.log("xLCM=", xLCM);
-    // console.log("yLCM=", yLCM);
+     console.log("LCM=", LCM);
 
-    var resDst = 1 + leastCommonMultiple(xLCM, yLCM);
+    var resDst = 1 + LCM;
 
-    // console.log("BEFORE: resDst=", resDst);
+     console.log("BEFORE: resDst=", resDst);
     while(resDst < MIN_RESOLUTION) {
         resDst *= 2;
     }
@@ -252,7 +252,7 @@ proto.estimateScale = function(width, height) {
             resDst = MAX_RESOLUTION; // option 2: use max resolution
         }
     }
-    // console.log("AFTER: resDst=", resDst);
+     console.log("AFTER: resDst=", resDst);
 
     var scale = resDst / resSrc;
     return (scale > 1) ? scale : 1;
@@ -260,8 +260,8 @@ proto.estimateScale = function(width, height) {
 
 proto.refineCoords = function(coords) {
 
-    var scaleW = this.dataScale;
-    var scaleH = this.dataScale;
+    var scaleW = this.dataScaleX;
+    var scaleH = this.dataScaleY;
 
     var width = coords[0].shape[0];
     var height = coords[0].shape[1];
@@ -420,8 +420,9 @@ proto.update = function(data) {
         params.intensityBounds[1] *= scaleFactor[2];
     }
 
-    this.dataScale = this.estimateScale(coords[0].shape[0], coords[0].shape[1]);
-    if(this.dataScale !== 1) {
+    this.dataScaleX = this.estimateScale(coords[0].shape[0], 0);
+    this.dataScaleY = this.estimateScale(coords[0].shape[1], 1);
+    if(this.dataScaleX !== 1 || this.dataScaleY !== 1) {
         this.refineCoords(coords);
     }
 
