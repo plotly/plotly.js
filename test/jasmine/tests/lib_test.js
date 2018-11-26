@@ -1558,12 +1558,17 @@ describe('Test lib.js:', function() {
 
     describe('cleanNumber', function() {
         it('should return finite numbers untouched', function() {
-            [
-                0, 1, 2, 1234.567,
-                -1, -100, -999.999,
-                Number.MAX_VALUE, Number.MIN_VALUE, Number.EPSILON,
-                -Number.MAX_VALUE, -Number.MIN_VALUE, -Number.EPSILON
-            ].forEach(function(v) {
+            var vals = [
+                0, 1, 2, 1234.567, -1, -100, -999.999,
+                Number.MAX_VALUE, Number.MIN_VALUE,
+                -Number.MAX_VALUE, -Number.MIN_VALUE
+            ];
+
+            if(!Lib.isIE()) {
+                vals.push(Number.EPSILON, -Number.EPSILON);
+            }
+
+            vals.forEach(function(v) {
                 expect(Lib.cleanNumber(v)).toBe(v);
             });
         });
