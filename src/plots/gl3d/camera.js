@@ -33,6 +33,8 @@ function createCamera(element, options) {
         limits[1] = options.zoomMax;
     }
 
+    console.log("call createView...");
+
     var view = createView({
         center: options.center || [0, 0, 0],
         up: options.up || [0, 1, 0],
@@ -41,6 +43,8 @@ function createCamera(element, options) {
         ortho: options.ortho || false,
         distanceLimits: limits
     });
+
+    console.log("view=", view);
 
     var pmatrix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     var distance = 0.0;

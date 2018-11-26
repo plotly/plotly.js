@@ -56,7 +56,6 @@
     ]
   },
   "dependencies": {
-    "3d-view": "^2.0.0",
     "@plotly/d3-sankey": "^0.5.1",
     "alpha-shape": "^1.0.0",
     "array-range": "^1.0.1",
