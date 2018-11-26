@@ -238,7 +238,7 @@ proto.estimateScale = function(width, height) {
 
     var resDst = 1 + leastCommonMultiple(xLCM, yLCM);
     if(resDst === 2) {
-        resDst < MIN_RESOLUTION; // remember having 120 is better than 128 in this case because it is a highly composite number
+        resDst = MIN_RESOLUTION; // remember having 120 is better than 128 in this case because it is a highly composite number
     }
 
     // console.log("BEFORE: resDst=", resDst);
