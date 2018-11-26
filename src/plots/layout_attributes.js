@@ -84,7 +84,9 @@ module.exports = {
             ].join(' ')
         },
         y: {
-            valType: 'any',
+            valType: 'number',
+            min: 0,
+            max: 1,
             dflt: 'auto',
             role: 'style',
             editType: 'layoutstyle',

@@ -1315,19 +1315,6 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         return Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
     }
 
-    // Special treatment for title.y that can be 'auto'
-    // or a number between 0 and 1.
-    function coerceTitleY() {
-        if(layoutIn.title && isNumeric(layoutIn.title.y)) {
-            var propOut = Lib.nestedProperty(layoutOut, 'title.y');
-            var opts = Lib.nestedProperty(plots.layoutAttributes, 'title.y').get();
-
-            Lib.valObjectMeta.number.coerceFunction(layoutIn.title.y, propOut, 'auto', opts);
-        } else {
-            coerce('title.y');
-        }
-    }
-
     var template = layoutIn.template;
     if(Lib.isPlainObject(template)) {
         layoutOut.template = template;
@@ -1348,7 +1335,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('title.xref');
     coerce('title.yref');
     coerce('title.x');
-    coerceTitleY();
+    coerce('title.y');
     coerce('title.xanchor');
     coerce('title.yanchor');
     coerce('title.pad.t');
