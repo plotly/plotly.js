@@ -27,7 +27,7 @@ function SurfaceTrace(scene, surface, uid) {
     this.showContour = [false, false, false];
     this.dataScaleX = 1.0;
     this.dataScaleY = 1.0;
-    this.refineData = true;
+    this.refineData = true; // this could also be set by user...
 }
 
 var proto = SurfaceTrace.prototype;
@@ -52,11 +52,11 @@ proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
         var selectIndex = selection.index = [
             Math.min(
-                Math.round(selection.data.index[0] / this.dataScaleX - 1)|0,
+                Math.floor(selection.data.index[0] / this.dataScaleX - 1),
                 this.data.z[0].length - 1
             ),
             Math.min(
-                Math.round(selection.data.index[1] / this.dataScaleY - 1)|0,
+                Math.floor(selection.data.index[1] / this.dataScaleY - 1),
                 this.data.z.length - 1
             )
         ];
@@ -418,6 +418,11 @@ proto.update = function(data) {
         // we must scale its value
         params.intensityBounds[0] *= scaleFactor[2];
         params.intensityBounds[1] *= scaleFactor[2];
+    }
+
+    if(MAX_RESOLUTION < coords[0].shape[0] ||
+        MAX_RESOLUTION < coords[0].shape[1]) {
+        this.refineData = false;
     }
 
     if(this.refineData === true) {
