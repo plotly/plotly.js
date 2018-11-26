@@ -120,8 +120,8 @@ var radialAxisAttrs = {
     editType: 'calc',
 
     _deprecated: {
-        title: overrideAll(axesAttrs._deprecated.title, 'plot', 'from-root'),
-        titlefont: overrideAll(axesAttrs._deprecated.titlefont, 'plot', 'from-root')
+        title: axesAttrs._deprecated.title,
+        titlefont: axesAttrs._deprecated.titlefont
     }
 };
 
