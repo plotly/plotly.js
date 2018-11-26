@@ -255,6 +255,29 @@ module.exports = function setConvert(ax, fullLayout) {
             return ensureNumber(v);
         };
     }
+    else if(ax.type === 'multicategory') {
+        // ax.d2c = ax.d2l = setMultiCategoryIndex;
+        ax.r2d = ax.c2d = ax.l2d = getCategoryName;
+        ax.d2r = ax.d2l_noadd = getCategoryIndex;
+
+        ax.r2c = function(v) {
+            var index = getCategoryIndex(v);
+            return index !== undefined ? index : ax.fraction2r(0.5);
+        };
+
+        ax.l2r = ax.c2r = ensureNumber;
+        ax.r2l = getCategoryIndex;
+
+        ax.d2p = function(v) { return ax.l2p(ax.r2c(v)); };
+        ax.p2d = function(px) { return getCategoryName(p2l(px)); };
+        ax.r2p = ax.d2p;
+        ax.p2r = p2l;
+
+        ax.cleanPos = function(v) {
+            if(typeof v === 'string' && v !== '') return v;
+            return ensureNumber(v);
+        };
+    }
 
     // find the range value at the specified (linear) fraction of the axis
     ax.fraction2r = function(v) {
@@ -400,7 +423,7 @@ module.exports = function setConvert(ax, fullLayout) {
     // in case the expected data isn't there, make a list of
     // integers based on the opposite data
     ax.makeCalcdata = function(trace, axLetter) {
-        var arrayIn, arrayOut, i, len;
+        var arrayIn, arrayOut, i, j, len;
 
         var axType = ax.type;
         var cal = axType === 'date' && trace[axLetter + 'calendar'];
@@ -418,8 +441,24 @@ module.exports = function setConvert(ax, fullLayout) {
             }
 
             arrayOut = new Array(len);
-            for(i = 0; i < len; i++) {
-                arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
+            if(axType === 'multicategory') {
+                var tmp = new Array(len);
+                for(j = 0; j < arrayIn.length; j++) {
+                    if(Array.isArray(arrayIn[j])) {
+                        for(i = 0; i < len; i++) {
+                            var v = arrayIn[j][i];
+                            if(j) tmp[i].push(v);
+                            else tmp[i] = [v];
+                        }
+                    }
+                }
+                for(i = 0; i < len; i++) {
+                    arrayOut[i] = setCategoryIndex(tmp[i]);
+                }
+            } else {
+                for(i = 0; i < len; i++) {
+                    arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
+                }
             }
         }
         else {

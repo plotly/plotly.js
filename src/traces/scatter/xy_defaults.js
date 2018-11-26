@@ -13,19 +13,23 @@ var Registry = require('../../registry');
 
 
 module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
-    var len,
-        x = coerce('x'),
-        y = coerce('y');
+    var x = coerce('x');
+    var y = coerce('y');
+    var len, xlen;
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     if(x) {
+        xlen = Array.isArray(x[0]) ?
+            x.map(function(c) { return c.length; })
+             .sort(function(a, b) { return a - b; })[0] :
+            x.length;
         if(y) {
-            len = Math.min(x.length, y.length);
+            len = Math.min(xlen, y.length);
         }
         else {
-            len = x.length;
+            len = xlen;
             coerce('y0');
             coerce('dy');
         }

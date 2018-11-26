@@ -57,7 +57,9 @@ var axisTickAttrs = overrideAll({
 
 var radialAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
-    type: axesAttrs.type,
+    type: extendFlat({}, axesAttrs.type, {
+        values: ['-', 'linear', 'log', 'date', 'category']
+    }),
 
     autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {

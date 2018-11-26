@@ -157,6 +157,7 @@ var getDataConversions = axes.getDataConversions = function(gd, trace, target, t
                 ax.d2c(targetArray[i]);
             }
         }
+        // TODO?
     } else {
         ax = axes.getFromTrace(gd, trace, d2cTarget);
     }
@@ -197,7 +198,7 @@ axes.counterLetter = function(id) {
 axes.minDtick = function(ax, newDiff, newFirst, allow) {
     // doesn't make sense to do forced min dTick on log or category axes,
     // and the plot itself may decide to cancel (ie non-grouped bars)
-    if(['log', 'category'].indexOf(ax.type) !== -1 || !allow) {
+    if(['log', 'category', 'multicategory'].indexOf(ax.type) !== -1 || !allow) {
         ax._minDtick = 0;
     }
     // undefined means there's nothing there yet
@@ -277,6 +278,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar, size) {
     var dataMin = Lib.aggNums(Math.min, null, data);
     var dataMax = Lib.aggNums(Math.max, null, data);
 
+    // TODO multicategory, if we allow multicategory histograms
     if(ax.type === 'category') {
         return {
             start: dataMin - 0.5,
@@ -478,7 +480,7 @@ axes.prepTicks = function(ax) {
         var minPx;
 
         if(!nt) {
-            if(ax.type === 'category') {
+            if(ax.type === 'category' || ax.type === 'multicategory') {
                 minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
                 nt = ax._length / minPx;
             } else {
@@ -543,7 +545,7 @@ axes.calcTicks = function calcTicks(ax) {
 
     // return the full set of tick vals
     var vals = [];
-    if(ax.type === 'category') {
+    if(ax.type === 'category' || ax.type === 'multicategory') {
         endTick = (axrev) ? Math.max(-0.5, endTick) :
             Math.min(ax._categories.length - 0.5, endTick);
     }
@@ -602,6 +604,7 @@ function arrayTicks(ax) {
     if(!Array.isArray(text)) text = [];
 
     // make sure showing ticks doesn't accidentally add new categories
+    // TODO multicategory, if we allow ticktext / tickvals
     var tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
 
     // array ticks on log axes always show the full number
@@ -725,7 +728,7 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.dtick = (roughDTick > 0.3) ? 'D2' : 'D1';
         }
     }
-    else if(ax.type === 'category') {
+    else if(ax.type === 'category' || ax.type === 'multicategory') {
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
@@ -765,7 +768,7 @@ function autoTickRound(ax) {
         dtick = 1;
     }
 
-    if(ax.type === 'category') {
+    if(ax.type === 'category' || ax.type === 'multicategory') {
         ax._tickround = null;
     }
     if(ax.type === 'date') {
@@ -871,7 +874,7 @@ axes.tickFirst = function(ax) {
         var tmin = sRound((r0 - tick0) / dtick) * dtick + tick0;
 
         // make sure no ticks outside the category list
-        if(ax.type === 'category') {
+        if(ax.type === 'category' || ax.type === 'multicategory') {
             tmin = Lib.constrain(tmin, 0, ax._categories.length - 1);
         }
         return tmin;
@@ -930,6 +933,7 @@ axes.tickText = function(ax, x, hover) {
     var arrayMode = ax.tickmode === 'array';
     var extraPrecision = hover || arrayMode;
     var axType = ax.type;
+    // TODO multicategory, if we allow ticktext / tickvals
     var tickVal2l = axType === 'category' ? ax.d2l_noadd : ax.d2l;
     var i;
 
@@ -965,12 +969,27 @@ axes.tickText = function(ax, x, hover) {
     if(axType === 'date') formatDate(ax, out, hover, extraPrecision);
     else if(axType === 'log') formatLog(ax, out, hover, extraPrecision, hideexp);
     else if(axType === 'category') formatCategory(ax, out);
+    else if(axType === 'multicategory') formatMultiCategory(ax, out, hover);
     else if(isAngular(ax)) formatAngle(ax, out, hover, extraPrecision, hideexp);
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
     if(ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
     if(ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
+
+    // Setup ticks and grid lines boundaries
+    // at 1/2 a 'category' to the left/bottom
+    if(ax.tickson === 'boundaries') {
+        var inbounds = function(v) {
+            var p = ax.l2p(v);
+            return p >= 0 && p <= ax._length ? v : null;
+        };
+
+        out.xbnd = [
+            inbounds(out.x - 0.5),
+            inbounds(out.x + ax.dtick - 0.5)
+        ];
+    }
 
     return out;
 };
@@ -1147,19 +1166,22 @@ function formatCategory(ax, out) {
     var tt = ax._categories[Math.round(out.x)];
     if(tt === undefined) tt = '';
     out.text = String(tt);
+}
 
-    // Setup ticks and grid lines boundaries
-    // at 1/2 a 'category' to the left/bottom
-    if(ax.tickson === 'boundaries') {
-        var inbounds = function(v) {
-            var p = ax.l2p(v);
-            return p >= 0 && p <= ax._length ? v : null;
-        };
+function formatMultiCategory(ax, out, hover) {
+    var v = Math.round(out.x);
+    var tt = ax._categories[v][1];
+    var tt2 = ax._categories[v][0];
+    tt = tt === undefined ? '' : String(tt);
+    tt2 = tt2 === undefined ? '' : String(tt2);
 
-        out.xbnd = [
-            inbounds(out.x - 0.5),
-            inbounds(out.x + ax.dtick - 0.5)
-        ];
+    if(hover) {
+        // TODO is this what we want?
+        out.text = tt2 + ' - ' + tt;
+    } else {
+        // setup for secondary labels
+        out.text = tt;
+        out.text2 = tt2;
     }
 }
 
@@ -1559,6 +1581,9 @@ axes.draw = function(gd, arg, opts) {
 
             plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
             plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
+            if(xa.type === 'multicategory') {
+                plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
+            }
             if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
             if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
             fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
@@ -1603,7 +1628,9 @@ axes.drawOne = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var counterLetter = axes.counterLetter(axId);
     var mainSubplot = ax._mainSubplot;
+    var mainLinePosition = ax._mainLinePosition;
     var mainPlotinfo = fullLayout._plots[mainSubplot];
+    var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var subplotsWithAx = axes.getSubplots(gd, ax);
 
     var vals = ax._vals = axes.calcTicks(ax);
@@ -1679,14 +1706,14 @@ axes.drawOne = function(gd, ax, opts) {
     var tickSubplots = [];
 
     if(ax.ticks) {
-        var mainTickPath = axes.makeTickPath(ax, ax._mainLinePosition, tickSigns[2]);
+        var mainTickPath = axes.makeTickPath(ax, mainLinePosition, tickSigns[2]);
         if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
             mainTickPath += axes.makeTickPath(ax, ax._mainMirrorPosition, tickSigns[3]);
         }
 
         axes.drawTicks(gd, ax, {
             vals: tickVals,
-            layer: mainPlotinfo[axLetter + 'axislayer'],
+            layer: mainAxLayer,
             path: mainTickPath,
             transFn: transFn
         });
@@ -1710,31 +1737,70 @@ axes.drawOne = function(gd, ax, opts) {
         });
     }
 
-    var labelFns = axes.makeLabelFns(ax, ax._mainLinePosition);
     // stash tickLabels selection, so that drawTitle can use it
     // to scoot title w/o having to query the axis layer again
+    //
+    // TODO? Stash this per class?
     ax._tickLabels = null;
 
     var seq = [];
 
     // tick labels - for now just the main labels.
     // TODO: mirror labels, esp for subplots
-    if(ax._mainLinePosition) {
+    if(mainLinePosition) {
+        var labelFns = axes.makeLabelFns(ax, mainLinePosition);
+
         seq.push(function() {
             return axes.drawLabels(gd, ax, {
                 vals: vals,
-                layer: mainPlotinfo[axLetter + 'axislayer'],
+                layer: mainAxLayer,
                 transFn: transFn,
                 labelXFn: labelFns.labelXFn,
                 labelYFn: labelFns.labelYFn,
                 labelAnchorFn: labelFns.labelAnchorFn,
             });
         });
+
+        if(ax.type === 'multicategory') {
+            // drawDividers()
+
+            // TODO move to formatMultiCategory
+            var lookup = {};
+            for(i = 0; i < vals.length; i++) {
+                var d = vals[i];
+                if(lookup[d.text2]) {
+                    lookup[d.text2].push(d.x);
+                } else {
+                    lookup[d.text2] = [d.x];
+                }
+            }
+            var secondaryLabelVals = [];
+            for(var k in lookup) {
+                secondaryLabelVals.push(tickTextObj(ax, Lib.interp(lookup[k], 0.5), k));
+            }
+
+            // TODO could do better!
+            var secondarayPosition = ax._mainLinePosition + {bottom: 20, top: -20}[ax.side];
+            var secondaryLabelFns = axes.makeLabelFns(ax, secondarayPosition);
+
+            seq.push(function() {
+                return axes.drawLabels(gd, ax, {
+                    vals: secondaryLabelVals,
+                    layer: mainAxLayer,
+                    cls: ax._id + 'tick2',
+                    transFn: transFn,
+                    labelXFn: secondaryLabelFns.labelXFn,
+                    labelYFn: secondaryLabelFns.labelYFn,
+                    labelAnchorFn: secondaryLabelFns.labelAnchorFn,
+                });
+            });
+        }
     }
 
     if(!opts.skipTitle &&
         !((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
     ) {
+        // TODO update 'avoid selection' for multicategory
         seq.push(function() {
             return axes.drawTitle(gd, ax);
         });
@@ -1748,7 +1814,7 @@ axes.drawOne = function(gd, ax, opts) {
     seq.push(function calcBoundingBox() {
         if(ax.showticklabels) {
             var gdBB = gd.getBoundingClientRect();
-            var bBox = mainPlotinfo[axLetter + 'axislayer'].node().getBoundingClientRect();
+            var bBox = mainAxLayer.node().getBoundingClientRect();
 
             /*
              * the way we're going to use this, the positioning that matters
@@ -2155,6 +2221,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
  * @param {object} opts
  * - {array of object} vals (calcTicks output-like)
  * - {d3 selection} layer
+ * - {string (optional)} cls (node className)
  * - {fn} transFn
  * - {fn} labelXFn
  * - {fn} labelYFn
@@ -2165,7 +2232,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
     var axId = ax._id;
     var axLetter = axId.charAt(0);
-    var cls = axId + 'tick';
+    var cls = opts.cls || axId + 'tick';
     var vals = opts.vals;
     var labelXFn = opts.labelXFn;
     var labelYFn = opts.labelYFn;

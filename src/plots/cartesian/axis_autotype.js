@@ -15,6 +15,7 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array, calendar) {
+    if(multiCategory(array)) return 'multicategory';
     if(moreDates(array, calendar)) return 'date';
     if(category(array)) return 'category';
     if(linearOK(array)) return 'linear';
@@ -80,4 +81,11 @@ function category(a) {
     }
 
     return curvecats > curvenums * 2;
+}
+
+function multiCategory(a) {
+    return (
+        Array.isArray(a[0]) && Array.isArray(a[1]) &&
+        (category(a[0]) || category(a[1]))
+    );
 }
