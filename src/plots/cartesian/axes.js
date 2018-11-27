@@ -2149,11 +2149,11 @@ axes.drawGrid = function(gd, ax, opts) {
             }
         });
 
-    ax._gridWidthCrispRound = Drawing.crispRound(gd, ax.gridwidth, 1);
+    ax._gw = Drawing.crispRound(gd, ax.gridwidth, 1);
 
     grid.attr('transform', opts.transFn)
         .call(Color.stroke, ax.gridcolor || '#ddd')
-        .style('stroke-width', ax._gridWidthCrispRound + 'px');
+        .style('stroke-width', ax._gw + 'px');
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
@@ -2201,14 +2201,9 @@ axes.drawZeroLine = function(gd, ax, opts) {
             });
         });
 
-    var strokeWidth = Drawing.crispRound(gd,
-        ax.zerolinewidth,
-        ax._gridWidthCrispRound || 1
-    );
-
     zl.attr('transform', opts.transFn)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-        .style('stroke-width', strokeWidth + 'px');
+        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
 };
 
 /**
