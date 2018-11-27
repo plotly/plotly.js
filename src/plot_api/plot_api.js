@@ -1405,7 +1405,10 @@ function _restyle(gd, aobj, traces) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
         data = gd.data,
+        eventData = Lib.extendDeepAll({}, aobj),
         i;
+
+    cleanDeprecatedAttributeKeys(aobj);
 
     // initialize flags
     var flags = editTypes.traceFlags();
@@ -1691,49 +1694,45 @@ function _restyle(gd, aobj, traces) {
         undoit: undoit,
         redoit: redoit,
         traces: traces,
-        eventData: Lib.extendDeepNoArrays([], [redoit, traces])
+        eventData: Lib.extendDeepNoArrays([], [eventData, traces])
     };
 }
 
 /**
- * Converts deprecated layout attributes and "string attributes" alike to
+ * Converts deprecated attribute keys to
  * the current API to ensure backwards compatibility.
  *
- * This is needed for the relayout mechanism to determine which
- * subroutines to run based on the actual layout attribute
+ * This is needed for the update mechanism to determine which
+ * subroutines to run based on the actual attribute
  * definitions (that don't include the deprecated ones).
  *
  * E.g. Maps {'xaxis.title': 'A chart'} to {'xaxis.title.text': 'A chart'}
  * and {titlefont: {...}} to {'title.font': {...}}.
  *
- * @param layoutObj
+ * @param aobj
  */
-function cleanDeprecatedLayoutAttributes(layoutObj) {
+function cleanDeprecatedAttributeKeys(aobj) {
     var oldAxisTitleRegExp = Lib.counterRegex('axis', '\.title', false, false);
-    var keys, i, key, value;
+    var keys = Object.keys(aobj);
+    var i, key, value;
 
-    if(typeof layoutObj.title === 'string') {
-        layoutObj.title = {text: layoutObj.title};
-    }
-
-    keys = Object.keys(layoutObj);
     for(i = 0; i < keys.length; i++) {
         key = keys[i];
-        value = layoutObj[key];
+        value = aobj[key];
 
-        if(key.indexOf('titlefont') > -1) {
-            replace(key, key.replace('titlefont', 'title.font'));
-        }
-
-        if((typeof value === 'string' || typeof value === 'number') &&
-          oldAxisTitleRegExp.test(key)) {
+        if((key === 'title' || oldAxisTitleRegExp.test(key)) &&
+          (typeof value === 'string' || typeof value === 'number')) {
             replace(key, key.replace('title', 'title.text'));
+        } else if(key.indexOf('titlefont') > -1) {
+            replace(key, key.replace('titlefont', 'title.font'));
+        } else if(key.indexOf('titleposition') > -1) {
+            replace(key, key.replace('titleposition', 'title.position'));
         }
     }
 
     function replace(oldAttrStr, newAttrStr) {
-        layoutObj[newAttrStr] = layoutObj[oldAttrStr];
-        delete layoutObj[oldAttrStr];
+        aobj[newAttrStr] = aobj[oldAttrStr];
+        delete aobj[oldAttrStr];
     }
 }
 
@@ -1875,7 +1874,7 @@ function _relayout(gd, aobj) {
         i,
         j;
 
-    cleanDeprecatedLayoutAttributes(aobj);
+    cleanDeprecatedAttributeKeys(aobj);
     keys = Object.keys(aobj);
 
     // look for 'allaxes', split out into all axes

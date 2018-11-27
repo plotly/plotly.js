@@ -245,13 +245,26 @@ function cleanTitle(titleContainer) {
         var oldFontAttrSet = Lib.isPlainObject(titleContainer.titlefont);
         var newFontAttrSet = titleContainer.title && Lib.isPlainObject(titleContainer.title.font);
         if(oldFontAttrSet && !newFontAttrSet) {
-            if(!titleContainer.title) {
-                titleContainer.title = {};
-            }
-
-            titleContainer.title.font = titleContainer.titlefont;
-            delete titleContainer.titlefont;
+            nestTitleAttr('titlefont', 'font');
         }
+
+        // titleposition -> title.position
+        var oldPositionAttrSet = titleContainer.titleposition;
+        var newPositionAttrSet = titleContainer.title && titleContainer.title.position;
+        if(oldPositionAttrSet && !newPositionAttrSet) {
+            nestTitleAttr('titleposition', 'position');
+        }
+    }
+
+    function nestTitleAttr(oldAttrName, newAttrName) {
+
+        // Ensure title object exists
+        if(!titleContainer.title) {
+            titleContainer.title = {};
+        }
+
+        titleContainer.title[newAttrName] = titleContainer[oldAttrName];
+        delete titleContainer[oldAttrName];
     }
 }
 
@@ -458,6 +471,8 @@ exports.cleanData = function(data) {
             delete trace.autobiny;
             delete trace.ybins;
         }
+
+        cleanTitle(trace);
     }
 };
 
