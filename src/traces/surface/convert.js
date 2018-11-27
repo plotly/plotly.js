@@ -32,20 +32,36 @@ function SurfaceTrace(scene, surface, uid) {
 
 var proto = SurfaceTrace.prototype;
 
-proto.getXat = function(a, b) {
-    return (!isArrayOrTypedArray(this.data.x)) ?
-                a :
-           (isArrayOrTypedArray(this.data.x[0])) ?
-                this.data.x[b][a] :
-                this.data.x[a];
+proto.getXat = function(a, b, calendar, axis) {
+    var v = (
+       (!isArrayOrTypedArray(this.data.x)) ?
+            a :
+       (isArrayOrTypedArray(this.data.x[0])) ?
+            this.data.x[b][a] :
+            this.data.x[a]
+    );
+
+    return (!calendar) ? v : axis.d2l(v, 0, calendar);
 };
 
-proto.getYat = function(a, b) {
-    return (!isArrayOrTypedArray(this.data.y)) ?
-                b :
-           (isArrayOrTypedArray(this.data.y[0])) ?
-                this.data.y[b][a] :
-                this.data.y[b];
+proto.getYat = function(a, b, calendar, axis) {
+    var v = (
+       (!isArrayOrTypedArray(this.data.y)) ?
+            b :
+       (isArrayOrTypedArray(this.data.y[0])) ?
+            this.data.y[b][a] :
+            this.data.y[b]
+    );
+
+    return (!calendar) ? v : axis.d2l(v, 0, calendar);
+};
+
+proto.getZat = function(a, b, calendar, axis) {
+    var v = (
+        this.data.z[b][a]
+    );
+
+    return (!calendar) ? v : axis.d2l(v, 0, calendar);
 };
 
 proto.handlePick = function(selection) {
@@ -318,8 +334,7 @@ proto.setContourLevels = function() {
 };
 
 proto.update = function(data) {
-    var i,
-        scene = this.scene,
+    var scene = this.scene,
         sceneLayout = scene.fullSceneLayout,
         surface = this.surface,
         alpha = data.opacity,
@@ -327,19 +342,9 @@ proto.update = function(data) {
         z = data.z,
         x = data.x,
         y = data.y,
-        xaxis = sceneLayout.xaxis,
-        yaxis = sceneLayout.yaxis,
-        zaxis = sceneLayout.zaxis,
         scaleFactor = scene.dataScale,
         xlen = z[0].length,
         ylen = data._ylength,
-        coords = [
-            ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
-            ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
-            ndarray(new Float32Array(xlen * ylen), [xlen, ylen])
-        ],
-        xc = coords[0],
-        yc = coords[1],
         contourLevels = scene.contourLevels;
 
     // Save data
@@ -353,43 +358,38 @@ proto.update = function(data) {
      * which is the transpose of 'gl-surface-plot'.
      */
 
-    var xcalendar = data.xcalendar,
-        ycalendar = data.ycalendar,
-        zcalendar = data.zcalendar;
-
-    fill(coords[2], function(row, col) {
-        return zaxis.d2l(z[col][row], 0, zcalendar) * scaleFactor[2];
-    });
-
-    // coords x
-    if(!isArrayOrTypedArray(x)) {
-        fill(xc, function(row) {
-            return xaxis.d2l(row, 0, xcalendar) * scaleFactor[0];
-        });
-    } else if(isArrayOrTypedArray(x[0])) {
-        fill(xc, function(row, col) {
-            return xaxis.d2l(x[col][row], 0, xcalendar) * scaleFactor[0];
-        });
-    } else {
-        // ticks x
-        fill(xc, function(row) {
-            return xaxis.d2l(x[row], 0, xcalendar) * scaleFactor[0];
-        });
+    var i, j, k;
+    var rawCoords = [];
+    for(i = 0; i < 3; i++) {
+        rawCoords[i] = [];
+        for(j = 0; j < xlen; j++) {
+            rawCoords[i][j] = [];
+            /*
+            for(k = 0; k < ylen; k++) {
+                rawCoords[i][j][k] = undefined;
+            }
+            */
+        }
     }
 
-    // coords y
-    if(!isArrayOrTypedArray(x)) {
-        fill(yc, function(row, col) {
-            return yaxis.d2l(col, 0, xcalendar) * scaleFactor[1];
-        });
-    } else if(isArrayOrTypedArray(y[0])) {
-        fill(yc, function(row, col) {
-            return yaxis.d2l(y[col][row], 0, ycalendar) * scaleFactor[1];
-        });
-    } else {
-        // ticks y
-        fill(yc, function(row, col) {
-            return yaxis.d2l(y[col], 0, ycalendar) * scaleFactor[1];
+    // coords x, y & z
+    for(j = 0; j < xlen; j++) {
+        for(k = 0; k < ylen; k++) {
+            rawCoords[0][j][k] = this.getXat(j, k, data.xcalendar, sceneLayout.xaxis) * scaleFactor[0];
+            rawCoords[1][j][k] = this.getYat(j, k, data.ycalendar, sceneLayout.yaxis) * scaleFactor[1];
+            rawCoords[2][j][k] = this.getZat(j, k, data.zcalendar, sceneLayout.zaxis) * scaleFactor[2];
+        }
+    }
+
+    var coords = [
+        ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
+        ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
+        ndarray(new Float32Array(xlen * ylen), [xlen, ylen])
+    ];
+
+    for (i = 0; i < 3; i++) {
+        fill(coords[i], function(row, col) {
+            return rawCoords[i][row][col];
         });
     }
 
