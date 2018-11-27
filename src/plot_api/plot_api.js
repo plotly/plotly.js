@@ -1712,7 +1712,8 @@ function _restyle(gd, aobj, traces) {
  * @param aobj
  */
 function cleanDeprecatedAttributeKeys(aobj) {
-    var oldAxisTitleRegExp = Lib.counterRegex('axis', '\.title', false, false);
+    var oldAxisTitleRegex = Lib.counterRegex('axis', '\.title', false, false);
+    var colorbarRegex = /colorbar\.title$/;
     var keys = Object.keys(aobj);
     var i, key, value;
 
@@ -1720,13 +1721,15 @@ function cleanDeprecatedAttributeKeys(aobj) {
         key = keys[i];
         value = aobj[key];
 
-        if((key === 'title' || oldAxisTitleRegExp.test(key)) &&
+        if((key === 'title' || oldAxisTitleRegex.test(key) || colorbarRegex.test(key)) &&
           (typeof value === 'string' || typeof value === 'number')) {
             replace(key, key.replace('title', 'title.text'));
         } else if(key.indexOf('titlefont') > -1) {
             replace(key, key.replace('titlefont', 'title.font'));
         } else if(key.indexOf('titleposition') > -1) {
             replace(key, key.replace('titleposition', 'title.position'));
+        } else if(key.indexOf('titleside') > -1) {
+            replace(key, key.replace('titleside', 'title.side'));
         }
     }
 

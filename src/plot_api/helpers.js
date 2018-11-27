@@ -254,6 +254,13 @@ function cleanTitle(titleContainer) {
         if(oldPositionAttrSet && !newPositionAttrSet) {
             nestTitleAttr('titleposition', 'position');
         }
+
+        // titleside -> title.side
+        var oldSideAttrSet = titleContainer.titleside;
+        var newSideAttrSet = titleContainer.title && titleContainer.title.side;
+        if(oldSideAttrSet && !newSideAttrSet) {
+            nestTitleAttr('titleside', 'side');
+        }
     }
 
     function nestTitleAttr(oldAttrName, newAttrName) {
@@ -473,6 +480,9 @@ exports.cleanData = function(data) {
         }
 
         cleanTitle(trace);
+        if(trace.colorbar) cleanTitle(trace.colorbar);
+        if(trace.marker && trace.marker.colorbar) cleanTitle(trace.marker.colorbar);
+        if(trace.line && trace.line.colorbar) cleanTitle(trace.line.colorbar);
     }
 };
 
