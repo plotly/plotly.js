@@ -65,21 +65,13 @@ proto.getZat = function(a, b, calendar, axis) {
     );
 
     return (calendar === undefined) ? v : axis.d2l(v, 0, calendar);
-    // return (calendar === undefined) ? null2undefined(v) : axis.d2l(v, 0, calendar);
 };
-/*
-function null2undefined(a) {
-    // Note: null * 1.0 = 0.0!
-    // Therefore we convert nul to undefined.
-    // where undefined * 1.0 = NaN
-    return (a === null) ? undefined : a;
-}
-*/
+
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
 
-        var j = Math.min(Math.floor(selection.data.index[0] / this.dataScaleX - 1), this.data.z[0].length - 1);
-        var k = Math.min(Math.floor(selection.data.index[1] / this.dataScaleY - 1), this.data._ylength - 1);
+        var j = Math.max(Math.min(Math.floor(selection.data.index[0] / this.dataScaleX - 0.5), this.data._xlength - 1), 0);
+        var k = Math.max(Math.min(Math.floor(selection.data.index[1] / this.dataScaleY - 0.5), this.data._ylength - 1), 0);
 
         selection.index = [j, k];
 
@@ -352,7 +344,7 @@ proto.update = function(data) {
         alpha = data.opacity,
         colormap = parseColorScale(data.colorscale, alpha),
         scaleFactor = scene.dataScale,
-        xlen = data.z.length,
+        xlen = data._xlength,
         ylen = data._ylength,
         contourLevels = scene.contourLevels;
 
@@ -423,7 +415,7 @@ proto.update = function(data) {
     }
 
     for(i = 0; i < 3; i++) {
-        this.midValues[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
+        data._worldOffset = this.midValues[i] = 0.0; // 0.5 * (this.minValues[i] + this.maxValues[i]);
     }
 
     for(i = 0; i < 3; i++) {
@@ -550,7 +542,6 @@ proto.update = function(data) {
     }
 
     params.coords = coords;
-
     surface.update(params);
 
     surface.visible = data.visible;
