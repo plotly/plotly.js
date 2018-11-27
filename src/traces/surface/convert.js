@@ -41,7 +41,7 @@ proto.getXat = function(a, b, calendar, axis) {
             this.data.x[a]
     );
 
-    return (!calendar) ? v : axis.d2l(v, 0, calendar);
+    return (calendar === undefined) ? v : axis.d2l(v, 0, calendar);
 };
 
 proto.getYat = function(a, b, calendar, axis) {
@@ -53,7 +53,7 @@ proto.getYat = function(a, b, calendar, axis) {
             this.data.y[b]
     );
 
-    return (!calendar) ? v : axis.d2l(v, 0, calendar);
+    return (calendar === undefined) ? v : axis.d2l(v, 0, calendar);
 };
 
 proto.getZat = function(a, b, calendar, axis) {
@@ -61,39 +61,32 @@ proto.getZat = function(a, b, calendar, axis) {
         this.data.z[b][a]
     );
 
-    return (!calendar) ? v : axis.d2l(v, 0, calendar);
+    return (calendar === undefined) ? v : axis.d2l(v, 0, calendar);
 };
 
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
-        var selectIndex = selection.index = [
-            Math.min(
-                Math.floor(selection.data.index[0] / this.dataScaleX - 1),
-                this.data.z[0].length - 1
-            ),
-            Math.min(
-                Math.floor(selection.data.index[1] / this.dataScaleY - 1),
-                this.data.z.length - 1
-            )
+
+        var j = Math.min(Math.floor(selection.data.index[0] / this.dataScaleX - 1), this.data.z[0].length - 1);
+        var k = Math.min(Math.floor(selection.data.index[1] / this.dataScaleY - 1), this.data.z.length - 1);
+
+        selection.index = [j, k];
+
+        selection.traceCoordinate = [
+            this.getXat(j, k),
+            this.getYat(j, k),
+            this.getZat(j, k)
         ];
-        var traceCoordinate = [0, 0, 0];
 
-        traceCoordinate[0] = this.getXat(selectIndex[0], selectIndex[1]);
-        traceCoordinate[1] = this.getYat(selectIndex[0], selectIndex[1]);
-
-        traceCoordinate[2] = this.data.z[selectIndex[1]][selectIndex[0]];
-        selection.traceCoordinate = traceCoordinate;
-
-        var sceneLayout = this.scene.fullSceneLayout;
         selection.dataCoordinate = [
-            sceneLayout.xaxis.d2l(traceCoordinate[0], 0, this.data.xcalendar) * this.scene.dataScale[0],
-            sceneLayout.yaxis.d2l(traceCoordinate[1], 0, this.data.ycalendar) * this.scene.dataScale[1],
-            sceneLayout.zaxis.d2l(traceCoordinate[2], 0, this.data.zcalendar) * this.scene.dataScale[2]
+            this.getXat(j, k, this.data.xcalendar, this.scene.fullSceneLayout.xaxis) * this.scene.dataScale[0],
+            this.getYat(j, k, this.data.ycalendar, this.scene.fullSceneLayout.yaxis) * this.scene.dataScale[1],
+            this.getZat(j, k, this.data.zcalendar, this.scene.fullSceneLayout.zaxis) * this.scene.dataScale[2]
         ];
 
         var text = this.data.text;
-        if(Array.isArray(text) && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]] !== undefined) {
-            selection.textLabel = text[selectIndex[1]][selectIndex[0]];
+        if(Array.isArray(text) && text[k] && text[k][j] !== undefined) {
+            selection.textLabel = text[k][j];
         } else if(text) {
             selection.textLabel = text;
         } else {
@@ -339,11 +332,8 @@ proto.update = function(data) {
         surface = this.surface,
         alpha = data.opacity,
         colormap = parseColorScale(data.colorscale, alpha),
-        z = data.z,
-        x = data.x,
-        y = data.y,
         scaleFactor = scene.dataScale,
-        xlen = z[0].length,
+        xlen = data.z.length,
         ylen = data._ylength,
         contourLevels = scene.contourLevels;
 
@@ -387,11 +377,9 @@ proto.update = function(data) {
         ndarray(new Float32Array(xlen * ylen), [xlen, ylen])
     ];
 
-    for (i = 0; i < 3; i++) {
-        fill(coords[i], function(row, col) {
-            return rawCoords[i][row][col];
-        });
-    }
+    fill(coords[0], function(row, col) { return rawCoords[0][row][col]; });
+    fill(coords[1], function(row, col) { return rawCoords[1][row][col]; });
+    fill(coords[2], function(row, col) { return rawCoords[2][row][col]; });
 
     var params = {
         colormap: colormap,
