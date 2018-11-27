@@ -1745,23 +1745,25 @@ axes.drawOne = function(gd, ax, opts) {
 
     // tick labels - for now just the main labels.
     // TODO: mirror labels, esp for subplots
+
+    seq.push(function() {
         var labelFns = axes.makeLabelFns(ax, mainLinePosition);
-
-        seq.push(function() {
-            return axes.drawLabels(gd, ax, {
-                vals: vals,
-                layer: mainAxLayer,
-                transFn: transFn,
-                labelXFn: labelFns.labelXFn,
-                labelYFn: labelFns.labelYFn,
-                labelAnchorFn: labelFns.labelAnchorFn,
-            });
+        return axes.drawLabels(gd, ax, {
+            vals: vals,
+            layer: mainAxLayer,
+            transFn: transFn,
+            labelXFn: labelFns.labelXFn,
+            labelYFn: labelFns.labelYFn,
+            labelAnchorFn: labelFns.labelAnchorFn,
         });
+    });
 
-        if(ax.type === 'multicategory') {
+    if(ax.type === 'multicategory') {
+        seq.push(function() {
+            // TODO?
             // drawDividers()
 
-            // TODO move to formatMultiCategory
+            var secondaryLabelVals = [];
             var lookup = {};
             for(i = 0; i < vals.length; i++) {
                 var d = vals[i];
@@ -1771,31 +1773,41 @@ axes.drawOne = function(gd, ax, opts) {
                     lookup[d.text2] = [d.x];
                 }
             }
-            var secondaryLabelVals = [];
             for(var k in lookup) {
                 secondaryLabelVals.push(tickTextObj(ax, Lib.interp(lookup[k], 0.5), k));
             }
 
-            // TODO could do better!
-            var secondarayPosition = ax._mainLinePosition + {bottom: 20, top: -20}[ax.side];
+            var labelHeight = 0;
+            ax._selections[ax._id + 'tick'].each(function() {
+                var thisLabel = selectTickLabel(this);
+
+                // TODO Drawing.bBox doesn't work when labels are rotated
+                // var bb = Drawing.bBox(thisLabel.node());
+                var bb = thisLabel.node().getBoundingClientRect();
+                labelHeight = Math.max(labelHeight, bb.height);
+            });
+
+            var secondarayPosition;
+            if(ax.side === 'bottom') {
+                secondarayPosition = mainLinePosition + labelHeight + 2;
+            } else {
+                secondarayPosition = mainLinePosition - labelHeight - 2;
+                if(ax.tickfont) {
+                    secondarayPosition -= (ax.tickfont.size * LINE_SPACING);
+                }
+            }
+
             var secondaryLabelFns = axes.makeLabelFns(ax, secondarayPosition);
 
-            seq.push(function() {
-                return axes.drawLabels(gd, ax, {
-                    vals: secondaryLabelVals,
-                    layer: mainAxLayer,
-                    cls: ax._id + 'tick2',
-                    transFn: transFn,
-                    labelXFn: secondaryLabelFns.labelXFn,
-                    labelYFn: secondaryLabelFns.labelYFn,
-                    labelAnchorFn: secondaryLabelFns.labelAnchorFn,
-                });
+            return axes.drawLabels(gd, ax, {
+                vals: secondaryLabelVals,
+                layer: mainAxLayer,
+                cls: ax._id + 'tick2',
+                transFn: transFn,
+                labelXFn: secondaryLabelFns.labelXFn,
+                labelYFn: secondaryLabelFns.labelYFn,
+                labelAnchorFn: secondaryLabelFns.labelAnchorFn,
             });
-        }
-
-        // TODO update 'avoid selection' for multicategory
-        seq.push(function() {
-            return axes.drawTitle(gd, ax);
         });
     }
 
@@ -2360,13 +2372,10 @@ axes.drawLabels = function(gd, ax, opts) {
             var i;
 
             tickLabels.each(function(d) {
-                var s = d3.select(this);
-                var thisLabel = s.select('.text-math-group');
-                if(thisLabel.empty()) thisLabel = s.select('text');
-
                 maxFontSize = Math.max(maxFontSize, d.fontSize);
 
                 var x = ax.l2p(d.x);
+                var thisLabel = selectTickLabel(this);
                 var bb = Drawing.bBox(thisLabel.node());
 
                 lbbArray.push({
@@ -2401,12 +2410,12 @@ axes.drawLabels = function(gd, ax, opts) {
             } else {
                 var vLen = vals.length;
                 var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
-                var fitBetweenTicks = tickSpacing < maxFontSize * 2.5;
+                var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory';
 
                 // any overlap at all - set 30 degrees or 90 degrees
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
-                        autoangle = fitBetweenTicks ? 90 : 30;
+                        autoangle = rotate90 ? 90 : 30;
                         break;
                     }
                 }
@@ -2432,15 +2441,18 @@ function drawTitle(gd, ax) {
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
     var axLetter = axId.charAt(0);
-    var offsetBase = 1.5;
     var gs = fullLayout._size;
     var fontSize = ax.title.font.size;
 
-    var transform, counterAxis, x, y;
+    var titleStandoff;
+    if(ax.type === 'multicategory') {
+        titleStandoff = ax._boundingBox.height;
+    } else {
+        var offsetBase = 1.5;
+        titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
     }
 
-    var titleStandoff = 10 + fontSize * offsetBase +
-        (ax.linewidth ? ax.linewidth - 1 : 0);
+    var transform, counterAxis, x, y;
 
     if(axLetter === 'x') {
         counterAxis = (ax.anchor === 'free') ?
@@ -2593,6 +2605,12 @@ function hasBarsOrFill(gd, ax) {
         }
     }
     return false;
+}
+
+function selectTickLabel(gTick) {
+    var s = d3.select(gTick);
+    var mj = s.select('.text-math-group');
+    return mj.empty() ? s.select('text') : mj;
 }
 
 /**
