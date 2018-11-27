@@ -1747,7 +1747,6 @@ axes.drawOne = function(gd, ax, opts) {
 
     // tick labels - for now just the main labels.
     // TODO: mirror labels, esp for subplots
-    if(mainLinePosition) {
         var labelFns = axes.makeLabelFns(ax, mainLinePosition);
 
         seq.push(function() {
@@ -1795,7 +1794,6 @@ axes.drawOne = function(gd, ax, opts) {
                 });
             });
         }
-    }
 
     if(!opts.skipTitle &&
         !((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
