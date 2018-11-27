@@ -1637,6 +1637,10 @@ axes.drawOne = function(gd, ax, opts) {
 
     if(!ax.visible) return;
 
+    // stash selections to avoid DOM queries e.g.
+    // - stash tickLabels selection, so that drawTitle can use it to scoot title
+    ax._selections = {};
+
     var transFn = axes.makeTransFn(ax);
 
     // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
@@ -1736,12 +1740,6 @@ axes.drawOne = function(gd, ax, opts) {
             transFn: transFn
         });
     }
-
-    // stash tickLabels selection, so that drawTitle can use it
-    // to scoot title w/o having to query the axis layer again
-    //
-    // TODO? Stash this per class?
-    ax._tickLabels = null;
 
     var seq = [];
 
@@ -2216,6 +2214,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
  *  - {string} _id
  *  - {boolean} showticklabels
  *  - {number} tickangle
+ *  - {object (optional)} _selections
  * @param {object} opts
  * - {array of object} vals (calcTicks output-like)
  * - {d3 selection} layer
@@ -2272,8 +2271,6 @@ axes.drawLabels = function(gd, ax, opts) {
             });
 
     tickLabels.exit().remove();
-
-    ax._tickLabels = tickLabels;
 
     // TODO ??
     if(isAngular(ax)) {
@@ -2422,20 +2419,18 @@ axes.drawLabels = function(gd, ax, opts) {
         }
     }
 
+    if(ax._selections) {
+        ax._selections[cls] = tickLabels;
+    }
+
     var done = Lib.syncOrAsync([allLabelsReady, fixLabelOverlaps]);
     if(done && done.then) gd._promises.push(done);
     return done;
 };
 
+function drawTitle(gd, ax) {
 axes.drawTitle = function(gd, ax) {
     var fullLayout = gd._fullLayout;
-    var tickLabels = ax._tickLabels;
-
-    var avoid = {
-        selection: tickLabels,
-        side: ax.side
-    };
-
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var offsetBase = 1.5;
@@ -2443,11 +2438,6 @@ axes.drawTitle = function(gd, ax) {
     var fontSize = ax.title.font.size;
 
     var transform, counterAxis, x, y;
-
-    if(tickLabels && tickLabels.node() && tickLabels.node().parentNode) {
-        var translation = Drawing.getTranslate(tickLabels.node().parentNode);
-        avoid.offsetLeft = translation.x;
-        avoid.offsetTop = translation.y;
     }
 
     var titleStandoff = 10 + fontSize * offsetBase +
@@ -2467,8 +2457,6 @@ axes.drawTitle = function(gd, ax) {
                 fontSize * (ax.showticklabels ? 1.5 : 0.5);
         }
         y += counterAxis._offset;
-
-        if(!avoid.side) avoid.side = 'bottom';
     }
     else {
         counterAxis = (ax.anchor === 'free') ?
@@ -2485,7 +2473,23 @@ axes.drawTitle = function(gd, ax) {
         x += counterAxis._offset;
 
         transform = {rotate: '-90', offset: 0};
-        if(!avoid.side) avoid.side = 'left';
+    }
+
+    var avoid;
+
+    if(ax.type !== 'multicategory') {
+        var tickLabels = ax._selections[ax._id + 'tick'];
+
+        avoid = {
+            selection: tickLabels,
+            side: ax.side
+        };
+
+        if(tickLabels && tickLabels.node() && tickLabels.node().parentNode) {
+            var translation = Drawing.getTranslate(tickLabels.node().parentNode);
+            avoid.offsetLeft = translation.x;
+            avoid.offsetTop = translation.y;
+        }
     }
 
     Titles.draw(gd, axId + 'title', {
