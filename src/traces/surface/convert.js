@@ -99,6 +99,7 @@ proto.handlePick = function(selection) {
             var v = selection.dataCoordinate[i];
             if(v !== null && v !== undefined) {
                 selection.dataCoordinate[i] *= this.scene.dataScale[i];
+                selection.dataCoordinate[i] -= this.midValues[i];
             }
         }
 
