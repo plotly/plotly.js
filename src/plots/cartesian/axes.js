@@ -2392,7 +2392,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
             var autoangle = 0;
 
-            if(ax.tickson === 'boundaries') {
+            if(ax.tickson === 'boundaries' && cls === ax._id + 'tick') {
                 var gap = 2;
                 if(ax.ticks) gap += ax.tickwidth / 2;
 

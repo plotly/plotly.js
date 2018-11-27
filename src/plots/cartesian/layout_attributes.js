@@ -323,7 +323,7 @@ module.exports = {
         description: [
             'Determines where ticks and grid lines are drawn with respect to their',
             'corresponding tick labels.',
-            'Only has an effect for axes of `type` *category*.',
+            'Only has an effect for axes of `type` *category* or *multicategory*.',
             'When set to *boundaries*, ticks and grid lines are drawn half a category',
             'to the left/bottom of labels.'
         ].join(' ')
