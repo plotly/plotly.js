@@ -28,6 +28,9 @@ function SurfaceTrace(scene, surface, uid) {
     this.dataScaleX = 1.0;
     this.dataScaleY = 1.0;
     this.refineData = true; // this could also be set by user...
+    this.minValues = [Infinity, Infinity, Infinity];
+    this.maxValues = [-Infinity, -Infinity, -Infinity];
+    this.midValues = [0, 0, 0];
 }
 
 var proto = SurfaceTrace.prototype;
@@ -62,13 +65,21 @@ proto.getZat = function(a, b, calendar, axis) {
     );
 
     return (calendar === undefined) ? v : axis.d2l(v, 0, calendar);
+    // return (calendar === undefined) ? null2undefined(v) : axis.d2l(v, 0, calendar);
 };
-
+/*
+function null2undefined(a) {
+    // Note: null * 1.0 = 0.0!
+    // Therefore we convert nul to undefined.
+    // where undefined * 1.0 = NaN
+    return (a === null) ? undefined : a;
+}
+*/
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
 
         var j = Math.min(Math.floor(selection.data.index[0] / this.dataScaleX - 1), this.data.z[0].length - 1);
-        var k = Math.min(Math.floor(selection.data.index[1] / this.dataScaleY - 1), this.data.z.length - 1);
+        var k = Math.min(Math.floor(selection.data.index[1] / this.dataScaleY - 1), this.data._ylength - 1);
 
         selection.index = [j, k];
 
@@ -79,10 +90,17 @@ proto.handlePick = function(selection) {
         ];
 
         selection.dataCoordinate = [
-            this.getXat(j, k, this.data.xcalendar, this.scene.fullSceneLayout.xaxis) * this.scene.dataScale[0],
-            this.getYat(j, k, this.data.ycalendar, this.scene.fullSceneLayout.yaxis) * this.scene.dataScale[1],
-            this.getZat(j, k, this.data.zcalendar, this.scene.fullSceneLayout.zaxis) * this.scene.dataScale[2]
+            this.getXat(j, k, this.data.xcalendar, this.scene.fullSceneLayout.xaxis),
+            this.getYat(j, k, this.data.ycalendar, this.scene.fullSceneLayout.yaxis),
+            this.getZat(j, k, this.data.zcalendar, this.scene.fullSceneLayout.zaxis)
         ];
+
+        for(var i = 0; i < 3; i++) {
+            var v = selection.dataCoordinate[i];
+            if(v !== null && v !== undefined) {
+                selection.dataCoordinate[i] *= this.scene.dataScale[i];
+            }
+        }
 
         var text = this.data.text;
         if(Array.isArray(text) && text[k] && text[k][j] !== undefined) {
@@ -348,7 +366,7 @@ proto.update = function(data) {
      * which is the transpose of 'gl-surface-plot'.
      */
 
-    var i, j, k;
+    var i, j, k, v;
     var rawCoords = [];
     for(i = 0; i < 3; i++) {
         rawCoords[i] = [];
@@ -365,21 +383,69 @@ proto.update = function(data) {
     // coords x, y & z
     for(j = 0; j < xlen; j++) {
         for(k = 0; k < ylen; k++) {
-            rawCoords[0][j][k] = this.getXat(j, k, data.xcalendar, sceneLayout.xaxis) * scaleFactor[0];
-            rawCoords[1][j][k] = this.getYat(j, k, data.ycalendar, sceneLayout.yaxis) * scaleFactor[1];
-            rawCoords[2][j][k] = this.getZat(j, k, data.zcalendar, sceneLayout.zaxis) * scaleFactor[2];
+            rawCoords[0][j][k] = this.getXat(j, k, data.xcalendar, sceneLayout.xaxis);
+            rawCoords[1][j][k] = this.getYat(j, k, data.ycalendar, sceneLayout.yaxis);
+            rawCoords[2][j][k] = this.getZat(j, k, data.zcalendar, sceneLayout.zaxis);
         }
     }
 
+    // Note: log axes are not defined in surfaces yet.
+    // but they could be defined here...
+
+    for(i = 0; i < 3; i++) {
+        for(j = 0; j < xlen; j++) {
+            for(k = 0; k < ylen; k++) {
+                v = rawCoords[i][j][k];
+                if(v === null || v === undefined) {
+                    rawCoords[i][j][k] = NaN;
+                } else {
+                    v = rawCoords[i][j][k] *= scaleFactor[i];
+                }
+            }
+        }
+    }
+
+    for(i = 0; i < 3; i++) {
+        for(j = 0; j < xlen; j++) {
+            for(k = 0; k < ylen; k++) {
+                v = rawCoords[i][j][k];
+                if(v !== null && v !== undefined) {
+                    if(this.minValues[i] > v) {
+                        this.minValues[i] = v;
+                    }
+                    if(this.maxValues[i] < v) {
+                        this.maxValues[i] = v;
+                    }
+                }
+            }
+        }
+    }
+
+    for(i = 0; i < 3; i++) {
+        this.midValues[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
+    }
+
+    for(i = 0; i < 3; i++) {
+        for(j = 0; j < xlen; j++) {
+            for(k = 0; k < ylen; k++) {
+                v = rawCoords[i][j][k];
+                if(v !== null && v !== undefined) {
+                    rawCoords[i][j][k] -= this.midValues[i];
+                }
+            }
+        }
+    }
+
+    // convert processed raw data to Float32 matrices
     var coords = [
         ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
         ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
         ndarray(new Float32Array(xlen * ylen), [xlen, ylen])
     ];
-
     fill(coords[0], function(row, col) { return rawCoords[0][row][col]; });
     fill(coords[1], function(row, col) { return rawCoords[1][row][col]; });
     fill(coords[2], function(row, col) { return rawCoords[2][row][col]; });
+    rawCoords = []; // free memory
 
     var params = {
         colormap: colormap,
@@ -414,9 +480,12 @@ proto.update = function(data) {
     }
     else {
         // when 'z' is used as 'intensity',
-        // we must scale its value
+        // we must scale and translate its value
         params.intensityBounds[0] *= scaleFactor[2];
         params.intensityBounds[1] *= scaleFactor[2];
+
+        params.intensityBounds[0] -= this.midValues[2];
+        params.intensityBounds[1] -= this.midValues[2];
     }
 
     if(MAX_RESOLUTION < coords[0].shape[0] ||
