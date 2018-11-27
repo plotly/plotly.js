@@ -1793,9 +1793,6 @@ axes.drawOne = function(gd, ax, opts) {
             });
         }
 
-    if(!opts.skipTitle &&
-        !((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
-    ) {
         // TODO update 'avoid selection' for multicategory
         seq.push(function() {
             return axes.drawTitle(gd, ax);
@@ -1807,7 +1804,7 @@ axes.drawOne = function(gd, ax, opts) {
         range[1] = Math.max(range[1], newRange[1]);
     }
 
-    seq.push(function calcBoundingBox() {
+    function calcBoundingBox() {
         if(ax.showticklabels) {
             var gdBB = gd.getBoundingClientRect();
             var bBox = mainAxLayer.node().getBoundingClientRect();
@@ -1887,9 +1884,9 @@ axes.drawOne = function(gd, ax, opts) {
                     [ax._boundingBox.right, ax._boundingBox.left]);
             }
         }
-    });
+    }
 
-    seq.push(function doAutoMargins() {
+    function doAutoMargins() {
         var pushKey = ax._name + '.automargin';
 
         if(!ax.automargin) {
@@ -1915,7 +1912,15 @@ axes.drawOne = function(gd, ax, opts) {
         }
 
         Plots.autoMargin(gd, pushKey, push);
-    });
+    }
+
+    seq.push(calcBoundingBox, doAutoMargins);
+
+    if(!opts.skipTitle &&
+        !((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
+    ) {
+        seq.push(function() { return drawTitle(gd, ax); });
+    }
 
     return Lib.syncOrAsync(seq);
 };
