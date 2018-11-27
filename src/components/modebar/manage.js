@@ -29,7 +29,7 @@ module.exports = function manageModeBar(gd) {
         context = gd._context,
         modeBar = fullLayout._modeBar;
 
-    if(!context.displayModeBar) {
+    if(!context.displayModeBar && !context.watermark) {
         if(modeBar) {
             modeBar.destroy();
             delete fullLayout._modeBar;
@@ -56,6 +56,9 @@ module.exports = function manageModeBar(gd) {
 
     if(Array.isArray(customButtons) && customButtons.length) {
         buttonGroups = fillCustomButton(customButtons);
+    }
+    else if(!context.displayModeBar && context.watermark) {
+        buttonGroups = [];
     }
     else {
         buttonGroups = getButtonGroups(

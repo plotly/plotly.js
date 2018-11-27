@@ -10,6 +10,7 @@
 
 var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
+var colorscaleAttrs = require('../components/colorscale/layout_attributes');
 var padAttrs = require('./pad_attributes');
 var extendFlat = require('../lib/extend').extendFlat;
 
@@ -290,6 +291,7 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the default trace colors.'
     },
+    colorscale: colorscaleAttrs,
     datarevision: {
         valType: 'any',
         role: 'info',

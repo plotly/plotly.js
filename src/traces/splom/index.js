@@ -80,7 +80,7 @@ function calc(gd, trace) {
         }
     }
 
-    calcColorscales(trace);
+    calcColorscales(gd, trace);
     Lib.extendFlat(opts, convertMarkerStyle(trace));
 
     var visibleLength = cdata.length;
@@ -310,7 +310,7 @@ function editStyle(gd, cd0) {
     var scene = gd._fullLayout._splomScenes[trace.uid];
 
     if(scene) {
-        calcColorscales(trace);
+        calcColorscales(gd, trace);
 
         Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(trace));
         // TODO [un]selected styles?

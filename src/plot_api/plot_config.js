@@ -133,6 +133,9 @@ module.exports = {
     // add the plotly logo on the end of the mode bar
     displaylogo: true,
 
+    // watermark the images with the company's logo
+    watermark: false,
+
     // increase the pixel ratio for Gl plot images
     plotGlPixelRatio: 2,
 

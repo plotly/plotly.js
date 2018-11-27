@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -209,5 +210,39 @@ describe('Plotly.toImage', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    it('should work on pages with <base>', function(done) {
+        var parser = new DOMParser();
+
+        var base = d3.select('body')
+            .append('base')
+            .attr('href', 'https://plot.ly');
+
+        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        .then(function() {
+            return Plotly.toImage(gd, {format: 'svg', imageDataOnly: true});
+        })
+        .then(function(svg) {
+            var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
+            var gSubplot = svgDOM.getElementsByClassName('plot')[0];
+            var clipPath = gSubplot.getAttribute('clip-path');
+            var len = clipPath.length;
+
+            var head = clipPath.substr(0, 4);
+            var tail = clipPath.substr(len - 7, len);
+            expect(head).toBe('url(', 'subplot clipPath head');
+            expect(tail).toBe('xyplot)', 'subplot clipPath tail');
+
+            var middle = clipPath.substr(4, 10);
+            expect(middle.length).toBe(10, 'subplot clipPath uid length');
+            expect(middle.indexOf('http://')).toBe(-1, 'no <base> URL in subplot clipPath!');
+            expect(middle.indexOf('https://')).toBe(-1, 'no <base> URL in subplot clipPath!');
+        })
+        .catch(failTest)
+        .then(function() {
+            base.remove();
+            done();
+        });
     });
 });
