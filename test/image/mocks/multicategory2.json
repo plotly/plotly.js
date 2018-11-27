@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "mode": "markers",
+      "marker": {
+        "symbol": "square"
+      },
+      "x": [
+        ["2017", "2017", "2017", "2017", "2018", "2018", "2018"],
+        ["q1", "looooooooooooooooong", "q3", "q4", "q1", "q2", "q3"]
+      ],
+      "y": [1, 2, 3, 1, 3, 2, 3, 1]
+    },
+    {
+      "mode": "markers",
+      "marker": {
+        "symbol": "square"
+      },
+      "x": [
+        ["2017", "2017", "2017", "2017", "2018", "2018", "2018"],
+        ["q1", "looooooooooooooooong", "q3", "q4", "q1", "q2", "q3"]
+      ],
+      "y": [0.63, 2.17, 3.11, 1.07, 3.08, 1.94, 2.55, 0.59]
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "title": "MULTI-CATEGORY ON TOP",
+      "side": "top"
+    },
+    "showlegend": false,
+    "width": 400,
+    "height": 800,
+    "margin": {"b": 40, "t": 200}
+  }
+}
