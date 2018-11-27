@@ -2429,7 +2429,6 @@ axes.drawLabels = function(gd, ax, opts) {
 };
 
 function drawTitle(gd, ax) {
-axes.drawTitle = function(gd, ax) {
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
     var axLetter = axId.charAt(0);
@@ -2457,13 +2456,13 @@ axes.drawTitle = function(gd, ax) {
                 fontSize * (ax.showticklabels ? 1.5 : 0.5);
         }
         y += counterAxis._offset;
-    }
-    else {
+    } else {
         counterAxis = (ax.anchor === 'free') ?
             {_offset: gs.l + (ax.position || 0) * gs.w, _length: 0} :
             axisIds.getFromId(gd, ax.anchor);
 
         y = ax._offset + ax._length / 2;
+
         if(ax.side === 'right') {
             x = counterAxis._length + titleStandoff +
                 fontSize * (ax.showticklabels ? 1 : 0.5);
@@ -2492,7 +2491,7 @@ axes.drawTitle = function(gd, ax) {
         }
     }
 
-    Titles.draw(gd, axId + 'title', {
+    return Titles.draw(gd, axId + 'title', {
         propContainer: ax,
         propName: ax._name + '.title.text',
         placeholder: fullLayout._dfltTitle[axLetter],
@@ -2500,7 +2499,7 @@ axes.drawTitle = function(gd, ax) {
         transform: transform,
         attributes: {x: x, y: y, 'text-anchor': 'middle'}
     });
-};
+}
 
 axes.shouldShowZeroLine = function(gd, ax, counterAxis) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
