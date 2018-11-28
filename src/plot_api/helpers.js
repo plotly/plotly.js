@@ -229,6 +229,11 @@ function cleanAxRef(container, attr) {
     }
 }
 
+/**
+ * Cleans up old title attribute structure (flat) in favor of the new one (nested).
+ *
+ * @param {Object} titleContainer - an object potentially including deprecated title attributes
+ */
 function cleanTitle(titleContainer) {
     if(titleContainer) {
 
@@ -241,45 +246,26 @@ function cleanTitle(titleContainer) {
             };
         }
 
-        // TODO 882 DRY UP?
-        // titlefont -> title.font
-        var oldFontAttrSet = Lib.isPlainObject(titleContainer.titlefont);
-        var newFontAttrSet = titleContainer.title && Lib.isPlainObject(titleContainer.title.font);
-        if(oldFontAttrSet && !newFontAttrSet) {
-            nestTitleAttr('titlefont', 'font');
-        }
-
-        // titleposition -> title.position
-        var oldPositionAttrSet = titleContainer.titleposition;
-        var newPositionAttrSet = titleContainer.title && titleContainer.title.position;
-        if(oldPositionAttrSet && !newPositionAttrSet) {
-            nestTitleAttr('titleposition', 'position');
-        }
-
-        // titleside -> title.side
-        var oldSideAttrSet = titleContainer.titleside;
-        var newSideAttrSet = titleContainer.title && titleContainer.title.side;
-        if(oldSideAttrSet && !newSideAttrSet) {
-            nestTitleAttr('titleside', 'side');
-        }
-
-        // titleoffset -> title.offset
-        var oldOffsetAttrSet = titleContainer.titleoffset;
-        var newOffsetAttrSet = titleContainer.title && titleContainer.title.offset;
-        if(oldOffsetAttrSet && !newOffsetAttrSet) {
-            nestTitleAttr('titleoffset', 'offset');
-        }
+        rewireAttr('titlefont', 'font');
+        rewireAttr('titleposition', 'position');
+        rewireAttr('titleside', 'side');
+        rewireAttr('titleoffset', 'offset');
     }
 
-    function nestTitleAttr(oldAttrName, newAttrName) {
+    function rewireAttr(oldAttrName, newAttrName) {
+        var oldAttrSet = titleContainer[oldAttrName];
+        var newAttrSet = titleContainer.title && titleContainer.title[newAttrName];
 
-        // Ensure title object exists
-        if(!titleContainer.title) {
-            titleContainer.title = {};
+        if(oldAttrSet && !newAttrSet) {
+
+            // Ensure title object exists
+            if(!titleContainer.title) {
+                titleContainer.title = {};
+            }
+
+            titleContainer.title[newAttrName] = titleContainer[oldAttrName];
+            delete titleContainer[oldAttrName];
         }
-
-        titleContainer.title[newAttrName] = titleContainer[oldAttrName];
-        delete titleContainer[oldAttrName];
     }
 }
 
