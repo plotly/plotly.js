@@ -417,7 +417,7 @@ proto.update = function(data) {
     }
 
     for(i = 0; i < 3; i++) {
-        data._worldOffset[i] = this.midValues[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
+        data._objectOffset[i] = this.midValues[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
     }
 
     for(i = 0; i < 3; i++) {
@@ -534,13 +534,13 @@ proto.update = function(data) {
         params.vertexColor = true;
     }
 
-    params.worldOffset = [
-        data._worldOffset[0],
-        data._worldOffset[1],
-        data._worldOffset[2]
+    params.objectOffset = [
+        data._objectOffset[0],
+        data._objectOffset[1],
+        data._objectOffset[2]
     ];
 
-    params.worldScale = [
+    params.objectScale = [
         scaleFactor[0],
         scaleFactor[1],
         scaleFactor[2]

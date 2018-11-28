@@ -84,7 +84,7 @@
     "gl-select-box": "^1.0.2",
     "gl-spikes2d": "^1.0.1",
     "gl-streamtube3d": "^1.1.1",
-    "gl-surface3d": "git://github.com/gl-vis/gl-surface3d.git#7fd01b7ba97bb6b09023bf9f97430081ac72eccc",
+    "gl-surface3d": "git://github.com/gl-vis/gl-surface3d.git#e67d13b4491a2f18eeb284afc9172f8eee21f62e",
     "gl-text": "^1.1.6",
     "glslify": "^6.3.1",
     "has-hover": "^1.0.1",

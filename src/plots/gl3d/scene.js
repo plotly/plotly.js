@@ -382,8 +382,8 @@ function computeTraceBounds(scene, trace, bounds) {
         }
 
         if(trace.type === 'surface') {
-            bounds[0][d] += trace._worldOffset[d];
-            bounds[1][d] += trace._worldOffset[d];
+            bounds[0][d] += trace._objectOffset[d];
+            bounds[1][d] += trace._objectOffset[d];
         }
     }
 }
