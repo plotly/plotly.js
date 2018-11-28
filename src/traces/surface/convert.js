@@ -418,7 +418,7 @@ proto.update = function(data) {
     }
 
     for(i = 0; i < 3; i++) {
-        data._worldOffset = this.midValues[i] = 0.0; // 0.5 * (this.minValues[i] + this.maxValues[i]);
+        data._worldOffset[i] = this.midValues[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
     }
 
     for(i = 0; i < 3; i++) {
