@@ -70,8 +70,11 @@ proto.getZat = function(a, b, calendar, axis) {
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
 
-        var j = Math.max(Math.min(Math.floor(selection.data.index[0] / this.dataScaleX - 0.5), this.data._xlength - 1), 0);
-        var k = Math.max(Math.min(Math.floor(selection.data.index[1] / this.dataScaleY - 0.5), this.data._ylength - 1), 0);
+        var xRatio = (selection.data.index[0] - 1) / this.dataScaleX - 1;
+        var yRatio = (selection.data.index[1] - 1) / this.dataScaleY - 1;
+
+        var j = Math.max(Math.min(Math.round(xRatio), this.data._xlength - 1), 0);
+        var k = Math.max(Math.min(Math.round(yRatio), this.data._ylength - 1), 0);
 
         selection.index = [j, k];
 
