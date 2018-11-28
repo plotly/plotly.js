@@ -1730,6 +1730,8 @@ function cleanDeprecatedAttributeKeys(aobj) {
             replace(key, key.replace('titleposition', 'title.position'));
         } else if(key.indexOf('titleside') > -1) {
             replace(key, key.replace('titleside', 'title.side'));
+        } else if(key.indexOf('titleoffset') > -1) {
+            replace(key, key.replace('titleoffset', 'title.offset'));
         }
     }
 

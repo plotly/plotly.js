@@ -241,6 +241,7 @@ function cleanTitle(titleContainer) {
             };
         }
 
+        // TODO 882 DRY UP?
         // titlefont -> title.font
         var oldFontAttrSet = Lib.isPlainObject(titleContainer.titlefont);
         var newFontAttrSet = titleContainer.title && Lib.isPlainObject(titleContainer.title.font);
@@ -260,6 +261,13 @@ function cleanTitle(titleContainer) {
         var newSideAttrSet = titleContainer.title && titleContainer.title.side;
         if(oldSideAttrSet && !newSideAttrSet) {
             nestTitleAttr('titleside', 'side');
+        }
+
+        // titleoffset -> title.offset
+        var oldOffsetAttrSet = titleContainer.titleoffset;
+        var newOffsetAttrSet = titleContainer.title && titleContainer.title.offset;
+        if(oldOffsetAttrSet && !newOffsetAttrSet) {
+            nestTitleAttr('titleoffset', 'offset');
         }
     }
 
@@ -483,6 +491,8 @@ exports.cleanData = function(data) {
         if(trace.colorbar) cleanTitle(trace.colorbar);
         if(trace.marker && trace.marker.colorbar) cleanTitle(trace.marker.colorbar);
         if(trace.line && trace.line.colorbar) cleanTitle(trace.line.colorbar);
+        if(trace.aaxis) cleanTitle(trace.aaxis);
+        if(trace.baxis) cleanTitle(trace.baxis);
     }
 };
 
