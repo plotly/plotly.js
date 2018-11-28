@@ -133,6 +133,7 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
         if(d.link.trace.link.hoverinfo !== 'skip') {
+            d.link.fullData = d.link.trace;
             gd.emit('plotly_hover', {
                 event: d3.event,
                 points: [d.link]
@@ -156,6 +157,7 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterY = boundingBox.top + boundingBox.height / 2;
 
         var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix};
+        d.link.fullData = d.link.trace;
 
         var tooltip = Fx.loneHover({
             x: hoverCenterX - rootBBox.left,
@@ -190,6 +192,7 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         if(d.link.trace.link.hoverinfo !== 'skip') {
+            d.link.fullData = d.link.trace;
             gd.emit('plotly_unhover', {
                 event: d3.event,
                 points: [d.link]
@@ -211,6 +214,7 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeHoveredStyle, d, sankey);
         if(d.node.trace.node.hoverinfo !== 'skip') {
+            d.node.fullData = d.node.trace;
             gd.emit('plotly_hover', {
                 event: d3.event,
                 points: [d.node]
@@ -231,6 +235,7 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterY = boundingBox.top + boundingBox.height / 4 - rootBBox.top;
 
         var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix};
+        d.node.fullData = d.node.trace;
 
         var tooltip = Fx.loneHover({
             x0: hoverCenterX0,
@@ -266,6 +271,7 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         if(d.node.trace.node.hoverinfo !== 'skip') {
+            d.node.fullData = d.node.trace;
             gd.emit('plotly_unhover', {
                 event: d3.event,
                 points: [d.node]

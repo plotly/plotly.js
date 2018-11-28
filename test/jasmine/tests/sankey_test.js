@@ -497,6 +497,53 @@ describe('sankey tests', function() {
             .then(done);
         });
 
+        it('should show the correct hover labels when hovertemplate is specified', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                _hover(404, 302);
+
+                assertLabel(
+                    ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
+                    ['rgb(148, 103, 189)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
+            })
+            .then(function() {
+                _hover(450, 300);
+
+                assertLabel(
+                    ['source: Solid', 'target: Industry', '46TWh'],
+                    ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
+            })
+            // Test (node|link).hovertemplate
+            .then(function() {
+                return Plotly.restyle(gd, {
+                    'node.hovertemplate': 'hovertemplate<br>%{value}<br>%{value:0.2f}<extra>%{fullData.name}</extra>',
+                    'link.hovertemplate': 'hovertemplate<br>source: %{source.label}<br>target: %{target.label}<br>size: %{value:0.0f}TWh<extra>%{fullData.name}</extra>'
+                });
+            })
+            .then(function() {
+                _hover(404, 302);
+
+                assertLabel(
+                    [ 'hovertemplate', '447TWh', '447.48', 'trace 0'],
+                    ['rgb(148, 103, 189)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
+            })
+            .then(function() {
+                _hover(450, 300);
+
+                assertLabel(
+                    ['hovertemplate', 'source: Solid', 'target: Industry', 'size: 46TWh', 'trace 0'],
+                    ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should show the correct hover labels with the style provided in template', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
