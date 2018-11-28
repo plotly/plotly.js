@@ -203,6 +203,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     // but no, we *actually* want to coerce this.
     coerce('tickmode');
 
+    if(!containerOut.title.text) {
+        delete containerOut.title.font;
+        delete containerOut.title.offset;
+    }
+
     return containerOut;
 };
 

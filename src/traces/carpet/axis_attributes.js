@@ -36,6 +36,7 @@ module.exports = {
     title: {
         text: {
             valType: 'string',
+            dflt: '',
             role: 'info',
             editType: 'calc',
             description: [
