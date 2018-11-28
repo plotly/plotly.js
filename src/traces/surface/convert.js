@@ -94,7 +94,6 @@ proto.handlePick = function(selection) {
             var v = selection.dataCoordinate[i];
             if(v !== null && v !== undefined) {
                 selection.dataCoordinate[i] *= this.scene.dataScale[i];
-                selection.dataCoordinate[i] -= this.midValues[i];
             }
         }
 
@@ -474,15 +473,6 @@ proto.update = function(data) {
 
         coords.push(intensity);
     }
-    else {
-        // when 'z' is used as 'intensity',
-        // we must scale and translate its value
-        params.intensityBounds[0] *= scaleFactor[2];
-        params.intensityBounds[1] *= scaleFactor[2];
-
-        params.intensityBounds[0] -= this.midValues[2];
-        params.intensityBounds[1] -= this.midValues[2];
-    }
 
     if(MAX_RESOLUTION < coords[0].shape[0] ||
         MAX_RESOLUTION < coords[0].shape[1]) {
@@ -543,6 +533,18 @@ proto.update = function(data) {
     if(isColormapCircular(colormap)) {
         params.vertexColor = true;
     }
+
+    params.worldOffset = [
+        data._worldOffset[0],
+        data._worldOffset[1],
+        data._worldOffset[2]
+    ];
+
+    params.worldScale = [
+        scaleFactor[0],
+        scaleFactor[1],
+        scaleFactor[2]
+    ];
 
     params.coords = coords;
     surface.update(params);
