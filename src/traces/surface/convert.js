@@ -473,6 +473,12 @@ proto.update = function(data) {
 
         coords.push(intensity);
     }
+    else {
+        // when 'z' is used as 'intensity',
+        // we must scale its value
+        params.intensityBounds[0] *= scaleFactor[2];
+        params.intensityBounds[1] *= scaleFactor[2];
+    }
 
     if(MAX_RESOLUTION < coords[0].shape[0] ||
         MAX_RESOLUTION < coords[0].shape[1]) {
