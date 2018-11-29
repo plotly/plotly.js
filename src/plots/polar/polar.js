@@ -483,9 +483,13 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     var sina = Math.sin(angleRad);
 
     var pad = 0;
+
+    // Hint: no need to check if there is in fact a title.text set
+    // because if plot is editable, pad needs to be calculated anyways
+    // to properly show placeholder text when title is empty.
     if(radialLayout.title) {
         var h = Drawing.bBox(_this.layers['radial-axis'].node()).height;
-        var ts = radialLayout.titlefont.size;
+        var ts = radialLayout.title.font.size;
         pad = radialLayout.side === 'counterclockwise' ?
             -h - ts * 0.4 :
             h + ts * 0.8;

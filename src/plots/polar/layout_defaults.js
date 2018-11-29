@@ -103,8 +103,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     coerceAxis('side');
                     coerceAxis('angle', sector[0]);
 
-                    coerceAxis('title');
-                    Lib.coerceFont(coerceAxis, 'titlefont', {
+                    coerceAxis('title.text');
+                    Lib.coerceFont(coerceAxis, 'title.font', {
                         family: opts.font.family,
                         size: Math.round(opts.font.size * 1.2),
                         color: dfltFontColor

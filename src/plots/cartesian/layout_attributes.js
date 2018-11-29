@@ -41,17 +41,27 @@ module.exports = {
         ].join(' ')
     },
     title: {
-        valType: 'string',
-        role: 'info',
-        editType: 'ticks',
-        description: 'Sets the title of this axis.'
+        text: {
+            valType: 'string',
+            role: 'info',
+            editType: 'ticks',
+            description: [
+                'Sets the title of this axis.',
+                'Note that before the existence of `title.text`, the title\'s',
+                'contents used to be defined as the `title` attribute itself.',
+                'This behavior has been deprecated.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'ticks',
+            description: [
+                'Sets this axis\' title font.',
+                'Note that the title\'s font used to be customized',
+                'by the now deprecated `titlefont` attribute.'
+            ].join(' ')
+        }),
+        editType: 'ticks'
     },
-    titlefont: fontAttrs({
-        editType: 'ticks',
-        description: [
-            'Sets this axis\' title font.'
-        ].join(' ')
-    }),
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
@@ -302,6 +312,20 @@ module.exports = {
             'If **, this axis\' ticks are not drawn.',
             'If *outside* (*inside*), this axis\' are drawn outside (inside)',
             'the axis lines.'
+        ].join(' ')
+    },
+    tickson: {
+        valType: 'enumerated',
+        values: ['labels', 'boundaries'],
+        role: 'info',
+        dflt: 'labels',
+        editType: 'ticks',
+        description: [
+            'Determines where ticks and grid lines are drawn with respect to their',
+            'corresponding tick labels.',
+            'Only has an effect for axes of `type` *category*.',
+            'When set to *boundaries*, ticks and grid lines are drawn half a category',
+            'to the left/bottom of labels.'
         ].join(' ')
     },
     mirror: {
@@ -788,6 +812,22 @@ module.exports = {
                 'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
                 'Set `tickmode` to *linear* for `autotick` *false*.'
             ].join(' ')
-        }
+        },
+        title: {
+            valType: 'string',
+            role: 'info',
+            editType: 'ticks',
+            description: [
+                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
+                'To set the axis\' title, please use `title.text` now.'
+            ].join(' ')
+        },
+        titlefont: fontAttrs({
+            editType: 'ticks',
+            description: [
+                'Former `titlefont` is now the sub-attribute `font` of `title`.',
+                'To customize title font properties, please use `title.font` now.'
+            ].join(' ')
+        })
     }
 };

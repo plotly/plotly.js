@@ -377,7 +377,7 @@ proto.drawAxes = function(doTitles) {
             placeholder: _(gd, 'Click to enter Component A title'),
             attributes: {
                 x: _this.x0 + _this.w / 2,
-                y: _this.y0 - aaxis.titlefont.size / 3 - apad,
+                y: _this.y0 - aaxis.title.font.size / 3 - apad,
                 'text-anchor': 'middle'
             }
         });
@@ -387,7 +387,7 @@ proto.drawAxes = function(doTitles) {
             placeholder: _(gd, 'Click to enter Component B title'),
             attributes: {
                 x: _this.x0 - bpad,
-                y: _this.y0 + _this.h + baxis.titlefont.size * 0.83 + bpad,
+                y: _this.y0 + _this.h + baxis.title.font.size * 0.83 + bpad,
                 'text-anchor': 'middle'
             }
         });
@@ -397,7 +397,7 @@ proto.drawAxes = function(doTitles) {
             placeholder: _(gd, 'Click to enter Component C title'),
             attributes: {
                 x: _this.x0 + _this.w + bpad,
-                y: _this.y0 + _this.h + caxis.titlefont.size * 0.83 + bpad,
+                y: _this.y0 + _this.h + caxis.title.font.size * 0.83 + bpad,
                 'text-anchor': 'middle'
             }
         });

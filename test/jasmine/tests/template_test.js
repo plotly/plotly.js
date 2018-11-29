@@ -158,7 +158,9 @@ describe('makeTemplate', function() {
                   {fill: 'toself'}
                 ] },
                 layout: {
-                    title: 'Fill toself and tonext',
+                    title: {
+                        text: 'Fill toself and tonext'
+                    },
                     width: 400,
                     height: 400
                 }

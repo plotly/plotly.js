@@ -77,11 +77,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleDomainDefaults(traceOut, layout, coerce);
 
     var hole = coerce('hole');
-    var title = coerce('title');
+    var title = coerce('title.text');
     if(title) {
-        var titlePosition = coerce('titleposition', hole ? 'middle center' : 'top center');
-        if(!hole && titlePosition === 'middle center') traceOut.titleposition = 'top center';
-        coerceFont(coerce, 'titlefont', layout.font);
+        var titlePosition = coerce('title.position', hole ? 'middle center' : 'top center');
+        if(!hole && titlePosition === 'middle center') traceOut.title.position = 'top center';
+        coerceFont(coerce, 'title.font', layout.font);
     }
 
     coerce('sort');

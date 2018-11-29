@@ -17,7 +17,6 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var ternaryAxesAttrs = {
     title: axesAttrs.title,
-    titlefont: axesAttrs.titlefont,
     color: axesAttrs.color,
     // ticks
     tickmode: axesAttrs.tickmode,
@@ -63,6 +62,10 @@ var ternaryAxesAttrs = {
             'values of the other two axes. The full view corresponds to',
             'all the minima set to zero.'
         ].join(' ')
+    },
+    _deprecated: {
+        title: axesAttrs._deprecated.title,
+        titlefont: axesAttrs._deprecated.titlefont
     }
 };
 

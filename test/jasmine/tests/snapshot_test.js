@@ -36,19 +36,19 @@ describe('Plotly.Snapshot', function() {
 
         data = [dummyTrace1, dummyTrace2];
         layout = {
-            title: 'Chart Title',
+            title: {text: 'Chart Title'},
             showlegend: true,
             autosize: true,
             width: 688,
             height: 460,
             xaxis: {
-                title: 'xaxis title',
+                title: {text: 'xaxis title'},
                 range: [-0.323374917925, 5.32337491793],
                 type: 'linear',
                 autorange: true
             },
             yaxis: {
-                title: 'yaxis title',
+                title: {text: 'yaxis title'},
                 range: [1.41922290389, 10.5807770961],
                 type: 'linear',
                 autorange: true
@@ -70,7 +70,7 @@ describe('Plotly.Snapshot', function() {
                 autosize: true,
                 width: 150,
                 height: 150,
-                title: '',
+                title: {text: ''},
                 showlegend: false,
                 margin: {'l': 5, 'r': 5, 't': 5, 'b': 5, 'pad': 0},
                 annotations: []
@@ -100,7 +100,7 @@ describe('Plotly.Snapshot', function() {
             };
 
             var THUMBNAIL_DEFAULT_LAYOUT = {
-                'title': '',
+                'title': {text: ''},
                 'hidesources': true,
                 'showlegend': false,
                 'hovermode': false,
@@ -117,6 +117,7 @@ describe('Plotly.Snapshot', function() {
             expect(thumbTile.layout.showlegend).toEqual(THUMBNAIL_DEFAULT_LAYOUT.showlegend);
             expect(thumbTile.layout.borderwidth).toEqual(THUMBNAIL_DEFAULT_LAYOUT.borderwidth);
             expect(thumbTile.layout.annotations).toEqual(THUMBNAIL_DEFAULT_LAYOUT.annotations);
+            expect(thumbTile.layout.title).toEqual(THUMBNAIL_DEFAULT_LAYOUT.title);
         });
 
         it('should create a 3D thumbnail with limited attributes', function() {
@@ -142,7 +143,7 @@ describe('Plotly.Snapshot', function() {
             };
 
             var AXIS_OVERRIDE = {
-                title: '',
+                title: {text: ''},
                 showaxeslabels: false,
                 showticklabels: false,
                 linetickenable: false
