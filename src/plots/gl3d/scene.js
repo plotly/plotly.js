@@ -754,15 +754,22 @@ proto.updateFx = function(dragmode, hovermode) {
             // but only if we *don't* explicitly set z-up earlier via the
             // relayout. So push `up` back to layout & fullLayout manually now.
             var gd = this.graphDiv;
-            var layout = gd.layout;
             var fullLayout = gd._fullLayout;
+            var fullCamera = this.fullSceneLayout.camera;
+            var x = fullCamera.up.x;
+            var y = fullCamera.up.y;
+            var z = fullCamera.up.z;
+            // only push `up` back to (full)layout if it's going to change
+            if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) return;
+
             var attr = this.id + '.camera.up';
-            var edits = {};
             var zUp = {x: 0, y: 0, z: 1};
+            var edits = {};
             edits[attr] = zUp;
+            var layout = gd.layout;
             Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
-            this.fullSceneLayout.camera.up = zUp;
-            Lib.nestedProperty(gd.layout, attr).set(zUp);
+            fullCamera.up = zUp;
+            Lib.nestedProperty(layout, attr).set(zUp);
         } else {
 
             // none rotation modes [pan or zoom]
