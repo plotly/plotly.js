@@ -132,3 +132,13 @@ exports.concat = function() {
     }
     return out;
 };
+
+exports.maxRowLength = function(z) {
+    var len = 0;
+
+    for(var i = 0; i < z.length; i++) {
+        len = Math.max(len, z[i].length);
+    }
+
+    return len;
+};

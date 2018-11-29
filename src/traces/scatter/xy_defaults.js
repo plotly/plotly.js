@@ -9,8 +9,8 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var Registry = require('../../registry');
-
 
 module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     var x = coerce('x');
@@ -21,10 +21,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     if(x) {
-        xlen = Array.isArray(x[0]) ?
-            x.map(function(c) { return c.length; })
-             .sort(function(a, b) { return a - b; })[0] :
-            x.length;
+        xlen = Array.isArray(x[0]) ? Lib.maxRowLength(x) : x.length;
         if(y) {
             len = Math.min(xlen, y.length);
         }
