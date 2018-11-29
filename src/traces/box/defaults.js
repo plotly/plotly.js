@@ -45,7 +45,10 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     if(y && y.length) {
         defaultOrientation = 'v';
         if(hasX) {
-            len = Math.min(x.length, y.length);
+            len = Math.min(
+                Array.isArray(x[0]) ? Lib.maxRowLength(x) : x.length,
+                y.length
+            );
         }
         else {
             coerce('x0');
