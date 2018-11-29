@@ -28,6 +28,7 @@ var setConvert = require('./set_convert');
  *  outerTicks: boolean, should ticks default to outside?
  *  showGrid: boolean, should gridlines be shown by default?
  *  noHover: boolean, this axis doesn't support hover effects?
+ *  noTickson: boolean, this axis doesn't support 'tickson'
  *  data: the plot data, used to manage categories
  *  bgColor: the plot background color, to calculate default gridline colors
  */
@@ -88,6 +89,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     if(containerOut.showline || containerOut.ticks) coerce('mirror');
 
     if(options.automargin) coerce('automargin');
+
+    if(!options.noTickson &&
+        containerOut.type === 'category' && (containerOut.ticks || containerOut.showgrid)) {
+        coerce('tickson');
+    }
 
     return containerOut;
 };

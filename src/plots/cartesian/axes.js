@@ -1163,6 +1163,20 @@ function formatCategory(ax, out) {
     var tt = ax._categories[Math.round(out.x)];
     if(tt === undefined) tt = '';
     out.text = String(tt);
+
+    // Setup ticks and grid lines boundaries
+    // at 1/2 a 'category' to the left/bottom
+    if(ax.tickson === 'boundaries') {
+        var inbounds = function(v) {
+            var p = ax.l2p(v);
+            return p >= 0 && p <= ax._length ? v : null;
+        };
+
+        out.xbnd = [
+            inbounds(out.x - 0.5),
+            inbounds(out.x + ax.dtick - 0.5)
+        ];
+    }
 }
 
 function formatLinear(ax, out, hover, extraPrecision, hideexp) {
@@ -1610,13 +1624,40 @@ axes.drawOne = function(gd, ax, opts) {
     var subplotsWithAx = axes.getSubplots(gd, ax);
 
     var vals = ax._vals = axes.calcTicks(ax);
-    // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
-    // The key case here is removing zero lines when the axis bound is zero
-    var valsClipped = ax._valsClipped = axes.clipEnds(ax, vals);
 
     if(!ax.visible) return;
 
     var transFn = axes.makeTransFn(ax);
+
+    // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
+    // The key case here is removing zero lines when the axis bound is zero
+    var valsClipped;
+    var tickVals;
+    var gridVals;
+
+    if(ax.tickson === 'boundaries' && vals.length) {
+        // valsBoundaries is not used for labels;
+        // no need to worry about the other tickTextObj keys
+        var valsBoundaries = [];
+        var _push = function(d, bndIndex) {
+            var xb = d.xbnd[bndIndex];
+            if(xb !== null) {
+                valsBoundaries.push(Lib.extendFlat({}, d, {x: xb}));
+            }
+        };
+        for(i = 0; i < vals.length; i++) _push(vals[i], 0);
+        _push(vals[i - 1], 1);
+
+        valsClipped = axes.clipEnds(ax, valsBoundaries);
+        tickVals = ax.ticks === 'inside' ? valsClipped : valsBoundaries;
+        gridVals = valsClipped;
+    } else {
+        valsClipped = axes.clipEnds(ax, vals);
+        tickVals = ax.ticks === 'inside' ? valsClipped : vals;
+        gridVals = valsClipped;
+    }
+
+    ax._valsClipped = valsClipped;
 
     if(!fullLayout._hasOnlyLargeSploms) {
         // keep track of which subplots (by main conteraxis) we've already
@@ -1637,7 +1678,7 @@ axes.drawOne = function(gd, ax, opts) {
                 'M' + counterAxis._offset + ',0h' + counterAxis._length;
 
             axes.drawGrid(gd, ax, {
-                vals: valsClipped,
+                vals: gridVals,
                 layer: plotinfo.gridlayer.select('.' + axId),
                 path: gridPath,
                 transFn: transFn
@@ -1652,7 +1693,6 @@ axes.drawOne = function(gd, ax, opts) {
     }
 
     var tickSigns = axes.getTickSigns(ax);
-    var tickVals = ax.ticks === 'inside' ? valsClipped : vals;
     var tickSubplots = [];
 
     if(ax.ticks) {
@@ -1920,8 +1960,9 @@ axes.makeTickPath = function(ax, shift, sgn) {
 axes.makeLabelFns = function(ax, shift, angle) {
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
+    var ticksOnOutsideLabels = ax.tickson !== 'boundaries' && ax.ticks === 'outside';
 
-    var labelStandoff = ax.ticks === 'outside' ? ax.ticklen : 0;
+    var labelStandoff = ticksOnOutsideLabels ? ax.ticklen : 0;
     var labelShift = 0;
 
     if(angle && ax.ticks === 'outside') {
@@ -1930,7 +1971,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
         labelShift = ax.ticklen * Math.sin(rad);
     }
 
-    if(ax.showticklabels && (ax.ticks === 'outside' || ax.showline)) {
+    if(ax.showticklabels && (ticksOnOutsideLabels || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
 
@@ -2017,7 +2058,6 @@ axes.drawTicks = function(gd, ax, opts) {
 
     ticks.attr('transform', opts.transFn);
 };
-
 
 /**
  * Draw axis grid
@@ -2151,8 +2191,6 @@ axes.drawLabels = function(gd, ax, opts) {
     var tickLabels = opts.layer.selectAll('g.' + cls)
         .data(ax.showticklabels ? vals : [], makeDataFn(ax));
 
-    var maxFontSize = 0;
-    var autoangle = 0;
     var labelsReady = [];
 
     tickLabels.enter().append('g')
@@ -2186,10 +2224,6 @@ axes.drawLabels = function(gd, ax, opts) {
             });
 
     tickLabels.exit().remove();
-
-    tickLabels.each(function(d) {
-        maxFontSize = Math.max(maxFontSize, d.fontSize);
-    });
 
     ax._tickLabels = tickLabels;
 
@@ -2273,15 +2307,19 @@ axes.drawLabels = function(gd, ax, opts) {
         // check for auto-angling if x labels overlap
         // don't auto-angle at all for log axes with
         // base and digit format
-        if(axLetter === 'x' && !isNumeric(ax.tickangle) &&
+        if(vals.length && axLetter === 'x' && !isNumeric(ax.tickangle) &&
             (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')
         ) {
+            var maxFontSize = 0;
             var lbbArray = [];
+            var i;
 
             tickLabels.each(function(d) {
                 var s = d3.select(this);
                 var thisLabel = s.select('.text-math-group');
                 if(thisLabel.empty()) thisLabel = s.select('text');
+
+                maxFontSize = Math.max(maxFontSize, d.fontSize);
 
                 var x = ax.l2p(d.x);
                 var bb = Drawing.bBox(thisLabel.node());
@@ -2298,21 +2336,38 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
             });
 
-            for(var i = 0; i < lbbArray.length - 1; i++) {
-                if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
-                    // any overlap at all - set 30 degrees
-                    autoangle = 30;
-                    break;
+            var autoangle = 0;
+
+            if(ax.tickson === 'boundaries') {
+                var gap = 2;
+                if(ax.ticks) gap += ax.tickwidth / 2;
+
+                for(i = 0; i < lbbArray.length; i++) {
+                    var xbnd = vals[i].xbnd;
+                    var lbb = lbbArray[i];
+                    if(
+                        (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
+                        (xbnd[1] !== null && (ax.l2p(xbnd[1]) - lbb.right) < gap)
+                    ) {
+                        autoangle = 90;
+                        break;
+                    }
+                }
+            } else {
+                var vLen = vals.length;
+                var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
+                var fitBetweenTicks = tickSpacing < maxFontSize * 2.5;
+
+                // any overlap at all - set 30 degrees or 90 degrees
+                for(i = 0; i < lbbArray.length - 1; i++) {
+                    if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
+                        autoangle = fitBetweenTicks ? 90 : 30;
+                        break;
+                    }
                 }
             }
 
             if(autoangle) {
-                var tickspacing = Math.abs(
-                        (vals[vals.length - 1].x - vals[0].x) * ax._m
-                    ) / (vals.length - 1);
-                if(tickspacing < maxFontSize * 2.5) {
-                    autoangle = 90;
-                }
                 positionLabels(tickLabels, autoangle);
             }
             ax._lastangle = autoangle;
