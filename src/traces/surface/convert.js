@@ -546,12 +546,6 @@ proto.update = function(data) {
         data._objectOffset[2]
     ];
 
-    params.objectScale = [
-        scaleFactor[0],
-        scaleFactor[1],
-        scaleFactor[2]
-    ];
-
     params.coords = coords;
     surface.update(params);
 
