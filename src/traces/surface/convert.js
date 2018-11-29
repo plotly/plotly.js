@@ -30,7 +30,7 @@ function SurfaceTrace(scene, surface, uid) {
     this.midValues = [0, 0, 0];
     this.dataScaleX = 1.0;
     this.dataScaleY = 1.0;
-    this.refineData = false; // this could also be set by user...
+    this.refineData = true;
 }
 
 var proto = SurfaceTrace.prototype;
