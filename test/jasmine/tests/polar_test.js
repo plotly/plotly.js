@@ -134,7 +134,7 @@ describe('Test polar plots defaults:', function() {
         expect(layoutOut.polar.angularaxis.linecolor).toBe('red');
         expect(layoutOut.polar.angularaxis.gridcolor).toBe('rgb(255, 153, 153)', 'blend by 60% with bgcolor');
 
-        expect(layoutOut.polar.radialaxis.titlefont.color).toBe('blue');
+        expect(layoutOut.polar.radialaxis.title.font.color).toBe('blue');
         expect(layoutOut.polar.radialaxis.linecolor).toBe('blue');
         expect(layoutOut.polar.radialaxis.gridcolor).toBe('rgb(153, 153, 255)', 'blend by 60% with bgcolor');
     });

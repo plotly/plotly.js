@@ -547,6 +547,30 @@ describe('Test plot api', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('passes update data back to plotly_relayout unmodified ' +
+          'even if deprecated attributes have been used', function(done) {
+            Plotly.newPlot(gd, [{y: [1, 3, 2]}]);
+
+            gd.on('plotly_relayout', function(eventData) {
+                expect(eventData).toEqual({
+                    'title': 'Plotly chart',
+                    'xaxis.title': 'X',
+                    'xaxis.titlefont': {color: 'green'},
+                    'yaxis.title': 'Y',
+                    'polar.radialaxis.title': 'Radial'
+                });
+                done();
+            });
+
+            Plotly.relayout(gd, {
+                'title': 'Plotly chart',
+                'xaxis.title': 'X',
+                'xaxis.titlefont': {color: 'green'},
+                'yaxis.title': 'Y',
+                'polar.radialaxis.title': 'Radial'
+            });
+        });
     });
 
     describe('Plotly.relayout subroutines switchboard', function() {

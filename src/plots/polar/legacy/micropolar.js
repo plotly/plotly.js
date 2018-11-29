@@ -215,8 +215,8 @@ var µ = module.exports = { version: '0.2.2' };
             centeringOffset[0] = Math.max(0, centeringOffset[0]);
             centeringOffset[1] = Math.max(0, centeringOffset[1]);
             svg.select('.outer-group').attr('transform', 'translate(' + centeringOffset + ')');
-            if (axisConfig.title) {
-                var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title);
+            if (axisConfig.title && axisConfig.title.text) {
+                var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title.text);
                 var titleBBox = title.node().getBBox();
                 title.attr({
                     x: chartCenter[0] - titleBBox.width / 2,

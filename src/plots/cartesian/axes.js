@@ -1865,8 +1865,8 @@ axes.drawOne = function(gd, ax, opts) {
             push[s] += ax._boundingBox.width;
         }
 
-        if(ax.title !== fullLayout._dfltTitle[axLetter]) {
-            push[s] += ax.titlefont.size;
+        if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
+            push[s] += ax.title.font.size;
         }
 
         Plots.autoMargin(gd, pushKey, push);
@@ -2392,7 +2392,7 @@ axes.drawTitle = function(gd, ax) {
     var axLetter = axId.charAt(0);
     var offsetBase = 1.5;
     var gs = fullLayout._size;
-    var fontSize = ax.titlefont.size;
+    var fontSize = ax.title.font.size;
 
     var transform, counterAxis, x, y;
 
@@ -2442,7 +2442,7 @@ axes.drawTitle = function(gd, ax) {
 
     Titles.draw(gd, axId + 'title', {
         propContainer: ax,
-        propName: ax._name + '.title',
+        propName: ax._name + '.title.text',
         placeholder: fullLayout._dfltTitle[axLetter],
         avoid: avoid,
         transform: transform,
@@ -2695,11 +2695,11 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
         i;
     if(key === 'title') {
         // special handling of placeholder titles
-        if(xVal === dfltTitle.x) {
-            xVal = dfltTitle.y;
+        if(xVal && xVal.text === dfltTitle.x) {
+            xVal.text = dfltTitle.y;
         }
-        if(yVal === dfltTitle.y) {
-            yVal = dfltTitle.x;
+        if(yVal && yVal.text === dfltTitle.y) {
+            yVal.text = dfltTitle.x;
         }
     }
 

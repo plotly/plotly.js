@@ -29,7 +29,9 @@ describe('Test axes', function() {
                 data: [{x: [1, 2, 3], y: [1, 2, 3]}],
                 layout: {
                     xaxis: {
-                        title: 'A Title!!!',
+                        title: {
+                            text: 'A Title!!!'
+                        },
                         type: 'log',
                         autorange: 'reversed',
                         rangemode: 'tozero',
@@ -42,14 +44,18 @@ describe('Test axes', function() {
                         tickcolor: '#f00'
                     },
                     yaxis: {
-                        title: 'Click to enter Y axis title',
+                        title: {
+                            text: 'Click to enter Y axis title'
+                        },
                         type: 'date'
                     }
                 }
             };
             var expectedYaxis = Lib.extendDeep({}, gd.layout.xaxis),
                 expectedXaxis = {
-                    title: 'Click to enter X axis title',
+                    title: {
+                        text: 'Click to enter X axis title'
+                    },
                     type: 'date'
                 };
 
@@ -345,11 +351,11 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis.zerolinecolor).toBe(undefined);
         });
 
-        it('should use \'axis.color\' as default for \'axis.titlefont.color\'', function() {
+        it('should use \'axis.color\' as default for \'axis.title.font.color\'', function() {
             layoutIn = {
                 xaxis: { color: 'red' },
                 yaxis: {},
-                yaxis2: { titlefont: { color: 'yellow' } }
+                yaxis2: { title: { font: { color: 'yellow' } } }
             };
 
             layoutOut.font = { color: 'blue' };
@@ -357,9 +363,9 @@ describe('Test axes', function() {
             layoutOut._subplots.yaxis.push('y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.titlefont.color).toEqual('red');
-            expect(layoutOut.yaxis.titlefont.color).toEqual('blue');
-            expect(layoutOut.yaxis2.titlefont.color).toEqual('yellow');
+            expect(layoutOut.xaxis.title.font.color).toEqual('red');
+            expect(layoutOut.yaxis.title.font.color).toEqual('blue');
+            expect(layoutOut.yaxis2.title.font.color).toEqual('yellow');
         });
 
         it('should use \'axis.color\' as default for \'axis.linecolor\'', function() {
@@ -2882,14 +2888,14 @@ describe('Test axes', function() {
                 expect(size.t).toBe(previousSize.t);
 
                 previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.titlefont.size': 30});
+                return Plotly.relayout(gd, {'yaxis.title.font.size': 30});
             })
             .then(function() {
                 var size = gd._fullLayout._size;
                 expect(size).toEqual(previousSize);
 
                 previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.title': 'hello'});
+                return Plotly.relayout(gd, {'yaxis.title.text': 'hello'});
             })
             .then(function() {
                 var size = gd._fullLayout._size;

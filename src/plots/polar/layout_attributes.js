@@ -112,13 +112,17 @@ var radialAxisAttrs = {
     },
 
 
-    title: extendFlat({}, axesAttrs.title, {editType: 'plot', dflt: ''}),
-    titlefont: overrideAll(axesAttrs.titlefont, 'plot', 'from-root'),
+    title: overrideAll(axesAttrs.title, 'plot', 'from-root'),
     // might need a 'titleside' and even 'titledirection' down the road
 
     hoverformat: axesAttrs.hoverformat,
 
-    editType: 'calc'
+    editType: 'calc',
+
+    _deprecated: {
+        title: axesAttrs._deprecated.title,
+        titlefont: axesAttrs._deprecated.titlefont
+    }
 };
 
 extendFlat(

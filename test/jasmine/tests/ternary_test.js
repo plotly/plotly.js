@@ -1,5 +1,6 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var rgb = require('@src/components/color').rgb;
 
 var supplyLayoutDefaults = require('@src/plots/ternary/layout_defaults');
 
@@ -382,6 +383,55 @@ describe('ternary plots', function() {
         .then(done);
     });
 
+    it('should be able to relayout axis title attributes', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+
+        function _assert(axisPrefix, title, family, color, size) {
+            var titleSel = d3.select('.' + axisPrefix + 'title');
+            var titleNode = titleSel.node();
+
+            var msg = 'for ' + axisPrefix + 'axis title';
+            expect(titleSel.text()).toBe(title, 'title ' + msg);
+            expect(titleNode.style['font-family']).toBe(family, 'font family ' + msg);
+            expect(parseFloat(titleNode.style['font-size'])).toBe(size, 'font size ' + msg);
+            expect(titleNode.style.fill).toBe(color, 'font color ' + msg);
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('a', 'Component A', '"Open Sans", verdana, arial, sans-serif', rgb('#ccc'), 14);
+            _assert('b', 'chocolate', '"Open Sans", verdana, arial, sans-serif', rgb('#0f0'), 14);
+            _assert('c', 'Component C', '"Open Sans", verdana, arial, sans-serif', rgb('#444'), 14);
+
+            // Note: Different update notations to also test legacy title structures
+            return Plotly.relayout(gd, {
+                'ternary.aaxis.title.text': 'chips',
+                'ternary.aaxis.title.font.color': 'yellow',
+                'ternary.aaxis.titlefont.family': 'monospace',
+                'ternary.aaxis.titlefont.size': 16,
+                'ternary.baxis.title': 'white chocolate',
+                'ternary.baxis.title.font.color': 'blue',
+                'ternary.baxis.titlefont.family': 'sans-serif',
+                'ternary.baxis.titlefont.size': 10,
+                'ternary.caxis.title': {
+                    text: 'candy',
+                    font: {
+                        color: 'pink',
+                        family: 'serif',
+                        size: 30
+                    }
+                }
+            });
+        })
+          .then(function() {
+              _assert('a', 'chips', 'monospace', rgb('yellow'), 16);
+              _assert('b', 'white chocolate', 'sans-serif', rgb('blue'), 10);
+              _assert('c', 'candy', 'serif', rgb('pink'), 30);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
     it('should be able to hide/show ticks and tick labels', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
@@ -546,9 +596,9 @@ describe('ternary defaults', function() {
         layoutIn = {};
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.ternary.aaxis.title).toEqual('Component A');
-        expect(layoutOut.ternary.baxis.title).toEqual('Component B');
-        expect(layoutOut.ternary.caxis.title).toEqual('Component C');
+        expect(layoutOut.ternary.aaxis.title.text).toEqual('Component A');
+        expect(layoutOut.ternary.baxis.title.text).toEqual('Component B');
+        expect(layoutOut.ternary.caxis.title.text).toEqual('Component C');
     });
 
     it('should default \'gricolor\' to 60% dark', function() {
