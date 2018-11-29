@@ -565,7 +565,7 @@ describe('Test plot api', function() {
             mockedMethods.forEach(function(m) {
                 spyOn(subroutines, m);
             });
-            spyOn(Axes, 'doTicks');
+            spyOn(Axes, 'draw');
             spyOn(Plots, 'supplyDefaults').and.callThrough();
         });
 
@@ -573,7 +573,7 @@ describe('Test plot api', function() {
             mockedMethods.forEach(function(m) {
                 subroutines[m].calls.reset();
             });
-            Axes.doTicks.calls.reset();
+            Axes.draw.calls.reset();
 
             supplyAllDefaults(gd);
             Plots.supplyDefaults.calls.reset();
@@ -682,9 +682,9 @@ describe('Test plot api', function() {
                         '# of ' + m + ' calls - ' + msg
                     );
                 });
-                expect(Axes.doTicks).toHaveBeenCalledTimes(1);
-                expect(Axes.doTicks.calls.allArgs()[0][1]).toEqual(['x']);
-                expect(Axes.doTicks.calls.allArgs()[0][2]).toBe(true, 'skip-axis-title argument');
+                expect(Axes.draw).toHaveBeenCalledTimes(1);
+                expect(Axes.draw.calls.allArgs()[0][1]).toEqual(['x']);
+                expect(Axes.draw.calls.allArgs()[0][2]).toEqual({skipTitle: true}, 'skip-axis-title argument');
                 expect(Plots.supplyDefaults).not.toHaveBeenCalled();
             }
 

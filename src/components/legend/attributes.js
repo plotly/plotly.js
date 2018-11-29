@@ -129,5 +129,15 @@ module.exports = {
             'visibility. Defaults to `layout.uirevision`.'
         ].join(' ')
     },
+    valign: {
+        valType: 'enumerated',
+        values: ['top', 'middle', 'bottom'],
+        dflt: 'middle',
+        role: 'style',
+        editType: 'legend',
+        description: [
+            'Sets the vertical alignment of the symbols with respect to their associated text.',
+        ].join(' ')
+    },
     editType: 'legend'
 };

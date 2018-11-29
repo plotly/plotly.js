@@ -4,13 +4,14 @@ var path = require('path');
 var minimist = require('minimist');
 var constants = require('../../tasks/util/constants');
 
-var isCI = !!process.env.CIRCLECI;
+var isCI = !!process.env.CI;
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
-    'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox'],
+    'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox', 'IE11'],
     alias: {
         'Chrome': 'chrome',
         'Firefox': ['firefox', 'FF'],
+        'IE11': ['ie11'],
         'bundleTest': ['bundletest', 'bundle_test'],
         'nowatch': 'no-watch',
         'failFast': 'fail-fast'
@@ -54,6 +55,7 @@ if(argv.info) {
         '  - `--info`: show this info message',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
+        '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
         '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
@@ -88,7 +90,7 @@ var isFullSuite = !isBundleTest && argv._.length === 0;
 var testFileGlob;
 
 if(isFullSuite) {
-    testFileGlob = path.join('tests', '*' + SUFFIX);
+    testFileGlob = path.join(__dirname, 'tests', '*' + SUFFIX);
 } else if(isBundleTest) {
     var _ = merge(argv.bundleTest);
 
@@ -96,9 +98,9 @@ if(isFullSuite) {
         console.warn('Can only run one bundle test suite at a time, ignoring ', _.slice(1));
     }
 
-    testFileGlob = path.join('bundle_tests', glob([basename(_[0])]));
+    testFileGlob = path.join(__dirname, 'bundle_tests', glob([basename(_[0])]));
 } else {
-    testFileGlob = path.join('tests', glob(merge(argv._).map(basename)));
+    testFileGlob = path.join(__dirname, 'tests', glob(merge(argv._).map(basename)));
 }
 
 var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
@@ -107,6 +109,7 @@ var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
+var pathToMathJax = path.join(constants.pathToDist, 'extras', 'mathjax');
 
 var reporters = (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'];
 if(argv.failFast) reporters.push('fail-fast');
@@ -134,7 +137,7 @@ function func(config) {
 func.defaultConfig = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '.',
+    basePath: constants.pathToRoot,
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -143,7 +146,13 @@ func.defaultConfig = {
     // list of files / patterns to load in the browser
     //
     // N.B. the rest of this field is filled below
-    files: [pathToCustomMatchers, pathToUnpolyfill],
+    files: [
+        pathToCustomMatchers,
+        pathToUnpolyfill,
+        // available to fetch from /base/path/to/mathjax
+        // more info: http://karma-runner.github.io/3.0/config/files.html
+        {pattern: pathToMathJax + '/**', included: false, watched: false, served: true}
+    ],
 
     // list of files / pattern to exclude
     exclude: [],
@@ -295,6 +304,7 @@ func.defaultConfig.files.push(testFileGlob);
 var browsers = func.defaultConfig.browsers;
 if(argv.Chrome) browsers.push('_Chrome');
 if(argv.Firefox) browsers.push('_Firefox');
+if(argv.IE11) browsers.push('IE');
 if(browsers.length === 0) browsers.push('_Chrome');
 
 module.exports = func;

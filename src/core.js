@@ -18,7 +18,7 @@ require('es6-promise').polyfill();
 require('../build/plotcss');
 
 // inject default MathJax config
-require('./fonts/mathjax_config');
+require('./fonts/mathjax_config')();
 
 // include registry module and expose register method
 var Registry = require('./registry');
@@ -54,7 +54,8 @@ register([
     require('./components/rangeslider'),
     require('./components/rangeselector'),
     require('./components/grid'),
-    require('./components/errorbars')
+    require('./components/errorbars'),
+    require('./components/colorscale')
 ]);
 
 // locales en and en-US are required for default behavior

@@ -428,7 +428,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(toggle(
             'polar.angularaxis.showgrid',
             [true, false], [8, 0],
-            '.angular-grid > .angularaxis > path', assertCnt
+            '.angular-grid > path', assertCnt
         ))
         .then(toggle(
             'polar.angularaxis.showticklabels',
@@ -608,7 +608,7 @@ describe('Test relayout on polar subplots:', function() {
             }
 
             assertLetterCount('.plotbg > path');
-            assertLetterCount('.radial-grid > .x > path');
+            assertLetterCount('.radial-grid > path');
             assertLetterCount('.angular-line > path');
         }
 
@@ -1303,7 +1303,7 @@ describe('Test polar *gridshape linear* interactions', function() {
         var dragCoverNode;
         var p1;
 
-        var layersRotateFromZero = ['.plotbg > path', '.radial-grid', '.angular-line > path'];
+        var layersRotateFromZero = ['.plotbg > path', '.radial-grid'];
         var layersRotateFromRadialAxis = ['.radial-axis', '.radial-line > line'];
 
         function _assertTransformRotate(msg, query, rot) {

@@ -51,6 +51,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var textData = coerce('text');
     var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
     coerce('hovertext');
+    coerce('hovertemplate');
 
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),

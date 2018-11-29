@@ -45,7 +45,7 @@ describe('@noCIdep Plotly.react', function() {
         spyOn(annotations, 'drawOne').and.callThrough();
         spyOn(annotations, 'draw').and.callThrough();
         spyOn(images, 'draw').and.callThrough();
-        spyOn(Axes, 'doTicks').and.callThrough();
+        spyOn(Axes, 'draw').and.callThrough();
     });
 
     afterEach(destroyGraphDiv);
@@ -281,11 +281,11 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            expect(Axes.doTicks).toHaveBeenCalledWith(gd, '');
+            expect(Axes.draw).toHaveBeenCalledWith(gd, '');
             return Plotly.react(gd, data, layout2);
         })
         .then(function() {
-            expect(Axes.doTicks).toHaveBeenCalledWith(gd, 'redraw');
+            expect(Axes.draw).toHaveBeenCalledWith(gd, 'redraw');
             expect(subroutines.layoutStyles).not.toHaveBeenCalled();
         })
         .catch(failTest)

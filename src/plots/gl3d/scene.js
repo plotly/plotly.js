@@ -169,7 +169,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function initializeGLPlot(scene, fullLayout, canvas, gl) {
+function initializeGLPlot(scene, canvas, gl) {
     var gd = scene.graphDiv;
 
     var glplotOptions = {
@@ -318,7 +318,7 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    if(!initializeGLPlot(this, fullLayout)) return; // todo check the necessity for this line
+    if(!initializeGLPlot(this)) return; // todo check the necessity for this line
 }
 
 var proto = Scene.prototype;
@@ -334,7 +334,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, scene.fullLayout, canvas, gl)) {
+        if(!initializeGLPlot(scene, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }

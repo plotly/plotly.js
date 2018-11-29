@@ -69,7 +69,11 @@ module.exports = function plot(gd, subplot, cdbar) {
         });
 
         // clip plotGroup, when trace layer isn't clipped
-        Drawing.setClipUrl(plotGroup, subplot._hasClipOnAxisFalse ? subplot.clipIds.forTraces : null);
+        Drawing.setClipUrl(
+            plotGroup,
+            subplot._hasClipOnAxisFalse ? subplot.clipIds.forTraces : null,
+            gd
+        );
     });
 };
 

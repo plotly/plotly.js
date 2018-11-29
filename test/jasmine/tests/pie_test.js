@@ -845,7 +845,7 @@ describe('pie hovering', function() {
                 'curveNumber', 'pointNumber', 'pointNumbers',
                 'data', 'fullData',
                 'label', 'color', 'value',
-                'i', 'v'
+                'i', 'v', 'percent', 'text'
             ];
 
             expect(Object.keys(hoverData.points[0]).sort()).toEqual(fields.sort());
@@ -1011,6 +1011,72 @@ describe('pie hovering', function() {
             .then(function() {
                 assertLabel('0\n12|345|678@91\n99@9%');
             })
+            .then(done);
+        });
+
+        it('should use hovertemplate if specified', function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['4', '5', '33.3%'].join('\n'),
+                    ['rgb(31, 119, 180)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)'],
+                    'initial'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{value}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['5'].join('\n'),
+                    null,
+                    'hovertemplate %{value}'
+                );
+
+                return Plotly.restyle(gd, {
+                    'text': [['A', 'B', 'C', 'D', 'E']],
+                    'hovertemplate': '%{text}<extra></extra>'
+                });
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['E'].join('\n'),
+                    null,
+                    'hovertemplate %{text}'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{percent}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['33.3%'].join('\n'),
+                    null,
+                    'hovertemplate %{percent}'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{label}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['4'].join('\n'),
+                    null,
+                    'hovertemplate %{label}'
+                );
+            })
+            .then(function() { return Plotly.restyle(gd, 'hovertemplate', [['', '', '', '', 'ht 5 %{percent:0.2%}<extra></extra>']]); })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['ht 5 33.33%'].join('\n'),
+                    null,
+                    'hovertemplate arrayOK'
+                );
+            })
+            .catch(fail)
             .then(done);
         });
     });

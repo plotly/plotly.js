@@ -10,6 +10,7 @@
 
 var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
+var colorscaleAttrs = require('../components/colorscale/layout_attributes');
 
 var globalFont = fontAttrs({
     editType: 'calc',
@@ -188,6 +189,7 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the default trace colors.'
     },
+    colorscale: colorscaleAttrs,
     datarevision: {
         valType: 'any',
         role: 'info',

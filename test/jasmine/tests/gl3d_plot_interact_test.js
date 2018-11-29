@@ -392,6 +392,135 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
+    it('@gl should set the camera dragmode to orbit if the camera.up.z vector is set to be tilted', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        up: {
+                            x: -0.5777,
+                            y: -0.5777,
+                            z: 0.5777
+                        }
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.dragmode === 'orbit').toBe(true);
+        })
+        .then(done);
+    });
+
+    it('@gl should set the camera dragmode to turntable if the camera.up.z vector is set to be upwards', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        up: {
+                            x: -0.0001,
+                            y: 0,
+                            z: 123.45
+                        }
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
+        })
+        .then(done);
+    });
+
+    it('@gl should set the camera dragmode to turntable if the camera.up is not set', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
+        })
+        .then(done);
+    });
+
+    it('@gl should set the camera dragmode to turntable if any of camera.up.[x|y|z] is missing', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        up: {
+                            x: null,
+                            z: 0
+                        }
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
+        })
+        .then(done);
+    });
+
+    it('@gl should set the camera dragmode to turntable if all camera.up.[x|y|z] are zero or missing', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        up: {
+                            x: 0,
+                            y: 0,
+                            z: 0
+                        }
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
+        })
+        .then(done);
+    });
+
     it('@gl should be able to reversibly change trace type', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
@@ -405,6 +534,7 @@ describe('Test gl3d plots', function() {
             expect(gd.layout.yaxis === undefined).toBe(true);
             expect(gd._fullLayout._has('gl3d')).toBe(true);
             expect(gd._fullLayout.scene._scene).toBeDefined();
+            expect(gd._fullLayout.scene._scene.camera).toBeDefined(true);
 
             return Plotly.restyle(gd, 'type', 'scatter');
         })

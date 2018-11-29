@@ -16,6 +16,8 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
+var Drawing = require('@src/components/drawing');
+
 describe('legend defaults', function() {
     'use strict';
 
@@ -664,6 +666,43 @@ describe('legend relayout update', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    describe('should update legend valign', function() {
+        var mock = require('@mocks/legend_valign_top.json');
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        function markerOffsetY() {
+            var translate = Drawing.getTranslate(d3.select('.legend .traces .layers'));
+            return translate.y;
+        }
+
+        it('it should translate markers', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            var top, middle, bottom;
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                top = markerOffsetY();
+                return Plotly.relayout(gd, 'legend.valign', 'middle');
+            })
+            .then(function() {
+                middle = markerOffsetY();
+                expect(middle).toBeGreaterThan(top);
+                return Plotly.relayout(gd, 'legend.valign', 'bottom');
+            })
+            .then(function() {
+                bottom = markerOffsetY();
+                expect(bottom).toBeGreaterThan(middle);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 

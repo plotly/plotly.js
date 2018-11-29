@@ -14,6 +14,8 @@ var transitions = require('../assets/transitions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
+var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/scatter/constants');
 
 var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
@@ -1102,6 +1104,20 @@ describe('end-to-end scatter tests', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should not error out when segment-less marker-less fill traces', function(done) {
+        Plotly.plot(gd, [{
+            x: [1, 2, 3, 4],
+            y: [null, null, null, null],
+            fill: 'tonexty'
+        }])
+        .then(function() {
+            expect(d3.selectAll('.js-fill').size()).toBe(1, 'js-fill is there');
+            expect(d3.select('.js-fill').attr('d')).toBe('M0,0Z', 'js-fill has an empty path');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('stacked area', function() {
@@ -1820,4 +1836,18 @@ describe('Test scatter *clipnaxis*:', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/scatter-colorscale-colorbar');
+    var mockCopy = Lib.extendDeep({}, mock);
+
+    var marker = mockCopy.data[0].marker;
+    marker.opacity = [];
+    marker.symbol = [];
+    for(var i = 0; i < mockCopy.data[0].y.length; ++i) {
+        marker.opacity.push(0.5);
+        marker.symbol.push('square');
+    }
+    checkEventData(mockCopy, 540, 260, constants.eventDataKeys);
 });

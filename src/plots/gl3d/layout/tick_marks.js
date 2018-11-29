@@ -15,7 +15,6 @@ module.exports = computeTickMarks;
 
 var Axes = require('../../cartesian/axes');
 var Lib = require('../../../lib');
-var convertHTMLToUnicode = require('../../../lib/html2unicode');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
@@ -73,7 +72,11 @@ function computeTickMarks(scene) {
             var dataTicks = Axes.calcTicks(axes);
             for(var j = 0; j < dataTicks.length; ++j) {
                 dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
-                dataTicks[j].text = convertHTMLToUnicode(dataTicks[j].text);
+
+                if(axes.type === 'date') {
+                    dataTicks[j].text =
+                    dataTicks[j].text.replace(/\<br\>/g, ' ');
+                }
             }
             ticks[i] = dataTicks;
 
