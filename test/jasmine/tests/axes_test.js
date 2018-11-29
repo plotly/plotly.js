@@ -1347,6 +1347,14 @@ describe('Test axes', function() {
             expect(axOut.tickvals).toEqual([2, 4, 6, 8]);
             expect(axOut.ticktext).toEqual(['who', 'do', 'we', 'appreciate']);
         });
+
+        it('should not coerce ticktext/tickvals on multicategory axes', function() {
+            var axIn = {tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
+            var axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'multicategory');
+            expect(axOut.tickvals).toBe(undefined);
+            expect(axOut.ticktext).toBe(undefined);
+        });
     });
 
     describe('saveRangeInitial', function() {
