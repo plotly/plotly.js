@@ -25,12 +25,12 @@ function SurfaceTrace(scene, surface, uid) {
     this.surface = surface;
     this.data = null;
     this.showContour = [false, false, false];
-    this.dataScaleX = 1.0;
-    this.dataScaleY = 1.0;
-    this.refineData = true; // this could also be set by user...
     this.minValues = [Infinity, Infinity, Infinity];
     this.maxValues = [-Infinity, -Infinity, -Infinity];
     this.midValues = [0, 0, 0];
+    this.dataScaleX = 1.0;
+    this.dataScaleY = 1.0;
+    this.refineData = false; // this could also be set by user...
 }
 
 var proto = SurfaceTrace.prototype;
