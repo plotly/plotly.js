@@ -3212,7 +3212,7 @@ describe('Test axes', function() {
                     angle: [90, 90, 90]
                 });
 
-                return Plotly.relayout(gd, 'xaxis.range', [-0.5, 1.5]);
+                return Plotly.relayout(gd, 'xaxis.range', [-0.4, 1.4]);
             })
             .then(function() {
                 _assert('narrower range - unrotated', {
