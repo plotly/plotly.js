@@ -528,7 +528,7 @@ describe('Plot title', function() {
         var topDistance = titleBB.top - refElemBB.top;
         var bottomDistance = refElemBB.bottom - titleBB.bottom;
 
-        var tolerance = 1.1;
+        var tolerance = 1.3;
         var msg = 'Title centered vertically within ' + elemSelector.desc;
         expect(topDistance).toBeWithin(bottomDistance, tolerance, msg);
     }
