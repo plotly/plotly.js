@@ -227,9 +227,9 @@ proto.calcXnums = function(xlen) {
         var a = this.getXat(i - 1, 0);
         var b = this.getXat(i, 0);
 
-        if(a !== undefined && a !== null &&
-            b !== undefined && b !== null &&
-            b != a) {
+        if(b !== a &&
+            a !== undefined && a !== null &&
+            b !== undefined && b !== null) {
             nums[i - 1] = Math.round(
                 maxDist / Math.abs(b - a)
             );
@@ -250,9 +250,9 @@ proto.calcYnums = function(ylen) {
         var a = this.getYat(0, i - 1);
         var b = this.getYat(0, i);
 
-        if(a !== undefined && a !== null &&
-            b !== undefined && b !== null &&
-            b != a) {
+        if(b !== a &&
+            a !== undefined && a !== null &&
+            b !== undefined && b !== null) {
             nums[i - 1] = Math.round(
                 maxDist / Math.abs(b - a)
             );
