@@ -3219,7 +3219,7 @@ describe('Test axes', function() {
                     angle: [0, 0]
                 });
 
-                return Plotly.relayout(gd, 'xaxis.tickwidth', 10);
+                return Plotly.relayout(gd, 'xaxis.tickwidth', 30);
             })
             .then(function() {
                 _assert('narrow range / wide ticks - rotated', {
