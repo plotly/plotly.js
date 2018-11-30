@@ -979,7 +979,7 @@ axes.tickText = function(ax, x, hover) {
 
     // Setup ticks and grid lines boundaries
     // at 1/2 a 'category' to the left/bottom
-    if(ax.tickson === 'boundaries') {
+    if(ax.tickson === 'boundaries' || ax.showdividers) {
         var inbounds = function(v) {
             var p = ax.l2p(v);
             return p >= 0 && p <= ax._length ? v : null;
@@ -1583,6 +1583,7 @@ axes.draw = function(gd, arg, opts) {
             plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
             if(xa.type === 'multicategory') {
                 plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
+                plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
             }
             if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
             if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
@@ -1642,36 +1643,21 @@ axes.drawOne = function(gd, ax, opts) {
     ax._selections = {};
 
     var transFn = axes.makeTransFn(ax);
-
+    var tickVals;
     // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
     // The key case here is removing zero lines when the axis bound is zero
     var valsClipped;
-    var tickVals;
-    var gridVals;
 
     if(ax.tickson === 'boundaries' && vals.length) {
-        // valsBoundaries is not used for labels;
-        // no need to worry about the other tickTextObj keys
-        var valsBoundaries = [];
-        var _push = function(d, bndIndex) {
-            var xb = d.xbnd[bndIndex];
-            if(xb !== null) {
-                valsBoundaries.push(Lib.extendFlat({}, d, {x: xb}));
-            }
-        };
-        for(i = 0; i < vals.length; i++) _push(vals[i], 0);
-        _push(vals[i - 1], 1);
-
-        valsClipped = axes.clipEnds(ax, valsBoundaries);
-        tickVals = ax.ticks === 'inside' ? valsClipped : valsBoundaries;
-        gridVals = valsClipped;
+        var boundaryVals = getBoundaryVals(ax, vals);
+        valsClipped = axes.clipEnds(ax, boundaryVals);
+        tickVals = ax.ticks === 'inside' ? valsClipped : boundaryVals;
     } else {
         valsClipped = axes.clipEnds(ax, vals);
         tickVals = ax.ticks === 'inside' ? valsClipped : vals;
-        gridVals = valsClipped;
     }
 
-    ax._valsClipped = valsClipped;
+    var gridVals = ax._gridVals = valsClipped;
 
     if(!fullLayout._hasOnlyLargeSploms) {
         // keep track of which subplots (by main conteraxis) we've already
@@ -1759,54 +1745,33 @@ axes.drawOne = function(gd, ax, opts) {
     });
 
     if(ax.type === 'multicategory') {
+        var labelLength = 0;
+
         seq.push(function() {
-            // TODO?
-            // drawDividers()
-
-            var secondaryLabelVals = [];
-            var lookup = {};
-            for(i = 0; i < vals.length; i++) {
-                var d = vals[i];
-                if(lookup[d.text2]) {
-                    lookup[d.text2].push(d.x);
-                } else {
-                    lookup[d.text2] = [d.x];
-                }
-            }
-            for(var k in lookup) {
-                secondaryLabelVals.push(tickTextObj(ax, Lib.interp(lookup[k], 0.5), k));
-            }
-
-            var labelHeight = 0;
-            ax._selections[ax._id + 'tick'].each(function() {
-                var thisLabel = selectTickLabel(this);
-
-                // TODO Drawing.bBox doesn't work when labels are rotated
-                // var bb = Drawing.bBox(thisLabel.node());
-                var bb = thisLabel.node().getBoundingClientRect();
-                labelHeight = Math.max(labelHeight, bb.height);
-            });
-
-            var secondarayPosition;
-            if(ax.side === 'bottom') {
-                secondarayPosition = mainLinePosition + labelHeight + 2;
-            } else {
-                secondarayPosition = mainLinePosition - labelHeight - 2;
-                if(ax.tickfont) {
-                    secondarayPosition -= (ax.tickfont.size * LINE_SPACING);
-                }
-            }
-
-            var secondaryLabelFns = axes.makeLabelFns(ax, secondarayPosition);
+            labelLength += getLabelLevelSpan(ax._selections[axId + 'tick']) + 2;
+            labelLength += ax._lastangle ? ax.tickfont.size * LINE_SPACING : 0;
+            var secondaryPosition = mainLinePosition + labelLength * tickSigns[2];
+            var secondaryLabelFns = axes.makeLabelFns(ax, secondaryPosition);
 
             return axes.drawLabels(gd, ax, {
-                vals: secondaryLabelVals,
+                vals: getSecondaryLabelVals(ax, vals),
                 layer: mainAxLayer,
-                cls: ax._id + 'tick2',
+                cls: axId + 'tick2',
                 transFn: transFn,
                 labelXFn: secondaryLabelFns.labelXFn,
                 labelYFn: secondaryLabelFns.labelYFn,
                 labelAnchorFn: secondaryLabelFns.labelAnchorFn,
+            });
+        });
+
+        seq.push(function() {
+            labelLength += getLabelLevelSpan(ax._selections[axId + 'tick2']) + 2;
+
+            return drawDividers(gd, ax, {
+                vals: getDividerVals(ax, vals),
+                layer: mainAxLayer,
+                path: axes.makeTickPath(ax, mainLinePosition, tickSigns[2], labelLength),
+                transFn: transFn
             });
         });
     }
@@ -1937,6 +1902,87 @@ axes.drawOne = function(gd, ax, opts) {
     return Lib.syncOrAsync(seq);
 };
 
+function getBoundaryVals(ax, vals) {
+    var out = [];
+    var i;
+
+    // boundaryVals are never used for labels;
+    // no need to worry about the other tickTextObj keys
+    var _push = function(d, bndIndex) {
+        var xb = d.xbnd[bndIndex];
+        if(xb !== null) {
+            out.push(Lib.extendFlat({}, d, {x: xb}));
+        }
+    };
+
+    for(i = 0; i < vals.length; i++) {
+        _push(vals[i], 0);
+    }
+    _push(vals[i - 1], 1);
+
+    return out;
+}
+
+function getSecondaryLabelVals(ax, vals) {
+    var out = [];
+    var lookup = {};
+
+    for(var i = 0; i < vals.length; i++) {
+        var d = vals[i];
+        if(lookup[d.text2]) {
+            lookup[d.text2].push(d.x);
+        } else {
+            lookup[d.text2] = [d.x];
+        }
+    }
+
+    for(var k in lookup) {
+        out.push(tickTextObj(ax, Lib.interp(lookup[k], 0.5), k));
+    }
+
+    return out;
+}
+
+function getDividerVals(ax, vals) {
+    var out = [];
+    var i, current;
+
+    // never used for labels;
+    // no need to worry about the other tickTextObj keys
+    var _push = function(d, bndIndex) {
+        var xb = d.xbnd[bndIndex];
+        if(xb !== null) {
+            out.push(Lib.extendFlat({}, d, {x: xb}));
+        }
+    };
+
+    for(i = 0; i < vals.length; i++) {
+        var d = vals[i];
+        if(d.text2 !== current) {
+            _push(d, 0);
+        }
+        current = d.text2;
+    }
+    _push(vals[i - 1], 1);
+
+    return out;
+}
+
+function getLabelLevelSpan(tickLabels) {
+    var out = 2;
+
+    tickLabels.each(function() {
+        var thisLabel = selectTickLabel(this);
+
+        // TODO Drawing.bBox doesn't work when labels are rotated
+        // var bb = Drawing.bBox(thisLabel.node());
+        var bb = thisLabel.node().getBoundingClientRect();
+        out = Math.max(out, bb.height);
+    });
+
+    return out;
+}
+
 /**
  * Which direction do the 'ax.side' values, and free ticks go?
  *
@@ -1988,12 +2034,15 @@ axes.makeTransFn = function(ax) {
  *  - {number} linewidth
  * @param {number} shift along direction of ticklen
  * @param {1 or -1} sng tick sign
+ * @param {number (optional)} len tick length
  * @return {string}
  */
-axes.makeTickPath = function(ax, shift, sgn) {
+axes.makeTickPath = function(ax, shift, sgn, len) {
+    len = len !== undefined ? len : ax.ticklen;
+
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
-    var len = ax.ticklen;
+
     return axLetter === 'x' ?
         'M0,' + (shift + pad * sgn) + 'v' + (len * sgn) :
         'M' + (shift + pad * sgn) + ',0h' + (len * sgn);
@@ -2181,7 +2230,6 @@ axes.drawGrid = function(gd, ax, opts) {
  *  - {string} zerolinecolor
  *  - {number (optional)} _gridWidthCrispRound
  * @param {object} opts
- * - {array of object} vals (calcTicks output-like)
  * - {d3 selection} layer
  * - {object} counterAxis (full axis object corresponding to counter axis)
  * - {string or fn} path
@@ -2392,9 +2440,11 @@ axes.drawLabels = function(gd, ax, opts) {
 
             var autoangle = 0;
 
-            if(ax.tickson === 'boundaries' && cls === ax._id + 'tick') {
+            if((ax.tickson === 'boundaries' || ax.showdividers) && cls === ax._id + 'tick') {
                 var gap = 2;
                 if(ax.ticks) gap += ax.tickwidth / 2;
+
+                // TODO should secondary labels also fall into this fix-overlap regime?
 
                 for(i = 0; i < lbbArray.length; i++) {
                     var xbnd = vals[i].xbnd;
@@ -2436,6 +2486,41 @@ axes.drawLabels = function(gd, ax, opts) {
     if(done && done.then) gd._promises.push(done);
     return done;
 };
+
+/**
+ * Draw axis dividers
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {string} showdividers
+ *  - {number} dividerwidth
+ *  - {string} dividercolor
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {fn} path
+ * - {fn} transFn
+ */
+function drawDividers(gd, ax, opts) {
+    var cls = ax._id + 'divider';
+    var vals = opts.vals;
+
+    var dividers = opts.layer.selectAll('path.' + cls)
+        .data(ax.showdividers ? vals : [], makeDataFn(ax));
+
+    dividers.exit().remove();
+
+    dividers.enter().insert('path', ':first-child')
+        .classed(cls, 1)
+        .classed('crisp', 1)
+        .call(Color.stroke, ax.dividercolor)
+        .style('stroke-width', Drawing.crispRound(gd, ax.dividerwidth, 1) + 'px');
+
+    dividers
+        .attr('transform', opts.transFn)
+        .attr('d', opts.path);
+}
 
 function drawTitle(gd, ax) {
     var fullLayout = gd._fullLayout;
@@ -2519,7 +2604,7 @@ axes.shouldShowZeroLine = function(gd, ax, counterAxis) {
         (rng[0] * rng[1] <= 0) &&
         ax.zeroline &&
         (ax.type === 'linear' || ax.type === '-') &&
-        ax._valsClipped.length &&
+        ax._gridVals.length &&
         (
             clipEnds(ax, 0) ||
             !anyCounterAxLineAtZero(gd, ax, counterAxis, rng) ||

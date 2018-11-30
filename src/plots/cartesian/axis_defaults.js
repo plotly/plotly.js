@@ -97,5 +97,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         coerce('tickson');
     }
 
+    if(containerOut.type === 'multicategory') {
+        var showDividers = coerce('showdividers');
+        if(showDividers) {
+            coerce('dividercolor');
+            coerce('dividerwidth');
+        }
+    }
+
     return containerOut;
 };

@@ -666,6 +666,40 @@ module.exports = {
         editType: 'ticks',
         description: 'Sets the width (in px) of the zero line.'
     },
+
+    showdividers: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Determines whether or not a dividers are drawn',
+            'between the category levels of this axis.',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    dividercolor: {
+        valType: 'color',
+        dflt: colorAttrs.defaultLine,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Sets the color of the dividers',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    dividerwidth: {
+        valType: 'number',
+        dflt: 1,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Sets the width (in px) of the dividers',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    // TODO dividerlen: that would override "to label base" length?
+
     // positioning attributes
     // anchor: not used directly, just put here for reference
     // values are any opposite-letter axis id
