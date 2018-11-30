@@ -73,7 +73,7 @@ proto.handlePick = function(selection) {
         var xRatio = (selection.data.index[0] - 1) / this.dataScaleX - 1;
         var yRatio = (selection.data.index[1] - 1) / this.dataScaleY - 1;
 
-        var j = Math.max(Math.min(Math.round(xRatio), this.data._xlength - 1), 0);
+        var j = Math.max(Math.min(Math.round(xRatio), this.data.z[0].length - 1), 0);
         var k = Math.max(Math.min(Math.round(yRatio), this.data._ylength - 1), 0);
 
         selection.index = [j, k];
@@ -224,12 +224,18 @@ proto.calcXnums = function(xlen) {
     );
     var nums = [];
     for(var i = 1; i < xlen; i++) {
-        nums[i - 1] = Math.round(
-            maxDist / Math.abs(
-                this.getXat(i, 0) -
-                this.getXat(i - 1, 0)
-            )
-        );
+        var a = this.getXat(i - 1, 0);
+        var b = this.getXat(i, 0);
+
+        if(a !== undefined && a !== null &&
+            b !== undefined && b !== null &&
+            b != a) {
+            nums[i - 1] = Math.round(
+                maxDist / Math.abs(b - a)
+            );
+        } else {
+            nums[i - 1] = 1;
+        }
     }
     return nums;
 };
@@ -241,12 +247,18 @@ proto.calcYnums = function(ylen) {
     );
     var nums = [];
     for(var i = 1; i < ylen; i++) {
-        nums[i - 1] = Math.round(
-            maxDist / Math.abs(
-                this.getYat(0, i) -
-                this.getYat(0, i - 1)
-            )
-        );
+        var a = this.getYat(0, i - 1);
+        var b = this.getYat(0, i);
+
+        if(a !== undefined && a !== null &&
+            b !== undefined && b !== null &&
+            b != a) {
+            nums[i - 1] = Math.round(
+                maxDist / Math.abs(b - a)
+            );
+        } else {
+            nums[i - 1] = 1;
+        }
     }
     return nums;
 };
@@ -346,7 +358,7 @@ proto.update = function(data) {
         alpha = data.opacity,
         colormap = parseColorScale(data.colorscale, alpha),
         scaleFactor = scene.dataScale,
-        xlen = data._xlength,
+        xlen = data.z[0].length,
         ylen = data._ylength,
         contourLevels = scene.contourLevels;
 
