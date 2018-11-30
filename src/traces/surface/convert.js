@@ -208,7 +208,7 @@ function leastCommonMultiple(a, b) {
     return n;
 }
 
-function ayyarLCM(A) {
+function arrayLCM(A) {
     if(A.length === 0) return undefined;
     var n = 1;
     for(var i = 0; i < A.length; i++) {
@@ -278,7 +278,7 @@ proto.estimateScale = function(resSrc, axis) {
 
     // console.log("nums=", nums);
 
-    var resDst = 1 + ayyarLCM(nums);
+    var resDst = 1 + arrayLCM(nums);
 
     // console.log("BEFORE: resDst=", resDst);
     while(resDst < MIN_RESOLUTION) {
