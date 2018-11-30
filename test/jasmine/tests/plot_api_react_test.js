@@ -1643,7 +1643,7 @@ describe('Plotly.react and uirevision attributes', function() {
         function editEditable() {
             return Registry.call('_guiUpdate', gd,
                 {'colorbar.x': 0.8, 'colorbar.y': 0.6},
-                {title: 'yep', 'legend.x': 1.1, 'legend.y': 0.9},
+                {'title.text': 'yep', 'legend.x': 1.1, 'legend.y': 0.9},
                 [2]
             );
         }
@@ -1653,7 +1653,7 @@ describe('Plotly.react and uirevision attributes', function() {
                 'colorbar.x': original ? [undefined, 1.02] : 0.8,
                 'colorbar.y': original ? [undefined, 0.5] : 0.6
             }], {
-                title: original ? [undefined, 'Click to enter Plot title'] : 'yep',
+                'title.text': original ? [undefined, 'Click to enter Plot title'] : 'yep',
                 'legend.x': original ? [undefined, 1.02] : 1.1,
                 'legend.y': original ? [undefined, 1] : 0.9
             });
@@ -1688,7 +1688,7 @@ describe('Plotly.react and uirevision attributes', function() {
             return {
                 'dimensions[0].constraintrange': original ? [[2.5, 3.5]] : [[[1.5, 2.5], [2.938, 3.979]]],
                 'dimensions[1].constraintrange': original ? undefined : [[6.937, 7.979]],
-                'line.colorbar.title': original ? [undefined, 'Click to enter Colorscale title'] : 'color',
+                'line.colorbar.title.text': original ? [undefined, 'Click to enter Colorscale title'] : 'color',
                 name: original ? [undefined, 'trace 0'] : 'name'
             };
         }
@@ -1700,7 +1700,7 @@ describe('Plotly.react and uirevision attributes', function() {
         function editTrace() {
             var _;
             return Registry.call('_guiRestyle', gd,
-                {'line.colorbar.title': 'color', name: 'name'},
+                {'line.colorbar.title.text': 'color', name: 'name'},
                 [0]
             )
             .then(function() {
@@ -1742,12 +1742,12 @@ describe('Plotly.react and uirevision attributes', function() {
 
         function attrs(original) {
             return {
-                'xaxis.title': original ? [undefined, 'Click to enter X axis title'] : 'XXX',
-                'yaxis.title': original ? [undefined, 'Click to enter Y axis title'] : 'YYY',
-                'ternary.aaxis.title': original ? [undefined, 'Component A'] : 'AAA',
-                'ternary.baxis.title': original ? [undefined, 'Component B'] : 'BBB',
-                'ternary.caxis.title': original ? [undefined, 'Component C'] : 'CCC',
-                'polar.radialaxis.title': original ? [undefined, ''] : 'RRR'
+                'xaxis.title.text': original ? [undefined, 'Click to enter X axis title'] : 'XXX',
+                'yaxis.title.text': original ? [undefined, 'Click to enter Y axis title'] : 'YYY',
+                'ternary.aaxis.title.text': original ? [undefined, 'Component A'] : 'AAA',
+                'ternary.baxis.title.text': original ? [undefined, 'Component B'] : 'BBB',
+                'ternary.caxis.title.text': original ? [undefined, 'Component C'] : 'CCC',
+                'polar.radialaxis.title.text': original ? [undefined, ''] : 'RRR'
             };
         }
 

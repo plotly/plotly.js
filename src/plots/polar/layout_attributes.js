@@ -136,6 +136,9 @@ var radialAxisAttrs = {
     }
 };
 
+// radial title is not gui-editable, so it needs dflt: '', similar to carpet axes.
+radialAxisAttrs.title.text.dflt = '';
+
 extendFlat(
     radialAxisAttrs,
 

@@ -2427,7 +2427,7 @@ exports._guiUpdate = guiEdit(update);
 // Ordered by most common edits first, to minimize our search time
 var layoutUIControlPatterns = [
     {pattern: /^hiddenlabels/, attr: 'legend.uirevision'},
-    {pattern: /^((x|y)axis\d*)\.((auto)?range|title)/},
+    {pattern: /^((x|y)axis\d*)\.((auto)?range|title\.text)/},
 
     // showspikes and modes include those nested inside scenes
     {pattern: /axis\d*\.showspikes$/, attr: 'modebar.uirevision'},
@@ -2435,14 +2435,14 @@ var layoutUIControlPatterns = [
 
     {pattern: /^(scene\d*)\.camera/},
     {pattern: /^(geo\d*)\.(projection|center)/},
-    {pattern: /^(ternary\d*\.[abc]axis)\.(min|title)$/},
-    {pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title)/},
+    {pattern: /^(ternary\d*\.[abc]axis)\.(min|title\.text)$/},
+    {pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title\.text)/},
     {pattern: /^(polar\d*\.angularaxis)\.rotation/},
     {pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/},
 
     {pattern: /^legend\.(x|y)$/, attr: 'editrevision'},
     {pattern: /^(shapes|annotations)/, attr: 'editrevision'},
-    {pattern: /^title$/, attr: 'editrevision'}
+    {pattern: /^title\.text$/, attr: 'editrevision'}
 ];
 
 // same for trace attributes: if `attr` is given it's in layout,
@@ -2461,7 +2461,7 @@ var traceUIControlPatterns = [
     // "name" also includes transform.styles
     {pattern: /(^|value\.)name$/},
     // including nested colorbar attributes (ie marker.colorbar)
-    {pattern: /colorbar\.title$/},
+    {pattern: /colorbar\.title\.text$/},
     {pattern: /colorbar\.(x|y)$/, attr: 'editrevision'}
 ];
 
