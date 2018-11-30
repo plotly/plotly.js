@@ -584,7 +584,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         });
                     },
                     doneFn: function() {
-                        Registry.call('relayout', gd, getUpdateObj());
+                        Registry.call('_guiRelayout', gd, getUpdateObj());
                         var notesBox = document.querySelector('.js-notes-box-panel');
                         if(notesBox) notesBox.redraw(notesBox.selectedObj);
                     }
@@ -667,7 +667,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 },
                 doneFn: function() {
                     setCursor(annTextGroupInner);
-                    Registry.call('relayout', gd, getUpdateObj());
+                    Registry.call('_guiRelayout', gd, getUpdateObj());
                     var notesBox = document.querySelector('.js-notes-box-panel');
                     if(notesBox) notesBox.redraw(notesBox.selectedObj);
                 }
@@ -691,7 +691,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     modifyBase(ya._name + '.autorange', true);
                 }
 
-                Registry.call('relayout', gd, getUpdateObj());
+                Registry.call('_guiRelayout', gd, getUpdateObj());
             });
     }
     else annText.call(textLayout);

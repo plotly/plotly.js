@@ -11,6 +11,7 @@
 
 var d3 = require('d3');
 var Lib = require('../../lib');
+var Registry = require('../../registry');
 
 var radians = Math.PI / 180;
 var degrees = 180 / Math.PI;
@@ -47,8 +48,10 @@ function initZoom(geo, projection) {
 function sync(geo, projection, cb) {
     var id = geo.id;
     var gd = geo.graphDiv;
-    var userOpts = gd.layout[id];
-    var fullOpts = gd._fullLayout[id];
+    var layout = gd.layout;
+    var userOpts = layout[id];
+    var fullLayout = gd._fullLayout;
+    var fullOpts = fullLayout[id];
 
     var eventData = {};
 
@@ -64,6 +67,7 @@ function sync(geo, projection, cb) {
 
     cb(set);
     set('projection.scale', projection.scale() / geo.fitScale);
+    Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, eventData);
     gd.emit('plotly_relayout', eventData);
 }
 

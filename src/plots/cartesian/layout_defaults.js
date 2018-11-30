@@ -158,7 +158,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut._shapeIndices = [];
 
         // set up some private properties
-        axLayoutOut._name = axName;
+        axLayoutOut._name = axLayoutOut._attr = axName;
         var id = axLayoutOut._id = name2id(axName);
 
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
@@ -175,6 +175,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName],
             splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
         };
+
+        coerce('uirevision', layoutOut.uirevision);
 
         handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);

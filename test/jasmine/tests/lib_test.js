@@ -2696,9 +2696,8 @@ describe('Queue', function() {
             return Plotly.relayout(gd, 'updatemenus[0]', null);
         })
         .then(function() {
-            // buttons have been stripped out because it's an empty container array...
             expect(gd.undoQueue.queue[1].undo.args[0][1])
-                .toEqual({ 'updatemenus[0]': {} });
+                .toEqual({ 'updatemenus[0]': { buttons: [] } });
             expect(gd.undoQueue.queue[1].redo.args[0][1])
                 .toEqual({ 'updatemenus[0]': null });
 

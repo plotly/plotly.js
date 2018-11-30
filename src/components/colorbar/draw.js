@@ -485,15 +485,10 @@ module.exports = function draw(gd, id) {
         }
 
         function drawTitle(titleClass, titleOpts) {
-            var trace = getTrace();
-            var propName = 'colorbar.title';
-            var containerName = trace._module.colorbar.container;
-            if(containerName) propName = containerName + '.' + propName;
-
             var dfltTitleOpts = {
                 propContainer: cbAxisOut,
-                propName: propName,
-                traceIndex: trace.index,
+                propName: getPropName('title'),
+                traceIndex: getTrace().index,
                 placeholder: fullLayout._dfltTitle.colorbar,
                 containerGroup: container.select('.cbtitle')
             };
@@ -645,11 +640,10 @@ module.exports = function draw(gd, id) {
                     setCursor(container);
 
                     if(xf !== undefined && yf !== undefined) {
-                        Registry.call('restyle',
-                            gd,
-                            {'colorbar.x': xf, 'colorbar.y': yf},
-                            getTrace().index
-                        );
+                        var update = {};
+                        update[getPropName('x')] = xf;
+                        update[getPropName('y')] = yf;
+                        Registry.call('_guiRestyle', gd, update, getTrace().index);
                     }
                 }
             });
@@ -665,6 +659,14 @@ module.exports = function draw(gd, id) {
             trace = gd._fullData[i];
             if(trace.uid === idNum) return trace;
         }
+    }
+
+    function getPropName(suffix) {
+        var trace = getTrace();
+        var propName = 'colorbar.';
+        var containerName = trace._module.colorbar.container;
+        if(containerName) propName = containerName + '.' + propName;
+        return propName + suffix;
     }
 
     // setter/getters for every item defined in opts

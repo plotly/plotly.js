@@ -53,6 +53,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         var axIn = contIn[axName];
         var axOut = Template.newContainer(contOut, axName);
         axOut._id = axOut._name = axName;
+        axOut._attr = opts.id + '.' + axName;
         axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
         var dataAttr = constants.axisName2dataArray[axName];
@@ -65,6 +66,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         var visible = coerceAxis('visible');
         setConvert(axOut, contOut, layoutOut);
+
+        coerceAxis('uirevision', contOut.uirevision);
 
         var dfltColor;
         var dfltFontColor;

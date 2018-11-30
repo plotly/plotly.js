@@ -13,6 +13,7 @@ var mapboxgl = require('mapbox-gl');
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var Registry = require('../../registry');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
@@ -137,22 +138,22 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     map.on('moveend', function(eventData) {
         if(!self.map) return;
 
-        var view = self.getView();
-
-        opts._input.center = opts.center = view.center;
-        opts._input.zoom = opts.zoom = view.zoom;
-        opts._input.bearing = opts.bearing = view.bearing;
-        opts._input.pitch = opts.pitch = view.pitch;
-
         // 'moveend' gets triggered by map.setCenter, map.setZoom,
         // map.setBearing and map.setPitch.
         //
-        // Here, we make sure that 'plotly_relayout' is
-        // triggered here only when the 'moveend' originates from a
+        // Here, we make sure that state updates amd 'plotly_relayout'
+        // are triggered only when the 'moveend' originates from a
         // mouse target (filtering out API calls) to not
         // duplicate 'plotly_relayout' events.
 
         if(eventData.originalEvent || wheeling) {
+            var view = self.getView();
+
+            opts._input.center = opts.center = view.center;
+            opts._input.zoom = opts.zoom = view.zoom;
+            opts._input.bearing = opts.bearing = view.bearing;
+            opts._input.pitch = opts.pitch = view.pitch;
+
             emitRelayoutFromView(view);
         }
         wheeling = false;
@@ -210,6 +211,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         for(var k in view) {
             evtData[id + '.' + k] = view[k];
         }
+        Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, evtData);
         gd.emit('plotly_relayout', evtData);
     }
 
@@ -306,8 +308,8 @@ proto.updateData = function(calcData) {
 };
 
 proto.updateLayout = function(fullLayout) {
-    var map = this.map,
-        opts = this.opts;
+    var map = this.map;
+    var opts = this.opts;
 
     map.setCenter(convertCenter(opts.center));
     map.setZoom(opts.zoom);

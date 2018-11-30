@@ -120,7 +120,15 @@ module.exports = {
             'or *bottom* of the legend.'
         ].join(' ')
     },
-    editType: 'legend',
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of legend-driven changes in trace and pie label',
+            'visibility. Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
     valign: {
         valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
@@ -130,5 +138,6 @@ module.exports = {
         description: [
             'Sets the vertical alignment of the symbols with respect to their associated text.',
         ].join(' ')
-    }
+    },
+    editType: 'legend'
 };
