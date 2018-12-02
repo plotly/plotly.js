@@ -367,6 +367,8 @@ proto.update = function(data) {
 
     // N.B. marker.opacity must be a scalar for performance
     var scatterOpacity = data.opacity;
+    if(scatterOpacity > 0.99) scatterOpacity = 0.99;
+
     if(data.marker && data.marker.opacity) scatterOpacity *= data.marker.opacity;
 
     scatterOptions = {
