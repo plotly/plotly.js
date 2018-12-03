@@ -1019,6 +1019,76 @@ describe('rangesliders in general', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should give correct rangeslider range on reversed axes', function(done) {
+        function _assert(msg, exp) {
+            var xa = gd._fullLayout.xaxis;
+
+            expect(xa.range)
+                .toBeCloseToArray(exp.axRng, 1, 'x-axis rng ' + msg);
+            expect(xa.rangeslider.range)
+                .toBeCloseToArray(exp.rangesliderRng, 1, 'rangeslider rng ' + msg);
+            expect(xa.rangeslider._input.range)
+                .toBeCloseToArray(exp.rangesliderRng, 1, 'rangeslider input rng ' + msg);
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 1]
+        }], {
+            xaxis: { rangeslider: {visible: true} }
+        })
+        .then(function() {
+            _assert('base', {
+                axRng: [0.935, 2.06],
+                rangesliderRng: [0.935, 2.06]
+            });
+
+            return Plotly.relayout(gd, 'xaxis.autorange', 'reversed');
+        })
+        .then(function() {
+            _assert('reversed!', {
+                axRng: [2.06, 0.935],
+                rangesliderRng: [2.06, 0.935]
+            });
+
+            return Plotly.relayout(gd, 'xaxis.range', [0, 3]);
+        })
+        .then(function() {
+            _assert('set increasing rng', {
+                axRng: [0, 3],
+                rangesliderRng: [0, 3]
+            });
+
+            return Plotly.relayout(gd, 'xaxis.range', [3, 0]);
+        })
+        .then(function() {
+            _assert('set reversed rng', {
+                axRng: [3, 0],
+                rangesliderRng: [3, 0]
+            });
+
+            return Plotly.relayout(gd, 'xaxis.rangeslider.range', [0, 3]);
+        })
+        .then(function() {
+            _assert('reversed ax rng / increasing rangeslider rng', {
+                axRng: [3, 0],
+                rangesliderRng: [3, 0]
+            });
+
+            return Plotly.relayout(gd, {
+                'xaxis.range': [0, 3],
+                'xaxis.rangeslider.range': [3, 0]
+            });
+        })
+        .then(function() {
+            _assert('increasing ax rng / reversed rangeslider rng', {
+                axRng: [0, 3],
+                rangesliderRng: [0, 3]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 function slide(fromX, fromY, toX, toY) {
