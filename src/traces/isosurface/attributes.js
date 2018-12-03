@@ -21,7 +21,8 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the x coordinates of the volume data'
+            'Sets the x coordinates of the volume data',
+            '(from which the isosurface will be calculated)'
         ].join(' ')
     },
     y: {
@@ -29,7 +30,8 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the y coordinates of the volume data'
+            'Sets the y coordinates of the volume data',
+            '(from which the isosurface will be calculated)'
         ].join(' ')
     },
     z: {
@@ -37,7 +39,8 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the z coordinates of the volume data'
+            'Sets the z coordinates of the volume data',
+            '(from which the isosurface will be calculated)'
         ].join(' ')
     },
 

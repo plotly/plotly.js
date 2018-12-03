@@ -6,54 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-/*
-    Usage example:
-
-    var width = 64
-    var height = 64
-    var depth = 64
-
-    var xs = []
-    var ys = []
-    var zs = []
-
-    var data = new Uint16Array(width*height*depth)
-    for (var z=0; z<depth; z++)
-    for (var y=0; y<height; y++)
-    for (var x=0; x<width; x++) {
-        xs.push(2*x/width);
-        ys.push(2*y/height);
-        zs.push(2*z/depth);
-        var value = 1500 + 500 * (
-            Math.sin(2 * 2*Math.PI*(z/depth-0.5)) +
-            Math.cos(3 * 2*Math.PI*(x/width-0.5)) +
-            Math.sin(4 * 2*Math.PI*(y/height-0.5))
-        );
-        data[z*height*width + y*width + x] = value
-    }
-
-    Plotly.newPlot(gd, [{
-      type: 'isosurface',
-
-      x: xs,
-      y: ys,
-      z: zs,
-
-      value: data,
-
-      isomin: 1600,
-      isomax: 2000,
-      cmin: 1500,
-      cmax: 2000,
-
-      smoothnormals: true,
-      isocaps: true,
-
-      colorscale: 'Portland',
-      color: 'grey'
-    }])
-
-*/
 'use strict';
 
 var isosurfacePlot = require('gl-isosurface3d');
