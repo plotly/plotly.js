@@ -23,6 +23,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
 
     var i, j, arrayVar, newArray, arrayVarName;
 
+    // TODO use makeCalcdata to make this work for multicategory?
     for(i = 0; i < colLen; i++) {
         col1[i] = ax1.d2c(col1[i], 0, col1Calendar);
         col2[i] = ax2.d2c(col2[i], 0, col2Calendar);

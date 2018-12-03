@@ -123,6 +123,7 @@ function calcSpan(trace, cdi, valAxis, bandwidth) {
 
     function calcSpanItem(index) {
         var s = spanIn[index];
+        // TODO skip on multicategory val axis?
         var sc = valAxis.d2c(s, 0, trace[cdi.valLetter + 'calendar']);
         return sc === BADNUM ? spanLoose[index] : sc;
     }

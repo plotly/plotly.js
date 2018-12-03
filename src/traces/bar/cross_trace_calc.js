@@ -126,6 +126,8 @@ function initBase(gd, pa, sa, calcTraces) {
         // time. But included here for completeness.
         var scalendar = trace.orientation === 'h' ? trace.xcalendar : trace.ycalendar;
 
+        // TODO skip for multicategory size axis?
+
         if(isArrayOrTypedArray(base)) {
             for(j = 0; j < Math.min(base.length, cd.length); j++) {
                 b = sa.d2c(base[j], 0, scalendar);
