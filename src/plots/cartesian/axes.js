@@ -1648,7 +1648,7 @@ axes.drawOne = function(gd, ax, opts) {
     // The key case here is removing zero lines when the axis bound is zero
     var valsClipped;
 
-    if(ax.tickson === 'boundaries' && vals.length) {
+    if(ax.tickson === 'boundaries') {
         var boundaryVals = getBoundaryVals(ax, vals);
         valsClipped = axes.clipEnds(ax, boundaryVals);
         tickVals = ax.ticks === 'inside' ? valsClipped : boundaryVals;
@@ -1915,10 +1915,12 @@ function getBoundaryVals(ax, vals) {
         }
     };
 
-    for(i = 0; i < vals.length; i++) {
-        _push(vals[i], 0);
+    if(vals.length) {
+        for(i = 0; i < vals.length; i++) {
+            _push(vals[i], 0);
+        }
+        _push(vals[i - 1], 1);
     }
-    _push(vals[i - 1], 1);
 
     return out;
 }
@@ -1956,14 +1958,16 @@ function getDividerVals(ax, vals) {
         }
     };
 
-    for(i = 0; i < vals.length; i++) {
-        var d = vals[i];
-        if(d.text2 !== current) {
-            _push(d, 0);
+    if(ax.showdividers && vals.length) {
+        for(i = 0; i < vals.length; i++) {
+            var d = vals[i];
+            if(d.text2 !== current) {
+                _push(d, 0);
+            }
+            current = d.text2;
         }
-        current = d.text2;
+        _push(vals[i - 1], 1);
     }
-    _push(vals[i - 1], 1);
 
     return out;
 }
@@ -2507,7 +2511,7 @@ function drawDividers(gd, ax, opts) {
     var vals = opts.vals;
 
     var dividers = opts.layer.selectAll('path.' + cls)
-        .data(ax.showdividers ? vals : [], makeDataFn(ax));
+        .data(vals, makeDataFn(ax));
 
     dividers.exit().remove();
 
