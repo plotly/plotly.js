@@ -267,6 +267,20 @@ describe('Test axes', function() {
                 });
                 checkTypes('date', 'linear');
             });
+
+            it('needs one *true* category inner-array to be consider *multicategory*', function() {
+                supplyWithTrace({
+                    x: [
+                        [2018, 2018, 2017, 2017],
+                        ['a', 'b', 'a', 'b']
+                    ],
+                    y: [
+                        ['a', 'b', 'c'],
+                        ['d', 'e', 'f']
+                    ]
+                });
+                checkTypes('multicategory', 'multicategory');
+            });
         });
 
         it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
