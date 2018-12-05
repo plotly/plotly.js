@@ -278,8 +278,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar, size) {
     var dataMin = Lib.aggNums(Math.min, null, data);
     var dataMax = Lib.aggNums(Math.max, null, data);
 
-    // TODO multicategory, if we allow multicategory histograms
-    if(ax.type === 'category') {
+    if(ax.type === 'category' || ax.type === 'multicategory') {
         return {
             start: dataMin - 0.5,
             end: dataMax + 0.5,
