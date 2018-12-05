@@ -26,11 +26,11 @@
   "layout": {
     "xaxis": {
       "title": "MULTI-CATEGORY ON TOP",
-      "side": "top"
+      "side": "top",
+      "automargin": true
     },
     "showlegend": false,
     "width": 400,
-    "height": 800,
-    "margin": {"b": 40, "t": 200}
+    "height": 800
   }
 }
