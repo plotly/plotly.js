@@ -30,6 +30,10 @@ function fromLog(v) {
     return Math.pow(10, v);
 }
 
+function isValidCategory(v) {
+    return v !== null && v !== undefined;
+}
+
 /**
  * Define the conversion functions for an axis data is used in 5 ways:
  *
@@ -123,7 +127,7 @@ module.exports = function setConvert(ax, fullLayout) {
      * a disconnect between the array and the index returned
      */
     function setCategoryIndex(v) {
-        if(v !== null && v !== undefined) {
+        if(isValidCategory(v)) {
             if(ax._categoriesMap === undefined) {
                 ax._categoriesMap = {};
             }
@@ -140,6 +144,47 @@ module.exports = function setConvert(ax, fullLayout) {
             }
         }
         return BADNUM;
+    }
+
+    function setMultiCategoryIndex(arrayIn, len) {
+        var arrayOut = new Array(len);
+        var i;
+
+        // [ [arrayIn[0][i], arrayIn[1][i]], for i .. len ]
+        var tmp = new Array(len);
+        // [ [cnt, {$cat: index}], for j .. arrayIn.length ]
+        var seen = [[0, {}], [0, {}]];
+
+        if(Array.isArray(arrayIn[0]) && Array.isArray(arrayIn[1])) {
+            for(i = 0; i < len; i++) {
+                var v0 = arrayIn[0][i];
+                var v1 = arrayIn[1][i];
+                if(isValidCategory(v0) && isValidCategory(v1)) {
+                    tmp[i] = [v0, v1];
+                    if(!(v0 in seen[0][1])) {
+                        seen[0][1][v0] = seen[0][0]++;
+                    }
+                    if(!(v1 in seen[1][1])) {
+                        seen[1][1][v1] = seen[1][0]++;
+                    }
+                }
+            }
+
+            tmp.sort(function(a, b) {
+                var ind0 = seen[0][1];
+                var d = ind0[a[0]] - ind0[b[0]];
+                if(d) return d;
+
+                var ind1 = seen[1][1];
+                return ind1[a[1]] - ind1[b[1]];
+            });
+        }
+
+        for(i = 0; i < len; i++) {
+            arrayOut[i] = setCategoryIndex(tmp[i]);
+        }
+
+        return arrayOut;
     }
 
     function getCategoryIndex(v) {
@@ -423,14 +468,14 @@ module.exports = function setConvert(ax, fullLayout) {
     // in case the expected data isn't there, make a list of
     // integers based on the opposite data
     ax.makeCalcdata = function(trace, axLetter) {
-        var arrayIn, arrayOut, i, j, len;
+        var arrayIn, arrayOut, i, len;
 
         var axType = ax.type;
         var cal = axType === 'date' && trace[axLetter + 'calendar'];
 
         if(axLetter in trace) {
             arrayIn = trace[axLetter];
-            len = trace._length || arrayIn.length;
+            len = trace._length || Lib.minRowLength(arrayIn);
 
             if(Lib.isTypedArray(arrayIn) && (axType === 'linear' || axType === 'log')) {
                 if(len === arrayIn.length) {
@@ -440,25 +485,13 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
 
-            arrayOut = new Array(len);
             if(axType === 'multicategory') {
-                var tmp = new Array(len);
-                for(j = 0; j < arrayIn.length; j++) {
-                    if(Array.isArray(arrayIn[j])) {
-                        for(i = 0; i < len; i++) {
-                            var v = arrayIn[j][i];
-                            if(j) tmp[i].push(v);
-                            else tmp[i] = [v];
-                        }
-                    }
-                }
-                for(i = 0; i < len; i++) {
-                    arrayOut[i] = setCategoryIndex(tmp[i]);
-                }
-            } else {
-                for(i = 0; i < len; i++) {
-                    arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
-                }
+                return setMultiCategoryIndex(arrayIn, len);
+            }
+
+            arrayOut = new Array(len);
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
             }
         }
         else {

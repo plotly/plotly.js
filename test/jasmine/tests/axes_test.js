@@ -2777,6 +2777,99 @@ describe('Test axes', function() {
                 expect(out).toEqual([946684800000, 978307200000, 1009843200000]);
             });
         });
+
+        describe('should set up category maps correctly for multicategory axes', function() {
+            it('case 1', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '1', '2', '2'], ['a', 'b', 'a', 'b']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1, 2, 3]);
+                expect(ax._categories).toEqual([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,a': 0, '1,b': 1, '2,a': 2, '2,b': 3});
+            });
+
+            it('case 2', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '2', '1', '2'], ['a', 'a', 'b', 'b']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1, 2, 3]);
+                expect(ax._categories).toEqual([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,a': 0, '1,b': 1, '2,a': 2, '2,b': 3});
+            });
+
+            it('case invalid in x[0]', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '2', null, '2'], ['a', 'a', 'b', 'b']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1, 2, BADNUM]);
+                expect(ax._categories).toEqual([['1', 'a'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,a': 0, '2,a': 1, '2,b': 2});
+            });
+
+            it('case invalid in x[1]', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '2', '1', '2'], ['a', 'a', null, 'b']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1, 2, BADNUM]);
+                expect(ax._categories).toEqual([['1', 'a'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,a': 0, '2,a': 1, '2,b': 2});
+            });
+
+            it('case 1D coordinate array', function() {
+                var out = _makeCalcdata({
+                    x: ['a', 'b', 'c']
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([BADNUM, BADNUM, BADNUM]);
+                expect(ax._categories).toEqual([]);
+                expect(ax._categoriesMap).toEqual(undefined);
+            });
+
+            it('case 2D 1-row coordinate array', function() {
+                var out = _makeCalcdata({
+                    x: [['a', 'b', 'c']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([BADNUM, BADNUM, BADNUM]);
+                expect(ax._categories).toEqual([]);
+                expect(ax._categoriesMap).toEqual(undefined);
+            });
+
+            it('case 2D with empty x[0] row coordinate array', function() {
+                var out = _makeCalcdata({
+                    x: [null, ['a', 'b', 'c']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([BADNUM, BADNUM]);
+                expect(ax._categories).toEqual([]);
+                expect(ax._categoriesMap).toEqual(undefined);
+            });
+        });
+
+        describe('2d coordinate array on non-multicategory axes should return BADNUMs', function() {
+            var axTypes = ['linear', 'log', 'date'];
+
+            axTypes.forEach(function(t) {
+                it('- case ' + t, function() {
+                    var out = _makeCalcdata({
+                        x: [['1', '1', '2', '2'], ['a', 'b', 'a', 'b']]
+                    }, 'x', t);
+                    expect(out).toEqual([BADNUM, BADNUM, BADNUM, BADNUM]);
+                });
+            });
+
+            it('- case category', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '1', '2', '2'], ['a', 'b', 'a', 'b']]
+                }, 'x', 'category');
+                // picks out length=4
+                expect(out).toEqual([0, 1, undefined, undefined]);
+            });
+        });
     });
 
     describe('automargin', function() {
