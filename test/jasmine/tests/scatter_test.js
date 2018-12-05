@@ -203,6 +203,72 @@ describe('Test scatter', function() {
             });
         });
 
+        describe('should find correct coordinate length', function() {
+            function _supply() {
+                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            }
+
+            it('- x 2d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- y 2d', function() {
+                traceIn = {
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 2d / y 1d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                    y: [1, 2, 3, 4, 5, 6]
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 1d / y 2d', function() {
+                traceIn = {
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                    x: [1, 2, 3, 4, 5, 6]
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 2d / y 2d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b', 'c', 'c']
+                    ],
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b', 'c', 'c', 'd', 'd']
+                    ]
+                };
+                _supply();
+                expect(traceOut._length).toBe(6);
+            });
+        });
     });
 
     describe('isBubble', function() {

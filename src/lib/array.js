@@ -134,17 +134,24 @@ exports.concat = function() {
 };
 
 exports.maxRowLength = function(z) {
-    var len = 0;
+    return _rowLength(z, Math.max, 0);
+};
 
+exports.minRowLength = function(z) {
+    return _rowLength(z, Math.min, Infinity);
+};
+
+function _rowLength(z, fn, len0) {
     if(isArrayOrTypedArray(z)) {
         if(Array.isArray(z[0])) {
+            var len = len0;
             for(var i = 0; i < z.length; i++) {
-                len = Math.max(len, z[i].length);
+                len = fn(len, z[i].length);
             }
+            return len;
         } else {
-            len = z.length;
+            return z.length;
         }
     }
-
-    return len;
-};
+    return 0;
+}
