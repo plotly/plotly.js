@@ -1746,9 +1746,10 @@ axes.drawOne = function(gd, ax, opts) {
 
     if(ax.type === 'multicategory') {
         var labelLength = 0;
+        var pad = {x: 2, y: 10}[axLetter];
 
         seq.push(function() {
-            labelLength += getLabelLevelSpan(ax._selections[axId + 'tick']) + 2;
+            labelLength += getLabelLevelSpan(ax, axId + 'tick') + pad;
             labelLength += ax._lastangle ? ax.tickfont.size * LINE_SPACING : 0;
             var secondaryPosition = mainLinePosition + labelLength * tickSigns[2];
             var secondaryLabelFns = axes.makeLabelFns(ax, secondaryPosition);
@@ -1765,7 +1766,7 @@ axes.drawOne = function(gd, ax, opts) {
         });
 
         seq.push(function() {
-            labelLength += getLabelLevelSpan(ax._selections[axId + 'tick2']) + 2;
+            labelLength += getLabelLevelSpan(ax, axId + 'tick2');
 
             return drawDividers(gd, ax, {
                 vals: getDividerVals(ax, vals),
@@ -1972,16 +1973,17 @@ function getDividerVals(ax, vals) {
     return out;
 }
 
-function getLabelLevelSpan(tickLabels) {
-    var out = 2;
+function getLabelLevelSpan(ax, cls) {
+    var out = 0;
+    var k = {x: 'height', y: 'width'}[ax._id.charAt(0)];
 
-    tickLabels.each(function() {
+    ax._selections[cls].each(function() {
         var thisLabel = selectTickLabel(this);
 
         // TODO Drawing.bBox doesn't work when labels are rotated
         // var bb = Drawing.bBox(thisLabel.node());
         var bb = thisLabel.node().getBoundingClientRect();
-        out = Math.max(out, bb.height);
+        out = Math.max(out, bb[k]);
     });
 
     return out;
@@ -2535,7 +2537,7 @@ function drawTitle(gd, ax) {
 
     var titleStandoff;
     if(ax.type === 'multicategory') {
-        titleStandoff = ax._boundingBox.height;
+        titleStandoff = ax._boundingBox[{x: 'height', y: 'width'}[axLetter]];
     } else {
         var offsetBase = 1.5;
         titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
