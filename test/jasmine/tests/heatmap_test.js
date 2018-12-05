@@ -164,15 +164,10 @@ describe('heatmap convertColumnXYZ', function() {
     'use strict';
 
     var trace;
-
-    function makeMockAxis() {
-        return {
-            d2c: function(v) { return v; }
-        };
-    }
-
-    var xa = makeMockAxis();
-    var ya = makeMockAxis();
+    var xa = {type: 'linear'};
+    var ya = {type: 'linear'};
+    setConvert(xa);
+    setConvert(ya);
 
     function checkConverted(trace, x, y, z) {
         trace._length = Math.min(trace.x.length, trace.y.length, trace.z.length);
