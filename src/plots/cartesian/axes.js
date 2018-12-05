@@ -1169,10 +1169,9 @@ function formatCategory(ax, out) {
 
 function formatMultiCategory(ax, out, hover) {
     var v = Math.round(out.x);
-    var tt = ax._categories[v][1];
-    var tt2 = ax._categories[v][0];
-    tt = tt === undefined ? '' : String(tt);
-    tt2 = tt2 === undefined ? '' : String(tt2);
+    var cats = ax._categories[v] || [];
+    var tt = cats[1] === undefined ? '' : String(cats[1]);
+    var tt2 = cats[0] === undefined ? '' : String(cats[0]);
 
     if(hover) {
         // TODO is this what we want?
