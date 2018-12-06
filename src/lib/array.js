@@ -143,7 +143,7 @@ exports.minRowLength = function(z) {
 
 function _rowLength(z, fn, len0) {
     if(isArrayOrTypedArray(z)) {
-        if(Array.isArray(z[0])) {
+        if(isArrayOrTypedArray(z[0])) {
             var len = len0;
             for(var i = 0; i < z.length; i++) {
                 len = fn(len, z[i].length);

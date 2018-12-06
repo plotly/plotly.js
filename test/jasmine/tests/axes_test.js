@@ -2862,6 +2862,19 @@ describe('Test axes', function() {
                 expect(ax._categories).toEqual([]);
                 expect(ax._categoriesMap).toEqual(undefined);
             });
+
+            it('case with inner typed arrays and set type:multicategory', function() {
+                var out = _makeCalcdata({
+                    x: [
+                        new Float32Array([1, 2, 1, 2]),
+                        new Float32Array([10, 10, 20, 20])
+                    ]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1, 2, 3]);
+                expect(ax._categories).toEqual([[1, 10], [1, 20], [2, 10], [2, 20]]);
+                expect(ax._categoriesMap).toEqual({'1,10': 0, '1,20': 1, '2,10': 2, '2,20': 3});
+            });
         });
 
         describe('2d coordinate array on non-multicategory axes should return BADNUMs', function() {

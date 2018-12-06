@@ -155,7 +155,7 @@ module.exports = function setConvert(ax, fullLayout) {
         // [ [cnt, {$cat: index}], for j .. arrayIn.length ]
         var seen = [[0, {}], [0, {}]];
 
-        if(Array.isArray(arrayIn[0]) && Array.isArray(arrayIn[1])) {
+        if(Lib.isArrayOrTypedArray(arrayIn[0]) && Lib.isArrayOrTypedArray(arrayIn[1])) {
             for(i = 0; i < len; i++) {
                 var v0 = arrayIn[0][i];
                 var v1 = arrayIn[1][i];
