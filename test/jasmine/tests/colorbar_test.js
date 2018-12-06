@@ -8,6 +8,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
+var drag = require('../assets/drag');
 
 
 describe('Test colorbar:', function() {
@@ -350,6 +351,50 @@ describe('Test colorbar:', function() {
                     .toBeCloseTo(lenFrac * 400, 3);
 
                 assertParcoordsCB(true, true);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        function getCBNode() {
+            return document.querySelector('.colorbar');
+        }
+
+        it('can drag root-level colorbars in editable mode', function(done) {
+            Plotly.newPlot(gd,
+                [{z: [[1, 2], [3, 4]], type: 'heatmap'}],
+                {width: 400, height: 400},
+                {editable: true}
+            )
+            .then(function() {
+                expect(gd.data[0].colorbar).toBeUndefined();
+                expect(gd._fullData[0].colorbar.x).toBe(1.02);
+                expect(gd._fullData[0].colorbar.y).toBe(0.5);
+                return drag(getCBNode(), -100, 100);
+            })
+            .then(function() {
+                expect(gd.data[0].colorbar.x).toBeWithin(0.591, 0.01);
+                expect(gd.data[0].colorbar.y).toBeWithin(0.045, 0.01);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can drag marker-level colorbars in editable mode', function(done) {
+            Plotly.newPlot(gd,
+                [{y: [1, 2, 1], marker: {color: [0, 1, 2], showscale: true}}],
+                {width: 400, height: 400},
+                {editable: true}
+            )
+            .then(function() {
+                expect(gd.data[0].marker.colorbar).toBeUndefined();
+                expect(gd._fullData[0].marker.colorbar.x).toBe(1.02);
+                expect(gd._fullData[0].marker.colorbar.y).toBe(0.5);
+                return drag(getCBNode(), -100, 100);
+            })
+            .then(function() {
+                expect(gd.data[0].marker.colorbar.x).toBeWithin(0.591, 0.01);
+                expect(gd.data[0].marker.colorbar.y).toBeWithin(0.045, 0.01);
             })
             .catch(failTest)
             .then(done);

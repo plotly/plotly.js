@@ -155,6 +155,15 @@ module.exports = {
             'Determines the mode of hover interactions for this scene.'
         ].join(' ')
     },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in camera attributes.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
     editType: 'plot',
 
     _deprecated: {

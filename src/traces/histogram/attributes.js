@@ -174,11 +174,6 @@ module.exports = {
         dflt: null,
         role: 'style',
         editType: 'calc',
-        impliedEdits: {
-            'ybins.start': undefined,
-            'ybins.end': undefined,
-            'ybins.size': undefined
-        },
         description: [
             'Obsolete: since v1.42 each bin attribute is auto-determined',
             'separately and `autobiny` is not needed. However, we accept',

@@ -113,7 +113,7 @@ module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
         makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours, plotinfo, carpet);
 
         // Clip the boundary of the plot
-        Drawing.setClipUrl(plotGroup, carpet._clipPathId);
+        Drawing.setClipUrl(plotGroup, carpet._clipPathId, gd);
     });
 };
 
@@ -129,8 +129,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, ca
     // In this case we'll remove the lines after making the labels.
     var linegroup = contourPlot.createLines(lineContainer, showLines || showLabels, pathinfo);
 
-    var lineClip = contourPlot.createLineClip(lineContainer, clipLinesForLabels,
-        gd._fullLayout._defs, cd0.trace.uid);
+    var lineClip = contourPlot.createLineClip(lineContainer, clipLinesForLabels, gd, cd0.trace.uid);
 
     var labelGroup = plotgroup.selectAll('g.contourlabels')
         .data(showLabels ? [0] : []);

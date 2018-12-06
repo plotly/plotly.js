@@ -1655,7 +1655,8 @@ describe('hover info', function() {
 
         it('should contain the axis names', function(done) {
             var gd = document.getElementById('graph');
-            Plotly.restyle(gd, 'hovertemplate', '%{yaxis.title}:%{y:$.2f}<br>%{xaxis.title}:%{x:0.4f}<extra></extra>')
+            Plotly.restyle(gd, 'hovertemplate',
+              '%{yaxis.title.text}:%{y:$.2f}<br>%{xaxis.title.text}:%{x:0.4f}<extra></extra>')
             .then(function() {
                 Fx.hover('graph', evt, 'xy');
 
