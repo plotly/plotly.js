@@ -124,7 +124,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 .style('vector-effect', 'non-scaling-stroke')
                 .attr('d',
                     'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
-                .call(Drawing.setClipUrl, plotinfo.layerClipId);
+                .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
             appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
 
@@ -136,11 +136,11 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
         // lastly, clip points groups of `cliponaxis !== false` traces
         // on `plotinfo._hasClipOnAxisFalse === true` subplots
         var hasClipOnAxisFalse = cd0.trace.cliponaxis === false;
-        Drawing.setClipUrl(plotGroup, hasClipOnAxisFalse ? null : plotinfo.layerClipId);
+        Drawing.setClipUrl(plotGroup, hasClipOnAxisFalse ? null : plotinfo.layerClipId, gd);
     });
 
     // error bars are on the top
-    Registry.getComponentMethod('errorbars', 'plot')(bartraces, plotinfo);
+    Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo);
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {

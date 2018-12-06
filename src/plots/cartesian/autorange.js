@@ -12,6 +12,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
+var Registry = require('../../registry');
 
 module.exports = {
     getAutoRange: getAutoRange,
@@ -250,6 +251,13 @@ function doAutoRange(gd, ax) {
         // but we want to report its results back to layout
 
         axIn = ax._input;
+
+        // before we edit _input, store preGUI values
+        var edits = {};
+        edits[ax._attr + '.range'] = ax.range;
+        edits[ax._attr + '.autorange'] = ax.autorange;
+        Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, edits);
+
         axIn.range = ax.range.slice();
         axIn.autorange = ax.autorange;
     }

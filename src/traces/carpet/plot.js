@@ -197,7 +197,7 @@ var midShift = ((1 - alignmentConstants.MID_SHIFT) / lineSpacing) + 1;
 
 function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientation, labelClass) {
     var data = [];
-    if(axis.title) data.push(axis.title);
+    if(axis.title.text) data.push(axis.title.text);
     var titleJoin = layer.selectAll('text.' + labelClass).data(data);
     var offset = labelOrientation.maxExtent;
 
@@ -213,8 +213,8 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
         }
 
         // In addition to the size of the labels, add on some extra padding:
-        var titleSize = axis.titlefont.size;
-        offset += titleSize + axis.titleoffset;
+        var titleSize = axis.title.font.size;
+        offset += titleSize + axis.title.offset;
 
         var labelNorm = labelOrientation.angle + (labelOrientation.flip < 0 ? 180 : 0);
         var angleDiff = (labelNorm - orientation.angle + 450) % 360;
@@ -222,7 +222,7 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
 
         var el = d3.select(this);
 
-        el.text(axis.title || '')
+        el.text(axis.title.text)
             .call(svgTextUtils.convertToTspans, gd);
 
         if(reverseTitle) {
@@ -236,7 +236,7 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
             )
             .classed('user-select-none', true)
             .attr('text-anchor', 'middle')
-            .call(Drawing.font, axis.titlefont);
+            .call(Drawing.font, axis.title.font);
     });
 
     titleJoin.exit().remove();

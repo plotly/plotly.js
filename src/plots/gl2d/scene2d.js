@@ -20,7 +20,6 @@ var getContext = require('webgl-context');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
-var convertHTMLToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 var axisConstraints = require('../cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
@@ -279,7 +278,7 @@ proto.computeTickMarks = function() {
     for(var j = 0; j < 2; ++j) {
         for(var i = 0; i < nextTicks[j].length; ++i) {
             // coercing tick value (may not be a string) to a string
-            nextTicks[j][i].text = convertHTMLToUnicode(nextTicks[j][i].text + '');
+            nextTicks[j][i].text = nextTicks[j][i].text + '';
         }
     }
 
@@ -313,27 +312,31 @@ proto.updateRefs = function(newFullLayout) {
 };
 
 proto.relayoutCallback = function() {
-    var graphDiv = this.graphDiv,
-        xaxis = this.xaxis,
-        yaxis = this.yaxis,
-        layout = graphDiv.layout;
+    var graphDiv = this.graphDiv;
+    var xaxis = this.xaxis;
+    var yaxis = this.yaxis;
+    var layout = graphDiv.layout;
 
-    // update user layout
-    layout.xaxis.autorange = xaxis.autorange;
-    layout.xaxis.range = xaxis.range.slice(0);
-    layout.yaxis.autorange = yaxis.autorange;
-    layout.yaxis.range = yaxis.range.slice(0);
+    // make a meaningful value to be passed on to possible 'plotly_relayout' subscriber(s)
+    var update = {};
+    var xrange = update[xaxis._name + '.range'] = xaxis.range.slice();
+    var yrange = update[yaxis._name + '.range'] = yaxis.range.slice();
+    update[xaxis._name + '.autorange'] = xaxis.autorange;
+    update[yaxis._name + '.autorange'] = yaxis.autorange;
 
-    // make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
-    // scene.camera has no many useful projection or scale information
-    // helps determine which one is the latest input (if async)
-    var update = {
-        lastInputTime: this.camera.lastInputTime
-    };
+    Registry.call('_storeDirectGUIEdit', graphDiv.layout, graphDiv._fullLayout._preGUI, update);
 
-    update[xaxis._name] = xaxis.range.slice(0);
-    update[yaxis._name] = yaxis.range.slice(0);
+    // update the input layout
+    var xaIn = layout[xaxis._name];
+    xaIn.range = xrange;
+    xaIn.autorange = xaxis.autorange;
 
+    var yaIn = layout[yaxis._name];
+    yaIn.range = yrange;
+    yaIn.autorange = yaxis.autorange;
+
+    // lastInputTime helps determine which one is the latest input (if async)
+    update.lastInputTime = this.camera.lastInputTime;
     graphDiv.emit('plotly_relayout', update);
 };
 

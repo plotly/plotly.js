@@ -140,7 +140,6 @@ module.exports = {
         valType: 'enumerated',
         role: 'info',
         values: ['orbit', 'turntable', 'zoom', 'pan', false],
-        dflt: 'turntable',
         editType: 'plot',
         description: [
             'Determines the mode of drag interactions for this scene.'
@@ -154,6 +153,15 @@ module.exports = {
         editType: 'modebar',
         description: [
             'Determines the mode of hover interactions for this scene.'
+        ].join(' ')
+    },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in camera attributes.',
+            'Defaults to `layout.uirevision`.'
         ].join(' ')
     },
     editType: 'plot',

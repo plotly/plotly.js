@@ -479,6 +479,24 @@ plots.supplyDefaults = function(gd, opts) {
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
+    // For persisting GUI-driven changes in layout
+    // _preGUI and _tracePreGUI were already copied over in relinkPrivateKeys
+    if(!newFullLayout._preGUI) newFullLayout._preGUI = {};
+    // track trace GUI changes by uid rather than by trace index
+    if(!newFullLayout._tracePreGUI) newFullLayout._tracePreGUI = {};
+    var tracePreGUI = newFullLayout._tracePreGUI;
+    var uids = {};
+    var uid;
+    for(uid in tracePreGUI) uids[uid] = 'old';
+    for(i = 0; i < newFullData.length; i++) {
+        uid = newFullData[i]._fullInput.uid;
+        if(!uids[uid]) tracePreGUI[uid] = {};
+        uids[uid] = 'new';
+    }
+    for(uid in uids) {
+        if(uids[uid] === 'old') delete tracePreGUI[uid];
+    }
+
     // TODO may return a promise
     plots.doAutoMargin(gd);
 
@@ -1122,6 +1140,8 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
     coerce('type');
     coerce('name', layout._traceWord + ' ' + traceInIndex);
 
+    coerce('uirevision', layout.uirevision);
+
     // we want even invisible traces to make their would-be subplots visible
     // so coerce the subplot id(s) now no matter what
     var _module = plots.getModule(traceOut);
@@ -1195,7 +1215,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
 
         if(_module) {
             _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            Lib.coerceHoverinfo(traceIn, traceOut, layout);
+            if(!traceOut.hovertemplate) Lib.coerceHoverinfo(traceIn, traceOut, layout);
         }
 
         if(!Registry.traceIs(traceOut, 'noOpacity')) coerce('opacity');
@@ -1324,13 +1344,24 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     var globalFont = Lib.coerceFont(coerce, 'font');
 
-    coerce('title', layoutOut._dfltTitle.plot);
+    coerce('title.text', layoutOut._dfltTitle.plot);
 
-    Lib.coerceFont(coerce, 'titlefont', {
+    Lib.coerceFont(coerce, 'title.font', {
         family: globalFont.family,
         size: Math.round(globalFont.size * 1.4),
         color: globalFont.color
     });
+
+    coerce('title.xref');
+    coerce('title.yref');
+    coerce('title.x');
+    coerce('title.y');
+    coerce('title.xanchor');
+    coerce('title.yanchor');
+    coerce('title.pad.t');
+    coerce('title.pad.r');
+    coerce('title.pad.b');
+    coerce('title.pad.l');
 
     // Make sure that autosize is defaulted to *true*
     // on layouts with no set width and height for backward compatibly,
@@ -1364,12 +1395,16 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('colorway');
 
     coerce('datarevision');
+    var uirevision = coerce('uirevision');
+    coerce('editrevision', uirevision);
+    coerce('selectionrevision', uirevision);
 
     coerce('modebar.orientation');
     coerce('modebar.bgcolor', Color.addOpacity(layoutOut.paper_bgcolor, 0.5));
     var modebarDefaultColor = Color.contrast(Color.rgb(layoutOut.modebar.bgcolor));
     coerce('modebar.color', Color.addOpacity(modebarDefaultColor, 0.3));
     coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
+    coerce('modebar.uirevision', uirevision);
 
     Registry.getComponentMethod(
         'calendars',

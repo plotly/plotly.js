@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "type": "contour",
+      "z": [
+        [1, 2, 1],
+        [2, 1, 2],
+        [2, 1, 2]
+      ],
+      "contours": {
+        "showlabels": true
+      }
+    }
+  ],
+  "layout": {
+    "yaxis": {
+      "autorange": "reversed"
+    },
+    "xaxis": {
+      "autorange": "reversed"
+    }
+  }
+}

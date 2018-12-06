@@ -1163,6 +1163,20 @@ function formatCategory(ax, out) {
     var tt = ax._categories[Math.round(out.x)];
     if(tt === undefined) tt = '';
     out.text = String(tt);
+
+    // Setup ticks and grid lines boundaries
+    // at 1/2 a 'category' to the left/bottom
+    if(ax.tickson === 'boundaries') {
+        var inbounds = function(v) {
+            var p = ax.l2p(v);
+            return p >= 0 && p <= ax._length ? v : null;
+        };
+
+        out.xbnd = [
+            inbounds(out.x - 0.5),
+            inbounds(out.x + ax.dtick - 0.5)
+        ];
+    }
 }
 
 function formatLinear(ax, out, hover, extraPrecision, hideexp) {
@@ -1472,14 +1486,14 @@ axes.findSubplotsWithAxis = function(subplots, ax) {
     var axMatch = new RegExp(
         (ax._id.charAt(0) === 'x') ? ('^' + ax._id + 'y') : (ax._id + '$')
     );
-    var subplotsWithAxis = [];
+    var subplotsWithAx = [];
 
     for(var i = 0; i < subplots.length; i++) {
         var sp = subplots[i];
-        if(axMatch.test(sp)) subplotsWithAxis.push(sp);
+        if(axMatch.test(sp)) subplotsWithAx.push(sp);
     }
 
-    return subplotsWithAxis;
+    return subplotsWithAx;
 };
 
 // makeClipPaths: prepare clipPaths for all single axes and all possible xy pairings
@@ -1532,24 +1546,25 @@ axes.makeClipPaths = function(gd) {
  *
  * @param {DOM element} gd : graph div
  * @param {string or array of strings} arg : polymorphic argument
- * @param {boolean} skipTitle : optional flag to skip axis title draw/update
+ * @param {object} opts:
+ * - @param {boolean} skipTitle : optional flag to skip axis title draw/update
  *
- * Signature 1: Axes.doTicks(gd, 'redraw')
+ * Signature 1: Axes.draw(gd, 'redraw')
  *   use this to clear and redraw all axes on graph
  *
- * Signature 2: Axes.doTicks(gd, '')
+ * Signature 2: Axes.draw(gd, '')
  *   use this to draw all axes on graph w/o the selectAll().remove()
  *   of the 'redraw' signature
  *
- * Signature 3: Axes.doTicks(gd, [axId, axId2, ...])
+ * Signature 3: Axes.draw(gd, [axId, axId2, ...])
  *   where the items are axis id string,
  *   use this to update multiple axes in one call
  *
- * N.B doTicks updates:
+ * N.B draw updates:
  * - ax._r (stored range for use by zoom/pan)
  * - ax._rl (stored linearized range for use by zoom/pan)
  */
-axes.doTicks = function(gd, arg, skipTitle) {
+axes.draw = function(gd, arg, opts) {
     var fullLayout = gd._fullLayout;
 
     if(arg === 'redraw') {
@@ -1570,13 +1585,13 @@ axes.doTicks = function(gd, arg, skipTitle) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    Lib.syncOrAsync(axList.map(function(axid) {
+    Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
-            if(!axid) return;
+            if(!axId) return;
 
-            var axDone = axes.doTicksSingle(gd, axid, skipTitle);
+            var ax = axes.getFromId(gd, axId);
+            var axDone = axes.drawOne(gd, ax, opts);
 
-            var ax = axes.getFromId(gd, axid);
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
 
@@ -1586,683 +1601,853 @@ axes.doTicks = function(gd, arg, skipTitle) {
 };
 
 /**
- * Per-axis drawing routine!
+ * Draw one cartesian axis
  *
- * This routine draws axis ticks and much more (... grids, labels, title etc.)
- * Supports multiple argument signatures.
- * N.B. this thing is async in general (because of MathJax rendering)
- *
- * @param {DOM element} gd : graph div
- * @param {string or object} arg : polymorphic argument
- * @param {boolean} skipTitle : optional flag to skip axis title draw/update
- * @return {promise}
- *
- * Signature 1: Axes.doTicks(gd, ax)
- *   where ax is an axis object as in fullLayout
- *
- * Signature 2: Axes.doTicks(gd, axId)
- *   where axId is a axis id string
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ * @param {object} opts
+ * - @param {boolean} skipTitle (set to true to skip axis title draw call)
  */
-axes.doTicksSingle = function(gd, arg, skipTitle) {
-    var fullLayout = gd._fullLayout;
-    var independent = false;
-    var ax;
+axes.drawOne = function(gd, ax, opts) {
+    opts = opts || {};
 
-    if(Lib.isPlainObject(arg)) {
-        ax = arg;
-        independent = true;
-    } else {
-        ax = axes.getFromId(gd, arg);
-    }
+    var i, sp, plotinfo;
 
-    // set scaling to pixels
     ax.setScale();
 
-    var axid = ax._id;
-    var axLetter = axid.charAt(0);
-    var counterLetter = axes.counterLetter(axid);
+    var fullLayout = gd._fullLayout;
+    var axId = ax._id;
+    var axLetter = axId.charAt(0);
+    var counterLetter = axes.counterLetter(axId);
+    var mainSubplot = ax._mainSubplot;
+    var mainPlotinfo = fullLayout._plots[mainSubplot];
+    var subplotsWithAx = axes.getSubplots(gd, ax);
+
     var vals = ax._vals = axes.calcTicks(ax);
-    var datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); };
-    var tcls = axid + 'tick';
-    var gcls = axid + 'grid';
-    var zcls = axid + 'zl';
-    var pad = (ax.linewidth || 1) / 2;
-    var labelStandoff = (ax.ticks === 'outside' ? ax.ticklen : 0);
-    var labelShift = 0;
-    var gridWidth = Drawing.crispRound(gd, ax.gridwidth, 1);
-    var zeroLineWidth = Drawing.crispRound(gd, ax.zerolinewidth, gridWidth);
-    var tickWidth = Drawing.crispRound(gd, ax.tickwidth, 1);
-    var sides, transfn, tickpathfn, subplots;
-    var tickLabels;
-    var i;
-
-    if(ax._counterangle && ax.ticks === 'outside') {
-        var caRad = ax._counterangle * Math.PI / 180;
-        labelStandoff = ax.ticklen * Math.cos(caRad) + 1;
-        labelShift = ax.ticklen * Math.sin(caRad);
-    }
-
-    if(ax.showticklabels && (ax.ticks === 'outside' || ax.showline)) {
-        labelStandoff += 0.2 * ax.tickfont.size;
-    }
-
-    // positioning arguments for x vs y axes
-    if(axLetter === 'x') {
-        sides = ['bottom', 'top'];
-        transfn = ax._transfn || function(d) {
-            return 'translate(' + (ax._offset + ax.l2p(d.x)) + ',0)';
-        };
-        tickpathfn = function(shift, len) {
-            if(ax._counterangle) {
-                var caRad = ax._counterangle * Math.PI / 180;
-                return 'M0,' + shift + 'l' + (Math.sin(caRad) * len) + ',' + (Math.cos(caRad) * len);
-            }
-            else return 'M0,' + shift + 'v' + len;
-        };
-    }
-    else if(axLetter === 'y') {
-        sides = ['left', 'right'];
-        transfn = ax._transfn || function(d) {
-            return 'translate(0,' + (ax._offset + ax.l2p(d.x)) + ')';
-        };
-        tickpathfn = function(shift, len) {
-            if(ax._counterangle) {
-                var caRad = ax._counterangle * Math.PI / 180;
-                return 'M' + shift + ',0l' + (Math.cos(caRad) * len) + ',' + (-Math.sin(caRad) * len);
-            }
-            else return 'M' + shift + ',0h' + len;
-        };
-    }
-    else if(isAngular(ax)) {
-        sides = ['left', 'right'];
-        transfn = ax._transfn;
-        tickpathfn = function(shift, len) {
-            return 'M' + shift + ',0h' + len;
-        };
-    }
-    else {
-        Lib.warn('Unrecognized doTicks axis:', axid);
-        return;
-    }
-
-    var axside = ax.side || sides[0];
-    // which direction do the side[0], side[1], and free ticks go?
-    // then we flip if outside XOR y axis
-    var ticksign = [-1, 1, axside === sides[1] ? 1 : -1];
-    if((ax.ticks !== 'inside') === (axLetter === 'x')) {
-        ticksign = ticksign.map(function(v) { return -v; });
-    }
 
     if(!ax.visible) return;
 
-    if(ax._tickFilter) {
-        vals = vals.filter(ax._tickFilter);
-    }
+    var transFn = axes.makeTransFn(ax);
 
-    // Remove zero lines, grid lines, and inside ticks if they're within
-    // 1 pixel of the end.
-    // The key case here is removing zero lines when the axis bound is zero.
-    // Don't clip angular values.
-    var valsClipped = ax._valsClipped = isAngular(ax) ?
-        vals :
-        vals.filter(function(d) { return clipEnds(ax, d.x); });
+    // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
+    // The key case here is removing zero lines when the axis bound is zero
+    var valsClipped;
+    var tickVals;
+    var gridVals;
 
-    function drawTicks(container, tickpath) {
-        var ticks = container.selectAll('path.' + tcls)
-            .data(ax.ticks === 'inside' ? valsClipped : vals, datafn);
-
-        if(tickpath && ax.ticks) {
-            ticks.enter().append('path').classed(tcls, 1).classed('ticks', 1)
-                .classed('crisp', 1)
-                .call(Color.stroke, ax.tickcolor)
-                .style('stroke-width', tickWidth + 'px')
-                .attr('d', tickpath);
-            ticks.attr('transform', transfn);
-            ticks.exit().remove();
-        }
-        else ticks.remove();
-    }
-
-    function drawLabels(container, position) {
-        // tick labels - for now just the main labels.
-        // TODO: mirror labels, esp for subplots
-        tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
-
-        if(!isNumeric(position)) {
-            tickLabels.remove();
-            drawAxTitle();
-            return;
-        }
-        if(!ax.showticklabels) {
-            tickLabels.remove();
-            drawAxTitle();
-            calcBoundingBox();
-            return;
-        }
-
-        var labelx, labely, labelanchor, labelpos0, flipit;
-        if(axLetter === 'x') {
-            flipit = (axside === 'bottom') ? 1 : -1;
-            labelx = function(d) { return d.dx + labelShift * flipit; };
-            labelpos0 = position + (labelStandoff + pad) * flipit;
-            labely = function(d) {
-                return d.dy + labelpos0 + d.fontSize *
-                    ((axside === 'bottom') ? 1 : -0.2);
-            };
-            labelanchor = function(angle) {
-                if(!isNumeric(angle) || angle === 0 || angle === 180) {
-                    return 'middle';
-                }
-                return (angle * flipit < 0) ? 'end' : 'start';
-            };
-        }
-        else if(axLetter === 'y') {
-            flipit = (axside === 'right') ? 1 : -1;
-            labely = function(d) {
-                return d.dy + d.fontSize * MID_SHIFT - labelShift * flipit;
-            };
-            labelx = function(d) {
-                return d.dx + position + (labelStandoff + pad +
-                    ((Math.abs(ax.tickangle) === 90) ? d.fontSize / 2 : 0)) * flipit;
-            };
-            labelanchor = function(angle) {
-                if(isNumeric(angle) && Math.abs(angle) === 90) {
-                    return 'middle';
-                }
-                return axside === 'right' ? 'start' : 'end';
-            };
-        }
-        else if(isAngular(ax)) {
-            ax._labelShift = labelShift;
-            ax._labelStandoff = labelStandoff;
-            ax._pad = pad;
-
-            labelx = ax._labelx;
-            labely = ax._labely;
-            labelanchor = ax._labelanchor;
-        }
-
-        var maxFontSize = 0,
-            autoangle = 0,
-            labelsReady = [];
-        tickLabels.enter().append('g').classed(tcls, 1)
-            .append('text')
-                // only so tex has predictable alignment that we can
-                // alter later
-                .attr('text-anchor', 'middle')
-                .each(function(d) {
-                    var thisLabel = d3.select(this),
-                        newPromise = gd._promises.length;
-                    thisLabel
-                        .call(svgTextUtils.positionText, labelx(d), labely(d))
-                        .call(Drawing.font, d.font, d.fontSize, d.fontColor)
-                        .text(d.text)
-                        .call(svgTextUtils.convertToTspans, gd);
-                    newPromise = gd._promises[newPromise];
-                    if(newPromise) {
-                        // if we have an async label, we'll deal with that
-                        // all here so take it out of gd._promises and
-                        // instead position the label and promise this in
-                        // labelsReady
-                        labelsReady.push(gd._promises.pop().then(function() {
-                            positionLabels(thisLabel, ax.tickangle);
-                        }));
-                    }
-                    else {
-                        // sync label: just position it now.
-                        positionLabels(thisLabel, ax.tickangle);
-                    }
-                });
-        tickLabels.exit().remove();
-
-        tickLabels.each(function(d) {
-            maxFontSize = Math.max(maxFontSize, d.fontSize);
-        });
-
-        if(isAngular(ax)) {
-            tickLabels.each(function(d) {
-                d3.select(this).select('text')
-                    .call(svgTextUtils.positionText, labelx(d), labely(d));
-            });
-        }
-
-        // How much to shift a multi-line label to center it vertically.
-        function getAnchorHeight(lineCount, lineHeight, angle) {
-            var h = (lineCount - 1) * lineHeight;
-            if(axLetter === 'x') {
-                if(angle < -60 || 60 < angle) {
-                    return -0.5 * h;
-                } else if(axside === 'top') {
-                    return -h;
-                }
-            } else {
-                angle *= axside === 'left' ? 1 : -1;
-                if(angle < -30) {
-                    return -h;
-                } else if(angle < 30) {
-                    return -0.5 * h;
-                }
+    if(ax.tickson === 'boundaries' && vals.length) {
+        // valsBoundaries is not used for labels;
+        // no need to worry about the other tickTextObj keys
+        var valsBoundaries = [];
+        var _push = function(d, bndIndex) {
+            var xb = d.xbnd[bndIndex];
+            if(xb !== null) {
+                valsBoundaries.push(Lib.extendFlat({}, d, {x: xb}));
             }
-            return 0;
-        }
-
-        function positionLabels(s, angle) {
-            s.each(function(d) {
-                var anchor = labelanchor(angle, d);
-                var thisLabel = d3.select(this),
-                    mathjaxGroup = thisLabel.select('.text-math-group'),
-                    transform = transfn.call(thisLabel.node(), d) +
-                        ((isNumeric(angle) && +angle !== 0) ?
-                        (' rotate(' + angle + ',' + labelx(d) + ',' +
-                            (labely(d) - d.fontSize / 2) + ')') :
-                        '');
-                var anchorHeight = getAnchorHeight(
-                    svgTextUtils.lineCount(thisLabel),
-                    LINE_SPACING * d.fontSize,
-                    isNumeric(angle) ? +angle : 0);
-                if(anchorHeight) {
-                    transform += ' translate(0, ' + anchorHeight + ')';
-                }
-                if(mathjaxGroup.empty()) {
-                    thisLabel.select('text').attr({
-                        transform: transform,
-                        'text-anchor': anchor
-                    });
-                }
-                else {
-                    var mjShift =
-                        Drawing.bBox(mathjaxGroup.node()).width *
-                            {end: -0.5, start: 0.5}[anchor];
-                    mathjaxGroup.attr('transform', transform +
-                        (mjShift ? 'translate(' + mjShift + ',0)' : ''));
-                }
-            });
-        }
-
-        // make sure all labels are correctly positioned at their base angle
-        // the positionLabels call above is only for newly drawn labels.
-        // do this without waiting, using the last calculated angle to
-        // minimize flicker, then do it again when we know all labels are
-        // there, putting back the prescribed angle to check for overlaps.
-        positionLabels(tickLabels, ax._lastangle || ax.tickangle);
-
-        function allLabelsReady() {
-            return labelsReady.length && Promise.all(labelsReady);
-        }
-
-        function fixLabelOverlaps() {
-            positionLabels(tickLabels, ax.tickangle);
-
-            // check for auto-angling if x labels overlap
-            // don't auto-angle at all for log axes with
-            // base and digit format
-            if(axLetter === 'x' && !isNumeric(ax.tickangle) &&
-                    (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')) {
-                var lbbArray = [];
-                tickLabels.each(function(d) {
-                    var s = d3.select(this),
-                        thisLabel = s.select('.text-math-group'),
-                        x = ax.l2p(d.x);
-                    if(thisLabel.empty()) thisLabel = s.select('text');
-
-                    var bb = Drawing.bBox(thisLabel.node());
-
-                    lbbArray.push({
-                        // ignore about y, just deal with x overlaps
-                        top: 0,
-                        bottom: 10,
-                        height: 10,
-                        left: x - bb.width / 2,
-                        // impose a 2px gap
-                        right: x + bb.width / 2 + 2,
-                        width: bb.width + 2
-                    });
-                });
-                for(i = 0; i < lbbArray.length - 1; i++) {
-                    if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
-                        // any overlap at all - set 30 degrees
-                        autoangle = 30;
-                        break;
-                    }
-                }
-                if(autoangle) {
-                    var tickspacing = Math.abs(
-                            (vals[vals.length - 1].x - vals[0].x) * ax._m
-                        ) / (vals.length - 1);
-                    if(tickspacing < maxFontSize * 2.5) {
-                        autoangle = 90;
-                    }
-                    positionLabels(tickLabels, autoangle);
-                }
-                ax._lastangle = autoangle;
-            }
-
-            // update the axis title
-            // (so it can move out of the way if needed)
-            // TODO: separate out scoot so we don't need to do
-            // a full redraw of the title (mostly relevant for MathJax)
-            drawAxTitle();
-            return axid + ' done';
-        }
-
-        function calcBoundingBox() {
-            if(ax.showticklabels) {
-                var gdBB = gd.getBoundingClientRect();
-                var bBox = container.node().getBoundingClientRect();
-
-                /*
-                 * the way we're going to use this, the positioning that matters
-                 * is relative to the origin of gd. This is important particularly
-                 * if gd is scrollable, and may have been scrolled between the time
-                 * we calculate this and the time we use it
-                 */
-
-                ax._boundingBox = {
-                    width: bBox.width,
-                    height: bBox.height,
-                    left: bBox.left - gdBB.left,
-                    right: bBox.right - gdBB.left,
-                    top: bBox.top - gdBB.top,
-                    bottom: bBox.bottom - gdBB.top
-                };
-            } else {
-                var gs = fullLayout._size;
-                var pos;
-
-                // set dummy bbox for ticklabel-less axes
-
-                if(axLetter === 'x') {
-                    pos = ax.anchor === 'free' ?
-                        gs.t + gs.h * (1 - ax.position) :
-                        gs.t + gs.h * (1 - ax._anchorAxis.domain[{bottom: 0, top: 1}[ax.side]]);
-
-                    ax._boundingBox = {
-                        top: pos,
-                        bottom: pos,
-                        left: ax._offset,
-                        right: ax._offset + ax._length,
-                        width: ax._length,
-                        height: 0
-                    };
-                } else {
-                    pos = ax.anchor === 'free' ?
-                        gs.l + gs.w * ax.position :
-                        gs.l + gs.w * ax._anchorAxis.domain[{left: 0, right: 1}[ax.side]];
-
-                    ax._boundingBox = {
-                        left: pos,
-                        right: pos,
-                        bottom: ax._offset + ax._length,
-                        top: ax._offset,
-                        height: ax._length,
-                        width: 0
-                    };
-                }
-            }
-
-            /*
-             * for spikelines: what's the full domain of positions in the
-             * opposite direction that are associated with this axis?
-             * This means any axes that we make a subplot with, plus the
-             * position of the axis itself if it's free.
-             */
-            if(subplots) {
-                var fullRange = ax._counterSpan = [Infinity, -Infinity];
-
-                for(i = 0; i < subplots.length; i++) {
-                    var subplot = fullLayout._plots[subplots[i]];
-                    var counterAxis = subplot[(axLetter === 'x') ? 'yaxis' : 'xaxis'];
-
-                    extendRange(fullRange, [
-                        counterAxis._offset,
-                        counterAxis._offset + counterAxis._length
-                    ]);
-                }
-
-                if(ax.anchor === 'free') {
-                    extendRange(fullRange, (axLetter === 'x') ?
-                        [ax._boundingBox.bottom, ax._boundingBox.top] :
-                        [ax._boundingBox.right, ax._boundingBox.left]);
-                }
-            }
-
-            function extendRange(range, newRange) {
-                range[0] = Math.min(range[0], newRange[0]);
-                range[1] = Math.max(range[1], newRange[1]);
-            }
-        }
-
-        function doAutoMargins() {
-            var pushKey = ax._name + '.automargin';
-            if(axLetter !== 'x' && axLetter !== 'y') { return; }
-            if(!ax.automargin) {
-                Plots.autoMargin(gd, pushKey);
-                return;
-            }
-
-            var s = ax.side[0];
-            var push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
-
-            if(axLetter === 'x') {
-                push.y = (ax.anchor === 'free' ? ax.position :
-                        ax._anchorAxis.domain[s === 't' ? 1 : 0]);
-                push[s] += ax._boundingBox.height;
-            }
-            else {
-                push.x = (ax.anchor === 'free' ? ax.position :
-                        ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
-                push[s] += ax._boundingBox.width;
-            }
-
-            if(ax.title !== fullLayout._dfltTitle[axLetter]) {
-                push[s] += ax.titlefont.size;
-            }
-
-            Plots.autoMargin(gd, pushKey, push);
-        }
-
-        var done = Lib.syncOrAsync([
-            allLabelsReady,
-            fixLabelOverlaps,
-            calcBoundingBox,
-            doAutoMargins
-        ]);
-        if(done && done.then) gd._promises.push(done);
-        return done;
-    }
-
-    function drawAxTitle() {
-        if(skipTitle) return;
-
-        // now this only applies to regular cartesian axes; colorbars and
-        // others ALWAYS call doTicks with skipTitle=true so they can
-        // configure their own titles.
-
-        // rangeslider takes over a bottom title so drop it here
-        if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox && ax.side === 'bottom') return;
-
-        var avoid = {
-            selection: tickLabels,
-            side: ax.side
         };
-        var axLetter = axid.charAt(0);
-        var gs = gd._fullLayout._size;
-        var offsetBase = 1.5;
-        var fontSize = ax.titlefont.size;
+        for(i = 0; i < vals.length; i++) _push(vals[i], 0);
+        _push(vals[i - 1], 1);
 
-        var transform, counterAxis, x, y;
-
-        if(tickLabels.size()) {
-            var translation = Drawing.getTranslate(tickLabels.node().parentNode);
-            avoid.offsetLeft = translation.x;
-            avoid.offsetTop = translation.y;
-        }
-
-        var titleStandoff = 10 + fontSize * offsetBase +
-            (ax.linewidth ? ax.linewidth - 1 : 0);
-
-        if(axLetter === 'x') {
-            counterAxis = (ax.anchor === 'free') ?
-                {_offset: gs.t + (1 - (ax.position || 0)) * gs.h, _length: 0} :
-                axisIds.getFromId(gd, ax.anchor);
-
-            x = ax._offset + ax._length / 2;
-
-            if(ax.side === 'top') {
-                y = -titleStandoff - fontSize * (ax.showticklabels ? 1 : 0);
-            }
-            else {
-                y = counterAxis._length + titleStandoff +
-                    fontSize * (ax.showticklabels ? 1.5 : 0.5);
-            }
-            y += counterAxis._offset;
-
-            if(!avoid.side) avoid.side = 'bottom';
-        }
-        else {
-            counterAxis = (ax.anchor === 'free') ?
-                {_offset: gs.l + (ax.position || 0) * gs.w, _length: 0} :
-                axisIds.getFromId(gd, ax.anchor);
-
-            y = ax._offset + ax._length / 2;
-            if(ax.side === 'right') {
-                x = counterAxis._length + titleStandoff +
-                    fontSize * (ax.showticklabels ? 1 : 0.5);
-            }
-            else {
-                x = -titleStandoff - fontSize * (ax.showticklabels ? 0.5 : 0);
-            }
-            x += counterAxis._offset;
-
-            transform = {rotate: '-90', offset: 0};
-            if(!avoid.side) avoid.side = 'left';
-        }
-
-        Titles.draw(gd, axid + 'title', {
-            propContainer: ax,
-            propName: ax._name + '.title',
-            placeholder: fullLayout._dfltTitle[axLetter],
-            avoid: avoid,
-            transform: transform,
-            attributes: {x: x, y: y, 'text-anchor': 'middle'}
-        });
+        valsClipped = axes.clipEnds(ax, valsBoundaries);
+        tickVals = ax.ticks === 'inside' ? valsClipped : valsBoundaries;
+        gridVals = valsClipped;
+    } else {
+        valsClipped = axes.clipEnds(ax, vals);
+        tickVals = ax.ticks === 'inside' ? valsClipped : vals;
+        gridVals = valsClipped;
     }
 
-    function drawGrid(plotinfo, counteraxis) {
-        if(fullLayout._hasOnlyLargeSploms) return;
+    ax._valsClipped = valsClipped;
 
-        var gridcontainer = plotinfo.gridlayer.selectAll('.' + axid);
-        var zlcontainer = plotinfo.zerolinelayer;
-        var gridpath = ax._gridpath || ((axLetter === 'x' ?
-                ('M0,' + counteraxis._offset + 'v') :
-                ('M' + counteraxis._offset + ',0h')
-            ) + counteraxis._length);
-        var grid = gridcontainer.selectAll('path.' + gcls)
-            .data((ax.showgrid === false) ? [] : valsClipped, datafn);
-        grid.enter().append('path').classed(gcls, 1)
-            .classed('crisp', 1)
-            .attr('d', gridpath)
-            .each(function(d) {
-                if(ax.zeroline && (ax.type === 'linear' || ax.type === '-') &&
-                        Math.abs(d.x) < ax.dtick / 100) {
-                    d3.select(this).remove();
-                }
-            });
-        grid.attr('transform', transfn)
-            .call(Color.stroke, ax.gridcolor || '#ddd')
-            .style('stroke-width', gridWidth + 'px');
-        if(typeof gridpath === 'function') grid.attr('d', gridpath);
-        grid.exit().remove();
-
-        // zero line
-        if(zlcontainer) {
-            var zlData = {x: 0, id: axid};
-            var showZl = axes.shouldShowZeroLine(gd, ax, counteraxis);
-            var zl = zlcontainer.selectAll('path.' + zcls)
-                .data(showZl ? [zlData] : []);
-            zl.enter().append('path').classed(zcls, 1).classed('zl', 1)
-                .classed('crisp', 1)
-                .attr('d', gridpath)
-                .each(function() {
-                    // use the fact that only one element can enter to trigger a sort.
-                    // If several zerolines enter at the same time we will sort once per,
-                    // but generally this should be a minimal overhead.
-                    zlcontainer.selectAll('path').sort(function(da, db) {
-                        return axisIds.idSort(da.id, db.id);
-                    });
-                });
-            zl.attr('transform', transfn)
-                .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-                .style('stroke-width', zeroLineWidth + 'px');
-            zl.exit().remove();
-        }
-    }
-
-    if(independent) {
-        drawTicks(ax._axislayer, tickpathfn(ax._pos + pad * ticksign[2], ticksign[2] * ax.ticklen));
-        if(ax._counteraxis) {
-            var fictionalPlotinfo = {
-                gridlayer: ax._gridlayer,
-                zerolinelayer: ax._zerolinelayer
-            };
-            drawGrid(fictionalPlotinfo, ax._counteraxis);
-        }
-        return drawLabels(ax._axislayer, ax._pos);
-    }
-    else if(fullLayout._has('cartesian')) {
-        subplots = axes.getSubplots(gd, ax);
-
+    if(!fullLayout._hasOnlyLargeSploms) {
         // keep track of which subplots (by main conteraxis) we've already
         // drawn grids for, so we don't overdraw overlaying subplots
         var finishedGrids = {};
 
-        subplots.map(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot];
-            var counterAxis = plotinfo[counterLetter + 'axis'];
+        for(i = 0; i < subplotsWithAx.length; i++) {
+            sp = subplotsWithAx[i];
+            plotinfo = fullLayout._plots[sp];
 
+            var counterAxis = plotinfo[counterLetter + 'axis'];
             var mainCounterID = counterAxis._mainAxis._id;
-            if(finishedGrids[mainCounterID]) return;
+            if(finishedGrids[mainCounterID]) continue;
             finishedGrids[mainCounterID] = 1;
 
-            drawGrid(plotinfo, counterAxis, subplot);
-        });
+            var gridPath = axLetter === 'x' ?
+                'M0,' + counterAxis._offset + 'v' + counterAxis._length :
+                'M' + counterAxis._offset + ',0h' + counterAxis._length;
 
-        var mainSubplot = ax._mainSubplot;
-        var mainPlotinfo = fullLayout._plots[mainSubplot];
-        var tickSubplots = [];
+            axes.drawGrid(gd, ax, {
+                vals: gridVals,
+                layer: plotinfo.gridlayer.select('.' + axId),
+                path: gridPath,
+                transFn: transFn
+            });
+            axes.drawZeroLine(gd, ax, {
+                counterAxis: counterAxis,
+                layer: plotinfo.zerolinelayer,
+                path: gridPath,
+                transFn: transFn
+            });
+        }
+    }
 
-        if(ax.ticks) {
-            var mainSign = ticksign[2];
-            var tickpath = tickpathfn(ax._mainLinePosition + pad * mainSign, mainSign * ax.ticklen);
-            if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
-                tickpath += tickpathfn(ax._mainMirrorPosition - pad * mainSign, -mainSign * ax.ticklen);
-            }
-            drawTicks(mainPlotinfo[axLetter + 'axislayer'], tickpath);
+    var tickSigns = axes.getTickSigns(ax);
+    var tickSubplots = [];
 
-            tickSubplots = Object.keys(ax._linepositions || {});
+    if(ax.ticks) {
+        var mainTickPath = axes.makeTickPath(ax, ax._mainLinePosition, tickSigns[2]);
+        if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
+            mainTickPath += axes.makeTickPath(ax, ax._mainMirrorPosition, tickSigns[3]);
         }
 
-        tickSubplots.map(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot];
-
-            var container = plotinfo[axLetter + 'axislayer'];
-
-            // [bottom or left, top or right]
-            // free and main are handled above
-            var linepositions = ax._linepositions[subplot] || [];
-
-            function tickPathSide(sidei) {
-                var tsign = ticksign[sidei];
-                return tickpathfn(linepositions[sidei] + pad * tsign, tsign * ax.ticklen);
-            }
-
-            drawTicks(container, tickPathSide(0) + tickPathSide(1));
+        axes.drawTicks(gd, ax, {
+            vals: tickVals,
+            layer: mainPlotinfo[axLetter + 'axislayer'],
+            path: mainTickPath,
+            transFn: transFn
         });
 
-        var mainContainer = mainPlotinfo[axLetter + 'axislayer'];
-
-        return drawLabels(mainContainer, ax._mainLinePosition);
+        tickSubplots = Object.keys(ax._linepositions || {});
     }
+
+    for(i = 0; i < tickSubplots.length; i++) {
+        sp = tickSubplots[i];
+        plotinfo = fullLayout._plots[sp];
+        // [bottom or left, top or right], free and main are handled above
+        var linepositions = ax._linepositions[sp] || [];
+        var spTickPath = axes.makeTickPath(ax, linepositions[0], tickSigns[0]) +
+            axes.makeTickPath(ax, linepositions[1], tickSigns[1]);
+
+        axes.drawTicks(gd, ax, {
+            vals: tickVals,
+            layer: plotinfo[axLetter + 'axislayer'],
+            path: spTickPath,
+            transFn: transFn
+        });
+    }
+
+    var labelFns = axes.makeLabelFns(ax, ax._mainLinePosition);
+    // stash tickLabels selection, so that drawTitle can use it
+    // to scoot title w/o having to query the axis layer again
+    ax._tickLabels = null;
+
+    var seq = [];
+
+    // tick labels - for now just the main labels.
+    // TODO: mirror labels, esp for subplots
+    if(ax._mainLinePosition) {
+        seq.push(function() {
+            return axes.drawLabels(gd, ax, {
+                vals: vals,
+                layer: mainPlotinfo[axLetter + 'axislayer'],
+                transFn: transFn,
+                labelXFn: labelFns.labelXFn,
+                labelYFn: labelFns.labelYFn,
+                labelAnchorFn: labelFns.labelAnchorFn,
+            });
+        });
+    }
+
+    if(!opts.skipTitle &&
+        !((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
+    ) {
+        seq.push(function() {
+            return axes.drawTitle(gd, ax);
+        });
+    }
+
+    function extendRange(range, newRange) {
+        range[0] = Math.min(range[0], newRange[0]);
+        range[1] = Math.max(range[1], newRange[1]);
+    }
+
+    seq.push(function calcBoundingBox() {
+        if(ax.showticklabels) {
+            var gdBB = gd.getBoundingClientRect();
+            var bBox = mainPlotinfo[axLetter + 'axislayer'].node().getBoundingClientRect();
+
+            /*
+             * the way we're going to use this, the positioning that matters
+             * is relative to the origin of gd. This is important particularly
+             * if gd is scrollable, and may have been scrolled between the time
+             * we calculate this and the time we use it
+             */
+
+            ax._boundingBox = {
+                width: bBox.width,
+                height: bBox.height,
+                left: bBox.left - gdBB.left,
+                right: bBox.right - gdBB.left,
+                top: bBox.top - gdBB.top,
+                bottom: bBox.bottom - gdBB.top
+            };
+        } else {
+            var gs = fullLayout._size;
+            var pos;
+
+            // set dummy bbox for ticklabel-less axes
+
+            if(axLetter === 'x') {
+                pos = ax.anchor === 'free' ?
+                    gs.t + gs.h * (1 - ax.position) :
+                    gs.t + gs.h * (1 - ax._anchorAxis.domain[{bottom: 0, top: 1}[ax.side]]);
+
+                ax._boundingBox = {
+                    top: pos,
+                    bottom: pos,
+                    left: ax._offset,
+                    right: ax._offset + ax._length,
+                    width: ax._length,
+                    height: 0
+                };
+            } else {
+                pos = ax.anchor === 'free' ?
+                    gs.l + gs.w * ax.position :
+                    gs.l + gs.w * ax._anchorAxis.domain[{left: 0, right: 1}[ax.side]];
+
+                ax._boundingBox = {
+                    left: pos,
+                    right: pos,
+                    bottom: ax._offset + ax._length,
+                    top: ax._offset,
+                    height: ax._length,
+                    width: 0
+                };
+            }
+        }
+
+        /*
+         * for spikelines: what's the full domain of positions in the
+         * opposite direction that are associated with this axis?
+         * This means any axes that we make a subplot with, plus the
+         * position of the axis itself if it's free.
+         */
+        if(subplotsWithAx) {
+            var fullRange = ax._counterSpan = [Infinity, -Infinity];
+
+            for(var i = 0; i < subplotsWithAx.length; i++) {
+                var plotinfo = fullLayout._plots[subplotsWithAx[i]];
+                var counterAxis = plotinfo[(axLetter === 'x') ? 'yaxis' : 'xaxis'];
+
+                extendRange(fullRange, [
+                    counterAxis._offset,
+                    counterAxis._offset + counterAxis._length
+                ]);
+            }
+
+            if(ax.anchor === 'free') {
+                extendRange(fullRange, (axLetter === 'x') ?
+                    [ax._boundingBox.bottom, ax._boundingBox.top] :
+                    [ax._boundingBox.right, ax._boundingBox.left]);
+            }
+        }
+    });
+
+    seq.push(function doAutoMargins() {
+        var pushKey = ax._name + '.automargin';
+
+        if(!ax.automargin) {
+            Plots.autoMargin(gd, pushKey);
+            return;
+        }
+
+        var s = ax.side.charAt(0);
+        var push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+
+        if(axLetter === 'x') {
+            push.y = (ax.anchor === 'free' ? ax.position :
+                ax._anchorAxis.domain[s === 't' ? 1 : 0]);
+            push[s] += ax._boundingBox.height;
+        } else {
+            push.x = (ax.anchor === 'free' ? ax.position :
+                ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
+            push[s] += ax._boundingBox.width;
+        }
+
+        if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
+            push[s] += ax.title.font.size;
+        }
+
+        Plots.autoMargin(gd, pushKey, push);
+    });
+
+    return Lib.syncOrAsync(seq);
+};
+
+/**
+ * Which direction do the 'ax.side' values, and free ticks go?
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} _id (starting with 'x' or 'y')
+ *  - {string} side
+ *  - {string} ticks
+ * @return {array} all entries are either -1 or 1
+ *  - [0]: sign for top/right ticks (i.e. negative SVG direction)
+ *  - [1]: sign for bottom/left ticks (i.e. positive SVG direction)
+ *  - [2]: sign for ticks corresponding to 'ax.side'
+ *  - [3]: sign for ticks mirroring 'ax.side'
+ */
+axes.getTickSigns = function(ax) {
+    var axLetter = ax._id.charAt(0);
+    var sideOpposite = {x: 'top', y: 'right'}[axLetter];
+    var main = ax.side === sideOpposite ? 1 : -1;
+    var out = [-1, 1, main, -main];
+    // then we flip if outside XOR y axis
+    if((ax.ticks !== 'inside') === (axLetter === 'x')) {
+        out = out.map(function(v) { return -v; });
+    }
+    return out;
+};
+
+/**
+ * Make axis translate transform function
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {number} _offset
+ *  - {fn} l2p
+ * @return {fn} function of calcTicks items
+ */
+axes.makeTransFn = function(ax) {
+    var axLetter = ax._id.charAt(0);
+    var offset = ax._offset;
+    return axLetter === 'x' ?
+        function(d) { return 'translate(' + (offset + ax.l2p(d.x)) + ',0)'; } :
+        function(d) { return 'translate(0,' + (offset + ax.l2p(d.x)) + ')'; };
+};
+
+/**
+ * Make axis tick path string
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {number} ticklen
+ *  - {number} linewidth
+ * @param {number} shift along direction of ticklen
+ * @param {1 or -1} sng tick sign
+ * @return {string}
+ */
+axes.makeTickPath = function(ax, shift, sgn) {
+    var axLetter = ax._id.charAt(0);
+    var pad = (ax.linewidth || 1) / 2;
+    var len = ax.ticklen;
+    return axLetter === 'x' ?
+        'M0,' + (shift + pad * sgn) + 'v' + (len * sgn) :
+        'M' + (shift + pad * sgn) + ',0h' + (len * sgn);
+};
+
+/**
+ * Make axis tick label x, y and anchor functions
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {string} ticks
+ *  - {number} ticklen
+ *  - {string} side
+ *  - {number} linewidth
+ *  - {number} tickfont.size
+ *  - {boolean} showline
+ * @param {number} shift
+ * @param {number} angle [in degrees] ...
+ * @return {object}
+ *  - {fn} labelXFn
+ *  - {fn} labelYFn
+ *  - {fn} labelAnchorFn
+ *  - {number} labelStandoff
+ *  - {number} labelShift
+ */
+axes.makeLabelFns = function(ax, shift, angle) {
+    var axLetter = ax._id.charAt(0);
+    var pad = (ax.linewidth || 1) / 2;
+    var ticksOnOutsideLabels = ax.tickson !== 'boundaries' && ax.ticks === 'outside';
+
+    var labelStandoff = ticksOnOutsideLabels ? ax.ticklen : 0;
+    var labelShift = 0;
+
+    if(angle && ax.ticks === 'outside') {
+        var rad = Lib.deg2rad(angle);
+        labelStandoff = ax.ticklen * Math.cos(rad) + 1;
+        labelShift = ax.ticklen * Math.sin(rad);
+    }
+
+    if(ax.showticklabels && (ticksOnOutsideLabels || ax.showline)) {
+        labelStandoff += 0.2 * ax.tickfont.size;
+    }
+
+    // Used in polar angular label x/y functions
+    // TODO generalize makeLabelFns so that it just work for angular axes
+    var out = {
+        labelStandoff: labelStandoff,
+        labelShift: labelShift
+    };
+
+    var x0, y0, ff, flipIt;
+    if(axLetter === 'x') {
+        flipIt = ax.side === 'bottom' ? 1 : -1;
+        x0 = labelShift * flipIt;
+        y0 = shift + (labelStandoff + pad) * flipIt;
+        ff = ax.side === 'bottom' ? 1 : -0.2;
+
+        out.labelXFn = function(d) { return d.dx + x0; };
+        out.labelYFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
+        out.labelAnchorFn = function(a) {
+            if(!isNumeric(a) || a === 0 || a === 180) {
+                return 'middle';
+            }
+            return (a * flipIt < 0) ? 'end' : 'start';
+        };
+    } else if(axLetter === 'y') {
+        flipIt = ax.side === 'right' ? 1 : -1;
+        x0 = labelStandoff + pad;
+        y0 = -labelShift * flipIt;
+        ff = Math.abs(ax.tickangle) === 90 ? 0.5 : 0;
+
+        out.labelXFn = function(d) { return d.dx + shift + (x0 + d.fontSize * ff) * flipIt; };
+        out.labelYFn = function(d) { return d.dy + y0 + d.fontSize * MID_SHIFT; };
+        out.labelAnchorFn = function(a) {
+            if(isNumeric(a) && Math.abs(a) === 90) {
+                return 'middle';
+            }
+            return ax.side === 'right' ? 'start' : 'end';
+        };
+    }
+
+    return out;
+};
+
+function makeDataFn(ax) {
+    return function(d) {
+        return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_');
+    };
+}
+
+/**
+ * Draw axis ticks
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {string} ticks
+ *  - {number} linewidth
+ *  - {string} tickcolor
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {string or fn} path
+ * - {fn} transFn
+ * - {boolean} crisp (set to false to unset crisp-edge SVG rendering)
+ */
+axes.drawTicks = function(gd, ax, opts) {
+    opts = opts || {};
+
+    var cls = ax._id + 'tick';
+
+    var ticks = opts.layer.selectAll('path.' + cls)
+        .data(ax.ticks ? opts.vals : [], makeDataFn(ax));
+
+    ticks.exit().remove();
+
+    ticks.enter().append('path')
+        .classed(cls, 1)
+        .classed('ticks', 1)
+        .classed('crisp', opts.crisp !== false)
+        .call(Color.stroke, ax.tickcolor)
+        .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
+        .attr('d', opts.path);
+
+    ticks.attr('transform', opts.transFn);
+};
+
+/**
+ * Draw axis grid
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {boolean} showgrid
+ *  - {string} gridcolor
+ *  - {string} gridwidth
+ *  - {boolean} zeroline
+ *  - {string} type
+ *  - {string} dtick
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {string or fn} path
+ * - {fn} transFn
+ * - {boolean} crisp (set to false to unset crisp-edge SVG rendering)
+ */
+axes.drawGrid = function(gd, ax, opts) {
+    opts = opts || {};
+
+    var cls = ax._id + 'grid';
+
+    var grid = opts.layer.selectAll('path.' + cls)
+        .data((ax.showgrid === false) ? [] : opts.vals, makeDataFn(ax));
+
+    grid.exit().remove();
+
+    grid.enter().append('path')
+        .classed(cls, 1)
+        .classed('crisp', opts.crisp !== false)
+        .attr('d', opts.path)
+        .each(function(d) {
+            if(ax.zeroline && (ax.type === 'linear' || ax.type === '-') &&
+                    Math.abs(d.x) < ax.dtick / 100) {
+                d3.select(this).remove();
+            }
+        });
+
+    ax._gridWidthCrispRound = Drawing.crispRound(gd, ax.gridwidth, 1);
+
+    grid.attr('transform', opts.transFn)
+        .call(Color.stroke, ax.gridcolor || '#ddd')
+        .style('stroke-width', ax._gridWidthCrispRound + 'px');
+
+    if(typeof opts.path === 'function') grid.attr('d', opts.path);
+};
+
+/**
+ * Draw axis zero-line
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {boolean} zeroline
+ *  - {number} zerolinewidth
+ *  - {string} zerolinecolor
+ *  - {number (optional)} _gridWidthCrispRound
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {object} counterAxis (full axis object corresponding to counter axis)
+ * - {string or fn} path
+ * - {fn} transFn
+ * - {boolean} crisp (set to false to unset crisp-edge SVG rendering)
+ */
+axes.drawZeroLine = function(gd, ax, opts) {
+    opts = opts || opts;
+
+    var cls = ax._id + 'zl';
+    var show = axes.shouldShowZeroLine(gd, ax, opts.counterAxis);
+
+    var zl = opts.layer.selectAll('path.' + cls)
+        .data(show ? [{x: 0, id: ax._id}] : []);
+
+    zl.exit().remove();
+
+    zl.enter().append('path')
+        .classed(cls, 1)
+        .classed('zl', 1)
+        .classed('crisp', opts.crisp !== false)
+        .attr('d', opts.path)
+        .each(function() {
+            // use the fact that only one element can enter to trigger a sort.
+            // If several zerolines enter at the same time we will sort once per,
+            // but generally this should be a minimal overhead.
+            opts.layer.selectAll('path').sort(function(da, db) {
+                return axisIds.idSort(da.id, db.id);
+            });
+        });
+
+    var strokeWidth = Drawing.crispRound(gd,
+        ax.zerolinewidth,
+        ax._gridWidthCrispRound || 1
+    );
+
+    zl.attr('transform', opts.transFn)
+        .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
+        .style('stroke-width', strokeWidth + 'px');
+};
+
+/**
+ * Draw axis tick labels
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {boolean} showticklabels
+ *  - {number} tickangle
+ * @param {object} opts
+ * - {array of object} vals (calcTicks output-like)
+ * - {d3 selection} layer
+ * - {fn} transFn
+ * - {fn} labelXFn
+ * - {fn} labelYFn
+ * - {fn} labelAnchorFn
+ */
+axes.drawLabels = function(gd, ax, opts) {
+    opts = opts || {};
+
+    var axId = ax._id;
+    var axLetter = axId.charAt(0);
+    var cls = axId + 'tick';
+    var vals = opts.vals;
+    var labelXFn = opts.labelXFn;
+    var labelYFn = opts.labelYFn;
+    var labelAnchorFn = opts.labelAnchorFn;
+
+    var tickLabels = opts.layer.selectAll('g.' + cls)
+        .data(ax.showticklabels ? vals : [], makeDataFn(ax));
+
+    var labelsReady = [];
+
+    tickLabels.enter().append('g')
+        .classed(cls, 1)
+        .append('text')
+            // only so tex has predictable alignment that we can
+            // alter later
+            .attr('text-anchor', 'middle')
+            .each(function(d) {
+                var thisLabel = d3.select(this);
+                var newPromise = gd._promises.length;
+
+                thisLabel
+                    .call(svgTextUtils.positionText, labelXFn(d), labelYFn(d))
+                    .call(Drawing.font, d.font, d.fontSize, d.fontColor)
+                    .text(d.text)
+                    .call(svgTextUtils.convertToTspans, gd);
+
+                if(gd._promises[newPromise]) {
+                    // if we have an async label, we'll deal with that
+                    // all here so take it out of gd._promises and
+                    // instead position the label and promise this in
+                    // labelsReady
+                    labelsReady.push(gd._promises.pop().then(function() {
+                        positionLabels(thisLabel, ax.tickangle);
+                    }));
+                } else {
+                    // sync label: just position it now.
+                    positionLabels(thisLabel, ax.tickangle);
+                }
+            });
+
+    tickLabels.exit().remove();
+
+    ax._tickLabels = tickLabels;
+
+    // TODO ??
+    if(isAngular(ax)) {
+        tickLabels.each(function(d) {
+            d3.select(this).select('text')
+                .call(svgTextUtils.positionText, labelXFn(d), labelYFn(d));
+        });
+    }
+
+    // How much to shift a multi-line label to center it vertically.
+    function getAnchorHeight(lineCount, lineHeight, angle) {
+        var h = (lineCount - 1) * lineHeight;
+        if(axLetter === 'x') {
+            if(angle < -60 || 60 < angle) {
+                return -0.5 * h;
+            } else if(ax.side === 'top') {
+                return -h;
+            }
+        } else {
+            angle *= ax.side === 'left' ? 1 : -1;
+            if(angle < -30) {
+                return -h;
+            } else if(angle < 30) {
+                return -0.5 * h;
+            }
+        }
+        return 0;
+    }
+
+    function positionLabels(s, angle) {
+        s.each(function(d) {
+            var thisLabel = d3.select(this);
+            var mathjaxGroup = thisLabel.select('.text-math-group');
+            var anchor = labelAnchorFn(angle, d);
+
+            var transform = opts.transFn.call(thisLabel.node(), d) +
+                ((isNumeric(angle) && +angle !== 0) ?
+                (' rotate(' + angle + ',' + labelXFn(d) + ',' +
+                    (labelYFn(d) - d.fontSize / 2) + ')') :
+                '');
+
+            var anchorHeight = getAnchorHeight(
+                svgTextUtils.lineCount(thisLabel),
+                LINE_SPACING * d.fontSize,
+                isNumeric(angle) ? +angle : 0
+            );
+
+            if(anchorHeight) {
+                transform += ' translate(0, ' + anchorHeight + ')';
+            }
+
+            if(mathjaxGroup.empty()) {
+                thisLabel.select('text').attr({
+                    transform: transform,
+                    'text-anchor': anchor
+                });
+            } else {
+                var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
+                var mjShift = mjWidth * {end: -0.5, start: 0.5}[anchor];
+                mathjaxGroup.attr('transform', transform + (mjShift ? 'translate(' + mjShift + ',0)' : ''));
+            }
+        });
+    }
+
+    // make sure all labels are correctly positioned at their base angle
+    // the positionLabels call above is only for newly drawn labels.
+    // do this without waiting, using the last calculated angle to
+    // minimize flicker, then do it again when we know all labels are
+    // there, putting back the prescribed angle to check for overlaps.
+    positionLabels(tickLabels, ax._lastangle || ax.tickangle);
+
+    function allLabelsReady() {
+        return labelsReady.length && Promise.all(labelsReady);
+    }
+
+    function fixLabelOverlaps() {
+        positionLabels(tickLabels, ax.tickangle);
+
+        // check for auto-angling if x labels overlap
+        // don't auto-angle at all for log axes with
+        // base and digit format
+        if(vals.length && axLetter === 'x' && !isNumeric(ax.tickangle) &&
+            (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')
+        ) {
+            var maxFontSize = 0;
+            var lbbArray = [];
+            var i;
+
+            tickLabels.each(function(d) {
+                var s = d3.select(this);
+                var thisLabel = s.select('.text-math-group');
+                if(thisLabel.empty()) thisLabel = s.select('text');
+
+                maxFontSize = Math.max(maxFontSize, d.fontSize);
+
+                var x = ax.l2p(d.x);
+                var bb = Drawing.bBox(thisLabel.node());
+
+                lbbArray.push({
+                    // ignore about y, just deal with x overlaps
+                    top: 0,
+                    bottom: 10,
+                    height: 10,
+                    left: x - bb.width / 2,
+                    // impose a 2px gap
+                    right: x + bb.width / 2 + 2,
+                    width: bb.width + 2
+                });
+            });
+
+            var autoangle = 0;
+
+            if(ax.tickson === 'boundaries') {
+                var gap = 2;
+                if(ax.ticks) gap += ax.tickwidth / 2;
+
+                for(i = 0; i < lbbArray.length; i++) {
+                    var xbnd = vals[i].xbnd;
+                    var lbb = lbbArray[i];
+                    if(
+                        (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
+                        (xbnd[1] !== null && (ax.l2p(xbnd[1]) - lbb.right) < gap)
+                    ) {
+                        autoangle = 90;
+                        break;
+                    }
+                }
+            } else {
+                var vLen = vals.length;
+                var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
+                var fitBetweenTicks = tickSpacing < maxFontSize * 2.5;
+
+                // any overlap at all - set 30 degrees or 90 degrees
+                for(i = 0; i < lbbArray.length - 1; i++) {
+                    if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
+                        autoangle = fitBetweenTicks ? 90 : 30;
+                        break;
+                    }
+                }
+            }
+
+            if(autoangle) {
+                positionLabels(tickLabels, autoangle);
+            }
+            ax._lastangle = autoangle;
+        }
+    }
+
+    var done = Lib.syncOrAsync([allLabelsReady, fixLabelOverlaps]);
+    if(done && done.then) gd._promises.push(done);
+    return done;
+};
+
+axes.drawTitle = function(gd, ax) {
+    var fullLayout = gd._fullLayout;
+    var tickLabels = ax._tickLabels;
+
+    var avoid = {
+        selection: tickLabels,
+        side: ax.side
+    };
+
+    var axId = ax._id;
+    var axLetter = axId.charAt(0);
+    var offsetBase = 1.5;
+    var gs = fullLayout._size;
+    var fontSize = ax.title.font.size;
+
+    var transform, counterAxis, x, y;
+
+    if(tickLabels && tickLabels.node() && tickLabels.node().parentNode) {
+        var translation = Drawing.getTranslate(tickLabels.node().parentNode);
+        avoid.offsetLeft = translation.x;
+        avoid.offsetTop = translation.y;
+    }
+
+    var titleStandoff = 10 + fontSize * offsetBase +
+        (ax.linewidth ? ax.linewidth - 1 : 0);
+
+    if(axLetter === 'x') {
+        counterAxis = (ax.anchor === 'free') ?
+            {_offset: gs.t + (1 - (ax.position || 0)) * gs.h, _length: 0} :
+            axisIds.getFromId(gd, ax.anchor);
+
+        x = ax._offset + ax._length / 2;
+
+        if(ax.side === 'top') {
+            y = -titleStandoff - fontSize * (ax.showticklabels ? 1 : 0);
+        } else {
+            y = counterAxis._length + titleStandoff +
+                fontSize * (ax.showticklabels ? 1.5 : 0.5);
+        }
+        y += counterAxis._offset;
+
+        if(!avoid.side) avoid.side = 'bottom';
+    }
+    else {
+        counterAxis = (ax.anchor === 'free') ?
+            {_offset: gs.l + (ax.position || 0) * gs.w, _length: 0} :
+            axisIds.getFromId(gd, ax.anchor);
+
+        y = ax._offset + ax._length / 2;
+        if(ax.side === 'right') {
+            x = counterAxis._length + titleStandoff +
+                fontSize * (ax.showticklabels ? 1 : 0.5);
+        } else {
+            x = -titleStandoff - fontSize * (ax.showticklabels ? 0.5 : 0);
+        }
+        x += counterAxis._offset;
+
+        transform = {rotate: '-90', offset: 0};
+        if(!avoid.side) avoid.side = 'left';
+    }
+
+    Titles.draw(gd, axId + 'title', {
+        propContainer: ax,
+        propName: ax._name + '.title.text',
+        placeholder: fullLayout._dfltTitle[axLetter],
+        avoid: avoid,
+        transform: transform,
+        attributes: {x: x, y: y, 'text-anchor': 'middle'}
+    });
 };
 
 axes.shouldShowZeroLine = function(gd, ax, counterAxis) {
@@ -2278,6 +2463,10 @@ axes.shouldShowZeroLine = function(gd, ax, counterAxis) {
             hasBarsOrFill(gd, ax)
         )
     );
+};
+
+axes.clipEnds = function(ax, vals) {
+    return vals.filter(function(d) { return clipEnds(ax, d.x); });
 };
 
 function clipEnds(ax, l) {
@@ -2506,11 +2695,11 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
         i;
     if(key === 'title') {
         // special handling of placeholder titles
-        if(xVal === dfltTitle.x) {
-            xVal = dfltTitle.y;
+        if(xVal && xVal.text === dfltTitle.x) {
+            xVal.text = dfltTitle.y;
         }
-        if(yVal === dfltTitle.y) {
-            yVal = dfltTitle.x;
+        if(yVal && yVal.text === dfltTitle.y) {
+            yVal.text = dfltTitle.x;
         }
     }
 

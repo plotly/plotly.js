@@ -84,7 +84,7 @@ function calc(gd, trace) {
     }
 
     // create scene options and scene
-    calcColorscales(trace);
+    calcColorscales(gd, trace);
     var opts = sceneOptions(gd, subplot, trace, positions, x, y);
     var scene = sceneUpdate(gd, subplot);
 
@@ -92,9 +92,12 @@ function calc(gd, trace) {
     // For graphs with very large number of points and array marker.size,
     // use average marker size instead to speed things up.
     setFirstScatter(fullLayout, trace);
-    var ppad = len < TOO_MANY_POINTS ?
-        calcMarkerSize(trace, len) :
-        2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+    var ppad;
+    if(len < TOO_MANY_POINTS) {
+        ppad = calcMarkerSize(trace, len);
+    } else if(opts.marker) {
+        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+    }
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     if(opts.errorX) expandForErrorBars(trace, xa, opts.errorX);
     if(opts.errorY) expandForErrorBars(trace, ya, opts.errorY);
@@ -813,6 +816,11 @@ function calcHover(pointData, x, y, trace) {
         di.hi = Array.isArray(hoverinfo) ? hoverinfo[id] : hoverinfo;
     }
 
+    var hovertemplate = trace.hovertemplate;
+    if(hovertemplate) {
+        di.ht = Array.isArray(hovertemplate) ? hovertemplate[id] : hovertemplate;
+    }
+
     var fakeCd = {};
     fakeCd[pointData.index] = di;
 
@@ -829,7 +837,9 @@ function calcHover(pointData, x, y, trace) {
 
         cd: fakeCd,
         distance: minDist,
-        spikeDistance: dxy
+        spikeDistance: dxy,
+
+        hovertemplate: di.ht
     });
 
     if(di.htx) pointData.text = di.htx;

@@ -21,7 +21,7 @@ module.exports = function calc(gd, trace) {
     var cd = [{x: false, y: false, trace: trace, t: {}}];
 
     arraysToCalcdata(cd, trace);
-    calcColorscales(trace);
+    calcColorscales(gd, trace);
 
     return cd;
 };

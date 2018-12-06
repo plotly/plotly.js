@@ -19,6 +19,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Fx = require('../../components/fx');
+var Axes = require('./axes');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
 var FROM_TL = require('../../constants/alignment').FROM_TL;
@@ -27,7 +28,6 @@ var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 
 var Plots = require('../plots');
 
-var doTicksSingle = require('./axes').doTicksSingle;
 var getFromId = require('./axis_ids').getFromId;
 var prepSelect = require('./select').prepSelect;
 var clearSelect = require('./select').clearSelect;
@@ -271,7 +271,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     .on('edit', function(text) {
                         var v = ax.d2r(text);
                         if(v !== undefined) {
-                            Registry.call('relayout', gd, attrStr, v);
+                            Registry.call('_guiRelayout', gd, attrStr, v);
                         }
                     });
             }
@@ -619,8 +619,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         updates = {};
         for(i = 0; i < activeAxIds.length; i++) {
             var axId = activeAxIds[i];
-            doTicksSingle(gd, axId, true);
             var ax = getFromId(gd, axId);
+            Axes.drawOne(gd, ax, {skipTitle: true});
             updates[ax._name + '.range[0]'] = ax.range[0];
             updates[ax._name + '.range[1]'] = ax.range[1];
         }
@@ -712,7 +712,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         gd.emit('plotly_doubleclick', null);
-        Registry.call('relayout', gd, attrs);
+        Registry.call('_guiRelayout', gd, attrs);
     }
 
     // dragTail - finish a drag event with a redraw
@@ -726,7 +726,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // accumulated MathJax promises - wait for them before we relayout.
         Lib.syncOrAsync([
             Plots.previousPromises,
-            function() { Registry.call('relayout', gd, updates); }
+            function() { Registry.call('_guiRelayout', gd, updates); }
         ], gd);
     }
 

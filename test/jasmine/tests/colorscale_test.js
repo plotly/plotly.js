@@ -4,6 +4,18 @@ var Plots = require('@src/plots/plots');
 var Heatmap = require('@src/traces/heatmap');
 var Scatter = require('@src/traces/scatter');
 
+var supplyAllDefaults = require('../assets/supply_defaults');
+
+function _supply(trace, layout) {
+    var gd = {
+        data: [trace],
+        layout: layout || {}
+    };
+
+    supplyAllDefaults(gd);
+
+    return gd;
+}
 
 describe('Test colorscale:', function() {
     'use strict';
@@ -348,39 +360,63 @@ describe('Test colorscale:', function() {
             handleDefaults(traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.showscale).toBe(true);
         });
+
     });
 
     describe('calc', function() {
         var calcColorscale = Colorscale.calc;
         var trace, z;
+        var gd;
 
         beforeEach(function() {
             trace = {};
             z = {};
+            gd = {};
         });
 
         it('should be RdBuNeg when autocolorscale and z <= 0', function() {
             trace = {
                 type: 'heatmap',
-                z: [[0, -1.5], [-2, -10]],
+                z: [[-0, -1.5], [-2, -10]],
                 autocolorscale: true,
                 _input: {autocolorscale: true}
             };
-            z = [[0, -1.5], [-2, -10]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
+        });
+
+        it('should be layout.colorscale.sequentialminus when autocolorscale and z <= 0', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            trace = {
+                type: 'heatmap',
+                z: [[-0, -1.5], [-2, -10]],
+                autocolorscale: true,
+                _input: {autocolorscale: true}
+            };
+            var layout = {
+                colorscale: {
+                    sequentialminus: colorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
         });
 
         it('should set autocolorscale to false if it wasn\'t explicitly set true in input', function() {
             trace = {
                 type: 'heatmap',
                 z: [[0, -1.5], [-2, -10]],
+                zmin: -10,
+                zmax: 0,
                 autocolorscale: true,
                 _input: {}
             };
-            z = [[0, -1.5], [-2, -10]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(false);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
         });
@@ -393,9 +429,30 @@ describe('Test colorscale:', function() {
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [-0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
+        });
+
+        it('should be layout.colorscale.sequentialminus when autocolorscale and the only numerical z <= -0.5', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            trace = {
+                type: 'heatmap',
+                z: [['a', 'b'], [-0.5, 'd']],
+                autocolorscale: true,
+                _input: {autocolorscale: true}
+            };
+            z = [[undefined, undefined], [-0.5, undefined]];
+            var layout = {
+                colorscale: {
+                    sequentialminus: colorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
         });
 
         it('should be Reds when the only numerical z >= 0.5', function() {
@@ -406,9 +463,72 @@ describe('Test colorscale:', function() {
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[0]).toEqual([0, 'rgb(220,220,220)']);
+        });
+
+        it('should be layout.colorscale.sequential when autocolorscale and the only numerical z >= 0.5', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            trace = {
+                type: 'heatmap',
+                z: [['a', 'b'], [0.5, 'd']],
+                autocolorscale: true,
+                _input: {autocolorscale: true}
+            };
+            z = [[undefined, undefined], [0.5, undefined]];
+            var layout = {
+                colorscale: {
+                    sequential: colorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
+        });
+
+        it('should be layout.colorscale.diverging when autocolorscale and there are positive and negative values', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            trace = {
+                type: 'heatmap',
+                z: [[-1.0, 'b'], [0.5, 'd']],
+                autocolorscale: true,
+                _input: {autocolorscale: true}
+            };
+            z = [[-1.0, undefined], [0.5, undefined]];
+            var layout = {
+                colorscale: {
+                    diverging: colorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
+        });
+
+        it('should ignore layout.colorscale.diverging when colorscale is defined at trace-level', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            var layoutColorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            trace = {
+                type: 'heatmap',
+                z: [[-1.0, 'b'], [0.5, 'd']],
+                autocolorscale: true,
+                _input: {autocolorscale: true},
+                colorscale: colorscale
+            };
+            z = [[-1.0, undefined], [0.5, undefined]];
+            var layout = {
+                colorscale: {
+                    diverging: layoutColorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
         });
 
         it('should be reverse the auto scale when reversescale is true', function() {
@@ -420,7 +540,8 @@ describe('Test colorscale:', function() {
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[trace.colorscale.length - 1])
                 .toEqual([1, 'rgb(220,220,220)']);

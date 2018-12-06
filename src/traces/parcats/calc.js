@@ -73,7 +73,11 @@ module.exports = function calc(gd, trace) {
     // Process colorscale
     if(line) {
         if(hasColorscale(trace, 'line')) {
-            colorscaleCalc(trace, trace.line.color, 'line', 'c');
+            colorscaleCalc(gd, trace, {
+                vals: trace.line.color,
+                containerStr: 'line',
+                cLetter: 'c'
+            });
         }
         markerColorscale = Drawing.tryColorscale(line);
     } else {

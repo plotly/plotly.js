@@ -15,17 +15,29 @@ var calcColorscale = require('../../components/colorscale/calc');
 var subTypes = require('./subtypes');
 
 
-module.exports = function calcMarkerColorscale(trace) {
+module.exports = function calcMarkerColorscale(gd, trace) {
     if(subTypes.hasLines(trace) && hasColorscale(trace, 'line')) {
-        calcColorscale(trace, trace.line.color, 'line', 'c');
+        calcColorscale(gd, trace, {
+            vals: trace.line.color,
+            containerStr: 'line',
+            cLetter: 'c'
+        });
     }
 
     if(subTypes.hasMarkers(trace)) {
         if(hasColorscale(trace, 'marker')) {
-            calcColorscale(trace, trace.marker.color, 'marker', 'c');
+            calcColorscale(gd, trace, {
+                vals: trace.marker.color,
+                containerStr: 'marker',
+                cLetter: 'c'
+            });
         }
         if(hasColorscale(trace, 'marker.line')) {
-            calcColorscale(trace, trace.marker.line.color, 'marker.line', 'c');
+            calcColorscale(gd, trace, {
+                vals: trace.marker.line.color,
+                containerStr: 'marker.line',
+                cLetter: 'c'
+            });
         }
     }
 };

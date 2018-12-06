@@ -56,6 +56,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // autobin(x|y) are only included here to appease Plotly.validate
     coerce('autobin' + sampleLetter);
 
+    coerce('hovertemplate');
+
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
     // override defaultColor for error bars with defaultLine

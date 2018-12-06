@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.42.3
+* plotly.js (gl2d) v1.42.5
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -66651,7 +66651,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.42.3';
+exports.version = '1.42.5';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -107567,9 +107567,12 @@ function calc(gd, trace) {
     // For graphs with very large number of points and array marker.size,
     // use average marker size instead to speed things up.
     setFirstScatter(fullLayout, trace);
-    var ppad = len < TOO_MANY_POINTS ?
-        calcMarkerSize(trace, len) :
-        2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+    var ppad;
+    if(len < TOO_MANY_POINTS) {
+        ppad = calcMarkerSize(trace, len);
+    } else if(opts.marker) {
+        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+    }
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     if(opts.errorX) expandForErrorBars(trace, xa, opts.errorX);
     if(opts.errorY) expandForErrorBars(trace, ya, opts.errorY);

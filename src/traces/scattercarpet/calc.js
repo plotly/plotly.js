@@ -50,7 +50,7 @@ module.exports = function calc(gd, trace) {
     cd[0].trace = trace;
 
     calcMarkerSize(trace, serieslen);
-    calcColorscale(trace);
+    calcColorscale(gd, trace);
     arraysToCalcdata(cd, trace);
     calcSelection(cd, trace);
 

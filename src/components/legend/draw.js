@@ -30,7 +30,6 @@ var FROM_BR = alignmentConstants.FROM_BR;
 var getLegendData = require('./get_legend_data');
 var style = require('./style');
 var helpers = require('./helpers');
-var anchorUtils = require('./anchor_utils');
 
 var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 
@@ -154,17 +153,17 @@ module.exports = function draw(gd) {
                 lx = gs.l + gs.w * opts.x,
                 ly = gs.t + gs.h * (1 - opts.y);
 
-            if(anchorUtils.isRightAnchor(opts)) {
+            if(Lib.isRightAnchor(opts)) {
                 lx -= opts._width;
             }
-            else if(anchorUtils.isCenterAnchor(opts)) {
+            else if(Lib.isCenterAnchor(opts)) {
                 lx -= opts._width / 2;
             }
 
-            if(anchorUtils.isBottomAnchor(opts)) {
+            if(Lib.isBottomAnchor(opts)) {
                 ly -= opts._height;
             }
-            else if(anchorUtils.isMiddleAnchor(opts)) {
+            else if(Lib.isMiddleAnchor(opts)) {
                 ly -= opts._height / 2;
             }
 
@@ -224,7 +223,7 @@ module.exports = function draw(gd) {
                     y: opts.borderwidth
                 });
 
-                Drawing.setClipUrl(scrollBox, clipId);
+                Drawing.setClipUrl(scrollBox, clipId, gd);
 
                 Drawing.setRect(scrollBar, 0, 0, 0, 0);
                 delete opts._scrollY;
@@ -262,7 +261,7 @@ module.exports = function draw(gd) {
                     y: opts.borderwidth + scrollBoxY
                 });
 
-                Drawing.setClipUrl(scrollBox, clipId);
+                Drawing.setClipUrl(scrollBox, clipId, gd);
 
                 scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
 
@@ -339,7 +338,7 @@ module.exports = function draw(gd) {
                     },
                     doneFn: function() {
                         if(xf !== undefined && yf !== undefined) {
-                            Registry.call('relayout', gd, {'legend.x': xf, 'legend.y': yf});
+                            Registry.call('_guiRelayout', gd, {'legend.x': xf, 'legend.y': yf});
                         }
                     },
                     clickFn: function(numClicks, e) {
@@ -446,7 +445,7 @@ function drawTexts(g, gd, maxLength) {
                     update.name = newName;
                 }
 
-                return Registry.call('restyle', gd, update, traceIndex);
+                return Registry.call('_guiRestyle', gd, update, traceIndex);
             });
     } else {
         textLayout(textEl);
@@ -536,6 +535,7 @@ function computeTextDimensions(g, gd) {
         // to avoid getBoundingClientRect
         var textY = lineHeight * (0.3 + (1 - textLines) / 2);
         svgTextUtils.positionText(text, constants.textOffsetX, textY);
+        legendItem.lineHeight = lineHeight;
     }
 
     height = Math.max(height, 16) + 3;
@@ -699,18 +699,18 @@ function expandMargin(gd) {
         opts = fullLayout.legend;
 
     var xanchor = 'left';
-    if(anchorUtils.isRightAnchor(opts)) {
+    if(Lib.isRightAnchor(opts)) {
         xanchor = 'right';
     }
-    else if(anchorUtils.isCenterAnchor(opts)) {
+    else if(Lib.isCenterAnchor(opts)) {
         xanchor = 'center';
     }
 
     var yanchor = 'top';
-    if(anchorUtils.isBottomAnchor(opts)) {
+    if(Lib.isBottomAnchor(opts)) {
         yanchor = 'bottom';
     }
-    else if(anchorUtils.isMiddleAnchor(opts)) {
+    else if(Lib.isMiddleAnchor(opts)) {
         yanchor = 'middle';
     }
 
@@ -730,10 +730,10 @@ function expandHorizontalMargin(gd) {
         opts = fullLayout.legend;
 
     var xanchor = 'left';
-    if(anchorUtils.isRightAnchor(opts)) {
+    if(Lib.isRightAnchor(opts)) {
         xanchor = 'right';
     }
-    else if(anchorUtils.isCenterAnchor(opts)) {
+    else if(Lib.isCenterAnchor(opts)) {
         xanchor = 'center';
     }
 

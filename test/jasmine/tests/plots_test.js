@@ -251,6 +251,14 @@ describe('Test Plots', function() {
                 traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
+
+            it('only if hovertemplate is not defined', function() {
+                layout._dataLength = 1;
+
+                traceIn = {};
+                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter', hovertemplate: '%{y}'}, 0, layout);
+                expect(traceOut.hoverinfo).toBeUndefined();
+            });
         });
     });
 

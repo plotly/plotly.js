@@ -172,7 +172,7 @@ module.exports = function(gd) {
                 placeholder: fullLayout._dfltTitle.x,
                 attributes: {
                     x: axisOpts._offset + axisOpts._length / 2,
-                    y: y + opts._height + opts._offsetShift + 10 + 1.5 * axisOpts.titlefont.size,
+                    y: y + opts._height + opts._offsetShift + 10 + 1.5 * axisOpts.title.font.size,
                     'text-anchor': 'middle'
                 }
             });
@@ -286,7 +286,7 @@ function setDataRange(rangeSlider, gd, axisOpts, opts) {
         dataMax = clamp(opts.p2d(opts._pixelMax));
 
     window.requestAnimationFrame(function() {
-        Registry.call('relayout', gd, axisOpts._name + '.range', [dataMin, dataMax]);
+        Registry.call('_guiRelayout', gd, axisOpts._name + '.range', [dataMin, dataMax]);
     });
 }
 
@@ -401,7 +401,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
 
     rangePlots.enter().append('g')
         .attr('class', function(id) { return constants.rangePlotClassName + ' ' + id; })
-        .call(Drawing.setClipUrl, opts._clipId);
+        .call(Drawing.setClipUrl, opts._clipId, gd);
 
     rangePlots.order();
 

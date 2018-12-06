@@ -325,10 +325,10 @@ describe('Test splom trace defaults:', function() {
         });
 
         var fullLayout = gd._fullLayout;
-        expect(fullLayout.xaxis.title).toBe('A');
-        expect(fullLayout.yaxis.title).toBe('A');
-        expect(fullLayout.xaxis2.title).toBe('B');
-        expect(fullLayout.yaxis2.title).toBe('B');
+        expect(fullLayout.xaxis.title.text).toBe('A');
+        expect(fullLayout.yaxis.title.text).toBe('A');
+        expect(fullLayout.xaxis2.title.text).toBe('B');
+        expect(fullLayout.yaxis2.title.text).toBe('B');
     });
 
     it('should set axis title default using dimensions *label* (even visible false dimensions)', function() {
@@ -346,12 +346,12 @@ describe('Test splom trace defaults:', function() {
         });
 
         var fullLayout = gd._fullLayout;
-        expect(fullLayout.xaxis.title).toBe('A');
-        expect(fullLayout.yaxis.title).toBe('A');
-        expect(fullLayout.xaxis2.title).toBe('B');
-        expect(fullLayout.yaxis2.title).toBe('B');
-        expect(fullLayout.xaxis3.title).toBe('C');
-        expect(fullLayout.yaxis3.title).toBe('C');
+        expect(fullLayout.xaxis.title.text).toBe('A');
+        expect(fullLayout.yaxis.title.text).toBe('A');
+        expect(fullLayout.xaxis2.title.text).toBe('B');
+        expect(fullLayout.yaxis2.title.text).toBe('B');
+        expect(fullLayout.xaxis3.title.text).toBe('C');
+        expect(fullLayout.yaxis3.title.text).toBe('C');
     });
 
     it('should ignore (x|y)axes values beyond dimensions length', function() {
@@ -382,12 +382,12 @@ describe('Test splom trace defaults:', function() {
             'x2y', 'x2y2', 'x2y3',
             'x3y', 'x3y2', 'x3y3'
         ]);
-        expect(fullLayout.xaxis.title).toBe('A');
-        expect(fullLayout.yaxis.title).toBe('A');
-        expect(fullLayout.xaxis2.title).toBe('B');
-        expect(fullLayout.yaxis2.title).toBe('B');
-        expect(fullLayout.xaxis3.title).toBe('C');
-        expect(fullLayout.yaxis3.title).toBe('C');
+        expect(fullLayout.xaxis.title.text).toBe('A');
+        expect(fullLayout.yaxis.title.text).toBe('A');
+        expect(fullLayout.xaxis2.title.text).toBe('B');
+        expect(fullLayout.yaxis2.title.text).toBe('B');
+        expect(fullLayout.xaxis3.title.text).toBe('C');
+        expect(fullLayout.yaxis3.title.text).toBe('C');
         expect(fullLayout.xaxis4).toBe(undefined);
         expect(fullLayout.yaxis4).toBe(undefined);
     });
@@ -422,12 +422,12 @@ describe('Test splom trace defaults:', function() {
         ]);
         expect(fullLayout.xaxis).toBe(undefined);
         expect(fullLayout.yaxis).toBe(undefined);
-        expect(fullLayout.xaxis2.title).toBe('A');
-        expect(fullLayout.yaxis2.title).toBe('A');
-        expect(fullLayout.xaxis3.title).toBe('B');
-        expect(fullLayout.yaxis3.title).toBe('B');
-        expect(fullLayout.xaxis4.title).toBe('C');
-        expect(fullLayout.yaxis4.title).toBe('C');
+        expect(fullLayout.xaxis2.title.text).toBe('A');
+        expect(fullLayout.yaxis2.title.text).toBe('A');
+        expect(fullLayout.xaxis3.title.text).toBe('B');
+        expect(fullLayout.yaxis3.title.text).toBe('B');
+        expect(fullLayout.xaxis4.title.text).toBe('C');
+        expect(fullLayout.yaxis4.title.text).toBe('C');
         expect(fullLayout.xaxis5).toBe(undefined);
         expect(fullLayout.yaxis5).toBe(undefined);
     });
@@ -1079,7 +1079,7 @@ describe('Test splom update switchboard:', function() {
 
             methods = [
                 [Plots, 'supplyDefaults'],
-                [Axes, 'doTicks'],
+                [Axes, 'draw'],
                 [regl, 'clear'],
                 [splomGrid, 'update']
             ];
@@ -1094,7 +1094,7 @@ describe('Test splom update switchboard:', function() {
 
             assertSpies(msg, [
                 ['supplyDefaults', 0],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['splom grid update', 1],
                 ['splom grid draw', 1],
@@ -1123,7 +1123,7 @@ describe('Test splom update switchboard:', function() {
             methods = [
                 [Plots, 'supplyDefaults'],
                 [Plots, 'doCalcdata'],
-                [Axes, 'doTicks'],
+                [Axes, 'draw'],
                 [regl, 'clear'],
                 [matrix, 'update'],
                 [matrix, 'draw']
@@ -1143,7 +1143,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1160,7 +1160,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1185,7 +1185,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1206,7 +1206,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 1],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1224,7 +1224,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 1],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1242,7 +1242,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['clear', 1],
                 ['update', 1],
                 ['draw', 1]

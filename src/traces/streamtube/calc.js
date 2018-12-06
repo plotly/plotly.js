@@ -43,7 +43,11 @@ module.exports = function calc(gd, trace) {
         normMin = Math.min(normMin, norm);
     }
 
-    colorscaleCalc(trace, [normMin, normMax], '', 'c');
+    colorscaleCalc(gd, trace, {
+        vals: [normMin, normMax],
+        containerStr: '',
+        cLetter: 'c'
+    });
 
     var xMax = -Infinity;
     var xMin = Infinity;

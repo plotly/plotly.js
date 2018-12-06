@@ -228,7 +228,7 @@ describe('plot schema', function() {
 
         assertPlotSchema(
             function(attr, attrName, attrs, level, attrString) {
-                if(attr && isPlainObject(attr[DEPRECATED])) {
+                if(attr && isPlainObject(attr[DEPRECATED]) && isValObject(attr[DEPRECATED])) {
                     Object.keys(attr[DEPRECATED]).forEach(function(dAttrName) {
                         var dAttr = attr[DEPRECATED][dAttrName];
 

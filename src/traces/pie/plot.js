@@ -99,20 +99,25 @@ module.exports = function plot(gd, cdpie) {
 
                     // in case we dragged over the pie from another subplot,
                     // or if hover is turned off
-                    if(hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo) {
+                    if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
                         var rInscribed = getInscribedRadiusFraction(pt, cd0);
                         var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
                         var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
                         var separators = fullLayout.separators;
                         var thisText = [];
 
-                        if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
-                        if(hoverinfo.indexOf('text') !== -1) {
-                            var texti = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+                        if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+                        pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+                        if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
+                            var texti = pt.text;
                             if(texti) thisText.push(texti);
                         }
-                        if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
-                        if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
+                        pt.value = pt.v;
+                        pt.valueLabel = helpers.formatPieValue(pt.v, separators);
+                        if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
+                        pt.percent = pt.v / cd0.vTotal;
+                        pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
+                        if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
 
                         var hoverLabel = trace.hoverlabel;
                         var hoverFont = hoverLabel.font;
@@ -122,13 +127,18 @@ module.exports = function plot(gd, cdpie) {
                             x1: hoverCenterX + rInscribed * cd0.r,
                             y: hoverCenterY,
                             text: thisText.join('<br>'),
-                            name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
+                            name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                             idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
                             color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
                             borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
                             fontFamily: helpers.castOption(hoverFont.family, pt.pts),
                             fontSize: helpers.castOption(hoverFont.size, pt.pts),
-                            fontColor: helpers.castOption(hoverFont.color, pt.pts)
+                            fontColor: helpers.castOption(hoverFont.color, pt.pts),
+
+                            trace: trace2,
+                            hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
+                            hovertemplateLabels: pt,
+                            eventData: [eventData(pt, trace2)]
                         }, {
                             container: fullLayout2._hoverlayer.node(),
                             outerContainer: fullLayout2._paper.node(),
@@ -312,7 +322,7 @@ module.exports = function plot(gd, cdpie) {
 
             // add the title
             var titleTextGroup = d3.select(this).selectAll('g.titletext')
-                .data(trace.title ? [0] : []);
+                .data(trace.title.text ? [0] : []);
 
             titleTextGroup.enter().append('g')
                 .classed('titletext', true);
@@ -324,18 +334,18 @@ module.exports = function plot(gd, cdpie) {
                     s.attr('data-notex', 1);
                 });
 
-                titleText.text(trace.title)
+                titleText.text(trace.title.text)
                     .attr({
                         'class': 'titletext',
                         transform: '',
                         'text-anchor': 'middle',
                     })
-                .call(Drawing.font, trace.titlefont)
+                .call(Drawing.font, trace.title.font)
                 .call(svgTextUtils.convertToTspans, gd);
 
                 var transform;
 
-                if(trace.titleposition === 'middle center') {
+                if(trace.title.position === 'middle center') {
                     transform = positionTitleInside(cd0);
                 } else {
                     transform = positionTitleOutside(cd0, fullLayout._size);
@@ -463,11 +473,11 @@ function prerenderTitles(cdpie, gd) {
         cd0 = cdpie[i][0];
         trace = cd0.trace;
 
-        if(trace.title) {
+        if(trace.title.text) {
             var dummyTitle = Drawing.tester.append('text')
               .attr('data-notex', 1)
-              .text(trace.title)
-              .call(Drawing.font, trace.titlefont)
+              .text(trace.title.text)
+              .call(Drawing.font, trace.title.font)
               .call(svgTextUtils.convertToTspans, gd);
             var bBox = Drawing.bBox(dummyTitle.node(), true);
             cd0.titleBox = {
@@ -569,7 +579,7 @@ function positionTitleInside(cd0) {
         y: cd0.cy,
         scale: cd0.trace.hole * cd0.r * 2 / textDiameter,
         tx: 0,
-        ty: - cd0.titleBox.height / 2 + cd0.trace.titlefont.size
+        ty: - cd0.titleBox.height / 2 + cd0.trace.title.font.size
     };
 }
 
@@ -592,25 +602,25 @@ function positionTitleOutside(cd0, plotSize) {
     // we reason below as if the baseline is the top middle point of the text box.
     // so we must add the font size to approximate the y-coord. of the top.
     // note that this correction must happen after scaling.
-    translate.ty += trace.titlefont.size;
+    translate.ty += trace.title.font.size;
     maxPull = getMaxPull(trace);
 
-    if(trace.titleposition.indexOf('top') !== -1) {
+    if(trace.title.position.indexOf('top') !== -1) {
         topMiddle.y -= (1 + maxPull) * cd0.r;
         translate.ty -= cd0.titleBox.height;
     }
-    else if(trace.titleposition.indexOf('bottom') !== -1) {
+    else if(trace.title.position.indexOf('bottom') !== -1) {
         topMiddle.y += (1 + maxPull) * cd0.r;
     }
 
-    if(trace.titleposition.indexOf('left') !== -1) {
+    if(trace.title.position.indexOf('left') !== -1) {
         // we start the text at the left edge of the pie
         maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2 + cd0.r;
         topMiddle.x -= (1 + maxPull) * cd0.r;
         translate.tx += cd0.titleBox.width / 2;
-    } else if(trace.titleposition.indexOf('center') !== -1) {
+    } else if(trace.title.position.indexOf('center') !== -1) {
         maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
-    } else if(trace.titleposition.indexOf('right') !== -1) {
+    } else if(trace.title.position.indexOf('right') !== -1) {
         maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2 + cd0.r;
         topMiddle.x += (1 + maxPull) * cd0.r;
         translate.tx -= cd0.titleBox.width / 2;
@@ -764,7 +774,7 @@ function scalePies(cdpie, plotSize) {
         pieBoxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
         pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
         // leave some space for the title, if it will be displayed outside
-        if(trace.title && trace.titleposition !== 'middle center') {
+        if(trace.title.text && trace.title.position !== 'middle center') {
             pieBoxHeight -= getTitleSpace(cd0, plotSize);
         }
 
@@ -774,7 +784,7 @@ function scalePies(cdpie, plotSize) {
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
         cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - pieBoxHeight / 2;
-        if(trace.title && trace.titleposition.indexOf('bottom') !== -1) {
+        if(trace.title.text && trace.title.position.indexOf('bottom') !== -1) {
             cd0.cy -= getTitleSpace(cd0, plotSize);
         }
 

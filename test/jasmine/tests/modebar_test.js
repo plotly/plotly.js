@@ -45,6 +45,7 @@ describe('ModeBar', function() {
             _fullData: [],
             _context: {
                 displaylogo: true,
+                showSendToCloud: false,
                 displayModeBar: true,
                 modeBarButtonsToRemove: [],
                 modeBarButtonsToAdd: [],
@@ -55,15 +56,15 @@ describe('ModeBar', function() {
     }
 
     function countGroups(modeBar) {
-        return d3.select(modeBar.element).selectAll('div.modebar-group')[0].length;
+        return d3.select(modeBar.element).selectAll('div.modebar-group').size();
     }
 
     function countButtons(modeBar) {
-        return d3.select(modeBar.element).selectAll('a.modebar-btn')[0].length;
+        return d3.select(modeBar.element).selectAll('a.modebar-btn').size();
     }
 
     function countLogo(modeBar) {
-        return d3.select(modeBar.element).selectAll('a.plotlyjsicon')[0].length;
+        return d3.select(modeBar.element).selectAll('a.plotlyjsicon').size();
     }
 
     function checkBtnAttr(modeBar, index, attr) {
@@ -334,7 +335,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (unselectable cartesian version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
@@ -352,7 +353,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (selectable scatter version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
@@ -376,7 +377,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (selectable box version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
@@ -400,7 +401,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (cartesian fixed-axes version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
@@ -415,7 +416,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (gl3d version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
                 ['resetCameraDefault3d', 'resetCameraLastSave3d'],
                 ['hoverClosest3d']
@@ -432,7 +433,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (geo version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['pan2d'],
                 ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
                 ['hoverClosestGeo']
@@ -449,7 +450,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (geo + selected version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['pan2d', 'select2d', 'lasso2d'],
                 ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
                 ['hoverClosestGeo']
@@ -472,7 +473,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (mapbox version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['pan2d'],
                 ['resetViewMapbox'],
                 ['toggleHover']
@@ -489,7 +490,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (mapbox + selected version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['pan2d', 'select2d', 'lasso2d'],
                 ['resetViewMapbox'],
                 ['toggleHover']
@@ -512,7 +513,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (gl2d version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
                 ['hoverClosestGl2d']
@@ -530,7 +531,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (pie version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['hoverClosestPie']
             ]);
 
@@ -545,7 +546,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (cartesian + gl3d version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
                 ['resetViews'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
@@ -562,7 +563,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (cartesian + geo unselectable version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetViews'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
@@ -580,7 +581,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (cartesian + geo selectable version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetViews'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
@@ -604,7 +605,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (cartesian + pie version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
@@ -628,7 +629,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (gl3d + geo version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
                 ['resetViews'],
                 ['toggleHover']
@@ -645,7 +646,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (un-selectable ternary version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d'],
                 ['toggleHover']
             ]);
@@ -661,7 +662,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (selectable ternary version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
                 ['toggleHover']
             ]);
@@ -683,7 +684,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (ternary + cartesian version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom2d', 'pan2d'],
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
@@ -699,7 +700,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (ternary + gl3d version)', function() {
             var buttons = getButtons([
-                ['toImage', 'sendDataToCloud'],
+                ['toImage'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
                 ['resetViews'],
                 ['toggleHover']
@@ -756,6 +757,33 @@ describe('ModeBar', function() {
             expect(countLogo(gd._fullLayout._modeBar)).toEqual(0);
         });
 
+        it('displays/hides cloud link according to showSendToCloud config arg', function() {
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'pie' }];
+            manageModeBar(gd);
+            checkButtons(gd._fullLayout._modeBar, getButtons([
+                ['toImage'],
+                ['hoverClosestPie']
+            ]), 1);
+
+            gd._context.showSendToCloud = true;
+            manageModeBar(gd);
+            checkButtons(gd._fullLayout._modeBar, getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['hoverClosestPie']
+            ]), 1);
+        });
+
+        it('always displays the logo if watermark config arg is true', function() {
+            var gd = getMockGraphInfo();
+            gd._context.displaylogo = false;
+            gd._context.displayModeBar = false;
+            gd._context.watermark = true;
+            manageModeBar(gd);
+            expect(countLogo(gd._fullLayout._modeBar)).toEqual(1);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(1);
+        });
+
         // gives 11 buttons in 5 groups by default
         function setupGraphInfo() {
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -768,10 +796,12 @@ describe('ModeBar', function() {
             var gd = setupGraphInfo();
             manageModeBar(gd);
 
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(11);
+
             gd._fullLayout._basePlotModules = [{ name: 'gl3d' }];
             manageModeBar(gd);
 
-            expect(countButtons(gd._fullLayout._modeBar)).toEqual(10);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(9);
         });
 
         it('updates mode bar buttons if modeBarButtonsToRemove changes', function() {
@@ -779,7 +809,7 @@ describe('ModeBar', function() {
             manageModeBar(gd);
             var initialButtonCount = countButtons(gd._fullLayout._modeBar);
 
-            gd._context.modeBarButtonsToRemove = ['toImage', 'sendDataToCloud'];
+            gd._context.modeBarButtonsToRemove = ['toImage', 'zoom2d'];
             manageModeBar(gd);
 
             expect(countButtons(gd._fullLayout._modeBar))
@@ -819,7 +849,7 @@ describe('ModeBar', function() {
 
             var modeBar = gd._fullLayout._modeBar;
             expect(countGroups(modeBar)).toEqual(6);
-            expect(countButtons(modeBar)).toEqual(11);
+            expect(countButtons(modeBar)).toEqual(10);
         });
 
         it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove (2)', function() {
@@ -839,7 +869,7 @@ describe('ModeBar', function() {
 
             var modeBar = gd._fullLayout._modeBar;
             expect(countGroups(modeBar)).toEqual(7);
-            expect(countButtons(modeBar)).toEqual(13);
+            expect(countButtons(modeBar)).toEqual(12);
         });
 
         it('sets up buttons with fully custom modeBarButtons', function() {
