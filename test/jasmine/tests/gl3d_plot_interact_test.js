@@ -714,7 +714,7 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@gl axis ticks should not be set when axis _length is NaN', function(done) {
+    it('@gl should not set _length to NaN and dtick should be defined.', function(done) {
         Plotly.plot(gd,
             {
                 data: [{
@@ -722,7 +722,7 @@ describe('Test gl3d plots', function() {
                     mode: 'markers',
                     x: [1, 2],
                     y: [3, 4],
-                    z: [5, 6]
+                    z: [0.000000005, 0.000000006]
                 }],
                 layout: {
                     scene: {
@@ -737,8 +737,8 @@ describe('Test gl3d plots', function() {
         )
         .then(function() {
             var zaxis = gd._fullLayout.scene.zaxis;
-            expect(isNaN(zaxis._length)).toBe(true);
-            expect(zaxis.dtick === undefined).toBe(true);
+            expect(isNaN(zaxis._length)).toBe(false);
+            expect(zaxis.dtick === undefined).toBe(false);
         })
         .catch(failTest)
         .then(done);
