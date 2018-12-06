@@ -218,9 +218,9 @@ function arrayLCM(A) {
 }
 
 proto.calcXnums = function(xlen) {
-
+    var i;
     var nums = [];
-    for(var i = 1; i < xlen; i++) {
+    for(i = 1; i < xlen; i++) {
         var a = this.getXat(i - 1, 0);
         var b = this.getXat(i, 0);
 
@@ -234,11 +234,11 @@ proto.calcXnums = function(xlen) {
     }
 
     var totalDist = 0;
-    for(var i = 1; i < xlen; i++) {
+    for(i = 1; i < xlen; i++) {
         totalDist += nums[i - 1];
     }
 
-    for(var i = 1; i < xlen; i++) {
+    for(i = 1; i < xlen; i++) {
         if(nums[i - 1] === 0) {
             nums[i - 1] = 1;
         } else {
@@ -250,9 +250,9 @@ proto.calcXnums = function(xlen) {
 };
 
 proto.calcYnums = function(ylen) {
-
+    var i;
     var nums = [];
-    for(var i = 1; i < ylen; i++) {
+    for(i = 1; i < ylen; i++) {
         var a = this.getYat(0, i - 1);
         var b = this.getYat(0, i);
 
@@ -266,11 +266,11 @@ proto.calcYnums = function(ylen) {
     }
 
     var totalDist = 0;
-    for(var i = 1; i < ylen; i++) {
+    for(i = 1; i < ylen; i++) {
         totalDist += nums[i - 1];
     }
 
-    for(var i = 1; i < ylen; i++) {
+    for(i = 1; i < ylen; i++) {
         if(nums[i - 1] === 0) {
             nums[i - 1] = 1;
         } else {
