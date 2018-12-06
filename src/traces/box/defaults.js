@@ -48,12 +48,12 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
             len = Math.min(Lib.minRowLength(x), Lib.minRowLength(y));
         } else {
             coerce('x0');
-            len = y.length;
+            len = Lib.minRowLength(y);
         }
     } else if(hasX) {
         defaultOrientation = 'h';
         coerce('y0');
-        len = x.length;
+        len = Lib.minRowLength(x);
     } else {
         traceOut.visible = false;
         return;
