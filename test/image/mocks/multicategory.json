@@ -21,8 +21,7 @@
     "xaxis": {
       "title": "MULTI-CATEGORY",
       "tickfont": {"size": 16},
-      "ticks": "outside",
-      "tickson": "boundaries"
+      "ticks": "outside"
     }
   }
 }

@@ -27,7 +27,8 @@
     "xaxis": {
       "title": "MULTI-CATEGORY ON TOP",
       "side": "top",
-      "automargin": true
+      "automargin": true,
+      "tickson": "labels"
     },
     "showlegend": false,
     "width": 400,

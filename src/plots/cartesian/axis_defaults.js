@@ -90,14 +90,18 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(options.automargin) coerce('automargin');
 
+    var isMultiCategory = containerOut.type === 'multicategory';
+
     if(!options.noTickson &&
-        (containerOut.type === 'category' || containerOut.type === 'multicategory') &&
+        (containerOut.type === 'category' || isMultiCategory) &&
         (containerOut.ticks || containerOut.showgrid)
     ) {
-        coerce('tickson');
+        var ticksonDflt;
+        if(isMultiCategory) ticksonDflt = 'boundaries';
+        coerce('tickson', ticksonDflt);
     }
 
-    if(containerOut.type === 'multicategory') {
+    if(isMultiCategory) {
         var showDividers = coerce('showdividers');
         if(showDividers) {
             coerce('dividercolor');
