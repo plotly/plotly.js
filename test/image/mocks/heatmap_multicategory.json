@@ -23,7 +23,7 @@
     ],
     "colorbar": {
       "x": -0.15,
-      "len": 0.3,
+      "len": 0.25,
       "y": 1,
       "yanchor": "top"
     }
@@ -59,8 +59,8 @@
     },
     "colorbar": {
       "x": -0.15,
-      "len": 0.3,
-      "y": 0.5
+      "len": 0.25,
+      "y": 0.65
     }
   }, {
     "type": "heatmap",
@@ -78,7 +78,20 @@
     "colorscale": "Greens",
     "colorbar": {
       "x": -0.15,
-      "len": 0.3,
+      "len": 0.25,
+      "y": 0.35
+    }
+  }, {
+    "type": "heatmap",
+    "name": "w/ x0|y0",
+    "x0": 2,
+    "y0": 2,
+    "z": [[1, 2], [12, 13]],
+    "opacity": 0.4,
+    "colorscale": "Reds",
+    "colorbar": {
+      "x": -0.15,
+      "len": 0.25,
       "y": 0,
       "yanchor": "bottom"
     }
