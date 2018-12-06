@@ -123,8 +123,8 @@ var attrs = {
 
     surfacecolor: {
         valType: 'data_array',
-        //role: 'style',
-        //editType: 'calc',
+        // role: 'style',
+        // editType: 'calc',
         description: [
             'Sets the color of the isosurface.',
             'By default the isosurface color is computed from the colorscale.',
