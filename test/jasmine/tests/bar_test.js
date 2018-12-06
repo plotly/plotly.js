@@ -878,6 +878,24 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
     });
+
+    it('should ignore *base* on category axes', function() {
+        var gd = mockBarPlot([
+            {x: ['a', 'b', 'c'], base: [0.2, -0.2, 1]},
+        ]);
+
+        expect(gd._fullLayout.xaxis.type).toBe('category');
+        assertPointField(gd.calcdata, 'b', [[0, 0, 0]]);
+    });
+
+    it('should ignore *base* on multicategory axes', function() {
+        var gd = mockBarPlot([
+            {x: [['a', 'a', 'b', 'b'], ['1', '2', '1', '2']], base: 10}
+        ]);
+
+        expect(gd._fullLayout.xaxis.type).toBe('multicategory');
+        assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0]]);
+    });
 });
 
 describe('A bar plot', function() {

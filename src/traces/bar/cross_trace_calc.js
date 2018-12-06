@@ -126,11 +126,14 @@ function initBase(gd, pa, sa, calcTraces) {
         // time. But included here for completeness.
         var scalendar = trace.orientation === 'h' ? trace.xcalendar : trace.ycalendar;
 
-        // TODO skip for multicategory size axis?
+        // 'base' on categorical axes makes no sense
+        var d2c = sa.type === 'category' || sa.type === 'multicategory' ?
+            function() { return null; } :
+            sa.d2c;
 
         if(isArrayOrTypedArray(base)) {
             for(j = 0; j < Math.min(base.length, cd.length); j++) {
-                b = sa.d2c(base[j], 0, scalendar);
+                b = d2c(base[j], 0, scalendar);
                 if(isNumeric(b)) {
                     cd[j].b = +b;
                     cd[j].hasB = 1;
@@ -141,7 +144,7 @@ function initBase(gd, pa, sa, calcTraces) {
                 cd[j].b = 0;
             }
         } else {
-            b = sa.d2c(base, 0, scalendar);
+            b = d2c(base, 0, scalendar);
             var hasBase = isNumeric(b);
             b = hasBase ? b : 0;
             for(j = 0; j < cd.length; j++) {
