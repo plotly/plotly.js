@@ -218,10 +218,7 @@ function arrayLCM(A) {
 }
 
 proto.calcXnums = function(xlen) {
-    var maxDist = Math.abs(
-        this.getXat(0, 0) -
-        this.getXat(xlen - 1, 0)
-    );
+
     var nums = [];
     for(var i = 1; i < xlen; i++) {
         var a = this.getXat(i - 1, 0);
@@ -230,21 +227,30 @@ proto.calcXnums = function(xlen) {
         if(b !== a &&
             a !== undefined && a !== null &&
             b !== undefined && b !== null) {
-            nums[i - 1] = Math.round(
-                maxDist / Math.abs(b - a)
-            );
+            nums[i - 1] = Math.abs(b - a);
         } else {
-            nums[i - 1] = 1;
+            nums[i - 1] = 0;
         }
     }
+
+    var totalDist = 0;
+    for(var i = 1; i < xlen; i++) {
+        totalDist += nums[i - 1];
+    }
+
+    for(var i = 1; i < xlen; i++) {
+        if(nums[i - 1] === 0) {
+            nums[i - 1] = 1;
+        } else {
+            nums[i - 1] = Math.round(totalDist);
+        }
+    }
+
     return nums;
 };
 
 proto.calcYnums = function(ylen) {
-    var maxDist = Math.abs(
-        this.getYat(0, 0) -
-        this.getYat(0, ylen - 1)
-    );
+
     var nums = [];
     for(var i = 1; i < ylen; i++) {
         var a = this.getYat(0, i - 1);
@@ -253,13 +259,25 @@ proto.calcYnums = function(ylen) {
         if(b !== a &&
             a !== undefined && a !== null &&
             b !== undefined && b !== null) {
-            nums[i - 1] = Math.round(
-                maxDist / Math.abs(b - a)
-            );
+            nums[i - 1] = Math.abs(b - a);
         } else {
-            nums[i - 1] = 1;
+            nums[i - 1] = 0;
         }
     }
+
+    var totalDist = 0;
+    for(var i = 1; i < ylen; i++) {
+        totalDist += nums[i - 1];
+    }
+
+    for(var i = 1; i < ylen; i++) {
+        if(nums[i - 1] === 0) {
+            nums[i - 1] = 1;
+        } else {
+            nums[i - 1] = Math.round(totalDist);
+        }
+    }
+
     return nums;
 };
 
@@ -269,21 +287,16 @@ var MIN_RESOLUTION = highlyComposites[9];
 var MAX_RESOLUTION = highlyComposites[13];
 
 proto.estimateScale = function(resSrc, axis) {
-    // console.log("axis=", axis);
-    // console.log("resSrc=", resSrc);
-
     var nums = (axis === 0) ?
         this.calcXnums(resSrc) :
         this.calcYnums(resSrc);
 
-    // console.log("nums=", nums);
-
     var resDst = 1 + arrayLCM(nums);
 
-    // console.log("BEFORE: resDst=", resDst);
     while(resDst < MIN_RESOLUTION) {
         resDst *= 2;
     }
+
     while(resDst > MAX_RESOLUTION) {
         resDst--;
         resDst /= smallestDivisor(resDst);
@@ -294,12 +307,8 @@ proto.estimateScale = function(resSrc, axis) {
             resDst = MAX_RESOLUTION; // option 2: use max resolution
         }
     }
-    // console.log("AFTER: resDst=", resDst);
 
     var scale = Math.round(resDst / resSrc);
-
-    // console.log("scale=", resDst, "/", resSrc, "=", scale);
-
     return (scale > 1) ? scale : 1;
 };
 
