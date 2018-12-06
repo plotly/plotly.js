@@ -1756,6 +1756,7 @@ axes.drawOne = function(gd, ax, opts) {
                 vals: getSecondaryLabelVals(ax, vals),
                 layer: mainAxLayer,
                 cls: axId + 'tick2',
+                repositionOnUpdate: true,
                 transFn: transFn,
                 labelXFn: secondaryLabelFns.labelXFn,
                 labelYFn: secondaryLabelFns.labelYFn,
@@ -2283,6 +2284,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
  * - {array of object} vals (calcTicks output-like)
  * - {d3 selection} layer
  * - {string (optional)} cls (node className)
+ * - {boolean} repositionOnUpdate (set to true to reposition update selection)
  * - {fn} transFn
  * - {fn} labelXFn
  * - {fn} labelYFn
@@ -2336,8 +2338,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
     tickLabels.exit().remove();
 
-    // TODO ??
-    if(isAngular(ax)) {
+    if(opts.repositionOnUpdate) {
         tickLabels.each(function(d) {
             d3.select(this).select('text')
                 .call(svgTextUtils.positionText, labelXFn(d), labelYFn(d));
