@@ -268,7 +268,7 @@ describe('Test axes', function() {
                 checkTypes('date', 'linear');
             });
 
-            it('needs one *true* category inner-array to be consider *multicategory*', function() {
+            it('2d coordinate array are considered *multicategory*', function() {
                 supplyWithTrace({
                     x: [
                         [2018, 2018, 2017, 2017],
@@ -280,6 +280,42 @@ describe('Test axes', function() {
                     ]
                 });
                 checkTypes('multicategory', 'multicategory');
+
+                supplyWithTrace({
+                    x: [
+                        [2018, 2018, 2017, 2017],
+                        [2018, 2018, 2017, 2017]
+                    ],
+                    y: [
+                        ['2018', '2018', '2017', '2017'],
+                        ['2018', '2018', '2017', '2017']
+                    ]
+                });
+                checkTypes('multicategory', 'multicategory');
+
+                supplyWithTrace({
+                    x: [
+                        [2018, 2018, 2017, 2017]
+                    ],
+                    y: [
+                        null,
+                        ['d', 'e', 'f']
+                    ]
+                });
+                checkTypes('linear', 'linear');
+
+                supplyWithTrace({
+                    type: 'carpet',
+                    x: [
+                        [2018, 2018, 2017, 2017],
+                        ['a', 'b', 'a', 'b']
+                    ],
+                    y: [
+                        ['a', 'b', 'c'],
+                        ['d', 'e', 'f']
+                    ]
+                });
+                checkTypes('linear', 'linear');
             });
         });
 
