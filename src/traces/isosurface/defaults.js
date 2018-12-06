@@ -33,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    coerce('color');
+    coerce('surfacecolor');
 
     coerce('isomin');
     coerce('isomax');

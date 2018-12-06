@@ -121,10 +121,10 @@ var attrs = {
         description: 'Whether to generate isocaps for the isosurface. By default this is set to true.'
     },
 
-    color: {
-        valType: 'color',
-        role: 'style',
-        editType: 'calc',
+    surfacecolor: {
+        valType: 'data_array',
+        //role: 'style',
+        //editType: 'calc',
         description: [
             'Sets the color of the isosurface.',
             'By default the isosurface color is computed from the colorscale.',
