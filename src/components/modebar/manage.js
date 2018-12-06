@@ -64,7 +64,8 @@ module.exports = function manageModeBar(gd) {
         buttonGroups = getButtonGroups(
             gd,
             context.modeBarButtonsToRemove,
-            context.modeBarButtonsToAdd
+            context.modeBarButtonsToAdd,
+            context.showSendToCloud
         );
     }
 
@@ -73,7 +74,7 @@ module.exports = function manageModeBar(gd) {
 };
 
 // logic behind which buttons are displayed by default
-function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
+function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
 
@@ -104,7 +105,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     }
 
     // buttons common to all plot types
-    addGroup(['toImage', 'sendDataToCloud']);
+    var commonGroup = ['toImage'];
+    if(showSendToCloud) commonGroup.push('sendDataToCloud');
+    addGroup(commonGroup);
 
     var zoomGroup = [];
     var hoverGroup = [];
