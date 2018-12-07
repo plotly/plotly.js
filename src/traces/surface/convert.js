@@ -27,7 +27,6 @@ function SurfaceTrace(scene, surface, uid) {
     this.showContour = [false, false, false];
     this.minValues = [Infinity, Infinity, Infinity];
     this.maxValues = [-Infinity, -Infinity, -Infinity];
-    this.midValues = [0, 0, 0];
     this.dataScaleX = 1.0;
     this.dataScaleY = 1.0;
     this.refineData = true;
@@ -438,7 +437,7 @@ proto.update = function(data) {
     }
 
     for(i = 0; i < 3; i++) {
-        data._objectOffset[i] = this.midValues[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
+        data._objectOffset[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
     }
 
     for(i = 0; i < 3; i++) {
@@ -446,7 +445,7 @@ proto.update = function(data) {
             for(k = 0; k < ylen; k++) {
                 v = rawCoords[i][j][k];
                 if(v !== null && v !== undefined) {
-                    rawCoords[i][j][k] -= this.midValues[i];
+                    rawCoords[i][j][k] -= data._objectOffset[i];
                 }
             }
         }
