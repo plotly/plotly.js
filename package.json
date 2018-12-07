@@ -80,7 +80,7 @@
     "gl-plot2d": "^1.4.0",
     "gl-plot3d": "^1.6.1",
     "gl-pointcloud2d": "^1.0.1",
-    "gl-scatter3d": "^1.1.0",
+    "gl-scatter3d": "^1.1.2",
     "gl-select-box": "^1.0.2",
     "gl-spikes2d": "^1.0.1",
     "gl-streamtube3d": "^1.1.1",
