@@ -19,7 +19,7 @@ module.exports = function(opts, extra) {
         for(var i = 0; i < keys.length; i++) {
             quotedKeys[i] = '`' + keys[i] + '`';
         }
-        descPart = descPart + 'Finally, this trace also supports ';
+        descPart = descPart + 'Finally, the template string has access to ';
         if(keys.length === 1) {
             descPart = 'variable ' + quotedKeys[0];
         } else {
