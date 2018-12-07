@@ -241,7 +241,7 @@ proto.calcXnums = function(xlen) {
         if(nums[i - 1] === 0) {
             nums[i - 1] = 1;
         } else {
-            nums[i - 1] = Math.round(totalDist);
+            nums[i - 1] = Math.round(totalDist / nums[i - 1]);
         }
     }
 
@@ -273,7 +273,7 @@ proto.calcYnums = function(ylen) {
         if(nums[i - 1] === 0) {
             nums[i - 1] = 1;
         } else {
-            nums[i - 1] = Math.round(totalDist);
+            nums[i - 1] = Math.round(totalDist / nums[i - 1]);
         }
     }
 
