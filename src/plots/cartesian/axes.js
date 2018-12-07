@@ -2046,7 +2046,7 @@ axes.makeTickPath = function(ax, shift, sgn, len) {
     len = len !== undefined ? len : ax.ticklen;
 
     var axLetter = ax._id.charAt(0);
-    var pad = (ax.linewidth || 1) / 2;
+    var pad = (ax.linewidth || (ax.ticks === 'outside' ? 0 : 1)) / 2;
 
     return axLetter === 'x' ?
         'M0,' + (shift + pad * sgn) + 'v' + (len * sgn) :
