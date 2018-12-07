@@ -1759,6 +1759,7 @@ axes.drawOne = function(gd, ax, opts) {
                 layer: mainAxLayer,
                 cls: axId + 'tick2',
                 repositionOnUpdate: true,
+                secondary: true,
                 transFn: transFn,
                 labelXFn: secondaryLabelFns.labelXFn,
                 labelYFn: secondaryLabelFns.labelYFn,
@@ -2295,6 +2296,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
  * - {d3 selection} layer
  * - {string (optional)} cls (node className)
  * - {boolean} repositionOnUpdate (set to true to reposition update selection)
+ * - {boolean} secondary
  * - {fn} transFn
  * - {fn} labelXFn
  * - {fn} labelYFn
@@ -2310,7 +2312,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var labelXFn = opts.labelXFn;
     var labelYFn = opts.labelYFn;
     var labelAnchorFn = opts.labelAnchorFn;
-    var tickAngle = ax.tickangle;
+    var tickAngle = opts.secondary ? 0 : ax.tickangle;
     var lastAngle = (ax._tickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
@@ -2459,7 +2461,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
             });
 
-            if((ax.tickson === 'boundaries' || ax.showdividers) && cls === ax._id + 'tick') {
+            if((ax.tickson === 'boundaries' || ax.showdividers) && !opts.secondary) {
                 var gap = 2;
                 if(ax.ticks) gap += ax.tickwidth / 2;
 

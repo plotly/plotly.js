@@ -83,6 +83,9 @@
       }
    ],
    "layout":{
+      "xaxis": {
+         "tickangle": 90
+      },
       "yaxis":{
          "zeroline":false,
          "title":"normalized moisture"
