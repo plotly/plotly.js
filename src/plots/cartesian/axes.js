@@ -1639,6 +1639,8 @@ axes.drawOne = function(gd, ax, opts) {
     // stash selections to avoid DOM queries e.g.
     // - stash tickLabels selection, so that drawTitle can use it to scoot title
     ax._selections = {};
+    // stash tick angle (including the computed 'auto' values) per tick-label class
+    ax._tickAngles = {};
 
     var transFn = axes.makeTransFn(ax);
     var tickVals;
@@ -1748,7 +1750,7 @@ axes.drawOne = function(gd, ax, opts) {
 
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick') + pad;
-            labelLength += ax._lastangle ? ax.tickfont.size * LINE_SPACING : 0;
+            labelLength += ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0;
             var secondaryPosition = mainLinePosition + labelLength * tickSigns[2];
             var secondaryLabelFns = axes.makeLabelFns(ax, secondaryPosition);
 
@@ -1973,19 +1975,26 @@ function getDividerVals(ax, vals) {
 }
 
 function getLabelLevelSpan(ax, cls) {
-    var out = 0;
-    var k = {x: 'height', y: 'width'}[ax._id.charAt(0)];
+    var axLetter = ax._id.charAt(0);
+    var angle = ax._tickAngles[cls] || 0;
+    var rad = Lib.deg2rad(angle);
+    var sinA = Math.sin(rad);
+    var cosA = Math.cos(rad);
+    var maxX = 0;
+    var maxY = 0;
+
+    // N.B. Drawing.bBox does not take into account rotate transforms
 
     ax._selections[cls].each(function() {
         var thisLabel = selectTickLabel(this);
-
-        // TODO Drawing.bBox doesn't work when labels are rotated
-        // var bb = Drawing.bBox(thisLabel.node());
-        var bb = thisLabel.node().getBoundingClientRect();
-        out = Math.max(out, bb[k]);
+        var bb = Drawing.bBox(thisLabel.node());
+        var w = bb.width;
+        var h = bb.height;
+        maxX = Math.max(maxX, cosA * w, sinA * h);
+        maxY = Math.max(maxY, sinA * w, cosA * h);
     });
 
-    return out;
+    return {x: maxY, y: maxX}[axLetter];
 }
 
 /**
@@ -2280,6 +2289,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
  *  - {boolean} showticklabels
  *  - {number} tickangle
  *  - {object (optional)} _selections
+ *  - {object} (optional)} _tickAngles
  * @param {object} opts
  * - {array of object} vals (calcTicks output-like)
  * - {d3 selection} layer
@@ -2300,6 +2310,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var labelXFn = opts.labelXFn;
     var labelYFn = opts.labelYFn;
     var labelAnchorFn = opts.labelAnchorFn;
+    var tickAngle = ax.tickangle;
+    var lastAngle = (ax._tickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
         .data(ax.showticklabels ? vals : [], makeDataFn(ax));
@@ -2328,11 +2340,11 @@ axes.drawLabels = function(gd, ax, opts) {
                     // instead position the label and promise this in
                     // labelsReady
                     labelsReady.push(gd._promises.pop().then(function() {
-                        positionLabels(thisLabel, ax.tickangle);
+                        positionLabels(thisLabel, tickAngle);
                     }));
                 } else {
                     // sync label: just position it now.
-                    positionLabels(thisLabel, ax.tickangle);
+                    positionLabels(thisLabel, tickAngle);
                 }
             });
 
@@ -2405,21 +2417,25 @@ axes.drawLabels = function(gd, ax, opts) {
     // do this without waiting, using the last calculated angle to
     // minimize flicker, then do it again when we know all labels are
     // there, putting back the prescribed angle to check for overlaps.
-    positionLabels(tickLabels, ax._lastangle || ax.tickangle);
+    positionLabels(tickLabels, lastAngle || tickAngle);
 
     function allLabelsReady() {
         return labelsReady.length && Promise.all(labelsReady);
     }
 
     function fixLabelOverlaps() {
-        positionLabels(tickLabels, ax.tickangle);
+        positionLabels(tickLabels, tickAngle);
+
+        var autoangle = null;
 
         // check for auto-angling if x labels overlap
         // don't auto-angle at all for log axes with
         // base and digit format
-        if(vals.length && axLetter === 'x' && !isNumeric(ax.tickangle) &&
+        if(vals.length && axLetter === 'x' && !isNumeric(tickAngle) &&
             (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')
         ) {
+            autoangle = 0;
+
             var maxFontSize = 0;
             var lbbArray = [];
             var i;
@@ -2442,8 +2458,6 @@ axes.drawLabels = function(gd, ax, opts) {
                     width: bb.width + 2
                 });
             });
-
-            var autoangle = 0;
 
             if((ax.tickson === 'boundaries' || ax.showdividers) && cls === ax._id + 'tick') {
                 var gap = 2;
@@ -2479,7 +2493,12 @@ axes.drawLabels = function(gd, ax, opts) {
             if(autoangle) {
                 positionLabels(tickLabels, autoangle);
             }
-            ax._lastangle = autoangle;
+        }
+
+        if(ax._tickAngles) {
+            ax._tickAngles[cls] = autoangle === null ?
+                (isNumeric(tickAngle) ? tickAngle : 0) :
+                autoangle;
         }
     }
 

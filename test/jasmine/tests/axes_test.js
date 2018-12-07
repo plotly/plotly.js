@@ -2964,7 +2964,7 @@ describe('Test axes', function() {
 
             Plotly.plot(gd, data)
             .then(function() {
-                expect(gd._fullLayout.xaxis._lastangle).toBe(30);
+                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBe(30);
 
                 initialSize = previousSize = Lib.extendDeep({}, gd._fullLayout._size);
                 return Plotly.relayout(gd, {'yaxis.automargin': true});
