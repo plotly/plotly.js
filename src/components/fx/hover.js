@@ -944,7 +944,7 @@ function createHoverText(hoverData, opts, gd) {
             yLetter = gd._fullLayout.scene.yaxis.title.text || 'y';
             zLetter = gd._fullLayout.scene.zaxis.title.text || 'z';
         }
-        else if(!gd._fullLayout.ternary) {
+        else if(!gd._fullLayout.ternary && !gd._fullLayout.title) {
             xLetter = gd._fullLayout.xaxis.title.text || 'x';
             yLetter = gd._fullLayout.yaxis.title.text || 'y';
         }
