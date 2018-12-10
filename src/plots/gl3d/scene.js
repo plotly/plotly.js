@@ -246,9 +246,9 @@ function initializeGLPlot(scene, canvas, gl) {
             center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
             eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
             up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+            ortho: cameraData.ortho,
             zoomMin: 0.1,
             zoomMax: 100,
-            ortho: cameraData.ortho,
             mode: 'orbit'
         });
     }
@@ -675,7 +675,7 @@ function getOrbitCamera(camera) {
     return [
         [camera.eye.x, camera.eye.y, camera.eye.z],
         [camera.center.x, camera.center.y, camera.center.z],
-        [camera.up.x, camera.up.y, camera.up.z]
+        [camera.up.x, camera.up.y, camera.up.z] // , camera.ortho // ?
     ];
 }
 
@@ -683,10 +683,10 @@ function getOrbitCamera(camera) {
 // inverse of getOrbitCamera
 function getLayoutCamera(camera) {
     return {
-        ortho: camera.ortho,
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
         center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
-        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]}
+        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]},
+        ortho: camera.ortho
     };
 }
 

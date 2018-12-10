@@ -37,8 +37,8 @@ function createCamera(element, options) {
         center: options.center || [0, 0, 0],
         up: options.up || [0, 1, 0],
         eye: options.eye || [0, 0, 10],
-        mode: options.mode || 'orbit',
         ortho: options.ortho || false,
+        mode: options.mode || 'orbit',
         distanceLimits: limits
     });
 
@@ -155,6 +155,18 @@ function createCamera(element, options) {
             },
             enumerable: true
         },
+        /*
+        ortho: {
+            get: function() {
+                return view.computedOrtho;
+            },
+            set: function(northo) {
+                // do nothing (i.e. for the moment)...
+                return view.computedOrtho;
+            },
+            enumerable: true
+        },
+        */
         distance: {
             get: function() {
                 return distance;
