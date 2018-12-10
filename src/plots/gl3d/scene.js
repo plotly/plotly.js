@@ -241,9 +241,6 @@ function initializeGLPlot(scene, canvas, gl) {
     }
 
     if(!scene.camera) {
-
-console.log("Hello!");
-
         var cameraData = scene.fullSceneLayout.camera;
         scene.camera = createCamera(scene.container, {
             center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
