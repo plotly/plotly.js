@@ -33,7 +33,7 @@ module.exports = function calc(gd, trace, opts) {
             updateStyle(trace._input, containerStr ? (containerStr + '.' + attr) : attr, inputVal);
         }
         else {
-            inputContainer[attr] = inputVal;
+            trace._input[attr] = inputVal;
         }
 
         container[attr] = fullVal;
