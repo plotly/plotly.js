@@ -935,10 +935,24 @@ function createHoverText(hoverData, opts, gd) {
             }
         }
 
+        var xLetter;
+        var yLetter;
+        var zLetter;
+
+        if(gd._fullLayout.scene) {
+            xLetter = gd._fullLayout.scene.xaxis.title.text || 'x';
+            yLetter = gd._fullLayout.scene.yaxis.title.text || 'y';
+            zLetter = gd._fullLayout.scene.zaxis.title.text || 'z';
+        }
+        else {
+            xLetter = gd._fullLayout.xaxis.title.text || 'x';
+            yLetter = gd._fullLayout.yaxis.title.text || 'y';
+        }
+
         if(d.zLabel !== undefined) {
-            if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
-            if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
-            text += (text ? 'z: ' : '') + d.zLabel;
+            if(d.xLabel !== undefined) text += xLetter + ': ' + d.xLabel + '<br>';
+            if(d.yLabel !== undefined) text += yLetter + ': ' + d.yLabel + '<br>';
+            text += (text ? zLetter + ': ' : '') + d.zLabel;
         }
         else if(showCommonLabel && d[hovermode + 'Label'] === t0) {
             text = d[(hovermode === 'x' ? 'y' : 'x') + 'Label'] || '';
