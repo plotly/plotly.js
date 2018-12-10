@@ -2,28 +2,72 @@
     "data": [
       {
         "type": "heatmap",
-        "x": [0, 1, 2],
-        "y": [0, 1, 2],
+        "zsmooth": "best",
+        "x": [0, 1, 2, 3, 4],
+        "y": [0, 1, 2, 3, 4],
         "z": [
-          [0, 1, 0],
-          [1, 0, 1],
-          [0, 1, 0]
+          [0, 1, 0, 1, 0],
+          [1, 0.25, 0.75, 0.25, 1],
+          [0, 0.75, 0.25, 0.75, 0],
+          [1, 0.25, 0.75, 0.25, 1],
+          [0, 1, 0, 1, 0]
         ]
       },
       {
         "type": "surface",
-        "x": [0, 1, 2],
-        "y": [0, 1, 2],
+        "x": [0, 1, 2, 3, 4],
+        "y": [0, 1, 2, 3, 4],
         "z": [
-          [0, 1, 0],
-          [1, 0, 1],
-          [0, 1, 0]
+          [0, 1, 0, 1, 0],
+          [1, 0.25, 0.75, 0.25, 1],
+          [0, 0.75, 0.25, 0.75, 0],
+          [1, 0.25, 0.75, 0.25, 1],
+          [0, 1, 0, 1, 0]
         ]
       }
     ],
     "layout": {
         "title": "Surface 3d plot on top of 2d heatmap!",
         "width": 600,
-        "height": 400
+        "height": 400,
+        "xaxis": {
+          "hovertitle": "lon",
+          "title": {
+            "text": "Longitude"
+          }
+        },
+        "yaxis": {
+          "hovertitle": "lat",
+          "title": {
+            "text": "Latitude"
+          }
+        },
+        "scene": {
+          "xaxis": {
+            "hovertitle": "lon",
+            "title": {
+              "text": "Longitude"
+            }
+          },
+          "yaxis": {
+            "hovertitle": "lat",
+            "title": {
+              "text": "Latitude"
+            }
+          },
+          "zaxis": {
+            "hovertitle": "alt",
+            "title": {
+              "text": "Altitude"
+            }
+          },
+          "camera": {
+            "eye": {
+              "x": 2,
+              "y": 2,
+              "z": 2
+            }
+          }
+        }
     }
 }

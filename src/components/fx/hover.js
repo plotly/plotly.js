@@ -931,10 +931,24 @@ function createHoverText(hoverData, opts, gd) {
             });
         }
 
+        var xLetter = 'x';
+        var yLetter = 'y';
+        var zLetter = 'z';
+
+        if(gd._fullLayout.scene) {
+            xLetter = gd._fullLayout.scene.xaxis.hovertitle || xLetter;
+            yLetter = gd._fullLayout.scene.yaxis.hovertitle || yLetter;
+            zLetter = gd._fullLayout.scene.zaxis.hovertitle || zLetter;
+        }
+        else if(!gd._fullLayout.ternary && !gd._fullLayout.title) {
+            xLetter = gd._fullLayout.xaxis.hovertitle || xLetter;
+            yLetter = gd._fullLayout.yaxis.hovertitle || yLetter;
+        }
+
         if(d.zLabel !== undefined) {
-            if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
-            if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
-            text += (text ? 'z: ' : '') + d.zLabel;
+            if(d.xLabel !== undefined) text += xLetter + ': ' + d.xLabel + '<br>';
+            if(d.yLabel !== undefined) text += yLetter + ': ' + d.yLabel + '<br>';
+            text += (text ? zLetter + ': ' : '') + d.zLabel;
         }
         else if(showCommonLabel && d[hovermode + 'Label'] === t0) {
             text = d[(hovermode === 'x' ? 'y' : 'x') + 'Label'] || '';

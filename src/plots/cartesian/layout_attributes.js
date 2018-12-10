@@ -594,6 +594,14 @@ module.exports = {
             '*%H~%M~%S.%2f* would display *09~15~23.46*'
         ].join(' ')
     },
+    hovertitle: {
+        valType: 'string',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Sets axis title(s) to be displayed in the hovering popup'
+        ].join(' ')
+    },
     // lines and grids
     showline: {
         valType: 'boolean',
