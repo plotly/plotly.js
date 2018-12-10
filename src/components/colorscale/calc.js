@@ -33,7 +33,12 @@ module.exports = function calc(gd, trace, opts) {
             updateStyle(trace._input, containerStr ? (containerStr + '.' + attr) : attr, inputVal);
         }
         else {
-            trace._input[attr] = inputVal;
+            if(trace._input.type === 'scatter3d') {
+                trace._input[attr] = inputVal;
+            }
+            else {
+                inputContainer[attr] = inputVal;
+            }
         }
 
         container[attr] = fullVal;
