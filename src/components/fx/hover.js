@@ -935,9 +935,9 @@ function createHoverText(hoverData, opts, gd) {
             }
         }
 
-        var xLetter;
-        var yLetter;
-        var zLetter;
+        var xLetter = 'x';
+        var yLetter = 'y';
+        var zLetter = 'z';
 
         if(gd._fullLayout.scene) {
             xLetter = gd._fullLayout.scene.xaxis.title.text || 'x';
