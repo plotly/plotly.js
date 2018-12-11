@@ -179,7 +179,7 @@ function getPos(trace, posLetter, posAxis, val, num) {
     }
 
     var pos0c = posAxis.type === 'multicategory' ?
-        posAxis.r2c(pos0) :
+        posAxis.r2c_just_indices(pos0) :
         posAxis.d2c(pos0, 0, trace[posLetter + 'calendar']);
 
     return val.map(function() { return pos0c; });
