@@ -298,8 +298,10 @@ describe('heatmap calc', function() {
 
         fullTrace._extremes = {};
 
-        // clearCalc used to be (oddly enough) part of supplyDefaults.
-        // Now it's in doCalcData, which we don't include in this partial pathway.
+        // we used to call ax.setScale during supplyDefaults, and this had a
+        // fallback to provide _categories and _categoriesMap. Now neither of
+        // those is true... anyway the right way to do this though is
+        // ax.clearCalc.
         fullLayout.xaxis.clearCalc();
         fullLayout.yaxis.clearCalc();
 
