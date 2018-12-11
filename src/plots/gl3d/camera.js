@@ -80,8 +80,8 @@ function createCamera(element, options) {
             distance = Math.exp(view.computedRadius[0]);
             return true;
         },
-        lookAt: function(center, eye, up) {
-            view.lookAt(view.lastT(), center, eye, up);
+        lookAt: function(eye, center, up) {
+            view.lookAt(view.lastT(), eye, center, up);
         },
         rotate: function(pitch, yaw, roll) {
             view.rotate(view.lastT(), pitch, yaw, roll);
@@ -155,18 +155,16 @@ function createCamera(element, options) {
             },
             enumerable: true
         },
-        /*
         ortho: {
             get: function() {
-                return view.computedOrtho;
+                return view.getOrtho();
             },
             set: function(northo) {
-                // do nothing (i.e. for the moment)...
-                return view.computedOrtho;
+                view.setOrtho(northo);
+                return view.getOrtho();
             },
             enumerable: true
         },
-        */
         distance: {
             get: function() {
                 return distance;
