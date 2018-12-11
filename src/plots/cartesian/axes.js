@@ -1671,6 +1671,7 @@ axes.drawOne = function(gd, ax, opts) {
     }
 
     var gridVals = ax._gridVals = valsClipped;
+    var dividerVals = getDividerVals(ax, vals);
 
     if(!fullLayout._hasOnlyLargeSploms) {
         // keep track of which subplots (by main conteraxis) we've already
@@ -1711,14 +1712,33 @@ axes.drawOne = function(gd, ax, opts) {
 
     if(ax.ticks) {
         var mainTickPath = axes.makeTickPath(ax, mainLinePosition, tickSigns[2]);
+        var mirrorTickPath;
+        var fullTickPath;
         if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
-            mainTickPath += axes.makeTickPath(ax, mainMirrorPosition, tickSigns[3]);
+            mirrorTickPath = axes.makeTickPath(ax, mainMirrorPosition, tickSigns[3]);
+            fullTickPath = mainTickPath + mirrorTickPath;
+        } else {
+            mirrorTickPath = '';
+            fullTickPath = mainTickPath;
+        }
+
+        var tickPath;
+        if(ax.showdividers && ax.ticks === 'outside' && ax.tickson === 'boundaries') {
+            var dividerLookup = {};
+            for(i = 0; i < dividerVals.length; i++) {
+                dividerLookup[dividerVals[i].x] = 1;
+            }
+            tickPath = function(d) {
+                return dividerLookup[d.x] ? mirrorTickPath : fullTickPath;
+            };
+        } else {
+            tickPath = fullTickPath;
         }
 
         axes.drawTicks(gd, ax, {
             vals: tickVals,
             layer: mainAxLayer,
-            path: mainTickPath,
+            path: tickPath,
             transFn: transFn
         });
 
@@ -1785,7 +1805,7 @@ axes.drawOne = function(gd, ax, opts) {
             labelLength += getLabelLevelSpan(ax, axId + 'tick2');
 
             return drawDividers(gd, ax, {
-                vals: getDividerVals(ax, vals),
+                vals: dividerVals,
                 layer: mainAxLayer,
                 path: axes.makeTickPath(ax, mainLinePosition, tickSigns[2], labelLength),
                 transFn: transFn
