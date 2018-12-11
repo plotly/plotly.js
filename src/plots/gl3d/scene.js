@@ -9,6 +9,7 @@
 
 'use strict';
 
+var createCamera = require('3d-view-controls');
 var createPlot = require('gl-plot3d');
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
@@ -22,7 +23,6 @@ var Fx = require('../../components/fx');
 var str2RGBAarray = require('../../lib/str2rgbarray');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
-var createCamera = require('./camera');
 var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');

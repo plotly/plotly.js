@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@plotly/d3-sankey": "^0.5.1",
-    "3d-view-controls": "^2.2.0",
+    "3d-view-controls": "git://github.com/archmoj/3d-view-controls.git#dd8f55edc9d240a7ca6fcc4dc75099c5dc824947",
     "alpha-shape": "^1.0.0",
     "array-range": "^1.0.1",
     "canvas-fit": "^1.5.0",
