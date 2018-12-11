@@ -295,6 +295,18 @@ describe('Test axes', function() {
 
                 supplyWithTrace({
                     x: [
+                        new Float32Array([2018, 2018, 2017, 2017]),
+                        [2018, 2018, 2017, 2017]
+                    ],
+                    y: [
+                        [2018, 2018, 2017, 2017],
+                        new Float64Array([2018, 2018, 2017, 2017])
+                    ]
+                });
+                checkTypes('multicategory', 'multicategory');
+
+                supplyWithTrace({
+                    x: [
                         [2018, 2018, 2017, 2017]
                     ],
                     y: [

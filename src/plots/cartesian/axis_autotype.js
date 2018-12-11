@@ -89,5 +89,5 @@ function category(a) {
 // trace modules that should never auto-type to multicategory
 // should be declared with 'noMultiCategory'
 function multiCategory(a) {
-    return Array.isArray(a[0]) && Array.isArray(a[1]);
+    return Lib.isArrayOrTypedArray(a[0]) && Lib.isArrayOrTypedArray(a[1]);
 }
