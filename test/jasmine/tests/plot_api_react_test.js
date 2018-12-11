@@ -468,6 +468,51 @@ describe('@noCIdep Plotly.react', function() {
         .then(done);
     });
 
+    it('can change from scatter to category scatterpolar and back', function(done) {
+        function scatter() {
+            return {
+                data: [{x: ['a', 'b'], y: [1, 2]}],
+                layout: {width: 400, height: 400, margin: {r: 80, t: 20}}
+            };
+        }
+
+        function scatterpolar() {
+            return {
+                // the bug https://github.com/plotly/plotly.js/issues/3255
+                // required all of this to change:
+                // - type -> scatterpolar
+                // - category theta
+                // - margins changed
+                data: [{type: 'scatterpolar', r: [1, 2, 3], theta: ['a', 'b', 'c']}],
+                layout: {width: 400, height: 400, margin: {r: 80, t: 50}}
+            };
+        }
+
+        function countTraces(scatterTraces, polarTraces) {
+            expect(document.querySelectorAll('.scatter').length)
+                .toBe(scatterTraces + polarTraces);
+            expect(document.querySelectorAll('.xy .scatter').length)
+                .toBe(scatterTraces);
+            expect(document.querySelectorAll('.polar .scatter').length)
+                .toBe(polarTraces);
+        }
+
+        Plotly.newPlot(gd, scatter())
+        .then(function() {
+            countTraces(1, 0);
+            return Plotly.react(gd, scatterpolar());
+        })
+        .then(function() {
+            countTraces(0, 1);
+            return Plotly.react(gd, scatter());
+        })
+        .then(function() {
+            countTraces(1, 0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('can change data in candlesticks multiple times', function(done) {
         // test that we've fixed the original issue in
         // https://github.com/plotly/plotly.js/issues/2510

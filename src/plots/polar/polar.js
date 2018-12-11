@@ -643,6 +643,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         Axes.drawLabels(gd, ax, {
             vals: vals,
             layer: layers['angular-axis'],
+            repositionOnUpdate: true,
             transFn: transFn,
             labelXFn: labelXFn,
             labelYFn: labelYFn,

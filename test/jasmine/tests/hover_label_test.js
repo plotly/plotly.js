@@ -2055,6 +2055,81 @@ describe('hover on fill', function() {
     });
 });
 
+describe('Hover on multicategory axes', function() {
+    var gd;
+    var eventData;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    it('should work for bar traces', function(done) {
+        Plotly.plot(gd, [{
+            type: 'bar',
+            x: [['2018', '2018', '2019', '2019'], ['a', 'b', 'a', 'b']],
+            y: [1, 2, -1, 3]
+        }], {
+            bargap: 0,
+            width: 400,
+            height: 400
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            assertHoverLabelContent({ nums: '−1', axis: '2019 - a' });
+            expect(eventData.x).toEqual(['2019', 'a']);
+        })
+        .then(function() {
+            return Plotly.update(gd,
+                {hovertemplate: 'Sample: %{x[1]}<br>Year: %{x[0]}<extra></extra>'},
+                {hovermode: 'closest'}
+            );
+        })
+        .then(function() { _hover(140, 200); })
+        .then(function() {
+            assertHoverLabelContent({ nums: 'Sample: b\nYear: 2018' });
+            expect(eventData.x).toEqual(['2018', 'b']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work on heatmap traces', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/heatmap_multicategory.json'));
+        fig.data = [fig.data[0]];
+        fig.layout.width = 500;
+        fig.layout.height = 500;
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: 'x: 2017 - q3\ny: Group 3 - A\nz: 2.303'
+            });
+            expect(eventData.x).toEqual(['2017', 'q3']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('hover updates', function() {
     'use strict';
 

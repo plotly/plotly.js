@@ -17,8 +17,6 @@ var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
-var maxRowLength = require('./max_row_length');
-
 module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -38,7 +36,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
 
         // get z dims
         var m = z.length;
-        var n = maxRowLength(z);
+        var n = Lib.maxRowLength(z);
         var xrev = false;
         var yrev = false;
 
