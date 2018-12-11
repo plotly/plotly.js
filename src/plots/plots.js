@@ -873,13 +873,11 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     // (on which the ticks & labels are drawn)
     for(i = 0; i < axList.length; i++) {
         ax = axList[i];
-        ax._mainSubplot = findMainSubplot(ax, newFullLayout);
+        ax._mainSubplot = findMainSubplot(ax, newFullLayout, ids);
     }
 };
 
-function findMainSubplot(ax, fullLayout) {
-    var subplotList = fullLayout._subplots;
-    var ids = subplotList.cartesian.concat(subplotList.gl2d || []);
+function findMainSubplot(ax, fullLayout, ids) {
     var mockGd = {_fullLayout: fullLayout};
 
     var isX = ax._id.charAt(0) === 'x';
