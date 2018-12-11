@@ -301,7 +301,10 @@ module.exports = function setConvert(ax, fullLayout) {
         };
     }
     else if(ax.type === 'multicategory') {
-        // ax.d2c = ax.d2l = setMultiCategoryIndex;
+        // N.B. multicategory axes don't define d2c and d2l,
+        // as 'data-to-calcdata' conversion needs to take into
+        // account all data array items as in ax.makeCalcdata.
+
         ax.r2d = ax.c2d = ax.l2d = getCategoryName;
         ax.d2r = ax.d2l_noadd = getCategoryIndex;
 
