@@ -322,7 +322,7 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.p2r = p2l;
 
         ax.cleanPos = function(v) {
-            if(typeof v === 'string' && v !== '') return v;
+            if(Array.isArray(v) || (typeof v === 'string' && v !== '')) return v;
             return ensureNumber(v);
         };
     }
