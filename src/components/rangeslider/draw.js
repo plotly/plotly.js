@@ -19,7 +19,7 @@ var Color = require('../color');
 var Titles = require('../titles');
 
 var Cartesian = require('../../plots/cartesian');
-var Axes = require('../../plots/cartesian/axes');
+var axisIDs = require('../../plots/cartesian/axis_ids');
 
 var dragElement = require('../dragelement');
 var setCursor = require('../../lib/setcursor');
@@ -77,8 +77,8 @@ module.exports = function(gd) {
     rangeSliders.each(function(axisOpts) {
         var rangeSlider = d3.select(this);
         var opts = axisOpts[constants.name];
-        var oppAxisOpts = fullLayout[Axes.id2name(axisOpts.anchor)];
-        var oppAxisRangeOpts = opts[Axes.id2name(axisOpts.anchor)];
+        var oppAxisOpts = fullLayout[axisIDs.id2name(axisOpts.anchor)];
+        var oppAxisRangeOpts = opts[axisIDs.id2name(axisOpts.anchor)];
 
         // update range
         // Expand slider range to the axis range
@@ -102,12 +102,7 @@ module.exports = function(gd) {
         var domain = axisOpts.domain;
         var tickHeight = (axisOpts._boundingBox || {}).height || 0;
 
-        var oppBottom = Infinity;
-        var subplotData = Axes.getSubplots(gd, axisOpts);
-        for(var i = 0; i < subplotData.length; i++) {
-            var oppAxis = Axes.getFromId(gd, subplotData[i].substr(subplotData[i].indexOf('y')));
-            oppBottom = Math.min(oppBottom, oppAxis.domain[0]);
-        }
+        var oppBottom = opts._oppBottom;
 
         opts._width = graphSize.w * (domain[1] - domain[0]);
 
@@ -366,11 +361,10 @@ function addClipPath(rangeSlider, gd, axisOpts, opts) {
 }
 
 function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
-    var subplotData = Axes.getSubplots(gd, axisOpts),
-        calcData = gd.calcdata;
+    var calcData = gd.calcdata;
 
     var rangePlots = rangeSlider.selectAll('g.' + constants.rangePlotClassName)
-        .data(subplotData, Lib.identity);
+        .data(axisOpts._subplotsWith, Lib.identity);
 
     rangePlots.enter().append('g')
         .attr('class', function(id) { return constants.rangePlotClassName + ' ' + id; })
@@ -386,7 +380,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         var plotgroup = d3.select(this),
             isMainPlot = (i === 0);
 
-        var oppAxisOpts = Axes.getFromId(gd, id, 'y'),
+        var oppAxisOpts = axisIDs.getFromId(gd, id, 'y'),
             oppAxisName = oppAxisOpts._name,
             oppAxisRangeOpts = opts[oppAxisName];
 

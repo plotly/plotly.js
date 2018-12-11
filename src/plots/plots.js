@@ -811,6 +811,12 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
             plotinfo.id = id;
         }
 
+        // add these axis ids to each others' subplot lists
+        xaxis._counterAxes.push(yaxis._id);
+        yaxis._counterAxes.push(xaxis._id);
+        xaxis._subplotsWith.push(id);
+        yaxis._subplotsWith.push(id);
+
         // update x and y axis layout object refs
         plotinfo.xaxis = xaxis;
         plotinfo.yaxis = yaxis;
@@ -873,11 +879,13 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     // (on which the ticks & labels are drawn)
     for(i = 0; i < axList.length; i++) {
         ax = axList[i];
-        ax._mainSubplot = findMainSubplot(ax, newFullLayout, ids);
+        ax._counterAxes.sort(axisIDs.idSort);
+        ax._subplotsWith.sort(Lib.subplotSort);
+        ax._mainSubplot = findMainSubplot(ax, newFullLayout);
     }
 };
 
-function findMainSubplot(ax, fullLayout, ids) {
+function findMainSubplot(ax, fullLayout) {
     var mockGd = {_fullLayout: fullLayout};
 
     var isX = ax._id.charAt(0) === 'x';
@@ -897,19 +905,15 @@ function findMainSubplot(ax, fullLayout, ids) {
     if(!mainSubplotID || !fullLayout._plots[mainSubplotID]) {
         mainSubplotID = '';
 
-        for(var j = 0; j < ids.length; j++) {
-            var id = ids[j];
-            var yIndex = id.indexOf('y');
-            var idPart = isX ? id.substr(0, yIndex) : id.substr(yIndex);
-            var counterPart = isX ? id.substr(yIndex) : id.substr(0, yIndex);
-
-            if(idPart === ax._id) {
-                if(!nextBestMainSubplotID) nextBestMainSubplotID = id;
-                var counterAx = axisIDs.getFromId(mockGd, counterPart);
-                if(anchorID && counterAx.overlaying === anchorID) {
-                    mainSubplotID = id;
-                    break;
-                }
+        var counterIDs = ax._counterAxes;
+        for(var j = 0; j < counterIDs.length; j++) {
+            var counterPart = counterIDs[j];
+            var id = isX ? (ax._id + counterPart) : (counterPart + ax._id);
+            if(!nextBestMainSubplotID) nextBestMainSubplotID = id;
+            var counterAx = axisIDs.getFromId(mockGd, counterPart);
+            if(anchorID && counterAx.overlaying === anchorID) {
+                mainSubplotID = id;
+                break;
             }
         }
     }

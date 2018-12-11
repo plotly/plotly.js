@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Axes = require('../../plots/cartesian/axes');
+var axisIDs = require('../../plots/cartesian/axis_ids');
 var constants = require('./constants');
 var name = constants.name;
 
@@ -19,7 +19,7 @@ function isVisible(ax) {
 exports.isVisible = isVisible;
 
 exports.makeData = function(fullLayout) {
-    var axes = Axes.list({ _fullLayout: fullLayout }, 'x', true);
+    var axes = axisIDs.list({ _fullLayout: fullLayout }, 'x', true);
     var margin = fullLayout.margin;
     var rangeSliderData = [];
 
@@ -45,12 +45,13 @@ exports.autoMarginOpts = function(gd, ax) {
     var opts = ax[name];
 
     var oppBottom = Infinity;
-    var subplotData = Axes.getSubplots(gd, ax);
-    for(var j = 0; j < subplotData.length; j++) {
-        var subplotj = subplotData[j];
-        var oppAxis = Axes.getFromId(gd, subplotj.substr(subplotj.indexOf('y')));
+    var counterAxes = ax._counterAxes;
+    for(var j = 0; j < counterAxes.length; j++) {
+        var counterId = counterAxes[j];
+        var oppAxis = axisIDs.getFromId(gd, counterId);
         oppBottom = Math.min(oppBottom, oppAxis.domain[0]);
     }
+    opts._oppBottom = oppBottom;
 
     var tickHeight = (ax.side === 'bottom' && ax._boundingBox.height) || 0;
 

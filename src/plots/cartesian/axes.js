@@ -1467,6 +1467,9 @@ axes.getTickFormat = function(ax) {
 // as an array of items like 'xy', 'x2y', 'x2y2'...
 // sorted by x (x,x2,x3...) then y
 // optionally restrict to only subplots containing axis object ax
+//
+// NOTE: this is currently only used OUTSIDE plotly.js (toolpanel, webapp)
+// ideally we get rid of it there (or just copy this there) and remove it here
 axes.getSubplots = function(gd, ax) {
     var subplotObj = gd._fullLayout._subplots;
     var allSubplots = subplotObj.cartesian.concat(subplotObj.gl2d || []);
@@ -1485,6 +1488,8 @@ axes.getSubplots = function(gd, ax) {
 };
 
 // find all subplots with axis 'ax'
+// NOTE: this is only used in axes.getSubplots (only used outside plotly.js) and
+// gl2d/convert (where it restricts axis subplots to only those with gl2d)
 axes.findSubplotsWithAxis = function(subplots, ax) {
     var axMatch = new RegExp(
         (ax._id.charAt(0) === 'x') ? ('^' + ax._id + 'y') : (ax._id + '$')
@@ -1631,7 +1636,7 @@ axes.drawOne = function(gd, ax, opts) {
     var mainMirrorPosition = ax._mainMirrorPosition;
     var mainPlotinfo = fullLayout._plots[mainSubplot];
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
-    var subplotsWithAx = axes.getSubplots(gd, ax);
+    var subplotsWithAx = ax._subplotsWith;
 
     var vals = ax._vals = axes.calcTicks(ax);
 
