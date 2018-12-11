@@ -20,7 +20,7 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout
     // we could try to accept x0 and dx, etc...
     // but that's a pretty weird use case.
     // for now require both x and y explicitly specified.
-    if(!(x && xlen && y && ylen)) {
+    if(!xlen || !ylen) {
         traceOut.visible = false;
         return;
     }
