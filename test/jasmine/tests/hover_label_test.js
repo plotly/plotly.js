@@ -2057,6 +2057,7 @@ describe('hover on fill', function() {
 
 describe('Hover on multicategory axes', function() {
     var gd;
+    var eventData;
 
     beforeEach(function() {
         gd = createGraphDiv();
@@ -2080,9 +2081,15 @@ describe('Hover on multicategory axes', function() {
             width: 400,
             height: 400
         })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
         .then(function() { _hover(200, 200); })
         .then(function() {
             assertHoverLabelContent({ nums: '−1', axis: '2019 - a' });
+            expect(eventData.x).toEqual(['2019', 'a']);
         })
         .then(function() {
             return Plotly.update(gd,
@@ -2093,6 +2100,7 @@ describe('Hover on multicategory axes', function() {
         .then(function() { _hover(140, 200); })
         .then(function() {
             assertHoverLabelContent({ nums: 'Sample: b\nYear: 2018' });
+            expect(eventData.x).toEqual(['2018', 'b']);
         })
         .catch(failTest)
         .then(done);
@@ -2105,11 +2113,17 @@ describe('Hover on multicategory axes', function() {
         fig.layout.height = 500;
 
         Plotly.plot(gd, fig)
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
         .then(function() { _hover(200, 200); })
         .then(function() {
             assertHoverLabelContent({
                 nums: 'x: 2017 - q3\ny: Group 3 - A\nz: 2.303'
             });
+            expect(eventData.x).toEqual(['2017', 'q3']);
         })
         .catch(failTest)
         .then(done);
