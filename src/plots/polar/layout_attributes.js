@@ -116,6 +116,7 @@ var radialAxisAttrs = {
     // might need a 'titleside' and even 'titledirection' down the road
 
     hoverformat: axesAttrs.hoverformat,
+    hovertitle: axesAttrs.hovertitle,
 
     uirevision: {
         valType: 'any',
@@ -232,6 +233,7 @@ var angularAxisAttrs = {
     },
 
     hoverformat: axesAttrs.hoverformat,
+    hovertitle: axesAttrs.hovertitle,
 
     uirevision: {
         valType: 'any',

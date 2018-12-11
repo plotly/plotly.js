@@ -56,7 +56,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
-    if(axType !== 'category' && !options.noHover) coerce('hoverformat');
+    if(axType !== 'category' && !options.noHover) {
+        coerce('hoverformat');
+        coerce('hovertitle');
+    }
 
     if(!visible) return containerOut;
 

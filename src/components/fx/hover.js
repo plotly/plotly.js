@@ -940,13 +940,13 @@ function createHoverText(hoverData, opts, gd) {
         var zLetter = 'z';
 
         if(gd._fullLayout.scene) {
-            xLetter = gd._fullLayout.scene.xaxis.title.text || 'x';
-            yLetter = gd._fullLayout.scene.yaxis.title.text || 'y';
-            zLetter = gd._fullLayout.scene.zaxis.title.text || 'z';
+            if(gd._fullLayout.scene.xaxis.hovertitle) xLetter = gd._fullLayout.scene.xaxis.title.text || 'x';
+            if(gd._fullLayout.scene.yaxis.hovertitle) yLetter = gd._fullLayout.scene.yaxis.title.text || 'y';
+            if(gd._fullLayout.scene.zaxis.hovertitle) zLetter = gd._fullLayout.scene.zaxis.title.text || 'z';
         }
         else if(!gd._fullLayout.ternary && !gd._fullLayout.title) {
-            xLetter = gd._fullLayout.xaxis.title.text || 'x';
-            yLetter = gd._fullLayout.yaxis.title.text || 'y';
+            if(gd._fullLayout.xaxis.hovertitle) xLetter = gd._fullLayout.xaxis.title.text || 'x';
+            if(gd._fullLayout.yaxis.hovertitle) yLetter = gd._fullLayout.yaxis.title.text || 'y';
         }
 
         if(d.zLabel !== undefined) {

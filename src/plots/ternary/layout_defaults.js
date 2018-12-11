@@ -126,5 +126,6 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     });
 
     coerce('hoverformat');
+    coerce('hovertitle');
     coerce('layer');
 }
