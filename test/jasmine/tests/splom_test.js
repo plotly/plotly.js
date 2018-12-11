@@ -820,11 +820,11 @@ describe('Test splom interactions:', function() {
 
         function _assert(msg, exp) {
             var splomScenes = gd._fullLayout._splomScenes;
-            var ids = Object.keys(splomScenes);
+            var ids = gd._fullData.map(function(trace) { return trace.uid; });
 
             for(var i = 0; i < 3; i++) {
                 var drawFn = splomScenes[ids[i]].draw;
-                expect(drawFn).toHaveBeenCalledTimes(exp[i], msg + ' - trace ' + i);
+                expect(drawFn.calls.count()).toBe(exp[i], msg + ' - trace ' + i);
                 drawFn.calls.reset();
             }
         }
@@ -869,7 +869,7 @@ describe('Test splom interactions:', function() {
 
         methods.forEach(function(m) { spyOn(Plots, m).and.callThrough(); });
 
-        function assetsFnCall(msg, exp) {
+        function assertFnCall(msg, exp) {
             methods.forEach(function(m) {
                 expect(Plots[m]).toHaveBeenCalledTimes(exp[m], msg);
                 Plots[m].calls.reset();
@@ -879,7 +879,7 @@ describe('Test splom interactions:', function() {
         spyOn(Lib, 'log');
 
         Plotly.plot(gd, fig).then(function() {
-            assetsFnCall('base', {
+            assertFnCall('base', {
                 cleanPlot: 1,       // called once from inside Plots.supplyDefaults
                 supplyDefaults: 1,
                 doCalcdata: 1
@@ -892,9 +892,9 @@ describe('Test splom interactions:', function() {
             return Plotly.relayout(gd, {width: 4810, height: 3656});
         })
         .then(function() {
-            assetsFnCall('after', {
-                cleanPlot: 4,       // 3 three from supplyDefaults, once in drawFramework
-                supplyDefaults: 3,  // 1 from relayout, 1 from automargin, 1 in drawFramework
+            assertFnCall('after', {
+                cleanPlot: 3,       // 2 from supplyDefaults, once in drawFramework
+                supplyDefaults: 2,  // 1 from relayout, 1 in drawFramework
                 doCalcdata: 1       // once in drawFramework
             });
             assertDims('after', 4810, 3656);

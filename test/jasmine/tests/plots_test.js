@@ -83,9 +83,9 @@ describe('Test Plots', function() {
             expect(gd._fullLayout.someFunc).toBe(oldFullLayout.someFunc);
 
             expect(gd._fullLayout.xaxis.c2p)
-                .not.toBe(oldFullLayout.xaxis.c2p, '(set during ax.setScale');
+                .not.toBe(oldFullLayout.xaxis.c2p, '(set during setConvert)');
             expect(gd._fullLayout.yaxis._m)
-                .not.toBe(oldFullLayout.yaxis._m, '(set during ax.setScale');
+                .toBe(oldFullLayout.yaxis._m, '(we don\'t run ax.setScale here)');
         });
 
         it('should include the correct reference to user data', function() {

@@ -298,6 +298,13 @@ describe('heatmap calc', function() {
 
         fullTrace._extremes = {};
 
+        // we used to call ax.setScale during supplyDefaults, and this had a
+        // fallback to provide _categories and _categoriesMap. Now neither of
+        // those is true... anyway the right way to do this though is
+        // ax.clearCalc.
+        fullLayout.xaxis.clearCalc();
+        fullLayout.yaxis.clearCalc();
+
         var out = Heatmap.calc(gd, fullTrace)[0];
         out._xcategories = fullLayout.xaxis._categories;
         out._ycategories = fullLayout.yaxis._categories;

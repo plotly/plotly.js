@@ -1467,6 +1467,9 @@ axes.getTickFormat = function(ax) {
 // as an array of items like 'xy', 'x2y', 'x2y2'...
 // sorted by x (x,x2,x3...) then y
 // optionally restrict to only subplots containing axis object ax
+//
+// NOTE: this is currently only used OUTSIDE plotly.js (toolpanel, webapp)
+// ideally we get rid of it there (or just copy this there) and remove it here
 axes.getSubplots = function(gd, ax) {
     var subplotObj = gd._fullLayout._subplots;
     var allSubplots = subplotObj.cartesian.concat(subplotObj.gl2d || []);
@@ -1485,6 +1488,8 @@ axes.getSubplots = function(gd, ax) {
 };
 
 // find all subplots with axis 'ax'
+// NOTE: this is only used in axes.getSubplots (only used outside plotly.js) and
+// gl2d/convert (where it restricts axis subplots to only those with gl2d)
 axes.findSubplotsWithAxis = function(subplots, ax) {
     var axMatch = new RegExp(
         (ax._id.charAt(0) === 'x') ? ('^' + ax._id + 'y') : (ax._id + '$')
@@ -1592,7 +1597,7 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    Lib.syncOrAsync(axList.map(function(axId) {
+    return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
             if(!axId) return;
 
@@ -1628,11 +1633,19 @@ axes.drawOne = function(gd, ax, opts) {
     var counterLetter = axes.counterLetter(axId);
     var mainSubplot = ax._mainSubplot;
     var mainLinePosition = ax._mainLinePosition;
+    var mainMirrorPosition = ax._mainMirrorPosition;
     var mainPlotinfo = fullLayout._plots[mainSubplot];
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
-    var subplotsWithAx = axes.getSubplots(gd, ax);
+    var subplotsWithAx = ax._subplotsWith;
 
     var vals = ax._vals = axes.calcTicks(ax);
+
+    // Add a couple of axis properties that should cause us to recreate
+    // elements. Used in d3 data function.
+    var axInfo = [ax.mirror, mainLinePosition, mainMirrorPosition].join('_');
+    for(i = 0; i < vals.length; i++) {
+        vals[i].axInfo = axInfo;
+    }
 
     if(!ax.visible) return;
 
@@ -1679,6 +1692,7 @@ axes.drawOne = function(gd, ax, opts) {
 
             axes.drawGrid(gd, ax, {
                 vals: gridVals,
+                counterAxis: counterAxis,
                 layer: plotinfo.gridlayer.select('.' + axId),
                 path: gridPath,
                 transFn: transFn
@@ -1698,7 +1712,7 @@ axes.drawOne = function(gd, ax, opts) {
     if(ax.ticks) {
         var mainTickPath = axes.makeTickPath(ax, mainLinePosition, tickSigns[2]);
         if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
-            mainTickPath += axes.makeTickPath(ax, ax._mainMirrorPosition, tickSigns[3]);
+            mainTickPath += axes.makeTickPath(ax, mainMirrorPosition, tickSigns[3]);
         }
 
         axes.drawTicks(gd, ax, {
@@ -1866,38 +1880,42 @@ axes.drawOne = function(gd, ax, opts) {
         }
     }
 
-    function doAutoMargins() {
-        var pushKey = ax._name + '.automargin';
+    var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
 
-        if(!ax.automargin) {
-            Plots.autoMargin(gd, pushKey);
-            return;
+    function doAutoMargins() {
+        var push, rangeSliderPush;
+
+        if(hasRangeSlider) {
+            rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
         }
+        Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
 
         var s = ax.side.charAt(0);
-        var push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+        if(ax.automargin && (!hasRangeSlider || s !== 'b')) {
+            push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
-        if(axLetter === 'x') {
-            push.y = (ax.anchor === 'free' ? ax.position :
-                ax._anchorAxis.domain[s === 't' ? 1 : 0]);
-            push[s] += ax._boundingBox.height;
-        } else {
-            push.x = (ax.anchor === 'free' ? ax.position :
-                ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
-            push[s] += ax._boundingBox.width;
+            if(axLetter === 'x') {
+                push.y = (ax.anchor === 'free' ? ax.position :
+                    ax._anchorAxis.domain[s === 't' ? 1 : 0]);
+                push[s] += ax._boundingBox.height;
+            } else {
+                push.x = (ax.anchor === 'free' ? ax.position :
+                    ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
+                push[s] += ax._boundingBox.width;
+            }
+
+            if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
+                push[s] += ax.title.font.size;
+            }
         }
 
-        if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
-            push[s] += ax.title.font.size;
-        }
-
-        Plots.autoMargin(gd, pushKey, push);
+        Plots.autoMargin(gd, axAutoMarginID(ax), push);
     }
 
     seq.push(calcBoundingBox, doAutoMargins);
 
     if(!opts.skipTitle &&
-        !((ax.rangeslider || {}).visible && ax._boundingBox && ax.side === 'bottom')
+        !(hasRangeSlider && ax._boundingBox && ax.side === 'bottom')
     ) {
         seq.push(function() { return drawTitle(gd, ax); });
     }
@@ -2142,10 +2160,8 @@ axes.makeLabelFns = function(ax, shift, angle) {
     return out;
 };
 
-function makeDataFn(ax) {
-    return function(d) {
-        return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_');
-    };
+function tickDataFn(d) {
+    return [d.text, d.x, d.axInfo, d.font, d.fontSize, d.fontColor].join('_');
 }
 
 /**
@@ -2170,7 +2186,7 @@ axes.drawTicks = function(gd, ax, opts) {
     var cls = ax._id + 'tick';
 
     var ticks = opts.layer.selectAll('path.' + cls)
-        .data(ax.ticks ? opts.vals : [], makeDataFn(ax));
+        .data(ax.ticks ? opts.vals : [], tickDataFn);
 
     ticks.exit().remove();
 
@@ -2200,6 +2216,8 @@ axes.drawTicks = function(gd, ax, opts) {
  * @param {object} opts
  * - {array of object} vals (calcTicks output-like)
  * - {d3 selection} layer
+ * - {object} counterAxis (full axis object corresponding to counter axis)
+ *     optional - only required if this axis supports zero lines
  * - {string or fn} path
  * - {fn} transFn
  * - {boolean} crisp (set to false to unset crisp-edge SVG rendering)
@@ -2208,26 +2226,39 @@ axes.drawGrid = function(gd, ax, opts) {
     opts = opts || {};
 
     var cls = ax._id + 'grid';
+    var vals = opts.vals;
+    var counterAx = opts.counterAxis;
+    if(ax.showgrid === false) {
+        vals = [];
+    }
+    else if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
+        var isArrayMode = ax.tickmode === 'array';
+        for(var i = 0; i < vals.length; i++) {
+            var xi = vals[i].x;
+            if(isArrayMode ? !xi : (Math.abs(xi) < ax.dtick / 100)) {
+                vals = vals.slice(0, i).concat(vals.slice(i + 1));
+                // In array mode you can in principle have multiple
+                // ticks at 0, so test them all. Otherwise once we found
+                // one we can stop.
+                if(isArrayMode) i--;
+                else break;
+            }
+        }
+    }
 
     var grid = opts.layer.selectAll('path.' + cls)
-        .data((ax.showgrid === false) ? [] : opts.vals, makeDataFn(ax));
+        .data(vals, tickDataFn);
 
     grid.exit().remove();
 
     grid.enter().append('path')
         .classed(cls, 1)
-        .classed('crisp', opts.crisp !== false)
-        .attr('d', opts.path)
-        .each(function(d) {
-            if(ax.zeroline && (ax.type === 'linear' || ax.type === '-') &&
-                    Math.abs(d.x) < ax.dtick / 100) {
-                d3.select(this).remove();
-            }
-        });
+        .classed('crisp', opts.crisp !== false);
 
     ax._gw = Drawing.crispRound(gd, ax.gridwidth, 1);
 
     grid.attr('transform', opts.transFn)
+        .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
         .style('stroke-width', ax._gw + 'px');
 
@@ -2266,7 +2297,6 @@ axes.drawZeroLine = function(gd, ax, opts) {
         .classed(cls, 1)
         .classed('zl', 1)
         .classed('crisp', opts.crisp !== false)
-        .attr('d', opts.path)
         .each(function() {
             // use the fact that only one element can enter to trigger a sort.
             // If several zerolines enter at the same time we will sort once per,
@@ -2277,6 +2307,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
         });
 
     zl.attr('transform', opts.transFn)
+        .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
         .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
 };
@@ -2316,7 +2347,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var lastAngle = (ax._tickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
-        .data(ax.showticklabels ? vals : [], makeDataFn(ax));
+        .data(ax.showticklabels ? vals : [], tickDataFn);
 
     var labelsReady = [];
 
@@ -2533,7 +2564,7 @@ function drawDividers(gd, ax, opts) {
     var vals = opts.vals;
 
     var dividers = opts.layer.selectAll('path.' + cls)
-        .data(vals, makeDataFn(ax));
+        .data(vals, tickDataFn);
 
     dividers.exit().remove();
 
@@ -2738,13 +2769,16 @@ axes.allowAutoMargin = function(gd) {
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
         if(ax.automargin) {
-            Plots.allowAutoMargin(gd, ax._name + '.automargin');
+            Plots.allowAutoMargin(gd, axAutoMarginID(ax));
         }
-        if(ax.rangeslider && ax.rangeslider.visible) {
-            Plots.allowAutoMargin(gd, 'rangeslider' + ax._id);
+        if(Registry.getComponentMethod('rangeslider', 'isVisible')(ax)) {
+            Plots.allowAutoMargin(gd, rangeSliderAutoMarginID(ax));
         }
     }
 };
+
+function axAutoMarginID(ax) { return ax._id + '.automargin'; }
+function rangeSliderAutoMarginID(ax) { return ax._id + '.rangeslider'; }
 
 // swap all the presentation attributes of the axes showing these traces
 axes.swap = function(gd, traces) {

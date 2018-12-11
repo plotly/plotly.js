@@ -28,9 +28,7 @@ function getRangeSliderChild(index) {
 }
 
 function countRangeSliderClipPaths() {
-    return d3.selectAll('defs').selectAll('*').filter(function() {
-        return this.id.indexOf('rangeslider') !== -1;
-    }).size();
+    return document.querySelectorAll('defs [id*=rangeslider]').length;
 }
 
 function testTranslate1D(node, val) {
