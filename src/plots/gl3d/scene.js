@@ -182,9 +182,7 @@ function initializeGLPlot(scene, camera, canvas, gl) {
         snapToData: true,
         autoScale: true,
         autoBounds: false,
-        camera: {
-            ortho: (camera && camera.ortho) || false
-        }
+        camera: camera
     };
 
     // for static plots, we reuse the WebGL context
@@ -322,7 +320,8 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    initializeGLPlot(this, {ortho: false});
+    var camera = fullLayout.scene.camera;
+    initializeGLPlot(this, camera);
 }
 
 var proto = Scene.prototype;
