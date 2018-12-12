@@ -169,7 +169,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function initializeGLPlot(scene, canvas, gl) {
+function initializeGLPlot(scene, camera, canvas, gl) {
     var gd = scene.graphDiv;
 
     var glplotOptions = {
@@ -181,7 +181,10 @@ function initializeGLPlot(scene, canvas, gl) {
         pickRadius: 10,
         snapToData: true,
         autoScale: true,
-        autoBounds: false
+        autoBounds: false,
+        camera: {
+            ortho: (camera && camera.ortho) || false
+        }
     };
 
     // for static plots, we reuse the WebGL context
@@ -319,7 +322,7 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    if(!initializeGLPlot(this)) return; // todo check the necessity for this line
+    initializeGLPlot(this, {ortho: false});
 }
 
 var proto = Scene.prototype;
@@ -328,6 +331,7 @@ proto.recoverContext = function() {
     var scene = this;
     var gl = this.glplot.gl;
     var canvas = this.glplot.canvas;
+    var camera = this.glplot.camera;
     this.glplot.dispose();
 
     function tryRecover() {
@@ -335,7 +339,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, canvas, gl)) {
+        if(!initializeGLPlot(scene, camera, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
@@ -724,6 +728,7 @@ proto.saveCamera = function saveCamera(layout) {
                 }
             }
         }
+        if(cameraData.ortho !== cameraDataLastSave.ortho) hasChanged = true;
     }
 
     if(hasChanged) cameraNestedProp.set(cameraData);
