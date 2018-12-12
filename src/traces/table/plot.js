@@ -59,9 +59,11 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .on('mousewheel', function(d) {
             if(d.scrollbarState.wheeling) return;
             d.scrollbarState.wheeling = true;
-            d3.event.stopPropagation();
-            d3.event.preventDefault();
-            makeDragRow(gd, tableControlView, null, d.scrollY + d3.event.deltaY)(d);
+            var noChange = makeDragRow(gd, tableControlView, null, d.scrollY + d3.event.deltaY)(d);
+            if(!noChange) {
+                d3.event.stopPropagation();
+                d3.event.preventDefault();
+            }
             d.scrollbarState.wheeling = false;
         })
         .call(renderScrollbarKit, gd, true);
@@ -711,13 +713,20 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
 
 function makeDragRow(gd, allTableControlView, optionalMultiplier, optionalPosition) {
     return function dragRow(eventD) {
-        // may come from whicever DOM event target: drag, wheel, bar... eventD corresponds to event target
+        // may come from whichever DOM event target: drag, wheel, bar... eventD corresponds to event target
         var d = eventD.calcdata ? eventD.calcdata : eventD;
         var tableControlView = allTableControlView.filter(function(dd) {return d.key === dd.key;});
         var multiplier = optionalMultiplier || d.scrollbarState.dragMultiplier;
+
+        var initialScrollY = d.scrollY;
+
         d.scrollY = optionalPosition === void(0) ? d.scrollY + multiplier * d3.event.dy : optionalPosition;
         var cellsColumnBlock = tableControlView.selectAll('.' + c.cn.yColumn).selectAll('.' + c.cn.columnBlock).filter(cellsBlock);
         updateBlockYPosition(gd, cellsColumnBlock, tableControlView);
+
+        // return false if we've "used" the scroll, ie it did something,
+        // so the event shouldn't bubble (if appropriate)
+        return d.scrollY === initialScrollY;
     };
 }
 
