@@ -58,7 +58,8 @@ module.exports = function calc(gd, trace) {
     var maxLineWidth = Math.max(arrayMax(trace.header.line.width), arrayMax(trace.cells.line.width));
 
     var calcdata = {
-        key: trace.index,
+        // include staticPlot in the key so if it changes we delete and redraw
+        key: trace.uid + gd._context.staticPlot,
         translateX: domain.x[0] * gd._fullLayout._size.w,
         translateY: gd._fullLayout._size.h * (1 - domain.y[1]),
         size: gd._fullLayout._size,

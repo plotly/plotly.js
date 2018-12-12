@@ -20,6 +20,7 @@ var splitData = require('./data_split_helpers');
 var Color = require('../../components/color');
 
 module.exports = function plot(gd, wrappedTraceHolders) {
+    var dynamic = !gd._context.staticPlot;
 
     var table = gd._fullLayout._paper.selectAll('.' + c.cn.table)
         .data(wrappedTraceHolders.map(function(wrappedTraceHolder) {
@@ -51,22 +52,30 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     var tableControlView = table.selectAll('.' + c.cn.tableControlView)
         .data(gup.repeat, gup.keyFun);
 
-    tableControlView.enter()
+    var cvEnter = tableControlView.enter()
         .append('g')
         .classed(c.cn.tableControlView, true)
-        .style('box-sizing', 'content-box')
-        .on('mousemove', function(d) {tableControlView.filter(function(dd) {return d === dd;}).call(renderScrollbarKit, gd);})
-        .on('mousewheel', function(d) {
-            if(d.scrollbarState.wheeling) return;
-            d.scrollbarState.wheeling = true;
-            var noChange = makeDragRow(gd, tableControlView, null, d.scrollY + d3.event.deltaY)(d);
-            if(!noChange) {
-                d3.event.stopPropagation();
-                d3.event.preventDefault();
-            }
-            d.scrollbarState.wheeling = false;
-        })
-        .call(renderScrollbarKit, gd, true);
+        .style('box-sizing', 'content-box');
+    if(dynamic) {
+        cvEnter
+            .on('mousemove', function(d) {
+                tableControlView
+                    .filter(function(dd) {return d === dd;})
+                    .call(renderScrollbarKit, gd);
+            })
+            .on('mousewheel', function(d) {
+                if(d.scrollbarState.wheeling) return;
+                d.scrollbarState.wheeling = true;
+                var newY = d.scrollY + d3.event.deltaY;
+                var noChange = makeDragRow(gd, tableControlView, null, newY)(d);
+                if(!noChange) {
+                    d3.event.stopPropagation();
+                    d3.event.preventDefault();
+                }
+                d.scrollbarState.wheeling = false;
+            })
+            .call(renderScrollbarKit, gd, true);
+    }
 
     tableControlView
         .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';});
@@ -98,9 +107,10 @@ module.exports = function plot(gd, wrappedTraceHolders) {
 
     yColumn.exit().remove();
 
-    yColumn
-        .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';})
-        .call(d3.behavior.drag()
+    yColumn.attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
+
+    if(dynamic) {
+        yColumn.call(d3.behavior.drag()
             .origin(function(d) {
                 var movedColumn = d3.select(this);
                 easeColumn(movedColumn, d, -c.uplift);
@@ -139,6 +149,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
                 columnMoved(gd, p, p.columns.map(function(dd) {return dd.xIndex;}));
             })
         );
+    }
 
     yColumn.each(function(d) {
         Drawing.setClipUrl(d3.select(this), columnBoundaryClipKey(gd, d), gd);
@@ -160,8 +171,8 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     var headerColumnBlock = columnBlock.filter(headerBlock);
     var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
-    cellsColumnBlock
-        .call(d3.behavior.drag()
+    if(dynamic) {
+        cellsColumnBlock.call(d3.behavior.drag()
             .origin(function(d) {
                 d3.event.stopPropagation();
                 return d;
@@ -171,6 +182,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
                 // fixme emit plotly notification
             })
         );
+    }
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)

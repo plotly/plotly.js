@@ -490,7 +490,37 @@ describe('table', function() {
         });
 
         it('does not scroll any tables with staticPlot', function(done) {
-            // TODO
+            var allTableControls = document.querySelectorAll('.' + cn.tableControlView);
+            var bigCenter = getCenter(allTableControls[1]);
+
+            var mock = Lib.extendDeep({}, mockMulti);
+
+            // make sure initially with staticPlot: false, scrolling works
+            // (copied from previous test)
+            scroll(bigCenter, 20);
+            assertBubbledEvents(0);
+            scroll(bigCenter, -40);
+            assertBubbledEvents(0);
+
+            Plotly.react(gd, mock.data, mock.layout, {staticPlot: true})
+            .then(function() {
+                // now the same scrolls bubble
+                scroll(bigCenter, 20);
+                assertBubbledEvents(1);
+                scroll(bigCenter, -40);
+                assertBubbledEvents(1);
+
+                return Plotly.react(gd, mock.data, mock.layout, {staticPlot: false});
+            })
+            .then(function() {
+                // scroll works again!
+                scroll(bigCenter, 20);
+                assertBubbledEvents(0);
+                scroll(bigCenter, -40);
+                assertBubbledEvents(0);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });
