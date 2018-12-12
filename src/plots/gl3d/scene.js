@@ -678,7 +678,7 @@ function getOrbitCamera(camera) {
     return [
         [camera.eye.x, camera.eye.y, camera.eye.z],
         [camera.center.x, camera.center.y, camera.center.z],
-        [camera.up.x, camera.up.y, camera.up.z] // , camera.ortho // ?
+        [camera.up.x, camera.up.y, camera.up.z]
     ];
 }
 

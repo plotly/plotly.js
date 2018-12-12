@@ -48,6 +48,7 @@ exports.plot = function plotGl3d(gd) {
         var sceneId = sceneIds[i],
             fullSceneData = getSubplotData(fullData, GL3D, sceneId),
             sceneLayout = fullLayout[sceneId],
+            camera = sceneLayout.camera,
             scene = sceneLayout._scene;
 
         if(!scene) {
@@ -56,7 +57,8 @@ exports.plot = function plotGl3d(gd) {
                 graphDiv: gd,
                 container: gd.querySelector('.gl-container'),
                 staticPlot: gd._context.staticPlot,
-                plotGlPixelRatio: gd._context.plotGlPixelRatio
+                plotGlPixelRatio: gd._context.plotGlPixelRatio,
+                camera: camera
             },
                 fullLayout
             );
