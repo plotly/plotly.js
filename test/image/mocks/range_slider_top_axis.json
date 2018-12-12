@@ -23,7 +23,10 @@
   ],
   "layout": {
     "xaxis": {
-      "title": "Top X Axis",
+      "title": {
+        "text": "Top X Axis",
+        "font": {"size": 24}
+      },
       "rangeslider": {
         "visible": true
       },
