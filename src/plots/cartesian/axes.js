@@ -1584,10 +1584,8 @@ axes.draw = function(gd, arg, opts) {
 
             plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
             plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
-            if(xa.type === 'multicategory') {
-                plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
-                plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
-            }
+            plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
+            plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
             if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
             if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
             fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
