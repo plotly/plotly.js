@@ -54,6 +54,7 @@ exports.autoMarginOpts = function(gd, ax) {
     opts._oppBottom = oppBottom;
 
     var tickHeight = (ax.side === 'bottom' && ax._boundingBox.height) || 0;
+    opts._tickHeight = tickHeight;
 
     return {
         x: 0,

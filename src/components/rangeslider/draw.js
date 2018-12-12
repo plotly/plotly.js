@@ -100,7 +100,7 @@ module.exports = function(gd) {
         var margin = fullLayout.margin;
         var graphSize = fullLayout._size;
         var domain = axisOpts.domain;
-        var tickHeight = (axisOpts._boundingBox || {}).height || 0;
+        var tickHeight = opts._tickHeight;
 
         var oppBottom = opts._oppBottom;
 
