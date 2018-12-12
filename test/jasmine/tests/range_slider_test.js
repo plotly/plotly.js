@@ -352,6 +352,51 @@ describe('Visible rangesliders', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should automargin correctly with a top or bottom x axis', function(done) {
+        var topMock = require('@mocks/range_slider_top_axis');
+
+        function assertTop(hasExtra) {
+            var op = hasExtra ? 'toBeGreaterThan' : 'toBeLessThan';
+            expect(gd._fullLayout._size.t)[op](102);
+            expect(gd._fullLayout._size.b).toBeWithin(128, 5);
+        }
+
+        function assertBottom(val) {
+            expect(gd._fullLayout._size.t).toBe(100);
+            expect(gd._fullLayout._size.b).toBeWithin(val, 10);
+        }
+
+        Plotly.plot(gd, topMock)
+        .then(function() {
+            assertTop(true);
+            return Plotly.relayout(gd, 'xaxis.range', [-0.5, 1.5]);
+        })
+        .then(function() {
+            assertTop(false);
+            return Plotly.relayout(gd, 'xaxis.range', [-0.5, 6.5]);
+        })
+        .then(function() {
+            assertTop(true);
+            // rangeslider automargins even without automargin turned on
+            // axis.automargin only affects automargin directly from labels,
+            // not when the rangeslider is pushed down by labels.
+            return Plotly.relayout(gd, {'xaxis.side': 'bottom', 'xaxis.automargin': false});
+        })
+        .then(function() {
+            assertBottom(210);
+            return Plotly.relayout(gd, 'xaxis.range', [-0.5, 1.5]);
+        })
+        .then(function() {
+            assertBottom(145);
+            return Plotly.relayout(gd, 'xaxis.range', [-0.5, 6.5]);
+        })
+        .then(function() {
+            assertBottom(210);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Rangeslider visibility property', function() {

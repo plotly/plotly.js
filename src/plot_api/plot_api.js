@@ -1937,8 +1937,19 @@ function addAxRangeSequence(seq, rangesAltered) {
     // subroutine of its own so that finalDraw always gets
     // executed after drawData
     var drawAxes = rangesAltered ?
-        function(gd) { return Axes.draw(gd, Object.keys(rangesAltered), {skipTitle: true}); } :
-        function(gd) { return Axes.draw(gd, 'redraw'); };
+        function(gd) {
+            var opts = {skipTitle: true};
+            for(var id in rangesAltered) {
+                if(Axes.getFromId(gd, id).automargin) {
+                    opts = {};
+                    break;
+                }
+            }
+            return Axes.draw(gd, Object.keys(rangesAltered), opts);
+        } :
+        function(gd) {
+            return Axes.draw(gd, 'redraw');
+        };
 
     seq.push(
         subroutines.doAutoRangeAndConstraints,
