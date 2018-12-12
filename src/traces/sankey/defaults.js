@@ -35,6 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceNode('line.width');
     coerceNode('hoverinfo', traceIn.hoverinfo);
     handleHoverLabelDefaults(nodeIn, nodeOut, coerceNode, hoverlabelDefault);
+    coerceNode('hovertemplate');
 
     var colors = layout.colorway;
 
@@ -57,6 +58,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceLink('line.width');
     coerceLink('hoverinfo', traceIn.hoverinfo);
     handleHoverLabelDefaults(linkIn, linkOut, coerceLink, hoverlabelDefault);
+    coerceLink('hovertemplate');
 
     var defaultLinkColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
                 'rgba(255, 255, 255, 0.6)' :

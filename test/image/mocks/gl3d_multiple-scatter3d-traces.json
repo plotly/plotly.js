@@ -1,0 +1,40 @@
+{
+    "data": [
+        {
+            "type": "scatter3d",
+            "mode": "markers",
+            "marker": {"opacity": 1.0},
+            "x": [-1, 0, 1],
+            "y": [0, 0, 0],
+            "z": [0, 0, 0]
+        },
+        {
+            "type": "scatter3d",
+            "mode": "markers",
+            "marker": {"opacity": 1.0},
+            "x": [-1, 0, 1],
+            "y": [0, 0, 0],
+            "z": [10, 10, 10]
+        },
+        {
+            "type": "scatter3d",
+            "mode": "markers",
+            "marker": {"opacity": 1.0},
+            "x": [-1, 0, 1],
+            "y": [0, 0, 0],
+            "z": [-10, -10, -10]
+        }
+    ],
+    "layout": {
+        "title": "Hovering over data points of multiple scatter3d traces",
+        "width": 600,
+        "height": 400,
+        "scene": {
+            "camera": {
+                "eye": {"x": 1, "y": 1, "z": 1},
+                "center": {"x": 0, "y": 0, "z": 0},
+                "up": {"x": 0, "y": 0, "z": 1}
+            }
+        }
+    }
+}

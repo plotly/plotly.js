@@ -164,15 +164,10 @@ describe('heatmap convertColumnXYZ', function() {
     'use strict';
 
     var trace;
-
-    function makeMockAxis() {
-        return {
-            d2c: function(v) { return v; }
-        };
-    }
-
-    var xa = makeMockAxis();
-    var ya = makeMockAxis();
+    var xa = {type: 'linear'};
+    var ya = {type: 'linear'};
+    setConvert(xa);
+    setConvert(ya);
 
     function checkConverted(trace, x, y, z) {
         trace._length = Math.min(trace.x.length, trace.y.length, trace.z.length);
@@ -302,6 +297,13 @@ describe('heatmap calc', function() {
         var fullLayout = gd._fullLayout;
 
         fullTrace._extremes = {};
+
+        // we used to call ax.setScale during supplyDefaults, and this had a
+        // fallback to provide _categories and _categoriesMap. Now neither of
+        // those is true... anyway the right way to do this though is
+        // ax.clearCalc.
+        fullLayout.xaxis.clearCalc();
+        fullLayout.yaxis.clearCalc();
 
         var out = Heatmap.calc(gd, fullTrace)[0];
         out._xcategories = fullLayout.xaxis._categories;

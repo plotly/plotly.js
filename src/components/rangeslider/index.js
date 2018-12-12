@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 var attrs = require('./attributes');
 var oppAxisAttrs = require('./oppaxis_attributes');
+var helpers = require('./helpers');
 
 module.exports = {
     moduleType: 'component',
@@ -29,5 +30,8 @@ module.exports = {
     layoutAttributes: require('./attributes'),
     handleDefaults: require('./defaults'),
     calcAutorange: require('./calc_autorange'),
-    draw: require('./draw')
+    draw: require('./draw'),
+    isVisible: helpers.isVisible,
+    makeData: helpers.makeData,
+    autoMarginOpts: helpers.autoMarginOpts
 };

@@ -28,9 +28,7 @@ function getRangeSliderChild(index) {
 }
 
 function countRangeSliderClipPaths() {
-    return d3.selectAll('defs').selectAll('*').filter(function() {
-        return this.id.indexOf('rangeslider') !== -1;
-    }).size();
+    return document.querySelectorAll('defs [id*=rangeslider]').length;
 }
 
 function testTranslate1D(node, val) {
@@ -350,6 +348,51 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toBeWithin(9.22, TOL);
             expect(+maskMax.getAttribute('width')).toBeWithin(71.95, TOL);
 
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should automargin correctly with a top or bottom x axis', function(done) {
+        var topMock = require('@mocks/range_slider_top_axis');
+
+        function assertTop(hasExtra) {
+            var op = hasExtra ? 'toBeGreaterThan' : 'toBeLessThan';
+            expect(gd._fullLayout._size.t)[op](102);
+            expect(gd._fullLayout._size.b).toBeWithin(128, 5);
+        }
+
+        function assertBottom(val) {
+            expect(gd._fullLayout._size.t).toBe(100);
+            expect(gd._fullLayout._size.b).toBeWithin(val, 10);
+        }
+
+        Plotly.plot(gd, topMock)
+        .then(function() {
+            assertTop(true);
+            return Plotly.relayout(gd, 'xaxis.range', [-0.5, 1.5]);
+        })
+        .then(function() {
+            assertTop(false);
+            return Plotly.relayout(gd, 'xaxis.range', [-0.5, 6.5]);
+        })
+        .then(function() {
+            assertTop(true);
+            // rangeslider automargins even without automargin turned on
+            // axis.automargin only affects automargin directly from labels,
+            // not when the rangeslider is pushed down by labels.
+            return Plotly.relayout(gd, {'xaxis.side': 'bottom', 'xaxis.automargin': false});
+        })
+        .then(function() {
+            assertBottom(210);
+            return Plotly.relayout(gd, 'xaxis.range', [-0.5, 1.5]);
+        })
+        .then(function() {
+            assertBottom(145);
+            return Plotly.relayout(gd, 'xaxis.range', [-0.5, 6.5]);
+        })
+        .then(function() {
+            assertBottom(210);
         })
         .catch(failTest)
         .then(done);
@@ -1015,6 +1058,76 @@ describe('rangesliders in general', function() {
         })
         .then(function() {
             expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-0.5, 2.5], 3);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should give correct rangeslider range on reversed axes', function(done) {
+        function _assert(msg, exp) {
+            var xa = gd._fullLayout.xaxis;
+
+            expect(xa.range)
+                .toBeCloseToArray(exp.axRng, 1, 'x-axis rng ' + msg);
+            expect(xa.rangeslider.range)
+                .toBeCloseToArray(exp.rangesliderRng, 1, 'rangeslider rng ' + msg);
+            expect(xa.rangeslider._input.range)
+                .toBeCloseToArray(exp.rangesliderRng, 1, 'rangeslider input rng ' + msg);
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 1]
+        }], {
+            xaxis: { rangeslider: {visible: true} }
+        })
+        .then(function() {
+            _assert('base', {
+                axRng: [0.935, 2.06],
+                rangesliderRng: [0.935, 2.06]
+            });
+
+            return Plotly.relayout(gd, 'xaxis.autorange', 'reversed');
+        })
+        .then(function() {
+            _assert('reversed!', {
+                axRng: [2.06, 0.935],
+                rangesliderRng: [2.06, 0.935]
+            });
+
+            return Plotly.relayout(gd, 'xaxis.range', [0, 3]);
+        })
+        .then(function() {
+            _assert('set increasing rng', {
+                axRng: [0, 3],
+                rangesliderRng: [0, 3]
+            });
+
+            return Plotly.relayout(gd, 'xaxis.range', [3, 0]);
+        })
+        .then(function() {
+            _assert('set reversed rng', {
+                axRng: [3, 0],
+                rangesliderRng: [3, 0]
+            });
+
+            return Plotly.relayout(gd, 'xaxis.rangeslider.range', [0, 3]);
+        })
+        .then(function() {
+            _assert('reversed ax rng / increasing rangeslider rng', {
+                axRng: [3, 0],
+                rangesliderRng: [3, 0]
+            });
+
+            return Plotly.relayout(gd, {
+                'xaxis.range': [0, 3],
+                'xaxis.rangeslider.range': [3, 0]
+            });
+        })
+        .then(function() {
+            _assert('increasing ax rng / reversed rangeslider rng', {
+                axRng: [0, 3],
+                rangesliderRng: [0, 3]
+            });
         })
         .catch(failTest)
         .then(done);

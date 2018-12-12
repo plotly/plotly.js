@@ -8,7 +8,7 @@
 
 'use strict';
 
-var maxRowLength = require('./max_row_length');
+var maxRowLength = require('../../lib').maxRowLength;
 
 /* Return a list of empty points in 2D array z
  * each empty point z[i][j] gives an array [i, j, neighborCount]

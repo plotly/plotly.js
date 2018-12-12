@@ -17,9 +17,14 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var color = require('../../../src/components/color');
 var rgb = color.rgb;
 
+var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/bar/constants');
+
 var customAssertions = require('../assets/custom_assertions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
 
@@ -872,6 +877,24 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
+    });
+
+    it('should ignore *base* on category axes', function() {
+        var gd = mockBarPlot([
+            {x: ['a', 'b', 'c'], base: [0.2, -0.2, 1]},
+        ]);
+
+        expect(gd._fullLayout.xaxis.type).toBe('category');
+        assertPointField(gd.calcdata, 'b', [[0, 0, 0]]);
+    });
+
+    it('should ignore *base* on multicategory axes', function() {
+        var gd = mockBarPlot([
+            {x: [['a', 'a', 'b', 'b'], ['1', '2', '1', '2']], base: 10}
+        ]);
+
+        expect(gd._fullLayout.xaxis.type).toBe('multicategory');
+        assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0]]);
     });
 });
 
@@ -2041,6 +2064,34 @@ describe('bar hover', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should use hovertemplate if specified', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) {
+                t.type = 'bar';
+                t.hovertemplate = '%{y}<extra></extra>';
+            });
+
+            function _hover() {
+                var evt = { xpx: 125, ypx: 150 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.plot(gd, mock)
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: ['1', '2', '1.5'],
+                    name: ['', '', ''],
+                    axis: '0'
+                });
+                // return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('with special width/offset combinations', function() {
@@ -2264,6 +2315,11 @@ describe('bar hover', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/stacked_bar');
+    checkEventData(mock, 216, 309, constants.eventDataKeys);
 });
 
 function mockBarPlot(dataWithoutTraceType, layout) {

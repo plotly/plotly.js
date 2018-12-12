@@ -133,7 +133,7 @@ module.exports = overrideAll(templatedArray('slider', {
         role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the slider.'
     },
-    pad: extendDeepAll({}, padAttrs, {
+    pad: extendDeepAll(padAttrs({editType: 'arraydraw'}), {
         description: 'Set the padding of the slider component along each side.'
     }, {t: {dflt: 20}}),
     xanchor: {

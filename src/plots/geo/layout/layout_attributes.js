@@ -65,7 +65,7 @@ var geoAxesAttrs = {
     }
 };
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'geo'}, {
         description: [
             'Note that geo subplots are constrained by domain.',
@@ -311,3 +311,14 @@ module.exports = overrideAll({
     lonaxis: geoAxesAttrs,
     lataxis: geoAxesAttrs
 }, 'plot', 'from-root');
+
+// set uirevision outside of overrideAll so it can be `editType: 'none'`
+attrs.uirevision = {
+    valType: 'any',
+    role: 'info',
+    editType: 'none',
+    description: [
+        'Controls persistence of user-driven changes in the view',
+        '(projection and center). Defaults to `layout.uirevision`.'
+    ].join(' ')
+};

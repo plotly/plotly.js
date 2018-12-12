@@ -41,23 +41,33 @@ module.exports = {
         ].join(' ')
     },
     title: {
-        valType: 'string',
-        role: 'info',
-        editType: 'ticks',
-        description: 'Sets the title of this axis.'
+        text: {
+            valType: 'string',
+            role: 'info',
+            editType: 'ticks',
+            description: [
+                'Sets the title of this axis.',
+                'Note that before the existence of `title.text`, the title\'s',
+                'contents used to be defined as the `title` attribute itself.',
+                'This behavior has been deprecated.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'ticks',
+            description: [
+                'Sets this axis\' title font.',
+                'Note that the title\'s font used to be customized',
+                'by the now deprecated `titlefont` attribute.'
+            ].join(' ')
+        }),
+        editType: 'ticks'
     },
-    titlefont: fontAttrs({
-        editType: 'ticks',
-        description: [
-            'Sets this axis\' title font.'
-        ].join(' ')
-    }),
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
         // it gets turned into linear in gd._fullLayout but not copied back
         // to gd.data like the others are.
-        values: ['-', 'linear', 'log', 'date', 'category'],
+        values: ['-', 'linear', 'log', 'date', 'category', 'multicategory'],
         dflt: '-',
         role: 'info',
         editType: 'calc',
@@ -303,6 +313,20 @@ module.exports = {
             'If **, this axis\' ticks are not drawn.',
             'If *outside* (*inside*), this axis\' are drawn outside (inside)',
             'the axis lines.'
+        ].join(' ')
+    },
+    tickson: {
+        valType: 'enumerated',
+        values: ['labels', 'boundaries'],
+        role: 'info',
+        dflt: 'labels',
+        editType: 'ticks',
+        description: [
+            'Determines where ticks and grid lines are drawn with respect to their',
+            'corresponding tick labels.',
+            'Only has an effect for axes of `type` *category* or *multicategory*.',
+            'When set to *boundaries*, ticks and grid lines are drawn half a category',
+            'to the left/bottom of labels.'
         ].join(' ')
     },
     mirror: {
@@ -643,6 +667,40 @@ module.exports = {
         editType: 'ticks',
         description: 'Sets the width (in px) of the zero line.'
     },
+
+    showdividers: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Determines whether or not a dividers are drawn',
+            'between the category levels of this axis.',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    dividercolor: {
+        valType: 'color',
+        dflt: colorAttrs.defaultLine,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Sets the color of the dividers',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    dividerwidth: {
+        valType: 'number',
+        dflt: 1,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Sets the width (in px) of the dividers',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    // TODO dividerlen: that would override "to label base" length?
+
     // positioning attributes
     // anchor: not used directly, just put here for reference
     // values are any opposite-letter axis id
@@ -767,6 +825,16 @@ module.exports = {
             'Used with `categoryorder`.'
         ].join(' ')
     },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis `range`,',
+            '`autorange`, and `title` if in `editable: true` configuration.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
     editType: 'calc',
 
     _deprecated: {
@@ -779,6 +847,22 @@ module.exports = {
                 'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
                 'Set `tickmode` to *linear* for `autotick` *false*.'
             ].join(' ')
-        }
+        },
+        title: {
+            valType: 'string',
+            role: 'info',
+            editType: 'ticks',
+            description: [
+                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
+                'To set the axis\' title, please use `title.text` now.'
+            ].join(' ')
+        },
+        titlefont: fontAttrs({
+            editType: 'ticks',
+            description: [
+                'Former `titlefont` is now the sub-attribute `font` of `title`.',
+                'To customize title font properties, please use `title.font` now.'
+            ].join(' ')
+        })
     }
 };

@@ -1558,12 +1558,17 @@ describe('Test lib.js:', function() {
 
     describe('cleanNumber', function() {
         it('should return finite numbers untouched', function() {
-            [
-                0, 1, 2, 1234.567,
-                -1, -100, -999.999,
-                Number.MAX_VALUE, Number.MIN_VALUE, Number.EPSILON,
-                -Number.MAX_VALUE, -Number.MIN_VALUE, -Number.EPSILON
-            ].forEach(function(v) {
+            var vals = [
+                0, 1, 2, 1234.567, -1, -100, -999.999,
+                Number.MAX_VALUE, Number.MIN_VALUE,
+                -Number.MAX_VALUE, -Number.MIN_VALUE
+            ];
+
+            if(!Lib.isIE()) {
+                vals.push(Number.EPSILON, -Number.EPSILON);
+            }
+
+            vals.forEach(function(v) {
                 expect(Lib.cleanNumber(v)).toBe(v);
             });
         });
@@ -2163,6 +2168,66 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('hovertemplateString', function() {
+        it('evaluates attributes', function() {
+            expect(Lib.hovertemplateString('foo %{bar}', {}, {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('evaluates attributes with a dot in their name', function() {
+            expect(Lib.hovertemplateString('%{marker.size}', {}, {'marker.size': 12}, {marker: {size: 14}})).toEqual('12');
+        });
+
+        it('evaluates nested properties', function() {
+            expect(Lib.hovertemplateString('foo %{bar.baz}', {}, {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        });
+
+        it('evaluates array nested properties', function() {
+            expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('subtitutes multiple matches', function() {
+            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        });
+
+        it('replaces missing matches with template string', function() {
+            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, {group: 1})).toEqual('foo 1 %{trace}');
+        });
+
+        it('uses the value from the first object with the specified key', function() {
+            var obj1 = {a: 'first'}, obj2 = {a: 'second', foo: {bar: 'bar'}};
+
+            // Simple key
+            expect(Lib.hovertemplateString('foo %{a}', {}, obj1, obj2)).toEqual('foo first');
+            expect(Lib.hovertemplateString('foo %{a}', {}, obj2, obj1)).toEqual('foo second');
+
+            // Nested Keys
+            expect(Lib.hovertemplateString('foo %{foo.bar}', {}, obj1, obj2)).toEqual('foo bar');
+
+            // Nested keys with 0
+            expect(Lib.hovertemplateString('y: %{y}', {}, {y: 0}, {y: 1})).toEqual('y: 0');
+        });
+
+        it('formats value using d3 mini-language', function() {
+            expect(Lib.hovertemplateString('a: %{a:.0%}', {}, {a: 0.123})).toEqual('a: 12%');
+            expect(Lib.hovertemplateString('b: %{b:2.2f}', {}, {b: 43})).toEqual('b: 43.00');
+        });
+
+        it('looks for default label if no format is provided', function() {
+            expect(Lib.hovertemplateString('y: %{y}', {yLabel: '0.1'}, {y: 0.123})).toEqual('y: 0.1');
+        });
+
+        it('warns user up to 10 times if a variable cannot be found', function() {
+            spyOn(Lib, 'warn').and.callThrough();
+            Lib.hovertemplateString('%{idontexist}', {});
+            expect(Lib.warn.calls.count()).toBe(1);
+
+            for(var i = 0; i < 15; i++) {
+                Lib.hovertemplateString('%{idontexist}', {});
+            }
+            expect(Lib.warn.calls.count()).toBe(10);
+        });
+    });
+
     describe('relativeAttr()', function() {
         it('replaces the last part always', function() {
             expect(Lib.relativeAttr('annotations[3].x', 'y')).toBe('annotations[3].y');
@@ -2593,12 +2658,12 @@ describe('Queue', function() {
             expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([null]);
             expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
 
-            return Plotly.relayout(gd, 'title', 'A title');
+            return Plotly.relayout(gd, 'title.text', 'A title');
         })
         .then(function() {
             expect(gd.undoQueue.index).toEqual(2);
-            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(null);
-            expect(gd.undoQueue.queue[1].redo.args[0][1].title).toEqual('A title');
+            expect(gd.undoQueue.queue[1].undo.args[0][1]['title.text']).toEqual(null);
+            expect(gd.undoQueue.queue[1].redo.args[0][1]['title.text']).toEqual('A title');
 
             return Plotly.restyle(gd, 'mode', 'markers');
         })
@@ -2609,8 +2674,8 @@ describe('Queue', function() {
             expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([null]);
             expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
 
-            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(null);
-            expect(gd.undoQueue.queue[0].redo.args[0][1].title).toEqual('A title');
+            expect(gd.undoQueue.queue[0].undo.args[0][1]['title.text']).toEqual(null);
+            expect(gd.undoQueue.queue[0].redo.args[0][1]['title.text']).toEqual('A title');
 
             return Plotly.restyle(gd, 'transforms[0]', { type: 'filter' });
         })
@@ -2631,9 +2696,8 @@ describe('Queue', function() {
             return Plotly.relayout(gd, 'updatemenus[0]', null);
         })
         .then(function() {
-            // buttons have been stripped out because it's an empty container array...
             expect(gd.undoQueue.queue[1].undo.args[0][1])
-                .toEqual({ 'updatemenus[0]': {} });
+                .toEqual({ 'updatemenus[0]': { buttons: [] } });
             expect(gd.undoQueue.queue[1].redo.args[0][1])
                 .toEqual({ 'updatemenus[0]': null });
 

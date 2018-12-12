@@ -72,8 +72,9 @@ module.exports = overrideAll({
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
     title: axesAttrs.title,
-    titlefont: axesAttrs.titlefont,
-    type: axesAttrs.type,
+    type: extendFlat({}, axesAttrs.type, {
+        values: ['-', 'linear', 'log', 'date', 'category']
+    }),
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
     range: extendFlat({}, axesAttrs.range, {
@@ -118,5 +119,9 @@ module.exports = overrideAll({
     gridwidth: axesAttrs.gridwidth,
     zeroline: axesAttrs.zeroline,
     zerolinecolor: axesAttrs.zerolinecolor,
-    zerolinewidth: axesAttrs.zerolinewidth
+    zerolinewidth: axesAttrs.zerolinewidth,
+    _deprecated: {
+        title: axesAttrs._deprecated.title,
+        titlefont: axesAttrs._deprecated.titlefont
+    }
 }, 'plot', 'from-root');
