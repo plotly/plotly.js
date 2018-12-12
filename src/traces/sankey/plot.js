@@ -133,6 +133,7 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
         if(d.link.trace.link.hoverinfo !== 'skip') {
+            d.link.fullData = d.link.trace;
             gd.emit('plotly_hover', {
                 event: d3.event,
                 points: [d.link]
@@ -155,10 +156,13 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterX = boundingBox.left + boundingBox.width / 2;
         var hoverCenterY = boundingBox.top + boundingBox.height / 2;
 
+        var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix};
+        d.link.fullData = d.link.trace;
+
         var tooltip = Fx.loneHover({
             x: hoverCenterX - rootBBox.left,
             y: hoverCenterY - rootBBox.top,
-            name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
+            name: hovertemplateLabels.valueLabel,
             text: [
                 d.link.label || '',
                 sourceLabel + d.link.source.label,
@@ -169,7 +173,11 @@ module.exports = function plot(gd, calcData) {
             fontFamily: castHoverOption(obj, 'font.family'),
             fontSize: castHoverOption(obj, 'font.size'),
             fontColor: castHoverOption(obj, 'font.color'),
-            idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
+            idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left',
+
+            hovertemplate: obj.hovertemplate,
+            hovertemplateLabels: hovertemplateLabels,
+            eventData: [d.link]
         }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
@@ -184,6 +192,7 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         if(d.link.trace.link.hoverinfo !== 'skip') {
+            d.link.fullData = d.link.trace;
             gd.emit('plotly_unhover', {
                 event: d3.event,
                 points: [d.link]
@@ -205,6 +214,7 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeHoveredStyle, d, sankey);
         if(d.node.trace.node.hoverinfo !== 'skip') {
+            d.node.fullData = d.node.trace;
             gd.emit('plotly_hover', {
                 event: d3.event,
                 points: [d.node]
@@ -224,6 +234,9 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterX1 = boundingBox.right + 2 - rootBBox.left;
         var hoverCenterY = boundingBox.top + boundingBox.height / 4 - rootBBox.top;
 
+        var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix};
+        d.node.fullData = d.node.trace;
+
         var tooltip = Fx.loneHover({
             x0: hoverCenterX0,
             x1: hoverCenterX1,
@@ -239,7 +252,11 @@ module.exports = function plot(gd, calcData) {
             fontFamily: castHoverOption(obj, 'font.family'),
             fontSize: castHoverOption(obj, 'font.size'),
             fontColor: castHoverOption(obj, 'font.color'),
-            idealAlign: 'left'
+            idealAlign: 'left',
+
+            hovertemplate: obj.hovertemplate,
+            hovertemplateLabels: hovertemplateLabels,
+            eventData: [d.node]
         }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
@@ -254,6 +271,7 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         if(d.node.trace.node.hoverinfo !== 'skip') {
+            d.node.fullData = d.node.trace;
             gd.emit('plotly_unhover', {
                 event: d3.event,
                 points: [d.node]

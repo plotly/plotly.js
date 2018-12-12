@@ -15,6 +15,8 @@ var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
 
 var Lib = require('../lib');
+var nestedProperty = Lib.nestedProperty;
+
 var Events = require('../lib/events');
 var Queue = require('../lib/queue');
 
@@ -110,9 +112,6 @@ exports.plot = function(gd, data, layout, config) {
     // so we can share cached text across tabs
     Drawing.makeTester();
 
-    // clear stashed base url
-    delete Drawing.baseUrl;
-
     // collect promises for any async actions during plotting
     // any part of the plotting code can push to gd._promises, then
     // before we move to the next step, we check that they're all
@@ -157,7 +156,7 @@ exports.plot = function(gd, data, layout, config) {
     // Legacy polar plots
     if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
         Lib.log('Legacy polar charts are deprecated!');
-        return plotPolar(gd, data, layout);
+        return plotLegacyPolar(gd, data, layout);
     }
 
     // so we don't try to re-call Plotly.plot from inside
@@ -333,8 +332,7 @@ exports.plot = function(gd, data, layout, config) {
         return Lib.syncOrAsync([
             Registry.getComponentMethod('shapes', 'calcAutorange'),
             Registry.getComponentMethod('annotations', 'calcAutorange'),
-            doAutoRangeAndConstraints,
-            Registry.getComponentMethod('rangeslider', 'calcAutorange')
+            doAutoRangeAndConstraints
         ], gd);
     }
 
@@ -346,6 +344,11 @@ exports.plot = function(gd, data, layout, config) {
         // store initial ranges *after* enforcing constraints, otherwise
         // we will never look like we're at the initial ranges
         if(graphWasEmpty) Axes.saveRangeInitial(gd);
+
+        // this one is different from shapes/annotations calcAutorange
+        // the others incorporate those components into ax._extremes,
+        // this one actually sets the ranges in rangesliders.
+        Registry.getComponentMethod('rangeslider', 'calcAutorange')(gd);
     }
 
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
@@ -419,7 +422,16 @@ function opaqueSetBackground(gd, bgColor) {
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Lib.extendDeep({}, defaultConfig);
+    if(!gd._context) {
+        gd._context = Lib.extendDeep({}, defaultConfig);
+
+        // stash <base> href, used to make robust clipPath URLs
+        var base = d3.select('base');
+        gd._context._baseUrl = base.size() && base.attr('href') ?
+            window.location.href.split('#')[0] :
+            '';
+    }
+
     var context = gd._context;
 
     var i, keys, key;
@@ -465,6 +477,9 @@ function setPlotContext(gd, config) {
                 }
             }
         }
+
+        // not part of the user-facing config options
+        context._exportedPlot = config._exportedPlot;
     }
 
     // staticPlot forces a bunch of others:
@@ -494,7 +509,7 @@ function setPlotContext(gd, config) {
     context._hasZeroWidth = context._hasZeroWidth || gd.clientWidth === 0;
 }
 
-function plotPolar(gd, data, layout) {
+function plotLegacyPolar(gd, data, layout) {
     // build or reuse the container skeleton
     var plotContainer = d3.select(gd).selectAll('.plot-container')
         .data([0]);
@@ -535,7 +550,7 @@ function plotPolar(gd, data, layout) {
 
     // editable title
     var opacity = 1;
-    var txt = gd._fullLayout.title;
+    var txt = gd._fullLayout.title ? gd._fullLayout.title.text : '';
     if(txt === '' || !txt) opacity = 0;
 
     var titleLayout = function() {
@@ -569,7 +584,7 @@ function plotPolar(gd, data, layout) {
         var setContenteditable = function() {
             this.call(svgTextUtils.makeEditable, {gd: gd})
                 .on('edit', function(text) {
-                    gd.framework({layout: {title: text}});
+                    gd.framework({layout: {title: {text: text}}});
                     this.text(text)
                         .call(titleLayout);
                     this.call(setContenteditable);
@@ -842,7 +857,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
              * instance that references the key and value for this particular trace.
              */
             trace = gd.data[indices[j]];
-            prop = Lib.nestedProperty(trace, key);
+            prop = nestedProperty(trace, key);
 
             /*
              * Target is the existing gd.data.trace.dataArray value like "x" or "marker.size"
@@ -1313,7 +1328,7 @@ exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
  * If the array is too short, it will wrap around (useful for
  * style files that want to specify cyclical default values).
  */
-exports.restyle = function restyle(gd, astr, val, _traces) {
+function restyle(gd, astr, val, _traces) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -1383,7 +1398,8 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
         gd.emit('plotly_restyle', specs.eventData);
         return gd;
     });
-};
+}
+exports.restyle = restyle;
 
 // for undo: undefined initial vals must be turned into nulls
 // so that we unset rather than ignore them
@@ -1392,11 +1408,77 @@ function undefinedToNull(val) {
     return val;
 }
 
+/**
+ * Factory function to wrap nestedProperty with GUI edits if necessary
+ * with GUI edits we add an optional prefix to the nestedProperty constructor
+ * to prepend to the attribute string in the preGUI store.
+ */
+function makeNP(preGUI, guiEditFlag) {
+    if(!guiEditFlag) return nestedProperty;
+
+    return function(container, attr, prefix) {
+        var np = nestedProperty(container, attr);
+        var npSet = np.set;
+        np.set = function(val) {
+            var fullAttr = (prefix || '') + attr;
+            storeCurrent(fullAttr, np.get(), val, preGUI);
+            npSet(val);
+        };
+        return np;
+    };
+}
+
+function storeCurrent(attr, val, newVal, preGUI) {
+    if(Array.isArray(val) || Array.isArray(newVal)) {
+        var arrayVal = Array.isArray(val) ? val : [];
+        var arrayNew = Array.isArray(newVal) ? newVal : [];
+        var maxLen = Math.max(arrayVal.length, arrayNew.length);
+        for(var i = 0; i < maxLen; i++) {
+            storeCurrent(attr + '[' + i + ']', arrayVal[i], arrayNew[i], preGUI);
+        }
+    }
+    else if(Lib.isPlainObject(val) || Lib.isPlainObject(newVal)) {
+        var objVal = Lib.isPlainObject(val) ? val : {};
+        var objNew = Lib.isPlainObject(newVal) ? newVal : {};
+        var objBoth = Lib.extendFlat({}, objVal, objNew);
+        for(var key in objBoth) {
+            storeCurrent(attr + '.' + key, objVal[key], objNew[key], preGUI);
+        }
+    }
+    else if(preGUI[attr] === undefined) {
+        preGUI[attr] = undefinedToNull(val);
+    }
+}
+
+/**
+ * storeDirectGUIEdit: for routines that skip restyle/relayout and mock it
+ * by emitting a plotly_restyle or plotly_relayout event, this routine
+ * keeps track of the initial state in _preGUI for use by uirevision
+ * Does *not* apply these changes to data/layout - that's the responsibility
+ * of the calling routine.
+ *
+ * @param {object} container: the input attributes container (eg `layout` or a `trace`)
+ * @param {object} preGUI: where original values should be stored, either
+ *     `layout._preGUI` or `layout._tracePreGUI[uid]`
+ * @param {object} edits: the {attr: val} object as normally passed to `relayout` etc
+ */
+exports._storeDirectGUIEdit = function(container, preGUI, edits) {
+    for(var attr in edits) {
+        var np = nestedProperty(container, attr);
+        storeCurrent(attr, np.get(), edits[attr], preGUI);
+    }
+};
+
 function _restyle(gd, aobj, traces) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        data = gd.data,
-        i;
+    var fullLayout = gd._fullLayout;
+    var fullData = gd._fullData;
+    var data = gd.data;
+    var guiEditFlag = fullLayout._guiEditing;
+    var layoutNP = makeNP(fullLayout._preGUI, guiEditFlag);
+    var eventData = Lib.extendDeepAll({}, aobj);
+    var i;
+
+    cleanDeprecatedAttributeKeys(aobj);
 
     // initialize flags
     var flags = editTypes.traceFlags();
@@ -1420,6 +1502,16 @@ function _restyle(gd, aobj, traces) {
 
     function rangeAttr(axName) { return 'LAYOUT' + axName + '.range'; }
 
+    function getFullTrace(traceIndex) {
+        // usually fullData maps 1:1 onto data, but with groupby transforms
+        // the fullData index can be greater. Take the *first* matching trace.
+        for(var j = traceIndex; j < fullData.length; j++) {
+            if(fullData[j]._input === data[traceIndex]) return fullData[j];
+        }
+        // should never get here - and if we *do* it should cause an error
+        // later on undefined fullTrace is passed to nestedProperty.
+    }
+
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
     // val=undefined will not set a value, just record what the value was.
@@ -1435,9 +1527,11 @@ function _restyle(gd, aobj, traces) {
 
         var extraparam;
         if(attr.substr(0, 6) === 'LAYOUT') {
-            extraparam = Lib.nestedProperty(gd.layout, attr.replace('LAYOUT', ''));
+            extraparam = layoutNP(gd.layout, attr.replace('LAYOUT', ''));
         } else {
-            extraparam = Lib.nestedProperty(data[traces[i]], attr);
+            var tracei = traces[i];
+            var preGUI = fullLayout._tracePreGUI[getFullTrace(tracei)._fullInput.uid];
+            extraparam = makeNP(preGUI, guiEditFlag)(data[tracei], attr);
         }
 
         if(!(attr in undoit)) {
@@ -1492,7 +1586,7 @@ function _restyle(gd, aobj, traces) {
         redoit[ai] = vi;
 
         if(ai.substr(0, 6) === 'LAYOUT') {
-            param = Lib.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
+            param = layoutNP(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [undefinedToNull(param.get())];
             // since we're allowing val to be an array, allow it here too,
             // even though that's meaningless
@@ -1507,8 +1601,9 @@ function _restyle(gd, aobj, traces) {
         undoit[ai] = a0();
         for(i = 0; i < traces.length; i++) {
             cont = data[traces[i]];
-            contFull = fullData[traces[i]];
-            param = Lib.nestedProperty(cont, ai);
+            contFull = getFullTrace(traces[i]);
+            var preGUI = fullLayout._tracePreGUI[contFull._fullInput.uid];
+            param = makeNP(preGUI, guiEditFlag)(cont, ai);
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
 
@@ -1518,7 +1613,7 @@ function _restyle(gd, aobj, traces) {
             var prefix = ai.substr(0, ai.length - finalPart.length - 1);
             var prefixDot = prefix ? prefix + '.' : '';
             var innerContFull = prefix ?
-                Lib.nestedProperty(contFull, prefix).get() : contFull;
+                nestedProperty(contFull, prefix).get() : contFull;
 
             valObject = PlotSchema.getTraceValObject(contFull, param.parts);
 
@@ -1565,14 +1660,14 @@ function _restyle(gd, aobj, traces) {
                 Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
                 if(oldVal === 'pie') {
-                    Lib.nestedProperty(cont, 'marker.color')
-                        .set(Lib.nestedProperty(cont, 'marker.colors').get());
+                    nestedProperty(cont, 'marker.color')
+                        .set(nestedProperty(cont, 'marker.colors').get());
 
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
                 } else if(Registry.traceIs(cont, 'cartesian')) {
-                    Lib.nestedProperty(cont, 'marker.colors')
-                        .set(Lib.nestedProperty(cont, 'marker.color').get());
+                    nestedProperty(cont, 'marker.colors')
+                        .set(nestedProperty(cont, 'marker.color').get());
                 }
             }
 
@@ -1643,7 +1738,7 @@ function _restyle(gd, aobj, traces) {
 
         // swap hovermode if set to "compare x/y data"
         if(ai === 'orientationaxes') {
-            var hovermode = Lib.nestedProperty(gd.layout, 'hovermode');
+            var hovermode = nestedProperty(gd.layout, 'hovermode');
             if(hovermode.get() === 'x') {
                 hovermode.set('y');
             } else if(hovermode.get() === 'y') {
@@ -1682,8 +1777,51 @@ function _restyle(gd, aobj, traces) {
         undoit: undoit,
         redoit: redoit,
         traces: traces,
-        eventData: Lib.extendDeepNoArrays([], [redoit, traces])
+        eventData: Lib.extendDeepNoArrays([], [eventData, traces])
     };
+}
+
+/**
+ * Converts deprecated attribute keys to
+ * the current API to ensure backwards compatibility.
+ *
+ * This is needed for the update mechanism to determine which
+ * subroutines to run based on the actual attribute
+ * definitions (that don't include the deprecated ones).
+ *
+ * E.g. Maps {'xaxis.title': 'A chart'} to {'xaxis.title.text': 'A chart'}
+ * and {titlefont: {...}} to {'title.font': {...}}.
+ *
+ * @param aobj
+ */
+function cleanDeprecatedAttributeKeys(aobj) {
+    var oldAxisTitleRegex = Lib.counterRegex('axis', '\.title', false, false);
+    var colorbarRegex = /colorbar\.title$/;
+    var keys = Object.keys(aobj);
+    var i, key, value;
+
+    for(i = 0; i < keys.length; i++) {
+        key = keys[i];
+        value = aobj[key];
+
+        if((key === 'title' || oldAxisTitleRegex.test(key) || colorbarRegex.test(key)) &&
+          (typeof value === 'string' || typeof value === 'number')) {
+            replace(key, key.replace('title', 'title.text'));
+        } else if(key.indexOf('titlefont') > -1) {
+            replace(key, key.replace('titlefont', 'title.font'));
+        } else if(key.indexOf('titleposition') > -1) {
+            replace(key, key.replace('titleposition', 'title.position'));
+        } else if(key.indexOf('titleside') > -1) {
+            replace(key, key.replace('titleside', 'title.side'));
+        } else if(key.indexOf('titleoffset') > -1) {
+            replace(key, key.replace('titleoffset', 'title.offset'));
+        }
+    }
+
+    function replace(oldAttrStr, newAttrStr) {
+        aobj[newAttrStr] = aobj[oldAttrStr];
+        delete aobj[oldAttrStr];
+    }
 }
 
 /**
@@ -1706,7 +1844,7 @@ function _restyle(gd, aobj, traces) {
  *  attribute object `{astr1: val1, astr2: val2 ...}`
  *  allows setting multiple attributes simultaneously
  */
-exports.relayout = function relayout(gd, astr, val) {
+function relayout(gd, astr, val) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -1769,7 +1907,8 @@ exports.relayout = function relayout(gd, astr, val) {
         gd.emit('plotly_relayout', specs.eventData);
         return gd;
     });
-};
+}
+exports.relayout = relayout;
 
 // Optimization mostly for large splom traces where
 // Plots.supplyDefaults can take > 100ms
@@ -1814,14 +1953,19 @@ var AX_AUTORANGE_RE = /^[xyz]axis[0-9]*\.autorange$/;
 var AX_DOMAIN_RE = /^[xyz]axis[0-9]*\.domain(\[[0|1]\])?$/;
 
 function _relayout(gd, aobj) {
-    var layout = gd.layout,
-        fullLayout = gd._fullLayout,
-        keys = Object.keys(aobj),
-        axes = Axes.list(gd),
-        arrayEdits = {},
-        arrayStr,
-        i,
-        j;
+    var layout = gd.layout;
+    var fullLayout = gd._fullLayout;
+    var guiEditFlag = fullLayout._guiEditing;
+    var layoutNP = makeNP(fullLayout._preGUI, guiEditFlag);
+    var keys = Object.keys(aobj);
+    var axes = Axes.list(gd);
+    var eventData = Lib.extendDeepAll({}, aobj);
+    var arrayEdits = {};
+
+    var arrayStr, i, j;
+
+    cleanDeprecatedAttributeKeys(aobj);
+    keys = Object.keys(aobj);
 
     // look for 'allaxes', split out into all axes
     // in case of 3D the axis are nested within a scene which is held in _id
@@ -1861,7 +2005,7 @@ function _relayout(gd, aobj) {
         // via a parent) do not override with this auto-generated extra
         if(attr in aobj || helpers.hasParent(aobj, attr)) return;
 
-        var p = Lib.nestedProperty(layout, attr);
+        var p = layoutNP(layout, attr);
         if(!(attr in undoit)) {
             undoit[attr] = undefinedToNull(p.get());
         }
@@ -1886,7 +2030,7 @@ function _relayout(gd, aobj) {
             throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
         }
 
-        var p = Lib.nestedProperty(layout, ai);
+        var p = layoutNP(layout, ai);
         var vi = aobj[ai];
         var plen = p.parts.length;
         // p.parts may end with an index integer if the property is an array
@@ -1898,8 +2042,8 @@ function _relayout(gd, aobj) {
         var pleafPlus = p.parts[pend - 1] + '.' + pleaf;
         // trunk nodes (everything except the leaf)
         var ptrunk = p.parts.slice(0, pend).join('.');
-        var parentIn = Lib.nestedProperty(gd.layout, ptrunk).get();
-        var parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
+        var parentIn = nestedProperty(gd.layout, ptrunk).get();
+        var parentFull = nestedProperty(fullLayout, ptrunk).get();
         var vOld = p.get();
 
         if(vi === undefined) continue;
@@ -1944,12 +2088,12 @@ function _relayout(gd, aobj) {
         // check autorange vs range
         else if(pleafPlus.match(AX_RANGE_RE)) {
             recordAlteredAxis(pleafPlus);
-            Lib.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
+            nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }
         else if(pleafPlus.match(AX_AUTORANGE_RE)) {
             recordAlteredAxis(pleafPlus);
-            Lib.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
-            var axFull = Lib.nestedProperty(fullLayout, ptrunk).get();
+            nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
+            var axFull = nestedProperty(fullLayout, ptrunk).get();
             if(axFull._inputDomain) {
                 // if we're autoranging and this axis has a constrained domain,
                 // reset it so we don't get locked into a shrunken size
@@ -1957,7 +2101,7 @@ function _relayout(gd, aobj) {
             }
         }
         else if(pleafPlus.match(AX_DOMAIN_RE)) {
-            Lib.nestedProperty(fullLayout, ptrunk + '._inputDomain').set(null);
+            nestedProperty(fullLayout, ptrunk + '._inputDomain').set(null);
         }
 
         // toggling axis type between log and linear: we need to convert
@@ -2026,10 +2170,10 @@ function _relayout(gd, aobj) {
                 doextra(ptrunk + '.autorange', true);
                 doextra(ptrunk + '.range', null);
             }
-            Lib.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
+            nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }
         else if(pleaf.match(AX_NAME_PATTERN)) {
-            var fullProp = Lib.nestedProperty(fullLayout, ai).get(),
+            var fullProp = nestedProperty(fullLayout, ai).get(),
                 newType = (vi || {}).type;
 
             // This can potentially cause strange behavior if the autotype is not
@@ -2051,8 +2195,6 @@ function _relayout(gd, aobj) {
             arrayStr = containerArrayMatch.array;
             i = containerArrayMatch.index;
             var propStr = containerArrayMatch.property;
-            var componentArray = Lib.nestedProperty(layout, arrayStr);
-            var obji = (componentArray || [])[i] || {};
             var updateValObject = valObject || {editType: 'calc'};
 
             if(i !== '' && propStr === '') {
@@ -2062,7 +2204,7 @@ function _relayout(gd, aobj) {
                 if(manageArrays.isAddVal(vi)) {
                     undoit[ai] = null;
                 } else if(manageArrays.isRemoveVal(vi)) {
-                    undoit[ai] = obji;
+                    undoit[ai] = (nestedProperty(layout, arrayStr).get() || [])[i];
                 } else {
                     Lib.warn('unrecognized full object value', aobj);
                 }
@@ -2106,7 +2248,7 @@ function _relayout(gd, aobj) {
     // now we've collected component edits - execute them all together
     for(arrayStr in arrayEdits) {
         var finished = manageArrays.applyContainerArrayChanges(gd,
-            Lib.nestedProperty(layout, arrayStr), arrayEdits[arrayStr], flags);
+            layoutNP(layout, arrayStr), arrayEdits[arrayStr], flags, layoutNP);
         if(!finished) flags.plot = true;
     }
 
@@ -2149,7 +2291,7 @@ function _relayout(gd, aobj) {
         rangesAltered: rangesAltered,
         undoit: undoit,
         redoit: redoit,
-        eventData: Lib.extendDeep({}, redoit)
+        eventData: eventData
     };
 }
 
@@ -2184,7 +2326,7 @@ function updateAutosize(gd) {
  *  integer or array of integers for the traces to alter (all if omitted)
  *
  */
-exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
+function update(gd, traceUpdate, layoutUpdate, _traces) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -2264,7 +2406,235 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
 
         return gd;
     });
-};
+}
+exports.update = update;
+
+/*
+ * internal-use-only restyle/relayout/update variants that record the initial
+ * values in (fullLayout|fullTrace)._preGUI so changes can be persisted across
+ * Plotly.react data updates, dependent on uirevision attributes
+ */
+function guiEdit(func) {
+    return function wrappedEdit(gd) {
+        gd._fullLayout._guiEditing = true;
+        var p = func.apply(null, arguments);
+        gd._fullLayout._guiEditing = false;
+        return p;
+    };
+}
+exports._guiRestyle = guiEdit(restyle);
+exports._guiRelayout = guiEdit(relayout);
+exports._guiUpdate = guiEdit(update);
+
+// For connecting edited layout attributes to uirevision attrs
+// If no `attr` we use `match[1] + '.uirevision'`
+// Ordered by most common edits first, to minimize our search time
+var layoutUIControlPatterns = [
+    {pattern: /^hiddenlabels/, attr: 'legend.uirevision'},
+    {pattern: /^((x|y)axis\d*)\.((auto)?range|title\.text)/},
+
+    // showspikes and modes include those nested inside scenes
+    {pattern: /axis\d*\.showspikes$/, attr: 'modebar.uirevision'},
+    {pattern: /(hover|drag)mode$/, attr: 'modebar.uirevision'},
+
+    {pattern: /^(scene\d*)\.camera/},
+    {pattern: /^(geo\d*)\.(projection|center)/},
+    {pattern: /^(ternary\d*\.[abc]axis)\.(min|title\.text)$/},
+    {pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title\.text)/},
+    {pattern: /^(polar\d*\.angularaxis)\.rotation/},
+    {pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/},
+
+    {pattern: /^legend\.(x|y)$/, attr: 'editrevision'},
+    {pattern: /^(shapes|annotations)/, attr: 'editrevision'},
+    {pattern: /^title\.text$/, attr: 'editrevision'}
+];
+
+// same for trace attributes: if `attr` is given it's in layout,
+// or with no `attr` we use `trace.uirevision`
+var traceUIControlPatterns = [
+    {pattern: /^selectedpoints$/, attr: 'selectionrevision'},
+    // "visible" includes trace.transforms[i].styles[j].value.visible
+    {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
+    {pattern: /^dimensions\[\d+\]\.constraintrange/},
+
+    // below this you must be in editable: true mode
+    // TODO: I still put name and title with `trace.uirevision`
+    // reasonable or should these be `editrevision`?
+    // Also applies to axis titles up in the layout section
+
+    // "name" also includes transform.styles
+    {pattern: /(^|value\.)name$/},
+    // including nested colorbar attributes (ie marker.colorbar)
+    {pattern: /colorbar\.title\.text$/},
+    {pattern: /colorbar\.(x|y)$/, attr: 'editrevision'}
+];
+
+function findUIPattern(key, patternSpecs) {
+    for(var i = 0; i < patternSpecs.length; i++) {
+        var spec = patternSpecs[i];
+        var match = key.match(spec.pattern);
+        if(match) {
+            return {head: match[1], attr: spec.attr};
+        }
+    }
+}
+
+// We're finding the new uirevision before supplyDefaults, so do the
+// inheritance manually. Note that only `undefined` inherits - other
+// falsy values are returned.
+function getNewRev(revAttr, container) {
+    var newRev = nestedProperty(container, revAttr).get();
+    if(newRev !== undefined) return newRev;
+
+    var parts = revAttr.split('.');
+    parts.pop();
+    while(parts.length > 1) {
+        parts.pop();
+        newRev = nestedProperty(container, parts.join('.') + '.uirevision').get();
+        if(newRev !== undefined) return newRev;
+    }
+
+    return container.uirevision;
+}
+
+function getFullTraceIndexFromUid(uid, fullData) {
+    for(var i = 0; i < fullData.length; i++) {
+        if(fullData[i]._fullInput.uid === uid) return i;
+    }
+    return -1;
+}
+
+function getTraceIndexFromUid(uid, data, tracei) {
+    for(var i = 0; i < data.length; i++) {
+        if(data[i].uid === uid) return i;
+    }
+    // fall back on trace order, but only if user didn't provide a uid for that trace
+    return data[tracei].uid ? -1 : tracei;
+}
+
+function valsMatch(v1, v2) {
+    var v1IsObj = Lib.isPlainObject(v1);
+    var v1IsArray = Array.isArray(v1);
+    if(v1IsObj || v1IsArray) {
+        return (
+            (v1IsObj && Lib.isPlainObject(v2)) ||
+            (v1IsArray && Array.isArray(v2))
+        ) && JSON.stringify(v1) === JSON.stringify(v2);
+    }
+    return v1 === v2;
+}
+
+function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
+    var layoutPreGUI = oldFullLayout._preGUI;
+    var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal;
+    var bothInheritAutorange = [];
+    var newRangeAccepted = {};
+    for(key in layoutPreGUI) {
+        match = findUIPattern(key, layoutUIControlPatterns);
+        if(match) {
+            revAttr = match.attr || (match.head + '.uirevision');
+            oldRev = nestedProperty(oldFullLayout, revAttr).get();
+            newRev = oldRev && getNewRev(revAttr, layout);
+            if(newRev && (newRev === oldRev)) {
+                preGUIVal = layoutPreGUI[key];
+                if(preGUIVal === null) preGUIVal = undefined;
+                newNP = nestedProperty(layout, key);
+                newVal = newNP.get();
+                if(valsMatch(newVal, preGUIVal)) {
+                    if(newVal === undefined && key.substr(key.length - 9) === 'autorange') {
+                        bothInheritAutorange.push(key.substr(0, key.length - 10));
+                    }
+                    newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
+                    continue;
+                }
+            }
+        }
+        else {
+            Lib.warn('unrecognized GUI edit: ' + key);
+        }
+        // if we got this far, the new value was accepted as the new starting
+        // point (either because it changed or revision changed)
+        // so remove it from _preGUI for next time.
+        delete layoutPreGUI[key];
+
+        if(key.substr(key.length - 8, 6) === 'range[') {
+            newRangeAccepted[key.substr(0, key.length - 9)] = 1;
+        }
+    }
+
+    // Special logic for `autorange`, since it interacts with `range`:
+    // If the new figure's matching `range` was kept, and `autorange`
+    // wasn't supplied explicitly in either the original or the new figure,
+    // we shouldn't alter that - but we may just have done that, so fix it.
+    for(var i = 0; i < bothInheritAutorange.length; i++) {
+        var axAttr = bothInheritAutorange[i];
+        if(newRangeAccepted[axAttr]) {
+            var newAx = nestedProperty(layout, axAttr).get();
+            if(newAx) delete newAx.autorange;
+        }
+    }
+
+    // Now traces - try to match them up by uid (in case we added/deleted in
+    // the middle), then fall back on index.
+    var allTracePreGUI = oldFullLayout._tracePreGUI;
+    for(var uid in allTracePreGUI) {
+        var tracePreGUI = allTracePreGUI[uid];
+        var newTrace = null;
+        var fullInput;
+        for(key in tracePreGUI) {
+            // wait until we know we have preGUI values to look for traces
+            // but if we don't find both, stop looking at this uid
+            if(!newTrace) {
+                var fulli = getFullTraceIndexFromUid(uid, oldFullData);
+                if(fulli < 0) {
+                    // Somehow we didn't even have this trace in oldFullData...
+                    // I guess this could happen with `deleteTraces` or something
+                    delete allTracePreGUI[uid];
+                    break;
+                }
+                var fullTrace = oldFullData[fulli];
+                fullInput = fullTrace._fullInput;
+
+                var newTracei = getTraceIndexFromUid(uid, data, fullInput.index);
+                if(newTracei < 0) {
+                    // No match in new data
+                    delete allTracePreGUI[uid];
+                    break;
+                }
+                newTrace = data[newTracei];
+            }
+
+            match = findUIPattern(key, traceUIControlPatterns);
+            if(match) {
+                if(match.attr) {
+                    oldRev = nestedProperty(oldFullLayout, match.attr).get();
+                    newRev = oldRev && getNewRev(match.attr, layout);
+                }
+                else {
+                    oldRev = fullInput.uirevision;
+                    // inheritance for trace.uirevision is simple, just layout.uirevision
+                    newRev = newTrace.uirevision;
+                    if(newRev === undefined) newRev = layout.uirevision;
+                }
+
+                if(newRev && newRev === oldRev) {
+                    preGUIVal = tracePreGUI[key];
+                    if(preGUIVal === null) preGUIVal = undefined;
+                    newNP = nestedProperty(newTrace, key);
+                    newVal = newNP.get();
+                    if(valsMatch(newVal, preGUIVal)) {
+                        newNP.set(undefinedToNull(nestedProperty(fullInput, key).get()));
+                        continue;
+                    }
+                }
+            }
+            else {
+                Lib.warn('unrecognized GUI edit: ' + key + ' in trace uid ' + uid);
+            }
+            delete tracePreGUI[key];
+        }
+    }
+}
 
 /**
  * Plotly.react:
@@ -2327,6 +2697,8 @@ exports.react = function(gd, data, layout, config) {
         helpers.cleanData(gd.data);
         gd.layout = layout || {};
         helpers.cleanLayout(gd.layout);
+
+        applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
 
         // "true" skips updating calcdata and remapping arrays from calcTransforms,
         // which supplyDefaults usually does at the end, but we may need to NOT do

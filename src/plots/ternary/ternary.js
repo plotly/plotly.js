@@ -77,6 +77,7 @@ proto.plot = function(ternaryCalcData, fullLayout) {
 
 proto.makeFramework = function(fullLayout) {
     var _this = this;
+    var gd = _this.graphDiv;
     var ternaryLayout = fullLayout[_this.id];
 
     var clipId = _this.clipId = 'clip' + _this.layoutId + _this.id;
@@ -96,8 +97,8 @@ proto.makeFramework = function(fullLayout) {
     _this.plotContainer = Lib.ensureSingle(_this.container, 'g', _this.id);
     _this.updateLayers(ternaryLayout);
 
-    Drawing.setClipUrl(_this.layers.backplot, clipId);
-    Drawing.setClipUrl(_this.layers.grids, clipId);
+    Drawing.setClipUrl(_this.layers.backplot, clipId, gd);
+    Drawing.setClipUrl(_this.layers.grids, clipId, gd);
 };
 
 proto.updateLayers = function(ternaryLayout) {
@@ -345,7 +346,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 
     Drawing.setClipUrl(
         _this.layers.frontplot,
-        _this._hasClipOnAxisFalse ? null : _this.clipId
+        _this._hasClipOnAxisFalse ? null : _this.clipId,
+        _this.graphDiv
     );
 };
 
@@ -375,7 +377,7 @@ proto.drawAxes = function(doTitles) {
             placeholder: _(gd, 'Click to enter Component A title'),
             attributes: {
                 x: _this.x0 + _this.w / 2,
-                y: _this.y0 - aaxis.titlefont.size / 3 - apad,
+                y: _this.y0 - aaxis.title.font.size / 3 - apad,
                 'text-anchor': 'middle'
             }
         });
@@ -385,7 +387,7 @@ proto.drawAxes = function(doTitles) {
             placeholder: _(gd, 'Click to enter Component B title'),
             attributes: {
                 x: _this.x0 - bpad,
-                y: _this.y0 + _this.h + baxis.titlefont.size * 0.83 + bpad,
+                y: _this.y0 + _this.h + baxis.title.font.size * 0.83 + bpad,
                 'text-anchor': 'middle'
             }
         });
@@ -395,7 +397,7 @@ proto.drawAxes = function(doTitles) {
             placeholder: _(gd, 'Click to enter Component C title'),
             attributes: {
                 x: _this.x0 + _this.w + bpad,
-                y: _this.y0 + _this.h + caxis.titlefont.size * 0.83 + bpad,
+                y: _this.y0 + _this.h + caxis.title.font.size * 0.83 + bpad,
                 'text-anchor': 'middle'
             }
         });
@@ -538,18 +540,22 @@ proto.initInteractions = function() {
 
     var x0, y0, mins0, span0, mins, lum, path0, dimmed, zb, corners;
 
+    function makeUpdate(_mins) {
+        var attrs = {};
+        attrs[_this.id + '.aaxis.min'] = _mins.a;
+        attrs[_this.id + '.baxis.min'] = _mins.b;
+        attrs[_this.id + '.caxis.min'] = _mins.c;
+        return attrs;
+    }
+
     function clickZoomPan(numClicks, evt) {
         var clickMode = gd._fullLayout.clickmode;
 
         removeZoombox(gd);
 
         if(numClicks === 2) {
-            var attrs = {};
-            attrs[_this.id + '.aaxis.min'] = 0;
-            attrs[_this.id + '.baxis.min'] = 0;
-            attrs[_this.id + '.caxis.min'] = 0;
             gd.emit('plotly_doubleclick', null);
-            Registry.call('relayout', gd, attrs);
+            Registry.call('_guiRelayout', gd, makeUpdate({a: 0, b: 0, c: 0}));
         }
 
         if(clickMode.indexOf('select') > -1 && numClicks === 1) {
@@ -653,12 +659,7 @@ proto.initInteractions = function() {
 
         if(mins === mins0) return;
 
-        var attrs = {};
-        attrs[_this.id + '.aaxis.min'] = mins.a;
-        attrs[_this.id + '.baxis.min'] = mins.b;
-        attrs[_this.id + '.caxis.min'] = mins.c;
-
-        Registry.call('relayout', gd, attrs);
+        Registry.call('_guiRelayout', gd, makeUpdate(mins));
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
             Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long');
@@ -731,12 +732,7 @@ proto.initInteractions = function() {
     }
 
     function dragDone() {
-        var attrs = {};
-        attrs[_this.id + '.aaxis.min'] = mins.a;
-        attrs[_this.id + '.baxis.min'] = mins.b;
-        attrs[_this.id + '.caxis.min'] = mins.c;
-
-        Registry.call('relayout', gd, attrs);
+        Registry.call('_guiRelayout', gd, makeUpdate(mins));
     }
 
     // finally, set up hover and click

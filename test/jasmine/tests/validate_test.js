@@ -18,7 +18,9 @@ describe('Plotly.validate', function() {
             type: 'scatter',
             x: [1, 2, 3]
         }], {
-            title: 'my simple graph'
+            title: {
+                text: 'my simple graph'
+            }
         });
 
         expect(out).toBeUndefined();
@@ -371,7 +373,9 @@ describe('Plotly.validate', function() {
                 }]
             }),
         ], {
-            title: 'my transformed graph'
+            title: {
+                text: 'my transformed graph'
+            }
         });
 
         expect(out.length).toEqual(5);

@@ -29,7 +29,6 @@ var costConstants = constants.LABELOPTIMIZER;
 exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var fullLayout = gd._fullLayout;
 
     Lib.makeTraceGroups(contourLayer, cdcontours, 'contour').each(function(cd) {
         var plotGroup = d3.select(this);
@@ -78,7 +77,7 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         makeBackground(plotGroup, perimeter, contours);
         makeFills(plotGroup, fillPathinfo, perimeter, contours);
         makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours, perimeter);
-        clipGaps(plotGroup, plotinfo, fullLayout._clips, cd0, perimeter);
+        clipGaps(plotGroup, plotinfo, gd, cd0, perimeter);
     });
 };
 
@@ -230,8 +229,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
     // In this case we'll remove the lines after making the labels.
     var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo);
 
-    var lineClip = exports.createLineClip(lineContainer, clipLinesForLabels,
-        gd._fullLayout._clips, cd0.trace.uid);
+    var lineClip = exports.createLineClip(lineContainer, clipLinesForLabels, gd, cd0.trace.uid);
 
     var labelGroup = plotgroup.selectAll('g.contourlabels')
         .data(showLabels ? [0] : []);
@@ -255,17 +253,37 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
             .attr('data-notex', 1)
             .call(Drawing.font, contours.labelfont);
 
-        var xLen = pathinfo[0].xaxis._length;
-        var yLen = pathinfo[0].yaxis._length;
+        var xa = pathinfo[0].xaxis;
+        var ya = pathinfo[0].yaxis;
+        var xLen = xa._length;
+        var yLen = ya._length;
+        var xRng = xa.range;
+        var yRng = ya.range;
+        var x0 = Math.max(perimeter[0][0], 0);
+        var x1 = Math.min(perimeter[2][0], xLen);
+        var y0 = Math.max(perimeter[0][1], 0);
+        var y1 = Math.min(perimeter[2][1], yLen);
 
         // visible bounds of the contour trace (and the midpoints, to
         // help with cost calculations)
-        var bounds = {
-            left: Math.max(perimeter[0][0], 0),
-            right: Math.min(perimeter[2][0], xLen),
-            top: Math.max(perimeter[0][1], 0),
-            bottom: Math.min(perimeter[2][1], yLen)
-        };
+        var bounds = {};
+
+        if(xRng[0] < xRng[1]) {
+            bounds.left = x0;
+            bounds.right = x1;
+        } else {
+            bounds.left = x1;
+            bounds.right = x0;
+        }
+
+        if(yRng[0] < yRng[1]) {
+            bounds.top = y0;
+            bounds.bottom = y1;
+        } else {
+            bounds.top = y1;
+            bounds.bottom = y0;
+        }
+
         bounds.middle = (bounds.top + bounds.bottom) / 2;
         bounds.center = (bounds.left + bounds.right) / 2;
 
@@ -353,7 +371,8 @@ exports.createLines = function(lineContainer, makeLines, pathinfo) {
     return linegroup;
 };
 
-exports.createLineClip = function(lineContainer, clipLinesForLabels, clips, uid) {
+exports.createLineClip = function(lineContainer, clipLinesForLabels, gd, uid) {
+    var clips = gd._fullLayout._clips;
     var clipId = clipLinesForLabels ? ('clipline' + uid) : null;
 
     var lineClip = clips.selectAll('#' + clipId)
@@ -364,7 +383,7 @@ exports.createLineClip = function(lineContainer, clipLinesForLabels, clips, uid)
         .classed('contourlineclip', true)
         .attr('id', clipId);
 
-    Drawing.setClipUrl(lineContainer, clipId);
+    Drawing.setClipUrl(lineContainer, clipId, gd);
 
     return lineClip;
 };
@@ -595,7 +614,8 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
     }
 };
 
-function clipGaps(plotGroup, plotinfo, clips, cd0, perimeter) {
+function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
+    var clips = gd._fullLayout._clips;
     var clipId = 'clip' + cd0.trace.uid;
 
     var clipPath = clips.selectAll('#' + clipId)
@@ -634,7 +654,7 @@ function clipGaps(plotGroup, plotinfo, clips, cd0, perimeter) {
     }
     else clipId = null;
 
-    plotGroup.call(Drawing.setClipUrl, clipId);
+    Drawing.setClipUrl(plotGroup, clipId, gd);
 }
 
 function makeClipMask(cd0) {

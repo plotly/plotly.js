@@ -36,7 +36,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var sampleLetter = orientation === 'v' ? 'x' : 'y';
     var aggLetter = orientation === 'v' ? 'y' : 'x';
 
-    var len = (x && y) ? Math.min(x.length && y.length) : (traceOut[sampleLetter] || []).length;
+    var len = (x && y) ?
+        Math.min(Lib.minRowLength(x) && Lib.minRowLength(y)) :
+        Lib.minRowLength(traceOut[sampleLetter] || []);
 
     if(!len) {
         traceOut.visible = false;

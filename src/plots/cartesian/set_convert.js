@@ -30,6 +30,10 @@ function fromLog(v) {
     return Math.pow(10, v);
 }
 
+function isValidCategory(v) {
+    return v !== null && v !== undefined;
+}
+
 /**
  * Define the conversion functions for an axis data is used in 5 ways:
  *
@@ -123,7 +127,7 @@ module.exports = function setConvert(ax, fullLayout) {
      * a disconnect between the array and the index returned
      */
     function setCategoryIndex(v) {
-        if(v !== null && v !== undefined) {
+        if(isValidCategory(v)) {
             if(ax._categoriesMap === undefined) {
                 ax._categoriesMap = {};
             }
@@ -142,14 +146,58 @@ module.exports = function setConvert(ax, fullLayout) {
         return BADNUM;
     }
 
-    function getCategoryIndex(v) {
-        // d2l/d2c variant that that won't add categories but will also
-        // allow numbers to be mapped to the linearized axis positions
-        if(ax._categoriesMap) {
-            var index = ax._categoriesMap[v];
-            if(index !== undefined) return index;
+    function setMultiCategoryIndex(arrayIn, len) {
+        var arrayOut = new Array(len);
+        var i;
+
+        // [ [arrayIn[0][i], arrayIn[1][i]], for i .. len ]
+        var tmp = new Array(len);
+        // [ [cnt, {$cat: index}], for j .. arrayIn.length ]
+        var seen = [[0, {}], [0, {}]];
+
+        if(Lib.isArrayOrTypedArray(arrayIn[0]) && Lib.isArrayOrTypedArray(arrayIn[1])) {
+            for(i = 0; i < len; i++) {
+                var v0 = arrayIn[0][i];
+                var v1 = arrayIn[1][i];
+                if(isValidCategory(v0) && isValidCategory(v1)) {
+                    tmp[i] = [v0, v1];
+                    if(!(v0 in seen[0][1])) {
+                        seen[0][1][v0] = seen[0][0]++;
+                    }
+                    if(!(v1 in seen[1][1])) {
+                        seen[1][1][v1] = seen[1][0]++;
+                    }
+                }
+            }
+
+            tmp.sort(function(a, b) {
+                var ind0 = seen[0][1];
+                var d = ind0[a[0]] - ind0[b[0]];
+                if(d) return d;
+
+                var ind1 = seen[1][1];
+                return ind1[a[1]] - ind1[b[1]];
+            });
         }
 
+        for(i = 0; i < len; i++) {
+            arrayOut[i] = setCategoryIndex(tmp[i]);
+        }
+
+        return arrayOut;
+    }
+
+    function getCategoryIndex(v) {
+        if(ax._categoriesMap) {
+            return ax._categoriesMap[v];
+        }
+    }
+
+    function getCategoryPosition(v) {
+        // d2l/d2c variant that that won't add categories but will also
+        // allow numbers to be mapped to the linearized axis positions
+        var index = getCategoryIndex(v);
+        if(index !== undefined) return index;
         if(isNumeric(v)) return +v;
     }
 
@@ -235,15 +283,15 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.d2c = ax.d2l = setCategoryIndex;
         ax.r2d = ax.c2d = ax.l2d = getCategoryName;
 
-        ax.d2r = ax.d2l_noadd = getCategoryIndex;
+        ax.d2r = ax.d2l_noadd = getCategoryPosition;
 
         ax.r2c = function(v) {
-            var index = getCategoryIndex(v);
+            var index = getCategoryPosition(v);
             return index !== undefined ? index : ax.fraction2r(0.5);
         };
 
         ax.l2r = ax.c2r = ensureNumber;
-        ax.r2l = getCategoryIndex;
+        ax.r2l = getCategoryPosition;
 
         ax.d2p = function(v) { return ax.l2p(ax.r2c(v)); };
         ax.p2d = function(px) { return getCategoryName(p2l(px)); };
@@ -252,6 +300,34 @@ module.exports = function setConvert(ax, fullLayout) {
 
         ax.cleanPos = function(v) {
             if(typeof v === 'string' && v !== '') return v;
+            return ensureNumber(v);
+        };
+    }
+    else if(ax.type === 'multicategory') {
+        // N.B. multicategory axes don't define d2c and d2l,
+        // as 'data-to-calcdata' conversion needs to take into
+        // account all data array items as in ax.makeCalcdata.
+
+        ax.r2d = ax.c2d = ax.l2d = getCategoryName;
+        ax.d2r = ax.d2l_noadd = getCategoryPosition;
+
+        ax.r2c = function(v) {
+            var index = getCategoryPosition(v);
+            return index !== undefined ? index : ax.fraction2r(0.5);
+        };
+
+        ax.r2c_just_indices = getCategoryIndex;
+
+        ax.l2r = ax.c2r = ensureNumber;
+        ax.r2l = getCategoryPosition;
+
+        ax.d2p = function(v) { return ax.l2p(ax.r2c(v)); };
+        ax.p2d = function(px) { return getCategoryName(p2l(px)); };
+        ax.r2p = ax.d2p;
+        ax.p2r = p2l;
+
+        ax.cleanPos = function(v) {
+            if(Array.isArray(v) || (typeof v === 'string' && v !== '')) return v;
             return ensureNumber(v);
         };
     }
@@ -348,11 +424,6 @@ module.exports = function setConvert(ax, fullLayout) {
     ax.setScale = function(usePrivateRange) {
         var gs = fullLayout._size;
 
-        // TODO cleaner way to handle this case
-        if(!ax._categories) ax._categories = [];
-        // Add a map to optimize the performance of category collection
-        if(!ax._categoriesMap) ax._categoriesMap = {};
-
         // make sure we have a domain (pull it in from the axis
         // this one is overlaying if necessary)
         if(ax.overlaying) {
@@ -407,7 +478,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         if(axLetter in trace) {
             arrayIn = trace[axLetter];
-            len = trace._length || arrayIn.length;
+            len = trace._length || Lib.minRowLength(arrayIn);
 
             if(Lib.isTypedArray(arrayIn) && (axType === 'linear' || axType === 'log')) {
                 if(len === arrayIn.length) {
@@ -415,6 +486,10 @@ module.exports = function setConvert(ax, fullLayout) {
                 } else if(arrayIn.subarray) {
                     return arrayIn.subarray(0, len);
                 }
+            }
+
+            if(axType === 'multicategory') {
+                return setMultiCategoryIndex(arrayIn, len);
             }
 
             arrayOut = new Array(len);

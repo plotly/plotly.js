@@ -25,6 +25,7 @@ describe('Test gl3d plots', function() {
     var gd, ptData;
 
     var mock = require('@mocks/gl3d_marker-arrays.json');
+    var multipleScatter3dMock = require('@mocks/gl3d_multiple-scatter3d-traces.json');
 
     // lines, markers, text, error bars and surfaces each
     // correspond to one glplot object
@@ -72,6 +73,35 @@ describe('Test gl3d plots', function() {
     afterEach(function() {
         Plotly.purge(gd);
         destroyGraphDiv();
+    });
+
+    it('@noCI @gl should display correct hover labels of the second point of the very first scatter3d trace', function(done) {
+        var _mock = Lib.extendDeep({}, multipleScatter3dMock);
+
+        function _hover() {
+            mouseEvent('mouseover', 300, 200);
+            return delay(20)();
+        }
+
+        Plotly.plot(gd, _mock)
+        .then(delay(20))
+        .then(function() {
+            gd.on('plotly_hover', function(eventData) {
+                ptData = eventData.points[0];
+            });
+        })
+        .then(_hover)
+        .then(delay(20))
+        .then(function() {
+            assertHoverLabelContent(
+                {
+                    nums: ['x: 0', 'y: 0', 'z: 0'].join('\n'),
+                    name: 'trace 0'
+                }
+            );
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@noCI @gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
@@ -714,7 +744,7 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@gl axis ticks should not be set when axis _length is NaN', function(done) {
+    it('@gl should not set _length to NaN and dtick should be defined.', function(done) {
         Plotly.plot(gd,
             {
                 data: [{
@@ -722,7 +752,7 @@ describe('Test gl3d plots', function() {
                     mode: 'markers',
                     x: [1, 2],
                     y: [3, 4],
-                    z: [5, 6]
+                    z: [0.000000005, 0.000000006]
                 }],
                 layout: {
                     scene: {
@@ -737,8 +767,8 @@ describe('Test gl3d plots', function() {
         )
         .then(function() {
             var zaxis = gd._fullLayout.scene.zaxis;
-            expect(isNaN(zaxis._length)).toBe(true);
-            expect(zaxis.dtick === undefined).toBe(true);
+            expect(isNaN(zaxis._length)).toBe(false);
+            expect(zaxis.dtick === undefined).toBe(false);
         })
         .catch(failTest)
         .then(done);

@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Registry = require('../../registry');
+var traceIs = require('../../registry').traceIs;
 var autoType = require('./axis_autotype');
 
 /*
@@ -57,6 +57,7 @@ function setAutoType(ax, data) {
 
     var calAttr = axLetter + 'calendar';
     var calendar = d0[calAttr];
+    var opts = {noMultiCategory: !traceIs(d0, 'cartesian') || traceIs(d0, 'noMultiCategory')};
     var i;
 
     // check all boxes on this x axis to see
@@ -67,8 +68,7 @@ function setAutoType(ax, data) {
 
         for(i = 0; i < data.length; i++) {
             var trace = data[i];
-            if(!Registry.traceIs(trace, 'box-violin') ||
-               (trace[axLetter + 'axis'] || axLetter) !== id) continue;
+            if(!traceIs(trace, 'box-violin') || (trace[axLetter + 'axis'] || axLetter) !== id) continue;
 
             if(trace[posLetter] !== undefined) boxPositions.push(trace[posLetter][0]);
             else if(trace.name !== undefined) boxPositions.push(trace.name);
@@ -77,7 +77,7 @@ function setAutoType(ax, data) {
             if(trace[calAttr] !== calendar) calendar = undefined;
         }
 
-        ax.type = autoType(boxPositions, calendar);
+        ax.type = autoType(boxPositions, calendar, opts);
     }
     else if(d0.type === 'splom') {
         var dimensions = d0.dimensions;
@@ -85,13 +85,13 @@ function setAutoType(ax, data) {
         for(i = 0; i < dimensions.length; i++) {
             var dim = dimensions[i];
             if(dim.visible && (diag[i][0] === id || diag[i][1] === id)) {
-                ax.type = autoType(dim.values, calendar);
+                ax.type = autoType(dim.values, calendar, opts);
                 break;
             }
         }
     }
     else {
-        ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar);
+        ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar, opts);
     }
 }
 
@@ -122,9 +122,9 @@ function getBoxPosLetter(trace) {
 }
 
 function isBoxWithoutPositionCoords(trace, axLetter) {
-    var posLetter = getBoxPosLetter(trace),
-        isBox = Registry.traceIs(trace, 'box-violin'),
-        isCandlestick = Registry.traceIs(trace._fullInput || {}, 'candlestick');
+    var posLetter = getBoxPosLetter(trace);
+    var isBox = traceIs(trace, 'box-violin');
+    var isCandlestick = traceIs(trace._fullInput || {}, 'candlestick');
 
     return (
         isBox &&

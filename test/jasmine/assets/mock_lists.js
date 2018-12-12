@@ -21,6 +21,7 @@ var svgMockList = [
     ['geo_first', require('@mocks/geo_first.json')],
     ['layout_image', require('@mocks/layout_image.json')],
     ['layout-colorway', require('@mocks/layout-colorway.json')],
+    ['multicategory', require('@mocks/multicategory.json')],
     ['polar_categories', require('@mocks/polar_categories.json')],
     ['polar_direction', require('@mocks/polar_direction.json')],
     ['polar_wind-rose', require('@mocks/polar_wind-rose.json')],

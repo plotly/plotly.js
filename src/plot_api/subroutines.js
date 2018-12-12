@@ -27,6 +27,10 @@ var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
 var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 
+var SVG_TEXT_ANCHOR_START = 'start';
+var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
+var SVG_TEXT_ANCHOR_END = 'end';
+
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
 };
@@ -51,7 +55,7 @@ function lsInner(gd) {
     var gs = fullLayout._size;
     var pad = gs.p;
     var axList = Axes.list(gd, '', true);
-    var i, subplot, plotinfo, xa, ya;
+    var i, subplot, plotinfo, ax, xa, ya;
 
     fullLayout._paperdiv.style({
         width: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroWidth && !gd.layout.width) ? '100%' : fullLayout.width + 'px',
@@ -87,10 +91,7 @@ function lsInner(gd) {
 
     // some preparation of axis position info
     for(i = 0; i < axList.length; i++) {
-        var ax = axList[i];
-
-        // reset scale in case the margins have changed
-        ax.setScale();
+        ax = axList[i];
 
         var counterAx = ax._anchorAxis;
 
@@ -109,11 +110,6 @@ function lsInner(gd) {
         ax._mainMirrorPosition = (ax.mirror && counterAx) ?
             getLinePosition(ax, counterAx,
                 alignmentConstants.OPPOSITE_SIDE[ax.side]) : null;
-
-        // Figure out which subplot to draw ticks, labels, & axis lines on
-        // do this as a separate loop so we already have all the
-        // _mainAxis and _anchorAxis links set
-        ax._mainSubplot = findMainSubplot(ax, fullLayout);
     }
 
     // figure out which backgrounds we need to draw,
@@ -224,7 +220,7 @@ function lsInner(gd) {
                 layerClipId = null;
             }
 
-            Drawing.setClipUrl(plotinfo.plot, plotClipId);
+            Drawing.setClipUrl(plotinfo.plot, plotClipId, gd);
 
             // stash layer clipId value (null or same as clipId)
             // to DRY up Drawing.setClipUrl calls on trace-module and trace layers
@@ -354,48 +350,6 @@ function lsInner(gd) {
     return gd._promises.length && Promise.all(gd._promises);
 }
 
-function findMainSubplot(ax, fullLayout) {
-    var subplotList = fullLayout._subplots;
-    var ids = subplotList.cartesian.concat(subplotList.gl2d || []);
-    var mockGd = {_fullLayout: fullLayout};
-
-    var isX = ax._id.charAt(0) === 'x';
-    var anchorAx = ax._mainAxis._anchorAxis;
-    var mainSubplotID = '';
-    var nextBestMainSubplotID = '';
-    var anchorID = '';
-
-    // First try the main ID with the anchor
-    if(anchorAx) {
-        anchorID = anchorAx._mainAxis._id;
-        mainSubplotID = isX ? (ax._id + anchorID) : (anchorID + ax._id);
-    }
-
-    // Then look for a subplot with the counteraxis overlaying the anchor
-    // If that fails just use the first subplot including this axis
-    if(!mainSubplotID || !fullLayout._plots[mainSubplotID]) {
-        mainSubplotID = '';
-
-        for(var j = 0; j < ids.length; j++) {
-            var id = ids[j];
-            var yIndex = id.indexOf('y');
-            var idPart = isX ? id.substr(0, yIndex) : id.substr(yIndex);
-            var counterPart = isX ? id.substr(yIndex) : id.substr(0, yIndex);
-
-            if(idPart === ax._id) {
-                if(!nextBestMainSubplotID) nextBestMainSubplotID = id;
-                var counterAx = Axes.getFromId(mockGd, counterPart);
-                if(anchorID && counterAx.overlaying === anchorID) {
-                    mainSubplotID = id;
-                    break;
-                }
-            }
-        }
-    }
-
-    return mainSubplotID || nextBestMainSubplotID;
-}
-
 function shouldShowLinesOrTicks(ax, subplot) {
     return (ax.ticks || ax.showline) &&
         (subplot === ax._mainSubplot || ax.mirror === 'all' || ax.mirror === 'allticks');
@@ -450,17 +404,91 @@ function findCounterAxisLineWidth(ax, side, counterAx, axList) {
 exports.drawMainTitle = function(gd) {
     var fullLayout = gd._fullLayout;
 
+    var textAnchor = getMainTitleTextAnchor(fullLayout);
+    var dy = getMainTitleDy(fullLayout);
+
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
-        propName: 'title',
+        propName: 'title.text',
         placeholder: fullLayout._dfltTitle.plot,
         attributes: {
-            x: fullLayout.width / 2,
-            y: fullLayout._size.t / 2,
-            'text-anchor': 'middle'
+            x: getMainTitleX(fullLayout, textAnchor),
+            y: getMainTitleY(fullLayout, dy),
+            'text-anchor': textAnchor,
+            dy: dy
         }
     });
 };
+
+function getMainTitleX(fullLayout, textAnchor) {
+    var title = fullLayout.title;
+    var gs = fullLayout._size;
+    var hPadShift = 0;
+
+    if(textAnchor === SVG_TEXT_ANCHOR_START) {
+        hPadShift = title.pad.l;
+    } else if(textAnchor === SVG_TEXT_ANCHOR_END) {
+        hPadShift = -title.pad.r;
+    }
+
+    switch(title.xref) {
+        case 'paper':
+            return gs.l + gs.w * title.x + hPadShift;
+        case 'container':
+        default:
+            return fullLayout.width * title.x + hPadShift;
+    }
+}
+
+function getMainTitleY(fullLayout, dy) {
+    var title = fullLayout.title;
+    var gs = fullLayout._size;
+    var vPadShift = 0;
+
+    if(dy === '0em' || !dy) {
+        vPadShift = -title.pad.b;
+    } else if(dy === alignmentConstants.CAP_SHIFT + 'em') {
+        vPadShift = title.pad.t;
+    }
+
+    if(title.y === 'auto') {
+        return gs.t / 2;
+    } else {
+        switch(title.yref) {
+            case 'paper':
+                return gs.t + gs.h - gs.h * title.y + vPadShift;
+            case 'container':
+            default:
+                return fullLayout.height - fullLayout.height * title.y + vPadShift;
+        }
+    }
+}
+
+function getMainTitleTextAnchor(fullLayout) {
+    var title = fullLayout.title;
+
+    var textAnchor = SVG_TEXT_ANCHOR_MIDDLE;
+    if(Lib.isRightAnchor(title)) {
+        textAnchor = SVG_TEXT_ANCHOR_END;
+    } else if(Lib.isLeftAnchor(title)) {
+        textAnchor = SVG_TEXT_ANCHOR_START;
+    }
+
+    return textAnchor;
+}
+
+function getMainTitleDy(fullLayout) {
+    var title = fullLayout.title;
+
+    var dy = '0em';
+    if(Lib.isTopAnchor(title)) {
+        dy = alignmentConstants.CAP_SHIFT + 'em';
+    } else if(Lib.isMiddleAnchor(title)) {
+        dy = alignmentConstants.MID_SHIFT + 'em';
+    }
+
+    return dy;
+}
 
 exports.doTraceStyle = function(gd) {
     var calcdata = gd.calcdata;
@@ -674,6 +702,8 @@ exports.doAutoRangeAndConstraints = function(gd) {
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
         cleanAxisConstraints(gd, ax);
+        // in case margins changed, update scale
+        ax.setScale();
         doAutoRange(gd, ax);
     }
 

@@ -692,27 +692,98 @@ describe('Pie traces', function() {
         });
     });
 
-    it('should be able to restyle title color', function(done) {
-        function _assert(msg, exp) {
-            var title = d3.select('.titletext > text').node();
-            expect(title.style.fill).toBe(exp.color, msg);
-        }
+    function _assertTitle(msg, expText, expColor) {
+        var title = d3.select('.titletext > text');
+        expect(title.text()).toBe(expText, msg + ' text');
+        expect(title.node().style.fill).toBe(expColor, msg + ' color');
+    }
 
+    it('show a user-defined title with a custom position and font', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: {
+                text: 'yo',
+                font: {color: 'blue'},
+                position: 'top left'
+            }
+        }])
+          .then(function() {
+              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
+              _verifyTitle(true, false, true, false, false);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('still support the deprecated `title` structure (backwards-compatibility)', function(done) {
         Plotly.plot(gd, [{
             type: 'pie',
             values: [1, 2, 3],
             title: 'yo',
-            titlefont: {color: 'blue'}
+            titlefont: {color: 'blue'},
+            titleposition: 'top left'
+        }])
+          .then(function() {
+              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
+              _verifyTitle(true, false, true, false, false);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should be able to restyle title', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: {
+                text: 'yo',
+                font: {color: 'blue'},
+                position: 'top left'
+            }
         }])
         .then(function() {
-            _assert('base', {color: 'rgb(0, 0, 255)'});
-            return Plotly.restyle(gd, 'titlefont.color', 'red');
+            _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
+            _verifyTitle(true, false, true, false, false);
+
+            return Plotly.restyle(gd, {
+                'title.text': 'oy',
+                'title.font.color': 'red',
+                'title.position': 'bottom right'
+            });
         })
         .then(function() {
-            _assert('base', {color: 'rgb(255, 0, 0)'});
+            _assertTitle('base', 'oy', 'rgb(255, 0, 0)');
+            _verifyTitle(false, true, false, true, false);
         })
         .catch(failTest)
         .then(done);
+    });
+
+    it('should be able to restyle title despite using the deprecated attributes', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: 'yo',
+            titlefont: {color: 'blue'},
+            titleposition: 'top left'
+        }])
+          .then(function() {
+              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
+              _verifyTitle(true, false, true, false, false);
+
+              return Plotly.restyle(gd, {
+                  'title': 'oy',
+                  'titlefont.color': 'red',
+                  'titleposition': 'bottom right'
+              });
+          })
+          .then(function() {
+              _assertTitle('base', 'oy', 'rgb(255, 0, 0)');
+              _verifyTitle(false, true, false, true, false);
+          })
+          .catch(failTest)
+          .then(done);
     });
 
     it('should be able to react with new text colors', function(done) {

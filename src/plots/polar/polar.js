@@ -290,7 +290,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 
     layers.frontplot
         .attr('transform', strTranslate(xOffset2, yOffset2))
-        .call(Drawing.setClipUrl, _this._hasClipOnAxisFalse ? null : _this.clipIds.forTraces);
+        .call(Drawing.setClipUrl, _this._hasClipOnAxisFalse ? null : _this.clipIds.forTraces, _this.gd);
 
     layers.bg
         .attr('d', dPath)
@@ -483,9 +483,13 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     var sina = Math.sin(angleRad);
 
     var pad = 0;
+
+    // Hint: no need to check if there is in fact a title.text set
+    // because if plot is editable, pad needs to be calculated anyways
+    // to properly show placeholder text when title is empty.
     if(radialLayout.title) {
         var h = Drawing.bBox(_this.layers['radial-axis'].node()).height;
-        var ts = radialLayout.titlefont.size;
+        var ts = radialLayout.title.font.size;
         pad = radialLayout.side === 'counterclockwise' ?
             -h - ts * 0.4 :
             h + ts * 0.8;
@@ -639,6 +643,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         Axes.drawLabels(gd, ax, {
             vals: vals,
             layer: layers['angular-axis'],
+            repositionOnUpdate: true,
             transFn: transFn,
             labelXFn: labelXFn,
             labelYFn: labelYFn,
@@ -902,7 +907,7 @@ proto.updateMainDrag = function(fullLayout) {
             rl[0] + (r0 - innerRadius) * m,
             rl[0] + (r1 - innerRadius) * m
         ];
-        Registry.call('relayout', gd, _this.id + '.radialaxis.range', newRng);
+        Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.range', newRng);
     }
 
     function zoomClick(numClicks, evt) {
@@ -918,7 +923,7 @@ proto.updateMainDrag = function(fullLayout) {
             }
 
             gd.emit('plotly_doubleclick', null);
-            Registry.call('relayout', gd, updateObj);
+            Registry.call('_guiRelayout', gd, updateObj);
         }
 
         if(clickMode.indexOf('select') > -1 && numClicks === 1) {
@@ -1045,9 +1050,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
 
     function doneFn() {
         if(angle1 !== null) {
-            Registry.call('relayout', gd, _this.id + '.radialaxis.angle', angle1);
+            Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.angle', angle1);
         } else if(rprime !== null) {
-            Registry.call('relayout', gd, _this.id + '.radialaxis.range[' + rngIndex + ']', rprime);
+            Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.range[' + rngIndex + ']', rprime);
         }
     }
 
@@ -1252,7 +1257,7 @@ proto.updateAngularDrag = function(fullLayout) {
             updateObj[_this.id + '.radialaxis.angle'] = rrot1;
         }
 
-        Registry.call('relayout', gd, updateObj);
+        Registry.call('_guiRelayout', gd, updateObj);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {

@@ -46,7 +46,7 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
         containerOut = Template.newContainer(ternaryLayoutOut, axName);
         containerOut._name = axName;
 
-        handleAxisDefaults(containerIn, containerOut, options);
+        handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut);
     }
 
     // if the min values contradict each other, set them all to default (0)
@@ -65,12 +65,14 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
     }
 }
 
-function handleAxisDefaults(containerIn, containerOut, options) {
+function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut) {
     var axAttrs = layoutAttributes[containerOut._name];
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, axAttrs, attr, dflt);
     }
+
+    coerce('uirevision', ternaryLayoutOut.uirevision);
 
     containerOut.type = 'linear'; // no other types allowed for ternary
 
@@ -83,10 +85,10 @@ function handleAxisDefaults(containerIn, containerOut, options) {
         letterUpper = axName.charAt(0).toUpperCase(),
         dfltTitle = 'Component ' + letterUpper;
 
-    var title = coerce('title', dfltTitle);
+    var title = coerce('title.text', dfltTitle);
     containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
 
-    Lib.coerceFont(coerce, 'titlefont', {
+    Lib.coerceFont(coerce, 'title.font', {
         family: options.font.family,
         size: Math.round(options.font.size * 1.2),
         color: dfltFontColor
