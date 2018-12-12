@@ -1803,6 +1803,7 @@ axes.drawOne = function(gd, ax, opts) {
 
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick2');
+            ax._labelLength = labelLength;
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
@@ -2608,7 +2609,7 @@ function drawTitle(gd, ax) {
 
     var titleStandoff;
     if(ax.type === 'multicategory') {
-        titleStandoff = ax._boundingBox[{x: 'height', y: 'width'}[axLetter]];
+        titleStandoff = ax._labelLength;
     } else {
         var offsetBase = 1.5;
         titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
