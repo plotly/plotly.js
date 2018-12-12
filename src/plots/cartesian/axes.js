@@ -1781,11 +1781,12 @@ axes.drawOne = function(gd, ax, opts) {
     if(ax.type === 'multicategory') {
         var labelLength = 0;
         var pad = {x: 2, y: 10}[axLetter];
+        var sgn = tickSigns[2] * (ax.ticks === 'inside' ? -1 : 1);
 
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick') + pad;
             labelLength += ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0;
-            var secondaryPosition = mainLinePosition + labelLength * tickSigns[2];
+            var secondaryPosition = mainLinePosition + labelLength * sgn;
             var secondaryLabelFns = axes.makeLabelFns(ax, secondaryPosition);
 
             return axes.drawLabels(gd, ax, {
@@ -1808,7 +1809,7 @@ axes.drawOne = function(gd, ax, opts) {
             return drawDividers(gd, ax, {
                 vals: dividerVals,
                 layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePosition, tickSigns[2], labelLength),
+                path: axes.makeTickPath(ax, mainLinePosition, sgn, labelLength),
                 transFn: transFn
             });
         });
