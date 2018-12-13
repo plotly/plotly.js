@@ -163,7 +163,8 @@
             "y": [-1000, 1000, 1000, -1000, 0],
             "mode": "markers",
             "marker": {
-                "size": 20
+                "size": 20,
+                "color": "red"
             }
         },
         {
