@@ -47,18 +47,36 @@ function hasColorscale(trace, containerStr) {
 /**
  * Extract colorscale into numeric domain and color range.
  *
- * @param {array} scl colorscale array of arrays
- * @param {number} cmin minimum color value (used to clamp scale)
- * @param {number} cmax maximum color value (used to clamp scale)
+ * @param {object} cont colorscale container (e.g. trace, marker)
+ *  - colorscale {array of arrays}
+ *  - cmin/zmin {number}
+ *  - cmax/zmax {number}
+ *  - reversescale {boolean}
+ * @param {object} opts
+ *  - cLetter {string} 'c' (for cmin/cmax) or 'z' (for zmin/zmax)
+ *
+ * @return {object}
+ *  - domain {array}
+ *  - range {array}
  */
-function extractScale(scl, cmin, cmax) {
+function extractScale(cont, opts) {
+    var cLetter = opts.cLetter;
+
+    var scl = cont.reversescale ?
+        flipScale(cont.colorscale) :
+        cont.colorscale;
+
+    // minimum color value (used to clamp scale)
+    var cmin = cont[cLetter + 'min'];
+    // maximum color value (used to clamp scale)
+    var cmax = cont[cLetter + 'max'];
+
     var N = scl.length;
     var domain = new Array(N);
     var range = new Array(N);
 
     for(var i = 0; i < N; i++) {
         var si = scl[i];
-
         domain[i] = cmin + si[0] * (cmax - cmin);
         range[i] = si[1];
     }
@@ -72,13 +90,11 @@ function extractScale(scl, cmin, cmax) {
 function flipScale(scl) {
     var N = scl.length;
     var sclNew = new Array(N);
-    var si;
 
     for(var i = N - 1, j = 0; i >= 0; i--, j++) {
-        si = scl[i];
+        var si = scl[i];
         sclNew[j] = [1 - si[0], si[1]];
     }
-
     return sclNew;
 }
 

@@ -530,23 +530,6 @@ describe('Test colorscale:', function() {
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale).toEqual(colorscale);
         });
-
-        it('should be reverse the auto scale when reversescale is true', function() {
-            trace = {
-                type: 'heatmap',
-                z: [['a', 'b'], [0.5, 'd']],
-                autocolorscale: true,
-                reversescale: true,
-                _input: {autocolorscale: true}
-            };
-            z = [[undefined, undefined], [0.5, undefined]];
-            gd = _supply(trace);
-            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
-            expect(trace.autocolorscale).toBe(true);
-            expect(trace.colorscale[trace.colorscale.length - 1])
-                .toEqual([1, 'rgb(220,220,220)']);
-        });
-
     });
 
     describe('extractScale + makeColorScaleFunc', function() {
@@ -559,19 +542,47 @@ describe('Test colorscale:', function() {
             [1, 'rgb(178,10,28)']
         ];
 
-        var specs = Colorscale.extractScale(scale, 2, 3);
-        var sclFunc = Colorscale.makeColorScaleFunc(specs);
-
         it('should constrain color array values between cmin and cmax', function() {
-            var color1 = sclFunc(1),
-                color2 = sclFunc(2),
-                color3 = sclFunc(3),
-                color4 = sclFunc(4);
+            var trace = {
+                colorscale: scale,
+                pmin: 2,
+                pmax: 3
+            };
+
+            var specs = Colorscale.extractScale(trace, {cLetter: 'p'});
+            var sclFunc = Colorscale.makeColorScaleFunc(specs);
+
+            var color1 = sclFunc(1);
+            var color2 = sclFunc(2);
+            var color3 = sclFunc(3);
+            var color4 = sclFunc(4);
 
             expect(color1).toEqual(color2);
             expect(color1).toEqual('rgb(5, 10, 172)');
             expect(color3).toEqual(color4);
             expect(color4).toEqual('rgb(178, 10, 28)');
+        });
+
+        it('should flip color range when reversescale is true', function() {
+            var trace = {
+                colorscale: scale,
+                reversescale: true,
+                pmin: 2,
+                pmax: 3
+            };
+
+            var specs = Colorscale.extractScale(trace, {cLetter: 'p'});
+            var sclFunc = Colorscale.makeColorScaleFunc(specs);
+
+            var color1 = sclFunc(1);
+            var color2 = sclFunc(2);
+            var color3 = sclFunc(3);
+            var color4 = sclFunc(4);
+
+            expect(color1).toEqual(color2);
+            expect(color1).toEqual('rgb(178, 10, 28)');
+            expect(color3).toEqual(color4);
+            expect(color4).toEqual('rgb(5, 10, 172)');
         });
     });
 });

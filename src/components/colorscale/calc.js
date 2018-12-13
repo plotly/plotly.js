@@ -9,7 +9,6 @@
 'use strict';
 
 var Lib = require('../../lib');
-var flipScale = require('./helpers').flipScale;
 
 module.exports = function calc(gd, trace, opts) {
     var fullLayout = gd._fullLayout;
@@ -89,7 +88,7 @@ module.exports = function calc(gd, trace, opts) {
         else scl = gd._fullLayout.colorscale.sequentialminus;
 
         // reversescale is handled at the containerOut level
-        doUpdate('colorscale', scl, container.reversescale ? flipScale(scl) : scl);
+        doUpdate('colorscale', scl);
 
         // We pushed a colorscale back to input, which will change the default autocolorscale next time
         // to avoid spurious redraws from Plotly.react, update resulting autocolorscale now
