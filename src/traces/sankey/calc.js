@@ -12,6 +12,8 @@ var tarjan = require('strongly-connected-components');
 var Lib = require('../../lib');
 var wrap = require('../../lib/gup').wrap;
 
+var convertToD3Sankey = require('./convert-to-d3-sankey');
+
 function circularityPresent(nodeList, sources, targets) {
 
     var nodeLen = nodeList.length;
@@ -48,8 +50,10 @@ module.exports = function calc(gd, trace) {
         trace.node.color = [];
     }
 
+    var result = convertToD3Sankey(trace);
+
     return wrap({
-        link: trace.link,
-        node: trace.node
+        _nodes: result.nodes,
+        _links: result.links
     });
 };

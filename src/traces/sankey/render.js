@@ -16,8 +16,6 @@ var Drawing = require('../../components/drawing');
 var d3sankey = require('./d3-sankey.js');
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
-var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
-var isIndex = Lib.isIndex;
 var gup = require('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
@@ -67,78 +65,18 @@ function switchToSankeyFormat(nodes) {
 // view models
 
 function sankeyModel(layout, d, traceIndex) {
-    var trace = unwrap(d).trace;
+    var calcData = unwrap(d);
+    var trace = calcData.trace;
     var domain = trace.domain;
-    var nodeSpec = trace.node;
-    var linkSpec = trace.link;
-    var arrangement = trace.arrangement;
     var horizontal = trace.orientation === 'h';
     var nodePad = trace.node.pad;
     var nodeThickness = trace.node.thickness;
-    var nodeLineColor = trace.node.line.color;
-    var nodeLineWidth = trace.node.line.width;
-    var linkLineColor = trace.link.line.color;
-    var linkLineWidth = trace.link.line.width;
-    var valueFormat = trace.valueformat;
-    var valueSuffix = trace.valuesuffix;
-    var textFont = trace.textfont;
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
 
-    var links = [];
-    var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
-    var linkedNodes = {};
-
-    var nodeCount = nodeSpec.label.length;
-    var i;
-    for(i = 0; i < linkSpec.value.length; i++) {
-        var val = linkSpec.value[i];
-        // remove negative values, but keep zeros with special treatment
-        var source = linkSpec.source[i];
-        var target = linkSpec.target[i];
-        if(!(val > 0 && isIndex(source, nodeCount) && isIndex(target, nodeCount))) {
-            continue;
-        }
-
-        source = +source;
-        target = +target;
-        linkedNodes[source] = linkedNodes[target] = true;
-
-        links.push({
-            pointNumber: i,
-            label: linkSpec.label[i],
-            color: hasLinkColorArray ? linkSpec.color[i] : linkSpec.color,
-            source: source,
-            target: target,
-            value: +val
-        });
-    }
-
-    var hasNodeColorArray = isArrayOrTypedArray(nodeSpec.color);
-    var nodes = [];
-    var removedNodes = false;
-    var nodeIndices = {};
-    for(i = 0; i < nodeCount; i++) {
-        if(linkedNodes[i]) {
-            var l = nodeSpec.label[i];
-            nodeIndices[i] = nodes.length;
-            nodes.push({
-                pointNumber: i,
-                label: l,
-                color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
-            });
-        }
-        else removedNodes = true;
-    }
-
-    // need to re-index links now, since we didn't put all the nodes in
-    if(removedNodes) {
-        for(i = 0; i < links.length; i++) {
-            links[i].source = nodeIndices[links[i].source];
-            links[i].target = nodeIndices[links[i].target];
-        }
-    }
+    var nodes = calcData._nodes;
+    var links = calcData._links;
 
     var sankey = d3sankey()
         .size(horizontal ? [width, height] : [height, width])
@@ -152,13 +90,6 @@ function sankeyModel(layout, d, traceIndex) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
-    var node, sankeyNodes = sankey.nodes();
-    for(var n = 0; n < sankeyNodes.length; n++) {
-        node = sankeyNodes[n];
-        node.width = width;
-        node.height = height;
-    }
-
     switchToForceFormat(nodes);
 
     return {
@@ -168,21 +99,21 @@ function sankeyModel(layout, d, traceIndex) {
         horizontal: horizontal,
         width: width,
         height: height,
-        nodePad: nodePad,
-        nodeLineColor: nodeLineColor,
-        nodeLineWidth: nodeLineWidth,
-        linkLineColor: linkLineColor,
-        linkLineWidth: linkLineWidth,
-        valueFormat: valueFormat,
-        valueSuffix: valueSuffix,
-        textFont: textFont,
+        nodePad: trace.node.pad,
+        nodeLineColor: trace.node.line.color,
+        nodeLineWidth: trace.node.line.width,
+        linkLineColor: trace.link.line.color,
+        linkLineWidth: trace.link.line.width,
+        valueFormat: trace.valueformat,
+        valueSuffix: trace.valuesuffix,
+        textFont: trace.textfont,
         translateX: domain.x[0] * layout.width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
         dragParallel: horizontal ? height : width,
         dragPerpendicular: horizontal ? width : height,
         nodes: nodes,
         links: links,
-        arrangement: arrangement,
+        arrangement: trace.arrangement,
         sankey: sankey,
         forceLayouts: {},
         interactionState: {
@@ -454,12 +385,14 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
 }
 
 // scene graph
-module.exports = function(svg, styledData, layout, callbacks) {
+module.exports = function(svg, calcData, layout, callbacks) {
+
+    var styledData = calcData
+            .filter(function(d) {return unwrap(d).trace.visible;})
+            .map(sankeyModel.bind(null, layout));
+
     var sankey = svg.selectAll('.' + c.cn.sankey)
-        .data(styledData
-                .filter(function(d) {return unwrap(d).trace.visible;})
-                .map(sankeyModel.bind(null, layout)),
-            keyFun);
+        .data(styledData, keyFun);
 
     sankey.exit()
         .remove();
