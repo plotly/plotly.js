@@ -24,7 +24,7 @@ module.exports = function(trace) {
     var i;
     for(i = 0; i < linkSpec.value.length; i++) {
         var val = linkSpec.value[i];
-    // remove negative values, but keep zeros with special treatment
+        // remove negative values, but keep zeros with special treatment
         var source = linkSpec.source[i];
         var target = linkSpec.target[i];
         if(!(val > 0 && isIndex(source, nodeCount) && isIndex(target, nodeCount))) {
@@ -62,7 +62,7 @@ module.exports = function(trace) {
         } else removedNodes = true;
     }
 
-  // need to re-index links now, since we didn't put all the nodes in
+    // need to re-index links now, since we didn't put all the nodes in
     if(removedNodes) {
         for(i = 0; i < links.length; i++) {
             links[i].source = nodeIndices[links[i].source];
