@@ -6,13 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
-
-var flipScale = require('./flip_scale');
-
+var flipScale = require('./helpers').flipScale;
 
 module.exports = function calc(gd, trace, opts) {
     var fullLayout = gd._fullLayout;

@@ -8,7 +8,7 @@
 
 'use strict';
 
-var hasColorscale = require('../../components/colorscale/has_colorscale');
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var setGroupPositions = require('../bar/cross_trace_calc').setGroupPositions;

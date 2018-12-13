@@ -8,7 +8,7 @@
 
 'use strict';
 
-var hasColorscale = require('../../components/colorscale/has_colorscale');
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var calcColorscale = require('../../components/colorscale/calc');
 var Lib = require('../../lib');
 var wrap = require('../../lib/gup').wrap;

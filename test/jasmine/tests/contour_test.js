@@ -6,7 +6,7 @@ var Lib = require('@src/lib');
 
 var Contour = require('@src/traces/contour');
 var makeColorMap = require('@src/traces/contour/make_color_map');
-var colorScales = require('@src/components/colorscale/scales');
+var colorScales = require('@src/components/colorscale/scales').scales;
 
 var failTest = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');

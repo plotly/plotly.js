@@ -6,14 +6,81 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../../lib');
 var Color = require('../color');
+
+var isValidScale = require('./scales').isValid;
+
+function hasColorscale(trace, containerStr) {
+    var container = containerStr ?
+        Lib.nestedProperty(trace, containerStr).get() || {} :
+        trace;
+    var color = container.color;
+
+    var isArrayWithOneNumber = false;
+    if(Lib.isArrayOrTypedArray(color)) {
+        for(var i = 0; i < color.length; i++) {
+            if(isNumeric(color[i])) {
+                isArrayWithOneNumber = true;
+                break;
+            }
+        }
+    }
+
+    return (
+        Lib.isPlainObject(container) && (
+            isArrayWithOneNumber ||
+            container.showscale === true ||
+            (isNumeric(container.cmin) && isNumeric(container.cmax)) ||
+            isValidScale(container.colorscale) ||
+            Lib.isPlainObject(container.colorbar)
+        )
+    );
+}
+
+/**
+ * Extract colorscale into numeric domain and color range.
+ *
+ * @param {array} scl colorscale array of arrays
+ * @param {number} cmin minimum color value (used to clamp scale)
+ * @param {number} cmax maximum color value (used to clamp scale)
+ */
+function extractScale(scl, cmin, cmax) {
+    var N = scl.length;
+    var domain = new Array(N);
+    var range = new Array(N);
+
+    for(var i = 0; i < N; i++) {
+        var si = scl[i];
+
+        domain[i] = cmin + si[0] * (cmax - cmin);
+        range[i] = si[1];
+    }
+
+    return {
+        domain: domain,
+        range: range
+    };
+}
+
+function flipScale(scl) {
+    var N = scl.length;
+    var sclNew = new Array(N);
+    var si;
+
+    for(var i = N - 1, j = 0; i >= 0; i--, j++) {
+        si = scl[i];
+        sclNew[j] = [1 - si[0], si[1]];
+    }
+
+    return sclNew;
+}
 
 /**
  * General colorscale function generator.
@@ -28,7 +95,7 @@ var Color = require('../color');
  *
  * @return {function}
  */
-module.exports = function makeColorScaleFunc(specs, opts) {
+function makeColorScaleFunc(specs, opts) {
     opts = opts || {};
 
     var domain = specs.domain,
@@ -80,7 +147,7 @@ module.exports = function makeColorScaleFunc(specs, opts) {
     sclFunc.range = function() { return range; };
 
     return sclFunc;
-};
+}
 
 function colorArray2rbga(colorArray) {
     var colorObj = {
@@ -92,3 +159,10 @@ function colorArray2rbga(colorArray) {
 
     return tinycolor(colorObj).toRgbString();
 }
+
+module.exports = {
+    hasColorscale: hasColorscale,
+    extractScale: extractScale,
+    flipScale: flipScale,
+    makeColorScaleFunc: makeColorScaleFunc
+};

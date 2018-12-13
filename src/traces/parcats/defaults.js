@@ -9,7 +9,7 @@
 'use strict';
 
 var Lib = require('../../lib');
-var hasColorscale = require('../../components/colorscale/has_colorscale');
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');

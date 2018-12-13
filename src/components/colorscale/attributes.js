@@ -8,7 +8,7 @@
 
 'use strict';
 
-var palettes = require('./scales.js');
+var palettes = require('./scales.js').scales;
 var paletteStr = Object.keys(palettes);
 
 function code(s) {

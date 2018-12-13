@@ -1144,7 +1144,7 @@ describe('Test plot api', function() {
         });
 
         it('turns off cauto (autocolorscale) when you edit cmin or cmax (colorscale)', function(done) {
-            var autocscale = require('@src/components/colorscale/scales').Reds;
+            var autocscale = require('@src/components/colorscale/scales').scales.Reds;
 
             var mcmin0 = 3;
             var mcscl0 = 'rainbow';
