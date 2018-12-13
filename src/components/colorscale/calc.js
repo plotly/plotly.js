@@ -33,12 +33,7 @@ module.exports = function calc(gd, trace, opts) {
             updateStyle(trace._input, containerStr ? (containerStr + '.' + attr) : attr, inputVal);
         }
         else {
-            if(trace._input.type === 'scatter3d') {
-                trace._input[attr] = inputVal;
-            }
-            else {
-                inputContainer[attr] = inputVal;
-            }
+            inputContainer[attr] = inputVal;
         }
 
         container[attr] = fullVal;
@@ -53,6 +48,8 @@ module.exports = function calc(gd, trace, opts) {
     }
 
     if(containerStr) {
+        if(inputContainer[containerStr] === undefined) return;
+
         container = Lib.nestedProperty(container, containerStr).get();
         inputContainer = Lib.nestedProperty(inputContainer, containerStr).get();
         fullInputContainer = Lib.nestedProperty(fullInputContainer, containerStr).get() || {};
