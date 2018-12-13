@@ -52,24 +52,54 @@ var max = d3array.max;
 var nest = require('d3-collection').nest;
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
+// sort links' breadth (ie top to bottom in a column), based on their source nodes' breadths
+function ascendingSourceDepth(a, b) {
+    return ascendingBreadth(a.source, b.source) || (a.originalIndex - b.originalIndex);
+}
+
+// sort links' breadth (ie top to bottom in a column), based on their target nodes' breadths
+function ascendingTargetDepth(a, b) {
+    return ascendingBreadth(a.target, b.target) || (a.originalIndex - b.originalIndex);
+}
+
+function ascendingBreadth(a, b) {
+    return a.y - b.y;
+}
+
+function value(d) {
+    return d.value;
+}
+
+function nodeCenter(node) {
+    return node.y + node.dy / 2;
+}
+
+function weightedSource(link) {
+    return nodeCenter(link.source) * link.value;
+}
+
+function weightedTarget(link) {
+    return nodeCenter(link.target) * link.value;
+}
+
 module.exports = function() {
     var sankey = {},
-        nodeWidth = 24,
-        nodePadding = 8,
+        dx = 24, // nodeWidth
+        py = 8, // nodePadding
         size = [1, 1],
         nodes = [],
         links = [],
         maxPaddedSpace = 2 / 3; // Defined as a fraction of the total available space
 
     sankey.nodeWidth = function(_) {
-        if(!arguments.length) return nodeWidth;
-        nodeWidth = +_;
+        if(!arguments.length) return dx;
+        dx = +_;
         return sankey;
     };
 
     sankey.nodePadding = function(_) {
-        if(!arguments.length) return nodePadding;
-        nodePadding = +_;
+        if(!arguments.length) return py;
+        py = +_;
         return sankey;
     };
 
@@ -94,14 +124,14 @@ module.exports = function() {
     sankey.layout = function(iterations) {
         computeNodeLinks();
         computeNodeValues();
-        computeNodeBreadths();
-        computeNodeDepths(iterations);
-        computeLinkDepths();
+        computeNodeDepths();
+        computeNodeBreadths(iterations);
+        computeLinkBreadths();
         return sankey;
     };
 
     sankey.relayout = function() {
-        computeLinkDepths();
+        computeLinkBreadths();
         return sankey;
     };
 
@@ -170,14 +200,15 @@ module.exports = function() {
   // Nodes are assigned the maximum breadth of incoming neighbors plus one;
   // nodes with no incoming links are assigned breadth zero, while
   // nodes with no outgoing links are assigned the maximum breadth.
-    function computeNodeBreadths() {
+    function computeNodeDepths() {
         var remainingNodes = nodes,
             nextNodes,
             x = 0;
 
         function processNode(node) {
+            node.depth = x;
             node.x = x;
-            node.dx = nodeWidth;
+            node.dx = dx;
             node.sourceLinks.forEach(function(link) {
                 if(nextNodes.indexOf(link.target) < 0) {
                     nextNodes.push(link.target);
@@ -194,7 +225,7 @@ module.exports = function() {
 
     //
         moveSinksRight(x);
-        scaleNodeBreadths((size[0] - nodeWidth) / (x - 1));
+        scaleNodeBreadths((size[0] - dx) / (x - 1));
     }
 
   // function moveSourcesRight() {
@@ -208,6 +239,7 @@ module.exports = function() {
     function moveSinksRight(x) {
         nodes.forEach(function(node) {
             if(!node.sourceLinks.length) {
+                node.depth = x - 1;
                 node.x = x - 1;
             }
         });
@@ -219,7 +251,7 @@ module.exports = function() {
         });
     }
 
-    function computeNodeDepths(iterations) {
+    function computeNodeBreadths(iterations) {
         var nodesByBreadth = nest()
         .key(function(d) { return d.x; })
         .sortKeys(ascending)
@@ -241,9 +273,9 @@ module.exports = function() {
                 return nodes.length;
             });
             var maxNodePadding = maxPaddedSpace * size[1] / (L - 1);
-            if(nodePadding > maxNodePadding) nodePadding = maxNodePadding;
+            if(py > maxNodePadding) py = maxNodePadding;
             var ky = min(nodesByBreadth, function(nodes) {
-                return (size[1] - (nodes.length - 1) * nodePadding) / sum(nodes, value);
+                return (size[1] - (nodes.length - 1) * py) / sum(nodes, value);
             });
 
             nodesByBreadth.forEach(function(nodes) {
@@ -263,14 +295,10 @@ module.exports = function() {
                 nodes.forEach(function(node) {
                     if(node.targetLinks.length) {
                         var y = sum(node.targetLinks, weightedSource) / sum(node.targetLinks, value);
-                        node.y += (y - center(node)) * alpha;
+                        node.y += (y - nodeCenter(node)) * alpha;
                     }
                 });
             });
-
-            function weightedSource(link) {
-                return center(link.source) * link.value;
-            }
         }
 
         function relaxRightToLeft(alpha) {
@@ -278,14 +306,10 @@ module.exports = function() {
                 nodes.forEach(function(node) {
                     if(node.sourceLinks.length) {
                         var y = sum(node.sourceLinks, weightedTarget) / sum(node.sourceLinks, value);
-                        node.y += (y - center(node)) * alpha;
+                        node.y += (y - nodeCenter(node)) * alpha;
                     }
                 });
             });
-
-            function weightedTarget(link) {
-                return center(link.target) * link.value;
-            }
         }
 
         function resolveCollisions() {
@@ -302,18 +326,18 @@ module.exports = function() {
                     node = nodes[i];
                     dy = y0 - node.y;
                     if(dy > 0) node.y += dy;
-                    y0 = node.y + node.dy + nodePadding;
+                    y0 = node.y + node.dy + py;
                 }
 
         // If the bottommost node goes outside the bounds, push it back up.
-                dy = y0 - nodePadding - size[1];
+                dy = y0 - py - size[1];
                 if(dy > 0) {
                     y0 = node.y -= dy;
 
           // Push any overlapping nodes back up.
                     for(i = n - 2; i >= 0; --i) {
                         node = nodes[i];
-                        dy = node.y + node.dy + nodePadding - y0;
+                        dy = node.y + node.dy + py - y0;
                         if(dy > 0) node.y -= dy;
                         y0 = node.y;
                     }
@@ -326,7 +350,7 @@ module.exports = function() {
         }
     }
 
-    function computeLinkDepths() {
+    function computeLinkBreadths() {
         nodes.forEach(function(node) {
             node.sourceLinks.sort(ascendingTargetDepth);
             node.targetLinks.sort(ascendingSourceDepth);
@@ -342,22 +366,6 @@ module.exports = function() {
                 ty += link.dy;
             });
         });
-
-        function ascendingSourceDepth(a, b) {
-            return (a.source.y - b.source.y) || (a.originalIndex - b.originalIndex);
-        }
-
-        function ascendingTargetDepth(a, b) {
-            return (a.target.y - b.target.y) || (a.originalIndex - b.originalIndex);
-        }
-    }
-
-    function center(node) {
-        return node.y + node.dy / 2;
-    }
-
-    function value(link) {
-        return link.value;
     }
 
     return sankey;
