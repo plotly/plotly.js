@@ -103,7 +103,7 @@
     "regl": "^1.3.7",
     "regl-error2d": "^2.0.5",
     "regl-line2d": "^3.0.12",
-    "regl-scatter2d": "^3.1.0",
+    "regl-scatter2d": "git://github.com/gl-vis/regl-scatter2d.git#2d5777fe8b1963ec978a3e32a6f7ccec173cc274",
     "regl-splom": "^1.0.5",
     "right-now": "^1.0.0",
     "robust-orientation": "^1.1.3",
