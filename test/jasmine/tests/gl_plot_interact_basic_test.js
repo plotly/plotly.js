@@ -13,7 +13,8 @@ var failTest = require('../assets/fail_test');
 var cameraStructure = {
     up: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
     center: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
-    eye: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)}
+    eye: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
+    ortho: jasmine.any(Boolean)
 };
 
 function makePlot(gd, mock) {
