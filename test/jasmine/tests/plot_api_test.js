@@ -1052,18 +1052,17 @@ describe('Test plot api', function() {
 
         it('should redo auto z/contour when editing z array', function(done) {
             Plotly.plot(gd, [{type: 'contour', z: [[1, 2], [3, 4]]}]).then(function() {
-                expect(gd.data[0].zauto).toBe(true, gd.data[0]);
-                expect(gd.data[0].zmin).toBe(1);
-                expect(gd.data[0].zmax).toBe(4);
-
+                expect(gd._fullData[0].zauto).toBe(true);
+                expect(gd._fullData[0].zmin).toBe(1);
+                expect(gd._fullData[0].zmax).toBe(4);
                 expect(gd.data[0].autocontour).toBe(true);
                 expect(gd.data[0].contours).toEqual({start: 1.5, end: 3.5, size: 0.5});
 
                 return Plotly.restyle(gd, {'z[0][0]': 10});
             }).then(function() {
-                expect(gd.data[0].zmin).toBe(2);
-                expect(gd.data[0].zmax).toBe(10);
-
+                expect(gd._fullData[0].zauto).toBe(true);
+                expect(gd._fullData[0].zmin).toBe(2);
+                expect(gd._fullData[0].zmax).toBe(10);
                 expect(gd.data[0].contours).toEqual({start: 3, end: 9, size: 1});
             })
             .catch(failTest)
@@ -1111,10 +1110,10 @@ describe('Test plot api', function() {
             var zmax1 = 10;
 
             function check(auto, msg) {
-                expect(gd.data[0].zmin).negateIf(auto).toBe(zmin0, msg);
-                expect(gd.data[0].zauto).toBe(auto, msg);
-                expect(gd.data[1].zmax).negateIf(auto).toBe(zmax1, msg);
-                expect(gd.data[1].zauto).toBe(auto, msg);
+                expect(gd._fullData[0].zmin).negateIf(auto).toBe(zmin0, msg);
+                expect(gd._fullData[0].zauto).toBe(auto, msg);
+                expect(gd._fullData[1].zmax).negateIf(auto).toBe(zmax1, msg);
+                expect(gd._fullData[1].zauto).toBe(auto, msg);
             }
 
             Plotly.plot(gd, [
@@ -1144,22 +1143,24 @@ describe('Test plot api', function() {
         });
 
         it('turns off cauto (autocolorscale) when you edit cmin or cmax (colorscale)', function(done) {
-            var autocscale = require('@src/components/colorscale/scales').scales.Reds;
+            var scales = require('@src/components/colorscale/scales').scales;
 
+            var autocscale = scales.Reds;
+            var mcscl0 = 'Rainbow';
+            var mlcscl1 = 'Greens';
             var mcmin0 = 3;
-            var mcscl0 = 'rainbow';
             var mlcmax1 = 6;
-            var mlcscl1 = 'greens';
 
             function check(auto, autocolorscale, msg) {
-                expect(gd.data[0].marker.cauto).toBe(auto, msg);
-                expect(gd.data[0].marker.cmin).negateIf(auto).toBe(mcmin0);
+                expect(gd._fullData[0].marker.cauto).toBe(auto, msg);
+                expect(gd._fullData[0].marker.cmin).negateIf(auto).toBe(mcmin0);
                 expect(gd._fullData[0].marker.autocolorscale).toBe(autocolorscale, msg);
-                expect(gd.data[0].marker.colorscale).toEqual(auto ? autocscale : mcscl0);
-                expect(gd.data[1].marker.line.cauto).toBe(auto, msg);
-                expect(gd.data[1].marker.line.cmax).negateIf(auto).toBe(mlcmax1);
+                expect(gd._fullData[0].marker.colorscale).toEqual(auto ? autocscale : scales[mcscl0]);
+
+                expect(gd._fullData[1].marker.line.cauto).toBe(auto, msg);
+                expect(gd._fullData[1].marker.line.cmax).negateIf(auto).toBe(mlcmax1);
                 expect(gd._fullData[1].marker.line.autocolorscale).toBe(autocolorscale, msg);
-                expect(gd.data[1].marker.line.colorscale).toEqual(auto ? autocscale : mlcscl1);
+                expect(gd._fullData[1].marker.line.colorscale).toEqual(auto ? autocscale : scales[mlcscl1]);
             }
 
             Plotly.plot(gd, [
@@ -1167,9 +1168,7 @@ describe('Test plot api', function() {
                 {y: [2, 1], mode: 'markers', marker: {line: {width: 2, color: [3, 4]}}}
             ])
             .then(function() {
-                // autocolorscale is actually true after supplyDefaults, but during calc it's set
-                // to false when we push the resulting colorscale back to the input container
-                check(true, false, 'initial');
+                check(true, true, 'initial');
                 return Plotly.restyle(gd, {'marker.cmin': mcmin0, 'marker.colorscale': mcscl0}, null, [0]);
             })
             .then(function() {

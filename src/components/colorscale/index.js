@@ -20,6 +20,7 @@ module.exports = {
 
     supplyLayoutDefaults: require('./layout_defaults'),
     handleDefaults: require('./defaults'),
+    crossTraceDefaults: require('./cross_trace_defaults'),
 
     calc: require('./calc'),
 

@@ -406,21 +406,6 @@ describe('Test colorscale:', function() {
             expect(trace.colorscale).toEqual(colorscale);
         });
 
-        it('should set autocolorscale to false if it wasn\'t explicitly set true in input', function() {
-            trace = {
-                type: 'heatmap',
-                z: [[0, -1.5], [-2, -10]],
-                zmin: -10,
-                zmax: 0,
-                autocolorscale: true,
-                _input: {}
-            };
-            gd = _supply(trace);
-            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
-            expect(trace.autocolorscale).toBe(false);
-            expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
-        });
-
         it('should be Blues when the only numerical z <= -0.5', function() {
             trace = {
                 type: 'heatmap',

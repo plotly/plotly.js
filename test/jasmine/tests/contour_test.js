@@ -309,14 +309,7 @@ describe('contour calc', function() {
 
                 ['start', 'end', 'size'].forEach(function(attr) {
                     expect(out.contours[attr]).toBe(spec[attr], [contoursIn, spec.inputNcontours, attr]);
-                    // all these get copied back to the input trace
-                    expect(out._input.contours[attr]).toBe(spec[attr], [contoursIn, spec.inputNcontours, attr]);
                 });
-
-                expect(out._input.autocontour).toBe(true);
-                expect(out._input.zauto).toBe(true);
-                expect(out._input.zmin).toBe(0);
-                expect(out._input.zmax).toBe(5);
             });
         });
     });
