@@ -33,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    var surfaceColor = coerce('surfacecolor');
+    coerce('surfacecolor');
 
     coerce('isomin');
     coerce('isomax');
@@ -61,19 +61,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
 
-    // backward compatibility block
-    if(!surfaceColor) {
-        mapLegacy(traceIn, 'zmin', 'cmin');
-        mapLegacy(traceIn, 'zmax', 'cmax');
-        mapLegacy(traceIn, 'zauto', 'cauto');
-    }
-
     // disable 1D transforms (for now)
     traceOut._length = null;
 };
-
-function mapLegacy(traceIn, oldAttr, newAttr) {
-    if(oldAttr in traceIn && !(newAttr in traceIn)) {
-        traceIn[newAttr] = traceIn[oldAttr];
-    }
-}
