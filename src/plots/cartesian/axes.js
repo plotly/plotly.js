@@ -1584,10 +1584,8 @@ axes.draw = function(gd, arg, opts) {
 
             plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
             plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
-            if(xa.type === 'multicategory') {
-                plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
-                plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
-            }
+            plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
+            plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
             if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
             if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
             fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
@@ -1781,11 +1779,12 @@ axes.drawOne = function(gd, ax, opts) {
     if(ax.type === 'multicategory') {
         var labelLength = 0;
         var pad = {x: 2, y: 10}[axLetter];
+        var sgn = tickSigns[2] * (ax.ticks === 'inside' ? -1 : 1);
 
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick') + pad;
             labelLength += ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0;
-            var secondaryPosition = mainLinePosition + labelLength * tickSigns[2];
+            var secondaryPosition = mainLinePosition + labelLength * sgn;
             var secondaryLabelFns = axes.makeLabelFns(ax, secondaryPosition);
 
             return axes.drawLabels(gd, ax, {
@@ -1803,11 +1802,12 @@ axes.drawOne = function(gd, ax, opts) {
 
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick2');
+            ax._labelLength = labelLength;
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
                 layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePosition, tickSigns[2], labelLength),
+                path: axes.makeTickPath(ax, mainLinePosition, sgn, labelLength),
                 transFn: transFn
             });
         });
@@ -2608,7 +2608,7 @@ function drawTitle(gd, ax) {
 
     var titleStandoff;
     if(ax.type === 'multicategory') {
-        titleStandoff = ax._boundingBox[{x: 'height', y: 'width'}[axLetter]];
+        titleStandoff = ax._labelLength;
     } else {
         var offsetBase = 1.5;
         titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);

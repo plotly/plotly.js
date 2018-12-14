@@ -19,6 +19,7 @@
   ],
   "layout": {
     "xaxis": {
+      "title": "MULTI-CATEGORY",
       "ticks": "outside",
       "showline": true,
       "mirror": "ticks",

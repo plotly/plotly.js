@@ -849,4 +849,62 @@ describe('subplot creation / deletion:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('clears secondary labels and divider when updating out of axis type multicategory', function(done) {
+        function _assert(msg, exp) {
+            var gd3 = d3.select(gd);
+            expect(gd3.selectAll('.xtick > text').size())
+                .toBe(exp.tickCnt, msg + ' # labels');
+            expect(gd3.selectAll('.xtick2 > text').size())
+                .toBe(exp.tick2Cnt, msg + ' # secondary labels');
+            expect(gd3.selectAll('.xdivider').size())
+                .toBe(exp.dividerCnt, msg + ' # dividers');
+        }
+
+        Plotly.react(gd, [{
+            type: 'bar',
+            x: ['a', 'b', 'c'],
+            y: [1, 2, 1]
+        }])
+        .then(function() {
+            _assert('base - category axis', {
+                tickCnt: 3,
+                tick2Cnt: 0,
+                dividerCnt: 0
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'bar',
+                x: [
+                    ['d', 'd', 'e'],
+                    ['a', 'b', 'c']
+                ],
+                y: [1, 2, 3]
+            }]);
+        })
+        .then(function() {
+            _assert('multicategory axis', {
+                tickCnt: 3,
+                tick2Cnt: 2,
+                dividerCnt: 3
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'bar',
+                x: ['a', 'b', 'c'],
+                y: [1, 2, 1]
+            }]);
+        })
+        .then(function() {
+            _assert('back to category axis', {
+                tickCnt: 3,
+                tick2Cnt: 0,
+                dividerCnt: 0
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
