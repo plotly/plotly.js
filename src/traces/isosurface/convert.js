@@ -136,11 +136,9 @@ function createIsosurfaceTrace(scene, data) {
     var maxY = Math.max.apply(null, data.y);
     var maxZ = Math.max.apply(null, data.z);
 
-
-    var RES = 40; // 64;
-    var width = RES + 1;
-    var height = RES + 1;
-    var depth = RES + 1;
+    var width = data.width;
+    var height = data.height;
+    var depth = Math.ceil(data.value.length / (width * height));
 
     var dims = [width, height, depth];
 
@@ -155,15 +153,6 @@ function createIsosurfaceTrace(scene, data) {
         createIsosurface.surfaceNets; // i.e. default
 
     var bounds = [[minX, minY, minZ], [maxX, maxY, maxZ]];
-    var f_xyz;
-    // bounds = [[-4, -4, -4], [4, 4, 4]]; f_xyz = function(x, y, z) { return x * y + y * z + z * x - x * y * z; };
-    // bounds = [[-4, -4, -4], [4, 4, 4]]; f_xyz = function(x, y, z) { return Math.sin(x) + Math.sin(y) + Math.sin(z) - 0.5; };
-    // bounds = [[-3, -3, -1], [3, 3, 1]]; f_xyz = function(x, y, z) { return Math.sin(x) * Math.sin(y) + Math.sin(z); };
-
-    var passValues = true;
-
-    var isosurfaceMesh;
-
 
     var xStart = bounds[0][0];
     var yStart = bounds[0][1];
@@ -183,6 +172,8 @@ function createIsosurfaceTrace(scene, data) {
         for(var j = 0; j <= height; j++) {
             for(var i = 0; i <= width; i++) {
 
+                var index = i + width * j + width * height * k;
+
                 var x = i * (xEnd - xStart) / (width - 1) + xStart;
                 var y = j * (yEnd - yStart) / (height - 1) + yStart;
                 var z = k * (zEnd - zStart) / (depth - 1) + zStart;
@@ -191,20 +182,14 @@ function createIsosurfaceTrace(scene, data) {
                 allYs[n] = y;
                 allZs[n] = z;
 
-                if(passValues) {
-                    fXYZs[n] = data.value[i + width * j + width * height * k]; // use input data from the mock
-                }
+                fXYZs[n] = data.value[index]; // use input data from the mock
 
                 n++;
             }
         }
     }
 
-    if(passValues) {
-        isosurfaceMesh = applyMethod(dims, fXYZs); // pass data array without bounds
-    } else {
-        isosurfaceMesh = applyMethod(dims, f_xyz, bounds); // pass function with bounds
-    }
+    var isosurfaceMesh = applyMethod(dims, fXYZs); // pass data array without bounds
 
     var q, len;
 

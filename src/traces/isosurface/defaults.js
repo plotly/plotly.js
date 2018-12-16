@@ -76,6 +76,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    coerce('width');
+    coerce('height');
 
     // disable 1D transforms
     // x/y/z should match lengths, and i/j/k should match as well, but

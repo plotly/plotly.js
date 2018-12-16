@@ -42,9 +42,23 @@ module.exports = extendFlat({
     },
     value: {
         valType: 'data_array',
-        editType: 'calc+clearAxisTypes',
+        editType: 'calc',
         description: [
             'Sets the 4th dimension of the vertices.'
+        ].join(' ')
+    },
+    width: {
+        valType: 'number',
+        editType: 'calc',
+        description: [
+            'Sets the first dimension of volume data i.e. in `x` direction.'
+        ].join(' ')
+    },
+    height: {
+        valType: 'number',
+        editType: 'calc',
+        description: [
+            'Sets the second dimension of volume data i.e. in `y` direction.'
         ].join(' ')
     },
 
