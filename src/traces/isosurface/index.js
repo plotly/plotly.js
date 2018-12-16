@@ -26,9 +26,10 @@ Isosurface.basePlotModule = require('../../plots/gl3d');
 Isosurface.categories = ['gl3d'];
 Isosurface.meta = {
     description: [
-        'Draws sets of triangles with coordinates given by',
-        'three 1-dimensional arrays in `x`, `y`, `z` and',
-        'values',
+        'Draws isosurface with coordinates given by',
+        'three 1-dimensional arrays in `x`, `y`, `z`',
+        'with `width`, `height` & `depth` lengths as well as',
+        'another 1-dimensional array volume (data cube).',
     ].join(' ')
 };
 

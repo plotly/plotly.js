@@ -40,7 +40,7 @@ module.exports = extendFlat({
             'jointly represent the X, Y and Z coordinates of the nth vertex.'
         ].join(' ')
     },
-    value: {
+    volume: {
         valType: 'data_array',
         editType: 'calc',
         description: [

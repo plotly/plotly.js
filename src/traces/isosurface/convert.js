@@ -138,7 +138,7 @@ function createIsosurfaceTrace(scene, data) {
 
     var width = data.width;
     var height = data.height;
-    var depth = Math.ceil(data.value.length / (width * height));
+    var depth = Math.ceil(data.volume.length / (width * height));
 
     var dims = [width, height, depth];
 
@@ -182,7 +182,7 @@ function createIsosurfaceTrace(scene, data) {
                 allYs[n] = y;
                 allZs[n] = z;
 
-                fXYZs[n] = data.value[index]; // use input data from the mock
+                fXYZs[n] = data.volume[index]; // use input data from the mock
 
                 n++;
             }

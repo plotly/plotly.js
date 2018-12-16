@@ -33,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }) && ret;
     }
 
-    var coords = readComponents(['x', 'y', 'z', 'value']);
+    var coords = readComponents(['x', 'y', 'z', 'volume']);
 
     if(!coords) {
         traceOut.visible = false;
