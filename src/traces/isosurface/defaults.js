@@ -19,26 +19,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    // read in face/vertex properties
-    function readComponents(array) {
-        var ret = array.map(function(attr) {
-            var result = coerce(attr);
-
-            if(result && Lib.isArrayOrTypedArray(result)) return result;
-            return null;
-        });
-
-        return ret.every(function(x) {
-            return x && x.length === ret[0].length;
-        }) && ret;
-    }
-
-    var coords = readComponents(['x', 'y', 'z', 'volume']);
-
-    if(!coords) {
-        traceOut.visible = false;
-        return;
-    }
+    coerce('x');
+    coerce('y');
+    coerce('z');
+    coerce('volume');
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
@@ -76,11 +60,4 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
-    coerce('width');
-    coerce('height');
-
-    // disable 1D transforms
-    // x/y/z should match lengths, and i/j/k should match as well, but
-    // the two sets have different lengths so transforms wouldn't work.
-    traceOut._length = null;
 };

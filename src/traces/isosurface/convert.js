@@ -136,9 +136,9 @@ function createIsosurfaceTrace(scene, data) {
     var maxY = Math.max.apply(null, data.y);
     var maxZ = Math.max.apply(null, data.z);
 
-    var width = data.width;
-    var height = data.height;
-    var depth = Math.ceil(data.volume.length / (width * height));
+    var width = data.x.length;
+    var height = data.y.length;
+    var depth = data.z.length;
 
     var dims = [width, height, depth];
 

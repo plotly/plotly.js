@@ -20,24 +20,21 @@ module.exports = extendFlat({
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the X coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
-            'jointly represent the X, Y and Z coordinates of the nth vertex.'
+            'Sets the X coordinates of the vertices on X axis.'
         ].join(' ')
     },
     y: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the Y coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
-            'jointly represent the X, Y and Z coordinates of the nth vertex.'
+            'Sets the Y coordinates of the vertices on Y axis.'
         ].join(' ')
     },
     z: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the Z coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
-            'jointly represent the X, Y and Z coordinates of the nth vertex.'
+            'Sets the Z coordinates of the vertices on Z axis.'
         ].join(' ')
     },
     volume: {
@@ -45,20 +42,6 @@ module.exports = extendFlat({
         editType: 'calc',
         description: [
             'Sets the 4th dimension of the vertices.'
-        ].join(' ')
-    },
-    width: {
-        valType: 'number',
-        editType: 'calc',
-        description: [
-            'Sets the first dimension of volume data i.e. in `x` direction.'
-        ].join(' ')
-    },
-    height: {
-        valType: 'number',
-        editType: 'calc',
-        description: [
-            'Sets the second dimension of volume data i.e. in `y` direction.'
         ].join(' ')
     },
 
