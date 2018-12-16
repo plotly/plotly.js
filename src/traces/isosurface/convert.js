@@ -128,12 +128,21 @@ function createIsosurfaceTrace(scene, data) {
 
     var gl = scene.glplot.gl;
 
-    var RES = 64;
-    var resX = RES;
-    var resY = RES;
-    var resZ = RES;
+    var minX = Math.min.apply(null, data.x);
+    var minY = Math.min.apply(null, data.y);
+    var minZ = Math.min.apply(null, data.z);
 
-    var dims = [resX, resY, resZ];
+    var maxX = Math.max.apply(null, data.x);
+    var maxY = Math.max.apply(null, data.y);
+    var maxZ = Math.max.apply(null, data.z);
+
+
+    var RES = 40; // 64;
+    var width = RES + 1;
+    var height = RES + 1;
+    var depth = RES + 1;
+
+    var dims = [width, height, depth];
 
     // var method = 'NETS';
     var method = 'CUBES';
@@ -145,9 +154,11 @@ function createIsosurfaceTrace(scene, data) {
         (method === SURFACE_NETS) ? createIsosurface.surfaceNets :
         createIsosurface.surfaceNets; // i.e. default
 
-    // var bounds = [[-4, -4, -4], [4, 4, 4]]; var f_xyz = function(x, y, z) { return x * y + y * z + z * x - x * y * z; };
-    var bounds = [[-4, -4, -4], [4, 4, 4]]; var f_xyz = function(x, y, z) { return Math.sin(x) + Math.sin(y) + Math.sin(z) - 0.5; };
-    // var bounds = [[-3, -3, -1], [3, 3, 1]]; var f_xyz = function(x, y, z) { return Math.sin(x) * Math.sin(y) + Math.sin(z); };
+    var bounds = [[minX, minY, minZ], [maxX, maxY, maxZ]];
+    var f_xyz;
+    // bounds = [[-4, -4, -4], [4, 4, 4]]; f_xyz = function(x, y, z) { return x * y + y * z + z * x - x * y * z; };
+    // bounds = [[-4, -4, -4], [4, 4, 4]]; f_xyz = function(x, y, z) { return Math.sin(x) + Math.sin(y) + Math.sin(z) - 0.5; };
+    // bounds = [[-3, -3, -1], [3, 3, 1]]; f_xyz = function(x, y, z) { return Math.sin(x) * Math.sin(y) + Math.sin(z); };
 
     var passValues = true;
 
@@ -168,21 +179,20 @@ function createIsosurfaceTrace(scene, data) {
     var fXYZs = [];
 
     var n = 0;
-    for(var k = 0; k <= resZ; k++) {
-        for(var j = 0; j <= resY; j++) {
-            for(var i = 0; i <= resX; i++) {
+    for(var k = 0; k <= depth; k++) {
+        for(var j = 0; j <= height; j++) {
+            for(var i = 0; i <= width; i++) {
 
-                var x = i * (xEnd - xStart) / resX + xStart;
-                var y = j * (yEnd - yStart) / resY + yStart;
-                var z = k * (zEnd - zStart) / resZ + zStart;
+                var x = i * (xEnd - xStart) / (width - 1) + xStart;
+                var y = j * (yEnd - yStart) / (height - 1) + yStart;
+                var z = k * (zEnd - zStart) / (depth - 1) + zStart;
 
                 allXs[n] = x;
                 allYs[n] = y;
                 allZs[n] = z;
 
                 if(passValues) {
-                    fXYZs[n] = f_xyz(x, y, z); // fill values with function
-                    // fXYZs[n] = data.value[i + (resX + 1) * j + (resX + 1) * (resY + 1) * k]; // use input data from the mock
+                    fXYZs[n] = data.value[i + width * j + width * height * k]; // use input data from the mock
                 }
 
                 n++;
@@ -191,9 +201,9 @@ function createIsosurfaceTrace(scene, data) {
     }
 
     if(passValues) {
-        isosurfaceMesh = applyMethod(dims, fXYZs, bounds); // pass data array
+        isosurfaceMesh = applyMethod(dims, fXYZs); // pass data array without bounds
     } else {
-        isosurfaceMesh = applyMethod(dims, f_xyz, bounds); // pass function
+        isosurfaceMesh = applyMethod(dims, f_xyz, bounds); // pass function with bounds
     }
 
     var q, len;
