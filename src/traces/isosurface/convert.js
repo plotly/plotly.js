@@ -184,58 +184,61 @@ function createIsosurfaceTrace(scene, data) {
     var positions = isosurfaceMesh.positions;
     len = positions.length;
 
-    var minX = Math.min.apply(null, data.x);
-    var minY = Math.min.apply(null, data.y);
-    var minZ = Math.min.apply(null, data.z);
+    var bounds = [
+        [
+            Math.min.apply(null, allXs),
+            Math.min.apply(null, allYs),
+            Math.min.apply(null, allZs)
+        ],
+        [
+            Math.max.apply(null, allXs),
+            Math.max.apply(null, allYs),
+            Math.max.apply(null, allZs)
+        ]
+    ];
 
-    var maxX = Math.max.apply(null, data.x);
-    var maxY = Math.max.apply(null, data.y);
-    var maxZ = Math.max.apply(null, data.z);
+    var axis, min, max;
 
-    console.log("minX=", minX);
-    console.log("maxX=", maxX);
-    console.log("dims[0]=", dims[0]);
-
-    // map pixel coordinates to real world coordinates
+    // map (integer) pixel coordinates to (real) world coordinates
     for(q = 0; q < len; q++) {
-        positions[q][0] = minX + (1 + maxX - minX) * positions[q][0] / dims[0];
-        positions[q][1] = minY + (1 + maxY - minY) * positions[q][1] / dims[1];
-        positions[q][2] = minZ + (1 + maxZ - minZ) * positions[q][2] / dims[2];
+        for(axis = 0; axis < 3; axis++) {
+            min = bounds[0][axis];
+            max = bounds[1][axis];
+            positions[q][axis] = min + (1 + max - min) * positions[q][axis] / dims[axis];
+        }
     }
 
     // handle non-uniform 3D space
-    for(var axis = 0; axis < 3; axis++) {
+    for(axis = 0; axis < 3; axis++) {
         var xyz = (axis === 0) ? data.x : (axis === 1) ? data.y : data.z;
+
+        min = bounds[0][axis];
+        max = bounds[1][axis];
 
         for(q = 0; q < len; q++) {
             var here = positions[q][axis];
-            var prev, next;
 
-            var found = false;
-            for(i = 1; i < dims[axis]; i++) {
-                prev = xyz[i - 1];
-                next = xyz[i];
+            var minDist = Infinity;
+            var first = 0;
+            var second = 0;
 
-                if((prev <= here && here <= next) || (prev >= here && here >= next)) {
-                    found = true;
-                    break;
+            var dist;
+            for(i = 0; i < dims[axis]; i++) {
+                dist = Math.abs(here - xyz[i]);
+
+                if(dist < minDist) {
+                    minDist = dist;
+                    second = first;
+                    first = i;
                 }
             }
 
-            if(!found) {
-                if(Math.abs(xyz[0] - here) <= Math.abs(xyz[dims[axis] - 1] - here)) {
-                    prev = xyz[0];
-                    next = xyz[1];
-                } else {
-                    prev = xyz[dims[axis] - 2];
-                    next = xyz[dims[axis] - 1];
-                }
-            }
+            if(dist > 0 && first !== second) {
 
-            if(here >= prev) {
-                positions[q][axis] = prev + (here - prev) * (next - prev);
-            } else {
-                positions[q][axis] = next + (here - next) * (prev - next);
+                var d1 = -(here - xyz[first]);
+                var d2 = (here - xyz[second]);
+
+                positions[q][axis] = (xyz[first] * d2 + xyz[second] * d1) / (d1 + d2);
             }
         }
     }
