@@ -126,6 +126,7 @@ function sankeyModel(layout, d, traceIndex) {
 function linkModel(d, l, i) {
     var tc = tinycolor(l.color);
     var basicKey = l.source.label + '|' + l.target.label;
+    var key = basicKey + '__' + i;
     // var foundKey = uniqueKeys[basicKey];
     // uniqueKeys[basicKey] = (foundKey || 0) + 1;
     // var key = basicKey + '__' + uniqueKeys[basicKey];
@@ -135,7 +136,7 @@ function linkModel(d, l, i) {
     l.curveNumber = d.trace.index;
 
     return {
-        key: basicKey,
+        key: key,
         traceId: d.key,
         pointNumber: l.pointNumber,
         link: l,
@@ -166,7 +167,7 @@ function nodeModel(d, n, i) {
     var basicKey = n.label;
     // var foundKey = uniqueKeys[basicKey];
     // uniqueKeys[basicKey] = (foundKey || 0) + 1;
-    // var key = basicKey + '__' + uniqueKeys[basicKey];
+    var key = basicKey + '__' + i;
 
     // for event data
     n.trace = d.trace;
@@ -180,8 +181,8 @@ function nodeModel(d, n, i) {
         x1: n.x1,
         y0: n.y0,
         y1: n.y1,
-        key: basicKey,
-        traceId: basicKey,
+        key: key,
+        traceId: d.key,
         node: n,
         nodePad: d.nodePad,
         nodeLineColor: d.nodeLineColor,
@@ -237,7 +238,7 @@ function sizeNode(rect) {
       .attr('height', function(d) {return d.y1 - d.y0;});
 }
 
-function salientEnough(d) {return (d.y0 - d.y1) > 1 || d.linkLineWidth > 0;}
+function salientEnough(d) {return (d.y0 - d.y1) > 1 || d.link.width > 0 || d.linkLineWidth > 0;}
 
 function sankeyTransform(d) {
     var offset = 'translate(' + d.translateX + ',' + d.translateY + ')';
@@ -260,38 +261,38 @@ function nodeTextColor(d) {return d.darkBackground && !d.horizontal ? 'rgb(255,2
 function nodeTextOffset(d) {return d.horizontal && d.left ? '100%' : '0%';}
 
 // // event handling
-//
-// function attachPointerEvents(selection, sankey, eventSet) {
-//     selection
-//         .on('.basic', null) // remove any preexisting handlers
-//         .on('mouseover.basic', function(d) {
-//             if(!d.interactionState.dragInProgress) {
-//                 eventSet.hover(this, d, sankey);
-//                 d.interactionState.hovered = [this, d];
-//             }
-//         })
-//         .on('mousemove.basic', function(d) {
-//             if(!d.interactionState.dragInProgress) {
-//                 eventSet.follow(this, d);
-//                 d.interactionState.hovered = [this, d];
-//             }
-//         })
-//         .on('mouseout.basic', function(d) {
-//             if(!d.interactionState.dragInProgress) {
-//                 eventSet.unhover(this, d, sankey);
-//                 d.interactionState.hovered = false;
-//             }
-//         })
-//         .on('click.basic', function(d) {
-//             if(d.interactionState.hovered) {
-//                 eventSet.unhover(this, d, sankey);
-//                 d.interactionState.hovered = false;
-//             }
-//             if(!d.interactionState.dragInProgress) {
-//                 eventSet.select(this, d, sankey);
-//             }
-//         });
-// }
+
+function attachPointerEvents(selection, sankey, eventSet) {
+    selection
+        .on('.basic', null) // remove any preexisting handlers
+        .on('mouseover.basic', function(d) {
+            if(!d.interactionState.dragInProgress) {
+                eventSet.hover(this, d, sankey);
+                d.interactionState.hovered = [this, d];
+            }
+        })
+        .on('mousemove.basic', function(d) {
+            if(!d.interactionState.dragInProgress) {
+                eventSet.follow(this, d);
+                d.interactionState.hovered = [this, d];
+            }
+        })
+        .on('mouseout.basic', function(d) {
+            if(!d.interactionState.dragInProgress) {
+                eventSet.unhover(this, d, sankey);
+                d.interactionState.hovered = false;
+            }
+        })
+        .on('click.basic', function(d) {
+            if(d.interactionState.hovered) {
+                eventSet.unhover(this, d, sankey);
+                d.interactionState.hovered = false;
+            }
+            if(!d.interactionState.dragInProgress) {
+                eventSet.select(this, d, sankey);
+            }
+        });
+}
 //
 // function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 //
@@ -433,22 +434,27 @@ module.exports = function(svg, calcData, layout, callbacks) {
               return d.sankey().links
                 .filter(function(l) {return l.value;})
                 .map(linkModel.bind(null, d));
-          }, keyFun)
+          }, keyFun);
+
     sankeyLink
           .enter().append('path')
-          .attr('d', linkPath());
-          // .call(attachPointerEvents, sankey, callbacks.linkEvents);
+          .classed(c.cn.sankeyLink, true)
+          .attr('d', linkPath())
+          .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
         .style('stroke', function(d) {
-            return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
+            // return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
+            return d.tinyColorHue;
         })
         .style('stroke-opacity', function(d) {
-            return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
+            // return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
+            return d.tinyColorAlpha;
         })
-        .style('stroke-width', function(d) {return salientEnough(d) ? d.linkLineWidth : 1;})
-        .style('fill', function(d) {return d.tinyColorHue;})
-        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+        .style('stroke-width', function(d) {return salientEnough(d) ? d.link.width : 1;});
+        // Uncomment the following if the link isn't a simple SVG path element
+        // .style('fill', function(d) {return d.tinyColorHue;})
+        // .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
     sankeyLink.transition()
        .ease(c.ease).duration(c.duration)
@@ -489,7 +495,7 @@ module.exports = function(svg, calcData, layout, callbacks) {
         .append('g')
         .classed(c.cn.sankeyNode, true)
         .call(updateNodePositions)
-        //.call(attachPointerEvents, sankey, callbacks.nodeEvents);
+        .call(attachPointerEvents, sankey, callbacks.nodeEvents);
 
     sankeyNode
         //.call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
