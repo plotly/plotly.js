@@ -983,6 +983,37 @@ describe('finance charts updates:', function() {
         .then(done);
     });
 
+    it('should work with typed array', function(done) {
+        var mockTA = {
+            open: new Float32Array(mock0.open),
+            high: new Float32Array(mock0.high),
+            low: new Float32Array(mock0.low),
+            close: new Float32Array(mock0.close)
+        };
+
+        var dataTA = [
+            Lib.extendDeep({}, mockTA, {type: 'ohlc'}),
+            Lib.extendDeep({}, mockTA, {type: 'candlestick'}),
+        ];
+
+        var data0 = [
+            Lib.extendDeep({}, mock0, {type: 'ohlc'}),
+            Lib.extendDeep({}, mock0, {type: 'candlestick'}),
+        ];
+
+        Plotly.plot(gd, dataTA)
+        .then(function() {
+            expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
+            expect(countBoxTraces()).toBe(1, '# of candlestick traces');
+        })
+        .then(function() { return Plotly.react(gd, data0); })
+        .then(function() {
+            expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
+            expect(countBoxTraces()).toBe(1, '# of candlestick traces');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('finance charts *special* handlers:', function() {
