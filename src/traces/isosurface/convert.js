@@ -57,7 +57,8 @@ proto.update = function(data) {
     var scene = this.scene,
         layout = scene.fullSceneLayout;
 
-    this.data = data;
+    this.data = (data.i && data.i.lenght) ? data :
+        generateIsosurfaceMesh(data);
 
     // Unpack position data
     function toDataCoords(axis, coord, scale, calendar) {
@@ -124,9 +125,9 @@ var SURFACE_NETS = 'NETS';
 var MARCHING_CUBES = 'CUBES';
 var MARCHING_TETRAHEDRA = 'TETRAHEDRA';
 
-function createIsosurfaceTrace(scene, data) {
+function generateIsosurfaceMesh(data) {
 
-    var gl = scene.glplot.gl;
+    // TODO: check this function is not called when the user update an attribute e.g. opacity
 
     data.i = [];
     data.j = [];
@@ -264,6 +265,13 @@ function createIsosurfaceTrace(scene, data) {
     data.x = allXs;
     data.y = allYs;
     data.z = allZs;
+
+    return data;
+}
+
+function createIsosurfaceTrace(scene, data) {
+
+    var gl = scene.glplot.gl;
 
     var mesh = createMesh({gl: gl});
 
