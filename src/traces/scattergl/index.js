@@ -27,7 +27,7 @@ var scatterCalc = require('../scatter/calc');
 var calcMarkerSize = scatterCalc.calcMarkerSize;
 var calcAxisExpansion = scatterCalc.calcAxisExpansion;
 var setFirstScatter = scatterCalc.setFirstScatter;
-var calcColorscales = require('../scatter/colorscale_calc');
+var calcColorscale = require('../scatter/colorscale_calc');
 var linkTraces = require('../scatter/link_traces');
 var getTraceColor = require('../scatter/get_trace_color');
 var fillHoverText = require('../scatter/fill_hover_text');
@@ -84,7 +84,7 @@ function calc(gd, trace) {
     }
 
     // create scene options and scene
-    calcColorscales(gd, trace);
+    calcColorscale(gd, trace);
     var opts = sceneOptions(gd, subplot, trace, positions, x, y);
     var scene = sceneUpdate(gd, subplot);
 
