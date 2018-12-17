@@ -9,15 +9,18 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
+var constants = require('./constants.js');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var textFontAttrs = fontAttrs({
     editType: 'calc',
     arrayOk: true,
+    colorEditType: 'style',
     description: ''
 });
 
@@ -59,6 +62,9 @@ module.exports = {
 
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
 
     textposition: {
         valType: 'enumerated',
@@ -72,9 +78,11 @@ module.exports = {
             '*inside* positions `text` inside, next to the bar end',
             '(rotated and scaled if needed).',
             '*outside* positions `text` outside, next to the bar end',
-            '(scaled if needed).',
-            '*auto* positions `text` inside or outside',
-            'so that `text` size is maximized.'
+            '(scaled if needed), unless there is another bar stacked on',
+            'this one, then the text gets pushed inside.',
+            '*auto* tries to position `text` inside the bar, but if',
+            'the bar is too small and no bar is stacked on this one',
+            'the text is moved outside.'
         ].join(' ')
     },
 

@@ -34,26 +34,39 @@ module.exports = {
         editType: 'calc'
     },
     title: {
-        valType: 'string',
-        role: 'info',
+        text: {
+            valType: 'string',
+            dflt: '',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Sets the title of this axis.',
+                'Note that before the existence of `title.text`, the title\'s',
+                'contents used to be defined as the `title` attribute itself.',
+                'This behavior has been deprecated.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'calc',
+            description: [
+                'Sets this axis\' title font.',
+                'Note that the title\'s font used to be set',
+                'by the now deprecated `titlefont` attribute.'
+            ].join(' ')
+        }),
+        offset: {
+            valType: 'number',
+            role: 'info',
+            dflt: 10,
+            editType: 'calc',
+            description: [
+                'An additional amount by which to offset the title from the tick',
+                'labels, given in pixels.',
+                'Note that this used to be set',
+                'by the now deprecated `titleoffset` attribute.'
+            ].join(' '),
+        },
         editType: 'calc',
-        description: 'Sets the title of this axis.'
-    },
-    titlefont: fontAttrs({
-        editType: 'calc',
-        description: [
-            'Sets this axis\' title font.'
-        ].join(' ')
-    }),
-    titleoffset: {
-        valType: 'number',
-        role: 'info',
-        dflt: 10,
-        editType: 'calc',
-        description: [
-            'An additional amount by which to offset the title from the tick',
-            'labels, given in pixels'
-        ].join(' '),
     },
     type: {
         valType: 'enumerated',
@@ -494,5 +507,30 @@ module.exports = {
         editType: 'calc',
         description: 'The stride between grid lines along the axis'
     },
+
+    _deprecated: {
+        title: {
+            valType: 'string',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Deprecated in favor of `title.text`.',
+                'Note that value of `title` is no longer a simple',
+                '*string* but a set of sub-attributes.'
+            ].join(' ')
+        },
+        titlefont: fontAttrs({
+            editType: 'calc',
+            description: 'Deprecated in favor of `title.font`.'
+        }),
+        titleoffset: {
+            valType: 'number',
+            role: 'info',
+            dflt: 10,
+            editType: 'calc',
+            description: 'Deprecated in favor of `title.offset`.'
+        }
+    },
+
     editType: 'calc'
 };

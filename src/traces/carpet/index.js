@@ -21,7 +21,7 @@ Carpet.isContainer = true; // so carpet traces get `calc` before other traces
 Carpet.moduleType = 'trace';
 Carpet.name = 'carpet';
 Carpet.basePlotModule = require('../../plots/cartesian');
-Carpet.categories = ['cartesian', 'svg', 'carpet', 'carpetAxis', 'notLegendIsolatable'];
+Carpet.categories = ['cartesian', 'svg', 'carpet', 'carpetAxis', 'notLegendIsolatable', 'noMultiCategory'];
 Carpet.meta = {
     description: [
         'The data describing carpet axis layout is set in `y` and (optionally)',

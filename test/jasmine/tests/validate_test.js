@@ -18,7 +18,9 @@ describe('Plotly.validate', function() {
             type: 'scatter',
             x: [1, 2, 3]
         }], {
-            title: 'my simple graph'
+            title: {
+                text: 'my simple graph'
+            }
         });
 
         expect(out).toBeUndefined();
@@ -371,7 +373,9 @@ describe('Plotly.validate', function() {
                 }]
             }),
         ], {
-            title: 'my transformed graph'
+            title: {
+                text: 'my transformed graph'
+            }
         });
 
         expect(out.length).toEqual(5);
@@ -567,5 +571,74 @@ describe('Plotly.validate', function() {
             out[1], 'unused', 'layout', null, ['polar3'], 'polar3',
             'In layout, container polar3 did not get coerced'
         );
+    });
+
+    it('understands histogram bin and autobin attributes', function() {
+        var out = Plotly.validate([{
+            type: 'histogram',
+            x: [1, 2, 3],
+            // allowed by Plotly.validate, even though we get rid of it
+            // in a real plot call
+            autobinx: true,
+            // valid attribute, but not coerced
+            autobiny: false
+        }]);
+        expect(out.length).toBe(1);
+        assertErrorContent(
+            out[0], 'unused', 'data', 0, ['autobiny'], 'autobiny',
+            'In data trace 0, key autobiny did not get coerced'
+        );
+
+        out = Plotly.validate([{
+            type: 'histogram',
+            x: [1, 2, 3],
+            xbins: {start: 1, end: 4, size: 0.5}
+        }]);
+        expect(out).toBeUndefined();
+
+        out = Plotly.validate([{
+            type: 'histogram',
+            x: [1, 2, 3],
+            xbins: {start: 0.8, end: 4, size: 0.5}
+        }, {
+            type: 'histogram',
+            x: [1, 2, 3],
+            // start and end still get coerced, even though start will get modified
+            // during calc. size will not be coerced because trace 0 already has it.
+            xbins: {start: 2, end: 3, size: 1}
+        }]);
+
+        expect(out.length).toBe(1);
+        assertErrorContent(
+            out[0], 'unused', 'data', 1, ['xbins', 'size'], 'xbins.size',
+            'In data trace 1, key xbins.size did not get coerced'
+        );
+    });
+
+    it('understands histogram2d(contour) bin and autobin attributes', function() {
+        var out = Plotly.validate([{
+            type: 'histogram2d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            autobinx: true,
+            autobiny: false,
+            xbins: {start: 5, end: 10},
+            ybins: {size: 2}
+        }, {
+            type: 'histogram2d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            xbins: {start: 0, end: 7, size: 1},
+            ybins: {size: 3}
+        }, {
+            type: 'histogram2dcontour',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            autobinx: false,
+            autobiny: false,
+            xbins: {start: 1, end: 5, size: 2},
+            ybins: {size: 4}
+        }]);
+        expect(out).toBeUndefined();
     });
 });

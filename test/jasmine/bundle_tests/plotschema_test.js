@@ -153,7 +153,7 @@ describe('plot schema', function() {
         // check that no other object has '_isSubplotObj'
         assertPlotSchema(
             function(attr, attrName) {
-                if(attr[IS_SUBPLOT_OBJ] === true) {
+                if(attr && attr[IS_SUBPLOT_OBJ] === true) {
                     expect(astrs.indexOf(attrName)).not.toEqual(-1);
                     cnt++;
                 }
@@ -228,7 +228,7 @@ describe('plot schema', function() {
 
         assertPlotSchema(
             function(attr, attrName, attrs, level, attrString) {
-                if(isPlainObject(attr[DEPRECATED])) {
+                if(attr && isPlainObject(attr[DEPRECATED]) && isValObject(attr[DEPRECATED])) {
                     Object.keys(attr[DEPRECATED]).forEach(function(dAttrName) {
                         var dAttr = attr[DEPRECATED][dAttrName];
 
@@ -244,7 +244,7 @@ describe('plot schema', function() {
 
     it('has valid or no `impliedEdits` in every attribute', function() {
         assertPlotSchema(function(attr, attrName, attrs, level, attrString) {
-            if(attr.impliedEdits !== undefined) {
+            if(attr && attr.impliedEdits !== undefined) {
                 expect(isPlainObject(attr.impliedEdits))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.impliedEdits));
                 // make sure it wasn't emptied out
@@ -362,6 +362,11 @@ describe('plot schema', function() {
         expect(typeof splomAttrs.yaxes.items.regex).toBe('string');
         expect(splomAttrs.yaxes.items.regex).toBe('/^y([2-9]|[1-9][0-9]+)?$/');
     });
+
+    it('should prune unsupported global-level trace attributes', function() {
+        expect(Plotly.PlotSchema.get().traces.sankey.attributes.hoverinfo.flags.length).toBe(0);
+    });
+
 });
 
 describe('getTraceValObject', function() {

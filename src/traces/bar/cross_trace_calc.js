@@ -126,9 +126,14 @@ function initBase(gd, pa, sa, calcTraces) {
         // time. But included here for completeness.
         var scalendar = trace.orientation === 'h' ? trace.xcalendar : trace.ycalendar;
 
+        // 'base' on categorical axes makes no sense
+        var d2c = sa.type === 'category' || sa.type === 'multicategory' ?
+            function() { return null; } :
+            sa.d2c;
+
         if(isArrayOrTypedArray(base)) {
             for(j = 0; j < Math.min(base.length, cd.length); j++) {
-                b = sa.d2c(base[j], 0, scalendar);
+                b = d2c(base[j], 0, scalendar);
                 if(isNumeric(b)) {
                     cd[j].b = +b;
                     cd[j].hasB = 1;
@@ -139,7 +144,7 @@ function initBase(gd, pa, sa, calcTraces) {
                 cd[j].b = 0;
             }
         } else {
-            b = sa.d2c(base, 0, scalendar);
+            b = d2c(base, 0, scalendar);
             var hasBase = isNumeric(b);
             b = hasBase ? b : 0;
             for(j = 0; j < cd.length; j++) {
@@ -356,7 +361,7 @@ function applyAttributes(sieve) {
 
         if(isArrayOrTypedArray(offset)) {
             // if offset is an array, then clone it into t.poffset.
-            newPoffset = offset.slice(0, calcTrace.length);
+            newPoffset = Array.prototype.slice.call(offset, 0, calcTrace.length);
 
             // guard against non-numeric items
             for(j = 0; j < newPoffset.length; j++) {
@@ -377,12 +382,12 @@ function applyAttributes(sieve) {
             t.poffset = offset;
         }
 
-        var width = fullTrace._width || fullTrace.width,
-            initialBarwidth = t.barwidth;
+        var width = fullTrace._width || fullTrace.width;
+        var initialBarwidth = t.barwidth;
 
         if(isArrayOrTypedArray(width)) {
             // if width is an array, then clone it into t.barwidth.
-            var newBarwidth = width.slice(0, calcTrace.length);
+            var newBarwidth = Array.prototype.slice.call(width, 0, calcTrace.length);
 
             // guard against non-numeric items
             for(j = 0; j < newBarwidth.length; j++) {

@@ -11,11 +11,14 @@
 
 var Lib = require('../../lib');
 
-var scales = require('./scales');
 var flipScale = require('./flip_scale');
 
 
-module.exports = function calc(trace, vals, containerStr, cLetter) {
+module.exports = function calc(gd, trace, opts) {
+    var fullLayout = gd._fullLayout;
+    var vals = opts.vals;
+    var containerStr = opts.containerStr;
+    var cLetter = opts.cLetter;
     var container = trace;
     var inputContainer = trace._input;
     var fullInputContainer = trace._fullInput;
@@ -84,9 +87,9 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     doUpdate(autoAttr, (auto !== false || (min === undefined && max === undefined)));
 
     if(container.autocolorscale) {
-        if(min * max < 0) scl = scales.RdBu;
-        else if(min >= 0) scl = scales.Reds;
-        else scl = scales.Blues;
+        if(min * max < 0) scl = fullLayout.colorscale.diverging;
+        else if(min >= 0) scl = fullLayout.colorscale.sequential;
+        else scl = gd._fullLayout.colorscale.sequentialminus;
 
         // reversescale is handled at the containerOut level
         doUpdate('colorscale', scl, container.reversescale ? flipScale(scl) : scl);

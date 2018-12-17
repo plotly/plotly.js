@@ -1,6 +1,7 @@
 var Annotations = require('@src/components/annotations');
 
 var Plotly = require('@lib/index');
+var Queue = require('@src/lib/queue');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Loggers = require('@src/lib/loggers');
@@ -191,11 +192,20 @@ describe('annotations relayout', function() {
         Plotly.plot(gd, mockData, mockLayout).then(done);
 
         spyOn(Loggers, 'warn');
+
+        Plotly.setPlotConfig({queueLength: 3});
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        destroyGraphDiv();
+        Plotly.setPlotConfig({queueLength: 0});
+    });
 
     function countAnnotations() {
+        // also check that no annotations are empty objects
+        (gd.layout.annotations || []).forEach(function(ann, i) {
+            expect(JSON.stringify(ann)).not.toBe(JSON.stringify({}), i);
+        });
         return d3.selectAll('g.annotation').size();
     }
 
@@ -220,10 +230,30 @@ describe('annotations relayout', function() {
         .then(function() {
             expect(countAnnotations()).toEqual(len);
 
+            return Queue.undo(gd);
+        })
+        .then(function() {
+            expect(countAnnotations()).toBe(len + 1);
+
+            return Queue.redo(gd);
+        })
+        .then(function() {
+            expect(countAnnotations()).toBe(len);
+
             return Plotly.relayout(gd, 'annotations[0]', null);
         })
         .then(function() {
             expect(countAnnotations()).toEqual(len - 1);
+
+            return Queue.undo(gd);
+        })
+        .then(function() {
+            expect(countAnnotations()).toBe(len);
+
+            return Queue.redo(gd);
+        })
+        .then(function() {
+            expect(countAnnotations()).toBe(len - 1);
 
             return Plotly.relayout(gd, 'annotations[0].visible', false);
         })

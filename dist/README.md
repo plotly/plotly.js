@@ -33,12 +33,25 @@ or the un-minified version as:
 
 You can grab the relevant MathJax files in `./dist/extras/mathjax/`.
 
+By default, plotly.js will modify the global MathJax configuration on load.
+This can lead to undesirable behavior if plotly.js is loaded alongside
+other libraries that also rely on MathJax. To disable this global configuration
+process, set the `MathJaxConfig` property to `'local'` in the `window.PlotlyConfig`
+object.  This property must be set before the plotly.js script tag, for example:
+
+```html
+<script>
+   window.PlotlyConfig = {MathJaxConfig: 'local'}
+</script>
+<script src="plotly.min.js"></script>
+```
+
 ### To include localization
 
 Plotly.js defaults to US English (en-US) and includes British English (en) in the standard bundle.
 Many other localizations are available - here is an example using Swiss-German (de-CH),
 see the contents of this directory for the full list.
-They are also available on our CDN as https://cdn.plot.ly/plotly-locale-de-ch-latest.js OR https://cdn.plot.ly/plotly-locale-de-ch-1.41.3.js
+They are also available on our CDN as https://cdn.plot.ly/plotly-locale-de-ch-latest.js OR https://cdn.plot.ly/plotly-locale-de-ch-1.42.5.js
 Note that the file names are all lowercase, even though the region is uppercase when you apply a locale.
 
 *After* the plotly.js script tag, add:
@@ -61,12 +74,12 @@ The main plotly.js bundle includes all the official (non-beta) trace modules.
 
 It be can imported as minified javascript
 - using dist file `dist/plotly.min.js`
-- using CDN URL https://cdn.plot.ly/plotly-latest.min.js OR https://cdn.plot.ly/plotly-1.41.3.min.js
+- using CDN URL https://cdn.plot.ly/plotly-latest.min.js OR https://cdn.plot.ly/plotly-1.42.5.min.js
 
 or as raw javascript:
 - using the `plotly.js-dist` npm package (starting in `v1.39.0`)
 - using dist file `dist/plotly.js`
-- using CDN URL https://cdn.plot.ly/plotly-latest.js OR https://cdn.plot.ly/plotly-1.41.3.js
+- using CDN URL https://cdn.plot.ly/plotly-latest.js OR https://cdn.plot.ly/plotly-1.42.5.js
 - using CommonJS with `require('plotly.js')`
 
 If you would like to have access to the attribute meta information (including attribute descriptions as on the [schema reference page](https://plot.ly/javascript/reference/)), use dist file `dist/plotly-with-meta.js`
@@ -75,7 +88,7 @@ The main plotly.js bundle weights in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
-| 5.8 MB | 2.7 MB | 819.8 kB | 6 MB |
+| 5.9 MB | 2.7 MB | 832.5 kB | 6.2 MB |
 
 ## Partial bundles
 
@@ -98,7 +111,7 @@ The `basic` partial bundle contains trace modules `scatter`, `bar` and `pie`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.2 MB | 775.4 kB | 254.1 kB |
+| 2.2 MB | 786.4 kB | 257.2 kB |
 
 #### CDN links
 
@@ -106,8 +119,8 @@ The `basic` partial bundle contains trace modules `scatter`, `bar` and `pie`.
 | ------ | --- |
 | Latest | https://cdn.plot.ly/plotly-basic-latest.js |
 | Latest minified | https://cdn.plot.ly/plotly-basic-latest.min.js |
-| Tagged | https://cdn.plot.ly/plotly-basic-1.41.3.js |
-| Tagged minified | https://cdn.plot.ly/plotly-basic-1.41.3.min.js |
+| Tagged | https://cdn.plot.ly/plotly-basic-1.42.5.js |
+| Tagged minified | https://cdn.plot.ly/plotly-basic-1.42.5.min.js |
 
 #### npm package (starting in `v1.39.0`)
 
@@ -144,7 +157,7 @@ The `cartesian` partial bundle contains trace modules `scatter`, `bar`, `box`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.5 MB | 885.7 kB | 288.7 kB |
+| 2.5 MB | 898.9 kB | 292.6 kB |
 
 #### CDN links
 
@@ -152,8 +165,8 @@ The `cartesian` partial bundle contains trace modules `scatter`, `bar`, `box`, `
 | ------ | --- |
 | Latest | https://cdn.plot.ly/plotly-cartesian-latest.js |
 | Latest minified | https://cdn.plot.ly/plotly-cartesian-latest.min.js |
-| Tagged | https://cdn.plot.ly/plotly-cartesian-1.41.3.js |
-| Tagged minified | https://cdn.plot.ly/plotly-cartesian-1.41.3.min.js |
+| Tagged | https://cdn.plot.ly/plotly-cartesian-1.42.5.js |
+| Tagged minified | https://cdn.plot.ly/plotly-cartesian-1.42.5.min.js |
 
 #### npm package (starting in `v1.39.0`)
 
@@ -190,7 +203,7 @@ The `geo` partial bundle contains trace modules `scatter`, `scattergeo` and `cho
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.2 MB | 798.5 kB | 263.2 kB |
+| 2.2 MB | 805.3 kB | 265.3 kB |
 
 #### CDN links
 
@@ -198,8 +211,8 @@ The `geo` partial bundle contains trace modules `scatter`, `scattergeo` and `cho
 | ------ | --- |
 | Latest | https://cdn.plot.ly/plotly-geo-latest.js |
 | Latest minified | https://cdn.plot.ly/plotly-geo-latest.min.js |
-| Tagged | https://cdn.plot.ly/plotly-geo-1.41.3.js |
-| Tagged minified | https://cdn.plot.ly/plotly-geo-1.41.3.min.js |
+| Tagged | https://cdn.plot.ly/plotly-geo-1.42.5.js |
+| Tagged minified | https://cdn.plot.ly/plotly-geo-1.42.5.min.js |
 
 #### npm package (starting in `v1.39.0`)
 
@@ -236,7 +249,7 @@ The `gl3d` partial bundle contains trace modules `scatter`, `scatter3d`, `surfac
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.2 MB | 1.3 MB | 411.4 kB |
+| 3.3 MB | 1.3 MB | 414 kB |
 
 #### CDN links
 
@@ -244,8 +257,8 @@ The `gl3d` partial bundle contains trace modules `scatter`, `scatter3d`, `surfac
 | ------ | --- |
 | Latest | https://cdn.plot.ly/plotly-gl3d-latest.js |
 | Latest minified | https://cdn.plot.ly/plotly-gl3d-latest.min.js |
-| Tagged | https://cdn.plot.ly/plotly-gl3d-1.41.3.js |
-| Tagged minified | https://cdn.plot.ly/plotly-gl3d-1.41.3.min.js |
+| Tagged | https://cdn.plot.ly/plotly-gl3d-1.42.5.js |
+| Tagged minified | https://cdn.plot.ly/plotly-gl3d-1.42.5.min.js |
 
 #### npm package (starting in `v1.39.0`)
 
@@ -282,7 +295,7 @@ The `gl2d` partial bundle contains trace modules `scatter`, `scattergl`, `splom`
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.3 MB | 1.3 MB | 431.3 kB |
+| 3.3 MB | 1.3 MB | 433.7 kB |
 
 #### CDN links
 
@@ -290,8 +303,8 @@ The `gl2d` partial bundle contains trace modules `scatter`, `scattergl`, `splom`
 | ------ | --- |
 | Latest | https://cdn.plot.ly/plotly-gl2d-latest.js |
 | Latest minified | https://cdn.plot.ly/plotly-gl2d-latest.min.js |
-| Tagged | https://cdn.plot.ly/plotly-gl2d-1.41.3.js |
-| Tagged minified | https://cdn.plot.ly/plotly-gl2d-1.41.3.min.js |
+| Tagged | https://cdn.plot.ly/plotly-gl2d-1.42.5.js |
+| Tagged minified | https://cdn.plot.ly/plotly-gl2d-1.42.5.min.js |
 
 #### npm package (starting in `v1.39.0`)
 
@@ -328,7 +341,7 @@ The `mapbox` partial bundle contains trace modules `scatter` and `scattermapbox`
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.7 MB | 1.3 MB | 400.9 kB |
+| 2.7 MB | 1.3 MB | 403.1 kB |
 
 #### CDN links
 
@@ -336,8 +349,8 @@ The `mapbox` partial bundle contains trace modules `scatter` and `scattermapbox`
 | ------ | --- |
 | Latest | https://cdn.plot.ly/plotly-mapbox-latest.js |
 | Latest minified | https://cdn.plot.ly/plotly-mapbox-latest.min.js |
-| Tagged | https://cdn.plot.ly/plotly-mapbox-1.41.3.js |
-| Tagged minified | https://cdn.plot.ly/plotly-mapbox-1.41.3.min.js |
+| Tagged | https://cdn.plot.ly/plotly-mapbox-1.42.5.js |
+| Tagged minified | https://cdn.plot.ly/plotly-mapbox-1.42.5.min.js |
 
 #### npm package (starting in `v1.39.0`)
 
@@ -374,7 +387,7 @@ The `finance` partial bundle contains trace modules `scatter`, `bar`, `histogram
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.3 MB | 805.5 kB | 263 kB |
+| 2.3 MB | 818.1 kB | 266.9 kB |
 
 #### CDN links
 
@@ -382,8 +395,8 @@ The `finance` partial bundle contains trace modules `scatter`, `bar`, `histogram
 | ------ | --- |
 | Latest | https://cdn.plot.ly/plotly-finance-latest.js |
 | Latest minified | https://cdn.plot.ly/plotly-finance-latest.min.js |
-| Tagged | https://cdn.plot.ly/plotly-finance-1.41.3.js |
-| Tagged minified | https://cdn.plot.ly/plotly-finance-1.41.3.min.js |
+| Tagged | https://cdn.plot.ly/plotly-finance-1.42.5.js |
+| Tagged minified | https://cdn.plot.ly/plotly-finance-1.42.5.min.js |
 
 #### npm package (starting in `v1.39.0`)
 

@@ -28,15 +28,7 @@ var attrs = module.exports = overrideAll({
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
 
-    text: extendFlat({}, scatterAttrs.text, {
-        description: [
-            'Sets text elements associated with each (x,y) pair to appear on hover.',
-            'If a single string, the same string appears over',
-            'all the data points.',
-            'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.'
-        ].join(' ')
-    }),
+    text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
 
     textposition: scatterAttrs.textposition,
@@ -54,6 +46,17 @@ var attrs = module.exports = overrideAll({
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
+        shape: {
+            valType: 'enumerated',
+            values: ['linear', 'hv', 'vh', 'hvh', 'vhv'],
+            dflt: 'linear',
+            role: 'style',
+            editType: 'plot',
+            description: [
+                'Determines the line shape.',
+                'The values correspond to step-wise line shapes.'
+            ].join(' ')
+        },
         dash: {
             valType: 'enumerated',
             values: Object.keys(DASHES),
@@ -94,3 +97,4 @@ var attrs = module.exports = overrideAll({
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
+attrs.hovertemplate = scatterAttrs.hovertemplate;

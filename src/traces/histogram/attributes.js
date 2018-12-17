@@ -9,6 +9,9 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var makeBinAttrs = require('./bin_attributes');
+var constants = require('./constants');
 
 module.exports = {
     x: {
@@ -125,24 +128,6 @@ module.exports = {
         },
         editType: 'calc'
     },
-
-    autobinx: {
-        valType: 'boolean',
-        dflt: null,
-        role: 'style',
-        editType: 'calc',
-        impliedEdits: {
-            'xbins.start': undefined,
-            'xbins.end': undefined,
-            'xbins.size': undefined
-        },
-        description: [
-            'Determines whether or not the x axis bin attributes are picked',
-            'by an algorithm. Note that this should be set to false if you',
-            'want to manually set the number of bins using the attributes in',
-            'xbins.'
-        ].join(' ')
-    },
     nbinsx: {
         valType: 'integer',
         min: 0,
@@ -152,28 +137,12 @@ module.exports = {
         description: [
             'Specifies the maximum number of desired bins. This value will be used',
             'in an algorithm that will decide the optimal bin size such that the',
-            'histogram best visualizes the distribution of the data.'
+            'histogram best visualizes the distribution of the data.',
+            'Ignored if `xbins.size` is provided.'
         ].join(' ')
     },
-    xbins: makeBinsAttr('x'),
+    xbins: makeBinAttrs('x', true),
 
-    autobiny: {
-        valType: 'boolean',
-        dflt: null,
-        role: 'style',
-        editType: 'calc',
-        impliedEdits: {
-            'ybins.start': undefined,
-            'ybins.end': undefined,
-            'ybins.size': undefined
-        },
-        description: [
-            'Determines whether or not the y axis bin attributes are picked',
-            'by an algorithm. Note that this should be set to false if you',
-            'want to manually set the number of bins using the attributes in',
-            'ybins.'
-        ].join(' ')
-    },
     nbinsy: {
         valType: 'integer',
         min: 0,
@@ -183,10 +152,39 @@ module.exports = {
         description: [
             'Specifies the maximum number of desired bins. This value will be used',
             'in an algorithm that will decide the optimal bin size such that the',
-            'histogram best visualizes the distribution of the data.'
+            'histogram best visualizes the distribution of the data.',
+            'Ignored if `ybins.size` is provided.'
         ].join(' ')
     },
-    ybins: makeBinsAttr('y'),
+    ybins: makeBinAttrs('y', true),
+    autobinx: {
+        valType: 'boolean',
+        dflt: null,
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Obsolete: since v1.42 each bin attribute is auto-determined',
+            'separately and `autobinx` is not needed. However, we accept',
+            '`autobinx: true` or `false` and will update `xbins` accordingly',
+            'before deleting `autobinx` from the trace.'
+        ].join(' ')
+    },
+    autobiny: {
+        valType: 'boolean',
+        dflt: null,
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Obsolete: since v1.42 each bin attribute is auto-determined',
+            'separately and `autobiny` is not needed. However, we accept',
+            '`autobiny: true` or `false` and will update `ybins` accordingly',
+            'before deleting `autobiny` from the trace.'
+        ].join(' ')
+    },
+
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
 
     marker: barAttrs.marker,
 
@@ -197,48 +195,3 @@ module.exports = {
         bardir: barAttrs._deprecated.bardir
     }
 };
-
-function makeBinsAttr(axLetter) {
-    var impliedEdits = {};
-    impliedEdits['autobin' + axLetter] = false;
-    var impliedEditsInner = {};
-    impliedEditsInner['^autobin' + axLetter] = false;
-
-    return {
-        start: {
-            valType: 'any', // for date axes
-            dflt: null,
-            role: 'style',
-            editType: 'calc',
-            impliedEdits: impliedEditsInner,
-            description: [
-                'Sets the starting value for the', axLetter,
-                'axis bins.'
-            ].join(' ')
-        },
-        end: {
-            valType: 'any', // for date axes
-            dflt: null,
-            role: 'style',
-            editType: 'calc',
-            impliedEdits: impliedEditsInner,
-            description: [
-                'Sets the end value for the', axLetter,
-                'axis bins.'
-            ].join(' ')
-        },
-        size: {
-            valType: 'any', // for date axes
-            dflt: null,
-            role: 'style',
-            editType: 'calc',
-            impliedEdits: impliedEditsInner,
-            description: [
-                'Sets the step in-between value each', axLetter,
-                'axis bin.'
-            ].join(' ')
-        },
-        editType: 'calc',
-        impliedEdits: impliedEdits
-    };
-}

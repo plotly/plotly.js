@@ -37,11 +37,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     coerce('hovertext');
+    coerce('hovertemplate');
     coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        coerce('line.shape');
     }
 
     if(subTypes.hasMarkers(traceOut)) {

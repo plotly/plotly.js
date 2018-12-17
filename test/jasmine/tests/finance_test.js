@@ -983,6 +983,37 @@ describe('finance charts updates:', function() {
         .then(done);
     });
 
+    it('should work with typed array', function(done) {
+        var mockTA = {
+            open: new Float32Array(mock0.open),
+            high: new Float32Array(mock0.high),
+            low: new Float32Array(mock0.low),
+            close: new Float32Array(mock0.close)
+        };
+
+        var dataTA = [
+            Lib.extendDeep({}, mockTA, {type: 'ohlc'}),
+            Lib.extendDeep({}, mockTA, {type: 'candlestick'}),
+        ];
+
+        var data0 = [
+            Lib.extendDeep({}, mock0, {type: 'ohlc'}),
+            Lib.extendDeep({}, mock0, {type: 'candlestick'}),
+        ];
+
+        Plotly.plot(gd, dataTA)
+        .then(function() {
+            expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
+            expect(countBoxTraces()).toBe(1, '# of candlestick traces');
+        })
+        .then(function() { return Plotly.react(gd, data0); })
+        .then(function() {
+            expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
+            expect(countBoxTraces()).toBe(1, '# of candlestick traces');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('finance charts *special* handlers:', function() {
@@ -1046,5 +1077,112 @@ describe('finance charts *special* handlers:', function() {
         .catch(failTest)
         .then(done);
     });
+});
 
+describe('finance trace hover:', function() {
+    var gd;
+
+    afterEach(destroyGraphDiv);
+
+    function run(specs) {
+        gd = createGraphDiv();
+
+        var data = specs.traces.map(function(t) {
+            return Lib.extendFlat({
+                type: specs.type,
+                open: [1, 2],
+                close: [2, 3],
+                high: [3, 4],
+                low: [0, 5]
+            }, t);
+        });
+
+        var layout = Lib.extendFlat({
+            showlegend: false,
+            width: 400,
+            height: 400,
+            margin: {t: 0, b: 0, l: 0, r: 0, pad: 0}
+        }, specs.layout || {});
+
+        var xval = 'xval' in specs ? specs.xvals : 0;
+        var yval = 'yval' in specs ? specs.yvals : 1;
+        var hovermode = layout.hovermode || 'x';
+
+        return Plotly.plot(gd, data, layout).then(function() {
+            var results = gd.calcdata.map(function(cd) {
+                var trace = cd[0].trace;
+                var pointData = {
+                    index: false,
+                    distance: 20,
+                    cd: cd,
+                    trace: trace,
+                    xa: gd._fullLayout.xaxis,
+                    ya: gd._fullLayout.yaxis,
+                    maxHoverDistance: 20
+                };
+                var pts = trace._module.hoverPoints(pointData, xval, yval, hovermode);
+                return pts ? pts[0] : {distance: Infinity};
+            });
+
+            var actual = results[0];
+            var exp = specs.exp;
+
+
+            for(var k in exp) {
+                var msg = '- key ' + k;
+                expect(actual[k]).toBe(exp[k], msg);
+            }
+        });
+    }
+
+    ['ohlc', 'candlestick'].forEach(function(type) {
+        [{
+            type: type,
+            desc: 'basic',
+            traces: [{}],
+            exp: {
+                extraText: 'open: 1<br>high: 3<br>low: 0<br>close: 2  ▲'
+            }
+        }, {
+            type: type,
+            desc: 'with scalar text',
+            traces: [{text: 'SCALAR'}],
+            exp: {
+                extraText: 'open: 1<br>high: 3<br>low: 0<br>close: 2  ▲<br>SCALAR'
+            }
+        }, {
+            type: type,
+            desc: 'with array text',
+            traces: [{text: ['A', 'B']}],
+            exp: {
+                extraText: 'open: 1<br>high: 3<br>low: 0<br>close: 2  ▲<br>A'
+            }
+        }, {
+            type: type,
+            desc: 'just scalar text',
+            traces: [{hoverinfo: 'text', text: 'SCALAR'}],
+            exp: {
+                extraText: 'SCALAR'
+            }
+        }, {
+            type: type,
+            desc: 'just array text',
+            traces: [{hoverinfo: 'text', text: ['A', 'B']}],
+            exp: {
+                extraText: 'A'
+            }
+        }, {
+            type: type,
+            desc: 'just array text with array hoverinfo',
+            traces: [{hoverinfo: ['text', 'text'], text: ['A', 'B']}],
+            exp: {
+                extraText: 'A'
+            }
+        }]
+        .forEach(function(specs) {
+            it('should generate correct hover labels ' + type + ' - ' + specs.desc, function(done) {
+                run(specs).catch(failTest).then(done);
+            });
+        });
+    });
 });

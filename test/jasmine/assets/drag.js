@@ -7,7 +7,7 @@ var getNodeCoords = require('./get_node_coords');
  * optionally specify an edge ('n', 'se', 'w' etc)
  * to grab it by an edge or corner (otherwise the middle is used)
  */
-function drag(node, dx, dy, edge, x0, y0, nsteps) {
+function drag(node, dx, dy, edge, x0, y0, nsteps, noCover) {
     nsteps = nsteps || 1;
 
     var coords = getNodeCoords(node, edge);
@@ -17,7 +17,8 @@ function drag(node, dx, dy, edge, x0, y0, nsteps) {
     mouseEvent('mousemove', fromX, fromY, {element: node});
     mouseEvent('mousedown', fromX, fromY, {element: node});
 
-    var promise = waitForDragCover().then(function(dragCoverNode) {
+    var promise = (noCover ? Promise.resolve(node) : waitForDragCover())
+    .then(function(dragCoverNode) {
         var toX;
         var toY;
 
@@ -28,7 +29,7 @@ function drag(node, dx, dy, edge, x0, y0, nsteps) {
         }
 
         mouseEvent('mouseup', toX, toY, {element: dragCoverNode});
-        return waitForDragCoverRemoval();
+        return noCover || waitForDragCoverRemoval();
     });
 
     return promise;

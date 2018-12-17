@@ -10,6 +10,8 @@
 
 var Lib = require('../../lib');
 var Color = require('../../components/color');
+var Template = require('../../plot_api/plot_template');
+
 var handleSubplotDefaults = require('../subplot_defaults');
 var getSubplotData = require('../get_data').getSubplotData;
 
@@ -49,12 +51,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         }
 
         var axIn = contIn[axName];
-        // Note: does not need template propagation, since coerceAxis is still
-        // based on the subplot-wide coerce function. Though it may be more
-        // efficient to make a new coerce function, then we *would* need to
-        // propagate the template.
-        var axOut = contOut[axName] = {};
+        var axOut = Template.newContainer(contOut, axName);
         axOut._id = axOut._name = axName;
+        axOut._attr = opts.id + '.' + axName;
         axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
         var dataAttr = constants.axisName2dataArray[axName];
@@ -67,6 +66,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         var visible = coerceAxis('visible');
         setConvert(axOut, contOut, layoutOut);
+
+        coerceAxis('uirevision', contOut.uirevision);
 
         var dfltColor;
         var dfltFontColor;
@@ -102,8 +103,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     coerceAxis('side');
                     coerceAxis('angle', sector[0]);
 
-                    coerceAxis('title');
-                    Lib.coerceFont(coerceAxis, 'titlefont', {
+                    coerceAxis('title.text');
+                    Lib.coerceFont(coerceAxis, 'title.font', {
                         family: opts.font.family,
                         size: Math.round(opts.font.size * 1.2),
                         color: dfltFontColor

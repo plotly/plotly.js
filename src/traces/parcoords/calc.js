@@ -19,7 +19,11 @@ module.exports = function calc(gd, trace) {
     var cscale = cs ? trace.line.colorscale : [[0, trace.line.color], [1, trace.line.color]];
 
     if(hasColorscale(trace, 'line')) {
-        calcColorscale(trace, color, 'line', 'c');
+        calcColorscale(gd, trace, {
+            vals: color,
+            containerStr: 'line',
+            cLetter: 'c'
+        });
     }
 
     return wrap({

@@ -37,6 +37,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     coerce('hovertext');
+    coerce('hovertemplate');
 
     var textPosition = coerce('textposition');
 
@@ -46,8 +47,21 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(hasInside || hasOutside) {
         var textFont = coerceFont(coerce, 'textfont', layout.font);
-        if(hasInside) coerceFont(coerce, 'insidetextfont', textFont);
+
+        // Note that coercing `insidetextfont` is always needed –
+        // even if `textposition` is `outside` for each trace – since
+        // an outside label can become an inside one, for example because
+        // of a bar being stacked on top of it.
+        var insideTextFontDefault = Lib.extendFlat({}, textFont);
+        var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
+        var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
+        if(isColorInheritedFromLayoutFont) {
+            delete insideTextFontDefault.color;
+        }
+        coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
+
         if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
+
         coerce('constraintext');
         coerce('selected.textfont.color');
         coerce('unselected.textfont.color');

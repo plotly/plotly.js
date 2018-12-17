@@ -11,13 +11,15 @@
 var colorAttrs = require('../../components/color/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var plotAttrs = require('../../plots/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var textFontAttrs = fontAttrs({
     editType: 'calc',
-    colorEditType: 'style',
+    arrayOk: true,
+    colorEditType: 'plot',
     description: 'Sets the font used for `textinfo`.'
 });
 
@@ -106,7 +108,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets text elements associated with each sector.',
-            'If trace `textinfo` contains a *text* flag, these elements will seen',
+            'If trace `textinfo` contains a *text* flag, these elements will be seen',
             'on the chart.',
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
@@ -158,6 +160,9 @@ module.exports = {
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: ['label', 'color', 'value', 'percent', 'text']
+    }),
     textposition: {
         valType: 'enumerated',
         role: 'info',
@@ -169,7 +174,6 @@ module.exports = {
             'Specifies the location of the `textinfo`.'
         ].join(' ')
     },
-    // TODO make those arrayOk?
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
@@ -181,31 +185,44 @@ module.exports = {
     }),
 
     title: {
-        valType: 'string',
-        dflt: '',
-        role: 'info',
-        editType: 'calc',
-        description: [
-            'Sets the title of the pie chart.',
-            'If it is empty, no title is displayed.'
-        ].join(' ')
+        text: {
+            valType: 'string',
+            dflt: '',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Sets the title of the pie chart.',
+                'If it is empty, no title is displayed.',
+                'Note that before the existence of `title.text`, the title\'s',
+                'contents used to be defined as the `title` attribute itself.',
+                'This behavior has been deprecated.'
+            ].join(' ')
+        },
+        font: extendFlat({}, textFontAttrs, {
+            description: [
+                'Sets the font used for `title`.',
+                'Note that the title\'s font used to be set',
+                'by the now deprecated `titlefont` attribute.'
+            ].join(' ')
+        }),
+        position: {
+            valType: 'enumerated',
+            values: [
+                'top left', 'top center', 'top right',
+                'middle center',
+                'bottom left', 'bottom center', 'bottom right'
+            ],
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Specifies the location of the `title`.',
+                'Note that the title\'s position used to be set',
+                'by the now deprecated `titleposition` attribute.'
+            ].join(' ')
+        },
+
+        editType: 'calc'
     },
-    titleposition: {
-        valType: 'enumerated',
-        values: [
-            'top left', 'top center', 'top right',
-            'middle center',
-            'bottom left', 'bottom center', 'bottom right'
-        ],
-        role: 'info',
-        editType: 'calc',
-        description: [
-            'Specifies the location of the `title`.',
-        ].join(' ')
-    },
-    titlefont: extendFlat({}, textFontAttrs, {
-        description: 'Sets the font used for `title`.'
-    }),
 
     // position and shape
     domain: domainAttrs({name: 'pie', trace: true, editType: 'calc'}),
@@ -279,5 +296,33 @@ module.exports = {
             'to pull all slices apart from each other equally',
             'or an array to highlight one or more slices.'
         ].join(' ')
+    },
+
+    _deprecated: {
+        title: {
+            valType: 'string',
+            dflt: '',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Deprecated in favor of `title.text`.',
+                'Note that value of `title` is no longer a simple',
+                '*string* but a set of sub-attributes.'
+            ].join(' ')
+        },
+        titlefont: extendFlat({}, textFontAttrs, {
+            description: 'Deprecated in favor of `title.font`.'
+        }),
+        titleposition: {
+            valType: 'enumerated',
+            values: [
+                'top left', 'top center', 'top right',
+                'middle center',
+                'bottom left', 'bottom center', 'bottom right'
+            ],
+            role: 'info',
+            editType: 'calc',
+            description: 'Deprecated in favor of `title.position`.'
+        }
     }
 };

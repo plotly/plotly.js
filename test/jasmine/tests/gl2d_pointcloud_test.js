@@ -1,11 +1,17 @@
 'use strict';
 
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
+var d3 = require('d3');
 
 // Test utilities
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var delay = require('../assets/delay');
+var readPixel = require('../assets/read_pixel');
+
+var multipleScatter2dMock = require('@mocks/gl2d_scatter2d-multiple-colors.json');
 
 var plotData = {
     'data': [
@@ -182,6 +188,24 @@ describe('pointcloud traces', function() {
         }).then(function() {
             expect(scene2d.xaxis.range).toBeCloseToArray([-0.548, 9.548], 2);
             expect(scene2d.yaxis.range).toBeCloseToArray([-1.415, 10.415], 2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should not change other traces colors', function(done) {
+        var _mock = Lib.extendDeep({}, multipleScatter2dMock);
+        Plotly.plot(gd, _mock)
+        .then(delay(40))
+        .then(function() {
+            var canvas = d3.select('.gl-canvas-context').node();
+
+            var RGBA = readPixel(canvas, canvas.width / 2 - 1, canvas.height / 2 - 1, 1, 1);
+
+            expect(RGBA[0] === 255).toBe(true, 'be red');
+            expect(RGBA[1] === 0).toBe(true, 'no green');
+            expect(RGBA[2] === 0).toBe(true, 'no blue');
+            expect(RGBA[3] === 255).toBe(true, 'no transparent');
         })
         .catch(failTest)
         .then(done);

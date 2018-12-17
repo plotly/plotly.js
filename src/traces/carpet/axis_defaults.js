@@ -113,14 +113,15 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
 
-    coerce('title');
-    Lib.coerceFont(coerce, 'titlefont', {
-        family: font.family,
-        size: Math.round(font.size * 1.2),
-        color: dfltFontColor
-    });
-
-    coerce('titleoffset');
+    var title = coerce('title.text');
+    if(title) {
+        Lib.coerceFont(coerce, 'title.font', {
+            family: font.family,
+            size: Math.round(font.size * 1.2),
+            color: dfltFontColor
+        });
+        coerce('title.offset');
+    }
 
     coerce('tickangle');
 
@@ -202,11 +203,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     // It needs to be coerced, then something above overrides this deep in the axis code,
     // but no, we *actually* want to coerce this.
     coerce('tickmode');
-
-    if(!containerOut.title || (containerOut.title && containerOut.title.length === 0)) {
-        delete containerOut.titlefont;
-        delete containerOut.titleoffset;
-    }
 
     return containerOut;
 };

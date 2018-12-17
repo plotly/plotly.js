@@ -13,16 +13,24 @@ var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'percent', 'name'],
+        flags: [],
+        arrayOk: false,
+        description: [
+            'Determines which trace information appear on hover.',
+            'If `none` or `skip` are set, no information is displayed upon hovering.',
+            'But, if `none` is set, click and hover events are still fired.',
+            'Note that this attribute is superseded by `node.hoverinfo` and `node.hoverinfo`',
+            'for nodes and links respectively.'
+        ].join(' ')
     }),
-    hoverlabel: fxAttrs.hoverlabel, // needs editType override
-
+    hoverlabel: fxAttrs.hoverlabel,
     domain: domainAttrs({name: 'sankey', trace: true}),
 
     orientation: {
@@ -127,6 +135,22 @@ module.exports = overrideAll({
             role: 'style',
             description: 'Sets the thickness (in px) of the `nodes`.'
         },
+        hoverinfo: {
+            valType: 'enumerated',
+            values: ['all', 'none', 'skip'],
+            dflt: 'all',
+            role: 'info',
+            description: [
+                'Determines which trace information appear when hovering nodes.',
+                'If `none` or `skip` are set, no information is displayed upon hovering.',
+                'But, if `none` is set, click and hover events are still fired.'
+            ].join(' ')
+        },
+        hoverlabel: fxAttrs.hoverlabel, // needs editType override,
+        hovertemplate: hovertemplateAttrs({}, {
+            description: 'Variables `sourceLinks` and `targetLinks` are arrays of link objects.',
+            keys: ['value', 'label']
+        }),
         description: 'The nodes of the Sankey plot.'
     },
 
@@ -185,6 +209,23 @@ module.exports = overrideAll({
             role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
+        hoverinfo: {
+            valType: 'enumerated',
+            values: ['all', 'none', 'skip'],
+            dflt: 'all',
+            role: 'info',
+            description: [
+                'Determines which trace information appear when hovering links.',
+                'If `none` or `skip` are set, no information is displayed upon hovering.',
+                'But, if `none` is set, click and hover events are still fired.'
+            ].join(' ')
+        },
+        hoverlabel: fxAttrs.hoverlabel, // needs editType override,
+        hovertemplate: hovertemplateAttrs({}, {
+            description: 'Variables `source` and `target` are node objects.',
+            keys: ['value', 'label']
+        }),
         description: 'The links of the Sankey plot.'
     }
 }, 'calc', 'nested');
+attrs.transforms = undefined;
