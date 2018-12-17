@@ -44,16 +44,6 @@ module.exports = function calc(gd, trace, opts) {
     container['_' + minAttr] = container[minAttr] = min;
     container['_' + maxAttr] = container[maxAttr] = max;
 
-    // TODO ?!?
-    /*
-     * If auto was explicitly false but min or max was missing,
-     * we filled in the missing piece here but later the trace does
-     * not look auto.
-     * Otherwise make sure the trace still looks auto as far as later
-     * changes are concerned.
-     */
-    // doUpdate(autoAttr, (auto !== false || (min === undefined && max === undefined)));
-
     if(container.autocolorscale) {
         if(min * max < 0) scl = fullLayout.colorscale.diverging;
         else if(min >= 0) scl = fullLayout.colorscale.sequential;
