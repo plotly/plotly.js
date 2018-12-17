@@ -863,4 +863,43 @@ describe('Test colorscale restyle calls:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should work with templates', function(done) {
+        function _assert(msg, exp) {
+            var mcc = [];
+            d3.selectAll('path.point').each(function() {
+                mcc.push(getFill(this));
+            });
+
+            expect(mcc).toEqual(exp.mcc);
+        }
+
+        var template = {
+            data: {
+                scatter: [{
+                    marker: {colorscale: 'Viridis'}
+                }]
+            }
+        };
+
+        Plotly.plot(gd, [{
+            y: [1, 2, 3],
+            marker: {color: [1, 2, 3]}
+        }])
+        .then(function() {
+            _assert('base - no templates', {
+                mcc: ['rgb(220, 220, 220)', 'rgb(234, 135, 92)', 'rgb(178, 10, 28)']
+            });
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'template', template);
+        })
+        .then(function() {
+            _assert('after relayouting in template', {
+                mcc: ['rgb(68, 1, 84)', 'rgb(33, 145, 140)', 'rgb(253, 231, 37)']
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
