@@ -128,7 +128,6 @@ function createIsosurfaceTrace(scene, data) {
 
     var gl = scene.glplot.gl;
 
-
     var width = data.x.length;
     var height = data.y.length;
     var depth = data.z.length;
@@ -145,11 +144,9 @@ function createIsosurfaceTrace(scene, data) {
         (method === SURFACE_NETS) ? createIsosurface.surfaceNets :
         createIsosurface.surfaceNets; // i.e. default
 
-
     var i, j, k;
 
     var fXYZs = [];
-
 
     var n = 0;
     for(k = 0; k <= depth; k++) {
@@ -186,6 +183,25 @@ function createIsosurfaceTrace(scene, data) {
 
     var positions = isosurfaceMesh.positions;
     len = positions.length;
+
+    var minX = Math.min.apply(null, data.x);
+    var minY = Math.min.apply(null, data.y);
+    var minZ = Math.min.apply(null, data.z);
+
+    var maxX = Math.max.apply(null, data.x);
+    var maxY = Math.max.apply(null, data.y);
+    var maxZ = Math.max.apply(null, data.z);
+
+    console.log("minX=", minX);
+    console.log("maxX=", maxX);
+    console.log("dims[0]=", dims[0]);
+
+    // map pixel coordinates to real world coordinates
+    for(q = 0; q < len; q++) {
+        positions[q][0] = minX + (1 + maxX - minX) * positions[q][0] / dims[0];
+        positions[q][1] = minY + (1 + maxY - minY) * positions[q][1] / dims[1];
+        positions[q][2] = minZ + (1 + maxZ - minZ) * positions[q][2] / dims[2];
+    }
 
     // handle non-uniform 3D space
     for(var axis = 0; axis < 3; axis++) {
@@ -224,6 +240,7 @@ function createIsosurfaceTrace(scene, data) {
         }
     }
 
+    // copy positions
     data.x = [];
     data.y = [];
     data.z = [];
