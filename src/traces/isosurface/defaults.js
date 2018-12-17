@@ -50,8 +50,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'opacity'
     ].forEach(function(x) { coerce(x); });
 
-    if('intensity' in traceIn) {
-        coerce('intensity');
+    if('colorscale' in traceIn) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
     } else {
         traceOut.showscale = false;

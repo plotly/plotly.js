@@ -71,16 +71,6 @@ module.exports = extendFlat({
         ].join(' ')
     },
 
-    intensity: {
-        valType: 'data_array',
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'Sets the vertex intensity values,',
-            'used for plotting fields on isosurfaces'
-        ].join(' ')
-    },
-
     // Color field
     color: {
         valType: 'color',
