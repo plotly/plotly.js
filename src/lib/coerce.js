@@ -6,18 +6,17 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var baseTraceAttrs = require('../plots/attributes');
-var getColorscale = require('../components/colorscale/get_scale');
-var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
+var scales = require('../components/colorscale/scales');
+var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
+
 var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
-var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 var modHalf = require('./mod').modHalf;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 
@@ -165,7 +164,7 @@ exports.valObjectMeta = {
     colorscale: {
         description: [
             'A Plotly colorscale either picked by a name:',
-            '(any of', colorscaleNames.join(', '), ')',
+            '(any of', Object.keys(scales.scales).join(', '), ')',
             'customized as an {array} of 2-element {arrays} where',
             'the first element is the normalized color level value',
             '(starting at *0* and ending at *1*),',
@@ -174,7 +173,7 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            propOut.set(getColorscale(v, dflt));
+            propOut.set(scales.get(v, dflt));
         }
     },
     angle: {

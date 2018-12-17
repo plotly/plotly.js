@@ -8,9 +8,10 @@
 
 'use strict';
 
-var scales = require('./scales');
+var scales = require('./scales').scales;
 
 var msg = 'Note that `autocolorscale` must be true for this attribute to work.';
+
 module.exports = {
     editType: 'calc',
     sequential: {

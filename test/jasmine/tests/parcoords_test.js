@@ -284,6 +284,8 @@ describe('parcoords initialization tests', function() {
                 cauto: true,
                 cmin: 21,
                 cmax: 63,
+                _cmin: 21,
+                _cmax: 63,
                 autocolorscale: false,
                 reversescale: false,
                 showscale: false

@@ -141,11 +141,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var context = canvas.getContext('2d');
 
         var sclFunc = Colorscale.makeColorScaleFunc(
-            Colorscale.extractScale(
-                trace.colorscale,
-                trace.zmin,
-                trace.zmax
-            ),
+            Colorscale.extractScale(trace, {cLetter: 'z'}),
             { noNumericCheck: true, returnArray: true }
         );
 
