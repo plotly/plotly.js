@@ -128,13 +128,6 @@ function createIsosurfaceTrace(scene, data) {
 
     var gl = scene.glplot.gl;
 
-    var minX = Math.min.apply(null, data.x);
-    var minY = Math.min.apply(null, data.y);
-    var minZ = Math.min.apply(null, data.z);
-
-    var maxX = Math.max.apply(null, data.x);
-    var maxY = Math.max.apply(null, data.y);
-    var maxZ = Math.max.apply(null, data.z);
 
     var width = data.x.length;
     var height = data.y.length;
@@ -152,35 +145,18 @@ function createIsosurfaceTrace(scene, data) {
         (method === SURFACE_NETS) ? createIsosurface.surfaceNets :
         createIsosurface.surfaceNets; // i.e. default
 
-    var bounds = [[minX, minY, minZ], [maxX, maxY, maxZ]];
 
-    var xStart = bounds[0][0];
-    var yStart = bounds[0][1];
-    var zStart = bounds[0][2];
+    var i, j, k;
 
-    var xEnd = bounds[1][0];
-    var yEnd = bounds[1][1];
-    var zEnd = bounds[1][2];
-
-    var allXs = [];
-    var allYs = [];
-    var allZs = [];
     var fXYZs = [];
 
+
     var n = 0;
-    for(var k = 0; k <= depth; k++) {
-        for(var j = 0; j <= height; j++) {
-            for(var i = 0; i <= width; i++) {
+    for(k = 0; k <= depth; k++) {
+        for(j = 0; j <= height; j++) {
+            for(i = 0; i <= width; i++) {
 
                 var index = i + width * j + width * height * k;
-
-                var x = i * (xEnd - xStart) / (width - 1) + xStart;
-                var y = j * (yEnd - yStart) / (height - 1) + yStart;
-                var z = k * (zEnd - zStart) / (depth - 1) + zStart;
-
-                allXs[n] = x;
-                allYs[n] = y;
-                allZs[n] = z;
 
                 fXYZs[n] = data.volume[index]; // use input data from the mock
 
@@ -193,17 +169,6 @@ function createIsosurfaceTrace(scene, data) {
 
     var q, len;
 
-    var positions = isosurfaceMesh.positions;
-    len = positions.length;
-    data.x = [];
-    data.y = [];
-    data.z = [];
-    for(q = 0; q < len; q++) {
-        data.x[q] = positions[q][0];
-        data.y[q] = positions[q][1];
-        data.z[q] = positions[q][2];
-    }
-
     var cells = isosurfaceMesh.cells;
     len = cells.length;
     data.i = [];
@@ -213,6 +178,59 @@ function createIsosurfaceTrace(scene, data) {
         data.i[q] = cells[q][0];
         data.j[q] = cells[q][1];
         data.k[q] = cells[q][2];
+    }
+
+    var allXs = []; for(i = 0; i < width; i++) { allXs[i] = data.x[i]; }
+    var allYs = []; for(j = 0; j < height; j++) { allYs[j] = data.y[j]; }
+    var allZs = []; for(k = 0; k < depth; k++) { allZs[k] = data.z[k]; }
+
+    var positions = isosurfaceMesh.positions;
+    len = positions.length;
+
+    // handle non-uniform 3D space
+    for(var axis = 0; axis < 3; axis++) {
+        var xyz = (axis === 0) ? data.x : (axis === 1) ? data.y : data.z;
+
+        for(q = 0; q < len; q++) {
+            var here = positions[q][axis];
+            var prev, next;
+
+            var found = false;
+            for(i = 1; i < dims[axis]; i++) {
+                prev = xyz[i - 1];
+                next = xyz[i];
+
+                if((prev <= here && here <= next) || (prev >= here && here >= next)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found) {
+                if(Math.abs(xyz[0] - here) <= Math.abs(xyz[dims[axis] - 1] - here)) {
+                    prev = xyz[0];
+                    next = xyz[1];
+                } else {
+                    prev = xyz[dims[axis] - 2];
+                    next = xyz[dims[axis] - 1];
+                }
+            }
+
+            if(here >= prev) {
+                positions[q][axis] = prev + (here - prev) * (next - prev);
+            } else {
+                positions[q][axis] = next + (here - next) * (prev - next);
+            }
+        }
+    }
+
+    data.x = [];
+    data.y = [];
+    data.z = [];
+    for(q = 0; q < len; q++) {
+        data.x[q] = positions[q][0];
+        data.y[q] = positions[q][1];
+        data.z[q] = positions[q][2];
     }
 
     var mesh = createMesh({gl: gl});
