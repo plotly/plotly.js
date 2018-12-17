@@ -7,8 +7,83 @@
       "z": [1, 2, 3],
       "mode": "lines+markers",
       "line": {
-        "color": [0, 1, 2],
-        "width": 10
+        "width": 3,
+        "color": [0, 1, 2]
+      }
+    },
+    {
+      "type": "scatter3d",
+      "x": [0, 0, 0],
+      "y": [2, 2, 2],
+      "z": [1, 2, 3],
+      "mode": "lines+markers",
+      "line": {
+        "width": 3,
+        "color": [0, 1, 2]
+      },
+      "marker": {
+        "color": [0, 1, 2]
+      }
+    },
+    {
+      "type": "scatter3d",
+      "x": [0, 0, 0],
+      "y": [3, 3, 3],
+      "z": [1, 2, 3],
+      "mode": "lines+markers",
+      "marker": {
+        "color": [0, 1, 2]
+      },
+      "line": {
+        "width": 3
+      }
+    },
+    {
+      "type": "scatter3d",
+      "x": [1, 1, 1],
+      "y": [0, 0, 0],
+      "z": [1, 2, 3],
+      "mode": "lines+markers",
+      "line": {
+        "width": 3,
+        "colorscale": "Blues",
+        "color": [0, 1, 2]
+      },
+      "marker": {
+        "colorscale": "Blues",
+        "color": [0, 1, 2]
+      }
+    },
+    {
+      "type": "scatter3d",
+      "x": [2, 2, 2],
+      "y": [0, 0, 0],
+      "z": [1, 2, 3],
+      "mode": "lines+markers",
+      "line": {
+        "width": 3,
+        "colorscale": "RdBu",
+        "color": [0, 1, 2]
+      },
+      "marker": {
+        "colorscale": "RdBu",
+        "color": [0, 1, 2]
+      }
+    },
+    {
+      "type": "scatter3d",
+      "x": [3, 3, 3],
+      "y": [0, 0, 0],
+      "z": [1, 2, 3],
+      "mode": "lines+markers",
+      "line": {
+        "width": 3,
+        "colorscale": "BuRd",
+        "color": [0, 1, 2]
+      },
+      "marker": {
+        "colorscale": "BuRd",
+        "color": [0, 1, 2]
       }
     }
   ]
