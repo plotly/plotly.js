@@ -92,7 +92,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
         }
     }
 
-    trace._extremes[ya._id] = Axes.findExtremes(ya, l.concat(h), {padded: true});
+    trace._extremes[ya._id] = Axes.findExtremes(ya, Lib.concat(l, h), {padded: true});
 
     if(cd.length) {
         cd[0].t = {
