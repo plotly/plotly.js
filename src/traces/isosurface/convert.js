@@ -129,6 +129,8 @@ function generateIsosurfaceMesh(data) {
 
     // TODO: check this function is not called when the user update an attribute e.g. opacity
 
+    data.intensity = [];
+
     data.i = [];
     data.j = [];
     data.k = [];
@@ -136,6 +138,8 @@ function generateIsosurfaceMesh(data) {
     var allXs = [];
     var allYs = [];
     var allZs = [];
+
+    var allCs = [];
 
     var width = data.x.length;
     var height = data.y.length;
@@ -174,6 +178,8 @@ function generateIsosurfaceMesh(data) {
 
     var num_pos = 0;
     for(var iso_id = 0; iso_id < data.isovalue.length; iso_id++) {
+
+        var intensity = data.isovalue[iso_id];
 
         var fXYZs = [];
 
@@ -257,6 +263,8 @@ function generateIsosurfaceMesh(data) {
             allXs.push(positions[q][0]);
             allYs.push(positions[q][1]);
             allZs.push(positions[q][2]);
+
+            allCs.push(intensity);
         }
 
         num_pos += len;
@@ -265,6 +273,7 @@ function generateIsosurfaceMesh(data) {
     data.x = allXs;
     data.y = allYs;
     data.z = allZs;
+    data.intensity = allCs;
 
     return data;
 }
