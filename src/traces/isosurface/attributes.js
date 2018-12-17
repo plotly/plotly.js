@@ -18,6 +18,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 module.exports = extendFlat({
     x: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the X coordinates of the vertices on X axis.'
@@ -25,6 +26,7 @@ module.exports = extendFlat({
     },
     y: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the Y coordinates of the vertices on Y axis.'
@@ -32,6 +34,7 @@ module.exports = extendFlat({
     },
     z: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the Z coordinates of the vertices on Z axis.'
@@ -39,18 +42,19 @@ module.exports = extendFlat({
     },
     volume: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc',
         description: [
             'Sets the 4th dimension of the vertices.'
         ].join(' ')
     },
     isovalue: {
-        valType: 'number',
+        valType: 'data_array',
+        role: 'info',
         editType: 'calc',
-        dflt: 0,
+        dflt: [0],
         description: [
-            'For the moment it is a single number that defines the iso surface boundaries.',
-            'TODO: It would be nice to pass an array of numbers in the next step'
+            'Sets iso surface boundaries.'
         ].join(' ')
     },
 
@@ -69,6 +73,7 @@ module.exports = extendFlat({
 
     intensity: {
         valType: 'data_array',
+        role: 'style',
         editType: 'calc',
         description: [
             'Sets the vertex intensity values,',

@@ -128,9 +128,36 @@ function createIsosurfaceTrace(scene, data) {
 
     var gl = scene.glplot.gl;
 
+    data.i = [];
+    data.j = [];
+    data.k = [];
+
+    var allXs = [];
+    var allYs = [];
+    var allZs = [];
+
     var width = data.x.length;
     var height = data.y.length;
     var depth = data.z.length;
+
+    var i, j, k;
+
+    var Xs = []; for(i = 0; i < width; i++) { Xs[i] = data.x[i]; }
+    var Ys = []; for(j = 0; j < height; j++) { Ys[j] = data.y[j]; }
+    var Zs = []; for(k = 0; k < depth; k++) { Zs[k] = data.z[k]; }
+
+    var bounds = [
+        [
+            Math.min.apply(null, Xs),
+            Math.min.apply(null, Ys),
+            Math.min.apply(null, Zs)
+        ],
+        [
+            Math.max.apply(null, Xs),
+            Math.max.apply(null, Ys),
+            Math.max.apply(null, Zs)
+        ]
+    ];
 
     var dims = [width, height, depth];
 
@@ -144,114 +171,99 @@ function createIsosurfaceTrace(scene, data) {
         (method === SURFACE_NETS) ? createIsosurface.surfaceNets :
         createIsosurface.surfaceNets; // i.e. default
 
-    var i, j, k;
+    var num_pos = 0;
+    for(var iso_id = 0; iso_id < data.isovalue.length; iso_id++) {
 
-    var fXYZs = [];
+        var fXYZs = [];
 
-    var n = 0;
-    for(k = 0; k <= depth; k++) {
-        for(j = 0; j <= height; j++) {
-            for(i = 0; i <= width; i++) {
+        var n = 0;
+        for(k = 0; k <= depth; k++) {
+            for(j = 0; j <= height; j++) {
+                for(i = 0; i <= width; i++) {
 
-                var index = i + width * j + width * height * k;
+                    var index = i + width * j + width * height * k;
 
-                fXYZs[n] = data.volume[index] - data.isovalue; // use input data from the mock
+                    fXYZs[n] = data.volume[index] - data.isovalue[iso_id];
 
-                n++;
-            }
-        }
-    }
-
-    var isosurfaceMesh = applyMethod(dims, fXYZs); // pass data array without bounds
-
-    var q, len;
-
-    var cells = isosurfaceMesh.cells;
-    len = cells.length;
-    data.i = [];
-    data.j = [];
-    data.k = [];
-    for(q = 0; q < len; q++) {
-        data.i[q] = cells[q][0];
-        data.j[q] = cells[q][1];
-        data.k[q] = cells[q][2];
-    }
-
-    var allXs = []; for(i = 0; i < width; i++) { allXs[i] = data.x[i]; }
-    var allYs = []; for(j = 0; j < height; j++) { allYs[j] = data.y[j]; }
-    var allZs = []; for(k = 0; k < depth; k++) { allZs[k] = data.z[k]; }
-
-    var positions = isosurfaceMesh.positions;
-    len = positions.length;
-
-    var bounds = [
-        [
-            Math.min.apply(null, allXs),
-            Math.min.apply(null, allYs),
-            Math.min.apply(null, allZs)
-        ],
-        [
-            Math.max.apply(null, allXs),
-            Math.max.apply(null, allYs),
-            Math.max.apply(null, allZs)
-        ]
-    ];
-
-    var axis, min, max;
-
-    // map (integer) pixel coordinates to (real) world coordinates
-    for(q = 0; q < len; q++) {
-        for(axis = 0; axis < 3; axis++) {
-            min = bounds[0][axis];
-            max = bounds[1][axis];
-            positions[q][axis] = min + (1 + max - min) * positions[q][axis] / dims[axis];
-        }
-    }
-
-    // handle non-uniform 3D space
-    for(axis = 0; axis < 3; axis++) {
-        var xyz = (axis === 0) ? data.x : (axis === 1) ? data.y : data.z;
-
-        min = bounds[0][axis];
-        max = bounds[1][axis];
-
-        for(q = 0; q < len; q++) {
-            var here = positions[q][axis];
-
-            var minDist = Infinity;
-            var first = 0;
-            var second = 0;
-
-            var dist;
-            for(i = 0; i < dims[axis]; i++) {
-                dist = Math.abs(here - xyz[i]);
-
-                if(dist < minDist) {
-                    minDist = dist;
-                    second = first;
-                    first = i;
+                    n++;
                 }
             }
+        }
 
-            if(dist > 0 && first !== second) {
+        var isosurfaceMesh = applyMethod(dims, fXYZs); // pass data array without bounds
 
-                var d1 = -(here - xyz[first]);
-                var d2 = (here - xyz[second]);
+        var q, len;
 
-                positions[q][axis] = (xyz[first] * d2 + xyz[second] * d1) / (d1 + d2);
+        var cells = isosurfaceMesh.cells;
+        len = cells.length;
+        for(q = 0; q < len; q++) {
+            data.i.push(cells[q][0] + num_pos);
+            data.j.push(cells[q][1] + num_pos);
+            data.k.push(cells[q][2] + num_pos);
+        }
+
+        var positions = isosurfaceMesh.positions;
+        len = positions.length;
+
+        var axis, min, max;
+
+        // map (integer) pixel coordinates to (real) world coordinates
+        for(q = 0; q < len; q++) {
+            for(axis = 0; axis < 3; axis++) {
+                min = bounds[0][axis];
+                max = bounds[1][axis];
+                positions[q][axis] = min + (1 + max - min) * positions[q][axis] / dims[axis];
             }
         }
+
+        // handle non-uniform 3D space
+        for(axis = 0; axis < 3; axis++) {
+            var xyz = (axis === 0) ? data.x : (axis === 1) ? data.y : data.z;
+
+            min = bounds[0][axis];
+            max = bounds[1][axis];
+
+            for(q = 0; q < len; q++) {
+                var here = positions[q][axis];
+
+                var minDist = Infinity;
+                var first = 0;
+                var second = 0;
+
+                var dist;
+                for(i = 0; i < dims[axis]; i++) {
+                    dist = Math.abs(here - xyz[i]);
+
+                    if(dist < minDist) {
+                        minDist = dist;
+                        second = first;
+                        first = i;
+                    }
+                }
+
+                if(dist > 0 && first !== second) {
+
+                    var d1 = -(here - xyz[first]);
+                    var d2 = (here - xyz[second]);
+
+                    positions[q][axis] = (xyz[first] * d2 + xyz[second] * d1) / (d1 + d2);
+                }
+            }
+        }
+
+        // copy positions
+        for(q = 0; q < len; q++) {
+            allXs.push(positions[q][0]);
+            allYs.push(positions[q][1]);
+            allZs.push(positions[q][2]);
+        }
+
+        num_pos += len;
     }
 
-    // copy positions
-    data.x = [];
-    data.y = [];
-    data.z = [];
-    for(q = 0; q < len; q++) {
-        data.x[q] = positions[q][0];
-        data.y[q] = positions[q][1];
-        data.z[q] = positions[q][2];
-    }
+    data.x = allXs;
+    data.y = allYs;
+    data.z = allZs;
 
     var mesh = createMesh({gl: gl});
 
