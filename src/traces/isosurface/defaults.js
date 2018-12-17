@@ -22,13 +22,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('x');
     coerce('y');
     coerce('z');
-    coerce('volume');
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     // Coerce remaining properties
     [
+        'volume',
+        'isovalue',
+        'text',
         'lighting.ambient',
         'lighting.diffuse',
         'lighting.specular',
@@ -58,6 +60,4 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         else if('vertexcolor' in traceIn) coerce('vertexcolor');
         else coerce('color', defaultColor);
     }
-
-    coerce('text');
 };

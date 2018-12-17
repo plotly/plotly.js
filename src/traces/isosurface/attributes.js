@@ -44,6 +44,15 @@ module.exports = extendFlat({
             'Sets the 4th dimension of the vertices.'
         ].join(' ')
     },
+    isovalue: {
+        valType: 'number',
+        editType: 'calc',
+        dflt: 0,
+        description: [
+            'For the moment it is a single number that defines the iso surface boundaries.',
+            'TODO: It would be nice to pass an array of numbers in the next step'
+        ].join(' ')
+    },
 
     text: {
         valType: 'string',

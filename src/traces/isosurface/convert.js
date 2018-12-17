@@ -155,7 +155,7 @@ function createIsosurfaceTrace(scene, data) {
 
                 var index = i + width * j + width * height * k;
 
-                fXYZs[n] = data.volume[index]; // use input data from the mock
+                fXYZs[n] = data.volume[index] - data.isovalue; // use input data from the mock
 
                 n++;
             }
