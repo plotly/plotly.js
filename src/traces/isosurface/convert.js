@@ -162,7 +162,7 @@ function generateIsosurfaceMesh(data) {
 
     var dims = [width, height, depth];
 
-    var num_pos = 0;
+    var num_vertices = 0;
     for(var iso_id = 0; iso_id < data.isovalue.length; iso_id++) {
 
         var intensity = data.isovalue[iso_id];
@@ -193,14 +193,6 @@ function generateIsosurfaceMesh(data) {
                 createIsosurface.marchingCubes(dims, fXYZs); // i.e. default
 
         var q, len;
-
-        var cells = isosurfaceMesh.cells;
-        len = cells.length;
-        for(q = 0; q < len; q++) {
-            data.i.push(cells[q][0] + num_pos);
-            data.j.push(cells[q][1] + num_pos);
-            data.k.push(cells[q][2] + num_pos);
-        }
 
         var positions = isosurfaceMesh.positions;
         len = positions.length;
@@ -251,7 +243,7 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        // copy positions
+        // record positions
         for(q = 0; q < len; q++) {
             allXs.push(positions[q][0]);
             allYs.push(positions[q][1]);
@@ -260,7 +252,16 @@ function generateIsosurfaceMesh(data) {
             allCs.push(intensity);
         }
 
-        num_pos += len;
+        // record cells
+        var cells = isosurfaceMesh.cells;
+        len = cells.length;
+        for(q = 0; q < len; q++) {
+            data.i.push(cells[q][0] + num_vertices);
+            data.j.push(cells[q][1] + num_vertices);
+            data.k.push(cells[q][2] + num_vertices);
+        }
+
+        num_vertices += positions.length;
     }
 
     data.x = allXs;
