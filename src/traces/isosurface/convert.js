@@ -207,12 +207,12 @@ function generateIsosurfaceMesh(data) {
 
         var axis, min, max;
 
-        // map (integer) pixel coordinates to (real) world coordinates
-        for(q = 0; q < len; q++) {
-            for(axis = 0; axis < 3; axis++) {
-                min = bounds[0][axis];
-                max = bounds[1][axis];
-                positions[q][axis] = min + (1 + max - min) * positions[q][axis] / dims[axis];
+        // map pixel coordinates (0..n) to (real) world coordinates
+        for(axis = 0; axis < 3; axis++) {
+            min = bounds[0][axis];
+            max = bounds[1][axis];
+            for(q = 0; q < len; q++) {
+                positions[q][axis] = min + (max - min) * positions[q][axis] / (dims[axis] - 1);
             }
         }
 
