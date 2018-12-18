@@ -30,6 +30,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     [
         'volume',
         'isovalue',
+        'meshalgo',
         'text',
         'lighting.ambient',
         'lighting.diffuse',

@@ -57,8 +57,7 @@ proto.update = function(data) {
     var scene = this.scene,
         layout = scene.fullSceneLayout;
 
-    this.data = (data.i && data.i.lenght) ? data :
-        generateIsosurfaceMesh(data);
+    this.data = generateIsosurfaceMesh(data);
 
     // Unpack position data
     function toDataCoords(axis, coord, scale, calendar) {
@@ -120,14 +119,11 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-
-var SURFACE_NETS = 'NETS';
-var MARCHING_CUBES = 'CUBES';
-var MARCHING_TETRAHEDRA = 'TETRAHEDRA';
+var SURFACE_NETS = 'SurfaceNets';
+var MARCHING_CUBES = 'MarchingCubes';
+var MARCHING_TETRAHEDRA = 'MarchingTetrahedra';
 
 function generateIsosurfaceMesh(data) {
-
-    // TODO: check this function is not called when the user update an attribute e.g. opacity
 
     data.intensity = [];
 
@@ -166,16 +162,6 @@ function generateIsosurfaceMesh(data) {
 
     var dims = [width, height, depth];
 
-    // var method = 'NETS';
-    var method = 'CUBES';
-    // var method = 'TETRAHEDRA';
-
-    var applyMethod =
-        (method === MARCHING_CUBES) ? createIsosurface.marchingCubes :
-        (method === MARCHING_TETRAHEDRA) ? createIsosurface.marchingTetrahedra :
-        (method === SURFACE_NETS) ? createIsosurface.surfaceNets :
-        createIsosurface.surfaceNets; // i.e. default
-
     var num_pos = 0;
     for(var iso_id = 0; iso_id < data.isovalue.length; iso_id++) {
 
@@ -197,7 +183,14 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        var isosurfaceMesh = applyMethod(dims, fXYZs); // pass data array without bounds
+        var isosurfaceMesh = // Note: data array is passed without bounds to disable rescales
+            (data.meshalgo === SURFACE_NETS) ?
+                createIsosurface.surfaceNets(dims, fXYZs) :
+            (data.meshalgo === MARCHING_TETRAHEDRA) ?
+                createIsosurface.marchingTetrahedra(dims, fXYZs) :
+            (data.meshalgo === MARCHING_CUBES) ?
+                createIsosurface.marchingCubes(dims, fXYZs) :
+                createIsosurface.marchingCubes(dims, fXYZs); // i.e. default
 
         var q, len;
 
