@@ -156,14 +156,12 @@ function generateIsosurfaceMesh(data) {
 
     var num_vertices = 0;
 
-    function drawTri(xyzw, debug) {
-        if(debug === -1) return;
-
+    function drawTri(xyzw) {
         for(var g = 0; g < 3; g++) {
             allXs.push(xyzw[g][0]);
             allYs.push(xyzw[g][1]);
             allZs.push(xyzw[g][2]);
-            allCs.push(debug || xyzw[g][3]);
+            allCs.push(xyzw[g][3]);
 
             if(g === 0) {
                 data.i.push(num_vertices);
@@ -225,10 +223,8 @@ function generateIsosurfaceMesh(data) {
         var b_OK = inRange(vB);
         var c_OK = inRange(vC);
 
-        var debug0 = 0;
-
         if(a_OK && b_OK && c_OK) {
-            drawTri(xyzw, debug0);
+            drawTri(xyzw);
             return;
         }
 
@@ -253,19 +249,12 @@ function generateIsosurfaceMesh(data) {
 
         var p1, p2;
 
-        var debug1 = 0;
-        var debug2 = 0;
-        var debug3 = 0;
-        var debug4 = 0;
-        var debug5 = 0;
-        var debug6 = 0;
-
         if(a_OK && b_OK) {
             p1 = calcIntersection(C, A);
             p2 = calcIntersection(C, B);
 
-            drawTri([A, B, p2], debug1);
-            drawTri([p2, p1, A], debug1);
+            drawTri([A, B, p2]);
+            drawTri([p2, p1, A]);
             return;
         }
 
@@ -273,8 +262,8 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(A, B);
             p2 = calcIntersection(A, C);
 
-            drawTri([B, C, p2], debug2);
-            drawTri([p2, p1, B], debug2);
+            drawTri([B, C, p2]);
+            drawTri([p2, p1, B]);
             return;
         }
 
@@ -282,8 +271,8 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(B, C);
             p2 = calcIntersection(B, A);
 
-            drawTri([C, A, p2], debug3);
-            drawTri([p2, p1, C], debug3);
+            drawTri([C, A, p2]);
+            drawTri([p2, p1, C]);
             return;
         }
 
@@ -291,7 +280,7 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(B, A);
             p2 = calcIntersection(C, A);
 
-            drawTri([A, p1, p2], debug4);
+            drawTri([A, p1, p2]);
             return;
         }
 
@@ -299,7 +288,7 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(C, B);
             p2 = calcIntersection(A, B);
 
-            drawTri([B, p1, p2], debug5);
+            drawTri([B, p1, p2]);
             return;
         }
 
@@ -307,7 +296,7 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(A, C);
             p2 = calcIntersection(B, C);
 
-            drawTri([C, p1, p2], debug6);
+            drawTri([C, p1, p2]);
             return;
         }
     }
