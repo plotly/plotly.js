@@ -1,7 +1,7 @@
 // var Plotly = require('@lib/index');
 // var attributes = require('@src/traces/sankey/attributes');
 
-var d3sankey = require('@src/traces/sankey/d3-sankey');
+var d3sankey = require('d3-sankey');
 
 var graph = {
     'nodes': [{
@@ -65,13 +65,14 @@ describe('d3-sankey', function() {
     var s;
 
     beforeEach(function() {
-        s = d3sankey()
+        s = d3sankey
+        .sankey()
         .nodeWidth(36)
         .nodePadding(10)
         .nodes(graph.nodes)
         .links(graph.links)
         .size([width, height])
-        .layout(32);
+        .iterations(32);
     });
 
     it('controls the width of nodes', function() {
@@ -87,15 +88,15 @@ describe('d3-sankey', function() {
     });
 
     it('keep a list of nodes', function() {
-        var node_names = s.nodes().map(function(obj) {
+        var node_names = s().nodes.map(function(obj) {
             return obj.name;
         });
         expect(node_names).toEqual(['node0', 'node1', 'node2', 'node3', 'node4']);
     });
 
     it('keep a list of links', function() {
-        var link_widths = s.links().map(function(obj) {
-            return obj.dy;
+        var link_widths = s().links.map(function(obj) {
+            return (obj.width);
         });
         expect(link_widths).toEqual([177.5, 177.5, 177.5, 177.5, 177.5, 177.5, 355]);
     });

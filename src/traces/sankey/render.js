@@ -14,54 +14,13 @@ var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var d3sankey = require('d3-sankey');
-var d3sankeyLinkHorizontal = require('d3').sankeyLinkHorizontal;
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
 var gup = require('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
-
-// basic data utilities
-
-function persistOriginalPlace(nodes) {
-    var i, distinctLayerPositions = [];
-    for(i = 0; i < nodes.length; i++) {
-        nodes[i].originalX = nodes[i].x;
-        nodes[i].originalY = nodes[i].y;
-        if(distinctLayerPositions.indexOf(nodes[i].x) === -1) {
-            distinctLayerPositions.push(nodes[i].x);
-        }
-    }
-    distinctLayerPositions.sort(function(a, b) {return a - b;});
-    for(i = 0; i < nodes.length; i++) {
-        nodes[i].originalLayerIndex = distinctLayerPositions.indexOf(nodes[i].originalX);
-        nodes[i].originalLayer = nodes[i].originalLayerIndex / (distinctLayerPositions.length - 1);
-    }
-}
-
-function saveCurrentDragPosition(d) {
-    d.lastDraggedX = d.x;
-    d.lastDraggedY = d.y;
-}
-
-function sameLayer(d) {
-    return function(n) {return n.node.originalX === d.node.originalX;};
-}
-
-function switchToForceFormat(nodes) {
-    // force uses x, y as centers
-    for(var i = 0; i < nodes.length; i++) {
-        nodes[i].y = nodes[i].y + nodes[i].dy / 2;
-    }
-}
-
-function switchToSankeyFormat(nodes) {
-    // sankey uses x, y as top left
-    for(var i = 0; i < nodes.length; i++) {
-        nodes[i].y = nodes[i].y - nodes[i].dy / 2;
-    }
-}
+var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
 // view models
 
@@ -88,11 +47,10 @@ function sankeyModel(layout, d, traceIndex) {
         .nodes(nodes)
         .links(links);
 
+    var graph = sankey();
     if(sankey.nodePadding() < nodePad) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
-
-    switchToForceFormat(nodes);
 
     return {
         key: traceIndex,
@@ -115,6 +73,7 @@ function sankeyModel(layout, d, traceIndex) {
         dragPerpendicular: horizontal ? width : height,
         arrangement: trace.arrangement,
         sankey: sankey,
+        graph: graph,
         forceLayouts: {},
         interactionState: {
             dragInProgress: false,
@@ -127,9 +86,6 @@ function linkModel(d, l, i) {
     var tc = tinycolor(l.color);
     var basicKey = l.source.label + '|' + l.target.label;
     var key = basicKey + '__' + i;
-    // var foundKey = uniqueKeys[basicKey];
-    // uniqueKeys[basicKey] = (foundKey || 0) + 1;
-    // var key = basicKey + '__' + uniqueKeys[basicKey];
 
     // for event data
     l.trace = d.trace;
@@ -152,9 +108,29 @@ function linkModel(d, l, i) {
 }
 
 function linkPath() {
-    return d3sankey.sankeyLinkHorizontal()
-      .source(function(d) { return [d.link.source.x1, d.link.y0];})
-      .target(function(d) { return [d.link.target.x0, d.link.y1];});
+    var curvature = 0.5;
+
+    function shape(d) {
+        var x0 = d.link.source.x1,
+            x1 = d.link.target.x0,
+            xi = interpolateNumber(x0, x1),
+            x2 = xi(curvature),
+            x3 = xi(1 - curvature),
+            y0a = d.link.y0 - d.link.width / 2,
+            y0b = d.link.y0 + d.link.width / 2,
+            y1a = d.link.y1 - d.link.width / 2,
+            y1b = d.link.y1 + d.link.width / 2;
+        return 'M' + x0 + ',' + y0a +
+             'C' + x2 + ',' + y0a +
+             ' ' + x3 + ',' + y1a +
+             ' ' + x1 + ',' + y1a +
+             'L' + x1 + ',' + y1b +
+             'C' + x3 + ',' + y1b +
+             ' ' + x2 + ',' + y0b +
+             ' ' + x0 + ',' + y0b +
+             'Z';
+    }
+    return shape;
 }
 
 function nodeModel(d, n, i) {
@@ -165,8 +141,6 @@ function nodeModel(d, n, i) {
         visibleLength = Math.max(0.5, (n.y1 - n.y0));
 
     var basicKey = n.label;
-    // var foundKey = uniqueKeys[basicKey];
-    // uniqueKeys[basicKey] = (foundKey || 0) + 1;
     var key = basicKey + '__' + i;
 
     // for event data
@@ -176,11 +150,8 @@ function nodeModel(d, n, i) {
     // additionnal coordinates
     n.dx = n.x1 - n.x0;
     n.dy = n.y1 - n.y0;
+
     return {
-        x0: n.x0,
-        x1: n.x1,
-        y0: n.y0,
-        y1: n.y1,
         key: key,
         traceId: d.key,
         node: n,
@@ -206,8 +177,9 @@ function nodeModel(d, n, i) {
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
+        graph: d.sankey(),
         arrangement: d.arrangement,
-        uniqueNodeLabelPathId: [d.guid, d.key].join(' '),
+        uniqueNodeLabelPathId: [d.guid, d.key, key].join('_'),
         interactionState: d.interactionState
     };
 }
@@ -217,7 +189,7 @@ function nodeModel(d, n, i) {
 function updateNodePositions(sankeyNode) {
     sankeyNode
         .attr('transform', function(d) {
-            return 'translate(' + d.x0.toFixed(3) + ', ' + (d.y0).toFixed(3) + ')';
+            return 'translate(' + d.node.x0.toFixed(3) + ', ' + (d.node.y0).toFixed(3) + ')';
         });
 }
 
@@ -232,13 +204,11 @@ function updateShapes(sankeyNode, sankeyLink) {
 
 function sizeNode(rect) {
     rect
-      // .attr('x', function(d) {return d.x0;})
-      // .attr('y', function(d) {return d.y0;})
-      .attr('width', function(d) {return d.x1 - d.x0;})
-      .attr('height', function(d) {return d.y1 - d.y0;});
+      .attr('width', function(d) {return d.node.x1 - d.node.x0;})
+      .attr('height', function(d) {return d.visibleHeight;});
 }
 
-function salientEnough(d) {return (d.y0 - d.y1) > 1 || d.link.width > 0 || d.linkLineWidth > 0;}
+function salientEnough(d) {return (d.link.width > 1 || d.linkLineWidth > 0);}
 
 function sankeyTransform(d) {
     var offset = 'translate(' + d.translateX + ',' + d.translateY + ')';
@@ -293,106 +263,171 @@ function attachPointerEvents(selection, sankey, eventSet) {
             }
         });
 }
-//
-// function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
-//
-//     var dragBehavior = d3.behavior.drag()
-//
-//         .origin(function(d) {return d.node;})
-//
-//         .on('dragstart', function(d) {
-//             if(d.arrangement === 'fixed') return;
-//             Lib.raiseToTop(this);
-//             d.interactionState.dragInProgress = d.node;
-//             saveCurrentDragPosition(d.node);
-//             if(d.interactionState.hovered) {
-//                 callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
-//                 d.interactionState.hovered = false;
-//             }
-//             if(d.arrangement === 'snap') {
-//                 var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
-//                 if(d.forceLayouts[forceKey]) {
-//                     d.forceLayouts[forceKey].alpha(1);
-//                 } else { // make a forceLayout iff needed
-//                     attachForce(sankeyNode, forceKey, d);
-//                 }
-//                 startForce(sankeyNode, sankeyLink, d, forceKey);
-//             }
-//         })
-//
-//         .on('drag', function(d) {
-//             if(d.arrangement === 'fixed') return;
-//             var x = d3.event.x;
-//             var y = d3.event.y;
-//             if(d.arrangement === 'snap') {
-//                 d.node.x = x;
-//                 d.node.y = y;
-//             } else {
-//                 if(d.arrangement === 'freeform') {
-//                     d.node.x = x;
-//                 }
-//                 d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
-//             }
-//             saveCurrentDragPosition(d.node);
-//             if(d.arrangement !== 'snap') {
-//                 d.sankey.relayout();
-//                 updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
-//             }
-//         })
-//
-//         .on('dragend', function(d) {
-//             d.interactionState.dragInProgress = false;
-//         });
-//
-//     sankeyNode
-//         .on('.drag', null) // remove possible previous handlers
-//         .call(dragBehavior);
-// }
-//
-// function attachForce(sankeyNode, forceKey, d) {
-//     var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
-//     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
-//         .alphaDecay(0)
-//         .force('collide', d3Force.forceCollide()
-//             .radius(function(n) {return n.dy / 2 + d.nodePad / 2;})
-//             .strength(1)
-//             .iterations(c.forceIterations))
-//         .force('constrain', snappingForce(sankeyNode, forceKey, nodes, d))
-//         .stop();
-// }
-//
-// function startForce(sankeyNode, sankeyLink, d, forceKey) {
-//     window.requestAnimationFrame(function faster() {
-//         for(var i = 0; i < c.forceTicksPerFrame; i++) {
-//             d.forceLayouts[forceKey].tick();
-//         }
-//         d.sankey.relayout();
-//         updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
-//         if(d.forceLayouts[forceKey].alpha() > 0) {
-//             window.requestAnimationFrame(faster);
-//         }
-//     });
-// }
-//
-// function snappingForce(sankeyNode, forceKey, nodes, d) {
-//     return function _snappingForce() {
-//         var maxVelocity = 0;
-//         for(var i = 0; i < nodes.length; i++) {
-//             var n = nodes[i];
-//             if(n === d.interactionState.dragInProgress) { // constrain node position to the dragging pointer
-//                 n.x = n.lastDraggedX;
-//                 n.y = n.lastDraggedY;
-//             } else {
-//                 n.vx = (n.originalX - n.x) / c.forceTicksPerFrame; // snap to layer
-//                 n.y = Math.min(d.size - n.dy / 2, Math.max(n.dy / 2, n.y)); // constrain to extent
-//             }
-//             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
-//         }
-//         if(!d.interactionState.dragInProgress && maxVelocity < 0.1 && d.forceLayouts[forceKey].alpha() > 0) {
-//             d.forceLayouts[forceKey].alpha(0);
-//         }
-//     };
-// }
+
+function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
+    var dragBehavior = d3.behavior.drag()
+        .origin(function(d) {
+            return {
+                x: d.node.x0,
+                y: d.node.y0
+            };
+        })
+
+        .on('dragstart', function(d) {
+            if(d.arrangement === 'fixed') return;
+            Lib.raiseToTop(this);
+            d.interactionState.dragInProgress = d.node;
+
+            saveCurrentDragPosition(d.node);
+            if(d.interactionState.hovered) {
+                callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
+                d.interactionState.hovered = false;
+            }
+            if(d.arrangement === 'snap') {
+                var forceKey = d.traceId + '|' + d.key;
+                if(d.forceLayouts[forceKey]) {
+                    d.forceLayouts[forceKey].alpha(1);
+                } else { // make a forceLayout if needed
+                    attachForce(sankeyNode, forceKey, d);
+                }
+                startForce(sankeyNode, sankeyLink, d, forceKey);
+            }
+        })
+
+        .on('drag', function(d) {
+            if(d.arrangement === 'fixed') return;
+            var x = d3.event.x;
+            var y = d3.event.y;
+            if(d.arrangement === 'snap') {
+                d.node.x0 = x - d.visibleWidth / 2;
+                d.node.x1 = x + d.visibleWidth / 2;
+                d.node.y0 = y - d.visibleHeight / 2;
+                d.node.y1 = y + d.visibleHeight / 2;
+            } else {
+                if(d.arrangement === 'freeform') {
+                    d.node.x0 = x - d.visibleWidth / 2;
+                    d.node.x1 = x + d.visibleWidth / 2;
+                    // d.x0 = x;
+                }
+                // d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
+                d.node.y0 = Math.max(0, Math.min(d.size - d.visibleHeight, y));
+                d.node.y1 = d.node.y0 + d.visibleHeight;
+            }
+
+            saveCurrentDragPosition(d.node);
+            if(d.arrangement !== 'snap') {
+                d.sankey.update(d.graph);
+                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
+            }
+        })
+
+        .on('dragend', function(d) {
+            d.interactionState.dragInProgress = false;
+        });
+
+    sankeyNode
+        .on('.drag', null) // remove possible previous handlers
+        .call(dragBehavior);
+}
+
+function attachForce(sankeyNode, forceKey, d) {
+    // Attach force to nodes in the same column (same x coordinate)
+    switchToForceFormat(d.graph.nodes);
+    var nodes = d.graph.nodes.filter(function(n) {return n.originalX === d.node.originalX;});
+    d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
+        .alphaDecay(0)
+        .force('collide', d3Force.forceCollide()
+            .radius(function(n) {return n.dy / 2 + d.nodePad / 2;})
+            .strength(1)
+            .iterations(c.forceIterations))
+        .force('constrain', snappingForce(sankeyNode, forceKey, nodes, d))
+        .stop();
+}
+
+function startForce(sankeyNode, sankeyLink, d, forceKey) {
+    window.requestAnimationFrame(function faster() {
+        var i;
+        for(i = 0; i < c.forceTicksPerFrame; i++) {
+            d.forceLayouts[forceKey].tick();
+        }
+
+        var nodes = d.graph.nodes;
+        switchToSankeyFormat(nodes);
+
+        d.sankey.update(d.graph);
+        updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
+
+        if(d.forceLayouts[forceKey].alpha() > 0) {
+            window.requestAnimationFrame(faster);
+        }
+    });
+}
+
+function snappingForce(sankeyNode, forceKey, nodes, d) {
+    return function _snappingForce() {
+        var maxVelocity = 0;
+        for(var i = 0; i < nodes.length; i++) {
+            var n = nodes[i];
+            if(n === d.interactionState.dragInProgress) { // constrain node position to the dragging pointer
+                n.x = n.lastDraggedX;
+                n.y = n.lastDraggedY;
+            } else {
+                n.vx = (n.originalX - n.x) / c.forceTicksPerFrame; // snap to layer
+                n.y = Math.min(d.size - n.dy / 2, Math.max(n.dy / 2, n.y)); // constrain to extent
+            }
+            maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
+        }
+        if(!d.interactionState.dragInProgress && maxVelocity < 0.1 && d.forceLayouts[forceKey].alpha() > 0) {
+            d.forceLayouts[forceKey].alpha(0);
+        }
+    };
+}
+
+// basic data utilities
+
+function persistOriginalPlace(nodes) {
+    var i, distinctLayerPositions = [];
+    for(i = 0; i < nodes.length; i++) {
+        nodes[i].originalX = (nodes[i].x0 + nodes[i].x1) / 2;
+        nodes[i].originalY = (nodes[i].y0 + nodes[i].y1) / 2;
+        if(distinctLayerPositions.indexOf(nodes[i].originalX) === -1) {
+            distinctLayerPositions.push(nodes[i].originalX);
+        }
+    }
+    distinctLayerPositions.sort(function(a, b) {return a - b;});
+    for(i = 0; i < nodes.length; i++) {
+        nodes[i].originalLayerIndex = distinctLayerPositions.indexOf(nodes[i].originalX);
+        nodes[i].originalLayer = nodes[i].originalLayerIndex / (distinctLayerPositions.length - 1);
+    }
+}
+
+function saveCurrentDragPosition(d) {
+    d.lastDraggedX = d.x0 + d.dx / 2;
+    d.lastDraggedY = d.y0 + d.dy / 2;
+}
+
+function sameLayer(d) {
+    return function(n) {return n.node.originalX === d.node.originalX;};
+}
+
+function switchToForceFormat(nodes) {
+    // force uses x, y as centers
+    for(var i = 0; i < nodes.length; i++) {
+        nodes[i].y = nodes[i].y0 + nodes[i].dy / 2;
+        nodes[i].x = nodes[i].x0 + nodes[i].dx / 2;
+    }
+}
+
+function switchToSankeyFormat(nodes) {
+    // sankey uses x0, x1, y0, y1
+    for(var i = 0; i < nodes.length; i++) {
+        nodes[i].y0 = nodes[i].y - nodes[i].dy / 2;
+        nodes[i].y1 = nodes[i].y0 + nodes[i].dy;
+
+        nodes[i].x0 = nodes[i].x - nodes[i].dx / 2;
+        nodes[i].x1 = nodes[i].x0 + nodes[i].dx;
+    }
+}
 
 // scene graph
 module.exports = function(svg, calcData, layout, callbacks) {
@@ -444,17 +479,14 @@ module.exports = function(svg, calcData, layout, callbacks) {
 
     sankeyLink
         .style('stroke', function(d) {
-            // return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
-            return d.tinyColorHue;
+            return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
         })
         .style('stroke-opacity', function(d) {
-            // return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
-            return d.tinyColorAlpha;
+            return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
         })
-        .style('stroke-width', function(d) {return salientEnough(d) ? d.link.width : 1;});
-        // Uncomment the following if the link isn't a simple SVG path element
-        // .style('fill', function(d) {return d.tinyColorHue;})
-        // .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+        .style('stroke-width', function(d) {return salientEnough(d) ? d.linkLineWidth : 1;})
+        .style('fill', function(d) {return d.tinyColorHue;})
+        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
     sankeyLink.transition()
        .ease(c.ease).duration(c.duration)
@@ -484,7 +516,6 @@ module.exports = function(svg, calcData, layout, callbacks) {
     var sankeyNode = sankeyNodeSet.selectAll('.' + c.cn.sankeyNode)
         .data(function(d) {
             var nodes = d.sankey().nodes;
-            var uniqueKeys = {};
             persistOriginalPlace(nodes);
             return nodes
                 .filter(function(n) {return n.value;})
@@ -498,7 +529,7 @@ module.exports = function(svg, calcData, layout, callbacks) {
         .call(attachPointerEvents, sankey, callbacks.nodeEvents);
 
     sankeyNode
-        //.call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
+        .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
 
     sankeyNode.transition()
         .ease(c.ease).duration(c.duration)
