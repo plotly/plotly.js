@@ -6,6 +6,7 @@ var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var getRectCenter = require('../assets/get_rect_center');
 
@@ -900,6 +901,96 @@ describe('Test click interactions:', function() {
             });
         });
 
+        it('should not try to autorange fixedrange:true axes when rangeInitial is not set', function(done) {
+            var fig = {
+                data: [{
+                    x: [1, 2, 3, 4],
+                    y: [1, 2, 3, 4]
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [0.2, 999, 0.3, 0.4],
+                    yaxis: 'y2'
+                }],
+                layout: {
+                    xaxis: {
+                        title: 'xaxis',
+                        range: [0, 4]
+                    },
+                    yaxis: {
+                        titel: 'yaxis',
+                        range: [-1, 5]
+                    },
+                    yaxis2: {
+                        title: 'yaxis2',
+                        overlaying: 'y',
+                        side: 'right',
+                        showgrid: false,
+                        zeroline: false,
+                        range: [-1, 1],
+                        fixedrange: true
+                    },
+                    width: 500,
+                    height: 500
+                }
+            };
+
+            function _assert(msg, exp) {
+                var fullLayout = gd._fullLayout;
+                var xa = fullLayout.xaxis;
+                var ya = fullLayout.yaxis;
+                var ya2 = fullLayout.yaxis2;
+
+                expect(xa._rangeInitial).toBe(undefined);
+                expect(ya._rangeInitial).toBe(undefined);
+                expect(ya2._rangeInitial).toBe(undefined);
+
+                expect(xa.range).toBeCloseToArray(exp.xRng, 1, msg);
+                expect(ya.range).toBeCloseToArray(exp.yRng, 1, msg);
+                expect(ya2.range).toBeCloseToArray(exp.y2Rng, 1, msg);
+            }
+
+            Plotly.newPlot(gd, [], {})
+            .then(function() {
+                expect(gd._fullLayout.xaxis._rangeInitial).toBe(undefined);
+                expect(gd._fullLayout.yaxis._rangeInitial).toBe(undefined);
+                expect(gd._fullLayout.yaxis2).toBe(undefined);
+            })
+            .then(function() { return Plotly.react(gd, fig); })
+            .then(function() {
+                _assert('after react into fig', {
+                    xRng: [0, 4],
+                    yRng: [-1, 5],
+                    y2Rng: [-1, 1]
+                });
+            })
+            .then(function() { return drag(200, 200, 250, 250); })
+            .then(function() {
+                _assert('after zoom', {
+                    xRng: [1.509, 2.138],
+                    yRng: [2.187, 3.125],
+                    y2Rng: [-1, 1]
+                });
+            })
+            .then(function() { return doubleClick(250, 250); })
+            .then(function() {
+                _assert('after double click autorange', {
+                    xRng: [0.788, 4.211],
+                    yRng: [0.788, 4.211],
+                    y2Rng: [-1, 1]
+                });
+            })
+            .then(function() { return doubleClick(250, 250); })
+            .then(function() {
+                // more info in: https://github.com/plotly/plotly.js/issues/2718
+                _assert('after 2nd double click autorange (does not reset as rangeInitial is not set)', {
+                    xRng: [0.788, 4.211],
+                    yRng: [0.788, 4.211],
+                    y2Rng: [-1, 1]
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('zoom interactions', function() {
