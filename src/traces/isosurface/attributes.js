@@ -40,12 +40,13 @@ module.exports = extendFlat({
             'Sets the Z coordinates of the vertices on Z axis.'
         ].join(' ')
     },
-    volume: {
+    value: {
         valType: 'data_array',
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the 4th dimension of the vertices.'
+            'Sets the 4th dimension of the vertices. It should be',
+            'one dimensional array containing n=width*height*depth numbers.'
         ].join(' ')
     },
     isocap: {

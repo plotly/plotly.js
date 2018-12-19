@@ -29,7 +29,7 @@ Isosurface.meta = {
         'Draws isosurface with coordinates given by',
         'three 1-dimensional arrays in `x`, `y`, `z`',
         'with `width`, `height` & `depth` lengths as well as',
-        'another 1-dimensional array volume (data cube).',
+        'another 1-dimensional array titled value (data cube).',
     ].join(' ')
 };
 

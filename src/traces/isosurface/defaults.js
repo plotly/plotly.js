@@ -19,17 +19,28 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    coerce('x');
-    coerce('y');
-    coerce('z');
+    var x = coerce('x');
+    var y = coerce('y');
+    var z = coerce('z');
+    var value = coerce('value');
+    var isovalue = coerce('isovalue');
+
+    if(
+        !x || !x.length ||
+        !y || !y.length ||
+        !z || !z.length ||
+        !value || !value.length ||
+        !isovalue || !isovalue.length
+    ) {
+        traceOut.visible = false;
+        return;
+    }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     // Coerce remaining properties
     [
-        'volume',
-        'isovalue',
         'isocap',
         'meshalgo',
         'text',

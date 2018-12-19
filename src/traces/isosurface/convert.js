@@ -193,7 +193,7 @@ function generateIsosurfaceMesh(data) {
                     Xs[i],
                     Ys[j],
                     Zs[k],
-                    data.volume[index]
+                    data.value[index]
                 ]
             );
         }
@@ -362,7 +362,7 @@ function generateIsosurfaceMesh(data) {
         for(k = 0; k <= depth; k++) {
             for(j = 0; j <= height; j++) {
                 for(i = 0; i <= width; i++) {
-                    fXYZs[n] = data.volume[getIndex(i, j, k)] - level;
+                    fXYZs[n] = data.value[getIndex(i, j, k)] - level;
                     n++;
                 }
             }
