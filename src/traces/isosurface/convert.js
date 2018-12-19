@@ -133,7 +133,6 @@ function generateIsosurfaceMesh(data) {
     var allZs = [];
 
     var allCs = [];
-    var allMs = [];
 
     var width = data.x.length;
     var height = data.y.length;
@@ -156,55 +155,150 @@ function generateIsosurfaceMesh(data) {
 
     var num_vertices = 0;
 
-    function addRect(a, b, c, d) {
+    function drawTri(xyzw) {
+        for(var g = 0; g < 3; g++) {
+            allXs.push(xyzw[g][0]);
+            allYs.push(xyzw[g][1]);
+            allZs.push(xyzw[g][2]);
+            allCs.push(xyzw[g][3]);
 
-        if(allMs[a] && allMs[b] && allMs[c] && allMs[d]) {
-            data.i.push(a); data.j.push(b); data.k.push(c);
-            data.i.push(c); data.j.push(d); data.k.push(a);
+            if(g === 0) {
+                data.i.push(num_vertices);
+            }
+            else if(g === 1) {
+                data.j.push(num_vertices);
+            }
+            else {
+                data.k.push(num_vertices);
+            }
+
+            num_vertices++;
+        }
+    }
+
+    function tryCreateTri(a, b, c) {
+        var indecies = [a, b, c];
+        var xyzw = [];
+
+        for(var g = 0; g < 3; g++) {
+            var index = indecies[g];
+
+            var k = Math.floor(index / (width * height));
+            var j = Math.floor((index - k * width * height) / width);
+            var i = Math.floor(index - k * width * height - j * width);
+
+            xyzw.push(
+                [
+                    Xs[i],
+                    Ys[j],
+                    Zs[k],
+                    data.volume[index]
+                ]
+            );
+        }
+
+        function inRange(value) {
+            return (imin <= value && value <= imax);
+        }
+
+        var A = xyzw[0];
+        var B = xyzw[1];
+        var C = xyzw[2];
+
+        var vA = A[3];
+        var vB = B[3];
+        var vC = C[3];
+
+        var a_OK = inRange(vA);
+        var b_OK = inRange(vB);
+        var c_OK = inRange(vC);
+
+        if(a_OK && b_OK && c_OK) {
+            drawTri(xyzw);
             return;
         }
 
-        if(allMs[a] && allMs[b] && allMs[c]) {
-            data.i.push(a); data.j.push(b); data.k.push(c);
+        if(!a_OK && !b_OK && !c_OK) {
             return;
         }
 
-        if(allMs[a] && allMs[b] && allMs[d]) {
-            data.i.push(a); data.j.push(b); data.k.push(d);
+        function calcIntersection(dst, src) {
+            var val = dst[3];
+
+            if(val < imin) val = imin;
+            else if(val > imax) val = imax;
+            else return dst;
+
+            var ratio = (val - src[3]) / (dst[3] - src[3]);
+            if(ratio < 0) return dst;
+            if(ratio > 1) return dst;
+
+            for(var l = 0; l < 4; l++) {
+                dst[l] = ratio * dst[l] + (1 - ratio) * src[l];
+            }
+            return dst;
+        }
+
+        var p1, p2;
+
+        if(a_OK && b_OK) {
+            p1 = calcIntersection(C, A);
+            p2 = calcIntersection(C, B);
+
+            drawTri([A, B, p2]);
+            drawTri([p2, p1, A]);
             return;
         }
 
-        if(allMs[a] && allMs[c] && allMs[d]) {
-            data.i.push(a); data.j.push(c); data.k.push(d);
+        if(b_OK && c_OK) {
+            p1 = calcIntersection(A, B);
+            p2 = calcIntersection(A, C);
+
+            drawTri([B, C, p2]);
+            drawTri([p2, p1, B]);
             return;
         }
 
-        if(allMs[b] && allMs[c] && allMs[d]) {
-            data.i.push(b); data.j.push(c); data.k.push(d);
+        if(c_OK && a_OK) {
+            p1 = calcIntersection(B, C);
+            p2 = calcIntersection(B, A);
+
+            drawTri([C, A, p2]);
+            drawTri([p2, p1, C]);
+            return;
+        }
+
+        if(a_OK) {
+            p1 = calcIntersection(B, A);
+            p2 = calcIntersection(C, A);
+
+            drawTri([A, p1, p2]);
+            return;
+        }
+
+        if(b_OK) {
+            p1 = calcIntersection(C, B);
+            p2 = calcIntersection(A, B);
+
+            drawTri([B, p1, p2]);
+            return;
+        }
+
+        if(c_OK) {
+            p1 = calcIntersection(A, C);
+            p2 = calcIntersection(B, C);
+
+            drawTri([C, p1, p2]);
             return;
         }
     }
 
+    function addRect(a, b, c, d) {
+        tryCreateTri(a, b, c);
+        tryCreateTri(c, d, a);
+    }
+
     if(data.isocap) {
-
-        // keep positions and colors for caps
-        for(k = 0; k < depth; k++) {
-            for(j = 0; j < height; j++) {
-                for(i = 0; i < width; i++) {
-                    allXs.push(Xs[i]);
-                    allYs.push(Ys[j]);
-                    allZs.push(Zs[k]);
-
-                    num_vertices++;
-
-                    var v = data.volume[getIndex(i, j, k)];
-                    allCs.push(v);
-                    allMs.push((v > imax || v < imin) ? false : true);
-                }
-            }
-        }
-
-        // create cap cells
 
         var p00, p01, p10, p11;
         for(j = 1; j < height; j++) {
