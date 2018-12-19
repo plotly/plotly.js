@@ -796,6 +796,8 @@ describe('Test histogram', function() {
                 x: [1, 2, 3], type: 'histogram'
             }, {
                 x: [1, 2, 3], type: 'histogram'
+            }, {
+                type: 'histogram'
             }])
             .then(function() {
                 assertTraceCount(3);
@@ -834,32 +836,33 @@ describe('Test histogram', function() {
             Plotly.newPlot(gd, [
                 {type: 'histogram', x: [1]},
                 {type: 'histogram', x: [10, 10.1, 10.2, 10.3]},
-                {type: 'histogram', x: [20, 20, 20, 20, 20, 20, 20, 20, 20, 21]}
+                {type: 'histogram', x: [20, 20, 20, 20, 20, 20, 20, 20, 20, 21]},
+                {type: 'histogram'}
             ])
             .then(function() {
-                _assertBinCenters([[0], [10], [20]]);
+                _assertBinCenters([[0], [10], [20], hidden]);
                 return Plotly.restyle(gd, 'visible', 'legendonly', [1, 2]);
             })
             .then(function() {
-                _assertBinCenters([[0], hidden, hidden]);
+                _assertBinCenters([[0], hidden, hidden, hidden]);
                 return Plotly.restyle(gd, 'visible', false, [1, 2]);
             })
             .then(function() {
-                _assertBinCenters([[1], hidden, hidden]);
+                _assertBinCenters([[1], hidden, hidden, hidden]);
                 return Plotly.restyle(gd, 'visible', [false, false, true]);
             })
             .then(function() {
-                _assertBinCenters([hidden, hidden, [20, 21]]);
+                _assertBinCenters([hidden, hidden, [20, 21], hidden]);
                 return Plotly.restyle(gd, 'visible', [false, true, false]);
             })
             .then(function() {
-                _assertBinCenters([hidden, [10.1, 10.3], hidden]);
+                _assertBinCenters([hidden, [10.1, 10.3], hidden, hidden]);
                 // only one trace is visible, despite traces being grouped
                 expect(gd._fullLayout.bargap).toBe(0);
                 return Plotly.restyle(gd, 'visible', ['legendonly', true, 'legendonly']);
             })
             .then(function() {
-                _assertBinCenters([hidden, [10], hidden]);
+                _assertBinCenters([hidden, [10], hidden, hidden]);
                 // legendonly traces still flip us back to gapped
                 expect(gd._fullLayout.bargap).toBe(0.2);
             })

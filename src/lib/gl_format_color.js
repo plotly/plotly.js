@@ -48,11 +48,7 @@ function formatColor(containerIn, opacityIn, len) {
 
     if(containerIn.colorscale !== undefined) {
         sclFunc = Colorscale.makeColorScaleFunc(
-            Colorscale.extractScale(
-                containerIn.colorscale,
-                containerIn.cmin,
-                containerIn.cmax
-            )
+            Colorscale.extractScale(containerIn, {cLetter: 'c'})
         );
     }
     else {

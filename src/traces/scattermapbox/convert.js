@@ -158,7 +158,7 @@ function makeCircleOpts(calcTrace) {
     if(arrayColor) {
         if(Colorscale.hasColorscale(trace, 'marker')) {
             colorFn = Colorscale.makeColorScaleFunc(
-                 Colorscale.extractScale(marker.colorscale, marker.cmin, marker.cmax)
+                 Colorscale.extractScale(marker, {cLetter: 'c'})
              );
         } else {
             colorFn = Lib.identity;

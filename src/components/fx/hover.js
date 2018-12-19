@@ -1565,8 +1565,11 @@ function hoverChanged(gd, evt, oldhoverdata) {
     for(var i = oldhoverdata.length - 1; i >= 0; i--) {
         var oldPt = oldhoverdata[i];
         var newPt = gd._hoverdata[i];
+
         if(oldPt.curveNumber !== newPt.curveNumber ||
-                String(oldPt.pointNumber) !== String(newPt.pointNumber)) {
+            String(oldPt.pointNumber) !== String(newPt.pointNumber) ||
+            String(oldPt.pointNumbers) !== String(newPt.pointNumbers)
+        ) {
             return true;
         }
     }

@@ -6,33 +6,32 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
-
 var hasColorbar = require('../colorbar/has_colorbar');
 var colorbarDefaults = require('../colorbar/defaults');
-var isValidScale = require('./is_valid_scale');
-var flipScale = require('./flip_scale');
 
+var isValidScale = require('./scales').isValid;
+
+function npMaybe(cont, prefix) {
+    var containerStr = prefix.slice(0, prefix.length - 1);
+    return prefix ?
+        Lib.nestedProperty(cont, containerStr).get() || {} :
+        cont;
+}
 
 module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, opts) {
-    var prefix = opts.prefix,
-        cLetter = opts.cLetter,
-        containerStr = prefix.slice(0, prefix.length - 1),
-        containerIn = prefix ?
-            Lib.nestedProperty(traceIn, containerStr).get() || {} :
-            traceIn,
-        containerOut = prefix ?
-            Lib.nestedProperty(traceOut, containerStr).get() || {} :
-            traceOut,
-        minIn = containerIn[cLetter + 'min'],
-        maxIn = containerIn[cLetter + 'max'],
-        sclIn = containerIn.colorscale;
+    var prefix = opts.prefix;
+    var cLetter = opts.cLetter;
+    var containerIn = npMaybe(traceIn, prefix);
+    var containerOut = npMaybe(traceOut, prefix);
+    var template = npMaybe(traceOut._template || {}, prefix) || {};
 
+    var minIn = containerIn[cLetter + 'min'];
+    var maxIn = containerIn[cLetter + 'max'];
     var validMinMax = isNumeric(minIn) && isNumeric(maxIn) && (minIn < maxIn);
     coerce(prefix + cLetter + 'auto', !validMinMax);
     coerce(prefix + cLetter + 'min');
@@ -40,19 +39,17 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
 
     // handles both the trace case (autocolorscale is false by default) and
     // the marker and marker.line case (autocolorscale is true by default)
+    var sclIn = containerIn.colorscale;
+    var sclTemplate = template.colorscale;
     var autoColorscaleDflt;
     if(sclIn !== undefined) autoColorscaleDflt = !isValidScale(sclIn);
+    if(sclTemplate !== undefined) autoColorscaleDflt = !isValidScale(sclTemplate);
     coerce(prefix + 'autocolorscale', autoColorscaleDflt);
-    var sclOut = coerce(prefix + 'colorscale');
 
-    // reversescale is handled at the containerOut level
-    var reverseScale = coerce(prefix + 'reversescale');
-    if(reverseScale) containerOut.colorscale = flipScale(sclOut);
+    coerce(prefix + 'colorscale');
+    coerce(prefix + 'reversescale');
 
-    // ... until Scatter.colorbar can handle marker line colorbars
-    if(prefix === 'marker.line.') return;
-
-    if(!opts.noScale) {
+    if(!opts.noScale && prefix !== 'marker.line.') {
         // handles both the trace case where the dflt is listed in attributes and
         // the marker case where the dflt is determined by hasColorbar
         var showScaleDflt;

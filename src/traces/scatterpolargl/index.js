@@ -12,7 +12,7 @@ var cluster = require('point-cluster');
 var isNumeric = require('fast-isnumeric');
 
 var ScatterGl = require('../scattergl');
-var calcColorscales = require('../scatter/colorscale_calc');
+var calcColorscale = require('../scatter/colorscale_calc');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var convert = require('../scattergl/convert');
 
@@ -38,7 +38,7 @@ function calc(gd, trace) {
     stash.r = rArray;
     stash.theta = thetaArray;
 
-    calcColorscales(gd, trace);
+    calcColorscale(gd, trace);
 
     // only compute 'style' options in calc, as position options
     // depend on the radial range and must be set in plot

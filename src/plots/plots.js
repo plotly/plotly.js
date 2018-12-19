@@ -449,6 +449,7 @@ plots.supplyDefaults = function(gd, opts) {
     for(i = 0; i < crossTraceDefaultsFuncs.length; i++) {
         crossTraceDefaultsFuncs[i](newFullData, newFullLayout);
     }
+    Registry.getComponentMethod('colorscale', 'crossTraceDefaults')(newFullData, newFullLayout);
 
     // turn on flag to optimize large splom-only graphs
     // mostly by omitting SVG layers during Cartesian.drawFramework

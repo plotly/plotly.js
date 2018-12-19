@@ -251,16 +251,18 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         var isFirstVisible = true;
         for(i = 0; i < traces.length; i++) {
             tracei = traces[i];
-            pos0 = tracei._pos0 = pa.makeCalcdata(tracei, mainData);
-            allPos = Lib.concat(allPos, pos0);
-            delete tracei._autoBinFinished;
-            if(trace.visible === true) {
-                if(isFirstVisible) {
-                    isFirstVisible = false;
-                }
-                else {
-                    delete tracei._autoBin;
-                    tracei._autoBinFinished = 1;
+            if(tracei.visible) {
+                pos0 = tracei._pos0 = pa.makeCalcdata(tracei, mainData);
+                allPos = Lib.concat(allPos, pos0);
+                delete tracei._autoBinFinished;
+                if(trace.visible === true) {
+                    if(isFirstVisible) {
+                        isFirstVisible = false;
+                    }
+                    else {
+                        delete tracei._autoBin;
+                        tracei._autoBinFinished = 1;
+                    }
                 }
             }
         }

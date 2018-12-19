@@ -11,7 +11,7 @@
 // Requirements
 // ============
 var wrap = require('../../lib/gup').wrap;
-var hasColorscale = require('../../components/colorscale/has_colorscale');
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleCalc = require('../../components/colorscale/calc');
 var filterUnique = require('../../lib/filter_unique.js');
 var Drawing = require('../../components/drawing');

@@ -8,16 +8,20 @@
 
 'use strict';
 
-var lineLayerMaker = require('./lines');
-var c = require('./constants');
-var Lib = require('../../lib');
 var d3 = require('d3');
+
+var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var Colorscale = require('../../components/colorscale');
+
 var gup = require('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
+
+var c = require('./constants');
 var brush = require('./axisbrush');
+var lineLayerMaker = require('./lines');
 
 function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
 
@@ -129,8 +133,8 @@ function model(layout, d, i) {
     var cd0 = unwrap(d),
         trace = cd0.trace,
         lineColor = cd0.lineColor,
-        cscale = cd0.cscale,
         line = trace.line,
+        cscale = line.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale,
         domain = trace.domain,
         dimensions = trace.dimensions,
         width = layout.width,
