@@ -703,13 +703,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
 
-                if(!ax._rangeInitial) {
-                    attrs[ax._name + '.autorange'] = true;
-                }
-                else {
-                    rangeInitial = ax._rangeInitial;
-                    attrs[ax._name + '.range[0]'] = rangeInitial[0];
-                    attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                if(!ax.fixedrange) {
+                    if(!ax._rangeInitial) {
+                        attrs[ax._name + '.autorange'] = true;
+                    } else {
+                        rangeInitial = ax._rangeInitial;
+                        attrs[ax._name + '.range[0]'] = rangeInitial[0];
+                        attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                    }
                 }
             }
         }
