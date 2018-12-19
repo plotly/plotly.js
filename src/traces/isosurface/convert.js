@@ -119,9 +119,6 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-var SURFACE_NETS = 'SurfaceNets';
-var MARCHING_CUBES = 'MarchingCubes';
-var MARCHING_TETRAHEDRA = 'MarchingTetrahedra';
 
 function generateIsosurfaceMesh(data) {
 
@@ -136,6 +133,7 @@ function generateIsosurfaceMesh(data) {
     var allZs = [];
 
     var allCs = [];
+    var allMs = [];
 
     var width = data.x.length;
     var height = data.y.length;
@@ -143,77 +141,168 @@ function generateIsosurfaceMesh(data) {
 
     var i, j, k;
 
+    function getIndex(i, j, k) {
+        return i + width * j + width * height * k;
+    }
+
     var Xs = []; for(i = 0; i < width; i++) { Xs[i] = data.x[i]; }
     var Ys = []; for(j = 0; j < height; j++) { Ys[j] = data.y[j]; }
     var Zs = []; for(k = 0; k < depth; k++) { Zs[k] = data.z[k]; }
 
-    var bounds = [
-        [
-            Math.min.apply(null, Xs),
-            Math.min.apply(null, Ys),
-            Math.min.apply(null, Zs)
-        ],
-        [
-            Math.max.apply(null, Xs),
-            Math.max.apply(null, Ys),
-            Math.max.apply(null, Zs)
-        ]
-    ];
+    var imin = Math.min.apply(null, data.isovalue);
+    var imax = Math.max.apply(null, data.isovalue);
 
     var dims = [width, height, depth];
 
     var num_vertices = 0;
+
+    function addRect(a, b, c, d) {
+
+        if(allMs[a] && allMs[b] && allMs[c] && allMs[d]) {
+            data.i.push(a); data.j.push(b); data.k.push(c);
+            data.i.push(c); data.j.push(d); data.k.push(a);
+            return;
+        }
+
+        if(allMs[a] && allMs[b] && allMs[c]) {
+            data.i.push(a); data.j.push(b); data.k.push(c);
+            return;
+        }
+
+        if(allMs[a] && allMs[b] && allMs[d]) {
+            data.i.push(a); data.j.push(b); data.k.push(d);
+            return;
+        }
+
+        if(allMs[a] && allMs[c] && allMs[d]) {
+            data.i.push(a); data.j.push(c); data.k.push(d);
+            return;
+        }
+
+        if(allMs[b] && allMs[c] && allMs[d]) {
+            data.i.push(b); data.j.push(c); data.k.push(d);
+            return;
+        }
+    }
+
+    if(data.isocap) {
+
+        // keep positions and colors for caps
+        for(k = 0; k < depth; k++) {
+            for(j = 0; j < height; j++) {
+                for(i = 0; i < width; i++) {
+                    allXs.push(Xs[i]);
+                    allYs.push(Ys[j]);
+                    allZs.push(Zs[k]);
+
+                    num_vertices++;
+
+                    var v = data.volume[getIndex(i, j, k)];
+                    allCs.push(v);
+                    allMs.push((v > imax || v < imin) ? false : true);
+                }
+            }
+        }
+
+        // create cap cells
+
+        var p00, p01, p10, p11;
+        for(j = 1; j < height; j++) {
+            for(i = 1; i < width; i++) {
+
+                for(k = 0; k < depth; k += depth - 1) {
+                    p00 = getIndex(i - 1, j - 1, k);
+                    p01 = getIndex(i - 1, j, k);
+                    p10 = getIndex(i, j - 1, k);
+                    p11 = getIndex(i, j, k);
+
+                    addRect(p00, p01, p11, p10);
+                }
+            }
+        }
+
+        for(k = 1; k < depth; k++) {
+            for(j = 1; j < height; j++) {
+
+                for(i = 0; i < width; i += width - 1) {
+                    p00 = getIndex(i, j - 1, k - 1);
+                    p01 = getIndex(i, j - 1, k);
+                    p10 = getIndex(i, j, k - 1);
+                    p11 = getIndex(i, j, k);
+
+                    addRect(p00, p01, p11, p10);
+                }
+            }
+        }
+
+        for(i = 1; i < width; i++) {
+            for(k = 1; k < depth; k++) {
+
+                for(j = 0; j < height; j += height - 1) {
+                    p00 = getIndex(i - 1, j, k - 1);
+                    p01 = getIndex(i, j, k - 1);
+                    p10 = getIndex(i - 1, j, k);
+                    p11 = getIndex(i, j, k);
+
+                    addRect(p00, p01, p11, p10);
+                }
+            }
+        }
+    }
+
     for(var iso_id = 0; iso_id < data.isovalue.length; iso_id++) {
 
-        var intensity = data.isovalue[iso_id];
+        var level = data.isovalue[iso_id];
+        var intensity = level;
 
         var fXYZs = [];
-
         var n = 0;
         for(k = 0; k <= depth; k++) {
             for(j = 0; j <= height; j++) {
                 for(i = 0; i <= width; i++) {
-
-                    var index = i + width * j + width * height * k;
-
-                    fXYZs[n] = data.volume[index] - data.isovalue[iso_id];
-
+                    fXYZs[n] = data.volume[getIndex(i, j, k)] - level;
                     n++;
                 }
             }
         }
 
         var isosurfaceMesh = // Note: data array is passed without bounds to disable rescales
-            (data.meshalgo === SURFACE_NETS) ?
+            (data.meshalgo === 'SurfaceNets') ?
                 createIsosurface.surfaceNets(dims, fXYZs) :
-            (data.meshalgo === MARCHING_TETRAHEDRA) ?
+            (data.meshalgo === 'MarchingTetrahedra') ?
                 createIsosurface.marchingTetrahedra(dims, fXYZs) :
-            (data.meshalgo === MARCHING_CUBES) ?
-                createIsosurface.marchingCubes(dims, fXYZs) :
-                createIsosurface.marchingCubes(dims, fXYZs); // i.e. default
+                createIsosurface.marchingCubes(dims, fXYZs); // default: MarchingCube
 
         var q, len;
 
         var positions = isosurfaceMesh.positions;
         len = positions.length;
 
-        var axis, min, max;
+        var axis;
+
+        var starts = [
+            Xs[0],
+            Ys[0],
+            Zs[0]
+        ];
+        var ends = [
+            Xs[Xs.length - 1],
+            Ys[Ys.length - 1],
+            Zs[Zs.length - 1]
+        ];
 
         // map pixel coordinates (0..n) to (real) world coordinates
         for(axis = 0; axis < 3; axis++) {
-            min = bounds[0][axis];
-            max = bounds[1][axis];
+            var start = starts[axis];
+            var end = ends[axis];
             for(q = 0; q < len; q++) {
-                positions[q][axis] = min + (max - min) * positions[q][axis] / (dims[axis] - 1);
+                positions[q][axis] = start + (end - start) * positions[q][axis] / (dims[axis] - 1);
             }
         }
 
         // handle non-uniform 3D space
         for(axis = 0; axis < 3; axis++) {
             var xyz = (axis === 0) ? data.x : (axis === 1) ? data.y : data.z;
-
-            min = bounds[0][axis];
-            max = bounds[1][axis];
 
             for(q = 0; q < len; q++) {
                 var here = positions[q][axis];
@@ -243,7 +332,7 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        // record positions
+        // record positions & colors of iso surface
         for(q = 0; q < len; q++) {
             allXs.push(positions[q][0]);
             allYs.push(positions[q][1]);
@@ -252,7 +341,7 @@ function generateIsosurfaceMesh(data) {
             allCs.push(intensity);
         }
 
-        // record cells
+        // record cells of iso surface
         var cells = isosurfaceMesh.cells;
         len = cells.length;
         for(q = 0; q < len; q++) {

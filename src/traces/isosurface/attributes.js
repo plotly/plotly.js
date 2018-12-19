@@ -48,6 +48,15 @@ module.exports = extendFlat({
             'Sets the 4th dimension of the vertices.'
         ].join(' ')
     },
+    isocap: {
+        valType: 'boolean',
+        role: 'info',
+        editType: 'calc',
+        dflt: false,
+        description: [
+            'Enable caps between minimum and maximum iso values.'
+        ].join(' ')
+    },
     isovalue: {
         valType: 'data_array',
         role: 'info',
