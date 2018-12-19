@@ -7,17 +7,39 @@
         [2, 1, 2],
         [2, 1, 2]
       ],
-      "contours": {
-        "showlabels": true
-      }
+      "contours": {"showlabels": true}
+    },
+    {
+      "type": "contour",
+      "z": [
+        [1, 2, 1],
+        [2, 1, 2],
+        [2, 1, 2]
+      ],
+      "contours": {"showlabels": true},
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "contour",
+      "z": [
+        [1, 2, 1],
+        [2, 1, 2],
+        [2, 1, 2]
+      ],
+      "contours": {"showlabels": true},
+      "xaxis": "x3",
+      "yaxis": "y3"
     }
   ],
   "layout": {
-    "yaxis": {
-      "autorange": "reversed"
-    },
-    "xaxis": {
-      "autorange": "reversed"
-    }
+    "grid": {"rows": 2, "columns": 2, "pattern": "independent"},
+
+    "xaxis": {"autorange": "reversed"},
+    "yaxis": {"autorange": "reversed"},
+
+    "xaxis2": {"autorange": "reversed"},
+
+    "yaxis3": {"autorange": "reversed"}
   }
 }
