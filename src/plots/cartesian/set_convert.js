@@ -178,10 +178,13 @@ module.exports = function setConvert(ax, fullLayout) {
                 var ind1 = seen[1][1];
                 return ind1[a[1]] - ind1[b[1]];
             });
-        }
 
-        for(i = 0; i < len; i++) {
-            arrayOut[i] = setCategoryIndex(tmp[i]);
+            for(i = 0; i < len; i++) {
+                setCategoryIndex(tmp[i]);
+            }
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = getCategoryIndex([arrayIn[0][i], arrayIn[1][i]]);
+            }
         }
 
         return arrayOut;

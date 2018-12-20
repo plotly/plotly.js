@@ -2856,7 +2856,7 @@ describe('Test axes', function() {
                     x: [['1', '2', '1', '2'], ['a', 'a', 'b', 'b']]
                 }, 'x', 'multicategory');
 
-                expect(out).toEqual([0, 1, 2, 3]);
+                expect(out).toEqual([0, 2, 1, 3]);
                 expect(ax._categories).toEqual([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']]);
                 expect(ax._categoriesMap).toEqual({'1,a': 0, '1,b': 1, '2,a': 2, '2,b': 3});
             });
@@ -2866,7 +2866,7 @@ describe('Test axes', function() {
                     x: [['1', '2', null, '2'], ['a', 'a', 'b', 'b']]
                 }, 'x', 'multicategory');
 
-                expect(out).toEqual([0, 1, 2, BADNUM]);
+                expect(out).toEqual([0, 1, BADNUM, 2]);
                 expect(ax._categories).toEqual([['1', 'a'], ['2', 'a'], ['2', 'b']]);
                 expect(ax._categoriesMap).toEqual({'1,a': 0, '2,a': 1, '2,b': 2});
             });
@@ -2876,7 +2876,7 @@ describe('Test axes', function() {
                     x: [['1', '2', '1', '2'], ['a', 'a', null, 'b']]
                 }, 'x', 'multicategory');
 
-                expect(out).toEqual([0, 1, 2, BADNUM]);
+                expect(out).toEqual([0, 1, BADNUM, 2]);
                 expect(ax._categories).toEqual([['1', 'a'], ['2', 'a'], ['2', 'b']]);
                 expect(ax._categoriesMap).toEqual({'1,a': 0, '2,a': 1, '2,b': 2});
             });
@@ -2919,7 +2919,7 @@ describe('Test axes', function() {
                     ]
                 }, 'x', 'multicategory');
 
-                expect(out).toEqual([0, 1, 2, 3]);
+                expect(out).toEqual([0, 2, 1, 3]);
                 expect(ax._categories).toEqual([[1, 10], [1, 20], [2, 10], [2, 20]]);
                 expect(ax._categoriesMap).toEqual({'1,10': 0, '1,20': 1, '2,10': 2, '2,20': 3});
             });
