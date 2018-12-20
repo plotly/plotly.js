@@ -206,7 +206,8 @@ function generateIsosurfaceMesh(data) {
             var PB = Math.abs(value - imax);
             var closeness = Math.min(PA, PB) / idif;
 
-            if(closeness < 0.01) return true;
+            // tolerate certain error i.e. based on distances ...
+            if(closeness < 0.001) return true;
 
             return false;
         }
