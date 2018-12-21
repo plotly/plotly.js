@@ -133,7 +133,7 @@
     "into-stream": "^3.1.0",
     "jasmine-core": "^2.99.1",
     "jsdom": "^11.12.0",
-    "karma": "^3.1.1",
+    "karma": "^3.1.4",
     "karma-browserify": "^6.0.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-fail-fast-reporter": "^1.0.5",
