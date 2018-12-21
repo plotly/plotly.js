@@ -97,10 +97,19 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
     }
 
+    var fullGl3dData = [];
+    for(var i = 0; i < opts.fullData.length; i++) {
+        if(opts.fullData[i].scene) {
+            fullGl3dData.push(
+                opts.fullData[i]
+            );
+        }
+    }
+
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
-        data: opts.fullData,
+        data: fullGl3dData,
         bgColor: bgColorCombined,
         calendar: opts.calendar,
         fullLayout: opts.fullLayout

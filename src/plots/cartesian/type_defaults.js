@@ -91,7 +91,6 @@ function setAutoType(ax, data) {
         }
     }
     else {
-        if(axLetter === 'z') opts.noMultiCategory = true;
         ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar, opts);
     }
 }
