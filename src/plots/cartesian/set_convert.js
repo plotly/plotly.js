@@ -17,6 +17,7 @@ var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
 var ensureNumber = Lib.ensureNumber;
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 
 var numConstants = require('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
@@ -148,43 +149,11 @@ module.exports = function setConvert(ax, fullLayout) {
 
     function setMultiCategoryIndex(arrayIn, len) {
         var arrayOut = new Array(len);
-        var i;
 
-        // [ [arrayIn[0][i], arrayIn[1][i]], for i .. len ]
-        var tmp = new Array(len);
-        // [ [cnt, {$cat: index}], for j .. arrayIn.length ]
-        var seen = [[0, {}], [0, {}]];
-
-        if(Lib.isArrayOrTypedArray(arrayIn[0]) && Lib.isArrayOrTypedArray(arrayIn[1])) {
-            for(i = 0; i < len; i++) {
-                var v0 = arrayIn[0][i];
-                var v1 = arrayIn[1][i];
-                if(isValidCategory(v0) && isValidCategory(v1)) {
-                    tmp[i] = [v0, v1];
-                    if(!(v0 in seen[0][1])) {
-                        seen[0][1][v0] = seen[0][0]++;
-                    }
-                    if(!(v1 in seen[1][1])) {
-                        seen[1][1][v1] = seen[1][0]++;
-                    }
-                }
-            }
-
-            tmp.sort(function(a, b) {
-                var ind0 = seen[0][1];
-                var d = ind0[a[0]] - ind0[b[0]];
-                if(d) return d;
-
-                var ind1 = seen[1][1];
-                return ind1[a[1]] - ind1[b[1]];
-            });
-
-            for(i = 0; i < len; i++) {
-                setCategoryIndex(tmp[i]);
-            }
-            for(i = 0; i < len; i++) {
-                arrayOut[i] = getCategoryIndex([arrayIn[0][i], arrayIn[1][i]]);
-            }
+        for(var i = 0; i < len; i++) {
+            var v0 = (arrayIn[0] || [])[i];
+            var v1 = (arrayIn[1] || [])[i];
+            arrayOut[i] = getCategoryIndex([v0, v1]);
         }
 
         return arrayOut;
@@ -332,6 +301,56 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.cleanPos = function(v) {
             if(Array.isArray(v) || (typeof v === 'string' && v !== '')) return v;
             return ensureNumber(v);
+        };
+
+        ax.setupMultiCategory = function(fullData) {
+            var traceIndices = ax._traceIndices;
+            var i, j;
+
+            // [ [cnt, {$cat: index}], for 1,2 ]
+            var seen = ax._multicatSeen = [[0, {}], [0, {}]];
+            // [ [arrayIn[0][i], arrayIn[1][i]], for i .. N ]
+            var list = ax._multicatList = [];
+
+            for(i = 0; i < traceIndices.length; i++) {
+                var trace = fullData[traceIndices[i]];
+
+                if(axLetter in trace) {
+                    var arrayIn = trace[axLetter];
+                    var len = trace._length || Lib.minRowLength(arrayIn);
+
+                    if(isArrayOrTypedArray(arrayIn[0]) && isArrayOrTypedArray(arrayIn[1])) {
+                        for(j = 0; j < len; j++) {
+                            var v0 = arrayIn[0][j];
+                            var v1 = arrayIn[1][j];
+
+                            if(isValidCategory(v0) && isValidCategory(v1)) {
+                                list.push([v0, v1]);
+
+                                if(!(v0 in seen[0][1])) {
+                                    seen[0][1][v0] = seen[0][0]++;
+                                }
+                                if(!(v1 in seen[1][1])) {
+                                    seen[1][1][v1] = seen[1][0]++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            list.sort(function(a, b) {
+                var ind0 = seen[0][1];
+                var d = ind0[a[0]] - ind0[b[0]];
+                if(d) return d;
+
+                var ind1 = seen[1][1];
+                return ind1[a[1]] - ind1[b[1]];
+            });
+
+            for(i = 0; i < list.length; i++) {
+                setCategoryIndex(list[i]);
+            }
         };
     }
 

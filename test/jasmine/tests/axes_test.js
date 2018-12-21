@@ -2723,6 +2723,8 @@ describe('Test axes', function() {
             ax = {type: axType};
             Axes.setConvert(ax);
             ax._categories = [];
+            ax._traceIndices = [0];
+            if(axType === 'multicategory') ax.setupMultiCategory([trace]);
             return ax.makeCalcdata(trace, axLetter);
         }
 

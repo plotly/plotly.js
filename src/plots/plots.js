@@ -2579,7 +2579,7 @@ plots.doCalcdata = function(gd, traces) {
         );
     }
 
-    clearAxesCalc(axList);
+    clearAxesCalc(axList, fullData);
 
     var hasCalcTransform = false;
 
@@ -2675,9 +2675,13 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
-function clearAxesCalc(axList) {
+function clearAxesCalc(axList, fullData) {
     for(var i = 0; i < axList.length; i++) {
-        axList[i].clearCalc();
+        var ax = axList[i];
+        ax.clearCalc();
+        if(ax.type === 'multicategory') {
+            ax.setupMultiCategory(fullData);
+        }
     }
 }
 
