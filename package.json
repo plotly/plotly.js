@@ -151,7 +151,7 @@
     "npm-link-check": "^3.0.0",
     "open": "0.0.5",
     "prepend-file": "^1.3.1",
-    "prettysize": "1.1.0",
+    "prettysize": "^2.0.0",
     "read-last-lines": "^1.6.0",
     "requirejs": "^2.3.6",
     "run-series": "^1.1.8",
