@@ -240,8 +240,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
         .classed('contourlabels', true);
 
     if(showLabels) {
-        var labelClipPathData = [perimeter];
-
+        var labelClipPathData = [];
         var labelData = [];
 
         // invalidate the getTextLocation cache in case paths changed
@@ -286,6 +285,13 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
 
         bounds.middle = (bounds.top + bounds.bottom) / 2;
         bounds.center = (bounds.left + bounds.right) / 2;
+
+        labelClipPathData.push([
+            [bounds.left, bounds.top],
+            [bounds.right, bounds.top],
+            [bounds.right, bounds.bottom],
+            [bounds.left, bounds.bottom]
+        ]);
 
         var plotDiagonal = Math.sqrt(xLen * xLen + yLen * yLen);
 
