@@ -34,9 +34,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var coords = readComponents(['x', 'y', 'z']);
-    var indices = readComponents(['i', 'j', 'k']);
+    readComponents(['i', 'j', 'k']);
 
-    if(!coords || !indices) {
+    if(!coords) {
         traceOut.visible = false;
         return;
     }
