@@ -185,7 +185,6 @@ describe('Test surface', function() {
 
     });
 
-
     describe('Test dimension and expected visibility tests', function() {
         var gd;
 
@@ -193,19 +192,17 @@ describe('Test surface', function() {
             gd = createGraphDiv();
         });
 
-
         afterEach(function() {
             Plotly.purge(gd);
             destroyGraphDiv();
         });
-
 
         function assertVisibility(exp, msg) {
             expect(gd._fullData[0]).not.toBe(undefined, 'no visibility!');
             expect(gd._fullData[0].visible).toBe(exp, msg);
         }
 
-        fit('@gl surface should be invisible when the z array is empty', function(done) {
+        it('@gl surface should be invisible when the z array is empty', function(done) {
             Plotly.plot(gd, [{
                 'type': 'surface',
                 'z': []
@@ -217,7 +214,35 @@ describe('Test surface', function() {
             .then(done);
         });
 
-        fit('@gl surface should be invisible when the x array is defined but has less than two rows', function(done) {
+        it('@gl surface should be invisible when the x array is defined but is empty', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'x': [],
+                'y': [0, 1],
+                'z': []
+            }])
+            .then(function() {
+                assertVisibility(false, 'not to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl surface should be invisible when the y array is defined but is empty', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'x': [0, 1],
+                'y': [],
+                'z': []
+            }])
+            .then(function() {
+                assertVisibility(false, 'not to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl surface should be invisible when the x array is defined and has at least one item', function(done) {
             Plotly.plot(gd, [{
                 'type': 'surface',
                 'x': [0],
@@ -225,13 +250,13 @@ describe('Test surface', function() {
                 'z': [[1], [2]]
             }])
             .then(function() {
-                assertVisibility(false, 'not to be visible');
+                assertVisibility(true, 'to be visible');
             })
             .catch(failTest)
             .then(done);
         });
 
-        fit('@gl surface should be invisible when the y array is defined but has less than two colums', function(done) {
+        it('@gl surface should be invisible when the y array is defined and has at least one item', function(done) {
             Plotly.plot(gd, [{
                 'type': 'surface',
                 'x': [0, 1],
@@ -239,13 +264,13 @@ describe('Test surface', function() {
                 'z': [[1, 2]]
             }])
             .then(function() {
-                assertVisibility(false, 'not to be visible');
+                assertVisibility(true, 'to be visible');
             })
             .catch(failTest)
             .then(done);
         });
 
-        fit('@gl surface should be visible when the x and y are not provided; but z array is provided', function(done) {
+        it('@gl surface should be visible when the x and y are not provided; but z array is provided', function(done) {
             Plotly.plot(gd, [{
                 'type': 'surface',
                 'z': [[1, 2], [3, 4]]
@@ -257,7 +282,7 @@ describe('Test surface', function() {
             .then(done);
         });
 
-        fit('@gl surface should be invisible when the x and y are provided; but z array is not provided', function(done) {
+        it('@gl surface should be invisible when the x and y are provided; but z array is not provided', function(done) {
             Plotly.plot(gd, [{
                 'type': 'surface',
                 'x': [0, 1],

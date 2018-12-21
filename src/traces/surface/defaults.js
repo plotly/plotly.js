@@ -28,13 +28,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var z = coerce('z');
     if(!z || !z.length ||
-       (x ? (x.length < 2) : false) ||
-       (y ? (y.length < 2) : false)
+       (x ? (x.length < 1) : false) ||
+       (y ? (y.length < 1) : false)
     ) {
         traceOut.visible = false;
         return;
     }
-
 
     traceOut._xlength = (Array.isArray(x) && Lib.isArrayOrTypedArray(x[0])) ? z.length : z[0].length;
     traceOut._ylength = z.length;
