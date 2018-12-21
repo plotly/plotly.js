@@ -2524,9 +2524,9 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 };
 
 plots.doCalcdata = function(gd, traces) {
-    var axList = axisIDs.list(gd),
-        fullData = gd._fullData,
-        fullLayout = gd._fullLayout;
+    var axList = axisIDs.list(gd);
+    var fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
 
     var trace, _module, i, j;
 
@@ -2579,7 +2579,7 @@ plots.doCalcdata = function(gd, traces) {
         );
     }
 
-    clearAxesCalc(axList);
+    setupAxisCategories(axList, fullData);
 
     var hasCalcTransform = false;
 
@@ -2617,7 +2617,7 @@ plots.doCalcdata = function(gd, traces) {
     }
 
     // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) clearAxesCalc(axList);
+    if(hasCalcTransform) setupAxisCategories(axList, fullData);
 
     function calci(i, isContainer) {
         trace = fullData[i];
@@ -2675,9 +2675,13 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
-function clearAxesCalc(axList) {
+function setupAxisCategories(axList, fullData) {
     for(var i = 0; i < axList.length; i++) {
-        axList[i].clearCalc();
+        var ax = axList[i];
+        ax.clearCalc();
+        if(ax.type === 'multicategory') {
+            ax.setupMultiCategory(fullData);
+        }
     }
 }
 
