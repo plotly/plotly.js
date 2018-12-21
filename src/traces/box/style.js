@@ -32,14 +32,15 @@ function style(gd, cd) {
 
         if(trace.type === 'candlestick') {
             allBoxes.each(function(boxData) {
+                if(boxData.empty) return;
+
                 var thisBox = d3.select(this);
                 var container = trace[boxData.dir]; // dir = 'increasing' or 'decreasing'
                 styleBox(thisBox, container.line.width, container.line.color, container.fillcolor);
                 // TODO: custom selection style for candlesticks
                 thisBox.style('opacity', trace.selectedpoints && !boxData.selected ? 0.3 : 1);
             });
-        }
-        else {
+        } else {
             styleBox(allBoxes, lineWidth, trace.line.color, trace.fillcolor);
             el.selectAll('path.mean')
                 .style({

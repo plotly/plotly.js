@@ -89,6 +89,8 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
             if(hasTextArray) pt.tx = trace.text[i];
 
             cd.push(pt);
+        } else {
+            cd.push({empty: true});
         }
     }
 
