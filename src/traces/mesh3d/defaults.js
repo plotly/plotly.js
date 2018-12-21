@@ -41,13 +41,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    if(indices) {
-        // otherwise, convert all face indices to ints
-        indices.forEach(function(index) {
-            for(var i = 0; i < index.length; ++i) index[i] |= 0;
-        });
-    }
-
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
