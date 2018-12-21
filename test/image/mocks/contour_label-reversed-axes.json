@@ -3,21 +3,61 @@
     {
       "type": "contour",
       "z": [
-        [1, 2, 1],
-        [2, 1, 2],
-        [2, 1, 2]
+        [1, 2, 3],
+        [2, 0, 0],
+        [3, 0, 3]
       ],
-      "contours": {
-        "showlabels": true
-      }
+      "contours": {"showlabels": true},
+      "showscale": false
+    },
+    {
+      "type": "contour",
+      "z": [
+        [1, 2, 3],
+        [2, 0, 0],
+        [3, 0, 3]
+      ],
+      "contours": {"showlabels": true},
+      "showscale": false,
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "contour",
+      "z": [
+        [1, 2, 3],
+        [2, 0, 0],
+        [3, 0, 3]
+      ],
+      "contours": {"showlabels": true},
+      "showscale": false,
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "contour",
+      "z": [
+        [1, 2, 3],
+        [2, 0, 0],
+        [3, 0, 3]
+      ],
+      "contours": {"showlabels": true},
+      "showscale": false,
+      "xaxis": "x4",
+      "yaxis": "y4"
     }
   ],
   "layout": {
-    "yaxis": {
-      "autorange": "reversed"
-    },
-    "xaxis": {
-      "autorange": "reversed"
-    }
+    "grid": {"rows": 2, "columns": 2, "pattern": "independent"},
+
+    "xaxis": {"autorange": "reversed"},
+    "yaxis": {"autorange": "reversed"},
+
+    "xaxis2": {"autorange": "reversed"},
+
+    "yaxis3": {"autorange": "reversed"},
+
+    "xaxis4": {"range": [2.05, -0.05]},
+    "yaxis4": {"range": [2.2, -0.2]}
   }
 }
