@@ -99,13 +99,12 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
     }
 
-    var sceneIds = opts.fullLayout._subplots[GL3D];
-    var fullSceneData = getSubplotData(opts.fullData, GL3D, sceneIds);
+    var fullGl3dData = getSubplotData(opts.fullData, GL3D, opts.id);
 
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
-        data: fullSceneData,
+        data: fullGl3dData,
         bgColor: bgColorCombined,
         calendar: opts.calendar,
         fullLayout: opts.fullLayout
