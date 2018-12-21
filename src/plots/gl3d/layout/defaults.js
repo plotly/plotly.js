@@ -16,7 +16,9 @@ var Registry = require('../../../registry');
 var handleSubplotDefaults = require('../../subplot_defaults');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 var layoutAttributes = require('./layout_attributes');
+var getSubplotData = require('../../get_data').getSubplotData;
 
+var GL3D = 'gl3d';
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var hasNon3D = layoutOut._basePlotModules.length > 1;
@@ -31,7 +33,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
-        type: 'gl3d',
+        type: GL3D,
         attributes: layoutAttributes,
         handleDefaults: handleGl3dDefaults,
         fullLayout: layoutOut,
@@ -97,10 +99,12 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
     }
 
+    var fullGl3dData = getSubplotData(opts.fullData, GL3D, opts.id);
+
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
-        data: opts.fullData,
+        data: fullGl3dData,
         bgColor: bgColorCombined,
         calendar: opts.calendar,
         fullLayout: opts.fullLayout
