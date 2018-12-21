@@ -2617,7 +2617,7 @@ plots.doCalcdata = function(gd, traces) {
     }
 
     // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) setupAxisCategories(axList);
+    if(hasCalcTransform) setupAxisCategories(axList, fullData);
 
     function calci(i, isContainer) {
         trace = fullData[i];
