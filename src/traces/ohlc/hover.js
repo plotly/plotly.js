@@ -61,7 +61,9 @@ function getClosestPoint(pointData, xval, yval, hovermode) {
     }
 
     function dy(di) {
-        return Fx.inbox(di[minAttr] - yval, di[maxAttr] - yval, hoverPseudoDistance);
+        var min = di[minAttr];
+        var max = di[maxAttr];
+        return min === max || Fx.inbox(min - yval, max - yval, hoverPseudoDistance);
     }
 
     function dxy(di) { return (dx(di) + dy(di)) / 2; }

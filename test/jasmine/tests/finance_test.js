@@ -1113,8 +1113,8 @@ describe('finance trace hover:', function() {
             margin: {t: 0, b: 0, l: 0, r: 0, pad: 0}
         }, specs.layout || {});
 
-        var xval = 'xval' in specs ? specs.xvals : 0;
-        var yval = 'yval' in specs ? specs.yvals : 1;
+        var xval = 'xval' in specs ? specs.xval : 0;
+        var yval = 'yval' in specs ? specs.yval : 1;
         var hovermode = layout.hovermode || 'x';
 
         return Plotly.plot(gd, data, layout).then(function() {
@@ -1135,7 +1135,6 @@ describe('finance trace hover:', function() {
 
             var actual = results[0];
             var exp = specs.exp;
-
 
             for(var k in exp) {
                 var msg = '- key ' + k;
@@ -1186,6 +1185,21 @@ describe('finance trace hover:', function() {
             traces: [{hoverinfo: ['text', 'text'], text: ['A', 'B']}],
             exp: {
                 extraText: 'A'
+            }
+        }, {
+            type: type,
+            desc: 'when high === low in *closest* mode',
+            traces: [{
+                high: [6, null, 7, 8],
+                close: [4, null, 7, 8],
+                low: [5, null, 7, 8],
+                open: [3, null, 7, 8]
+            }],
+            layout: {hovermode: 'closest'},
+            xval: 2,
+            yval: 6.9,
+            exp: {
+                extraText: 'open: 7<br>high: 7<br>low: 7<br>close: 7  ▲'
             }
         }]
         .forEach(function(specs) {
