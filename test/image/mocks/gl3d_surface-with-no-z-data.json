@@ -1,0 +1,33 @@
+{
+    "data": [
+      {
+        "type": "surface",
+        "x": [],
+        "y": [],
+        "z": []
+      },
+      {
+        "type": "surface",
+        "x": [0],
+        "y": [0],
+        "z": [[1]]
+      },
+      {
+        "type": "surface",
+        "x": [0, 1, 2],
+        "y": [0],
+        "z": [[1, 2, 3]]
+      },
+      {
+        "type": "surface",
+        "x": [0],
+        "y": [0, 1, 2],
+        "z": [[1, 2, 3]]
+      }
+    ],
+    "layout": {
+        "title": "Surface traces with rows/columns less than two<br>or with no Z data would be invisible.",
+        "width": 600,
+        "height": 400
+    }
+}

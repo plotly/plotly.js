@@ -23,14 +23,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    var x = coerce('x');
+    var y = coerce('y');
+
     var z = coerce('z');
-    if(!z) {
+    if(!z || !z.length ||
+       (x ? (x.length < 2) : false) ||
+       (y ? (y.length < 2) : false)
+    ) {
         traceOut.visible = false;
         return;
     }
 
-    var x = coerce('x');
-    coerce('y');
 
     traceOut._xlength = (Array.isArray(x) && Lib.isArrayOrTypedArray(x[0])) ? z.length : z[0].length;
     traceOut._ylength = z.length;
