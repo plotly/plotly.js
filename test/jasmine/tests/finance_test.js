@@ -1241,6 +1241,17 @@ describe('finance trace hover via Fx.hover():', function() {
                     name: ['trace 0', 'trace 1']
                 }, 'hover over 3rd items (aka 2nd visible items)');
             })
+            .then(function() {
+                Lib.clearThrottle();
+                return Plotly.react(gd, [gd.data[0]], gd.layout);
+            })
+            .then(function() { hover(281, 252); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'hover off by 1\nopen: 7\nhigh: 7\nlow: 7\nclose: 7  ▲',
+                    name: ''
+                }, 'after removing 2nd trace');
+            })
             .catch(failTest)
             .then(done);
         });
