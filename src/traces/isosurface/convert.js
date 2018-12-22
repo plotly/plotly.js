@@ -388,18 +388,23 @@ function generateIsosurfaceMesh(data) {
             Ys[0],
             Zs[0]
         ];
-        var ends = [
-            Xs[Xs.length - 1],
-            Ys[Ys.length - 1],
-            Zs[Zs.length - 1]
-        ];
+
+        // may possibly help handle parametric coordinates
+        var sumOnAxis = [0, 0, 0];
+        for(i = 1; i < Xs.length; i++) {
+            sumOnAxis[0] += Xs[i] - Xs[i - 1];
+        }
+        for(j = 1; j < Ys.length; j++) {
+            sumOnAxis[1] += Ys[j] - Ys[j - 1];
+        }
+        for(k = 1; k < Zs.length; k++) {
+            sumOnAxis[2] += Zs[k] - Zs[k - 1];
+        }
 
         // map pixel coordinates (0..n) to (real) world coordinates
         for(axis = 0; axis < 3; axis++) {
-            var start = starts[axis];
-            var end = ends[axis];
             for(q = 0; q < len; q++) {
-                positions[q][axis] = start + (end - start) * positions[q][axis] / (dims[axis] - 1);
+                positions[q][axis] = starts[axis] + sumOnAxis[axis] * positions[q][axis] / (dims[axis] - 1);
             }
         }
 
