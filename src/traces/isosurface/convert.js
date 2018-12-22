@@ -156,12 +156,12 @@ function generateIsosurfaceMesh(data) {
 
     var num_vertices = 0;
 
-    function drawTri(xyzw) {
+    function drawTri(xyzv) {
         for(var g = 0; g < 3; g++) {
-            allXs.push(xyzw[g][0]);
-            allYs.push(xyzw[g][1]);
-            allZs.push(xyzw[g][2]);
-            allCs.push(xyzw[g][3]);
+            allXs.push(xyzv[g][0]);
+            allYs.push(xyzv[g][1]);
+            allZs.push(xyzv[g][2]);
+            allCs.push(xyzv[g][3]);
 
             if(g === 0) {
                 data.i.push(num_vertices);
@@ -179,7 +179,7 @@ function generateIsosurfaceMesh(data) {
 
     function tryCreateTri(a, b, c) {
         var indecies = [a, b, c];
-        var xyzw = [];
+        var xyzv = [];
 
         for(var g = 0; g < 3; g++) {
             var index = indecies[g];
@@ -188,7 +188,7 @@ function generateIsosurfaceMesh(data) {
             var j = Math.floor((index - k * width * height) / width);
             var i = Math.floor(index - k * width * height - j * width);
 
-            xyzw.push(
+            xyzv.push(
                 [
                     Xs[i],
                     Ys[j],
@@ -212,9 +212,9 @@ function generateIsosurfaceMesh(data) {
             return false;
         }
 
-        var A = xyzw[0];
-        var B = xyzw[1];
-        var C = xyzw[2];
+        var A = xyzv[0];
+        var B = xyzv[1];
+        var C = xyzv[2];
 
         var vA = A[3];
         var vB = B[3];
@@ -225,7 +225,7 @@ function generateIsosurfaceMesh(data) {
         var c_OK = inRange(vC);
 
         if(a_OK && b_OK && c_OK) {
-            drawTri(xyzw);
+            drawTri(xyzv);
             return;
         }
 
