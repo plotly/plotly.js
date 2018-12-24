@@ -63,6 +63,7 @@
     "no-shadow": [0, {"builtinGlobals": true}],
     "block-scoped-var": [2],
     "no-unused-vars": [2],
+    "one-var": [2, {"initialized": "never"}],
     "no-undef-init": [2],
     "no-use-before-define": [2, "nofunc"],
     "no-loop-func": [2],

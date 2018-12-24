@@ -30,10 +30,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     // so easy and anyway we lost the information we would have needed to do
     // this inside scatterHover.
     if(newPointData.index === undefined) {
-        var yFracUp = 1 - (newPointData.y0 / pointData.ya._length),
-            xLen = pointData.xa._length,
-            xMin = xLen * yFracUp / 2,
-            xMax = xLen - xMin;
+        var yFracUp = 1 - (newPointData.y0 / pointData.ya._length);
+        var xLen = pointData.xa._length;
+        var xMin = xLen * yFracUp / 2;
+        var xMax = xLen - xMin;
         newPointData.x0 = Math.max(Math.min(newPointData.x0, xMax), xMin);
         newPointData.x1 = Math.max(Math.min(newPointData.x1, xMax), xMin);
         return scatterPointData;

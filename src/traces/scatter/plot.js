@@ -127,8 +127,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         return hasTransition ? selection.transition() : selection;
     }
 
-    var xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
 
     var trace = cdscatter[0].trace;
     var line = trace.line;
@@ -164,21 +164,21 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         prevPolygons = prevtrace._polygons;
     }
 
-    var thispath,
-        thisrevpath,
-        // fullpath is all paths for this curve, joined together straight
-        // across gaps, for filling
-        fullpath = '',
-        // revpath is fullpath reversed, for fill-to-next
-        revpath = '',
-        // functions for converting a point array to a path
-        pathfn, revpathbase, revpathfn,
-        // variables used before and after the data join
-        pt0, lastSegment, pt1, thisPolygons;
+    var thispath;
+    var thisrevpath;
+    // fullpath is all paths for this curve, joined together straight
+    // across gaps, for filling
+    var fullpath = '';
+    // revpath is fullpath reversed, for fill-to-next
+    var revpath = '';
+    // functions for converting a point array to a path
+    var pathfn, revpathbase, revpathfn;
+    // variables used before and after the data join
+    var pt0, lastSegment, pt1, thisPolygons;
 
     // initialize line join data / method
-    var segments = [],
-        makeUpdate = Lib.noop;
+    var segments = [];
+    var makeUpdate = Lib.noop;
 
     ownFillEl3 = trace._ownFill;
 
@@ -528,10 +528,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 }
 
 function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
-    var xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        xr = d3.extent(Lib.simpleMap(xa.range, xa.r2c)),
-        yr = d3.extent(Lib.simpleMap(ya.range, ya.r2c));
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var xr = d3.extent(Lib.simpleMap(xa.range, xa.r2c));
+    var yr = d3.extent(Lib.simpleMap(ya.range, ya.r2c));
 
     var trace = cdscatter[0].trace;
     if(!subTypes.hasMarkers(trace)) return;
@@ -543,10 +543,10 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     if(mnum === 0) return;
 
     var cd = cdscatter.filter(function(v) {
-            return v.x >= xr[0] && v.x <= xr[1] && v.y >= yr[0] && v.y <= yr[1];
-        }),
-        inc = Math.ceil(cd.length / mnum),
-        tnum = 0;
+        return v.x >= xr[0] && v.x <= xr[1] && v.y >= yr[0] && v.y <= yr[1];
+    });
+    var inc = Math.ceil(cd.length / mnum);
+    var tnum = 0;
     cdscatterAll.forEach(function(cdj, j) {
         var tracei = cdj[0].trace;
         if(subTypes.hasMarkers(tracei) &&

@@ -190,22 +190,22 @@ function zoomNonClipped(geo, projection) {
 // zoom for clipped projections
 // inspired by https://www.jasondavies.com/maps/d3.geo.zoom.js
 function zoomClipped(geo, projection) {
-    var view = {r: projection.rotate(), k: projection.scale()},
-        zoom = initZoom(geo, projection),
-        event = d3eventDispatch(zoom, 'zoomstart', 'zoom', 'zoomend'),
-        zooming = 0,
-        zoomOn = zoom.on;
+    var view = {r: projection.rotate(), k: projection.scale()};
+    var zoom = initZoom(geo, projection);
+    var event = d3eventDispatch(zoom, 'zoomstart', 'zoom', 'zoomend');
+    var zooming = 0;
+    var zoomOn = zoom.on;
 
     var zoomPoint;
 
     zoom.on('zoomstart', function() {
         d3.select(this).style(zoomstartStyle);
 
-        var mouse0 = d3.mouse(this),
-            rotate0 = projection.rotate(),
-            lastRotate = rotate0,
-            translate0 = projection.translate(),
-            q = quaternionFromEuler(rotate0);
+        var mouse0 = d3.mouse(this);
+        var rotate0 = projection.rotate();
+        var lastRotate = rotate0;
+        var translate0 = projection.translate();
+        var q = quaternionFromEuler(rotate0);
 
         zoomPoint = position(projection, mouse0);
 
@@ -232,10 +232,10 @@ function zoomClipped(geo, projection) {
                     .translate(translate0);
 
                 // calculate the new params
-                var point1 = position(projection, mouse1),
-                    between = rotateBetween(zoomPoint, point1),
-                    newEuler = eulerFromQuaternion(multiply(q, between)),
-                    rotateAngles = view.r = unRoll(newEuler, zoomPoint, lastRotate);
+                var point1 = position(projection, mouse1);
+                var between = rotateBetween(zoomPoint, point1);
+                var newEuler = eulerFromQuaternion(multiply(q, between));
+                var rotateAngles = view.r = unRoll(newEuler, zoomPoint, lastRotate);
 
                 if(!isFinite(rotateAngles[0]) || !isFinite(rotateAngles[1]) ||
                    !isFinite(rotateAngles[2])) {
@@ -291,12 +291,15 @@ function position(projection, point) {
 }
 
 function quaternionFromEuler(euler) {
-    var lambda = 0.5 * euler[0] * radians,
-        phi = 0.5 * euler[1] * radians,
-        gamma = 0.5 * euler[2] * radians,
-        sinLambda = Math.sin(lambda), cosLambda = Math.cos(lambda),
-        sinPhi = Math.sin(phi), cosPhi = Math.cos(phi),
-        sinGamma = Math.sin(gamma), cosGamma = Math.cos(gamma);
+    var lambda = 0.5 * euler[0] * radians;
+    var phi = 0.5 * euler[1] * radians;
+    var gamma = 0.5 * euler[2] * radians;
+    var sinLambda = Math.sin(lambda);
+    var cosLambda = Math.cos(lambda);
+    var sinPhi = Math.sin(phi);
+    var cosPhi = Math.cos(phi);
+    var sinGamma = Math.sin(gamma);
+    var cosGamma = Math.cos(gamma);
     return [
         cosLambda * cosPhi * cosGamma + sinLambda * sinPhi * sinGamma,
         sinLambda * cosPhi * cosGamma - cosLambda * sinPhi * sinGamma,
@@ -306,8 +309,14 @@ function quaternionFromEuler(euler) {
 }
 
 function multiply(a, b) {
-    var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3],
-        b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
+    var a0 = a[0];
+    var a1 = a[1];
+    var a2 = a[2];
+    var a3 = a[3];
+    var b0 = b[0];
+    var b1 = b[1];
+    var b2 = b[2];
+    var b3 = b[3];
     return [
         a0 * b0 - a1 * b1 - a2 * b2 - a3 * b3,
         a0 * b1 + a1 * b0 + a2 * b3 - a3 * b2,
@@ -318,10 +327,10 @@ function multiply(a, b) {
 
 function rotateBetween(a, b) {
     if(!a || !b) return;
-    var axis = cross(a, b),
-        norm = Math.sqrt(dot(axis, axis)),
-        halfgamma = 0.5 * Math.acos(Math.max(-1, Math.min(1, dot(a, b)))),
-        k = Math.sin(halfgamma) / norm;
+    var axis = cross(a, b);
+    var norm = Math.sqrt(dot(axis, axis));
+    var halfgamma = 0.5 * Math.acos(Math.max(-1, Math.min(1, dot(a, b))));
+    var k = Math.sin(halfgamma) / norm;
     return norm && [Math.cos(halfgamma), axis[2] * k, -axis[1] * k, axis[0] * k];
 }
 
@@ -341,20 +350,20 @@ function unRoll(rotateAngles, pt, lastRotate) {
     ptRotated = rotateCartesian(ptRotated, 1, rotateAngles[1]);
     ptRotated = rotateCartesian(ptRotated, 0, rotateAngles[2] - lastRotate[2]);
 
-    var x = pt[0],
-        y = pt[1],
-        z = pt[2],
-        f = ptRotated[0],
-        g = ptRotated[1],
-        h = ptRotated[2],
+    var x = pt[0];
+    var y = pt[1];
+    var z = pt[2];
+    var f = ptRotated[0];
+    var g = ptRotated[1];
+    var h = ptRotated[2];
 
-        // the following essentially solves:
-        // ptRotated = rotateCartesian(rotateCartesian(pt, 2, newYaw), 1, newPitch)
-        // for newYaw and newPitch, as best it can
-        theta = Math.atan2(y, x) * degrees,
-        a = Math.sqrt(x * x + y * y),
-        b,
-        newYaw1;
+    // the following essentially solves:
+    // ptRotated = rotateCartesian(rotateCartesian(pt, 2, newYaw), 1, newPitch)
+    // for newYaw and newPitch, as best it can
+    var theta = Math.atan2(y, x) * degrees;
+    var a = Math.sqrt(x * x + y * y);
+    var b;
+    var newYaw1;
 
     if(Math.abs(g) > a) {
         newYaw1 = (g > 0 ? 90 : -90) - theta;
@@ -364,21 +373,21 @@ function unRoll(rotateAngles, pt, lastRotate) {
         b = Math.sqrt(a * a - g * g);
     }
 
-    var newYaw2 = 180 - newYaw1 - 2 * theta,
-        newPitch1 = (Math.atan2(h, f) - Math.atan2(z, b)) * degrees,
-        newPitch2 = (Math.atan2(h, f) - Math.atan2(z, -b)) * degrees;
+    var newYaw2 = 180 - newYaw1 - 2 * theta;
+    var newPitch1 = (Math.atan2(h, f) - Math.atan2(z, b)) * degrees;
+    var newPitch2 = (Math.atan2(h, f) - Math.atan2(z, -b)) * degrees;
 
     // which is closest to lastRotate[0,1]: newYaw/Pitch or newYaw2/Pitch2?
-    var dist1 = angleDistance(lastRotate[0], lastRotate[1], newYaw1, newPitch1),
-        dist2 = angleDistance(lastRotate[0], lastRotate[1], newYaw2, newPitch2);
+    var dist1 = angleDistance(lastRotate[0], lastRotate[1], newYaw1, newPitch1);
+    var dist2 = angleDistance(lastRotate[0], lastRotate[1], newYaw2, newPitch2);
 
     if(dist1 <= dist2) return [newYaw1, newPitch1, lastRotate[2]];
     else return [newYaw2, newPitch2, lastRotate[2]];
 }
 
 function angleDistance(yaw0, pitch0, yaw1, pitch1) {
-    var dYaw = angleMod(yaw1 - yaw0),
-        dPitch = angleMod(pitch1 - pitch0);
+    var dYaw = angleMod(yaw1 - yaw0);
+    var dPitch = angleMod(pitch1 - pitch0);
     return Math.sqrt(dYaw * dYaw + dPitch * dPitch);
 }
 
@@ -391,12 +400,12 @@ function angleMod(angle) {
 // axis is 0 (x), 1 (y), or 2 (z)
 // angle is in degrees
 function rotateCartesian(vector, axis, angle) {
-    var angleRads = angle * radians,
-        vectorOut = vector.slice(),
-        ax1 = (axis === 0) ? 1 : 0,
-        ax2 = (axis === 2) ? 1 : 2,
-        cosa = Math.cos(angleRads),
-        sina = Math.sin(angleRads);
+    var angleRads = angle * radians;
+    var vectorOut = vector.slice();
+    var ax1 = (axis === 0) ? 1 : 0;
+    var ax2 = (axis === 2) ? 1 : 2;
+    var cosa = Math.cos(angleRads);
+    var sina = Math.sin(angleRads);
 
     vectorOut[ax1] = vector[ax1] * cosa - vector[ax2] * sina;
     vectorOut[ax2] = vector[ax2] * cosa + vector[ax1] * sina;
@@ -412,9 +421,9 @@ function eulerFromQuaternion(q) {
 }
 
 function cartesian(spherical) {
-    var lambda = spherical[0] * radians,
-        phi = spherical[1] * radians,
-        cosPhi = Math.cos(phi);
+    var lambda = spherical[0] * radians;
+    var phi = spherical[1] * radians;
+    var cosPhi = Math.cos(phi);
     return [
         cosPhi * Math.cos(lambda),
         cosPhi * Math.sin(lambda),
@@ -441,9 +450,9 @@ function cross(a, b) {
 // the svg:g element containing the brush) and the standard arguments `d` (the
 // target element's data) and `i` (the selection index of the target element).
 function d3eventDispatch(target) {
-    var i = 0,
-        n = arguments.length,
-        argumentz = [];
+    var i = 0;
+    var n = arguments.length;
+    var argumentz = [];
 
     while(++i < n) argumentz.push(arguments[i]);
 

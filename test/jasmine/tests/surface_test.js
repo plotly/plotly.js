@@ -13,8 +13,8 @@ describe('Test surface', function() {
     describe('supplyDefaults', function() {
         var supplyDefaults = Surface.supplyDefaults;
 
-        var defaultColor = '#444',
-            layout = {_dfltTitle: {colorbar: 'cb'}};
+        var defaultColor = '#444';
+        var layout = {_dfltTitle: {colorbar: 'cb'}};
 
         var traceIn, traceOut;
 

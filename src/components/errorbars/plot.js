@@ -24,13 +24,13 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
     var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 
     traces.each(function(d) {
-        var trace = d[0].trace,
-            // || {} is in case the trace (specifically scatterternary)
-            // doesn't support error bars at all, but does go through
-            // the scatter.plot mechanics, which calls ErrorBars.plot
-            // internally
-            xObj = trace.error_x || {},
-            yObj = trace.error_y || {};
+        var trace = d[0].trace;
+        // || {} is in case the trace (specifically scatterternary)
+        // doesn't support error bars at all, but does go through
+        // the scatter.plot mechanics, which calls ErrorBars.plot
+        // internally
+        var xObj = trace.error_x || {};
+        var yObj = trace.error_y || {};
 
         var keyFunc;
 

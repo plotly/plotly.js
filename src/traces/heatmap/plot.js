@@ -110,8 +110,8 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             bottom = Math.min((1 + extra) * ya._length, bottom);
         }
 
-        var imageWidth = Math.round(right - left),
-            imageHeight = Math.round(bottom - top);
+        var imageWidth = Math.round(right - left);
+        var imageHeight = Math.round(bottom - top);
 
         // setup image nodes
 
@@ -202,12 +202,12 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             var z00 = r0[xinterp.bin0];
             if(z00 === undefined) return setColor(undefined, 1);
 
-            var z01 = r0[xinterp.bin1],
-                z10 = r1[xinterp.bin0],
-                z11 = r1[xinterp.bin1],
-                dx = (z01 - z00) || 0,
-                dy = (z10 - z00) || 0,
-                dxy;
+            var z01 = r0[xinterp.bin1];
+            var z10 = r1[xinterp.bin0];
+            var z11 = r1[xinterp.bin1];
+            var dx = (z01 - z00) || 0;
+            var dy = (z10 - z00) || 0;
+            var dxy;
 
             // the bilinear interpolation term needs different calculations
             // for all the different permutations of missing data
@@ -229,13 +229,12 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         }
 
         if(zsmooth) { // best or fast, works fastest with imageData
-            var pxIndex = 0,
-                pixels;
+            var pxIndex = 0;
+            var pixels;
 
             try {
                 pixels = new Uint8Array(imageWidth * imageHeight * 4);
-            }
-            catch(e) {
+            } catch(e) {
                 pixels = new Array(imageWidth * imageHeight * 4);
             }
 
@@ -283,10 +282,9 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             var imageData = context.createImageData(imageWidth, imageHeight);
             try {
                 imageData.data.set(pixels);
-            }
-            catch(e) {
-                var pxArray = imageData.data,
-                    dlen = pxArray.length;
+            } catch(e) {
+                var pxArray = imageData.data;
+                var dlen = pxArray.length;
                 for(j = 0; j < dlen; j ++) {
                     pxArray[j] = pixels[j];
                 }

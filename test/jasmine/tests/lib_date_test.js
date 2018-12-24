@@ -17,12 +17,12 @@ describe('dates', function() {
     // to near the present, but we accept them as part of 4-digit years
     d1c.setFullYear(13);
 
-    var thisYear = new Date().getFullYear(),
-        thisYear2 = thisYear % 100,
-        nowMinus70 = thisYear - 70,
-        nowMinus70x2 = nowMinus70 % 100,
-        nowPlus29 = thisYear + 29,
-        nowPlus29x2 = nowPlus29 % 100;
+    var thisYear = new Date().getFullYear();
+    var thisYear2 = thisYear % 100;
+    var nowMinus70 = thisYear - 70;
+    var nowMinus70x2 = nowMinus70 % 100;
+    var nowPlus29 = thisYear + 29;
+    var nowPlus29x2 = nowPlus29 % 100;
 
     function tweakedTZOffset(d) {
         var tzOffset = d.getTimezoneOffset() * 60000;
@@ -176,8 +176,8 @@ describe('dates', function() {
         it('should interpret JS dates by local time, not by its getTime()', function() {
             // not really part of the test, just to make sure the test is meaningful
             // the test should NOT be run in a UTC environment
-            var local0 = Number(new Date(1970, 0, 1)),
-                localjuly1 = Number(new Date(1970, 6, 1));
+            var local0 = Number(new Date(1970, 0, 1));
+            var localjuly1 = Number(new Date(1970, 6, 1));
             expect([local0, localjuly1]).not.toEqual([0, JULY1MS],
                 'test must not run in UTC');
             // verify that there *is* daylight saving time in the test environment
@@ -256,11 +256,11 @@ describe('dates', function() {
 
         it('should work right with inputs beyond our precision', function() {
             for(var i = -1; i <= 1; i += 0.001) {
-                var tenths = Math.round(i * 10),
-                    base = i < -0.05 ? '1969-12-31 23:59:59.99' : '1970-01-01 00:00:00.00',
-                    expected = (base + String(tenths + 200).substr(1))
-                        .replace(/0+$/, '')
-                        .replace(/ 00:00:00[\.]$/, '');
+                var tenths = Math.round(i * 10);
+                var base = i < -0.05 ? '1969-12-31 23:59:59.99' : '1970-01-01 00:00:00.00';
+                var expected = (base + String(tenths + 200).substr(1))
+                    .replace(/0+$/, '')
+                    .replace(/ 00:00:00[\.]$/, '');
                 expect(Lib.ms2DateTime(i)).toBe(expected, i);
             }
         });
@@ -287,21 +287,21 @@ describe('dates', function() {
                 ['thai', '2513-01-01'],
                 ['ummalqura', '1389-10-23']
             ].forEach(function(v) {
-                var calendar = v[0],
-                    dateStr = v[1];
+                var calendar = v[0];
+                var dateStr = v[1];
                 expect(Lib.ms2DateTime(0, 0, calendar)).toBe(dateStr, calendar);
                 expect(Lib.dateTime2ms(dateStr, calendar)).toBe(0, calendar);
 
-                var expectedPlus1ms = dateStr + ' 00:00:00.0001',
-                    expected1s = dateStr + ' 00:00:01',
-                    expected1m = dateStr + ' 00:01',
-                    expected1h = dateStr + ' 01:00',
-                    expectedLastInstant = dateStr + ' 23:59:59.9999';
+                var expectedPlus1ms = dateStr + ' 00:00:00.0001';
+                var expected1s = dateStr + ' 00:00:01';
+                var expected1m = dateStr + ' 00:01';
+                var expected1h = dateStr + ' 01:00';
+                var expectedLastInstant = dateStr + ' 23:59:59.9999';
 
-                var oneSec = 1000,
-                    oneMin = 60 * oneSec,
-                    oneHour = 60 * oneMin,
-                    lastInstant = 24 * oneHour - 0.1;
+                var oneSec = 1000;
+                var oneMin = 60 * oneSec;
+                var oneHour = 60 * oneMin;
+                var lastInstant = 24 * oneHour - 0.1;
 
                 expect(Lib.ms2DateTime(0.1, 0, calendar)).toBe(expectedPlus1ms, calendar);
                 expect(Lib.ms2DateTime(oneSec, 0, calendar)).toBe(expected1s, calendar);
@@ -322,9 +322,9 @@ describe('dates', function() {
                 return v !== 'gregorian';
             });
 
-            var canonicalTick = calComponent.CANONICAL_TICK,
-                canonicalSunday = calComponent.CANONICAL_SUNDAY,
-                dfltRange = calComponent.DFLTRANGE;
+            var canonicalTick = calComponent.CANONICAL_TICK;
+            var canonicalSunday = calComponent.CANONICAL_SUNDAY;
+            var dfltRange = calComponent.DFLTRANGE;
             expect(Object.keys(canonicalTick).length).toBe(calList.length);
             expect(Object.keys(canonicalSunday).length).toBe(calList.length);
             expect(Object.keys(dfltRange).length).toBe(calList.length);
@@ -578,9 +578,9 @@ describe('dates', function() {
                 ]
 
             ].forEach(function(v) {
-                var fmt = v[0],
-                    expectedGregorian = v[1],
-                    expectedCoptic = v[2];
+                var fmt = v[0];
+                var expectedGregorian = v[1];
+                var expectedCoptic = v[2];
 
                 // tickround is irrelevant here...
                 expect(Lib.formatDate(ms, fmt, 'y', utcFormat))

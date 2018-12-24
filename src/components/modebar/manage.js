@@ -25,9 +25,9 @@ var modeBarButtons = require('./buttons');
  *
  */
 module.exports = function manageModeBar(gd) {
-    var fullLayout = gd._fullLayout,
-        context = gd._context,
-        modeBar = fullLayout._modeBar;
+    var fullLayout = gd._fullLayout;
+    var context = gd._context;
+    var modeBar = fullLayout._modeBar;
 
     if(!context.displayModeBar && !context.watermark) {
         if(modeBar) {

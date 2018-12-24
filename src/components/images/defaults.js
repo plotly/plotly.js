@@ -44,13 +44,13 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     coerce('sizing');
     coerce('opacity');
 
-    var gdMock = { _fullLayout: fullLayout },
-        axLetters = ['x', 'y'];
+    var gdMock = { _fullLayout: fullLayout };
+    var axLetters = ['x', 'y'];
 
     for(var i = 0; i < 2; i++) {
         // 'paper' is the fallback axref
-        var axLetter = axLetters[i],
-            axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
+        var axLetter = axLetters[i];
+        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
 
         Axes.coercePosition(imageOut, gdMock, coerce, axRef, axLetter, 0);
     }

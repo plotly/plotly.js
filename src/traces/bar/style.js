@@ -15,10 +15,10 @@ var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 
-var attributes = require('./attributes'),
-    attributeTextFont = attributes.textfont,
-    attributeInsideTextFont = attributes.insidetextfont,
-    attributeOutsideTextFont = attributes.outsidetextfont;
+var attributes = require('./attributes');
+var attributeTextFont = attributes.textfont;
+var attributeInsideTextFont = attributes.insidetextfont;
+var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = require('./helpers');
 
 function style(gd, cd) {
@@ -145,9 +145,9 @@ function getOutsideTextFont(trace, index, layoutFont) {
 function getFontValue(attributeDefinition, attributeValue, index, defaultValue) {
     attributeValue = attributeValue || {};
 
-    var familyValue = helpers.getValue(attributeValue.family, index),
-        sizeValue = helpers.getValue(attributeValue.size, index),
-        colorValue = helpers.getValue(attributeValue.color, index);
+    var familyValue = helpers.getValue(attributeValue.family, index);
+    var sizeValue = helpers.getValue(attributeValue.size, index);
+    var colorValue = helpers.getValue(attributeValue.color, index);
 
     return {
         family: helpers.coerceString(

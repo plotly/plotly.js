@@ -64,10 +64,10 @@ function coordDefaults(coordStr, coerce) {
 }
 
 function isValidZ(z) {
-    var allRowsAreArrays = true,
-        oneRowIsFilled = false,
-        hasOneNumber = false,
-        zi;
+    var allRowsAreArrays = true;
+    var oneRowIsFilled = false;
+    var hasOneNumber = false;
+    var zi;
 
     /*
      * Without this step:

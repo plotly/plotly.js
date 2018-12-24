@@ -109,8 +109,8 @@ module.exports = function convert(calcTrace) {
         }
 
         if(hasText) {
-            var iconSize = (trace.marker || {}).size,
-                textOpts = convertTextOpts(trace.textposition, iconSize);
+            var iconSize = (trace.marker || {}).size;
+            var textOpts = convertTextOpts(trace.textposition, iconSize);
 
             // all data-driven below !!
 
@@ -234,17 +234,17 @@ function makeCircleOpts(calcTrace) {
 function makeSymbolGeoJSON(calcTrace) {
     var trace = calcTrace[0].trace;
 
-    var marker = trace.marker || {},
-        symbol = marker.symbol,
-        text = trace.text;
+    var marker = trace.marker || {};
+    var symbol = marker.symbol;
+    var text = trace.text;
 
     var fillSymbol = (symbol !== 'circle') ?
-            getFillFunc(symbol) :
-            blankFillFunc;
+        getFillFunc(symbol) :
+        blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
-            getFillFunc(text) :
-            blankFillFunc;
+        getFillFunc(text) :
+        blankFillFunc;
 
     var features = [];
 

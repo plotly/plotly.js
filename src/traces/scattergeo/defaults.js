@@ -57,8 +57,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 };
 
 function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
-    var len = 0,
-        locations = coerce('locations');
+    var len = 0;
+    var locations = coerce('locations');
 
     var lon, lat;
 

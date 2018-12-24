@@ -16,15 +16,15 @@ var failTest = require('../assets/fail_test');
 describe('heatmap supplyDefaults', function() {
     'use strict';
 
-    var traceIn,
-        traceOut;
+    var traceIn;
+    var traceOut;
 
-    var defaultColor = '#444',
-        layout = {
-            font: Plots.layoutAttributes.font,
-            _dfltTitle: {colorbar: 'cb'},
-            _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
-        };
+    var defaultColor = '#444';
+    var layout = {
+        font: Plots.layoutAttributes.font,
+        _dfltTitle: {colorbar: 'cb'},
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
+    };
 
     var supplyDefaults = Heatmap.supplyDefaults;
 
@@ -288,9 +288,9 @@ describe('heatmap calc', function() {
     'use strict';
 
     function _calc(opts) {
-        var base = { type: 'heatmap' },
-            trace = Lib.extendFlat({}, base, opts),
-            gd = { data: [trace] };
+        var base = { type: 'heatmap' };
+        var trace = Lib.extendFlat({}, base, opts);
+        var gd = { data: [trace] };
 
         supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
@@ -598,8 +598,8 @@ describe('heatmap plot', function() {
             return element;
         });
 
-        var argumentsWithoutPadding = [],
-            argumentsWithPadding = [];
+        var argumentsWithoutPadding = [];
+        var argumentsWithPadding = [];
         Plotly.plot(gd, mockWithoutPadding.data, mockWithoutPadding.layout).then(function() {
             argumentsWithoutPadding = getContextStub.fillRect.calls.allArgs().slice(0);
             return Plotly.plot(gd, mockWithPadding.data, mockWithPadding.layout);
@@ -660,9 +660,9 @@ describe('heatmap hover', function() {
     var gd;
 
     function _hover(gd, xval, yval) {
-        var fullLayout = gd._fullLayout,
-            calcData = gd.calcdata,
-            hoverData = [];
+        var fullLayout = gd._fullLayout;
+        var calcData = gd.calcdata;
+        var hoverData = [];
 
         for(var i = 0; i < calcData.length; i++) {
             var pointData = {
@@ -693,8 +693,8 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/heatmap_multi-trace.json'),
-                mockCopy = Lib.extendDeep({}, mock);
+            var mock = require('@mocks/heatmap_multi-trace.json');
+            var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
         });

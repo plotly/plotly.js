@@ -95,8 +95,8 @@ exports.inbox = function inbox(v0, v1, passVal) {
 
 exports.quadrature = function quadrature(dx, dy) {
     return function(di) {
-        var x = dx(di),
-            y = dy(di);
+        var x = dx(di);
+        var y = dy(di);
         return Math.sqrt(x * x + y * y);
     };
 };

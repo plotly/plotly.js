@@ -397,9 +397,9 @@ function getUniqueInfo(values, uniqueValues) {
     }
 
     // Initialize Variables
-    var uniqueValueCounts = {},
-        uniqueValueInds = {},
-        inds = [];
+    var uniqueValueCounts = {};
+    var uniqueValueInds = {};
+    var inds = [];
 
     // Initialize uniqueValueCounts and
     uniqueValues.forEach(function(uniqueVal, valInd) {

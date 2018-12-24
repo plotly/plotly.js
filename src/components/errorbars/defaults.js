@@ -36,8 +36,8 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
 
     if(visible === false) return;
 
-    var type = coerce('type', 'array' in containerIn ? 'data' : 'percent'),
-        symmetric = true;
+    var type = coerce('type', 'array' in containerIn ? 'data' : 'percent');
+    var symmetric = true;
 
     if(type !== 'sqrt') {
         symmetric = coerce('symmetric',

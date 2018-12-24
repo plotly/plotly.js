@@ -60,12 +60,12 @@ function Contour(scene, uid) {
 var proto = Contour.prototype;
 
 proto.handlePick = function(pickResult) {
-    var options = this.heatmapOptions,
-        shape = options.shape,
-        index = pickResult.pointId,
-        xIndex = index % shape[0],
-        yIndex = Math.floor(index / shape[0]),
-        zIndex = index;
+    var options = this.heatmapOptions;
+    var shape = options.shape;
+    var index = pickResult.pointId;
+    var xIndex = index % shape[0];
+    var yIndex = Math.floor(index / shape[0]);
+    var zIndex = index;
 
     return {
         trace: this,
@@ -90,10 +90,10 @@ proto.update = function(fullTrace, calcTrace) {
     this.hoverinfo = fullTrace.hoverinfo;
 
     // convert z from 2D -> 1D
-    var z = calcPt.z,
-        rowLen = z[0].length,
-        colLen = z.length,
-        colorOptions;
+    var z = calcPt.z;
+    var rowLen = z[0].length;
+    var colLen = z.length;
+    var colorOptions;
 
     this.contourOptions.z = flattenZ(z, rowLen, colLen);
     this.heatmapOptions.z = [].concat.apply([], z);
@@ -150,17 +150,17 @@ function flattenZ(zIn, rowLen, colLen) {
 }
 
 function convertColorScale(fullTrace, options) {
-    var contours = fullTrace.contours,
-        start = contours.start,
-        end = contours.end,
-        cs = contours.size || 1,
-        fill = options.fill;
+    var contours = fullTrace.contours;
+    var start = contours.start;
+    var end = contours.end;
+    var cs = contours.size || 1;
+    var fill = options.fill;
 
     var colorMap = makeColorMap(fullTrace);
 
-    var N = Math.floor((end - start) / cs) + (fill ? 2 : 1), // for K thresholds (contour linees) there are K+1 areas
-        levels = new Array(N),
-        levelColors = new Array(4 * N);
+    var N = Math.floor((end - start) / cs) + (fill ? 2 : 1); // for K thresholds (contour linees) there are K+1 areas
+    var levels = new Array(N);
+    var levelColors = new Array(4 * N);
 
     for(var i = 0; i < N; i++) {
         var level = levels[i] = start + cs * (i) - (fill ? cs / 2 : 0); // in case of fill, use band midpoint

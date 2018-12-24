@@ -62,20 +62,20 @@ module.exports = function interp2d(z, emptyPoints) {
 };
 
 function iterateInterp2d(z, emptyPoints, overshoot) {
-    var maxFractionalChange = 0,
-        thisPt,
-        i,
-        j,
-        p,
-        q,
-        neighborShift,
-        neighborRow,
-        neighborVal,
-        neighborCount,
-        neighborSum,
-        initialVal,
-        minNeighbor,
-        maxNeighbor;
+    var maxFractionalChange = 0;
+    var thisPt;
+    var i;
+    var j;
+    var p;
+    var q;
+    var neighborShift;
+    var neighborRow;
+    var neighborVal;
+    var neighborCount;
+    var neighborSum;
+    var initialVal;
+    var minNeighbor;
+    var maxNeighbor;
 
     for(p = 0; p < emptyPoints.length; p++) {
         thisPt = emptyPoints[p];

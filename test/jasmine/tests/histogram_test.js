@@ -296,10 +296,10 @@ describe('Test histogram', function() {
                 nbinsx: 4
             });
 
-            var x0 = 0,
-                x1 = x0 + oneDay,
-                x2 = x1 + oneDay,
-                x3 = x2 + oneDay;
+            var x0 = 0;
+            var x1 = x0 + oneDay;
+            var x2 = x1 + oneDay;
+            var x3 = x2 + oneDay;
 
             expect(out).toEqual([
                 {i: 0, b: 0, p: x0, s: 2, pts: [0, 1], ph0: x0, ph1: x0},
@@ -628,8 +628,8 @@ describe('Test histogram', function() {
             ];
 
             CDFs.forEach(function(CDF) {
-                var p = CDF.p,
-                    s = CDF.s;
+                var p = CDF.p;
+                var s = CDF.s;
 
                 it('handles direction=' + CDF.direction + ', currentbin=' + CDF.currentbin +
                         ', histnorm=' + CDF.histnorm + ', histfunc=' + CDF.histfunc, function() {

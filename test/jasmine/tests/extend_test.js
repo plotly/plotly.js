@@ -4,10 +4,10 @@ var extendDeep = extendModule.extendDeep;
 var extendDeepAll = extendModule.extendDeepAll;
 var extendDeepNoArrays = extendModule.extendDeepNoArrays;
 
-var str = 'me a test',
-    integer = 10,
-    arr = [1, 'what', new Date(81, 8, 4)],
-    date = new Date(81, 4, 13);
+var str = 'me a test';
+var integer = 10;
+var arr = [1, 'what', new Date(81, 8, 4)];
+var date = new Date(81, 4, 13);
 
 var Foo = function() {};
 

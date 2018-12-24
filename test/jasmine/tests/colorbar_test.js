@@ -44,8 +44,8 @@ describe('Test colorbar:', function() {
     });
 
     describe('hasColorbar', function() {
-        var hasColorbar = Colorbar.hasColorbar,
-            trace;
+        var hasColorbar = Colorbar.hasColorbar;
+        var trace;
 
         it('should return true when marker colorbar is defined', function() {
             trace = {

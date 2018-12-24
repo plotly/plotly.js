@@ -52,9 +52,9 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
     // if the min values contradict each other, set them all to default (0)
     // and delete *all* the inputs so the user doesn't get confused later by
     // changing one and having them all change.
-    var aaxis = ternaryLayoutOut.aaxis,
-        baxis = ternaryLayoutOut.baxis,
-        caxis = ternaryLayoutOut.caxis;
+    var aaxis = ternaryLayoutOut.aaxis;
+    var baxis = ternaryLayoutOut.baxis;
+    var caxis = ternaryLayoutOut.caxis;
     if(aaxis.min + baxis.min + caxis.min >= sum) {
         aaxis.min = 0;
         baxis.min = 0;
@@ -81,9 +81,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor !== axAttrs.color.dflt) ? dfltColor : options.font.color;
 
-    var axName = containerOut._name,
-        letterUpper = axName.charAt(0).toUpperCase(),
-        dfltTitle = 'Component ' + letterUpper;
+    var axName = containerOut._name;
+    var letterUpper = axName.charAt(0).toUpperCase();
+    var dfltTitle = 'Component ' + letterUpper;
 
     var title = coerce('title.text', dfltTitle);
     containerOut._hovertitle = title === dfltTitle ? title : letterUpper;

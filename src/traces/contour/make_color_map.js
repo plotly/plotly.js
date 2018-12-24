@@ -14,12 +14,12 @@ var Colorscale = require('../../components/colorscale');
 var endPlus = require('./end_plus');
 
 module.exports = function makeColorMap(trace) {
-    var contours = trace.contours,
-        start = contours.start,
-        end = endPlus(contours),
-        cs = contours.size || 1,
-        nc = Math.floor((end - start) / cs) + 1,
-        extra = contours.coloring === 'lines' ? 0 : 1;
+    var contours = trace.contours;
+    var start = contours.start;
+    var end = endPlus(contours);
+    var cs = contours.size || 1;
+    var nc = Math.floor((end - start) / cs) + 1;
+    var extra = contours.coloring === 'lines' ? 0 : 1;
 
     if(!isFinite(cs)) {
         cs = 1;
@@ -51,10 +51,14 @@ module.exports = function makeColorMap(trace) {
 
         // do the contours extend beyond the colorscale?
         // if so, extend the colorscale with constants
-        var zRange = d3.extent([trace.zmin, trace.zmax, contours.start,
-                contours.start + cs * (nc - 1)]),
-            zmin = zRange[trace.zmin < trace.zmax ? 0 : 1],
-            zmax = zRange[trace.zmin < trace.zmax ? 1 : 0];
+        var zRange = d3.extent([
+            trace.zmin,
+            trace.zmax,
+            contours.start,
+            contours.start + cs * (nc - 1)
+        ]);
+        var zmin = zRange[trace.zmin < trace.zmax ? 0 : 1];
+        var zmax = zRange[trace.zmin < trace.zmax ? 1 : 0];
 
         if(zmin !== trace.zmin) {
             domain.splice(0, 0, zmin);

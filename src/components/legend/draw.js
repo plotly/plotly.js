@@ -131,10 +131,10 @@ module.exports = function draw(gd) {
             }
 
             // Position and size the legend
-            var lxMin = 0,
-                lxMax = fullLayout.width,
-                lyMin = 0,
-                lyMax = fullLayout.height;
+            var lxMin = 0;
+            var lxMax = fullLayout.width;
+            var lyMin = 0;
+            var lyMax = fullLayout.height;
 
             computeLegendDimensions(gd, groups, traces);
 
@@ -149,9 +149,9 @@ module.exports = function draw(gd) {
             // Scroll section must be executed after repositionLegend.
             // It requires the legend width, height, x and y to position the scrollbox
             // and these values are mutated in repositionLegend.
-            var gs = fullLayout._size,
-                lx = gs.l + gs.w * opts.x,
-                ly = gs.t + gs.h * (1 - opts.y);
+            var gs = fullLayout._size;
+            var lx = gs.l + gs.w * opts.x;
+            var ly = gs.t + gs.h * (1 - opts.y);
 
             if(Lib.isRightAnchor(opts)) {
                 lx -= opts._width;
@@ -168,8 +168,8 @@ module.exports = function draw(gd) {
             }
 
             // Make sure the legend left and right sides are visible
-            var legendWidth = opts._width,
-                legendWidthMax = gs.w;
+            var legendWidth = opts._width;
+            var legendWidthMax = gs.w;
 
             if(legendWidth > legendWidthMax) {
                 lx = gs.l;
@@ -184,8 +184,8 @@ module.exports = function draw(gd) {
             // Make sure the legend top and bottom are visible
             // (legends with a scroll bar are not allowed to stretch beyond the extended
             // margins)
-            var legendHeight = opts._height,
-                legendHeightMax = gs.h;
+            var legendHeight = opts._height;
+            var legendHeightMax = gs.h;
 
             if(legendHeight > legendHeightMax) {
                 ly = gs.t;
@@ -328,8 +328,8 @@ module.exports = function draw(gd) {
                         y0 = transform.y;
                     },
                     moveFn: function(dx, dy) {
-                        var newX = x0 + dx,
-                            newY = y0 + dy;
+                        var newX = x0 + dx;
+                        var newY = y0 + dy;
 
                         Drawing.setTranslate(legend, newX, newY);
 
@@ -468,8 +468,8 @@ function ensureLength(str, maxLength) {
 }
 
 function setupTraceToggle(g, gd) {
-    var newMouseDownTime,
-        numClicks = 1;
+    var newMouseDownTime;
+    var numClicks = 1;
 
     var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function(s) {
         s.style('cursor', 'pointer')
@@ -563,9 +563,9 @@ function computeLegendDimensions(gd, groups, traces) {
         }
 
         traces.each(function(d) {
-            var legendItem = d[0],
-                textHeight = legendItem.height,
-                textWidth = legendItem.width;
+            var legendItem = d[0];
+            var textHeight = legendItem.height;
+            var textWidth = legendItem.width;
 
             Drawing.setTranslate(this,
                 borderwidth,
@@ -585,8 +585,8 @@ function computeLegendDimensions(gd, groups, traces) {
         extraWidth = 40;
     }
     else if(isGrouped) {
-        var groupXOffsets = [opts._width],
-            groupData = groups.data();
+        var groupXOffsets = [opts._width];
+        var groupData = groups.data();
 
         for(var i = 0, n = groupData.length; i < n; i++) {
             var textWidths = groupData[i].map(function(legendItemArray) {
@@ -605,13 +605,13 @@ function computeLegendDimensions(gd, groups, traces) {
         });
 
         groups.each(function() {
-            var group = d3.select(this),
-                groupTraces = group.selectAll('g.traces'),
-                groupHeight = 0;
+            var group = d3.select(this);
+            var groupTraces = group.selectAll('g.traces');
+            var groupHeight = 0;
 
             groupTraces.each(function(d) {
-                var legendItem = d[0],
-                    textHeight = legendItem.height;
+                var legendItem = d[0];
+                var textHeight = legendItem.height;
 
                 Drawing.setTranslate(this,
                     0,
@@ -627,13 +627,13 @@ function computeLegendDimensions(gd, groups, traces) {
         opts._width += borderwidth * 2;
     }
     else {
-        var rowHeight = 0,
-            maxTraceHeight = 0,
-            maxTraceWidth = 0,
-            offsetX = 0,
-            fullTracesWidth = 0,
-            traceGap = opts.tracegroupgap || 5,
-            oneRowLegend;
+        var rowHeight = 0;
+        var maxTraceHeight = 0;
+        var maxTraceWidth = 0;
+        var offsetX = 0;
+        var fullTracesWidth = 0;
+        var traceGap = opts.tracegroupgap || 5;
+        var oneRowLegend;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
@@ -644,8 +644,8 @@ function computeLegendDimensions(gd, groups, traces) {
         // check if legend fits in one row
         oneRowLegend = fullLayout._size.w > borderwidth + fullTracesWidth - traceGap;
         traces.each(function(d) {
-            var legendItem = d[0],
-                traceWidth = oneRowLegend ? 40 + d[0].width : maxTraceWidth;
+            var legendItem = d[0];
+            var traceWidth = oneRowLegend ? 40 + d[0].width : maxTraceWidth;
 
             if((borderwidth + offsetX + traceGap + traceWidth) > fullLayout._size.w) {
                 offsetX = 0;
@@ -695,8 +695,8 @@ function computeLegendDimensions(gd, groups, traces) {
 }
 
 function expandMargin(gd) {
-    var fullLayout = gd._fullLayout,
-        opts = fullLayout.legend;
+    var fullLayout = gd._fullLayout;
+    var opts = fullLayout.legend;
 
     var xanchor = 'left';
     if(Lib.isRightAnchor(opts)) {
@@ -726,8 +726,8 @@ function expandMargin(gd) {
 }
 
 function expandHorizontalMargin(gd) {
-    var fullLayout = gd._fullLayout,
-        opts = fullLayout.legend;
+    var fullLayout = gd._fullLayout;
+    var opts = fullLayout.legend;
 
     var xanchor = 'left';
     if(Lib.isRightAnchor(opts)) {

@@ -16,9 +16,9 @@ var Color = require('../color');
 
 module.exports = function style(traces) {
     traces.each(function(d) {
-        var trace = d[0].trace,
-            yObj = trace.error_y || {},
-            xObj = trace.error_x || {};
+        var trace = d[0].trace;
+        var yObj = trace.error_y || {};
+        var xObj = trace.error_x || {};
 
         var s = d3.select(this);
 

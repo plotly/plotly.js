@@ -233,8 +233,8 @@ exports.valObjectMeta = {
                 propOut.set(v);
                 return;
             }
-            var vParts = v.split('+'),
-                i = 0;
+            var vParts = v.split('+');
+            var i = 0;
             while(i < vParts.length) {
                 var vi = vParts[i];
                 if(opts.flags.indexOf(vi) === -1 || vParts.indexOf(vi) < i) {
@@ -415,9 +415,9 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var propIn = nestedProperty(containerIn, attribute),
-        propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt),
-        valIn = propIn.get();
+    var propIn = nestedProperty(containerIn, attribute);
+    var propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
+    var valIn = propIn.get();
 
     return (valIn !== undefined && valIn !== null) ? propOut : false;
 };
@@ -510,9 +510,9 @@ function validate(value, opts) {
         return valObjectDef.validateFunction(value, opts);
     }
 
-    var failed = {},
-        out = failed,
-        propMock = { set: function(v) { out = v; } };
+    var failed = {};
+    var out = failed;
+    var propMock = { set: function(v) { out = v; } };
 
     // 'failed' just something mutable that won't be === anything else
 

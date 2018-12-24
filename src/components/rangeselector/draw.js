@@ -44,9 +44,9 @@ module.exports = function draw(gd) {
     });
 
     selectors.each(function(d) {
-        var selector = d3.select(this),
-            axisLayout = d,
-            selectorLayout = axisLayout.rangeselector;
+        var selector = d3.select(this);
+        var axisLayout = d;
+        var selectorLayout = axisLayout.rangeselector;
 
         var buttons = selector.selectAll('g.button')
             .data(Lib.filterVisible(selectorLayout.buttons));

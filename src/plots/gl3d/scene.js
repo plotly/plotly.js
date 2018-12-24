@@ -37,7 +37,8 @@ function render(scene) {
     // update size of svg container
     var svgContainer = scene.svgContainer;
     var clientRect = scene.container.getBoundingClientRect();
-    var width = clientRect.width, height = clientRect.height;
+    var width = clientRect.width;
+    var height = clientRect.height;
     svgContainer.setAttributeNS(null, 'viewBox', '0 0 ' + width + ' ' + height);
     svgContainer.setAttributeNS(null, 'width', width);
     svgContainer.setAttributeNS(null, 'height', height);
@@ -492,9 +493,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     });
 
     // Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = [[0, 0, 0], [0, 0, 0]],
-        axisDataRange = [],
-        axisTypeRatios = {};
+    var sceneBounds = [[0, 0, 0], [0, 0, 0]];
+    var axisDataRange = [];
+    var axisTypeRatios = {};
 
     for(i = 0; i < 3; ++i) {
         axis = fullSceneLayout[axisProperties[i]];
@@ -641,8 +642,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
 
     // Update frame position for multi plots
-    var domain = fullSceneLayout.domain || null,
-        size = fullLayout._size || null;
+    var domain = fullSceneLayout.domain || null;
+    var size = fullLayout._size || null;
 
     if(domain && size) {
         var containerStyle = this.container.style;
@@ -707,8 +708,8 @@ proto.saveCamera = function saveCamera(layout) {
     var hasChanged = false;
 
     function same(x, y, i, j) {
-        var vectors = ['up', 'center', 'eye'],
-            components = ['x', 'y', 'z'];
+        var vectors = ['up', 'center', 'eye'];
+        var components = ['x', 'y', 'z'];
         return y[vectors[i]] && (x[vectors[i]][components[j]] === y[vectors[i]][components[j]]);
     }
 

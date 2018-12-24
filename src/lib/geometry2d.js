@@ -16,18 +16,18 @@ var mod = require('./mod').mod;
  */
 exports.segmentsIntersect = segmentsIntersect;
 function segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
-    var a = x2 - x1,
-        b = x3 - x1,
-        c = x4 - x3,
-        d = y2 - y1,
-        e = y3 - y1,
-        f = y4 - y3,
-        det = a * f - c * d;
+    var a = x2 - x1;
+    var b = x3 - x1;
+    var c = x4 - x3;
+    var d = y2 - y1;
+    var e = y3 - y1;
+    var f = y4 - y3;
+    var det = a * f - c * d;
     // parallel lines? intersection is undefined
     // ignore the case where they are colinear
     if(det === 0) return null;
-    var t = (b * f - c * e) / det,
-        u = (b * d - a * e) / det;
+    var t = (b * f - c * e) / det;
+    var u = (b * d - a * e) / det;
     // segments do not intersect?
     if(u < 0 || u > 1 || t < 0 || t > 1) return null;
 

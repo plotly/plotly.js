@@ -94,12 +94,11 @@ function drawOne(gd, index) {
 
     function drawShape(shapeLayer) {
         var attrs = {
-                'data-index': index,
-                'fill-rule': 'evenodd',
-                d: getPathString(gd, options)
-            },
-            lineColor = options.line.width ?
-                options.line.color : 'rgba(0,0,0,0)';
+            'data-index': index,
+            'fill-rule': 'evenodd',
+            d: getPathString(gd, options)
+        };
+        var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
 
         var path = shapeLayer.append('path')
             .attr(attrs)
@@ -144,22 +143,22 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     var pathIn;
 
     // setup conversion functions
-    var xa = Axes.getFromId(gd, shapeOptions.xref),
-        ya = Axes.getFromId(gd, shapeOptions.yref),
-        x2p = helpers.getDataToPixel(gd, xa),
-        y2p = helpers.getDataToPixel(gd, ya, true),
-        p2x = helpers.getPixelToData(gd, xa),
-        p2y = helpers.getPixelToData(gd, ya, true);
+    var xa = Axes.getFromId(gd, shapeOptions.xref);
+    var ya = Axes.getFromId(gd, shapeOptions.yref);
+    var x2p = helpers.getDataToPixel(gd, xa);
+    var y2p = helpers.getDataToPixel(gd, ya, true);
+    var p2x = helpers.getPixelToData(gd, xa);
+    var p2y = helpers.getPixelToData(gd, ya, true);
 
     var sensoryElement = obtainSensoryElement();
     var dragOptions = {
-            element: sensoryElement.node(),
-            gd: gd,
-            prepFn: startDrag,
-            doneFn: endDrag,
-            clickFn: abortDrag
-        },
-        dragMode;
+        element: sensoryElement.node(),
+        gd: gd,
+        prepFn: startDrag,
+        doneFn: endDrag,
+        clickFn: abortDrag
+    };
+    var dragMode;
 
     dragElement.init(dragOptions);
 
@@ -170,8 +169,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function createLineDragHandles() {
-        var minSensoryWidth = 10,
-            sensoryWidth = Math.max(shapeOptions.line.width, minSensoryWidth);
+        var minSensoryWidth = 10;
+        var sensoryWidth = Math.max(shapeOptions.line.width, minSensoryWidth);
 
         // Helper shapes group
         // Note that by setting the `data-index` attr, it is ensured that
@@ -232,13 +231,13 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
 
             // choose 'move' or 'resize'
             // based on initial position of cursor within the drag element
-            var w = dragBBox.right - dragBBox.left,
-                h = dragBBox.bottom - dragBBox.top,
-                x = evt.clientX - dragBBox.left,
-                y = evt.clientY - dragBBox.top,
-                cursor = (!isPath && w > MINWIDTH && h > MINHEIGHT && !evt.shiftKey) ?
-                    dragElement.getCursor(x / w, 1 - y / h) :
-                    'move';
+            var w = dragBBox.right - dragBBox.left;
+            var h = dragBBox.bottom - dragBBox.top;
+            var x = evt.clientX - dragBBox.left;
+            var y = evt.clientY - dragBBox.top;
+            var cursor = (!isPath && w > MINWIDTH && h > MINHEIGHT && !evt.shiftKey) ?
+                dragElement.getCursor(x / w, 1 - y / h) :
+                'move';
 
             setCursor(shapePath, cursor);
 
@@ -316,9 +315,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
 
     function moveShape(dx, dy) {
         if(shapeOptions.type === 'path') {
-            var noOp = function(coord) { return coord; },
-                moveX = noOp,
-                moveY = noOp;
+            var noOp = function(coord) { return coord; };
+            var moveX = noOp;
+            var moveY = noOp;
 
             if(xPixelSized) {
                 modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
@@ -359,9 +358,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     function resizeShape(dx, dy) {
         if(isPath) {
             // TODO: implement path resize, don't forget to update dragMode code
-            var noOp = function(coord) { return coord; },
-                moveX = noOp,
-                moveY = noOp;
+            var noOp = function(coord) { return coord; };
+            var moveX = noOp;
+            var moveY = noOp;
 
             if(xPixelSized) {
                 modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
@@ -393,10 +392,10 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
             }
         }
         else {
-            var newN = (~dragMode.indexOf('n')) ? n0 + dy : n0,
-                newS = (~dragMode.indexOf('s')) ? s0 + dy : s0,
-                newW = (~dragMode.indexOf('w')) ? w0 + dx : w0,
-                newE = (~dragMode.indexOf('e')) ? e0 + dx : e0;
+            var newN = (~dragMode.indexOf('n')) ? n0 + dy : n0;
+            var newS = (~dragMode.indexOf('s')) ? s0 + dy : s0;
+            var newW = (~dragMode.indexOf('w')) ? w0 + dx : w0;
+            var newE = (~dragMode.indexOf('e')) ? e0 + dx : e0;
 
             // Do things in opposing direction for y-axis.
             // Hint: for data-sized shapes the reversal of axis direction is done in p2y.
@@ -485,10 +484,10 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function deactivateClipPathTemporarily(shapePath, shapeOptions, gd) {
-        var xref = shapeOptions.xref,
-            yref = shapeOptions.yref,
-            xa = Axes.getFromId(gd, xref),
-            ya = Axes.getFromId(gd, yref);
+        var xref = shapeOptions.xref;
+        var yref = shapeOptions.yref;
+        var xa = Axes.getFromId(gd, xref);
+        var ya = Axes.getFromId(gd, yref);
 
         var clipAxes = '';
         if(xref !== 'paper' && !xa.autorange) clipAxes += xref;
@@ -503,12 +502,12 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
 }
 
 function getPathString(gd, options) {
-    var type = options.type,
-        xa = Axes.getFromId(gd, options.xref),
-        ya = Axes.getFromId(gd, options.yref),
-        gs = gd._fullLayout._size,
-        x2r, x2p, y2r, y2p,
-        x0, x1, y0, y1;
+    var type = options.type;
+    var xa = Axes.getFromId(gd, options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
+    var gs = gd._fullLayout._size;
+    var x2r, x2p, y2r, y2p;
+    var x0, x1, y0, y1;
 
     if(xa) {
         x2r = helpers.shapePositionToRange(xa);
@@ -554,33 +553,33 @@ function getPathString(gd, options) {
 
     if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
     if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
+
     // circle
-    var cx = (x0 + x1) / 2,
-        cy = (y0 + y1) / 2,
-        rx = Math.abs(cx - x0),
-        ry = Math.abs(cy - y0),
-        rArc = 'A' + rx + ',' + ry,
-        rightPt = (cx + rx) + ',' + cy,
-        topPt = cx + ',' + (cy - ry);
+    var cx = (x0 + x1) / 2;
+    var cy = (y0 + y1) / 2;
+    var rx = Math.abs(cx - x0);
+    var ry = Math.abs(cy - y0);
+    var rArc = 'A' + rx + ',' + ry;
+    var rightPt = (cx + rx) + ',' + cy;
+    var topPt = cx + ',' + (cy - ry);
     return 'M' + rightPt + rArc + ' 0 1,1 ' + topPt +
         rArc + ' 0 0,1 ' + rightPt + 'Z';
 }
 
 
 function convertPath(options, x2p, y2p) {
-    var pathIn = options.path,
-        xSizemode = options.xsizemode,
-        ySizemode = options.ysizemode,
-        xAnchor = options.xanchor,
-        yAnchor = options.yanchor;
-
+    var pathIn = options.path;
+    var xSizemode = options.xsizemode;
+    var ySizemode = options.ysizemode;
+    var xAnchor = options.xanchor;
+    var yAnchor = options.yanchor;
 
     return pathIn.replace(constants.segmentRE, function(segment) {
-        var paramNumber = 0,
-            segmentType = segment.charAt(0),
-            xParams = constants.paramIsX[segmentType],
-            yParams = constants.paramIsY[segmentType],
-            nParams = constants.numParams[segmentType];
+        var paramNumber = 0;
+        var segmentType = segment.charAt(0);
+        var xParams = constants.paramIsX[segmentType];
+        var yParams = constants.paramIsY[segmentType];
+        var nParams = constants.numParams[segmentType];
 
         var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
             if(xParams[paramNumber]) {
@@ -608,11 +607,11 @@ function convertPath(options, x2p, y2p) {
 
 function movePath(pathIn, moveX, moveY) {
     return pathIn.replace(constants.segmentRE, function(segment) {
-        var paramNumber = 0,
-            segmentType = segment.charAt(0),
-            xParams = constants.paramIsX[segmentType],
-            yParams = constants.paramIsY[segmentType],
-            nParams = constants.numParams[segmentType];
+        var paramNumber = 0;
+        var segmentType = segment.charAt(0);
+        var xParams = constants.paramIsX[segmentType];
+        var yParams = constants.paramIsY[segmentType];
+        var nParams = constants.numParams[segmentType];
 
         var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
             if(paramNumber >= nParams) return param;

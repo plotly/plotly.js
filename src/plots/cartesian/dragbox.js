@@ -242,12 +242,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
         else if(numClicks === 1 && singleEnd) {
-            var ax = ns ? ya0 : xa0,
-                end = (ns === 's' || ew === 'w') ? 0 : 1,
-                attrStr = ax._name + '.range[' + end + ']',
-                initialText = getEndText(ax, end),
-                hAlign = 'left',
-                vAlign = 'middle';
+            var ax = ns ? ya0 : xa0;
+            var end = (ns === 's' || ew === 'w') ? 0 : 1;
+            var attrStr = ax._name + '.range[' + end + ']';
+            var initialText = getEndText(ax, end);
+            var hAlign = 'left';
+            var vAlign = 'middle';
 
             if(ax.fixedrange) return;
 
@@ -316,10 +316,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return false;
         }
 
-        var x1 = Math.max(0, Math.min(pw, dx0 + x0)),
-            y1 = Math.max(0, Math.min(ph, dy0 + y0)),
-            dx = Math.abs(x1 - x0),
-            dy = Math.abs(y1 - y0);
+        var x1 = Math.max(0, Math.min(pw, dx0 + x0));
+        var y1 = Math.max(0, Math.min(ph, dy0 + y0));
+        var dx = Math.abs(x1 - x0);
+        var dy = Math.abs(y1 - y0);
 
         box.l = Math.min(x0, x1);
         box.r = Math.max(x0, x1);
@@ -450,18 +450,17 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200),
-            gbb = mainplot.draglayer.select('.nsewdrag')
-                .node().getBoundingClientRect(),
-            xfrac = (e.clientX - gbb.left) / gbb.width,
-            yfrac = (gbb.bottom - e.clientY) / gbb.height,
-            i;
+        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200);
+        var gbb = mainplot.draglayer.select('.nsewdrag').node().getBoundingClientRect();
+        var xfrac = (e.clientX - gbb.left) / gbb.width;
+        var yfrac = (gbb.bottom - e.clientY) / gbb.height;
+        var i;
 
         function zoomWheelOneAxis(ax, centerFraction, zoom) {
             if(ax.fixedrange) return;
 
-            var axRange = Lib.simpleMap(ax.range, ax.r2l),
-                v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
+            var axRange = Lib.simpleMap(ax.range, ax.r2l);
+            var v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
             function doZoom(v) { return ax.l2r(v0 + (v - v0) * zoom); }
             ax.range = axRange.map(doZoom);
         }
@@ -533,9 +532,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // TODO: this makes (generally non-fatal) errors when you get
         // near floating point limits
         function dz(axArray, end, d) {
-            var otherEnd = 1 - end,
-                movedAx,
-                newLinearizedEnd;
+            var otherEnd = 1 - end;
+            var movedAx;
+            var newLinearizedEnd;
             for(var i = 0; i < axArray.length; i++) {
                 var axi = axArray[i];
                 if(axi.fixedrange) continue;
@@ -601,8 +600,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // Draw ticks and annotations (and other components) when ranges change.
     // Also records the ranges that have changed for use by update at the end.
     function ticksAndAnnotations(ns, ew) {
-        var activeAxIds = [],
-            i;
+        var activeAxIds = [];
+        var i;
 
         function pushActiveAxIds(axList) {
             for(i = 0; i < axList.length; i++) {
@@ -652,9 +651,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function doubleClick() {
         if(gd._transitioningWithDuration) return;
 
-        var doubleClickConfig = gd._context.doubleClick,
-            axList = (xActive ? xaxes : []).concat(yActive ? yaxes : []),
-            attrs = {};
+        var doubleClickConfig = gd._context.doubleClick;
+        var axList = (xActive ? xaxes : []).concat(yActive ? yaxes : []);
+        var attrs = {};
 
         var ax, i, rangeInitial;
 
@@ -904,9 +903,9 @@ function isDirectionActive(axList, activeVal) {
 }
 
 function getEndText(ax, end) {
-    var initialVal = ax.range[end],
-        diff = Math.abs(initialVal - ax.range[1 - end]),
-        dig;
+    var initialVal = ax.range[end];
+    var diff = Math.abs(initialVal - ax.range[1 - end]);
+    var dig;
 
     // TODO: this should basically be ax.r2d but we're doing extra
     // rounding here... can we clean up at all?

@@ -14,8 +14,7 @@ var tinycolor = require('tinycolor2');
 exports.coerceString = function(attributeDefinition, value, defaultValue) {
     if(typeof value === 'string') {
         if(value || !attributeDefinition.noBlank) return value;
-    }
-    else if(typeof value === 'number') {
+    } else if(typeof value === 'number') {
         if(!attributeDefinition.strict) return String(value);
     }
 
@@ -28,9 +27,9 @@ exports.coerceNumber = function(attributeDefinition, value, defaultValue) {
     if(isNumeric(value)) {
         value = +value;
 
-        var min = attributeDefinition.min,
-            max = attributeDefinition.max,
-            isOutOfBounds = (min !== undefined && value < min) ||
+        var min = attributeDefinition.min;
+        var max = attributeDefinition.max;
+        var isOutOfBounds = (min !== undefined && value < min) ||
               (max !== undefined && value > max);
 
         if(!isOutOfBounds) return value;

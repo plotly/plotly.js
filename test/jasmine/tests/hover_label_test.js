@@ -1265,14 +1265,14 @@ describe('hover info', function() {
 
     describe('hoverformat', function() {
         var data = [{
-                x: [1, 2, 3],
-                y: [0.12345, 0.23456, 0.34567]
-            }],
-            layout = {
-                yaxis: { showticklabels: true, hoverformat: ',.2r' },
-                width: 600,
-                height: 400
-            };
+            x: [1, 2, 3],
+            y: [0.12345, 0.23456, 0.34567]
+        }];
+        var layout = {
+            yaxis: { showticklabels: true, hoverformat: ',.2r' },
+            width: 600,
+            height: 400
+        };
 
         beforeEach(function() {
             this.gd = createGraphDiv();
@@ -1302,16 +1302,16 @@ describe('hover info', function() {
 
     describe('textmode', function() {
         var data = [{
-                x: [1, 2, 3, 4],
-                y: [2, 3, 4, 5],
-                mode: 'text',
-                hoverinfo: 'text',
-                text: ['test', null, 42, undefined]
-            }],
-            layout = {
-                width: 600,
-                height: 400
-            };
+            x: [1, 2, 3, 4],
+            y: [2, 3, 4, 5],
+            mode: 'text',
+            hoverinfo: 'text',
+            text: ['test', null, 42, undefined]
+        }];
+        var layout = {
+            width: 600,
+            height: 400
+        };
 
         beforeEach(function(done) {
             Plotly.plot(createGraphDiv(), data, layout).then(done);

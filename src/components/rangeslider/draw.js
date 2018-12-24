@@ -127,9 +127,9 @@ module.exports = function(gd) {
 
         // update data <--> pixel coordinate conversion methods
 
-        var range0 = axisOpts.r2l(opts.range[0]),
-            range1 = axisOpts.r2l(opts.range[1]),
-            dist = range1 - range0;
+        var range0 = axisOpts.r2l(opts.range[0]);
+        var range1 = axisOpts.r2l(opts.range[1]);
+        var dist = range1 - range0;
 
         opts.p2d = function(v) {
             return (v / opts._width) * dist + range0;
@@ -142,9 +142,9 @@ module.exports = function(gd) {
         opts._rl = [range0, range1];
 
         if(oppAxisRangeOpts.rangemode !== 'match') {
-            var range0OppAxis = oppAxisOpts.r2l(oppAxisRangeOpts.range[0]),
-                range1OppAxis = oppAxisOpts.r2l(oppAxisRangeOpts.range[1]),
-                distOppAxis = range1OppAxis - range0OppAxis;
+            var range0OppAxis = oppAxisOpts.r2l(oppAxisRangeOpts.range[0]);
+            var range1OppAxis = oppAxisOpts.r2l(oppAxisRangeOpts.range[1]);
+            var distOppAxis = range1OppAxis - range0OppAxis;
 
             opts.d2pOppAxis = function(v) {
                 return (v - range0OppAxis) / distOppAxis * opts._height;
@@ -185,17 +185,17 @@ module.exports = function(gd) {
 };
 
 function setupDragElement(rangeSlider, gd, axisOpts, opts) {
-    var slideBox = rangeSlider.select('rect.' + constants.slideBoxClassName).node(),
-        grabAreaMin = rangeSlider.select('rect.' + constants.grabAreaMinClassName).node(),
-        grabAreaMax = rangeSlider.select('rect.' + constants.grabAreaMaxClassName).node();
+    var slideBox = rangeSlider.select('rect.' + constants.slideBoxClassName).node();
+    var grabAreaMin = rangeSlider.select('rect.' + constants.grabAreaMinClassName).node();
+    var grabAreaMax = rangeSlider.select('rect.' + constants.grabAreaMaxClassName).node();
 
     rangeSlider.on('mousedown', function() {
-        var event = d3.event,
-            target = event.target,
-            startX = event.clientX,
-            offsetX = startX - rangeSlider.node().getBoundingClientRect().left,
-            minVal = opts.d2p(axisOpts._rl[0]),
-            maxVal = opts.d2p(axisOpts._rl[1]);
+        var event = d3.event;
+        var target = event.target;
+        var startX = event.clientX;
+        var offsetX = startX - rangeSlider.node().getBoundingClientRect().left;
+        var minVal = opts.d2p(axisOpts._rl[0]);
+        var maxVal = opts.d2p(axisOpts._rl[1]);
 
         var dragCover = dragElement.coverSlip();
 
@@ -259,8 +259,8 @@ function setDataRange(rangeSlider, gd, axisOpts, opts) {
         return axisOpts.l2r(Lib.constrain(v, opts._rl[0], opts._rl[1]));
     }
 
-    var dataMin = clamp(opts.p2d(opts._pixelMin)),
-        dataMax = clamp(opts.p2d(opts._pixelMax));
+    var dataMin = clamp(opts.p2d(opts._pixelMin));
+    var dataMax = clamp(opts.p2d(opts._pixelMax));
 
     window.requestAnimationFrame(function() {
         Registry.call('_guiRelayout', gd, axisOpts._name + '.range', [dataMin, dataMax]);
@@ -282,8 +282,8 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
         return Lib.constrain(v, -hw2, opts._width + hw2);
     }
 
-    var pixelMin = clamp(opts.d2p(axisOpts._rl[0])),
-        pixelMax = clamp(opts.d2p(axisOpts._rl[1]));
+    var pixelMin = clamp(opts.d2p(axisOpts._rl[0]));
+    var pixelMax = clamp(opts.d2p(axisOpts._rl[1]));
 
     rangeSlider.select('rect.' + constants.slideBoxClassName)
         .attr('x', pixelMin)
@@ -297,8 +297,8 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
         .attr('width', opts._width - pixelMax);
 
     if(oppAxisRangeOpts.rangemode !== 'match') {
-        var pixelMinOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[1])),
-            pixelMaxOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[0]));
+        var pixelMinOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[1]));
+        var pixelMaxOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[0]));
 
         rangeSlider.select('rect.' + constants.maskMinOppAxisClassName)
             .attr('x', pixelMin)
@@ -320,8 +320,8 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
     // https://github.com/plotly/plotly.js/pull/1409
     var offset = 0.5;
 
-    var xMin = Math.round(clampHandle(pixelMin - hw2)) - offset,
-        xMax = Math.round(clampHandle(pixelMax - hw2)) + offset;
+    var xMin = Math.round(clampHandle(pixelMin - hw2)) - offset;
+    var xMax = Math.round(clampHandle(pixelMax - hw2)) + offset;
 
     rangeSlider.select('g.' + constants.grabberMinClassName)
         .attr('transform', 'translate(' + xMin + ',' + offset + ')');
@@ -340,8 +340,8 @@ function drawBg(rangeSlider, gd, axisOpts, opts) {
     });
 
     var borderCorrect = (opts.borderwidth % 2) === 0 ?
-            opts.borderwidth :
-            opts.borderwidth - 1;
+        opts.borderwidth :
+        opts.borderwidth - 1;
 
     var offsetShift = -opts._offsetShift;
     var lw = Drawing.crispRound(gd, opts.borderwidth);
@@ -386,12 +386,12 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
     var mainplotinfo;
 
     rangePlots.each(function(id, i) {
-        var plotgroup = d3.select(this),
-            isMainPlot = (i === 0);
+        var plotgroup = d3.select(this);
+        var isMainPlot = (i === 0);
 
-        var oppAxisOpts = axisIDs.getFromId(gd, id, 'y'),
-            oppAxisName = oppAxisOpts._name,
-            oppAxisRangeOpts = opts[oppAxisName];
+        var oppAxisOpts = axisIDs.getFromId(gd, id, 'y');
+        var oppAxisName = oppAxisOpts._name;
+        var oppAxisRangeOpts = opts[oppAxisName];
 
         var mockFigure = {
             data: [],
@@ -448,8 +448,8 @@ function filterRangePlotCalcData(calcData, subplotId) {
     var out = [];
 
     for(var i = 0; i < calcData.length; i++) {
-        var calcTrace = calcData[i],
-            trace = calcTrace[0].trace;
+        var calcTrace = calcData[i];
+        var trace = calcTrace[0].trace;
 
         if(trace.xaxis + trace.yaxis === subplotId) {
             out.push(calcTrace);

@@ -109,9 +109,9 @@ describe('parcoords initialization tests', function() {
     describe('parcoords defaults', function() {
 
         function _supply(traceIn) {
-            var traceOut = { visible: true },
-                defaultColor = '#444',
-                layout = { font: Plots.layoutAttributes.font };
+            var traceOut = { visible: true };
+            var defaultColor = '#444';
+            var layout = { font: Plots.layoutAttributes.font };
 
             Parcoords.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 

@@ -69,10 +69,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         ny = Math.max(0, Math.min(y2.length - 2, Lib.findBin(yval, y2)));
     }
 
-    var x0 = xa.c2p(x[nx]),
-        x1 = xa.c2p(x[nx + 1]),
-        y0 = ya.c2p(y[ny]),
-        y1 = ya.c2p(y[ny + 1]);
+    var x0 = xa.c2p(x[nx]);
+    var x1 = xa.c2p(x[nx + 1]);
+    var y0 = ya.c2p(y[ny]);
+    var y1 = ya.c2p(y[ny + 1]);
 
     if(contour) {
         x1 = x0;

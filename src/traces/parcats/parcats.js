@@ -364,8 +364,8 @@ function key(d) {
  /** True if a category view model is in the right-most display dimension
   * @param {CategoryViewModel} d */
 function catInRightDim(d) {
-    var numDims = d.parcatsViewModel.dimensions.length,
-        leftDimInd = d.parcatsViewModel.dimensions[numDims - 1].model.dimensionInd;
+    var numDims = d.parcatsViewModel.dimensions.length;
+    var leftDimInd = d.parcatsViewModel.dimensions[numDims - 1].model.dimensionInd;
     return d.model.dimensionInd === leftDimInd;
 }
 
@@ -1058,9 +1058,9 @@ function dragDimension(d) {
         return;
     }
 
-    var dragDimInd = d.dragDimensionDisplayInd,
-        prevDimInd = dragDimInd - 1,
-        nextDimInd = dragDimInd + 1;
+    var dragDimInd = d.dragDimensionDisplayInd;
+    var prevDimInd = dragDimInd - 1;
+    var nextDimInd = dragDimInd + 1;
 
     var dragDimension = d.parcatsViewModel
         .dimensions[dragDimInd];
@@ -1456,14 +1456,14 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
     var margin = layout.margin || {l: 80, r: 80, t: 100, b: 80};
 
     // Compute pixel position/extents
-    var trace = parcatsModel.trace,
-        domain = trace.domain,
-        figureWidth = layout.width,
-        figureHeight = layout.height,
-        traceWidth = Math.floor(figureWidth * (domain.x[1] - domain.x[0])),
-        traceHeight = Math.floor(figureHeight * (domain.y[1] - domain.y[0])),
-        traceX = domain.x[0] * figureWidth + margin.l,
-        traceY = layout.height - domain.y[1] * layout.height + margin.t;
+    var trace = parcatsModel.trace;
+    var domain = trace.domain;
+    var figureWidth = layout.width;
+    var figureHeight = layout.height;
+    var traceWidth = Math.floor(figureWidth * (domain.x[1] - domain.x[0]));
+    var traceHeight = Math.floor(figureHeight * (domain.y[1] - domain.y[0]));
+    var traceX = domain.x[0] * figureWidth + margin.l;
+    var traceY = layout.height - domain.y[1] * layout.height + margin.t;
 
     // Handle path shape
     // -----------------
@@ -1533,10 +1533,10 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
 function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) {
 
     // Compute the x midpoint of each path segment
-    var xRefPoints1 = [],
-        xRefPoints2 = [],
-        refInterpolator,
-        d;
+    var xRefPoints1 = [];
+    var xRefPoints2 = [];
+    var refInterpolator;
+    var d;
 
     for(d = 0; d < dimWidths.length - 1; d++) {
         refInterpolator = d3.interpolateNumber(dimWidths[d] + leftXPositions[d], leftXPositions[d + 1]);
@@ -1681,12 +1681,11 @@ function updatePathViewModels(parcatsViewModel) {
     });
 
     // Create path models
-    var pathViewModels = new Array(pathModels.length),
-        totalCount = dimensionViewModels[0].model.count,
-        totalHeight = dimensionViewModels[0].categories
-            .map(function(c) {
-                return c.height;}).reduce(
-                    function(v1, v2) {return v1 + v2;});
+    var pathViewModels = new Array(pathModels.length);
+    var totalCount = dimensionViewModels[0].model.count;
+    var totalHeight = dimensionViewModels[0].categories
+        .map(function(c) { return c.height; })
+        .reduce(function(v1, v2) { return v1 + v2; });
 
 
     for(var pathNumber = 0; pathNumber < pathModels.length; pathNumber++) {
@@ -1807,15 +1806,15 @@ function updateDimensionViewModels(parcatsViewModel) {
 function createDimensionViewModel(parcatsViewModel, dimensionModel) {
 
     // Compute dimension x position
-    var categoryLabelPad = 40,
-        dimWidth = 16,
-        numDimensions = parcatsViewModel.model.dimensions.length,
-        displayInd = dimensionModel.displayInd;
+    var categoryLabelPad = 40;
+    var dimWidth = 16;
+    var numDimensions = parcatsViewModel.model.dimensions.length;
+    var displayInd = dimensionModel.displayInd;
 
     // Compute x coordinate values
-    var dimDx,
-        dimX0,
-        dimX;
+    var dimDx;
+    var dimX0;
+    var dimX;
 
     if(numDimensions > 1) {
         dimDx = (parcatsViewModel.width - 2 * categoryLabelPad - dimWidth) / (numDimensions - 1);
@@ -1826,17 +1825,17 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
     dimX = dimX0 + dimDx * displayInd;
 
     // Compute categories
-    var categories = [],
-        maxCats = parcatsViewModel.model.maxCats,
-        numCats = dimensionModel.categories.length,
-        catSpacing = 8,
-        totalCount = dimensionModel.count,
-        totalHeight = parcatsViewModel.height - catSpacing * (maxCats - 1),
-        nextCatHeight,
-        nextCatModel,
-        nextCat,
-        catInd,
-        catDisplayInd;
+    var categories = [];
+    var maxCats = parcatsViewModel.model.maxCats;
+    var numCats = dimensionModel.categories.length;
+    var catSpacing = 8;
+    var totalCount = dimensionModel.count;
+    var totalHeight = parcatsViewModel.height - catSpacing * (maxCats - 1);
+    var nextCatHeight;
+    var nextCatModel;
+    var nextCat;
+    var catInd;
+    var catDisplayInd;
 
     // Compute starting Y offset
     var nextCatY = (maxCats - numCats) * catSpacing / 2.0;

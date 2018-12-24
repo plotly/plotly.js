@@ -17,8 +17,8 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
 
     if(traceOut.marker) {
         // don't try to inherit a color array
-        var markerColor = traceOut.marker.color,
-            markerLineColor = (traceOut.marker.line || {}).color;
+        var markerColor = traceOut.marker.color;
+        var markerLineColor = (traceOut.marker.line || {}).color;
 
         if(markerColor && !isArrayOrTypedArray(markerColor)) {
             inheritColorFromMarker = markerColor;

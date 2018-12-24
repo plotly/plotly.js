@@ -82,11 +82,11 @@ function onClick(gd, hoverData) {
  * }
  */
 function getToggleSets(gd, hoverData) {
-    var annotations = gd._fullLayout.annotations,
-        onSet = [],
-        offSet = [],
-        explicitOffSet = [],
-        hoverLen = (hoverData || []).length;
+    var annotations = gd._fullLayout.annotations;
+    var onSet = [];
+    var offSet = [];
+    var explicitOffSet = [];
+    var hoverLen = (hoverData || []).length;
 
     var i, j, anni, showMode, pointj, xa, ya, toggleType;
 

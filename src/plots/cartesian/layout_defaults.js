@@ -183,12 +183,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
-        var spikecolor = coerce2('spikecolor'),
-            spikethickness = coerce2('spikethickness'),
-            spikedash = coerce2('spikedash'),
-            spikemode = coerce2('spikemode'),
-            spikesnap = coerce2('spikesnap'),
-            showSpikes = coerce('showspikes', !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
+        var spikecolor = coerce2('spikecolor');
+        var spikethickness = coerce2('spikethickness');
+        var spikedash = coerce2('spikedash');
+        var spikemode = coerce2('spikemode');
+        var spikesnap = coerce2('spikesnap');
+        var showSpikes = coerce('showspikes', !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
 
         if(!showSpikes) {
             delete axLayoutOut.spikecolor;

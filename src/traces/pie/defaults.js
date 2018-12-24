@@ -54,10 +54,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertemplate');
 
     if(textInfo && textInfo !== 'none') {
-        var textPosition = coerce('textposition'),
-            hasBoth = Array.isArray(textPosition) || textPosition === 'auto',
-            hasInside = hasBoth || textPosition === 'inside',
-            hasOutside = hasBoth || textPosition === 'outside';
+        var textPosition = coerce('textposition');
+        var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
+        var hasInside = hasBoth || textPosition === 'inside';
+        var hasOutside = hasBoth || textPosition === 'outside';
 
         if(hasInside || hasOutside) {
             var dfltFont = coerceFont(coerce, 'textfont', layout.font);

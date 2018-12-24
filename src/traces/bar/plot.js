@@ -19,9 +19,9 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Registry = require('../../registry');
 
-var attributes = require('./attributes'),
-    attributeText = attributes.text,
-    attributeTextPosition = attributes.textposition;
+var attributes = require('./attributes');
+var attributeText = attributes.text;
+var attributeTextPosition = attributes.textposition;
 var helpers = require('./helpers');
 var style = require('./style');
 
@@ -84,8 +84,8 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
             }
 
             var lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
-                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1,
-                offset = d3.round((lw / 2) % 1, 2);
+                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
+            var offset = d3.round((lw / 2) % 1, 2);
 
             function roundWithLine(v) {
                 // if there are explicit gaps, don't round,
@@ -111,9 +111,8 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 // pixelation. if the bars ARE fully opaque and have
                 // no line, expand to a full pixel to make sure we
                 // can see them
-                var op = Color.opacity(di.mc || trace.marker.color),
-                    fixpx = (op < 1 || lw > 0.01) ?
-                        roundWithLine : expandToVisible;
+                var op = Color.opacity(di.mc || trace.marker.color);
+                var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
                 x0 = fixpx(x0, x1);
                 x1 = fixpx(x1, x0);
                 y0 = fixpx(y0, y1);
@@ -164,8 +163,8 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     }
 
     // get trace attributes
-    var trace = calcTrace[0].trace,
-        orientation = trace.orientation;
+    var trace = calcTrace[0].trace;
+    var orientation = trace.orientation;
 
     var text = getText(trace, i);
     textPosition = getTextPosition(trace, i);
@@ -181,21 +180,21 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
 
     // compute text position
-    var barmode = gd._fullLayout.barmode,
-        inStackMode = (barmode === 'stack'),
-        inRelativeMode = (barmode === 'relative'),
-        inStackOrRelativeMode = inStackMode || inRelativeMode,
+    var barmode = gd._fullLayout.barmode;
+    var inStackMode = (barmode === 'stack');
+    var inRelativeMode = (barmode === 'relative');
+    var inStackOrRelativeMode = inStackMode || inRelativeMode;
 
-        calcBar = calcTrace[i],
-        isOutmostBar = !inStackOrRelativeMode || calcBar._outmost,
+    var calcBar = calcTrace[i];
+    var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
 
-        barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD,  // padding excluded
-        barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD,  // padding excluded
+    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;  // padding excluded
+    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;  // padding excluded
 
-        textSelection,
-        textBB,
-        textWidth,
-        textHeight;
+    var textSelection;
+    var textBB;
+    var textWidth;
+    var textHeight;
 
     if(textPosition === 'outside') {
         if(!isOutmostBar && !calcBar.hasB) textPosition = 'inside';
@@ -211,14 +210,13 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
             textWidth = textBB.width,
             textHeight = textBB.height;
 
-            var textHasSize = (textWidth > 0 && textHeight > 0),
-                fitsInside =
-                    (textWidth <= barWidth && textHeight <= barHeight),
-                fitsInsideIfRotated =
-                    (textWidth <= barHeight && textHeight <= barWidth),
-                fitsInsideIfShrunk = (orientation === 'h') ?
-                    (barWidth >= textWidth * (barHeight / textHeight)) :
-                    (barHeight >= textHeight * (barWidth / textWidth));
+            var textHasSize = (textWidth > 0 && textHeight > 0);
+            var fitsInside = (textWidth <= barWidth && textHeight <= barHeight);
+            var fitsInsideIfRotated = (textWidth <= barHeight && textHeight <= barWidth);
+            var fitsInsideIfShrunk = (orientation === 'h') ?
+                (barWidth >= textWidth * (barHeight / textHeight)) :
+                (barHeight >= textHeight * (barWidth / textWidth));
+
             if(textHasSize &&
                     (fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk)) {
                 textPosition = 'inside';
@@ -265,16 +263,16 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
 
 function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
     // compute text and target positions
-    var textWidth = textBB.width,
-        textHeight = textBB.height,
-        textX = (textBB.left + textBB.right) / 2,
-        textY = (textBB.top + textBB.bottom) / 2,
-        barWidth = Math.abs(x1 - x0),
-        barHeight = Math.abs(y1 - y0),
-        targetWidth,
-        targetHeight,
-        targetX,
-        targetY;
+    var textWidth = textBB.width;
+    var textHeight = textBB.height;
+    var textX = (textBB.left + textBB.right) / 2;
+    var textY = (textBB.top + textBB.bottom) / 2;
+    var barWidth = Math.abs(x1 - x0);
+    var barHeight = Math.abs(y1 - y0);
+    var targetWidth;
+    var targetHeight;
+    var targetX;
+    var targetY;
 
     // apply text padding
     var textpad;
@@ -350,9 +348,9 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
 
 function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
     var barWidth = (orientation === 'h') ?
-            Math.abs(y1 - y0) :
-            Math.abs(x1 - x0),
-        textpad;
+        Math.abs(y1 - y0) :
+        Math.abs(x1 - x0);
+    var textpad;
 
     // Keep the padding so the text doesn't sit right against
     // the bars, but don't factor it into barWidth
@@ -369,12 +367,12 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
     }
 
     // compute text and target positions
-    var textX = (textBB.left + textBB.right) / 2,
-        textY = (textBB.top + textBB.bottom) / 2,
-        targetWidth,
-        targetHeight,
-        targetX,
-        targetY;
+    var textX = (textBB.left + textBB.right) / 2;
+    var textY = (textBB.top + textBB.bottom) / 2;
+    var targetWidth;
+    var targetHeight;
+    var targetX;
+    var targetY;
 
     targetWidth = scale * textBB.width;
     targetHeight = scale * textBB.height;
@@ -406,9 +404,9 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
 }
 
 function getTransform(textX, textY, targetX, targetY, scale, rotate) {
-    var transformScale,
-        transformRotate,
-        transformTranslate;
+    var transformScale;
+    var transformRotate;
+    var transformTranslate;
 
     if(scale < 1) transformScale = 'scale(' + scale + ') ';
     else {
@@ -420,8 +418,8 @@ function getTransform(textX, textY, targetX, targetY, scale, rotate) {
         'rotate(' + rotate + ' ' + textX + ' ' + textY + ') ' : '';
 
     // Note that scaling also affects the center of the text box
-    var translateX = (targetX - scale * textX),
-        translateY = (targetY - scale * textY);
+    var translateX = (targetX - scale * textX);
+    var translateY = (targetY - scale * textY);
     transformTranslate = 'translate(' + translateX + ' ' + translateY + ')';
 
     return transformTranslate + transformScale + transformRotate;

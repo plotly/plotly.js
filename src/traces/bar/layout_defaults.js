@@ -21,10 +21,10 @@ module.exports = function(layoutIn, layoutOut, fullData) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
-    var hasBars = false,
-        shouldBeGapless = false,
-        gappedAnyway = false,
-        usedSubplots = {};
+    var hasBars = false;
+    var shouldBeGapless = false;
+    var gappedAnyway = false;
+    var usedSubplots = {};
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];

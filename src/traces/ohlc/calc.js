@@ -120,8 +120,8 @@ function convertTickWidth(gd, xa, trace) {
     var minDiff = trace._minDiff;
 
     if(!minDiff) {
-        var fullData = gd._fullData,
-            ohlcTracesOnThisXaxis = [];
+        var fullData = gd._fullData;
+        var ohlcTracesOnThisXaxis = [];
 
         minDiff = Infinity;
 

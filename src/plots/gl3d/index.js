@@ -45,10 +45,10 @@ exports.plot = function plotGl3d(gd) {
     var sceneIds = fullLayout._subplots[GL3D];
 
     for(var i = 0; i < sceneIds.length; i++) {
-        var sceneId = sceneIds[i],
-            fullSceneData = getSubplotData(fullData, GL3D, sceneId),
-            sceneLayout = fullLayout[sceneId],
-            scene = sceneLayout._scene;
+        var sceneId = sceneIds[i];
+        var fullSceneData = getSubplotData(fullData, GL3D, sceneId);
+        var sceneLayout = fullLayout[sceneId];
+        var scene = sceneLayout._scene;
 
         if(!scene) {
             scene = new Scene({
