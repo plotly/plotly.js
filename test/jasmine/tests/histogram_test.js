@@ -1043,11 +1043,11 @@ describe('getBinSpanLabelRound', function() {
         var cn8i = Lib.dateTime2ms('1995-08i-01', cn);
         var cn9 = Lib.dateTime2ms('1995-09-01', cn);
 
-        var cn1_00 = Lib.dateTime2ms('2000-01-01', cn);
-        var cn1_01 = Lib.dateTime2ms('2001-01-01', cn);
-        var cn1_02 = Lib.dateTime2ms('2002-01-01', cn);
-        var cn1_10 = Lib.dateTime2ms('2010-01-01', cn);
-        var cn1_20 = Lib.dateTime2ms('2020-01-01', cn);
+        var cn1x00 = Lib.dateTime2ms('2000-01-01', cn);
+        var cn1x01 = Lib.dateTime2ms('2001-01-01', cn);
+        var cn1x02 = Lib.dateTime2ms('2002-01-01', cn);
+        var cn1x10 = Lib.dateTime2ms('2010-01-01', cn);
+        var cn1x20 = Lib.dateTime2ms('2020-01-01', cn);
 
         _test(100, 2000, [cn8i, cn8i + 10000, cn8i + 20000], cn,
             [cn8i, cn8i + 9000, cn8i + 10000, cn8i + 19000]);
@@ -1059,17 +1059,17 @@ describe('getBinSpanLabelRound', function() {
         _test(12 * hr, 12 * hr, [cn8 - 12 * hr, cn8i - 12 * hr, cn9 - 12 * hr], cn,
             [cn8, cn8i - day, cn8i, cn9 - day]);
 
-        _test(0, 28 * day, [cn1_00, cn1_01, cn1_02], cn,
-            [cn1_00, Lib.dateTime2ms('2000-12-01', cn), cn1_01, Lib.dateTime2ms('2001-12-01', cn)]);
-        _test(14 * day, 14 * day, [cn1_00 - 14 * day, cn1_01 - 14 * day, cn1_02 - 14 * day], cn,
-            [cn1_00, Lib.dateTime2ms('2000-12-01', cn), cn1_01, Lib.dateTime2ms('2001-12-01', cn)]);
+        _test(0, 28 * day, [cn1x00, cn1x01, cn1x02], cn,
+            [cn1x00, Lib.dateTime2ms('2000-12-01', cn), cn1x01, Lib.dateTime2ms('2001-12-01', cn)]);
+        _test(14 * day, 14 * day, [cn1x00 - 14 * day, cn1x01 - 14 * day, cn1x02 - 14 * day], cn,
+            [cn1x00, Lib.dateTime2ms('2000-12-01', cn), cn1x01, Lib.dateTime2ms('2001-12-01', cn)]);
 
-        _test(0, 353 * day, [cn1_00, cn1_10, cn1_20], cn,
-            [cn1_00, Lib.dateTime2ms('2009-01-01', cn), cn1_10, Lib.dateTime2ms('2019-01-01', cn)]);
+        _test(0, 353 * day, [cn1x00, cn1x10, cn1x20], cn,
+            [cn1x00, Lib.dateTime2ms('2009-01-01', cn), cn1x10, Lib.dateTime2ms('2019-01-01', cn)]);
         // occasionally we give extra precision for world dates (month when it should be year
         // or day when it should be month). That's better than doing the opposite... not going
         // to fix now, too many edge cases, better not to complicate the logic for them all.
-        _test(176 * day, 177 * day, [cn1_00 - 176 * day, cn1_10 - 176 * day, cn1_20 - 176 * day], cn, [
+        _test(176 * day, 177 * day, [cn1x00 - 176 * day, cn1x10 - 176 * day, cn1x20 - 176 * day], cn, [
             Lib.dateTime2ms('1999-08-01', cn), Lib.dateTime2ms('2009-07-01', cn),
             Lib.dateTime2ms('2009-08-01', cn), Lib.dateTime2ms('2019-07-01', cn)
         ]);

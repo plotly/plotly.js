@@ -12,9 +12,9 @@ var CALLBACK_DELAY = 500;
 
 // Testing constants
 // =================
-var basic_mock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
-var margin = basic_mock.layout.margin;
-var domain = basic_mock.data[0].domain;
+var basicMock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
+var margin = basicMock.layout.margin;
+var domain = basicMock.data[0].domain;
 
 var categoryLabelPad = 40,
     dimWidth = 16,
@@ -175,7 +175,7 @@ describe('Basic parcats trace', function() {
     // Tests
     // -----
     it('should create trace properly', function(done) {
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
                 // Check trace properties
                 var trace = gd.data[0];
@@ -188,7 +188,7 @@ describe('Basic parcats trace', function() {
     });
 
     it('should compute initial model properly', function(done) {
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
 
                 // Var check calc data
@@ -271,18 +271,15 @@ describe('Basic parcats trace', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
 
-                // Var check calc data
-                var gd_traceData = gd.data[0];
-
                 // Check that trace data matches input
-                expect(gd_traceData).toEqual(mock.data[0]);
+                expect(gd.data[0]).toEqual(mock.data[0]);
             })
             .catch(failTest)
             .then(done);
     });
 
     it('should compute initial fullData properly', function(done) {
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
                 // Check that some of the defaults are computed properly
                 var fullTrace = gd._fullData[0];
@@ -296,7 +293,7 @@ describe('Basic parcats trace', function() {
 
     it('should compute initial model views properly', function(done) {
 
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
                 checkParcatsModelView(gd);
             })
@@ -306,7 +303,7 @@ describe('Basic parcats trace', function() {
     });
 
     it('should compute initial svg properly', function(done) {
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
                 checkParcatsSvg(gd);
             })

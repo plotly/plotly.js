@@ -474,11 +474,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Remove empty traces
     var traceIds = Object.keys(this.traces);
 
-    trace_id_loop:
+    traceIdLoop:
     for(i = 0; i < traceIds.length; ++i) {
         for(j = 0; j < sceneData.length; ++j) {
             if(sceneData[j].uid === traceIds[i] && sceneData[j].visible === true) {
-                continue trace_id_loop;
+                continue traceIdLoop;
             }
         }
         trace = this.traces[traceIds[i]];

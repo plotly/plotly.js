@@ -18,11 +18,11 @@ describe('dates', function() {
     d1c.setFullYear(13);
 
     var thisYear = new Date().getFullYear(),
-        thisYear_2 = thisYear % 100,
+        thisYear2 = thisYear % 100,
         nowMinus70 = thisYear - 70,
-        nowMinus70_2 = nowMinus70 % 100,
+        nowMinus70x2 = nowMinus70 % 100,
         nowPlus29 = thisYear + 29,
-        nowPlus29_2 = nowPlus29 % 100;
+        nowPlus29x2 = nowPlus29 % 100;
 
     function tweakedTZOffset(d) {
         var tzOffset = d.getTimezoneOffset() * 60000;
@@ -73,9 +73,9 @@ describe('dates', function() {
                 ['0013-1-1 1:00:00.60011111111', +d1c + 0.11111111],
 
                 // 2-digit years get mapped to now-70 -> now+29
-                [thisYear_2 + '-05', new Date(thisYear, 4, 1)],
-                [nowMinus70_2 + '-10-18', new Date(nowMinus70, 9, 18)],
-                [nowPlus29_2 + '-02-12 14:29:32', new Date(nowPlus29, 1, 12, 14, 29, 32)],
+                [thisYear2 + '-05', new Date(thisYear, 4, 1)],
+                [nowMinus70x2 + '-10-18', new Date(nowMinus70, 9, 18)],
+                [nowPlus29x2 + '-02-12 14:29:32', new Date(nowPlus29, 1, 12, 14, 29, 32)],
 
                 // including timezone info (that we discard)
                 ['2014-03-04 08:15Z', new Date(2014, 2, 4, 8, 15)],
@@ -112,8 +112,8 @@ describe('dates', function() {
 
             [
                 [10, 2010],
-                [nowPlus29_2, nowPlus29],
-                [nowMinus70_2, nowMinus70],
+                [nowPlus29x2, nowPlus29],
+                [nowMinus70x2, nowMinus70],
                 [99, 1999]
             ].forEach(function(v) {
                 expect(Lib.dateTime2ms(v[0])).toBe(Date.UTC(v[1], 0, 1), v[0]);
@@ -292,28 +292,28 @@ describe('dates', function() {
                 expect(Lib.ms2DateTime(0, 0, calendar)).toBe(dateStr, calendar);
                 expect(Lib.dateTime2ms(dateStr, calendar)).toBe(0, calendar);
 
-                var expected_p1ms = dateStr + ' 00:00:00.0001',
-                    expected_1s = dateStr + ' 00:00:01',
-                    expected_1m = dateStr + ' 00:01',
-                    expected_1h = dateStr + ' 01:00',
-                    expected_lastinstant = dateStr + ' 23:59:59.9999';
+                var expectedPlus1ms = dateStr + ' 00:00:00.0001',
+                    expected1s = dateStr + ' 00:00:01',
+                    expected1m = dateStr + ' 00:01',
+                    expected1h = dateStr + ' 01:00',
+                    expectedLastInstant = dateStr + ' 23:59:59.9999';
 
                 var oneSec = 1000,
                     oneMin = 60 * oneSec,
                     oneHour = 60 * oneMin,
                     lastInstant = 24 * oneHour - 0.1;
 
-                expect(Lib.ms2DateTime(0.1, 0, calendar)).toBe(expected_p1ms, calendar);
-                expect(Lib.ms2DateTime(oneSec, 0, calendar)).toBe(expected_1s, calendar);
-                expect(Lib.ms2DateTime(oneMin, 0, calendar)).toBe(expected_1m, calendar);
-                expect(Lib.ms2DateTime(oneHour, 0, calendar)).toBe(expected_1h, calendar);
-                expect(Lib.ms2DateTime(lastInstant, 0, calendar)).toBe(expected_lastinstant, calendar);
+                expect(Lib.ms2DateTime(0.1, 0, calendar)).toBe(expectedPlus1ms, calendar);
+                expect(Lib.ms2DateTime(oneSec, 0, calendar)).toBe(expected1s, calendar);
+                expect(Lib.ms2DateTime(oneMin, 0, calendar)).toBe(expected1m, calendar);
+                expect(Lib.ms2DateTime(oneHour, 0, calendar)).toBe(expected1h, calendar);
+                expect(Lib.ms2DateTime(lastInstant, 0, calendar)).toBe(expectedLastInstant, calendar);
 
-                expect(Lib.dateTime2ms(expected_p1ms, calendar)).toBe(0.1, calendar);
-                expect(Lib.dateTime2ms(expected_1s, calendar)).toBe(oneSec, calendar);
-                expect(Lib.dateTime2ms(expected_1m, calendar)).toBe(oneMin, calendar);
-                expect(Lib.dateTime2ms(expected_1h, calendar)).toBe(oneHour, calendar);
-                expect(Lib.dateTime2ms(expected_lastinstant, calendar)).toBe(lastInstant, calendar);
+                expect(Lib.dateTime2ms(expectedPlus1ms, calendar)).toBe(0.1, calendar);
+                expect(Lib.dateTime2ms(expected1s, calendar)).toBe(oneSec, calendar);
+                expect(Lib.dateTime2ms(expected1m, calendar)).toBe(oneMin, calendar);
+                expect(Lib.dateTime2ms(expected1h, calendar)).toBe(oneHour, calendar);
+                expect(Lib.dateTime2ms(expectedLastInstant, calendar)).toBe(lastInstant, calendar);
             });
         });
 

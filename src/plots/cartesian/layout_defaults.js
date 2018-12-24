@@ -102,12 +102,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
     // TODO: bgcolor for each subplot, to inherit from the main one
-    var plot_bgcolor = Color.background;
+    var plotBgColor = Color.background;
     if(xIds.length && yIds.length) {
-        plot_bgcolor = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'plot_bgcolor');
+        plotBgColor = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'plot_bgcolor');
     }
 
-    var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
+    var bgColor = Color.combine(plotBgColor, layoutOut.paper_bgcolor);
 
     var axName, axLetter, axLayoutIn, axLayoutOut;
 

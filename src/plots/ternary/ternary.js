@@ -166,7 +166,7 @@ proto.updateLayers = function(ternaryLayout) {
     toplevel.order();
 };
 
-var w_over_h = Math.sqrt(4 / 3);
+var whRatio = Math.sqrt(4 / 3);
 
 proto.adjustLayout = function(ternaryLayout, graphSize) {
     var _this = this,
@@ -184,13 +184,13 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 
     var x0, y0, w, h, xDomainFinal, yDomainFinal;
 
-    if(wmax > w_over_h * hmax) {
+    if(wmax > whRatio * hmax) {
         h = hmax;
-        w = h * w_over_h;
+        w = h * whRatio;
     }
     else {
         w = wmax;
-        h = w / w_over_h;
+        h = w / whRatio;
     }
 
     xDomainFinal = xDomain * w / wmax;
@@ -253,7 +253,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         // tickangle = 'auto' means 0 anyway for a y axis, need to coerce to 0 here
         // so we can shift by 30.
         tickangle: (+ternaryLayout.aaxis.tickangle || 0) - 30,
-        domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
+        domain: [yDomain0, yDomain0 + yDomainFinal * whRatio],
         anchor: 'free',
         position: 0,
         _id: 'y',
@@ -282,7 +282,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         range: [sum - amin - bmin, cmin],
         side: 'right',
         tickangle: (+ternaryLayout.caxis.tickangle || 0) + 30,
-        domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
+        domain: [yDomain0, yDomain0 + yDomainFinal * whRatio],
         anchor: 'free',
         position: 0,
         _id: 'y',
@@ -620,7 +620,7 @@ proto.initInteractions = function() {
             xCenter = (xLeft + xRight) / 2,
             xSpan = xRight - xLeft,
             yBottom = (1 - afrac) * _this.h,
-            yTop = yBottom - xSpan / w_over_h;
+            yTop = yBottom - xSpan / whRatio;
 
         if(xSpan < constants.MINZOOM) {
             mins = mins0;

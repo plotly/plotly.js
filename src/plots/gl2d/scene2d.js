@@ -489,7 +489,7 @@ proto.updateTraces = function(fullData, calcData) {
     this.fullData = fullData;
 
     // remove empty traces
-    trace_id_loop:
+    traceIdLoop:
     for(i = 0; i < traceIds.length; i++) {
         var oldUid = traceIds[i],
             oldTrace = this.traces[oldUid];
@@ -498,7 +498,7 @@ proto.updateTraces = function(fullData, calcData) {
             fullTrace = fullData[j];
 
             if(fullTrace.uid === oldUid && fullTrace.type === oldTrace.type) {
-                continue trace_id_loop;
+                continue traceIdLoop;
             }
         }
 

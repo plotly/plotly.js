@@ -192,7 +192,7 @@ function zoomNonClipped(geo, projection) {
 function zoomClipped(geo, projection) {
     var view = {r: projection.rotate(), k: projection.scale()},
         zoom = initZoom(geo, projection),
-        event = d3_eventDispatch(zoom, 'zoomstart', 'zoom', 'zoomend'),
+        event = d3eventDispatch(zoom, 'zoomstart', 'zoom', 'zoomend'),
         zooming = 0,
         zoomOn = zoom.on;
 
@@ -440,7 +440,7 @@ function cross(a, b) {
 // events have a target component (such as a brush), a target element (such as
 // the svg:g element containing the brush) and the standard arguments `d` (the
 // target element's data) and `i` (the selection index of the target element).
-function d3_eventDispatch(target) {
+function d3eventDispatch(target) {
     var i = 0,
         n = arguments.length,
         argumentz = [];
