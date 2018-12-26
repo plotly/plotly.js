@@ -6,12 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../lib');
-var config = require('../plot_api/plot_config');
-
+var dfltConfig = require('../plot_api/plot_config').dfltConfig;
 
 /**
  * Copy arg array *without* removing `undefined` values from objects.
@@ -91,7 +89,7 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
         queueObj.redo.args.push(redoArgs);
     }
 
-    if(gd.undoQueue.queue.length > config.queueLength) {
+    if(gd.undoQueue.queue.length > dfltConfig.queueLength) {
         gd.undoQueue.queue.shift();
         gd.undoQueue.index--;
     }

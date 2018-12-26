@@ -11,7 +11,7 @@
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
 var PlotSchema = require('./plot_schema');
-var dfltConfig = require('./plot_config');
+var dfltConfig = require('./plot_config').dfltConfig;
 
 var isPlainObject = Lib.isPlainObject;
 var isArray = Array.isArray;
