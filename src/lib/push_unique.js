@@ -23,9 +23,8 @@
  */
 module.exports = function pushUnique(array, item) {
     if(item instanceof RegExp) {
-        var itemStr = item.toString(),
-            i;
-        for(i = 0; i < array.length; i++) {
+        var itemStr = item.toString();
+        for(var i = 0; i < array.length; i++) {
             if(array[i] instanceof RegExp && array[i].toString() === itemStr) {
                 return array;
             }

@@ -186,9 +186,9 @@ function runInQueue(mockList) {
 }
 
 function comparePixels(mockName, cb) {
-    var requestOpts = getRequestOpts({ mockName: mockName }),
-        imagePaths = getImagePaths(mockName),
-        saveImageStream = fs.createWriteStream(imagePaths.test);
+    var requestOpts = getRequestOpts({ mockName: mockName });
+    var imagePaths = getImagePaths(mockName);
+    var saveImageStream = fs.createWriteStream(imagePaths.test);
 
     function log(msg) {
         process.stdout.write('Error for', mockName + ':', msg);

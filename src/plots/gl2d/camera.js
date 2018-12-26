@@ -33,9 +33,9 @@ function Camera2D(element, plot) {
 
 
 function createCamera(scene) {
-    var element = scene.mouseContainer,
-        plot = scene.glplot,
-        result = new Camera2D(element, plot);
+    var element = scene.mouseContainer;
+    var plot = scene.glplot;
+    var result = new Camera2D(element, plot);
 
     function unSetAutoRange() {
         scene.xaxis.autorange = false;
@@ -81,11 +81,11 @@ function createCamera(scene) {
     }, hasPassive ? {passive: false} : false);
 
     function handleInteraction(buttons, x, y) {
-        var dataBox = scene.calcDataBox(),
-            viewBox = plot.viewBox;
+        var dataBox = scene.calcDataBox();
+        var viewBox = plot.viewBox;
 
-        var lastX = result.lastPos[0],
-            lastY = result.lastPos[1];
+        var lastX = result.lastPos[0];
+        var lastY = result.lastPos[1];
 
         var MINDRAG = cartesianConstants.MINDRAG * plot.pixelRatio;
         var MINZOOM = cartesianConstants.MINZOOM * plot.pixelRatio;
@@ -99,8 +99,8 @@ function createCamera(scene) {
         y = (viewBox[3] - viewBox[1]) - y;
 
         function updateRange(i0, start, end) {
-            var range0 = Math.min(start, end),
-                range1 = Math.max(start, end);
+            var range0 = Math.min(start, end);
+            var range1 = Math.max(start, end);
 
             if(range0 !== range1) {
                 dataBox[i0] = range0;
@@ -265,11 +265,11 @@ function createCamera(scene) {
     result.wheelListener = mouseWheel(element, function(dx, dy) {
         if(!scene.scrollZoom) return false;
 
-        var dataBox = scene.calcDataBox(),
-            viewBox = plot.viewBox;
+        var dataBox = scene.calcDataBox();
+        var viewBox = plot.viewBox;
 
-        var lastX = result.lastPos[0],
-            lastY = result.lastPos[1];
+        var lastX = result.lastPos[0];
+        var lastY = result.lastPos[1];
 
         var scale = Math.exp(5.0 * dy / (viewBox[3] - viewBox[1]));
 

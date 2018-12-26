@@ -549,8 +549,10 @@ describe('config argument', function() {
     });
 
     describe('responsive figure', function() {
-        var gd, data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
-        var width = 960, height = 800;
+        var gd;
+        var data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
+        var width = 960;
+        var height = 800;
 
         var parent, elWidth, elHeight;
 
@@ -701,7 +703,8 @@ describe('config argument', function() {
         });
 
         it('@flaky should resize in both direction in a grid when responsive: true', function(done) {
-            var numCols = 2, numRows = 2;
+            var numCols = 2;
+            var numRows = 2;
             parent.style.display = 'grid';
             parent.style.gridTemplateColumns = 'repeat(' + numCols + ', 1fr)';
             parent.style.gridTemplateRows = 'repeat(' + numRows + ', 1fr)';

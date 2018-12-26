@@ -32,9 +32,9 @@
  * @return {array} new filtered array
  */
 module.exports = function filterUnique(array) {
-    var seen = {},
-        out = [],
-        j = 0;
+    var seen = {};
+    var out = [];
+    var j = 0;
 
     for(var i = 0; i < array.length; i++) {
         var item = array[i];

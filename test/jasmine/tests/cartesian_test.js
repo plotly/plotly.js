@@ -110,10 +110,10 @@ describe('restyle', function() {
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_basic.json'));
 
             function assertScatterModeSizes(lineSize, pointSize, textSize) {
-                var gd3 = d3.select(gd),
-                    lines = gd3.selectAll('g.scatter.trace .js-line'),
-                    points = gd3.selectAll('g.scatter.trace path.point'),
-                    texts = gd3.selectAll('g.scatter.trace text');
+                var gd3 = d3.select(gd);
+                var lines = gd3.selectAll('g.scatter.trace .js-line');
+                var points = gd3.selectAll('g.scatter.trace path.point');
+                var texts = gd3.selectAll('g.scatter.trace text');
 
                 expect(lines.size()).toEqual(lineSize);
                 expect(points.size()).toEqual(pointSize);
@@ -280,9 +280,9 @@ describe('relayout', function() {
             function assertPointTranslate(pointT, textT) {
                 var TOLERANCE = 10;
 
-                var gd3 = d3.select(gd),
-                    points = gd3.selectAll('g.scatter.trace path.point'),
-                    texts = gd3.selectAll('g.scatter.trace text');
+                var gd3 = d3.select(gd);
+                var points = gd3.selectAll('g.scatter.trace path.point');
+                var texts = gd3.selectAll('g.scatter.trace text');
 
                 expect(points.size()).toEqual(1);
                 expect(texts.size()).toEqual(1);

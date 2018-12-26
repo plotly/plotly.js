@@ -553,7 +553,10 @@ describe('Test gl2d plots', function() {
 
     it('@noCI @gl should display selection of big number of regular points', function(done) {
         // generate large number of points
-        var x = [], y = [], n = 2e2, N = n * n;
+        var x = [];
+        var y = [];
+        var n = 2e2;
+        var N = n * n;
         for(var i = 0; i < N; i++) {
             x.push((i % n) / n);
             y.push(i / N);
@@ -588,7 +591,13 @@ describe('Test gl2d plots', function() {
         ];
 
         // generate large number of points
-        var x = [], y = [], n = 2e2, N = n * n, color = [], symbol = [], size = [];
+        var x = [];
+        var y = [];
+        var n = 2e2;
+        var N = n * n;
+        var color = [];
+        var symbol = [];
+        var size = [];
         for(var i = 0; i < N; i++) {
             x.push((i % n) / n);
             y.push(i / N);
@@ -829,7 +838,8 @@ describe('Test gl2d plots', function() {
             }
         };
 
-        var sceneTarget, relayoutCallback = jasmine.createSpy('relayoutCallback');
+        var sceneTarget;
+        var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         function scroll(target, amt) {
             return new Promise(function(resolve) {

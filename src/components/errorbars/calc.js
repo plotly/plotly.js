@@ -34,9 +34,9 @@ module.exports = function calc(gd) {
 };
 
 function calcOneAxis(calcTrace, trace, axis, coord) {
-    var opts = trace['error_' + coord] || {},
-        isVisible = (opts.visible && ['linear', 'log'].indexOf(axis.type) !== -1),
-        vals = [];
+    var opts = trace['error_' + coord] || {};
+    var isVisible = (opts.visible && ['linear', 'log'].indexOf(axis.type) !== -1);
+    var vals = [];
 
     if(!isVisible) return;
 
@@ -67,8 +67,8 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
 
         var errors = computeError(calcCoord, iIn);
         if(isNumeric(errors[0]) && isNumeric(errors[1])) {
-            var shoe = calcPt[coord + 's'] = calcCoord - errors[0],
-                hat = calcPt[coord + 'h'] = calcCoord + errors[1];
+            var shoe = calcPt[coord + 's'] = calcCoord - errors[0];
+            var hat = calcPt[coord + 'h'] = calcCoord + errors[1];
             vals.push(shoe, hat);
         }
     }

@@ -54,8 +54,8 @@ exports.getTimeLastModified = function(filePath) {
         throw new Error(filePath + ' does not exist');
     }
 
-    var stats = fs.statSync(filePath),
-        formattedTime = exports.formatTime(stats.mtime);
+    var stats = fs.statSync(filePath);
+    var formattedTime = exports.formatTime(stats.mtime);
 
     return formattedTime;
 };

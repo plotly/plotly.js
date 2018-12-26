@@ -176,9 +176,9 @@ function transformOne(trace, state) {
         return [trace];
     }
 
-    var groupNames = Lib.filterUnique(groups),
-        newData = new Array(groupNames.length),
-        len = groups.length;
+    var groupNames = Lib.filterUnique(groups);
+    var newData = new Array(groupNames.length);
+    var len = groups.length;
 
     var arrayAttrs = PlotSchema.findArrayAttributes(trace);
 

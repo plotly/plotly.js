@@ -15,19 +15,19 @@ var constants = require('./constants');
 // at every intersection, rather than just following a path
 // TODO: shorten the inner loop to only the relevant levels
 module.exports = function makeCrossings(pathinfo) {
-    var z = pathinfo[0].z,
-        m = z.length,
-        n = z[0].length, // we already made sure z isn't ragged in interp2d
-        twoWide = m === 2 || n === 2,
-        xi,
-        yi,
-        startIndices,
-        ystartIndices,
-        label,
-        corners,
-        mi,
-        pi,
-        i;
+    var z = pathinfo[0].z;
+    var m = z.length;
+    var n = z[0].length; // we already made sure z isn't ragged in interp2d
+    var twoWide = m === 2 || n === 2;
+    var xi;
+    var yi;
+    var startIndices;
+    var ystartIndices;
+    var label;
+    var corners;
+    var mi;
+    var pi;
+    var i;
 
     for(yi = 0; yi < m - 1; yi++) {
         ystartIndices = [];

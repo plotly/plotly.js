@@ -58,8 +58,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
      * attributes like aspectratio can be written back dynamically.
      */
 
-    var bgcolor = coerce('bgcolor'),
-        bgColorCombined = Color.combine(bgcolor, opts.paper_bgcolor);
+    var bgcolor = coerce('bgcolor');
+    var bgColorCombined = Color.combine(bgcolor, opts.paper_bgcolor);
 
     var cameraKeys = ['up', 'center', 'eye'];
 

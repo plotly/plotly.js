@@ -31,10 +31,8 @@ module.exports = function getUpdateObject(axisLayout, buttonLayout) {
 function getXRange(axisLayout, buttonLayout) {
     var currentRange = axisLayout.range;
     var base = new Date(axisLayout.r2l(currentRange[1]));
-
-    var step = buttonLayout.step,
-        count = buttonLayout.count;
-
+    var step = buttonLayout.step;
+    var count = buttonLayout.count;
     var range0;
 
     switch(buttonLayout.stepmode) {

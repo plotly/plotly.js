@@ -39,9 +39,10 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
     var showArrow = annOut.showarrow;
 
     // positioning
-    var axLetters = ['x', 'y'],
-        arrowPosDflt = [-10, -30],
-        gdMock = {_fullLayout: fullLayout};
+    var axLetters = ['x', 'y'];
+    var arrowPosDflt = [-10, -30];
+    var gdMock = {_fullLayout: fullLayout};
+
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i];
 
@@ -57,9 +58,9 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
         Axes.coercePosition(annOut, gdMock, coerce, axRef, axLetter, 0.5);
 
         if(showArrow) {
-            var arrowPosAttr = 'a' + axLetter,
-                // axref, ayref
-                aaxRef = Axes.coerceRef(annIn, annOut, gdMock, arrowPosAttr, 'pixel');
+            var arrowPosAttr = 'a' + axLetter;
+            // axref, ayref
+            var aaxRef = Axes.coerceRef(annIn, annOut, gdMock, arrowPosAttr, 'pixel');
 
             // for now the arrow can only be on the same axis or specified as pixels
             // TODO: sometime it might be interesting to allow it to be on *any* axis

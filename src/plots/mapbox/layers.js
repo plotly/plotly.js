@@ -134,8 +134,8 @@ function isVisible(opts) {
 }
 
 function convertOpts(opts) {
-    var layout = {},
-        paint = {};
+    var layout = {};
+    var paint = {};
 
     switch(opts.type) {
 
@@ -166,8 +166,8 @@ function convertOpts(opts) {
             break;
 
         case 'symbol':
-            var symbol = opts.symbol,
-                textOpts = convertTextOpts(symbol.textposition, symbol.iconsize);
+            var symbol = opts.symbol;
+            var textOpts = convertTextOpts(symbol.textposition, symbol.iconsize);
 
             Lib.extendFlat(layout, {
                 'icon-image': symbol.icon + '-15',

@@ -33,11 +33,11 @@ module.exports = function nestedProperty(container, propStr) {
         throw 'bad property string';
     }
 
-    var j = 0,
-        propParts = propStr.split('.'),
-        indexed,
-        indices,
-        i;
+    var j = 0;
+    var propParts = propStr.split('.');
+    var indexed;
+    var indices;
+    var i;
 
     // check for parts of the nesting hierarchy that are numbers (ie array elements)
     while(j < propParts.length) {
@@ -76,12 +76,12 @@ module.exports = function nestedProperty(container, propStr) {
 
 function npGet(cont, parts) {
     return function() {
-        var curCont = cont,
-            curPart,
-            allSame,
-            out,
-            i,
-            j;
+        var curCont = cont;
+        var curPart;
+        var allSame;
+        var out;
+        var i;
+        var j;
 
         for(i = 0; i < parts.length - 1; i++) {
             curPart = parts[i];
@@ -132,12 +132,12 @@ function isDeletable(val, propStr) {
 
 function npSet(cont, parts, propStr) {
     return function(val) {
-        var curCont = cont,
-            propPart = '',
-            containerLevels = [[cont, propPart]],
-            toDelete = isDeletable(val, propStr),
-            curPart,
-            i;
+        var curCont = cont;
+        var propPart = '';
+        var containerLevels = [[cont, propPart]];
+        var toDelete = isDeletable(val, propStr);
+        var curPart;
+        var i;
 
         for(i = 0; i < parts.length - 1; i++) {
             curPart = parts[i];
@@ -196,13 +196,13 @@ function joinPropStr(propStr, newPart) {
 
 // handle special -1 array index
 function setArrayAll(containerArray, innerParts, val, propStr) {
-    var arrayVal = isArrayOrTypedArray(val),
-        allSet = true,
-        thisVal = val,
-        thisPropStr = propStr.replace('-1', 0),
-        deleteThis = arrayVal ? false : isDeletable(val, thisPropStr),
-        firstPart = innerParts[0],
-        i;
+    var arrayVal = isArrayOrTypedArray(val);
+    var allSet = true;
+    var thisVal = val;
+    var thisPropStr = propStr.replace('-1', 0);
+    var deleteThis = arrayVal ? false : isDeletable(val, thisPropStr);
+    var firstPart = innerParts[0];
+    var i;
 
     for(i = 0; i < containerArray.length; i++) {
         thisPropStr = propStr.replace('-1', i);

@@ -50,8 +50,8 @@ function getLocationId(locationmode, location) {
 
 function countryNameToISO3(countryName) {
     for(var i = 0; i < countryIds.length; i++) {
-        var iso3 = countryIds[i],
-            regex = new RegExp(countryRegex[iso3]);
+        var iso3 = countryIds[i];
+        var regex = new RegExp(countryRegex[iso3]);
 
         if(regex.test(countryName.trim().toLowerCase())) return iso3;
     }

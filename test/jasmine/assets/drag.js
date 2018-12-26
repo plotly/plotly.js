@@ -37,8 +37,8 @@ function drag(node, dx, dy, edge, x0, y0, nsteps, noCover) {
 
 function waitForDragCover() {
     return new Promise(function(resolve) {
-        var interval = 5,
-            timeout = 5000;
+        var interval = 5;
+        var timeout = 5000;
 
         var id = setInterval(function() {
             var dragCoverNode = document.querySelector('.dragcover');
@@ -58,8 +58,8 @@ function waitForDragCover() {
 
 function waitForDragCoverRemoval() {
     return new Promise(function(resolve) {
-        var interval = 5,
-            timeout = 5000;
+        var interval = 5;
+        var timeout = 5000;
 
         var id = setInterval(function() {
             var dragCoverNode = document.querySelector('.dragcover');

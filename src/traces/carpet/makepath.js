@@ -12,7 +12,8 @@ module.exports = function makePath(xp, yp, isBicubic) {
     // Prevent d3 errors that would result otherwise:
     if(xp.length === 0) return '';
 
-    var i, path = [];
+    var i;
+    var path = [];
     var stride = isBicubic ? 3 : 1;
     for(i = 0; i < xp.length; i += stride) {
         path.push(xp[i] + ',' + yp[i]);

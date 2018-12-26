@@ -18,10 +18,9 @@ var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults
 
 var attributes = require('./attributes');
 
-
 module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
-    var colorbarOut = Template.newContainer(containerOut, 'colorbar'),
-        colorbarIn = containerIn.colorbar || {};
+    var colorbarOut = Template.newContainer(containerOut, 'colorbar');
+    var colorbarIn = containerIn.colorbar || {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(colorbarIn, colorbarOut, attributes, attr, dflt);

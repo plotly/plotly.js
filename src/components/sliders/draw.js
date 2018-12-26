@@ -24,8 +24,8 @@ var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
 
 module.exports = function draw(gd) {
-    var fullLayout = gd._fullLayout,
-        sliderData = makeSliderData(fullLayout, gd);
+    var fullLayout = gd._fullLayout;
+    var sliderData = makeSliderData(fullLayout, gd);
 
     // draw a container for *all* sliders:
     var sliders = fullLayout._infolayer
@@ -103,8 +103,8 @@ function autoMarginId(sliderOpts) {
 
 // This really only just filters by visibility:
 function makeSliderData(fullLayout, gd) {
-    var contOpts = fullLayout[constants.name],
-        sliderData = [];
+    var contOpts = fullLayout[constants.name];
+    var sliderData = [];
 
     for(var i = 0; i < contOpts.length; i++) {
         var item = contOpts[i];

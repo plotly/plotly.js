@@ -33,8 +33,8 @@ exports.initInteractions = function initInteractions(gd) {
         // sort overlays last, then by x axis number, then y axis number
         if((fullLayout._plots[a].mainplot && true) ===
             (fullLayout._plots[b].mainplot && true)) {
-            var aParts = a.split('y'),
-                bParts = b.split('y');
+            var aParts = a.split('y');
+            var bParts = b.split('y');
             return (aParts[0] === bParts[0]) ?
                 (Number(aParts[1] || 1) - Number(bParts[1] || 1)) :
                 (Number(aParts[0] || 1) - Number(bParts[0] || 1));

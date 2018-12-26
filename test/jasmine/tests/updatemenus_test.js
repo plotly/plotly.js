@@ -339,9 +339,9 @@ describe('update menus initialization', function() {
 describe('update menus interactions', function() {
     'use strict';
 
-    var mock = require('@mocks/updatemenus.json'),
-        bgColor = 'rgb(255, 255, 255)',
-        activeColor = 'rgb(244, 250, 255)';
+    var mock = require('@mocks/updatemenus.json');
+    var bgColor = 'rgb(255, 255, 255)';
+    var activeColor = 'rgb(244, 250, 255)';
 
     var gd;
 
@@ -443,8 +443,8 @@ describe('update menus interactions', function() {
     });
 
     it('should drop/fold buttons when clicking on header', function(done) {
-        var header0 = selectHeader(0),
-            header1 = selectHeader(1);
+        var header0 = selectHeader(0);
+        var header1 = selectHeader(1);
 
         click(header0).then(function() {
             assertMenus([3, 0]);
@@ -578,8 +578,8 @@ describe('update menus interactions', function() {
     });
 
     it('should apply update on button click', function(done) {
-        var header0 = selectHeader(0),
-            header1 = selectHeader(1);
+        var header0 = selectHeader(0);
+        var header1 = selectHeader(1);
 
         assertActive(gd, [1, 2]);
 
@@ -650,8 +650,8 @@ describe('update menus interactions', function() {
     });
 
     it('should change color on mouse over', function(done) {
-        var INDEX_0 = 2,
-            INDEX_1 = gd.layout.updatemenus[1].active;
+        var INDEX_0 = 2;
+        var INDEX_1 = gd.layout.updatemenus[1].active;
 
         var header0 = selectHeader(0);
 
@@ -807,9 +807,9 @@ describe('update menus interactions', function() {
         assertNodeCount('.' + constants.containerClassName, 1);
         assertNodeCount('.' + constants.headerClassName, expectedMenus.length);
 
-        var gButton = d3.select('.' + constants.dropdownButtonGroupClassName),
-            actualActiveIndex = +gButton.attr(constants.menuIndexAttrName),
-            hasActive = false;
+        var gButton = d3.select('.' + constants.dropdownButtonGroupClassName);
+        var actualActiveIndex = +gButton.attr(constants.menuIndexAttrName);
+        var hasActive = false;
 
         expectedMenus.forEach(function(expected, i) {
             if(expected) {
@@ -838,8 +838,8 @@ describe('update menus interactions', function() {
     }
 
     function assertItemDims(node, width, height) {
-        var rect = node.select('rect'),
-            actualWidth = +rect.attr('width');
+        var rect = node.select('rect');
+        var actualWidth = +rect.attr('width');
 
         // must compare with a tolerance as the exact result
         // is browser/font dependent (via getBBox)
@@ -868,14 +868,14 @@ describe('update menus interactions', function() {
     }
 
     function selectHeader(menuIndex) {
-        var headers = d3.selectAll('.' + constants.headerClassName),
-            header = d3.select(headers[0][menuIndex]);
+        var headers = d3.selectAll('.' + constants.headerClassName);
+        var header = d3.select(headers[0][menuIndex]);
         return header;
     }
 
     function selectButton(buttonIndex) {
-        var buttons = d3.selectAll('.' + constants.dropdownButtonClassName),
-            button = d3.select(buttons[0][buttonIndex]);
+        var buttons = d3.selectAll('.' + constants.dropdownButtonClassName);
+        var button = d3.select(buttons[0][buttonIndex]);
         return button;
     }
 });
@@ -1055,14 +1055,14 @@ describe('update menus interaction with scrollbox:', function() {
     });
 
     it('scrollbox can be dragged', function() {
-        var deltaX = -50,
-            deltaY = -100,
-            scrollBox,
-            scrollBar,
-            scrollBoxTranslate0,
-            scrollBarTranslate0,
-            scrollBoxTranslate1,
-            scrollBarTranslate1;
+        var deltaX = -50;
+        var deltaY = -100;
+        var scrollBox;
+        var scrollBar;
+        var scrollBoxTranslate0;
+        var scrollBarTranslate0;
+        var scrollBoxTranslate1;
+        var scrollBarTranslate1;
 
         scrollBox = getScrollBox();
         expect(scrollBox).toBeDefined();
@@ -1129,13 +1129,13 @@ describe('update menus interaction with scrollbox:', function() {
     });
 
     it('scrollbox handles wheel events', function() {
-        var deltaY = 100,
-            scrollBox,
-            scrollBar,
-            scrollBoxTranslate0,
-            scrollBarTranslate0,
-            scrollBoxTranslate1,
-            scrollBarTranslate1;
+        var deltaY = 100;
+        var scrollBox;
+        var scrollBar;
+        var scrollBoxTranslate0;
+        var scrollBarTranslate0;
+        var scrollBoxTranslate1;
+        var scrollBarTranslate1;
 
         scrollBox = getScrollBox();
         expect(scrollBox).toBeDefined();
@@ -1202,14 +1202,14 @@ describe('update menus interaction with scrollbox:', function() {
     });
 
     it('scrollbar can be dragged', function() {
-        var deltaX = 20,
-            deltaY = 10,
-            scrollBox,
-            scrollBar,
-            scrollBoxPosition0,
-            scrollBarPosition0,
-            scrollBoxPosition1,
-            scrollBarPosition1;
+        var deltaX = 20;
+        var deltaY = 10;
+        var scrollBox;
+        var scrollBar;
+        var scrollBoxPosition0;
+        var scrollBarPosition0;
+        var scrollBoxPosition1;
+        var scrollBarPosition1;
 
         scrollBox = getScrollBox();
         expect(scrollBox).toBeDefined();
@@ -1288,21 +1288,21 @@ describe('update menus interaction with scrollbox:', function() {
     }
 
     function getCenter(node) {
-        var bbox = getBBox(node),
-            x = bbox.x + 0.5 * bbox.width,
-            y = bbox.y + 0.5 * bbox.height;
+        var bbox = getBBox(node);
+        var x = bbox.x + 0.5 * bbox.width;
+        var y = bbox.y + 0.5 * bbox.height;
 
         return { x: x, y: y };
     }
 
     function getScrollBarCenter(scrollBox, scrollBar) {
-        var scrollBoxTranslate = Drawing.getTranslate(scrollBox),
-            scrollBarTranslate = Drawing.getTranslate(scrollBar),
-            translateX = scrollBoxTranslate.x + scrollBarTranslate.x,
-            translateY = scrollBoxTranslate.y + scrollBarTranslate.y,
-            center = getCenter(scrollBar),
-            x = center.x + translateX,
-            y = center.y + translateY;
+        var scrollBoxTranslate = Drawing.getTranslate(scrollBox);
+        var scrollBarTranslate = Drawing.getTranslate(scrollBar);
+        var translateX = scrollBoxTranslate.x + scrollBarTranslate.x;
+        var translateY = scrollBoxTranslate.y + scrollBarTranslate.y;
+        var center = getCenter(scrollBar);
+        var x = center.x + translateX;
+        var y = center.y + translateY;
 
         return { x: x, y: y };
     }

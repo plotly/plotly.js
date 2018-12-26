@@ -51,13 +51,13 @@ describe('Test axes', function() {
                     }
                 }
             };
-            var expectedYaxis = Lib.extendDeep({}, gd.layout.xaxis),
-                expectedXaxis = {
-                    title: {
-                        text: 'Click to enter X axis title'
-                    },
-                    type: 'date'
-                };
+            var expectedYaxis = Lib.extendDeep({}, gd.layout.xaxis);
+            var expectedXaxis = {
+                title: {
+                    text: 'Click to enter X axis title'
+                },
+                type: 'date'
+            };
 
             supplyDefaults(gd);
 
@@ -138,37 +138,37 @@ describe('Test axes', function() {
                 }
             };
             var expectedXaxis = {
-                    type: 'category',
-                    ticks: 'inside',
-                    ticklen: 10,
-                    tickcolor: '#f00',
-                    tickwidth: 2,
-                    showline: true,
-                    side: 'top',
-                    domain: [0, 0.45]
-                },
-                expectedXaxis2 = {
-                    type: 'category',
-                    ticks: 'inside',
-                    ticklen: 10,
-                    tickcolor: '#f00',
-                    tickwidth: 3,
-                    showline: true,
-                    side: 'top',
-                    domain: [0.55, 1]
-                },
-                expectedYaxis = {
-                    type: 'linear',
-                    ticks: 'outside',
-                    ticklen: 5,
-                    tickwidth: 4,
-                    side: 'right'
-                },
-                expectedAnnotations = [
-                    {x: 3, y: 2},
-                    {x: 4, y: 3, xref: 'x2', yref: 'y'},
-                    {x: 5, y: 0.5, xref: 'x', yref: 'paper'}
-                ];
+                type: 'category',
+                ticks: 'inside',
+                ticklen: 10,
+                tickcolor: '#f00',
+                tickwidth: 2,
+                showline: true,
+                side: 'top',
+                domain: [0, 0.45]
+            };
+            var expectedXaxis2 = {
+                type: 'category',
+                ticks: 'inside',
+                ticklen: 10,
+                tickcolor: '#f00',
+                tickwidth: 3,
+                showline: true,
+                side: 'top',
+                domain: [0.55, 1]
+            };
+            var expectedYaxis = {
+                type: 'linear',
+                ticks: 'outside',
+                ticklen: 5,
+                tickwidth: 4,
+                side: 'right'
+            };
+            var expectedAnnotations = [
+                {x: 3, y: 2},
+                {x: 4, y: 3, xref: 'x2', yref: 'y'},
+                {x: 5, y: 0.5, xref: 'x', yref: 'paper'}
+            ];
 
             supplyDefaults(gd);
 
@@ -471,8 +471,8 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('xy2');
             layoutOut._subplots.yaxis.push('y2');
 
-            var bgColor = Color.combine('yellow', 'green'),
-                frac = 100 * (0xe - 0x4) / (0xf - 0x4);
+            var bgColor = Color.combine('yellow', 'green');
+            var frac = 100 * (0xe - 0x4) / (0xf - 0x4);
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.gridcolor)
@@ -1147,8 +1147,8 @@ describe('Test axes', function() {
     });
 
     describe('handleTickDefaults', function() {
-        var data = [{ x: [1, 2, 3], y: [3, 4, 5] }],
-            gd;
+        var data = [{ x: [1, 2, 3], y: [3, 4, 5] }];
+        var gd;
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -1229,8 +1229,8 @@ describe('Test axes', function() {
         }
 
         it('should set default tickmode correctly', function() {
-            var axIn = {},
-                axOut = {};
+            var axIn = {};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
             // and not push it back to axIn (which we used to do)
@@ -1262,8 +1262,8 @@ describe('Test axes', function() {
         });
 
         it('should set nticks iff tickmode=auto', function() {
-            var axIn = {},
-                axOut = {};
+            var axIn = {};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.nticks).toBe(0);
 
@@ -1279,8 +1279,8 @@ describe('Test axes', function() {
         });
 
         it('should set tick0 and dtick iff tickmode=linear', function() {
-            var axIn = {tickmode: 'auto', tick0: 1, dtick: 1},
-                axOut = {};
+            var axIn = {tickmode: 'auto', tick0: 1, dtick: 1};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tick0).toBe(undefined);
             expect(axOut.dtick).toBe(undefined);
@@ -1305,11 +1305,11 @@ describe('Test axes', function() {
         });
 
         it('should handle tick0 and dtick for date axes', function() {
-            var someMs = 123456789,
-                someMsDate = Lib.ms2DateTimeLocal(someMs),
-                oneDay = 24 * 3600 * 1000,
-                axIn = {tick0: someMs, dtick: String(3 * oneDay)},
-                axOut = {};
+            var someMs = 123456789;
+            var someMsDate = Lib.ms2DateTimeLocal(someMs);
+            var oneDay = 24 * 3600 * 1000;
+            var axIn = {tick0: someMs, dtick: String(3 * oneDay)};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'date');
             expect(axOut.tick0).toBe(someMsDate);
             expect(axOut.dtick).toBe(3 * oneDay);
@@ -1351,8 +1351,8 @@ describe('Test axes', function() {
         });
 
         it('should handle tick0 and dtick for log axes', function() {
-            var axIn = {tick0: '0.2', dtick: 0.3},
-                axOut = {};
+            var axIn = {tick0: '0.2', dtick: 0.3};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'log');
             expect(axOut.tick0).toBe(0.2);
             expect(axOut.dtick).toBe(0.3);
@@ -1397,8 +1397,8 @@ describe('Test axes', function() {
         });
 
         it('should set tickvals and ticktext iff tickmode=array', function() {
-            var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']},
-                axOut = {};
+            var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickvals).toBe(undefined);
             expect(axOut.ticktext).toBe(undefined);
@@ -2951,22 +2951,22 @@ describe('Test axes', function() {
 
     describe('automargin', function() {
         var data = [{
-                x: [
-                    'short label 1', 'loooooong label 1',
-                    'short label 2', 'loooooong label 2',
-                    'short label 3', 'loooooong label 3',
-                    'short label 4', 'loooooongloooooongloooooong label 4',
-                    'short label 5', 'loooooong label 5'
-                ],
-                y: [
-                    'short label 1', 'loooooong label 1',
-                    'short label 2', 'loooooong label 2',
-                    'short label 3', 'loooooong label 3',
-                    'short label 4', 'loooooong label 4',
-                    'short label 5', 'loooooong label 5'
-                ]
-            }],
-            gd, initialSize, previousSize, savedBottom;
+            x: [
+                'short label 1', 'loooooong label 1',
+                'short label 2', 'loooooong label 2',
+                'short label 3', 'loooooong label 3',
+                'short label 4', 'loooooongloooooongloooooong label 4',
+                'short label 5', 'loooooong label 5'
+            ],
+            y: [
+                'short label 1', 'loooooong label 1',
+                'short label 2', 'loooooong label 2',
+                'short label 3', 'loooooong label 3',
+                'short label 4', 'loooooong label 4',
+                'short label 5', 'loooooong label 5'
+            ]
+        }];
+        var gd, initialSize, previousSize, savedBottom;
 
         beforeEach(function() {
             gd = createGraphDiv();

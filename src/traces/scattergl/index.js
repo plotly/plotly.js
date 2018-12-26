@@ -504,7 +504,8 @@ function plot(gd, subplot, cdata) {
                                 pos = srcPos.slice();
 
                                 for(i = Math.floor(nextPos.length / 2); i--;) {
-                                    var xx = nextPos[i * 2], yy = nextPos[i * 2 + 1];
+                                    var xx = nextPos[i * 2];
+                                    var yy = nextPos[i * 2 + 1];
                                     if(isNaN(xx) || isNaN(yy)) continue;
                                     pos.push(xx, yy);
                                 }

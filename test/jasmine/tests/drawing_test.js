@@ -120,8 +120,8 @@ describe('Drawing', function() {
         });
 
         it('should work with negative values', function() {
-            var el = document.createElement('div'),
-                el3 = d3.select(document.createElement('div'));
+            var el = document.createElement('div');
+            var el3 = d3.select(document.createElement('div'));
 
             expect(Drawing.getTranslate(el)).toEqual({ x: 0, y: 0 });
 
@@ -142,10 +142,10 @@ describe('Drawing', function() {
             ];
 
             for(var i = 0; i < testCases.length; i++) {
-                var testCase = testCases[i],
-                    transform = testCase.transform,
-                    x = testCase.x,
-                    y = testCase.y;
+                var testCase = testCases[i];
+                var transform = testCase.transform;
+                var x = testCase.x;
+                var y = testCase.y;
 
                 el.setAttribute('transform', transform);
                 expect(Drawing.getTranslate(el)).toEqual({ x: x, y: y });

@@ -28,8 +28,8 @@ describe('Test colorscale:', function() {
     'use strict';
 
     describe('isValidScale', function() {
-        var isValidScale = Colorscale.isValidScale,
-            scl;
+        var isValidScale = Colorscale.isValidScale;
+        var scl;
 
         it('should accept colorscale strings', function() {
             expect(isValidScale('Earth')).toBe(true);
@@ -84,8 +84,8 @@ describe('Test colorscale:', function() {
     });
 
     describe('flipScale', function() {
-        var flipScale = Colorscale.flipScale,
-            scl;
+        var flipScale = Colorscale.flipScale;
+        var scl;
 
         it('should flip a colorscale', function() {
             scl = [[0, 'rgb(0, 0, 200)'], ['0.5', 'rgb(0, 0, 0)'], ['1.0', 'rgb(200, 0, 0)']];
@@ -97,8 +97,8 @@ describe('Test colorscale:', function() {
     });
 
     describe('hasColorscale', function() {
-        var hasColorscale = Colorscale.hasColorscale,
-            trace;
+        var hasColorscale = Colorscale.hasColorscale;
+        var trace;
 
         it('should return false when marker is not defined', function() {
             var shouldBeFalse = [
@@ -247,12 +247,12 @@ describe('Test colorscale:', function() {
     });
 
     describe('handleDefaults (heatmap-like version)', function() {
-        var handleDefaults = Colorscale.handleDefaults,
-            layout = {
-                font: Plots.layoutAttributes.font,
-                _dfltTitle: {colorbar: 'cb'}
-            },
-            opts = {prefix: '', cLetter: 'z'};
+        var handleDefaults = Colorscale.handleDefaults;
+        var layout = {
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
+        };
+        var opts = {prefix: '', cLetter: 'z'};
         var traceIn, traceOut;
 
         function coerce(attr, dflt) {
@@ -318,12 +318,12 @@ describe('Test colorscale:', function() {
     });
 
     describe('handleDefaults (scatter-like version)', function() {
-        var handleDefaults = Colorscale.handleDefaults,
-            layout = {
-                font: Plots.layoutAttributes.font,
-                _dfltTitle: {colorbar: 'cb'}
-            },
-            opts = {prefix: 'marker.', cLetter: 'c'};
+        var handleDefaults = Colorscale.handleDefaults;
+        var layout = {
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
+        };
+        var opts = {prefix: 'marker.', cLetter: 'c'};
         var traceIn, traceOut;
 
         function coerce(attr, dflt) {

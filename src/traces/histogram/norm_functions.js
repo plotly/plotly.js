@@ -12,8 +12,8 @@
 
 module.exports = {
     percent: function(size, total) {
-        var nMax = size.length,
-            norm = 100 / total;
+        var nMax = size.length;
+        var norm = 100 / total;
         for(var n = 0; n < nMax; n++) size[n] *= norm;
     },
     probability: function(size, total) {

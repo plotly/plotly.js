@@ -846,11 +846,11 @@ describe('Test geo interactions', function() {
 
             var N_LOCATIONS_AT_START = mock.data[1].locations.length;
 
-            var lonQueue = [45, -45, 12, 20],
-                latQueue = [-75, 80, 5, 10],
-                textQueue = ['c', 'd', 'e', 'f'],
-                locationsQueue = ['AUS', 'FRA', 'DEU', 'MEX'],
-                zQueue = [100, 20, 30, 12];
+            var lonQueue = [45, -45, 12, 20];
+            var latQueue = [-75, 80, 5, 10];
+            var textQueue = ['c', 'd', 'e', 'f'];
+            var locationsQueue = ['AUS', 'FRA', 'DEU', 'MEX'];
+            var zQueue = [100, 20, 30, 12];
 
             beforeEach(function(done) {
                 var update = {
@@ -1259,9 +1259,9 @@ describe('Test event property of interactions on a geo plot:', function() {
 
     var mockCopy, gd;
 
-    var blankPos = [10, 10],
-        pointPos,
-        nearPos;
+    var blankPos = [10, 10];
+    var pointPos;
+    var nearPos;
 
     beforeAll(function(done) {
         gd = createGraphDiv();
@@ -1301,8 +1301,8 @@ describe('Test event property of interactions on a geo plot:', function() {
         it('should contain the correct fields', function() {
             click(pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -1327,12 +1327,12 @@ describe('Test event property of interactions on a geo plot:', function() {
 
     describe('modified click events', function() {
         var clickOpts = {
-                altKey: true,
-                ctrlKey: true,
-                metaKey: true,
-                shiftKey: true
-            },
-            futureData;
+            altKey: true,
+            ctrlKey: true,
+            metaKey: true,
+            shiftKey: true
+        };
+        var futureData;
 
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
@@ -1398,8 +1398,8 @@ describe('Test event property of interactions on a geo plot:', function() {
             mouseEvent('mousemove', blankPos[0], blankPos[1]);
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -1435,8 +1435,8 @@ describe('Test event property of interactions on a geo plot:', function() {
 
         it('should contain the correct fields', function(done) {
             move(pointPos[0], pointPos[1], nearPos[0], nearPos[1], HOVERMINTIME + 10).then(function() {
-                var pt = futureData.points[0],
-                    evt = futureData.event;
+                var pt = futureData.points[0];
+                var evt = futureData.event;
 
                 expect(Object.keys(pt)).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',

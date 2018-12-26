@@ -47,9 +47,9 @@ exports.plot = function plotTernary(gd) {
     var ternaryIds = fullLayout._subplots[TERNARY];
 
     for(var i = 0; i < ternaryIds.length; i++) {
-        var ternaryId = ternaryIds[i],
-            ternaryCalcData = getSubplotCalcData(calcData, TERNARY, ternaryId),
-            ternary = fullLayout[ternaryId]._subplot;
+        var ternaryId = ternaryIds[i];
+        var ternaryCalcData = getSubplotCalcData(calcData, TERNARY, ternaryId);
+        var ternary = fullLayout[ternaryId]._subplot;
 
         // If ternary is not instantiated, create one!
         if(!ternary) {

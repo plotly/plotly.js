@@ -23,17 +23,17 @@ var Lib = require('../../lib');
  *      - offset
  */
 module.exports = function convertTextOpts(textposition, iconSize) {
-    var parts = textposition.split(' '),
-        vPos = parts[0],
-        hPos = parts[1];
+    var parts = textposition.split(' ');
+    var vPos = parts[0];
+    var hPos = parts[1];
 
     // ballpack values
-    var factor = Lib.isArrayOrTypedArray(iconSize) ? Lib.mean(iconSize) : iconSize,
-        xInc = 0.5 + (factor / 100),
-        yInc = 1.5 + (factor / 100);
+    var factor = Lib.isArrayOrTypedArray(iconSize) ? Lib.mean(iconSize) : iconSize;
+    var xInc = 0.5 + (factor / 100);
+    var yInc = 1.5 + (factor / 100);
 
-    var anchorVals = ['', ''],
-        offset = [0, 0];
+    var anchorVals = ['', ''];
+    var offset = [0, 0];
 
     switch(vPos) {
         case 'top':

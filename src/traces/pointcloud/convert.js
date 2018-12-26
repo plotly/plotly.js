@@ -86,10 +86,10 @@ proto.updateFast = function(options) {
     var userBounds = options.xbounds && options.ybounds;
     var index = options.indices;
 
-    var len,
-        idToIndex,
-        positions,
-        bounds = this.bounds;
+    var len;
+    var idToIndex;
+    var positions;
+    var bounds = this.bounds;
 
     var xx, yy, i;
 
@@ -167,9 +167,9 @@ proto.updateFast = function(options) {
 
     this.pointcloudOptions.positions = positions;
 
-    var markerColor = str2RGBArray(options.marker.color),
-        borderColor = str2RGBArray(options.marker.border.color),
-        opacity = options.opacity * options.marker.opacity;
+    var markerColor = str2RGBArray(options.marker.color);
+    var borderColor = str2RGBArray(options.marker.border.color);
+    var opacity = options.opacity * options.marker.opacity;
 
     markerColor[3] *= opacity;
     this.pointcloudOptions.color = markerColor;
