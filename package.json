@@ -48,7 +48,7 @@
     "version": "npm run build && git add -A dist src build",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
-    "postshrinkwrap": "replace --silent 'http://' 'https://' package-lock.json"
+    "postshrinkwrap": "replace --silent '\"resolved\": \"http://' '\"resolved\": \"https://' package-lock.json"
   },
   "browserify": {
     "transform": [
