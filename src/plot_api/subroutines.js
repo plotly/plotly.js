@@ -37,8 +37,8 @@ exports.layoutStyles = function(gd) {
 
 function overlappingDomain(xDomain, yDomain, domains) {
     for(var i = 0; i < domains.length; i++) {
-        var existingX = domains[i][0],
-            existingY = domains[i][1];
+        var existingX = domains[i][0];
+        var existingY = domains[i][1];
 
         if(existingX[0] >= xDomain[1] || existingX[1] <= xDomain[0]) {
             continue;
@@ -532,8 +532,8 @@ exports.doColorBars = function(gd) {
         var cdi0 = gd.calcdata[i][0];
 
         if((cdi0.t || {}).cb) {
-            var trace = cdi0.trace,
-                cb = cdi0.t.cb;
+            var trace = cdi0.trace;
+            var cb = cdi0.t.cb;
 
             if(Registry.traceIs(trace, 'contour')) {
                 cb.line({

@@ -26,8 +26,8 @@
  *        - error[1] : " " " " positive "
  */
 module.exports = function makeComputeError(opts) {
-    var type = opts.type,
-        symmetric = opts.symmetric;
+    var type = opts.type;
+    var symmetric = opts.symmetric;
 
     if(type === 'data') {
         var array = opts.array || [];
@@ -54,8 +54,8 @@ module.exports = function makeComputeError(opts) {
         }
     }
     else {
-        var computeErrorValue = makeComputeErrorValue(type, opts.value),
-            computeErrorValueMinus = makeComputeErrorValue(type, opts.valueminus);
+        var computeErrorValue = makeComputeErrorValue(type, opts.value);
+        var computeErrorValueMinus = makeComputeErrorValue(type, opts.valueminus);
 
         if(symmetric || opts.valueminus === undefined) {
             return function computeError(dataPt) {

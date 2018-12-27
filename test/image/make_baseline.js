@@ -64,9 +64,9 @@ function runInQueue(mockList) {
 }
 
 function makeBaseline(mockName, cb) {
-    var requestOpts = getRequestOpts({ mockName: mockName }),
-        imagePaths = getImagePaths(mockName),
-        saveImageStream = fs.createWriteStream(imagePaths.baseline);
+    var requestOpts = getRequestOpts({ mockName: mockName });
+    var imagePaths = getImagePaths(mockName);
+    var saveImageStream = fs.createWriteStream(imagePaths.baseline);
 
     function checkFormat(err, res) {
         if(err) throw err;

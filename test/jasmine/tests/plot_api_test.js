@@ -140,10 +140,10 @@ describe('Test plot api', function() {
             .then(function() {
                 var uid = gd._fullLayout._uid;
 
-                var plotClip = document.getElementById('clip' + uid + 'xyplot'),
-                    clipRect = plotClip.children[0],
-                    clipWidth = +clipRect.getAttribute('width'),
-                    clipHeight = +clipRect.getAttribute('height');
+                var plotClip = document.getElementById('clip' + uid + 'xyplot');
+                var clipRect = plotClip.children[0];
+                var clipWidth = +clipRect.getAttribute('width');
+                var clipHeight = +clipRect.getAttribute('height');
 
                 expect(clipWidth).toBe(240);
                 expect(clipHeight).toBe(220);
@@ -2211,9 +2211,9 @@ describe('Test plot api', function() {
         afterEach(destroyGraphDiv);
 
         it('', function(done) {
-            var gd = createGraphDiv(),
-                initialData = [],
-                layout = { title: 'Redraw' };
+            var gd = createGraphDiv();
+            var initialData = [];
+            var layout = { title: 'Redraw' };
 
             Plotly.newPlot(gd, initialData, layout);
 
@@ -2378,8 +2378,8 @@ describe('Test plot api', function() {
 
             Plotly.plot(gd, data);
 
-            var trace0 = gd.data[0],
-                trace1 = gd.data[1];
+            var trace0 = gd.data[0];
+            var trace1 = gd.data[1];
 
             expect(trace0.transforms.length).toEqual(2);
             expect(trace0.transforms[0].filtersrc).toBeUndefined();
@@ -2408,8 +2408,8 @@ describe('Test plot api', function() {
 
             Plotly.plot(gd, data);
 
-            var trace0 = gd.data[0],
-                trace1 = gd.data[1];
+            var trace0 = gd.data[0];
+            var trace1 = gd.data[1];
 
             expect(trace0.transforms.length).toEqual(2);
             expect(trace0.transforms[0].calendar).toBeUndefined();

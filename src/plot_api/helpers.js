@@ -121,11 +121,11 @@ exports.cleanLayout = function(layout) {
             var cameraposition = scene.cameraposition;
 
             if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-                var rotation = cameraposition[0],
-                    center = cameraposition[1],
-                    radius = cameraposition[2],
-                    mat = m4FromQuat([], rotation),
-                    eye = [];
+                var rotation = cameraposition[0];
+                var center = cameraposition[1];
+                var radius = cameraposition[2];
+                var mat = m4FromQuat([], rotation);
+                var eye = [];
 
                 for(j = 0; j < 3; ++j) {
                     eye[j] = center[j] + radius * mat[2 + 4 * j];
@@ -222,8 +222,8 @@ exports.cleanLayout = function(layout) {
 };
 
 function cleanAxRef(container, attr) {
-    var valIn = container[attr],
-        axLetter = attr.charAt(0);
+    var valIn = container[attr];
+    var axLetter = attr.charAt(0);
     if(valIn && valIn !== 'paper') {
         container[attr] = cleanId(valIn, axLetter);
     }
@@ -289,9 +289,10 @@ exports.cleanData = function(data) {
 
         // error_y.opacity is obsolete - merge into color
         if(trace.error_y && 'opacity' in trace.error_y) {
-            var dc = Color.defaults,
-                yeColor = trace.error_y.color ||
-                (Registry.traceIs(trace, 'bar') ? Color.defaultLine : dc[tracei % dc.length]);
+            var dc = Color.defaults;
+            var yeColor = trace.error_y.color || (Registry.traceIs(trace, 'bar') ?
+                Color.defaultLine :
+                dc[tracei % dc.length]);
             trace.error_y.color = Color.addOpacity(
                 Color.rgb(yeColor),
                 Color.opacity(yeColor) * trace.error_y.opacity);
@@ -517,8 +518,8 @@ function commonPrefix(name1, name2, show1, show2) {
 // textposition - support partial attributes (ie just 'top')
 // and incorrect use of middle / center etc.
 function cleanTextPosition(textposition) {
-    var posY = 'middle',
-        posX = 'center';
+    var posY = 'middle';
+    var posX = 'center';
 
     if(typeof textposition === 'string') {
         if(textposition.indexOf('top') !== -1) posY = 'top';
@@ -547,9 +548,10 @@ exports.swapXYData = function(trace) {
         else trace.transpose = true;
     }
     if(trace.error_x && trace.error_y) {
-        var errorY = trace.error_y,
-            copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
-                !(errorY.color || errorY.thickness || errorY.width);
+        var errorY = trace.error_y;
+        var copyYstyle = ('copy_ystyle' in errorY) ?
+            errorY.copy_ystyle :
+            !(errorY.color || errorY.thickness || errorY.width);
         Lib.swapAttrs(trace, ['error_?.copy_ystyle']);
         if(copyYstyle) {
             Lib.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
@@ -601,10 +603,10 @@ exports.coerceTraceIndices = function(gd, traceIndices) {
  *
  */
 exports.manageArrayContainers = function(np, newVal, undoit) {
-    var obj = np.obj,
-        parts = np.parts,
-        pLength = parts.length,
-        pLast = parts[pLength - 1];
+    var obj = np.obj;
+    var parts = np.parts;
+    var pLength = parts.length;
+    var pLast = parts[pLength - 1];
 
     var pLastIsNumber = isNumeric(pLast);
 
@@ -612,8 +614,8 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     if(pLastIsNumber && newVal === null) {
 
         // Clear item in array container when new value is null
-        var contPath = parts.slice(0, pLength - 1).join('.'),
-            cont = Lib.nestedProperty(obj, contPath).get();
+        var contPath = parts.slice(0, pLength - 1).join('.');
+        var cont = Lib.nestedProperty(obj, contPath).get();
         cont.splice(pLast, 1);
 
         // Note that nested property clears null / undefined at end of

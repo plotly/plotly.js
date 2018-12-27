@@ -11,10 +11,10 @@
 // Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager
 // Copyright (c) 2010-2013 Arthur Clemens, arthur@visiblearea.com
 module.exports = function UndoManager() {
-    var undoCommands = [],
-        index = -1,
-        isExecuting = false,
-        callback;
+    var undoCommands = [];
+    var index = -1;
+    var isExecuting = false;
+    var callback;
 
     function execute(command, action) {
         if(!command) return this;

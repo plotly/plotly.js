@@ -450,7 +450,10 @@ module.exports = function(canvasGL, d) {
         var panelCount = panels.length;
         var I;
 
-        var leftmost, rightmost, lowestX = Infinity, highestX = -Infinity;
+        var leftmost;
+        var rightmost;
+        var lowestX = Infinity;
+        var highestX = -Infinity;
 
         for(I = 0; I < panelCount; I++) {
             if(panels[I].dim2.canvasX > highestX) {

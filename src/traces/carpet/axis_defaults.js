@@ -32,9 +32,9 @@ var autoType = require('../../plots/cartesian/axis_autotype');
  *  bgColor: the plot background color, to calculate default gridline colors
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, options) {
-    var letter = options.letter,
-        font = options.font || {},
-        attributes = carpetAttrs[letter + 'axis'];
+    var letter = options.letter;
+    var font = options.font || {};
+    var attributes = carpetAttrs[letter + 'axis'];
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
@@ -212,11 +212,11 @@ function setAutoType(ax, data) {
     // only autotype if type is '-'
     if(ax.type !== '-') return;
 
-    var id = ax._id,
-        axLetter = id.charAt(0);
+    var id = ax._id;
+    var axLetter = id.charAt(0);
 
-    var calAttr = axLetter + 'calendar',
-        calendar = ax[calAttr];
+    var calAttr = axLetter + 'calendar';
+    var calendar = ax[calAttr];
 
     ax.type = autoType(data, calendar);
 }

@@ -56,8 +56,8 @@ function parseColorArray(colors) {
 }
 
 proto.update = function(data) {
-    var scene = this.scene,
-        layout = scene.fullSceneLayout;
+    var scene = this.scene;
+    var layout = scene.fullSceneLayout;
 
     this.data = data;
 

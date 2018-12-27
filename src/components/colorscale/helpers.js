@@ -114,10 +114,10 @@ function flipScale(scl) {
 function makeColorScaleFunc(specs, opts) {
     opts = opts || {};
 
-    var domain = specs.domain,
-        range = specs.range,
-        N = range.length,
-        _range = new Array(N);
+    var domain = specs.domain;
+    var range = specs.range;
+    var N = range.length;
+    var _range = new Array(N);
 
     for(var i = 0; i < N; i++) {
         var rgba = tinycolor(range[i]).toRgb();
@@ -129,9 +129,9 @@ function makeColorScaleFunc(specs, opts) {
         .range(_range)
         .clamp(true);
 
-    var noNumericCheck = opts.noNumericCheck,
-        returnArray = opts.returnArray,
-        sclFunc;
+    var noNumericCheck = opts.noNumericCheck;
+    var returnArray = opts.returnArray;
+    var sclFunc;
 
     if(noNumericCheck && returnArray) {
         sclFunc = _sclFunc;

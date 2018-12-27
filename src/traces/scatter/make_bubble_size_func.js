@@ -15,17 +15,17 @@ var isNumeric = require('fast-isnumeric');
 // used in the drawing step for 'scatter' and 'scattegeo' and
 // in the convert step for 'scatter3d'
 module.exports = function makeBubbleSizeFn(trace) {
-    var marker = trace.marker,
-        sizeRef = marker.sizeref || 1,
-        sizeMin = marker.sizemin || 0;
+    var marker = trace.marker;
+    var sizeRef = marker.sizeref || 1;
+    var sizeMin = marker.sizemin || 0;
 
     // for bubble charts, allow scaling the provided value linearly
     // and by area or diameter.
     // Note this only applies to the array-value sizes
 
     var baseFn = (marker.sizemode === 'area') ?
-            function(v) { return Math.sqrt(v / sizeRef); } :
-            function(v) { return v / sizeRef; };
+        function(v) { return Math.sqrt(v / sizeRef); } :
+        function(v) { return v / sizeRef; };
 
     // TODO add support for position/negative bubbles?
     // TODO add 'sizeoffset' attribute?

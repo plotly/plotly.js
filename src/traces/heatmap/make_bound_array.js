@@ -12,13 +12,13 @@ var Registry = require('../../registry');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
-    var arrayOut = [],
-        isContour = Registry.traceIs(trace, 'contour'),
-        isHist = Registry.traceIs(trace, 'histogram'),
-        isGL2D = Registry.traceIs(trace, 'gl2d'),
-        v0,
-        dv,
-        i;
+    var arrayOut = [];
+    var isContour = Registry.traceIs(trace, 'contour');
+    var isHist = Registry.traceIs(trace, 'histogram');
+    var isGL2D = Registry.traceIs(trace, 'gl2d');
+    var v0;
+    var dv;
+    var i;
 
     var isArrayOfTwoItemsOrMore = isArrayOrTypedArray(arrayIn) && arrayIn.length > 1;
 
@@ -45,8 +45,8 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
             }
 
             if(len < numbricks) {
-                var lastPt = arrayOut[arrayOut.length - 1],
-                    delta = lastPt - arrayOut[arrayOut.length - 2];
+                var lastPt = arrayOut[arrayOut.length - 1];
+                var delta = lastPt - arrayOut[arrayOut.length - 2];
 
                 for(i = len; i < numbricks; i++) {
                     lastPt += delta;

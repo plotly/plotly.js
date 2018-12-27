@@ -40,21 +40,21 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     coerce('line.width');
     coerce('line.dash');
 
-    var dfltType = shapeIn.path ? 'path' : 'rect',
-        shapeType = coerce('type', dfltType),
-        xSizeMode = coerce('xsizemode'),
-        ySizeMode = coerce('ysizemode');
+    var dfltType = shapeIn.path ? 'path' : 'rect';
+    var shapeType = coerce('type', dfltType);
+    var xSizeMode = coerce('xsizemode');
+    var ySizeMode = coerce('ysizemode');
 
     // positioning
     var axLetters = ['x', 'y'];
     for(var i = 0; i < 2; i++) {
-        var axLetter = axLetters[i],
-            attrAnchor = axLetter + 'anchor',
-            sizeMode = axLetter === 'x' ? xSizeMode : ySizeMode,
-            gdMock = {_fullLayout: fullLayout},
-            ax,
-            pos2r,
-            r2pos;
+        var axLetter = axLetters[i];
+        var attrAnchor = axLetter + 'anchor';
+        var sizeMode = axLetter === 'x' ? xSizeMode : ySizeMode;
+        var gdMock = {_fullLayout: fullLayout};
+        var ax;
+        var pos2r;
+        var r2pos;
 
         // xref, yref
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, '', 'paper');
@@ -71,17 +71,17 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
         // Coerce x0, x1, y0, y1
         if(shapeType !== 'path') {
-            var dflt0 = 0.25,
-                dflt1 = 0.75;
+            var dflt0 = 0.25;
+            var dflt1 = 0.75;
 
             // hack until V2.0 when log has regular range behavior - make it look like other
             // ranges to send to coerce, then put it back after
             // this is all to give reasonable default position behavior on log axes, which is
             // a pretty unimportant edge case so we could just ignore this.
-            var attr0 = axLetter + '0',
-                attr1 = axLetter + '1',
-                in0 = shapeIn[attr0],
-                in1 = shapeIn[attr1];
+            var attr0 = axLetter + '0';
+            var attr1 = axLetter + '1';
+            var in0 = shapeIn[attr0];
+            var in1 = shapeIn[attr1];
             shapeIn[attr0] = pos2r(shapeIn[attr0], true);
             shapeIn[attr1] = pos2r(shapeIn[attr1], true);
 

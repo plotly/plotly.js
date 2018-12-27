@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.43.0
+* plotly.js (gl3d) v1.43.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -73858,7 +73858,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.43.0';
+exports.version = '1.43.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -90889,9 +90889,13 @@ axes.draw = function(gd, arg, opts) {
             plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
             plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
             plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
+            plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick2').remove();
             plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
+            plotinfo.yaxislayer.selectAll('.' + ya._id + 'divider').remove();
+
             if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
             if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
+
             fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
             fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
         });
@@ -93917,13 +93921,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
 
-                if(!ax._rangeInitial) {
-                    attrs[ax._name + '.autorange'] = true;
-                }
-                else {
-                    rangeInitial = ax._rangeInitial;
-                    attrs[ax._name + '.range[0]'] = rangeInitial[0];
-                    attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                if(!ax.fixedrange) {
+                    if(!ax._rangeInitial) {
+                        attrs[ax._name + '.autorange'] = true;
+                    } else {
+                        rangeInitial = ax._rangeInitial;
+                        attrs[ax._name + '.range[0]'] = rangeInitial[0];
+                        attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                    }
                 }
             }
         }
@@ -97102,6 +97107,7 @@ var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
 var ensureNumber = Lib.ensureNumber;
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 
 var numConstants = _dereq_('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
@@ -97233,40 +97239,11 @@ module.exports = function setConvert(ax, fullLayout) {
 
     function setMultiCategoryIndex(arrayIn, len) {
         var arrayOut = new Array(len);
-        var i;
 
-        // [ [arrayIn[0][i], arrayIn[1][i]], for i .. len ]
-        var tmp = new Array(len);
-        // [ [cnt, {$cat: index}], for j .. arrayIn.length ]
-        var seen = [[0, {}], [0, {}]];
-
-        if(Lib.isArrayOrTypedArray(arrayIn[0]) && Lib.isArrayOrTypedArray(arrayIn[1])) {
-            for(i = 0; i < len; i++) {
-                var v0 = arrayIn[0][i];
-                var v1 = arrayIn[1][i];
-                if(isValidCategory(v0) && isValidCategory(v1)) {
-                    tmp[i] = [v0, v1];
-                    if(!(v0 in seen[0][1])) {
-                        seen[0][1][v0] = seen[0][0]++;
-                    }
-                    if(!(v1 in seen[1][1])) {
-                        seen[1][1][v1] = seen[1][0]++;
-                    }
-                }
-            }
-
-            tmp.sort(function(a, b) {
-                var ind0 = seen[0][1];
-                var d = ind0[a[0]] - ind0[b[0]];
-                if(d) return d;
-
-                var ind1 = seen[1][1];
-                return ind1[a[1]] - ind1[b[1]];
-            });
-        }
-
-        for(i = 0; i < len; i++) {
-            arrayOut[i] = setCategoryIndex(tmp[i]);
+        for(var i = 0; i < len; i++) {
+            var v0 = (arrayIn[0] || [])[i];
+            var v1 = (arrayIn[1] || [])[i];
+            arrayOut[i] = getCategoryIndex([v0, v1]);
         }
 
         return arrayOut;
@@ -97414,6 +97391,56 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.cleanPos = function(v) {
             if(Array.isArray(v) || (typeof v === 'string' && v !== '')) return v;
             return ensureNumber(v);
+        };
+
+        ax.setupMultiCategory = function(fullData) {
+            var traceIndices = ax._traceIndices;
+            var i, j;
+
+            // [ [cnt, {$cat: index}], for 1,2 ]
+            var seen = ax._multicatSeen = [[0, {}], [0, {}]];
+            // [ [arrayIn[0][i], arrayIn[1][i]], for i .. N ]
+            var list = ax._multicatList = [];
+
+            for(i = 0; i < traceIndices.length; i++) {
+                var trace = fullData[traceIndices[i]];
+
+                if(axLetter in trace) {
+                    var arrayIn = trace[axLetter];
+                    var len = trace._length || Lib.minRowLength(arrayIn);
+
+                    if(isArrayOrTypedArray(arrayIn[0]) && isArrayOrTypedArray(arrayIn[1])) {
+                        for(j = 0; j < len; j++) {
+                            var v0 = arrayIn[0][j];
+                            var v1 = arrayIn[1][j];
+
+                            if(isValidCategory(v0) && isValidCategory(v1)) {
+                                list.push([v0, v1]);
+
+                                if(!(v0 in seen[0][1])) {
+                                    seen[0][1][v0] = seen[0][0]++;
+                                }
+                                if(!(v1 in seen[1][1])) {
+                                    seen[1][1][v1] = seen[1][0]++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            list.sort(function(a, b) {
+                var ind0 = seen[0][1];
+                var d = ind0[a[0]] - ind0[b[0]];
+                if(d) return d;
+
+                var ind1 = seen[1][1];
+                return ind1[a[1]] - ind1[b[1]];
+            });
+
+            for(i = 0; i < list.length; i++) {
+                setCategoryIndex(list[i]);
+            }
         };
     }
 
@@ -99870,7 +99897,9 @@ var Registry = _dereq_('../../../registry');
 var handleSubplotDefaults = _dereq_('../../subplot_defaults');
 var supplyGl3dAxisLayoutDefaults = _dereq_('./axis_defaults');
 var layoutAttributes = _dereq_('./layout_attributes');
+var getSubplotData = _dereq_('../../get_data').getSubplotData;
 
+var GL3D = 'gl3d';
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var hasNon3D = layoutOut._basePlotModules.length > 1;
@@ -99885,7 +99914,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
-        type: 'gl3d',
+        type: GL3D,
         attributes: layoutAttributes,
         handleDefaults: handleGl3dDefaults,
         fullLayout: layoutOut,
@@ -99951,10 +99980,12 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
     }
 
+    var fullGl3dData = getSubplotData(opts.fullData, GL3D, opts.id);
+
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
-        data: opts.fullData,
+        data: fullGl3dData,
         bgColor: bgColorCombined,
         calendar: opts.calendar,
         fullLayout: opts.fullLayout
@@ -99993,7 +100024,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     coerce('hovermode', opts.getDfltFromLayout('hovermode'));
 }
 
-},{"../../../components/color":375,"../../../lib":494,"../../../registry":593,"../../subplot_defaults":592,"./axis_defaults":574,"./layout_attributes":577}],577:[function(_dereq_,module,exports){
+},{"../../../components/color":375,"../../../lib":494,"../../../registry":593,"../../get_data":569,"../../subplot_defaults":592,"./axis_defaults":574,"./layout_attributes":577}],577:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -104063,9 +104094,9 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 };
 
 plots.doCalcdata = function(gd, traces) {
-    var axList = axisIDs.list(gd),
-        fullData = gd._fullData,
-        fullLayout = gd._fullLayout;
+    var axList = axisIDs.list(gd);
+    var fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
 
     var trace, _module, i, j;
 
@@ -104118,7 +104149,7 @@ plots.doCalcdata = function(gd, traces) {
         );
     }
 
-    clearAxesCalc(axList);
+    setupAxisCategories(axList, fullData);
 
     var hasCalcTransform = false;
 
@@ -104156,7 +104187,7 @@ plots.doCalcdata = function(gd, traces) {
     }
 
     // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) clearAxesCalc(axList);
+    if(hasCalcTransform) setupAxisCategories(axList, fullData);
 
     function calci(i, isContainer) {
         trace = fullData[i];
@@ -104214,9 +104245,13 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
-function clearAxesCalc(axList) {
+function setupAxisCategories(axList, fullData) {
     for(var i = 0; i < axList.length; i++) {
-        axList[i].clearCalc();
+        var ax = axList[i];
+        ax.clearCalc();
+        if(ax.type === 'multicategory') {
+            ax.setupMultiCategory(fullData);
+        }
     }
 }
 

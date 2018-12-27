@@ -73,21 +73,21 @@ module.exports = function validate(data, layout) {
 
     Plots.supplyDefaults(gd);
 
-    var dataOut = gd._fullData,
-        len = dataIn.length;
+    var dataOut = gd._fullData;
+    var len = dataIn.length;
 
     for(var i = 0; i < len; i++) {
-        var traceIn = dataIn[i],
-            base = ['data', i];
+        var traceIn = dataIn[i];
+        var base = ['data', i];
 
         if(!isPlainObject(traceIn)) {
             errorList.push(format('object', base));
             continue;
         }
 
-        var traceOut = dataOut[i],
-            traceType = traceOut.type,
-            traceSchema = schema.traces[traceType].attributes;
+        var traceOut = dataOut[i];
+        var traceType = traceOut.type;
+        var traceSchema = schema.traces[traceType].attributes;
 
         // PlotSchema does something fancy with trace 'type', reset it here
         // to make the trace schema compatible with Lib.validate.
@@ -102,8 +102,8 @@ module.exports = function validate(data, layout) {
 
         crawl(traceIn, traceOut, traceSchema, errorList, base);
 
-        var transformsIn = traceIn.transforms,
-            transformsOut = traceOut.transforms;
+        var transformsIn = traceIn.transforms;
+        var transformsOut = traceOut.transforms;
 
         if(transformsIn) {
             if(!isArray(transformsIn)) {
@@ -113,8 +113,8 @@ module.exports = function validate(data, layout) {
             base.push('transforms');
 
             for(var j = 0; j < transformsIn.length; j++) {
-                var path = ['transforms', j],
-                    transformType = transformsIn[j].type;
+                var path = ['transforms', j];
+                var transformType = transformsIn[j].type;
 
                 if(!isPlainObject(transformsIn[j])) {
                     errorList.push(format('object', base, path));
@@ -136,8 +136,8 @@ module.exports = function validate(data, layout) {
         }
     }
 
-    var layoutOut = gd._fullLayout,
-        layoutSchema = fillLayoutSchema(schema, dataOut);
+    var layoutOut = gd._fullLayout;
+    var layoutSchema = fillLayoutSchema(schema, dataOut);
 
     crawl(layoutIn, layoutOut, layoutSchema, errorList, 'layout');
 
@@ -159,8 +159,8 @@ function crawl(objIn, objOut, schema, list, base, path) {
         var p = path.slice();
         p.push(k);
 
-        var valIn = objIn[k],
-            valOut = objOut[k];
+        var valIn = objIn[k];
+        var valOut = objOut[k];
 
         var nestedSchema = getNestedSchema(schema, k);
         var isInfoArray = (nestedSchema || {}).valType === 'info_array';
@@ -220,8 +220,8 @@ function crawl(objIn, objOut, schema, list, base, path) {
             }
         }
         else if(nestedSchema.items && !isInfoArray && isArray(valIn)) {
-            var _nestedSchema = items[Object.keys(items)[0]],
-                indexList = [];
+            var _nestedSchema = items[Object.keys(items)[0]];
+            var indexList = [];
 
             var j, _p;
 
@@ -392,9 +392,9 @@ function format(code, base, path, valIn, valOut) {
 }
 
 function isInSchema(schema, key) {
-    var parts = splitKey(key),
-        keyMinusId = parts.keyMinusId,
-        id = parts.id;
+    var parts = splitKey(key);
+    var keyMinusId = parts.keyMinusId;
+    var id = parts.id;
 
     if((keyMinusId in schema) && schema[keyMinusId]._isSubplotObj && id) {
         return true;

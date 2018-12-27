@@ -55,9 +55,9 @@ module.exports = function setContours(trace) {
     }
     else if(contours.type !== 'constraint') {
         // sanity checks on manually-supplied start/end/size
-        var start = contours.start,
-            end = contours.end,
-            inputContours = trace._input.contours;
+        var start = contours.start;
+        var end = contours.end;
+        var inputContours = trace._input.contours;
 
         if(start > end) {
             contours.start = inputContours.start = end;

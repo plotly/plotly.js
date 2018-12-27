@@ -292,13 +292,13 @@ proto.updateData = function(calcData) {
 
     // remove empty trace objects
     var ids = Object.keys(traceHash);
-    id_loop:
+    idLoop:
     for(i = 0; i < ids.length; i++) {
         var id = ids[i];
 
         for(j = 0; j < calcData.length; j++) {
             trace = calcData[j][0].trace;
-            if(id === trace.uid) continue id_loop;
+            if(id === trace.uid) continue idLoop;
         }
 
         traceObj = traceHash[id];

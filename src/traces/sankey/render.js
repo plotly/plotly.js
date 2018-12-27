@@ -26,7 +26,8 @@ var unwrap = gup.unwrap;
 // basic data utilities
 
 function persistOriginalPlace(nodes) {
-    var i, distinctLayerPositions = [];
+    var i;
+    var distinctLayerPositions = [];
     for(i = 0; i < nodes.length; i++) {
         nodes[i].originalX = nodes[i].x;
         nodes[i].originalY = nodes[i].y;
@@ -152,7 +153,8 @@ function sankeyModel(layout, d, traceIndex) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
-    var node, sankeyNodes = sankey.nodes();
+    var node;
+    var sankeyNodes = sankey.nodes();
     for(var n = 0; n < sankeyNodes.length; n++) {
         node = sankeyNodes[n];
         node.width = width;
@@ -219,11 +221,11 @@ function linkModel(uniqueKeys, d, l) {
 }
 
 function nodeModel(uniqueKeys, d, n) {
-    var tc = tinycolor(n.color),
-        zoneThicknessPad = c.nodePadAcross,
-        zoneLengthPad = d.nodePad / 2,
-        visibleThickness = n.dx,
-        visibleLength = Math.max(0.5, n.dy);
+    var tc = tinycolor(n.color);
+    var zoneThicknessPad = c.nodePadAcross;
+    var zoneLengthPad = d.nodePad / 2;
+    var visibleThickness = n.dx;
+    var visibleLength = Math.max(0.5, n.dy);
 
     var basicKey = n.label;
     var foundKey = uniqueKeys[basicKey];

@@ -181,7 +181,9 @@ function createCamera(element, options) {
         return false;
     });
 
-    var lastX = 0, lastY = 0, lastMods = {shift: false, control: false, alt: false, meta: false};
+    var lastX = 0;
+    var lastY = 0;
+    var lastMods = {shift: false, control: false, alt: false, meta: false};
     camera.mouseListener = mouseChange(element, handleInteraction);
 
     // enable simple touch interactions

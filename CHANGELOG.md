@@ -10,6 +10,16 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.43.1] -- 2018-12-21
+
+### Fixed
+- Fix z-axis auto-type for cartesian + gl3d graphs (bug introduced in 1.43.0) [#3360]
+- Fix `multicategory` axis coordinate sorting [#3362]
+- Fix `multicategory` y-axes clearance [#3354]
+- Fix contour label clipPath segments for reversed axes [#3352]
+- Fix axis autorange on double-click on graph `fixedrange:true` [#3351]
+
+
 ## [1.43.0] -- 2018-12-19
 
 ### Added

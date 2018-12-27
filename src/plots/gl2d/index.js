@@ -58,9 +58,9 @@ exports.plot = function plotGl2d(gd) {
     var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {
-        var subplotId = subplotIds[i],
-            subplotObj = fullLayout._plots[subplotId],
-            fullSubplotData = getSubplotData(fullData, 'gl2d', subplotId);
+        var subplotId = subplotIds[i];
+        var subplotObj = fullLayout._plots[subplotId];
+        var fullSubplotData = getSubplotData(fullData, 'gl2d', subplotId);
 
         // ref. to corresp. Scene instance
         var scene = subplotObj._scene2d;
@@ -89,8 +89,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldSceneKeys = oldFullLayout._subplots.gl2d || [];
 
     for(var i = 0; i < oldSceneKeys.length; i++) {
-        var id = oldSceneKeys[i],
-            oldSubplot = oldFullLayout._plots[id];
+        var id = oldSceneKeys[i];
+        var oldSubplot = oldFullLayout._plots[id];
 
         // old subplot wasn't gl2d; nothing to do
         if(!oldSubplot._scene2d) continue;
@@ -118,8 +118,8 @@ exports.toSVG = function(gd) {
     var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {
-        var subplot = fullLayout._plots[subplotIds[i]],
-            scene = subplot._scene2d;
+        var subplot = fullLayout._plots[subplotIds[i]];
+        var scene = subplot._scene2d;
 
         var imageData = scene.toImage('png');
         var image = fullLayout._glimages.append('svg:image');
