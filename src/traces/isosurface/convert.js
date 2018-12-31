@@ -112,7 +112,7 @@ function generateIsosurfaceMesh(data) {
     var allYs = [];
     var allZs = [];
 
-    var allCs = [];
+    var allVs = [];
 
     var width = data.x.length;
     var height = data.y.length;
@@ -128,9 +128,9 @@ function generateIsosurfaceMesh(data) {
     var Ys = []; for(j = 0; j < height; j++) { Ys[j] = data.y[j]; }
     var Zs = []; for(k = 0; k < depth; k++) { Zs[k] = data.z[k]; }
 
-    var imin = Math.min.apply(null, data.isovalue);
-    var imax = Math.max.apply(null, data.isovalue);
-    var idif = imax - imin;
+    var vMin = Math.min.apply(null, data.isovalue);
+    var vMax = Math.max.apply(null, data.isovalue);
+    var vDif = vMax - vMin;
 
     var dims = [width, height, depth];
 
@@ -141,7 +141,7 @@ function generateIsosurfaceMesh(data) {
             allXs.push(xyzv[g][0]);
             allYs.push(xyzv[g][1]);
             allZs.push(xyzv[g][2]);
-            allCs.push(xyzv[g][3]);
+            allVs.push(xyzv[g][3]);
 
             if(g === 0) {
                 data.i.push(num_vertices);
@@ -180,11 +180,11 @@ function generateIsosurfaceMesh(data) {
 
         function inRange(value) {
 
-            if(imin <= value && value <= imax) return true;
+            if(vMin <= value && value <= vMax) return true;
 
-            var PA = Math.abs(value - imin);
-            var PB = Math.abs(value - imax);
-            var closeness = Math.min(PA, PB) / idif;
+            var PA = Math.abs(value - vMin);
+            var PB = Math.abs(value - vMax);
+            var closeness = Math.min(PA, PB) / vDif;
 
             // tolerate certain error i.e. based on distances ...
             if(closeness < 0.001) return true;
@@ -216,12 +216,12 @@ function generateIsosurfaceMesh(data) {
         function calcIntersection(dst, src) {
             var result = [dst[0], dst[1], dst[2], dst[3]];
 
-            var val = dst[3];
-            if(val < imin) val = imin;
-            else if(val > imax) val = imax;
+            var value = dst[3];
+            if(value < vMin) value = vMin;
+            else if(value > vMax) value = vMax;
             else return result;
 
-            var ratio = (val - dst[3]) / (src[3] - dst[3]);
+            var ratio = (value - dst[3]) / (src[3] - dst[3]);
             for(var l = 0; l < 4; l++) {
                 result[l] = (1 - ratio) * dst[l] + ratio * src[l];
             }
@@ -287,7 +287,7 @@ function generateIsosurfaceMesh(data) {
         tryCreateTri(c, d, a);
     }
 
-    if(data.isocap && idif > 0) {
+    if(data.isocap && vDif > 0) {
 
         var p00, p01, p10, p11;
         for(j = 1; j < height; j++) {
@@ -335,15 +335,14 @@ function generateIsosurfaceMesh(data) {
 
     for(var iso_id = 0; iso_id < data.isovalue.length; iso_id++) {
 
-        var level = data.isovalue[iso_id];
-        var intensity = level;
+        var value = data.isovalue[iso_id];
 
         var fXYZs = [];
         var n = 0;
         for(k = 0; k <= depth; k++) {
             for(j = 0; j <= height; j++) {
                 for(i = 0; i <= width; i++) {
-                    fXYZs[n] = data.value[getIndex(i, j, k)] - level;
+                    fXYZs[n] = data.value[getIndex(i, j, k)] - value;
                     n++;
                 }
             }
@@ -426,7 +425,7 @@ function generateIsosurfaceMesh(data) {
             allYs.push(positions[q][1]);
             allZs.push(positions[q][2]);
 
-            allCs.push(intensity);
+            allVs.push(value);
         }
 
         // record cells of iso surface
@@ -444,7 +443,7 @@ function generateIsosurfaceMesh(data) {
     data.x = allXs;
     data.y = allYs;
     data.z = allZs;
-    data.intensity = allCs;
+    data.intensity = allVs;
 
     return data;
 }
