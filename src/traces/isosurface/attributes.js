@@ -96,7 +96,7 @@ module.exports = extendFlat({
 },
 
 colorscaleAttrs('', {
-    colorAttr: '`intensity`',
+    colorAttr: '`value`',
     showScaleDflt: true,
     editTypeOverride: 'calc'
 }), {
