@@ -21,7 +21,6 @@ function IsosurfaceTrace(scene, mesh, uid) {
     this.uid = uid;
     this.mesh = mesh;
     this.name = '';
-    this.color = '#fff';
     this.data = null;
     this.showContour = false;
 }
@@ -48,10 +47,6 @@ proto.handlePick = function(selection) {
         return true;
     }
 };
-
-function parseColorArray(colors) {
-    return colors.map(str2RgbaArray);
-}
 
 proto.update = function(data) {
     var scene = this.scene,
@@ -91,24 +86,9 @@ proto.update = function(data) {
         useFacetNormals: data.flatshading
     };
 
-    if(data.intensity) {
-        this.color = '#fff';
-        config.vertexIntensity = data.intensity;
-        config.vertexIntensityBounds = [data.cmin, data.cmax];
-        config.colormap = parseColorScale(data.colorscale);
-    }
-    else if(data.vertexcolor) {
-        this.color = data.vertexcolor[0];
-        config.vertexColors = parseColorArray(data.vertexcolor);
-    }
-    else if(data.facecolor) {
-        this.color = data.facecolor[0];
-        config.cellColors = parseColorArray(data.facecolor);
-    }
-    else {
-        this.color = data.color;
-        config.meshColor = str2RgbaArray(data.color);
-    }
+    config.vertexIntensity = data.intensity;
+    config.vertexIntensityBounds = [data.cmin, data.cmax];
+    config.colormap = parseColorScale(data.colorscale);
 
     // Update mesh
     this.mesh.update(config);

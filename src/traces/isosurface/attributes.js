@@ -92,31 +92,6 @@ module.exports = extendFlat({
         ].join(' ')
     },
 
-    // Color field
-    color: {
-        valType: 'color',
-        role: 'style',
-        editType: 'calc',
-        description: 'Sets the color of the whole isosurface'
-    },
-    vertexcolor: {
-        valType: 'data_array',
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'Sets the color of each vertex',
-            'Overrides *color*.'
-        ].join(' ')
-    },
-    facecolor: {
-        valType: 'data_array',
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'Sets the color of each face',
-            'Overrides *color* and *vertexcolor*.'
-        ].join(' ')
-    },
     transforms: undefined
 },
 

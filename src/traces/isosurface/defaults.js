@@ -63,13 +63,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'opacity'
     ].forEach(function(x) { coerce(x); });
 
-    if('colorscale' in traceIn) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
-    } else {
-        traceOut.showscale = false;
-
-        if('facecolor' in traceIn) coerce('facecolor');
-        else if('vertexcolor' in traceIn) coerce('vertexcolor');
-        else coerce('color', defaultColor);
-    }
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
 };
