@@ -1,15 +1,15 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var drawColorbar = require('./draw');
+var flipScale = require('../colorscale/helpers').flipScale;
 
 /**
  * connectColorbar: create a colorbar from a trace, using its module to
@@ -49,7 +49,11 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
 
-    cb.fillgradient(container.colorscale)
+    var scl = container.reversescale ?
+        flipScale(container.colorscale) :
+        container.colorscale;
+
+    cb.fillgradient(scl)
         .zrange([container[moduleOpts.min], container[moduleOpts.max]])
         .options(container.colorbar)();
 };

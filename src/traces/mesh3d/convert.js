@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56,8 +56,8 @@ function parseColorArray(colors) {
 }
 
 proto.update = function(data) {
-    var scene = this.scene,
-        layout = scene.fullSceneLayout;
+    var scene = this.scene;
+    var layout = scene.fullSceneLayout;
 
     this.data = data;
 

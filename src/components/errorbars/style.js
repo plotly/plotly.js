@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,9 +16,9 @@ var Color = require('../color');
 
 module.exports = function style(traces) {
     traces.each(function(d) {
-        var trace = d[0].trace,
-            yObj = trace.error_y || {},
-            xObj = trace.error_x || {};
+        var trace = d[0].trace;
+        var yObj = trace.error_y || {};
+        var xObj = trace.error_x || {};
 
         var s = d3.select(this);
 

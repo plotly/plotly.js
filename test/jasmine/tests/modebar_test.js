@@ -820,8 +820,8 @@ describe('ModeBar', function() {
             var gd = setupGraphInfo();
             manageModeBar(gd);
 
-            var initialGroupCount = countGroups(gd._fullLayout._modeBar),
-                initialButtonCount = countButtons(gd._fullLayout._modeBar);
+            var initialGroupCount = countGroups(gd._fullLayout._modeBar);
+            var initialButtonCount = countButtons(gd._fullLayout._modeBar);
 
             gd._context.modeBarButtonsToAdd = [{
                 name: 'some button',
@@ -1032,10 +1032,10 @@ describe('ModeBar', function() {
 
             describe('buttons zoomIn2d, zoomOut2d, autoScale2d and resetScale2d', function() {
                 it('should update axis ranges', function() {
-                    var buttonZoomIn = selectButton(modeBar, 'zoomIn2d'),
-                        buttonZoomOut = selectButton(modeBar, 'zoomOut2d'),
-                        buttonAutoScale = selectButton(modeBar, 'autoScale2d'),
-                        buttonResetScale = selectButton(modeBar, 'resetScale2d');
+                    var buttonZoomIn = selectButton(modeBar, 'zoomIn2d');
+                    var buttonZoomOut = selectButton(modeBar, 'zoomOut2d');
+                    var buttonAutoScale = selectButton(modeBar, 'autoScale2d');
+                    var buttonResetScale = selectButton(modeBar, 'resetScale2d');
 
                     assertRange('xaxis', ['2016-01-01', '2016-04-01']);
                     assertRange('yaxis', [1, 3]);
@@ -1071,11 +1071,11 @@ describe('ModeBar', function() {
 
             describe('buttons zoom2d, pan2d, select2d and lasso2d', function() {
                 it('should update the layout dragmode', function() {
-                    var zoom2d = selectButton(modeBar, 'zoom2d'),
-                        pan2d = selectButton(modeBar, 'pan2d'),
-                        select2d = selectButton(modeBar, 'select2d'),
-                        lasso2d = selectButton(modeBar, 'lasso2d'),
-                        buttons = [zoom2d, pan2d, select2d, lasso2d];
+                    var zoom2d = selectButton(modeBar, 'zoom2d');
+                    var pan2d = selectButton(modeBar, 'pan2d');
+                    var select2d = selectButton(modeBar, 'select2d');
+                    var lasso2d = selectButton(modeBar, 'lasso2d');
+                    var buttons = [zoom2d, pan2d, select2d, lasso2d];
 
                     expect(gd._fullLayout.dragmode).toBe('zoom');
                     assertActive(buttons, zoom2d);
@@ -1270,9 +1270,10 @@ describe('ModeBar', function() {
     });
 
     describe('modebar styling', function() {
-        var gd,
-            colors = ['rgba(128, 128, 128, 0.7)', 'rgba(255, 0, 128, 0.2)'],
-            targetBtn = 'pan2d', button, style;
+        var gd;
+        var colors = ['rgba(128, 128, 128, 0.7)', 'rgba(255, 0, 128, 0.2)'];
+        var targetBtn = 'pan2d';
+        var button, style;
 
         beforeEach(function() {
             gd = createGraphDiv();

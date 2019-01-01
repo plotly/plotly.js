@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63,10 +63,10 @@ exports.plot = function plotMapbox(gd) {
     mapboxgl.accessToken = accessToken;
 
     for(var i = 0; i < mapboxIds.length; i++) {
-        var id = mapboxIds[i],
-            subplotCalcData = getSubplotCalcData(calcData, MAPBOX, id),
-            opts = fullLayout[id],
-            mapbox = opts._subplot;
+        var id = mapboxIds[i];
+        var subplotCalcData = getSubplotCalcData(calcData, MAPBOX, id);
+        var opts = fullLayout[id];
+        var mapbox = opts._subplot;
 
         if(!mapbox) {
             mapbox = createMapbox({
@@ -111,9 +111,9 @@ exports.toSVG = function(gd) {
     var size = fullLayout._size;
 
     for(var i = 0; i < subplotIds.length; i++) {
-        var opts = fullLayout[subplotIds[i]],
-            domain = opts.domain,
-            mapbox = opts._subplot;
+        var opts = fullLayout[subplotIds[i]];
+        var domain = opts.domain;
+        var mapbox = opts._subplot;
 
         var imageData = mapbox.toImage('png');
         var image = fullLayout._glimages.append('svg:image');
@@ -133,8 +133,8 @@ exports.toSVG = function(gd) {
 };
 
 function findAccessToken(gd, mapboxIds) {
-    var fullLayout = gd._fullLayout,
-        context = gd._context;
+    var fullLayout = gd._fullLayout;
+    var context = gd._context;
 
     // special case for Mapbox Atlas users
     if(context.mapboxAccessToken === '') return '';

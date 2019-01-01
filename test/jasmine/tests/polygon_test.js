@@ -1,57 +1,58 @@
-var polygon = require('@src/lib/polygon'),
-    polygonTester = polygon.tester,
-    isBent = polygon.isSegmentBent,
-    filter = polygon.filter;
+var polygon = require('@src/lib/polygon');
+
+var polygonTester = polygon.tester;
+var isBent = polygon.isSegmentBent;
+var filter = polygon.filter;
 
 describe('polygon.tester', function() {
     'use strict';
 
-    var squareCW = [[0, 0], [0, 1], [1, 1], [1, 0]],
-        squareCCW = [[0, 0], [1, 0], [1, 1], [0, 1]],
-        bowtie = [[0, 0], [0, 1], [1, 0], [1, 1]],
-        squareish = [
-            [-0.123, -0.0456],
-            [0.12345, 1.2345],
-            [1.3456, 1.4567],
-            [1.5678, 0.21345]],
-        equilateralTriangle = [
-            [0, Math.sqrt(3) / 3],
-            [-0.5, -Math.sqrt(3) / 6],
-            [0.5, -Math.sqrt(3) / 6]],
+    var squareCW = [[0, 0], [0, 1], [1, 1], [1, 0]];
+    var squareCCW = [[0, 0], [1, 0], [1, 1], [0, 1]];
+    var bowtie = [[0, 0], [0, 1], [1, 0], [1, 1]];
+    var squareish = [
+        [-0.123, -0.0456],
+        [0.12345, 1.2345],
+        [1.3456, 1.4567],
+        [1.5678, 0.21345]];
+    var equilateralTriangle = [
+        [0, Math.sqrt(3) / 3],
+        [-0.5, -Math.sqrt(3) / 6],
+        [0.5, -Math.sqrt(3) / 6]];
 
-        zigzag = [          // 4     *
-            [0, 0], [2, 1], //        \-.
-            [0, 1], [2, 2], // 3       * *
-            [1, 2], [3, 3], //      ,-'  |
-            [2, 4], [4, 3], // 2   *-*   |
-            [4, 0]],        //    ,-'    |
+    var zigzag = [          // 4     *
+        [0, 0], [2, 1],     //        \-.
+        [0, 1], [2, 2],     // 3       * *
+        [1, 2], [3, 3],     //      ,-'  |
+        [2, 4], [4, 3],     // 2   *-*   |
+        [4, 0]];            //    ,-'    |
                             // 1 *---*   |
                             //    ,-'    |
                             // 0 *-------*
                             //   0 1 2 3 4
-        inZigzag = [
-            [0.5, 0.01], [1, 0.49], [1.5, 0.5], [2, 0.5], [2.5, 0.5], [3, 0.5],
-            [3.5, 0.5], [0.5, 1.01], [1, 1.49], [1.5, 1.5], [2, 1.5], [2.5, 1.5],
-            [3, 1.5], [3.5, 1.5], [1.5, 2.01], [2, 2.49], [2.5, 2.5], [3, 2.5],
-            [3.5, 2.5], [2.5, 3.51], [3, 3.49]],
-        notInZigzag = [
-            [0, -0.01], [0, 0.01], [0, 0.99], [0, 1.01], [0.5, -0.01], [0.5, 0.26],
-            [0.5, 0.99], [0.5, 1.26], [1, -0.01], [1, 0.51], [1, 0.99], [1, 1.51],
-            [1, 1.99], [1, 2.01], [2, -0.01], [2, 2.51], [2, 3.99], [2, 4.01],
-            [3, -0.01], [2.99, 3], [3, 3.51], [4, -0.01], [4, 3.01]],
+    var inZigzag = [
+        [0.5, 0.01], [1, 0.49], [1.5, 0.5], [2, 0.5], [2.5, 0.5], [3, 0.5],
+        [3.5, 0.5], [0.5, 1.01], [1, 1.49], [1.5, 1.5], [2, 1.5], [2.5, 1.5],
+        [3, 1.5], [3.5, 1.5], [1.5, 2.01], [2, 2.49], [2.5, 2.5], [3, 2.5],
+        [3.5, 2.5], [2.5, 3.51], [3, 3.49]];
+    var notInZigzag = [
+        [0, -0.01], [0, 0.01], [0, 0.99], [0, 1.01], [0.5, -0.01], [0.5, 0.26],
+        [0.5, 0.99], [0.5, 1.26], [1, -0.01], [1, 0.51], [1, 0.99], [1, 1.51],
+        [1, 1.99], [1, 2.01], [2, -0.01], [2, 2.51], [2, 3.99], [2, 4.01],
+        [3, -0.01], [2.99, 3], [3, 3.51], [4, -0.01], [4, 3.01]];
 
-        donut = [ // inner CCW, outer CW             // 3 *-----*
-            [3, 0], [0, 0], [0, 1], [2, 1], [2, 2],  //   |     |
-            [1, 2], [1, 1], [0, 1], [0, 3], [3, 3]], // 2 | *-* |
-        donut2 = [ // inner CCW, outer CCW           //   | | | |
-            [3, 3], [0, 3], [0, 1], [2, 1], [2, 2],  // 1 *-*-* |
-            [1, 2], [1, 1], [0, 1], [0, 0], [3, 0]], //   |     |
-                                                     // 0 *-----*
-                                                     //   0 1 2 3
-        inDonut = [[0.5, 0.5], [1, 0.5], [1.5, 0.5], [2, 0.5], [2.5, 0.5],
-            [2.5, 1], [2.5, 1.5], [2.5, 2], [2.5, 2.5], [2, 2.5], [1.5, 2.5],
-            [1, 2.5], [0.5, 2.5], [0.5, 2], [0.5, 1.5], [0.5, 1]],
-        notInDonut = [[1.5, -0.5], [1.5, 1.5], [1.5, 3.5], [-0.5, 1.5], [3.5, 1.5]];
+    var donut = [ // inner CCW, outer CW        // 3 *-----*
+       [3, 0], [0, 0], [0, 1], [2, 1], [2, 2],  //   |     |
+       [1, 2], [1, 1], [0, 1], [0, 3], [3, 3]]; // 2 | *-* |
+    var donut2 = [ // inner CCW, outer CCW      //   | | | |
+       [3, 3], [0, 3], [0, 1], [2, 1], [2, 2],  // 1 *-*-* |
+       [1, 2], [1, 1], [0, 1], [0, 0], [3, 0]]; //   |     |
+                                                // 0 *-----*
+                                                //   0 1 2 3
+    var inDonut = [[0.5, 0.5], [1, 0.5], [1.5, 0.5], [2, 0.5], [2.5, 0.5],
+        [2.5, 1], [2.5, 1.5], [2.5, 2], [2.5, 2.5], [2, 2.5], [1.5, 2.5],
+        [1, 2.5], [0.5, 2.5], [0.5, 2], [0.5, 1.5], [0.5, 1]];
+    var notInDonut = [[1.5, -0.5], [1.5, 1.5], [1.5, 3.5], [-0.5, 1.5], [3.5, 1.5]];
 
     it('should exclude points outside the bounding box', function() {
         var poly = polygonTester([[1, 2], [3, 4]]);
@@ -68,9 +69,9 @@ describe('polygon.tester', function() {
             zigzag, donut, donut2];
 
         polyPts.forEach(function(polyPt) {
-            var poly = polygonTester(polyPt),
-                xArray = polyPt.map(function(pt) { return pt[0]; }),
-                yArray = polyPt.map(function(pt) { return pt[1]; });
+            var poly = polygonTester(polyPt);
+            var xArray = polyPt.map(function(pt) { return pt[0]; });
+            var yArray = polyPt.map(function(pt) { return pt[1]; });
 
             expect(poly.pts.length).toEqual(polyPt.length + 1);
             polyPt.forEach(function(pt, i) {
@@ -99,8 +100,8 @@ describe('polygon.tester', function() {
 
             poly.pts.forEach(function(pt1, i) {
                 if(!i) return;
-                var pt0 = poly.pts[i - 1],
-                    j;
+                var pt0 = poly.pts[i - 1];
+                var j;
 
                 var testPts = [pt0, pt1];
                 for(j = 1; j < np; j++) {
@@ -138,8 +139,8 @@ describe('polygon.tester', function() {
             expect(zzpoly.contains(pt)).toBe(false);
         });
 
-        var donutpoly = polygonTester(donut),
-            donut2poly = polygonTester(donut2);
+        var donutpoly = polygonTester(donut);
+        var donut2poly = polygonTester(donut2);
         inDonut.forEach(function(pt) {
             expect(donutpoly.contains(pt)).toBe(true);
             expect(donut2poly.contains(pt)).toBe(true);
@@ -199,8 +200,8 @@ describe('polygon.filter', function() {
     });
 
     it('should give the right result if points are added one-by-one', function() {
-        var p = filter([pts[0]], 0.5),
-            i;
+        var p = filter([pts[0]], 0.5);
+        var i;
 
         // intermediate result (the last point isn't in the final)
         for(i = 1; i < 6; i++) p.addPt(pts[i]);

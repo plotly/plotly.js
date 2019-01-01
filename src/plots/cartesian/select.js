@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -126,8 +126,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         x1 = Math.max(0, Math.min(pw, dx0 + x0));
         y1 = Math.max(0, Math.min(ph, dy0 + y0));
 
-        var dx = Math.abs(x1 - x0),
-            dy = Math.abs(y1 - y0);
+        var dx = Math.abs(x1 - x0);
+        var dy = Math.abs(y1 - y0);
 
         if(mode === 'select') {
             var direction = fullLayout.selectdirection;
@@ -203,7 +203,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             function() {
                 selection = [];
 
-                var thisSelection, traceSelections = [], traceSelection;
+                var thisSelection;
+                var traceSelections = [];
+                var traceSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 

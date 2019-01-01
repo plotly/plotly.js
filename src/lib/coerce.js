@@ -1,11 +1,10 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -13,11 +12,11 @@ var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var baseTraceAttrs = require('../plots/attributes');
-var getColorscale = require('../components/colorscale/get_scale');
-var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
+var scales = require('../components/colorscale/scales');
+var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
+
 var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
-var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 var modHalf = require('./mod').modHalf;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 
@@ -165,7 +164,7 @@ exports.valObjectMeta = {
     colorscale: {
         description: [
             'A Plotly colorscale either picked by a name:',
-            '(any of', colorscaleNames.join(', '), ')',
+            '(any of', Object.keys(scales.scales).join(', '), ')',
             'customized as an {array} of 2-element {arrays} where',
             'the first element is the normalized color level value',
             '(starting at *0* and ending at *1*),',
@@ -174,7 +173,7 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            propOut.set(getColorscale(v, dflt));
+            propOut.set(scales.get(v, dflt));
         }
     },
     angle: {
@@ -234,8 +233,8 @@ exports.valObjectMeta = {
                 propOut.set(v);
                 return;
             }
-            var vParts = v.split('+'),
-                i = 0;
+            var vParts = v.split('+');
+            var i = 0;
             while(i < vParts.length) {
                 var vi = vParts[i];
                 if(opts.flags.indexOf(vi) === -1 || vParts.indexOf(vi) < i) {
@@ -416,9 +415,9 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var propIn = nestedProperty(containerIn, attribute),
-        propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt),
-        valIn = propIn.get();
+    var propIn = nestedProperty(containerIn, attribute);
+    var propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
+    var valIn = propIn.get();
 
     return (valIn !== undefined && valIn !== null) ? propOut : false;
 };
@@ -511,9 +510,9 @@ function validate(value, opts) {
         return valObjectDef.validateFunction(value, opts);
     }
 
-    var failed = {},
-        out = failed,
-        propMock = { set: function(v) { out = v; } };
+    var failed = {};
+    var out = failed;
+    var propMock = { set: function(v) { out = v; } };
 
     // 'failed' just something mutable that won't be === anything else
 

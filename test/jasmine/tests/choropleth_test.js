@@ -18,14 +18,14 @@ describe('Test choropleth', function() {
     'use strict';
 
     describe('supplyDefaults', function() {
-        var traceIn,
-            traceOut;
+        var traceIn;
+        var traceOut;
 
-        var defaultColor = '#444',
-            layout = {
-                font: Plots.layoutAttributes.font,
-                _dfltTitle: {colorbar: 'cb'}
-            };
+        var defaultColor = '#444';
+        var layout = {
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
+        };
 
         beforeEach(function() {
             traceOut = {};

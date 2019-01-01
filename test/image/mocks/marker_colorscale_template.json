@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "type": "scatter",
+      "y": [1, 2, 3],
+      "marker": {
+        "size": 20,
+        "color": [1, 2, 3],
+        "showscale": true
+      },
+      "mode": "markers"
+    }
+  ],
+  "layout": {
+    "template": {
+      "data": {
+        "scatter": [
+          {
+            "marker": {
+              "symbol": "square",
+              "colorscale": "Viridis",
+              "colorbar": {
+                "ticks": "inside",
+                "ticklen": 10,
+                "tickcolor": "white"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

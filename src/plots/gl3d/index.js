@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -45,11 +45,11 @@ exports.plot = function plotGl3d(gd) {
     var sceneIds = fullLayout._subplots[GL3D];
 
     for(var i = 0; i < sceneIds.length; i++) {
-        var sceneId = sceneIds[i],
-            fullSceneData = getSubplotData(fullData, GL3D, sceneId),
-            sceneLayout = fullLayout[sceneId],
-            camera = sceneLayout.camera,
-            scene = sceneLayout._scene;
+        var sceneId = sceneIds[i];
+        var fullSceneData = getSubplotData(fullData, GL3D, sceneId);
+        var sceneLayout = fullLayout[sceneId];
+        var camera = sceneLayout.camera;
+        var scene = sceneLayout._scene;
 
         if(!scene) {
             scene = new Scene({

@@ -19,8 +19,8 @@ describe('scatterternary defaults', function() {
 
     var traceIn, traceOut;
 
-    var defaultColor = '#444',
-        layout = {};
+    var defaultColor = '#444';
+    var layout = {};
 
     beforeEach(function() {
         traceOut = {};
