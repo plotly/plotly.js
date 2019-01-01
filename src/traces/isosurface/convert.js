@@ -49,8 +49,8 @@ proto.handlePick = function(selection) {
 };
 
 proto.update = function(data) {
-    var scene = this.scene,
-        layout = scene.fullSceneLayout;
+    var scene = this.scene;
+    var layout = scene.fullSceneLayout;
 
     this.data = generateIsosurfaceMesh(data);
 
@@ -118,7 +118,9 @@ function generateIsosurfaceMesh(data) {
     var height = data.y.length;
     var depth = data.z.length;
 
-    var i, j, k;
+    var i;
+    var j;
+    var k;
 
     function getIndex(i, j, k) {
         return i + width * j + width * height * k;
@@ -134,11 +136,11 @@ function generateIsosurfaceMesh(data) {
 
     var dims = [width, height, depth];
 
-    var num_vertices = 0;
+    var numVertices = 0;
 
-    for(var iso_id = 0; iso_id < data.isovalue.length; iso_id++) {
+    for(var layer = 0; layer < data.isovalue.length; layer++) {
 
-        var value = data.isovalue[iso_id];
+        var value = data.isovalue[layer];
 
         var fXYZs = [];
         var n = 0;
@@ -234,12 +236,12 @@ function generateIsosurfaceMesh(data) {
         var cells = isosurfaceMesh.cells;
         len = cells.length;
         for(q = 0; q < len; q++) {
-            data.i.push(cells[q][0] + num_vertices);
-            data.j.push(cells[q][1] + num_vertices);
-            data.k.push(cells[q][2] + num_vertices);
+            data.i.push(cells[q][0] + numVertices);
+            data.j.push(cells[q][1] + numVertices);
+            data.k.push(cells[q][2] + numVertices);
         }
 
-        num_vertices += positions.length;
+        numVertices += positions.length;
     }
 
 
@@ -251,16 +253,16 @@ function generateIsosurfaceMesh(data) {
             allVs.push(xyzv[g][3]);
 
             if(g === 0) {
-                data.i.push(num_vertices);
+                data.i.push(numVertices);
             }
             else if(g === 1) {
-                data.j.push(num_vertices);
+                data.j.push(numVertices);
             }
             else {
-                data.k.push(num_vertices);
+                data.k.push(numVertices);
             }
 
-            num_vertices++;
+            numVertices++;
         }
     }
 
@@ -307,16 +309,16 @@ function generateIsosurfaceMesh(data) {
         var vB = B[3];
         var vC = C[3];
 
-        var a_OK = inRange(vA);
-        var b_OK = inRange(vB);
-        var c_OK = inRange(vC);
+        var aOk = inRange(vA);
+        var bOk = inRange(vB);
+        var cOk = inRange(vC);
 
-        if(a_OK && b_OK && c_OK) {
+        if(aOk && bOk && cOk) {
             drawTri(xyzv);
             return;
         }
 
-        if(!a_OK && !b_OK && !c_OK) {
+        if(!aOk && !bOk && !cOk) {
             return;
         }
 
@@ -337,7 +339,7 @@ function generateIsosurfaceMesh(data) {
 
         var p1, p2;
 
-        if(a_OK && b_OK) {
+        if(aOk && bOk) {
             p1 = calcIntersection(C, A);
             p2 = calcIntersection(C, B);
 
@@ -346,7 +348,7 @@ function generateIsosurfaceMesh(data) {
             return;
         }
 
-        if(b_OK && c_OK) {
+        if(bOk && cOk) {
             p1 = calcIntersection(A, B);
             p2 = calcIntersection(A, C);
 
@@ -355,7 +357,7 @@ function generateIsosurfaceMesh(data) {
             return;
         }
 
-        if(c_OK && a_OK) {
+        if(cOk && aOk) {
             p1 = calcIntersection(B, C);
             p2 = calcIntersection(B, A);
 
@@ -364,7 +366,7 @@ function generateIsosurfaceMesh(data) {
             return;
         }
 
-        if(a_OK) {
+        if(aOk) {
             p1 = calcIntersection(B, A);
             p2 = calcIntersection(C, A);
 
@@ -372,7 +374,7 @@ function generateIsosurfaceMesh(data) {
             return;
         }
 
-        if(b_OK) {
+        if(bOk) {
             p1 = calcIntersection(C, B);
             p2 = calcIntersection(A, B);
 
@@ -380,7 +382,7 @@ function generateIsosurfaceMesh(data) {
             return;
         }
 
-        if(c_OK) {
+        if(cOk) {
             p1 = calcIntersection(A, C);
             p2 = calcIntersection(B, C);
 
