@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -92,7 +92,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
         }
     }
 
-    trace._extremes[ya._id] = Axes.findExtremes(ya, l.concat(h), {padded: true});
+    trace._extremes[ya._id] = Axes.findExtremes(ya, Lib.concat(l, h), {padded: true});
 
     if(cd.length) {
         cd[0].t = {
@@ -120,8 +120,8 @@ function convertTickWidth(gd, xa, trace) {
     var minDiff = trace._minDiff;
 
     if(!minDiff) {
-        var fullData = gd._fullData,
-            ohlcTracesOnThisXaxis = [];
+        var fullData = gd._fullData;
+        var ohlcTracesOnThisXaxis = [];
 
         minDiff = Infinity;
 

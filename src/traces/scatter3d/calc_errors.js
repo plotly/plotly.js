@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -21,8 +21,8 @@ function calculateAxisErrors(data, params, scaleFactor, axis) {
 
         if(axis.type === 'log') {
             var point = axis.c2l(data[i]);
-            var min = data[i] - errors[0],
-                max = data[i] + errors[1];
+            var min = data[i] - errors[0];
+            var max = data[i] + errors[1];
 
             result[i] = [
                 (axis.c2l(min, true) - point) * scaleFactor,

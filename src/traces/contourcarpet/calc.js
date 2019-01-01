@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86,11 +86,11 @@ function heatmappishCalc(gd, trace) {
     interp2d(z, trace._emptypoints);
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = Lib.maxRowLength(z),
-        xIn = trace.xtype === 'scaled' ? '' : a,
-        xArray = makeBoundArray(trace, xIn, a0, da, xlen, aax),
-        yIn = trace.ytype === 'scaled' ? '' : b,
-        yArray = makeBoundArray(trace, yIn, b0, db, z.length, bax);
+    var xlen = Lib.maxRowLength(z);
+    var xIn = trace.xtype === 'scaled' ? '' : a;
+    var xArray = makeBoundArray(trace, xIn, a0, da, xlen, aax);
+    var yIn = trace.ytype === 'scaled' ? '' : b;
+    var yArray = makeBoundArray(trace, yIn, b0, db, z.length, bax);
 
     var cd0 = {
         a: xArray,

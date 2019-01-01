@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68,17 +68,17 @@ manager.framework = function(_gd) {
 };
 
 manager.fillLayout = function(_gd) {
-    var container = d3.select(_gd).selectAll('.plot-container'),
-        paperDiv = container.selectAll('.svg-container'),
-        paper = _gd.framework && _gd.framework.svg && _gd.framework.svg(),
-        dflts = {
-            width: 800,
-            height: 600,
-            paper_bgcolor: Color.background,
-            _container: container,
-            _paperdiv: paperDiv,
-            _paper: paper
-        };
+    var container = d3.select(_gd).selectAll('.plot-container');
+    var paperDiv = container.selectAll('.svg-container');
+    var paper = _gd.framework && _gd.framework.svg && _gd.framework.svg();
+    var dflts = {
+        width: 800,
+        height: 600,
+        paper_bgcolor: Color.background,
+        _container: container,
+        _paperdiv: paperDiv,
+        _paper: paper
+    };
 
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };

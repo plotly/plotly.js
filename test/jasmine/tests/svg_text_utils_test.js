@@ -49,8 +49,8 @@ describe('svg+text utils', function() {
 
             if(!expectedAttrs) expectedAttrs = {};
 
-            var WHITE_LIST = ['xlink:href', 'xlink:show', 'style', 'target', 'onclick'],
-                attrs = listAttributes(a.node());
+            var WHITE_LIST = ['xlink:href', 'xlink:show', 'style', 'target', 'onclick'];
+            var attrs = listAttributes(a.node());
 
             // check that no other attribute are found in anchor,
             // which can be lead to XSS attacks.

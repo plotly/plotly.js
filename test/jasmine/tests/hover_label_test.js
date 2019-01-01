@@ -942,7 +942,6 @@ describe('hover info', function() {
     describe('histogram hover info', function() {
         it('shows the data range when bins have multiple values', function(done) {
             var gd = createGraphDiv();
-            var pts;
 
             Plotly.plot(gd, [{
                 x: [0, 2, 3, 4, 5, 6, 7],
@@ -954,23 +953,46 @@ describe('hover info', function() {
                 margin: {l: 0, t: 0, r: 0, b: 0}
             })
             .then(function() {
-                gd.on('plotly_hover', function(e) { pts = e.points; });
+                var pts = null;
+                gd.once('plotly_hover', function(e) { pts = e.points; });
 
                 _hoverNatural(gd, 250, 200);
-                assertHoverLabelContent({
-                    nums: '3',
-                    axis: '3 - 5'
-                });
-            })
-            .then(function() {
+                assertHoverLabelContent({nums: '3', axis: '3 - 5'});
+                if(pts === null) fail('no hover evt triggered');
                 expect(pts.length).toBe(1);
-                var pt = pts[0];
 
+                var pt = pts[0];
                 expect(pt.curveNumber).toBe(0);
                 expect(pt.binNumber).toBe(1);
                 expect(pt.pointNumbers).toEqual([2, 3, 4]);
                 expect(pt.x).toBe(4);
                 expect(pt.y).toBe(3);
+                expect(pt.data).toBe(gd.data[0]);
+                expect(pt.fullData).toBe(gd._fullData[0]);
+                expect(pt.xaxis).toBe(gd._fullLayout.xaxis);
+                expect(pt.yaxis).toBe(gd._fullLayout.yaxis);
+            })
+            .then(function() {
+                var pts = null;
+                gd.once('plotly_hover', function(e) { pts = e.points; });
+
+                _hoverNatural(gd, 250, 200);
+                expect(pts).toBe(null, 'should not emit hover event on same pt');
+            })
+            .then(function() {
+                var pts = null;
+                gd.once('plotly_hover', function(e) { pts = e.points; });
+
+                _hoverNatural(gd, 350, 200);
+                assertHoverLabelContent({nums: '2', axis: '6 - 8'});
+                expect(pts.length).toBe(1);
+
+                var pt = pts[0];
+                expect(pt.curveNumber).toBe(0);
+                expect(pt.binNumber).toBe(2);
+                expect(pt.pointNumbers).toEqual([5, 6]);
+                expect(pt.x).toBe(7);
+                expect(pt.y).toBe(2);
                 expect(pt.data).toBe(gd.data[0]);
                 expect(pt.fullData).toBe(gd._fullData[0]);
                 expect(pt.xaxis).toBe(gd._fullLayout.xaxis);
@@ -1243,14 +1265,14 @@ describe('hover info', function() {
 
     describe('hoverformat', function() {
         var data = [{
-                x: [1, 2, 3],
-                y: [0.12345, 0.23456, 0.34567]
-            }],
-            layout = {
-                yaxis: { showticklabels: true, hoverformat: ',.2r' },
-                width: 600,
-                height: 400
-            };
+            x: [1, 2, 3],
+            y: [0.12345, 0.23456, 0.34567]
+        }];
+        var layout = {
+            yaxis: { showticklabels: true, hoverformat: ',.2r' },
+            width: 600,
+            height: 400
+        };
 
         beforeEach(function() {
             this.gd = createGraphDiv();
@@ -1280,16 +1302,16 @@ describe('hover info', function() {
 
     describe('textmode', function() {
         var data = [{
-                x: [1, 2, 3, 4],
-                y: [2, 3, 4, 5],
-                mode: 'text',
-                hoverinfo: 'text',
-                text: ['test', null, 42, undefined]
-            }],
-            layout = {
-                width: 600,
-                height: 400
-            };
+            x: [1, 2, 3, 4],
+            y: [2, 3, 4, 5],
+            mode: 'text',
+            hoverinfo: 'text',
+            text: ['test', null, 42, undefined]
+        }];
+        var layout = {
+            width: 600,
+            height: 400
+        };
 
         beforeEach(function(done) {
             Plotly.plot(createGraphDiv(), data, layout).then(done);

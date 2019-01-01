@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -166,31 +166,31 @@ proto.updateLayers = function(ternaryLayout) {
     toplevel.order();
 };
 
-var w_over_h = Math.sqrt(4 / 3);
+var whRatio = Math.sqrt(4 / 3);
 
 proto.adjustLayout = function(ternaryLayout, graphSize) {
-    var _this = this,
-        domain = ternaryLayout.domain,
-        xDomainCenter = (domain.x[0] + domain.x[1]) / 2,
-        yDomainCenter = (domain.y[0] + domain.y[1]) / 2,
-        xDomain = domain.x[1] - domain.x[0],
-        yDomain = domain.y[1] - domain.y[0],
-        wmax = xDomain * graphSize.w,
-        hmax = yDomain * graphSize.h,
-        sum = ternaryLayout.sum,
-        amin = ternaryLayout.aaxis.min,
-        bmin = ternaryLayout.baxis.min,
-        cmin = ternaryLayout.caxis.min;
+    var _this = this;
+    var domain = ternaryLayout.domain;
+    var xDomainCenter = (domain.x[0] + domain.x[1]) / 2;
+    var yDomainCenter = (domain.y[0] + domain.y[1]) / 2;
+    var xDomain = domain.x[1] - domain.x[0];
+    var yDomain = domain.y[1] - domain.y[0];
+    var wmax = xDomain * graphSize.w;
+    var hmax = yDomain * graphSize.h;
+    var sum = ternaryLayout.sum;
+    var amin = ternaryLayout.aaxis.min;
+    var bmin = ternaryLayout.baxis.min;
+    var cmin = ternaryLayout.caxis.min;
 
     var x0, y0, w, h, xDomainFinal, yDomainFinal;
 
-    if(wmax > w_over_h * hmax) {
+    if(wmax > whRatio * hmax) {
         h = hmax;
-        w = h * w_over_h;
+        w = h * whRatio;
     }
     else {
         w = wmax;
-        h = w / w_over_h;
+        h = w / whRatio;
     }
 
     xDomainFinal = xDomain * w / wmax;
@@ -253,7 +253,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         // tickangle = 'auto' means 0 anyway for a y axis, need to coerce to 0 here
         // so we can shift by 30.
         tickangle: (+ternaryLayout.aaxis.tickangle || 0) - 30,
-        domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
+        domain: [yDomain0, yDomain0 + yDomainFinal * whRatio],
         anchor: 'free',
         position: 0,
         _id: 'y',
@@ -282,7 +282,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         range: [sum - amin - bmin, cmin],
         side: 'right',
         tickangle: (+ternaryLayout.caxis.tickangle || 0) + 30,
-        domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
+        domain: [yDomain0, yDomain0 + yDomainFinal * whRatio],
         anchor: 'free',
         position: 0,
         _id: 'y',
@@ -494,10 +494,10 @@ var STARTMARKER = 'm0.5,0.5h5v-2h-5v-5h-2v5h-5v2h5v5h2Z';
 var SHOWZOOMOUTTIP = true;
 
 proto.initInteractions = function() {
-    var _this = this,
-        dragger = _this.layers.plotbg.select('path').node(),
-        gd = _this.graphDiv,
-        zoomContainer = gd._fullLayout._zoomlayer;
+    var _this = this;
+    var dragger = _this.layers.plotbg.select('path').node();
+    var gd = _this.graphDiv;
+    var zoomContainer = gd._fullLayout._zoomlayer;
 
     // use plotbg for the main interactions
     var dragOptions = {
@@ -610,17 +610,17 @@ proto.initInteractions = function() {
     function getCFrac(x, y) { return ((x - (_this.h - y) / Math.sqrt(3)) / _this.w); }
 
     function zoomMove(dx0, dy0) {
-        var x1 = x0 + dx0,
-            y1 = y0 + dy0,
-            afrac = Math.max(0, Math.min(1, getAFrac(x0, y0), getAFrac(x1, y1))),
-            bfrac = Math.max(0, Math.min(1, getBFrac(x0, y0), getBFrac(x1, y1))),
-            cfrac = Math.max(0, Math.min(1, getCFrac(x0, y0), getCFrac(x1, y1))),
-            xLeft = ((afrac / 2) + cfrac) * _this.w,
-            xRight = (1 - (afrac / 2) - bfrac) * _this.w,
-            xCenter = (xLeft + xRight) / 2,
-            xSpan = xRight - xLeft,
-            yBottom = (1 - afrac) * _this.h,
-            yTop = yBottom - xSpan / w_over_h;
+        var x1 = x0 + dx0;
+        var y1 = y0 + dy0;
+        var afrac = Math.max(0, Math.min(1, getAFrac(x0, y0), getAFrac(x1, y1)));
+        var bfrac = Math.max(0, Math.min(1, getBFrac(x0, y0), getBFrac(x1, y1)));
+        var cfrac = Math.max(0, Math.min(1, getCFrac(x0, y0), getCFrac(x1, y1)));
+        var xLeft = ((afrac / 2) + cfrac) * _this.w;
+        var xRight = (1 - (afrac / 2) - bfrac) * _this.w;
+        var xCenter = (xLeft + xRight) / 2;
+        var xSpan = xRight - xLeft;
+        var yBottom = (1 - afrac) * _this.h;
+        var yTop = yBottom - xSpan / whRatio;
 
         if(xSpan < constants.MINZOOM) {
             mins = mins0;
@@ -677,19 +677,19 @@ proto.initInteractions = function() {
     }
 
     function plotDrag(dx, dy) {
-        var dxScaled = dx / _this.xaxis._m,
-            dyScaled = dy / _this.yaxis._m;
+        var dxScaled = dx / _this.xaxis._m;
+        var dyScaled = dy / _this.yaxis._m;
         mins = {
             a: mins0.a - dyScaled,
             b: mins0.b + (dxScaled + dyScaled) / 2,
             c: mins0.c - (dxScaled - dyScaled) / 2
         };
-        var minsorted = [mins.a, mins.b, mins.c].sort(),
-            minindices = {
-                a: minsorted.indexOf(mins.a),
-                b: minsorted.indexOf(mins.b),
-                c: minsorted.indexOf(mins.c)
-            };
+        var minsorted = [mins.a, mins.b, mins.c].sort();
+        var minindices = {
+            a: minsorted.indexOf(mins.a),
+            b: minsorted.indexOf(mins.b),
+            c: minsorted.indexOf(mins.c)
+        };
         if(minsorted[0] < 0) {
             if(minsorted[1] + minsorted[0] / 2 < 0) {
                 minsorted[2] += minsorted[0] + minsorted[1];

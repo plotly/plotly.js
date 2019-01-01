@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59,8 +59,8 @@ exports.extractPathCoords = function(path, paramsToUse) {
 };
 
 exports.getDataToPixel = function(gd, axis, isVertical) {
-    var gs = gd._fullLayout._size,
-        dataToPixel;
+    var gs = gd._fullLayout._size;
+    var dataToPixel;
 
     if(axis) {
         var d2r = exports.shapePositionToRange(axis);
@@ -82,8 +82,8 @@ exports.getDataToPixel = function(gd, axis, isVertical) {
 };
 
 exports.getPixelToData = function(gd, axis, isVertical) {
-    var gs = gd._fullLayout._size,
-        pixelToData;
+    var gs = gd._fullLayout._size;
+    var pixelToData;
 
     if(axis) {
         var r2d = exports.rangeToShapePosition(axis);

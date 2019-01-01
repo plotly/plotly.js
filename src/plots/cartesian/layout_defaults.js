@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -102,12 +102,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
     // TODO: bgcolor for each subplot, to inherit from the main one
-    var plot_bgcolor = Color.background;
+    var plotBgColor = Color.background;
     if(xIds.length && yIds.length) {
-        plot_bgcolor = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'plot_bgcolor');
+        plotBgColor = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'plot_bgcolor');
     }
 
-    var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
+    var bgColor = Color.combine(plotBgColor, layoutOut.paper_bgcolor);
 
     var axName, axLetter, axLayoutIn, axLayoutOut;
 
@@ -183,12 +183,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
-        var spikecolor = coerce2('spikecolor'),
-            spikethickness = coerce2('spikethickness'),
-            spikedash = coerce2('spikedash'),
-            spikemode = coerce2('spikemode'),
-            spikesnap = coerce2('spikesnap'),
-            showSpikes = coerce('showspikes', !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
+        var spikecolor = coerce2('spikecolor');
+        var spikethickness = coerce2('spikethickness');
+        var spikedash = coerce2('spikedash');
+        var spikemode = coerce2('spikemode');
+        var spikesnap = coerce2('spikesnap');
+        var showSpikes = coerce('showspikes', !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
 
         if(!showSpikes) {
             delete axLayoutOut.spikecolor;

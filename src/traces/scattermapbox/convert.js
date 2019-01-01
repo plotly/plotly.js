@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -109,8 +109,8 @@ module.exports = function convert(calcTrace) {
         }
 
         if(hasText) {
-            var iconSize = (trace.marker || {}).size,
-                textOpts = convertTextOpts(trace.textposition, iconSize);
+            var iconSize = (trace.marker || {}).size;
+            var textOpts = convertTextOpts(trace.textposition, iconSize);
 
             // all data-driven below !!
 
@@ -158,7 +158,7 @@ function makeCircleOpts(calcTrace) {
     if(arrayColor) {
         if(Colorscale.hasColorscale(trace, 'marker')) {
             colorFn = Colorscale.makeColorScaleFunc(
-                 Colorscale.extractScale(marker.colorscale, marker.cmin, marker.cmax)
+                 Colorscale.extractScale(marker, {cLetter: 'c'})
              );
         } else {
             colorFn = Lib.identity;
@@ -234,17 +234,17 @@ function makeCircleOpts(calcTrace) {
 function makeSymbolGeoJSON(calcTrace) {
     var trace = calcTrace[0].trace;
 
-    var marker = trace.marker || {},
-        symbol = marker.symbol,
-        text = trace.text;
+    var marker = trace.marker || {};
+    var symbol = marker.symbol;
+    var text = trace.text;
 
     var fillSymbol = (symbol !== 'circle') ?
-            getFillFunc(symbol) :
-            blankFillFunc;
+        getFillFunc(symbol) :
+        blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
-            getFillFunc(text) :
-            blankFillFunc;
+        getFillFunc(text) :
+        blankFillFunc;
 
     var features = [];
 

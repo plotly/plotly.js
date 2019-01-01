@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -79,7 +79,7 @@ function addProjectionsToD3(d3) {
       d3_geo_projectPoints.push([ x, y ]);
     },
     lineEnd: function() {
-      if (d3_geo_projectPoints.length) d3_geo_projectLines.push(d3_geo_projectPoints), 
+      if (d3_geo_projectPoints.length) d3_geo_projectLines.push(d3_geo_projectPoints),
       d3_geo_projectPoints = [];
     },
     result: function() {
@@ -206,7 +206,7 @@ function addProjectionsToD3(d3) {
     };
     var projection = d3.geo.projection(forward), stream_ = projection.stream;
     projection.stream = function(stream) {
-      var rotate = projection.rotate(), rotateStream = stream_(stream), sphereStream = (projection.rotate([ 0, 0 ]), 
+      var rotate = projection.rotate(), rotateStream = stream_(stream), sphereStream = (projection.rotate([ 0, 0 ]),
       stream_(stream));
       projection.rotate(rotate);
       rotateStream.sphere = function() {

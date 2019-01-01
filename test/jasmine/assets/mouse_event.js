@@ -33,8 +33,8 @@ module.exports = function(type, x, y, opts) {
         fullOpts.shiftKey = opts.shiftKey;
     }
 
-    var el = (opts && opts.element) || document.elementFromPoint(x, y),
-        ev;
+    var el = (opts && opts.element) || document.elementFromPoint(x, y);
+    var ev;
 
     if(type === 'scroll' || type === 'mousewheel') {
         // somehow table needs this to be mouswheel but others need wheel.

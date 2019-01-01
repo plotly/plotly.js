@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -18,21 +18,21 @@ var maxRowLength = require('../../lib').maxRowLength;
  * neighbors, and add a fractional neighborCount
  */
 module.exports = function findEmpties(z) {
-    var empties = [],
-        neighborHash = {},
-        noNeighborList = [],
-        nextRow = z[0],
-        row = [],
-        blank = [0, 0, 0],
-        rowLength = maxRowLength(z),
-        prevRow,
-        i,
-        j,
-        thisPt,
-        p,
-        neighborCount,
-        newNeighborHash,
-        foundNewNeighbors;
+    var empties = [];
+    var neighborHash = {};
+    var noNeighborList = [];
+    var nextRow = z[0];
+    var row = [];
+    var blank = [0, 0, 0];
+    var rowLength = maxRowLength(z);
+    var prevRow;
+    var i;
+    var j;
+    var thisPt;
+    var p;
+    var neighborCount;
+    var newNeighborHash;
+    var foundNewNeighbors;
 
     for(i = 0; i < z.length; i++) {
         prevRow = row;

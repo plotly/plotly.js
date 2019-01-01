@@ -111,9 +111,9 @@ function testExport(mockName, format, cb) {
         height: HEIGHT
     };
 
-    var requestOpts = getRequestOpts(specs),
-        imagePaths = getImagePaths(mockName, format),
-        saveImageStream = fs.createWriteStream(imagePaths.test);
+    var requestOpts = getRequestOpts(specs);
+    var imagePaths = getImagePaths(mockName, format);
+    var saveImageStream = fs.createWriteStream(imagePaths.test);
 
     function checkExport(err) {
         if(err) throw err;

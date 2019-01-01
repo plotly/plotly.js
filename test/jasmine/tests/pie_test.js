@@ -824,8 +824,8 @@ describe('pie hovering', function() {
     var mock = require('@mocks/pie_simple.json');
 
     describe('with hoverinfo set to none', function() {
-        var mockCopy = Lib.extendDeep({}, mock),
-            gd;
+        var mockCopy = Lib.extendDeep({}, mock);
+        var gd;
 
         mockCopy.data[0].hoverinfo = 'none';
 
@@ -839,8 +839,8 @@ describe('pie hovering', function() {
         afterEach(destroyGraphDiv);
 
         it('should fire hover event when moving from one slice to another', function(done) {
-            var count = 0,
-                hoverData = [];
+            var count = 0;
+            var hoverData = [];
 
             gd.on('plotly_hover', function(data) {
                 count++;
@@ -857,8 +857,8 @@ describe('pie hovering', function() {
         });
 
         it('should fire unhover event when the mouse moves off the graph', function(done) {
-            var count = 0,
-                unhoverData = [];
+            var count = 0;
+            var unhoverData = [];
 
             gd.on('plotly_unhover', function(data) {
                 count++;
@@ -878,10 +878,10 @@ describe('pie hovering', function() {
     });
 
     describe('event data', function() {
-        var mockCopy = Lib.extendDeep({}, mock),
-            width = mockCopy.layout.width,
-            height = mockCopy.layout.height,
-            gd;
+        var mockCopy = Lib.extendDeep({}, mock);
+        var width = mockCopy.layout.width;
+        var height = mockCopy.layout.height;
+        var gd;
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -893,10 +893,8 @@ describe('pie hovering', function() {
         afterEach(destroyGraphDiv);
 
         it('should contain the correct fields', function() {
-
-            var hoverData,
-                unhoverData;
-
+            var hoverData;
+            var unhoverData;
 
             gd.on('plotly_hover', function(data) {
                 hoverData = data;
@@ -927,8 +925,8 @@ describe('pie hovering', function() {
         });
 
         it('should fire hover event when moving from one slice to another', function(done) {
-            var count = 0,
-                hoverData = [];
+            var count = 0;
+            var hoverData = [];
 
             gd.on('plotly_hover', function(data) {
                 count++;
@@ -945,8 +943,8 @@ describe('pie hovering', function() {
         });
 
         it('should fire unhover event when the mouse moves off the graph', function(done) {
-            var count = 0,
-                unhoverData = [];
+            var count = 0;
+            var unhoverData = [];
 
             gd.on('plotly_unhover', function(data) {
                 count++;
@@ -1159,8 +1157,8 @@ describe('Test event data of interactions on a pie plot:', function() {
 
     var mockCopy, gd;
 
-    var blankPos = [10, 10],
-        pointPos;
+    var blankPos = [10, 10];
+    var pointPos;
 
     beforeAll(function(done) {
         gd = createGraphDiv();
@@ -1249,12 +1247,12 @@ describe('Test event data of interactions on a pie plot:', function() {
 
     describe('modified click events', function() {
         var clickOpts = {
-                altKey: true,
-                ctrlKey: true,
-                metaKey: true,
-                shiftKey: true
-            },
-            futureData;
+            altKey: true,
+            ctrlKey: true,
+            metaKey: true,
+            shiftKey: true
+        };
+        var futureData;
 
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
