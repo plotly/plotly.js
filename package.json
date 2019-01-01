@@ -48,7 +48,7 @@
     "version": "npm run build && git add -A dist src build",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
-    "postshrinkwrap": "node node_modules/chttps/chttps ."
+    "postshrinkwrap": "chttps ."
   },
   "browserify": {
     "transform": [
@@ -121,7 +121,7 @@
     "browserify": "^16.2.3",
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^3.2.0",
-    "chttps": "^1.0.4",
+    "chttps": "^1.0.5",
     "deep-equal": "^1.0.1",
     "derequire": "^2.0.6",
     "ecstatic": "^3.3.0",
