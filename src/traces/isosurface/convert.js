@@ -143,14 +143,19 @@ function generateIsosurfaceMesh(data) {
         var pnts = [];
         for(var g = 0; g < 3; g++) {
 
+            var x = xyzv[g][0];
+            var y = xyzv[g][1];
+            var z = xyzv[g][2];
+            var v = xyzv[g][3];
+
             var foundVertex = false;
-            for(var q = partBeginVertextLength; q < allVs.length - 1; q++) {
+            for(var f = partBeginVertextLength; f < allVs.length - 1; f++) {
                 if(
-                    xyzv[g][0] === allXs[q] &&
-                    xyzv[g][1] === allYs[q] &&
-                    xyzv[g][2] === allZs[q]
+                    x === allXs[f] &&
+                    y === allYs[f] &&
+                    z === allZs[f]
                 ) {
-                    pnts[g] = q;
+                    pnts[g] = f;
                     foundVertex = true;
                     break;
                 }
@@ -158,10 +163,11 @@ function generateIsosurfaceMesh(data) {
 
             if(!foundVertex) {
                 pnts[g] = numVertices;
-                allXs.push(xyzv[g][0]);
-                allYs.push(xyzv[g][1]);
-                allZs.push(xyzv[g][2]);
-                allVs.push(xyzv[g][3]);
+
+                allXs.push(x);
+                allYs.push(y);
+                allZs.push(z);
+                allVs.push(v);
                 numVertices++;
             }
         }
@@ -306,7 +312,7 @@ function generateIsosurfaceMesh(data) {
         var p00, p01, p10, p11;
 
         for(k = 0; k < depth; k += depth - 1) {
-            partBeginVertextLength = allVs.length;
+            partBeginVertextLength = numVertices;
 
             for(j = 1; j < height; j++) {
                 for(i = 1; i < width; i++) {
@@ -322,7 +328,7 @@ function generateIsosurfaceMesh(data) {
         }
 
         for(i = 0; i < width; i += width - 1) {
-            partBeginVertextLength = allVs.length;
+            partBeginVertextLength = numVertices;
 
             for(k = 1; k < depth; k++) {
                 for(j = 1; j < height; j++) {
@@ -338,7 +344,7 @@ function generateIsosurfaceMesh(data) {
         }
 
         for(j = 0; j < height; j += height - 1) {
-            partBeginVertextLength = allVs.length;
+            partBeginVertextLength = numVertices;
 
             for(i = 1; i < width; i++) {
                 for(k = 1; k < depth; k++) {
@@ -439,25 +445,26 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        // record positions & colors of iso surface
-        for(q = 0; q < len; q++) {
-            allXs.push(positions[q][0]);
-            allYs.push(positions[q][1]);
-            allZs.push(positions[q][2]);
+        partBeginVertextLength = numVertices;
+        len = isosurfaceMesh.cells.length;
+        for(var f = 0; f < len; f++) {
+            var xyzv = [];
 
-            allVs.push(value);
+            for(var g = 0; g < 3; g++) {
+                var p = isosurfaceMesh.cells[f][g];
+
+                xyzv.push(
+                    [
+                        positions[p][0],
+                        positions[p][1],
+                        positions[p][2],
+                        value
+                    ]
+                );
+            }
+
+            drawTri(xyzv);
         }
-
-        // record cells of iso surface
-        var cells = isosurfaceMesh.cells;
-        len = cells.length;
-        for(q = 0; q < len; q++) {
-            data.i.push(cells[q][0] + numVertices);
-            data.j.push(cells[q][1] + numVertices);
-            data.k.push(cells[q][2] + numVertices);
-        }
-
-        numVertices += positions.length;
     }
 
     data.x = allXs;
