@@ -137,133 +137,38 @@ function generateIsosurfaceMesh(data) {
     var dims = [width, height, depth];
 
     var numVertices = 0;
-
-    for(var layer = 0; layer < data.isovalue.length; layer++) {
-
-        var value = data.isovalue[layer];
-
-        var fXYZs = [];
-        var n = 0;
-        for(k = 0; k <= depth; k++) {
-            for(j = 0; j <= height; j++) {
-                for(i = 0; i <= width; i++) {
-                    fXYZs[n] = data.value[getIndex(i, j, k)] - value;
-                    n++;
-                }
-            }
-        }
-
-        var isosurfaceMesh = // Note: data array is passed without bounds to disable rescales
-            (data.meshalgo === 'SurfaceNets') ?
-                createIsosurface.surfaceNets(dims, fXYZs) :
-            (data.meshalgo === 'MarchingTetrahedra') ?
-                createIsosurface.marchingTetrahedra(dims, fXYZs) :
-                createIsosurface.marchingCubes(dims, fXYZs); // default: MarchingCube
-
-        var q, len;
-
-        var positions = isosurfaceMesh.positions;
-        len = positions.length;
-
-        var axis;
-
-        var starts = [
-            Xs[0],
-            Ys[0],
-            Zs[0]
-        ];
-
-        var ends = [
-            Xs[Xs.length - 1],
-            Ys[Ys.length - 1],
-            Zs[Zs.length - 1]
-        ];
-
-        // map pixel coordinates (0..n) to (real) world coordinates
-        for(axis = 0; axis < 3; axis++) {
-            for(q = 0; q < len; q++) {
-                positions[q][axis] = starts[axis] + (ends[axis] - starts[axis]) * positions[q][axis] / (dims[axis] - 1);
-            }
-        }
-
-        // handle non-uniform 3D space
-        for(axis = 0; axis < 3; axis++) {
-            var ref = (axis === 0) ? data.x : (axis === 1) ? data.y : data.z;
-
-            for(q = 0; q < len; q++) {
-                var here = positions[q][axis];
-
-                var minDist = Infinity;
-                var first = 0;
-                var second = 0;
-
-                var dist;
-                for(i = 0; i < dims[axis]; i++) {
-                    dist = Math.abs(here - ref[i]);
-
-                    if(dist < minDist) {
-                        minDist = dist;
-                        second = first;
-                        first = i;
-                    }
-                }
-
-                if(dist > 0 && first !== second) {
-
-                    var d0 = Math.abs(ref[first] - ref[second]);
-                    var d1 = Math.abs(here - ref[first]);
-                    var d2 = Math.abs(here - ref[second]);
-
-                    if(d1 + d2 > d0) { // extrapolation
-                        positions[q][axis] = (ref[first] * d2 - ref[second] * d1) / d0;
-                    } else { // interpolation
-                        positions[q][axis] = (ref[first] * d2 + ref[second] * d1) / d0;
-                    }
-                }
-            }
-        }
-
-        // record positions & colors of iso surface
-        for(q = 0; q < len; q++) {
-            allXs.push(positions[q][0]);
-            allYs.push(positions[q][1]);
-            allZs.push(positions[q][2]);
-
-            allVs.push(value);
-        }
-
-        // record cells of iso surface
-        var cells = isosurfaceMesh.cells;
-        len = cells.length;
-        for(q = 0; q < len; q++) {
-            data.i.push(cells[q][0] + numVertices);
-            data.j.push(cells[q][1] + numVertices);
-            data.k.push(cells[q][2] + numVertices);
-        }
-
-        numVertices += positions.length;
-    }
-
+    var partBeginVertextLength;
 
     function drawTri(xyzv) {
+        var pnts = [];
         for(var g = 0; g < 3; g++) {
-            allXs.push(xyzv[g][0]);
-            allYs.push(xyzv[g][1]);
-            allZs.push(xyzv[g][2]);
-            allVs.push(xyzv[g][3]);
 
-            if(g === 0) {
-                data.i.push(numVertices);
-            }
-            else if(g === 1) {
-                data.j.push(numVertices);
-            }
-            else {
-                data.k.push(numVertices);
+            var foundVertex = false;
+            for(var q = partBeginVertextLength; q < allVs.length - 1; q++) {
+                if(
+                    xyzv[g][0] === allXs[q] &&
+                    xyzv[g][1] === allYs[q] &&
+                    xyzv[g][2] === allZs[q]
+                ) {
+                    pnts[g] = q;
+                    foundVertex = true;
+                    break;
+                }
             }
 
-            numVertices++;
+            if(!foundVertex) {
+                pnts[g] = numVertices;
+                allXs.push(xyzv[g][0]);
+                allYs.push(xyzv[g][1]);
+                allZs.push(xyzv[g][2]);
+                allVs.push(xyzv[g][3]);
+                numVertices++;
+            }
         }
+
+        data.i.push(pnts[0]);
+        data.j.push(pnts[1]);
+        data.k.push(pnts[2]);
     }
 
     function tryCreateTri(a, b, c) {
@@ -399,10 +304,13 @@ function generateIsosurfaceMesh(data) {
     if(data.isocap && vDif > 0) {
 
         var p00, p01, p10, p11;
-        for(j = 1; j < height; j++) {
-            for(i = 1; i < width; i++) {
 
-                for(k = 0; k < depth; k += depth - 1) {
+        for(k = 0; k < depth; k += depth - 1) {
+            partBeginVertextLength = allVs.length;
+
+            for(j = 1; j < height; j++) {
+                for(i = 1; i < width; i++) {
+
                     p00 = getIndex(i - 1, j - 1, k);
                     p01 = getIndex(i - 1, j, k);
                     p10 = getIndex(i, j - 1, k);
@@ -413,10 +321,12 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        for(k = 1; k < depth; k++) {
-            for(j = 1; j < height; j++) {
+        for(i = 0; i < width; i += width - 1) {
+            partBeginVertextLength = allVs.length;
 
-                for(i = 0; i < width; i += width - 1) {
+            for(k = 1; k < depth; k++) {
+                for(j = 1; j < height; j++) {
+
                     p00 = getIndex(i, j - 1, k - 1);
                     p01 = getIndex(i, j - 1, k);
                     p10 = getIndex(i, j, k - 1);
@@ -427,10 +337,12 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        for(i = 1; i < width; i++) {
-            for(k = 1; k < depth; k++) {
+        for(j = 0; j < height; j += height - 1) {
+            partBeginVertextLength = allVs.length;
 
-                for(j = 0; j < height; j += height - 1) {
+            for(i = 1; i < width; i++) {
+                for(k = 1; k < depth; k++) {
+
                     p00 = getIndex(i - 1, j, k - 1);
                     p01 = getIndex(i, j, k - 1);
                     p10 = getIndex(i - 1, j, k);
@@ -440,6 +352,112 @@ function generateIsosurfaceMesh(data) {
                 }
             }
         }
+    }
+
+    for(var layer = 0; layer < data.isovalue.length; layer++) {
+
+        var value = data.isovalue[layer];
+
+        var fXYZs = [];
+        var n = 0;
+        for(k = 0; k <= depth; k++) {
+            for(j = 0; j <= height; j++) {
+                for(i = 0; i <= width; i++) {
+                    fXYZs[n] = data.value[getIndex(i, j, k)] - value;
+                    n++;
+                }
+            }
+        }
+
+        var isosurfaceMesh = // Note: data array is passed without bounds to disable rescales
+            (data.meshalgo === 'SurfaceNets') ?
+                createIsosurface.surfaceNets(dims, fXYZs) :
+            (data.meshalgo === 'MarchingTetrahedra') ?
+                createIsosurface.marchingTetrahedra(dims, fXYZs) :
+                createIsosurface.marchingCubes(dims, fXYZs); // default: MarchingCube
+
+        var q, len;
+
+        var positions = isosurfaceMesh.positions;
+        len = positions.length;
+
+        var axis;
+
+        var starts = [
+            Xs[0],
+            Ys[0],
+            Zs[0]
+        ];
+
+        var ends = [
+            Xs[Xs.length - 1],
+            Ys[Ys.length - 1],
+            Zs[Zs.length - 1]
+        ];
+
+        // map pixel coordinates (0..n) to (real) world coordinates
+        for(axis = 0; axis < 3; axis++) {
+            for(q = 0; q < len; q++) {
+                positions[q][axis] = starts[axis] + (ends[axis] - starts[axis]) * positions[q][axis] / (dims[axis] - 1);
+            }
+        }
+
+        // handle non-uniform 3D space
+        for(axis = 0; axis < 3; axis++) {
+            var ref = (axis === 0) ? data.x : (axis === 1) ? data.y : data.z;
+
+            for(q = 0; q < len; q++) {
+                var here = positions[q][axis];
+
+                var minDist = Infinity;
+                var first = 0;
+                var second = 0;
+
+                var dist;
+                for(i = 0; i < dims[axis]; i++) {
+                    dist = Math.abs(here - ref[i]);
+
+                    if(dist < minDist) {
+                        minDist = dist;
+                        second = first;
+                        first = i;
+                    }
+                }
+
+                if(dist > 0 && first !== second) {
+
+                    var d0 = Math.abs(ref[first] - ref[second]);
+                    var d1 = Math.abs(here - ref[first]);
+                    var d2 = Math.abs(here - ref[second]);
+
+                    if(d1 + d2 > d0) { // extrapolation
+                        positions[q][axis] = (ref[first] * d2 - ref[second] * d1) / d0;
+                    } else { // interpolation
+                        positions[q][axis] = (ref[first] * d2 + ref[second] * d1) / d0;
+                    }
+                }
+            }
+        }
+
+        // record positions & colors of iso surface
+        for(q = 0; q < len; q++) {
+            allXs.push(positions[q][0]);
+            allYs.push(positions[q][1]);
+            allZs.push(positions[q][2]);
+
+            allVs.push(value);
+        }
+
+        // record cells of iso surface
+        var cells = isosurfaceMesh.cells;
+        len = cells.length;
+        for(q = 0; q < len; q++) {
+            data.i.push(cells[q][0] + numVertices);
+            data.j.push(cells[q][1] + numVertices);
+            data.k.push(cells[q][2] + numVertices);
+        }
+
+        numVertices += positions.length;
     }
 
     data.x = allXs;
