@@ -62,5 +62,7 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
         cb.fillgradient(scl)
             .zrange([container[moduleOpts.min], container[moduleOpts.max]])
             .options(container.colorbar)();
+
+        return;
     }
 };
