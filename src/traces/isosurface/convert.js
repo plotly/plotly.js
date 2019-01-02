@@ -9,7 +9,7 @@
 
 'use strict';
 
-var createIsosurface = require('isosurface').marchingCubes;
+// var createIsosurface = require('isosurface').marchingCubes;
 var createMesh = require('gl-mesh3d');
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
@@ -134,8 +134,6 @@ function generateIsosurfaceMesh(data) {
     var vMax = Math.max.apply(null, data.isovalue);
     var vDif = vMax - vMin;
 
-    var dims = [width, height, depth];
-
     var numVertices = 0;
     var beginVertextLength;
 
@@ -172,7 +170,7 @@ function generateIsosurfaceMesh(data) {
         data.k.push(c);
     }
 
-    function drawTri(xyzv) {
+    function drawTri(debug, xyzv) {
         var pnts = [];
         for(var g = 0; g < 3; g++) {
 
@@ -185,14 +183,18 @@ function generateIsosurfaceMesh(data) {
             if(id > -1) {
                 pnts[g] = id;
             } else {
-                pnts[g] = addVertex(x, y, z, v);
+                if(debug === undefined) {
+                    pnts[g] = addVertex(x, y, z, v);
+                } else {
+                    pnts[g] = addVertex(x, y, z, debug);
+                }
             }
         }
 
         addFace(pnts[0], pnts[1], pnts[2]);
     }
 
-    function tryCreateTri(a, b, c) {
+    function tryCreateTri(a, b, c, debug) {
         var indecies = [a, b, c];
         var xyzv = [];
 
@@ -240,7 +242,7 @@ function generateIsosurfaceMesh(data) {
         var cOk = inRange(vC);
 
         if(aOk && bOk && cOk) {
-            drawTri(xyzv);
+            drawTri(debug, xyzv);
             return;
         }
 
@@ -269,8 +271,8 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(C, A);
             p2 = calcIntersection(C, B);
 
-            drawTri([A, B, p2]);
-            drawTri([p2, p1, A]);
+            drawTri(debug, [A, B, p2]);
+            drawTri(debug, [p2, p1, A]);
             return;
         }
 
@@ -278,8 +280,8 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(A, B);
             p2 = calcIntersection(A, C);
 
-            drawTri([B, C, p2]);
-            drawTri([p2, p1, B]);
+            drawTri(debug, [B, C, p2]);
+            drawTri(debug, [p2, p1, B]);
             return;
         }
 
@@ -287,8 +289,8 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(B, C);
             p2 = calcIntersection(B, A);
 
-            drawTri([C, A, p2]);
-            drawTri([p2, p1, C]);
+            drawTri(debug, [C, A, p2]);
+            drawTri(debug, [p2, p1, C]);
             return;
         }
 
@@ -296,7 +298,7 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(B, A);
             p2 = calcIntersection(C, A);
 
-            drawTri([A, p1, p2]);
+            drawTri(debug, [A, p1, p2]);
             return;
         }
 
@@ -304,7 +306,7 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(C, B);
             p2 = calcIntersection(A, B);
 
-            drawTri([B, p1, p2]);
+            drawTri(debug, [B, p1, p2]);
             return;
         }
 
@@ -312,21 +314,25 @@ function generateIsosurfaceMesh(data) {
             p1 = calcIntersection(A, C);
             p2 = calcIntersection(B, C);
 
-            drawTri([C, p1, p2]);
+            drawTri(debug, [C, p1, p2]);
             return;
         }
     }
-
+/*
     function addRect(a, b, c, d) {
         tryCreateTri(a, b, c);
         tryCreateTri(c, d, a);
     }
+*/
 
     if(data.isocap && vDif > 0) {
+/*
+        var dims = [width, height, depth];
 
         var p00, p01, p10, p11;
 
-        for(k = 0; k < depth; k += depth - 1) {
+        //for(k = 0; k < depth; k += depth - 1) {
+        for(k = 0; k < depth; k++) {
             beginSection();
 
             for(j = 1; j < height; j++) {
@@ -342,7 +348,8 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        for(i = 0; i < width; i += width - 1) {
+        //for(i = 0; i < width; i += width - 1) {
+        for(i = 0; i < width; i++) {
             beginSection();
 
             for(k = 1; k < depth; k++) {
@@ -358,7 +365,8 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        for(j = 0; j < height; j += height - 1) {
+        //for(j = 0; j < height; j += height - 1) {
+        for(j = 0; j < height; j++) {
             beginSection();
 
             for(i = 1; i < width; i++) {
@@ -373,6 +381,50 @@ function generateIsosurfaceMesh(data) {
                 }
             }
         }
+*/
+
+        var debug = 0.5 * data.isovalue[0] + 0.5 * data.isovalue[data.isovalue.length - 1];
+        var debugX = undefined; // 0.1 * data.isovalue[0] + 0.9 * data.isovalue[data.isovalue.length - 1];
+        var debugY = undefined; // 0.2 * data.isovalue[0] + 0.8 * data.isovalue[data.isovalue.length - 1];
+        var debugZ = undefined; // 0.3 * data.isovalue[0] + 0.7 * data.isovalue[data.isovalue.length - 1];
+
+        for(k = 1; k < depth; k++) {
+            for(j = 1; j < height; j++) {
+                for(i = 1; i < width; i++) {
+
+                    var p000 = getIndex(i - 0, j - 0, k - 0);
+                    var p001 = getIndex(i - 0, j - 0, k - 1);
+                    var p010 = getIndex(i - 0, j - 1, k - 0);
+                    var p011 = getIndex(i - 0, j - 1, k - 1);
+                    var p100 = getIndex(i - 1, j - 0, k - 0);
+                    var p101 = getIndex(i - 1, j - 0, k - 1);
+                    var p110 = getIndex(i - 1, j - 1, k - 0);
+                    var p111 = getIndex(i - 1, j - 1, k - 1);
+
+                    beginSection(); tryCreateTri(p000, p001, p010, debugX);
+                    beginSection(); tryCreateTri(p000, p100, p001, debugY);
+                    beginSection(); tryCreateTri(p000, p010, p100, debugZ);
+                    beginSection(); tryCreateTri(p001, p010, p100, debug);
+
+                    beginSection(); tryCreateTri(p011, p001, p010, debugX);
+                    beginSection(); tryCreateTri(p011, p010, p111, debugY);
+                    beginSection(); tryCreateTri(p011, p111, p001, debugZ);
+                    beginSection(); tryCreateTri(p001, p010, p111, debug);
+
+                    beginSection(); tryCreateTri(p101, p100, p111, debugX);
+                    beginSection(); tryCreateTri(p101, p001, p100, debugY);
+                    beginSection(); tryCreateTri(p101, p111, p001, debugZ);
+                    beginSection(); tryCreateTri(p001, p100, p111, debug);
+
+                    beginSection(); tryCreateTri(p110, p100, p111, debugX);
+                    beginSection(); tryCreateTri(p110, p111, p010, debugY);
+                    beginSection(); tryCreateTri(p110, p010, p100, debugZ);
+                    beginSection(); tryCreateTri(p010, p100, p111, debug);
+
+                }
+            }
+        }
+
     }
 
     for(var layer = 0; layer < data.isovalue.length; layer++) {
@@ -389,7 +441,7 @@ function generateIsosurfaceMesh(data) {
                 }
             }
         }
-
+/*
         var isosurfaceMesh = createIsosurface(dims, fXYZs); // Note: data array is passed without bounds to disable rescales
 
         var q, len;
@@ -473,8 +525,9 @@ function generateIsosurfaceMesh(data) {
                 );
             }
 
-            drawTri(xyzv);
+            drawTri(debug, xyzv);
         }
+*/
     }
 
     data.x = allXs;
