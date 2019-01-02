@@ -137,7 +137,40 @@ function generateIsosurfaceMesh(data) {
     var dims = [width, height, depth];
 
     var numVertices = 0;
-    var partBeginVertextLength;
+    var beginVertextLength;
+
+    function beginSection() {
+        beginVertextLength = numVertices;
+    }
+
+    function getVertexId(x, y, z) {
+        for(var f = beginVertextLength; f < allVs.length - 1; f++) {
+            if(
+                x === allXs[f] &&
+                y === allYs[f] &&
+                z === allZs[f]
+            ) {
+                return f;
+            }
+        }
+        return -1;
+    }
+
+    function addVertex(x, y, z, v) {
+        allXs.push(x);
+        allYs.push(y);
+        allZs.push(z);
+        allVs.push(v);
+        numVertices++;
+
+        return numVertices - 1;
+    }
+
+    function addFace(a, b, c) {
+        data.i.push(a);
+        data.j.push(b);
+        data.k.push(c);
+    }
 
     function drawTri(xyzv) {
         var pnts = [];
@@ -148,33 +181,15 @@ function generateIsosurfaceMesh(data) {
             var z = xyzv[g][2];
             var v = xyzv[g][3];
 
-            var foundVertex = false;
-            for(var f = partBeginVertextLength; f < allVs.length - 1; f++) {
-                if(
-                    x === allXs[f] &&
-                    y === allYs[f] &&
-                    z === allZs[f]
-                ) {
-                    pnts[g] = f;
-                    foundVertex = true;
-                    break;
-                }
-            }
-
-            if(!foundVertex) {
-                pnts[g] = numVertices;
-
-                allXs.push(x);
-                allYs.push(y);
-                allZs.push(z);
-                allVs.push(v);
-                numVertices++;
+            var id = getVertexId(x, y, z);
+            if(id > -1) {
+                pnts[g] = id;
+            } else {
+                pnts[g] = addVertex(x, y, z, v);
             }
         }
 
-        data.i.push(pnts[0]);
-        data.j.push(pnts[1]);
-        data.k.push(pnts[2]);
+        addFace(pnts[0], pnts[1], pnts[2]);
     }
 
     function tryCreateTri(a, b, c) {
@@ -312,7 +327,7 @@ function generateIsosurfaceMesh(data) {
         var p00, p01, p10, p11;
 
         for(k = 0; k < depth; k += depth - 1) {
-            partBeginVertextLength = numVertices;
+            beginSection();
 
             for(j = 1; j < height; j++) {
                 for(i = 1; i < width; i++) {
@@ -328,7 +343,7 @@ function generateIsosurfaceMesh(data) {
         }
 
         for(i = 0; i < width; i += width - 1) {
-            partBeginVertextLength = numVertices;
+            beginSection();
 
             for(k = 1; k < depth; k++) {
                 for(j = 1; j < height; j++) {
@@ -344,7 +359,7 @@ function generateIsosurfaceMesh(data) {
         }
 
         for(j = 0; j < height; j += height - 1) {
-            partBeginVertextLength = numVertices;
+            beginSection();
 
             for(i = 1; i < width; i++) {
                 for(k = 1; k < depth; k++) {
@@ -440,7 +455,7 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        partBeginVertextLength = numVertices;
+        beginSection();
         len = isosurfaceMesh.cells.length;
         for(var f = 0; f < len; f++) {
             var xyzv = [];
