@@ -31,9 +31,6 @@ var lineAttrs = extendFlat({
         description: 'Sets the dash style of the lines.'
     }
 }, colorAttributes('line'));
-// not yet implemented
-delete lineAttrs.showscale;
-delete lineAttrs.colorbar;
 
 function makeProjectionAttr(axLetter) {
     return {

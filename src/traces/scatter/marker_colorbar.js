@@ -10,7 +10,7 @@
 'use strict';
 
 module.exports = {
-    container: 'marker',
+    container: 'marker | line',
     min: 'cmin',
     max: 'cmax'
 };

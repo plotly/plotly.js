@@ -41,19 +41,24 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
 
     var trace = cd[0].trace;
     var cbId = 'cb' + trace.uid;
-    var containerName = moduleOpts.container;
-    var container = containerName ? trace[containerName] : trace;
+    var containerNames = moduleOpts.container.split(' | ');
 
-    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
-    if(!container || !container.showscale) return;
+    for(var i = 0; i < containerNames.length; i++) {
+        var containerName = containerNames[i];
 
-    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+        var container = containerName ? trace[containerName] : trace;
 
-    var scl = container.reversescale ?
-        flipScale(container.colorscale) :
-        container.colorscale;
+        gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+        if(!container || !container.showscale) continue;
 
-    cb.fillgradient(scl)
-        .zrange([container[moduleOpts.min], container[moduleOpts.max]])
-        .options(container.colorbar)();
+        var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+
+        var scl = container.reversescale ?
+            flipScale(container.colorscale) :
+            container.colorscale;
+
+        cb.fillgradient(scl)
+            .zrange([container[moduleOpts.min], container[moduleOpts.max]])
+            .options(container.colorbar)();
+    }
 };
