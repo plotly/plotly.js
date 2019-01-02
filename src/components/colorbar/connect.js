@@ -41,7 +41,9 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
 
     var trace = cd[0].trace;
     var cbId = 'cb' + trace.uid;
-    var containerNames = moduleOpts.container.split(' | ');
+    var containerNames = (moduleOpts.container) ?
+        moduleOpts.container.split(' | ') :
+        [moduleOpts.container];
 
     for(var i = 0; i < containerNames.length; i++) {
         var containerName = containerNames[i];
