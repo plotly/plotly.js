@@ -9,7 +9,7 @@
 
 'use strict';
 
-var createIsosurface = require('isosurface');
+var createIsosurface = require('isosurface').marchingCubes;
 var createMesh = require('gl-mesh3d');
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
@@ -375,12 +375,7 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        var isosurfaceMesh = // Note: data array is passed without bounds to disable rescales
-            (data.meshalgo === 'SurfaceNets') ?
-                createIsosurface.surfaceNets(dims, fXYZs) :
-            (data.meshalgo === 'MarchingTetrahedra') ?
-                createIsosurface.marchingTetrahedra(dims, fXYZs) :
-                createIsosurface.marchingCubes(dims, fXYZs); // default: MarchingCube
+        var isosurfaceMesh = createIsosurface(dims, fXYZs); // Note: data array is passed without bounds to disable rescales
 
         var q, len;
 

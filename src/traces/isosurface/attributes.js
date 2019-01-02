@@ -67,17 +67,6 @@ module.exports = extendFlat({
             'Sets iso surface boundaries.'
         ].join(' ')
     },
-    meshalgo: {
-        valType: 'string',
-        role: 'info',
-        dflt: 'MarchingCubes',
-        editType: 'calc',
-        description: [
-            'Sets the isosurface polygonizer algorithm:',
-            'including: `MarchingCubes` (i.e. default),',
-            '`MarchingTetrahedra` or `SurfaceNets`.'
-        ].join(' ')
-    },
 
     text: {
         valType: 'string',

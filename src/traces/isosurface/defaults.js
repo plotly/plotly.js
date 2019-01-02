@@ -42,7 +42,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Coerce remaining properties
     [
         'isocap',
-        'meshalgo',
         'text',
         'lighting.ambient',
         'lighting.diffuse',
