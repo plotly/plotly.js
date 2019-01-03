@@ -194,6 +194,16 @@ function generateIsosurfaceMesh(data) {
         addFace(pnts[0], pnts[1], pnts[2]);
     }
 
+    function drawTetra(debug, xyzv) {
+
+        beginSection(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+        drawTri(debug, [xyzv[0], xyzv[1], xyzv[2]]);
+        drawTri(debug, [xyzv[0], xyzv[1], xyzv[3]]);
+        drawTri(debug, [xyzv[0], xyzv[2], xyzv[3]]);
+        drawTri(debug, [xyzv[1], xyzv[2], xyzv[3]]);
+    }
+
     function calcIntersection(dst, src) {
         var result = [dst[0], dst[1], dst[2], dst[3]];
 
@@ -209,14 +219,26 @@ function generateIsosurfaceMesh(data) {
         return result;
     }
 
+    function inRange(value) {
+
+        if(vMin <= value && value <= vMax) return true;
+
+        var dA = Math.abs(value - vMin);
+        var dB = Math.abs(value - vMax);
+        var closeness = Math.min(dA, dB) / vDif;
+
+        // tolerate certain error i.e. based on distances ...
+        if(closeness < 0.001) return true;
+
+        return false;
+    }
+
     function tryCreateTetra(a, b, c, d, debug) {
 
-        beginSection(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-        var indecies = [a, b, c];
+        var indecies = [a, b, c, d];
         var xyzv = [];
 
-        for(var g = 0; g < 3; g++) {
+        for(var g = 0; g < 4; g++) {
             var index = indecies[g];
 
             var k = Math.floor(index / (width * height));
@@ -233,100 +255,53 @@ function generateIsosurfaceMesh(data) {
             );
         }
 
-        function inRange(value) {
+        var ok = [
+            inRange(xyzv[0][3]),
+            inRange(xyzv[1][3]),
+            inRange(xyzv[2][3]),
+            inRange(xyzv[3][3])
+        ];
 
-            if(vMin <= value && value <= vMax) return true;
-
-            var PA = Math.abs(value - vMin);
-            var PB = Math.abs(value - vMax);
-            var closeness = Math.min(PA, PB) / vDif;
-
-            // tolerate certain error i.e. based on distances ...
-            if(closeness < 0.001) return true;
-
-            return false;
-        }
-
-        var A = xyzv[0];
-        var B = xyzv[1];
-        var C = xyzv[2];
-
-        var vA = A[3];
-        var vB = B[3];
-        var vC = C[3];
-
-        var aOk = inRange(vA);
-        var bOk = inRange(vB);
-        var cOk = inRange(vC);
-
-        if(aOk && bOk && cOk) {
-            drawTri(debug, xyzv);
+        if(ok[0] && ok[1] && ok[2] && ok[3]) {
+            drawTetra(debug, xyzv);
             return;
         }
 
-        if(!aOk && !bOk && !cOk) {
+        if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
             return;
         }
 
-        var p1, p2;
+        var p1, p2, p3;
 
-        if(aOk && bOk) {
-            p1 = calcIntersection(C, A);
-            p2 = calcIntersection(C, B);
+        [[0, 1, 2], [1, 2, 0], [2, 0, 1]].forEach(function(e) {
+            if(ok[e[0]] && ok[e[1]]) {
+                var A = xyzv[e[0]];
+                var B = xyzv[e[1]];
+                var C = xyzv[e[2]];
 
-            drawTri(debug, [A, B, p2]);
-            drawTri(debug, [p2, p1, A]);
-            return;
-        }
+                p1 = calcIntersection(C, A);
+                p2 = calcIntersection(C, B);
 
-        if(bOk && cOk) {
-            p1 = calcIntersection(A, B);
-            p2 = calcIntersection(A, C);
+                drawTri(debug, [A, B, p2]);
+                drawTri(debug, [p2, p1, A]);
+                return;
+            }
+        });
 
-            drawTri(debug, [B, C, p2]);
-            drawTri(debug, [p2, p1, B]);
-            return;
-        }
+        [[0, 1, 2], [1, 2, 0], [2, 0, 1]].forEach(function(e) {
+            if(ok[e[0]]) {
+                var A = xyzv[e[0]];
+                var B = xyzv[e[1]];
+                var C = xyzv[e[2]];
 
-        if(cOk && aOk) {
-            p1 = calcIntersection(B, C);
-            p2 = calcIntersection(B, A);
+                p1 = calcIntersection(B, A);
+                p2 = calcIntersection(C, A);
 
-            drawTri(debug, [C, A, p2]);
-            drawTri(debug, [p2, p1, C]);
-            return;
-        }
-
-        if(aOk) {
-            p1 = calcIntersection(B, A);
-            p2 = calcIntersection(C, A);
-
-            drawTri(debug, [A, p1, p2]);
-            return;
-        }
-
-        if(bOk) {
-            p1 = calcIntersection(C, B);
-            p2 = calcIntersection(A, B);
-
-            drawTri(debug, [B, p1, p2]);
-            return;
-        }
-
-        if(cOk) {
-            p1 = calcIntersection(A, C);
-            p2 = calcIntersection(B, C);
-
-            drawTri(debug, [C, p1, p2]);
-            return;
-        }
+                drawTri(debug, [A, p1, p2]);
+                return;
+            }
+        });
     }
-/*
-    function addRect(a, b, c, d) {
-        tryCreateTri(a, b, c);
-        tryCreateTri(c, d, a);
-    }
-*/
 
     function addCube(p000, p001, p010, p011, p100, p101, p110, p111) {
         tryCreateTetra(p000, p001, p010, p100);
@@ -336,81 +311,22 @@ function generateIsosurfaceMesh(data) {
     }
 
     if(data.isocap && vDif > 0) {
-/*
-        var dims = [width, height, depth];
-
-        var p00, p01, p10, p11;
-
-        //for(k = 0; k < depth; k += depth - 1) {
-        for(k = 0; k < depth; k++) {
-            beginSection();
-
-            for(j = 1; j < height; j++) {
-                for(i = 1; i < width; i++) {
-
-                    p00 = getIndex(i - 1, j - 1, k);
-                    p01 = getIndex(i - 1, j, k);
-                    p10 = getIndex(i, j - 1, k);
-                    p11 = getIndex(i, j, k);
-
-                    addRect(p00, p01, p11, p10);
-                }
-            }
-        }
-
-        //for(i = 0; i < width; i += width - 1) {
-        for(i = 0; i < width; i++) {
-            beginSection();
-
-            for(k = 1; k < depth; k++) {
-                for(j = 1; j < height; j++) {
-
-                    p00 = getIndex(i, j - 1, k - 1);
-                    p01 = getIndex(i, j - 1, k);
-                    p10 = getIndex(i, j, k - 1);
-                    p11 = getIndex(i, j, k);
-
-                    addRect(p00, p01, p11, p10);
-                }
-            }
-        }
-
-        //for(j = 0; j < height; j += height - 1) {
-        for(j = 0; j < height; j++) {
-            beginSection();
-
-            for(i = 1; i < width; i++) {
-                for(k = 1; k < depth; k++) {
-
-                    p00 = getIndex(i - 1, j, k - 1);
-                    p01 = getIndex(i, j, k - 1);
-                    p10 = getIndex(i - 1, j, k);
-                    p11 = getIndex(i, j, k);
-
-                    addRect(p00, p01, p11, p10);
-                }
-            }
-        }
-*/
-
         for(k = 1; k < depth; k++) {
             for(j = 1; j < height; j++) {
                 for(i = 1; i < width; i++) {
-
-                    var p000 = getIndex(i - 0, j - 0, k - 0);
-                    var p001 = getIndex(i - 0, j - 0, k - 1);
-                    var p010 = getIndex(i - 0, j - 1, k - 0);
-                    var p011 = getIndex(i - 0, j - 1, k - 1);
-                    var p100 = getIndex(i - 1, j - 0, k - 0);
-                    var p101 = getIndex(i - 1, j - 0, k - 1);
-                    var p110 = getIndex(i - 1, j - 1, k - 0);
-                    var p111 = getIndex(i - 1, j - 1, k - 1);
-
-                    addCube(p000, p001, p010, p011, p100, p101, p110, p111);
+                    addCube(
+                        getIndex(i - 1, j - 1, k - 1),
+                        getIndex(i - 1, j - 1, k ),
+                        getIndex(i - 1, j , k - 1),
+                        getIndex(i - 1, j , k ),
+                        getIndex(i , j - 1, k - 1),
+                        getIndex(i , j - 1, k ),
+                        getIndex(i , j , k - 1),
+                        getIndex(i , j , k )
+                    );
                 }
             }
         }
-
     }
 
     for(var layer = 0; layer < data.isovalue.length; layer++) {
@@ -427,93 +343,6 @@ function generateIsosurfaceMesh(data) {
                 }
             }
         }
-/*
-        var isosurfaceMesh = createIsosurface(dims, fXYZs); // Note: data array is passed without bounds to disable rescales
-
-        var q, len;
-
-        var positions = isosurfaceMesh.positions;
-        len = positions.length;
-
-        var axis;
-
-        var starts = [
-            Xs[0],
-            Ys[0],
-            Zs[0]
-        ];
-
-        var ends = [
-            Xs[Xs.length - 1],
-            Ys[Ys.length - 1],
-            Zs[Zs.length - 1]
-        ];
-
-        // map pixel coordinates (0..n) to (real) world coordinates
-        for(axis = 0; axis < 3; axis++) {
-            for(q = 0; q < len; q++) {
-                positions[q][axis] = starts[axis] + (ends[axis] - starts[axis]) * positions[q][axis] / (dims[axis] - 1);
-            }
-        }
-
-        // handle non-uniform 3D space
-        for(axis = 0; axis < 3; axis++) {
-            var ref = (axis === 0) ? data.x : (axis === 1) ? data.y : data.z;
-
-            for(q = 0; q < len; q++) {
-                var here = positions[q][axis];
-
-                var minDist = Infinity;
-                var first = 0;
-                var second = 0;
-
-                var dist;
-                for(i = 0; i < dims[axis]; i++) {
-                    dist = Math.abs(here - ref[i]);
-
-                    if(dist < minDist) {
-                        minDist = dist;
-                        second = first;
-                        first = i;
-                    }
-                }
-
-                if(dist > 0 && first !== second) {
-
-                    var d0 = Math.abs(ref[first] - ref[second]);
-                    var d1 = Math.abs(here - ref[first]);
-                    var d2 = Math.abs(here - ref[second]);
-
-                    if(d1 + d2 > d0) { // extrapolation
-                        positions[q][axis] = (ref[first] * d2 - ref[second] * d1) / d0;
-                    } else { // interpolation
-                        positions[q][axis] = (ref[first] * d2 + ref[second] * d1) / d0;
-                    }
-                }
-            }
-        }
-
-        beginSection();
-        len = isosurfaceMesh.cells.length;
-        for(var f = 0; f < len; f++) {
-            var xyzv = [];
-
-            for(var g = 0; g < 3; g++) {
-                var p = isosurfaceMesh.cells[f][g];
-
-                xyzv.push(
-                    [
-                        positions[p][0],
-                        positions[p][1],
-                        positions[p][2],
-                        value
-                    ]
-                );
-            }
-
-            drawTri(debug, xyzv);
-        }
-*/
     }
 
     data.x = allXs;
