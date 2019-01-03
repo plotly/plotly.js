@@ -1930,4 +1930,78 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl mapbox subplots should preserve viewport changes after panning', function(done) {
+        Plotly.setPlotConfig({
+            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+        });
+
+        function _react() {
+            return Plotly.react(gd, [{
+                type: 'scattermapbox',
+                lon: [3, 1, 2],
+                lat: [2, 3, 1]
+            }], {
+                width: 500,
+                height: 500,
+                uirevision: true
+            });
+        }
+
+        // see mapbox_test.js for rationale
+        function _mouseEvent(type, pos) {
+            return new Promise(function(resolve) {
+                mouseEvent(type, pos[0], pos[1]);
+                setTimeout(resolve, 100);
+            });
+        }
+
+        // see mapbox_test.js for rationale
+        function _drag(p0, p1) {
+            return _mouseEvent('mousemove', p0)
+                .then(function() { return _mouseEvent('mousedown', p0); })
+                .then(function() { return _mouseEvent('mousemove', p1); })
+                .then(function() { return _mouseEvent('mousemove', p1); })
+                .then(function() { return _mouseEvent('mouseup', p1); })
+                .then(function() { return _mouseEvent('mouseup', p1); });
+        }
+
+        // should be same before & after 2nd react()
+        function _assertGUI(msg) {
+            var TOL = 2;
+
+            var mapbox = gd.layout.mapbox || {};
+            expect((mapbox.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
+            expect((mapbox.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
+            expect(mapbox.zoom).toBe(1);
+
+            var fullMapbox = gd._fullLayout.mapbox || {};
+            expect(fullMapbox.center.lon).toBeCloseTo(-17.578, TOL, msg);
+            expect(fullMapbox.center.lat).toBeCloseTo(17.308, TOL, msg);
+            expect(fullMapbox.zoom).toBe(1);
+
+            var preGUI = gd._fullLayout._preGUI;
+            expect(preGUI['mapbox.center.lon']).toBe(null, msg);
+            expect(preGUI['mapbox.center.lat']).toBe(null, msg);
+            expect(preGUI['mapbox.zoom']).toBe(null, msg);
+        }
+
+        _react()
+        .then(function() {
+            expect(gd.layout.mapbox).toEqual({});
+
+            var fullMapbox = gd._fullLayout.mapbox;
+            expect(fullMapbox.center.lon).toBe(0);
+            expect(fullMapbox.center.lat).toBe(0);
+            expect(fullMapbox.zoom).toBe(1);
+
+            expect(gd._fullLayout._preGUI).toEqual({});
+        })
+        .then(function() { return _drag([200, 200], [250, 250]); })
+        .then(function() { _assertGUI('before'); })
+        .then(_react)
+        .then(function() { _assertGUI('after'); })
+        .catch(failTest)
+        .then(done);
+    });
 });
