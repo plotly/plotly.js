@@ -38,18 +38,34 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
-    var numVertices = coords[0].length;
 
-    var indices = readComponents(['i', 'j', 'k']);
-    if(indices) {
-        indices.forEach(function(arr) {
-            for(var i = 0; i < arr.length; ++i) {
-                if(!Lib.isIndex(arr, numVertices)) {
+    var allIndices = readComponents(['i', 'j', 'k']);
+    if(allIndices === false) {
+        traceOut.visible = false;
+        return;
+    }
+    if(allIndices) {
+        var numVertices = coords[0].length;
+        allIndices.forEach(function(indices) {
+            indices.forEach(function(index) {
+                if(!Lib.isIndex(index, numVertices)) {
                     traceOut.visible = false;
                     return;
                 }
-            }
+            });
         });
+
+        var numFaces = allIndices[0].length;
+        for(var q = 0; q < numFaces; q++) {
+            if(
+                allIndices[0][q] === allIndices[1][q] ||
+                allIndices[0][q] === allIndices[2][q] ||
+                allIndices[1][q] === allIndices[2][q]
+            ) {
+                traceOut.visible = false;
+                return;
+            }
+        }
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
