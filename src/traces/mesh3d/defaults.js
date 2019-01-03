@@ -39,11 +39,31 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    var allIndices = readComponents(['i', 'j', 'k']);
-    if(allIndices === false) {
+    // three indices should be all provided or not
+    if(
+        (traceIn.i && (!traceIn.j || !traceIn.k)) ||
+        (traceIn.j && (!traceIn.k || !traceIn.i)) ||
+        (traceIn.k && (!traceIn.i || !traceIn.j))
+    ) {
         traceOut.visible = false;
         return;
     }
+
+    // test for size of indices
+    if(
+        traceIn.i && Lib.isArrayOrTypedArray(traceIn.i) &&
+        traceIn.j && Lib.isArrayOrTypedArray(traceIn.j) &&
+        traceIn.k && Lib.isArrayOrTypedArray(traceIn.k)
+    ) {
+        if( traceIn.k.length !== 0 && (
+            traceIn.i.length !== traceIn.j.length ||
+            traceIn.j.length !== traceIn.k.length)) {
+            traceOut.visible = false;
+            return;
+        }
+    }
+
+    var allIndices = readComponents(['i', 'j', 'k']);
     if(allIndices) {
         var numVertices = coords[0].length;
         allIndices.forEach(function(indices) {

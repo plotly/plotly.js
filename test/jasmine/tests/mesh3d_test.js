@@ -76,34 +76,6 @@ describe('Test mesh3d', function() {
             expect(gd._fullData[0].visible).toBe(exp, msg);
         }
 
-        it('@gl mesh3d should be visible when the vertex array are empty', function(done) {
-            Plotly.plot(gd, [{
-                x: [],
-                y: [],
-                z: [],
-                type: 'mesh3d'
-            }])
-            .then(function() {
-                assertVisibility(false, 'not to be visible');
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('@gl mesh3d should be visible when the index arrays are not provided', function(done) {
-            Plotly.plot(gd, [{
-                x: [0, 1, 0.5, 0.5],
-                y: [0, 0.5, 1, 0.5],
-                z: [0, 0.5, 0.5, 1],
-                type: 'mesh3d'
-            }])
-            .then(function() {
-                assertVisibility(false, 'not to be visible');
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
         it('@gl mesh3d should be invisible when the indices are not integer', function(done) {
             Plotly.plot(gd, [{
                 x: [0, 1, 0.5, 0.5],
@@ -218,6 +190,34 @@ describe('Test mesh3d', function() {
             }])
             .then(function() {
                 assertVisibility(true, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be visible when the index arrays are not provided', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: [0, 0.5, 0.5, 1],
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be visible when the vertex array are empty', function(done) {
+            Plotly.plot(gd, [{
+                x: [],
+                y: [],
+                z: [],
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(true, 'not to be visible');
             })
             .catch(failTest)
             .then(done);
