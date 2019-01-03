@@ -9,7 +9,6 @@
 
 'use strict';
 
-// var createIsosurface = require('isosurface').marchingCubes;
 var createMesh = require('gl-mesh3d');
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
@@ -171,6 +170,9 @@ function generateIsosurfaceMesh(data) {
     }
 
     function drawTri(debug, xyzv) {
+
+        beginSection(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<
+
         var pnts = [];
         for(var g = 0; g < 3; g++) {
 
@@ -194,10 +196,12 @@ function generateIsosurfaceMesh(data) {
         addFace(pnts[0], pnts[1], pnts[2]);
     }
 
+    function drawQuad(debug, xyzv) {
+        drawTri(debug, [xyzv[0], xyzv[1], xyzv[2]]);
+        drawTri(debug, [xyzv[2], xyzv[3], xyzv[0]]);
+    }
+
     function drawTetra(debug, xyzv) {
-
-        beginSection(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<
-
         drawTri(debug, [xyzv[0], xyzv[1], xyzv[2]]);
         drawTri(debug, [xyzv[0], xyzv[1], xyzv[3]]);
         drawTri(debug, [xyzv[0], xyzv[2], xyzv[3]]);
@@ -271,33 +275,79 @@ function generateIsosurfaceMesh(data) {
             return;
         }
 
-        var p1, p2, p3;
-
-        [[0, 1, 2], [1, 2, 0], [2, 0, 1]].forEach(function(e) {
-            if(ok[e[0]] && ok[e[1]]) {
+        [
+            [0, 1, 2, 3],
+            [0, 1, 3, 2],
+            [0, 2, 3, 1],
+            [1, 2, 3, 0]
+        ].forEach(function(e) {
+            if(ok[e[0]] && ok[e[1]] && ok[e[2]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
+                var D = xyzv[e[3]];
 
-                p1 = calcIntersection(C, A);
-                p2 = calcIntersection(C, B);
+                var p1 = calcIntersection(D, A);
+                var p2 = calcIntersection(D, B);
+                var p3 = calcIntersection(D, C);
 
-                drawTri(debug, [A, B, p2]);
-                drawTri(debug, [p2, p1, A]);
+                drawQuad(debug, [A, B, p2, p1]);
+                drawQuad(debug, [B, C, p3, p2]);
+                drawQuad(debug, [C, A, p1, p3]);
+                drawTri(debug, [A, B, C]);
+                drawTri(debug, [p1, p2, p3]);
                 return;
             }
         });
 
-        [[0, 1, 2], [1, 2, 0], [2, 0, 1]].forEach(function(e) {
+        [
+            [0, 1, 2, 3],
+            [0, 2, 1, 3],
+            [0, 3, 1, 3],
+            [1, 2, 0, 3],
+            [1, 3, 0, 2],
+            [2, 3, 0, 1]
+        ].forEach(function(e) {
+            if(ok[e[0]] && ok[e[1]]) {
+                var A = xyzv[e[0]];
+                var B = xyzv[e[1]];
+                var C = xyzv[e[2]];
+                var D = xyzv[e[3]];
+
+                var p1 = calcIntersection(C, A);
+                var p2 = calcIntersection(C, B);
+                var p3 = calcIntersection(D, B);
+                var p4 = calcIntersection(D, A);
+
+                drawQuad(debug, [A, B, p2, p1]);
+                drawQuad(debug, [A, B, p3, p4]);
+                drawQuad(debug, [p1, p2, p3, p4]);
+                drawTri(debug, [A, p4, p1]);
+                drawTri(debug, [B, p3, p2]);
+                return;
+            }
+        });
+
+        [
+            [0, 1, 2, 3],
+            [1, 0, 2, 3],
+            [2, 0, 1, 3],
+            [3, 0, 2, 3]
+        ].forEach(function(e) {
             if(ok[e[0]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
+                var D = xyzv[e[3]];
 
-                p1 = calcIntersection(B, A);
-                p2 = calcIntersection(C, A);
+                var p1 = calcIntersection(B, A);
+                var p2 = calcIntersection(C, A);
+                var p3 = calcIntersection(D, A);
 
                 drawTri(debug, [A, p1, p2]);
+                drawTri(debug, [A, p2, p3]);
+                drawTri(debug, [A, p3, p1]);
+                drawTri(debug, [p1, p2, p3]);
                 return;
             }
         });
@@ -316,13 +366,13 @@ function generateIsosurfaceMesh(data) {
                 for(i = 1; i < width; i++) {
                     addCube(
                         getIndex(i - 1, j - 1, k - 1),
-                        getIndex(i - 1, j - 1, k ),
-                        getIndex(i - 1, j , k - 1),
-                        getIndex(i - 1, j , k ),
-                        getIndex(i , j - 1, k - 1),
-                        getIndex(i , j - 1, k ),
-                        getIndex(i , j , k - 1),
-                        getIndex(i , j , k )
+                        getIndex(i - 1, j - 1, k),
+                        getIndex(i - 1, j, k - 1),
+                        getIndex(i - 1, j, k),
+                        getIndex(i, j - 1, k - 1),
+                        getIndex(i, j - 1, k),
+                        getIndex(i, j, k - 1),
+                        getIndex(i, j, k)
                     );
                 }
             }
