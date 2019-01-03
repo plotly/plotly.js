@@ -14,11 +14,17 @@ Scatter3D.plot = require('./convert');
 Scatter3D.attributes = require('./attributes');
 Scatter3D.markerSymbols = require('../../constants/gl3d_markers');
 Scatter3D.supplyDefaults = require('./defaults');
-Scatter3D.colorbar = {
-    container: 'marker | line',
-    min: 'cmin',
-    max: 'cmax'
-};
+Scatter3D.colorbar = [
+    {
+        container: 'marker',
+        min: 'cmin',
+        max: 'cmax'
+    }, {
+        container: 'line',
+        min: 'cmin',
+        max: 'cmax'
+    }
+];
 Scatter3D.calc = require('./calc');
 
 Scatter3D.moduleType = 'trace';

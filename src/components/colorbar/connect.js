@@ -41,12 +41,10 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
 
     var trace = cd[0].trace;
     var cbId = 'cb' + trace.uid;
-    var containerNames = (moduleOpts.container) ?
-        moduleOpts.container.split(' | ') :
-        [moduleOpts.container];
+    moduleOpts = Array.isArray(moduleOpts) ? moduleOpts : [moduleOpts];
 
-    for(var i = 0; i < containerNames.length; i++) {
-        var containerName = containerNames[i];
+    for(var i = 0; i < moduleOpts.length; i++) {
+        var containerName = moduleOpts[i].container;
 
         var container = containerName ? trace[containerName] : trace;
 
@@ -60,7 +58,7 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
             container.colorscale;
 
         cb.fillgradient(scl)
-            .zrange([container[moduleOpts.min], container[moduleOpts.max]])
+            .zrange([container[moduleOpts[i].min], container[moduleOpts[i].max]])
             .options(container.colorbar)();
 
         return;
