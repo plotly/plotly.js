@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -25,9 +25,9 @@ var modeBarButtons = require('./buttons');
  *
  */
 module.exports = function manageModeBar(gd) {
-    var fullLayout = gd._fullLayout,
-        context = gd._context,
-        modeBar = fullLayout._modeBar;
+    var fullLayout = gd._fullLayout;
+    var context = gd._context;
+    var modeBar = fullLayout._modeBar;
 
     if(!context.displayModeBar && !context.watermark) {
         if(modeBar) {

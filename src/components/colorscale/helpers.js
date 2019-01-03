@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -114,10 +114,10 @@ function flipScale(scl) {
 function makeColorScaleFunc(specs, opts) {
     opts = opts || {};
 
-    var domain = specs.domain,
-        range = specs.range,
-        N = range.length,
-        _range = new Array(N);
+    var domain = specs.domain;
+    var range = specs.range;
+    var N = range.length;
+    var _range = new Array(N);
 
     for(var i = 0; i < N; i++) {
         var rgba = tinycolor(range[i]).toRgb();
@@ -129,9 +129,9 @@ function makeColorScaleFunc(specs, opts) {
         .range(_range)
         .clamp(true);
 
-    var noNumericCheck = opts.noNumericCheck,
-        returnArray = opts.returnArray,
-        sclFunc;
+    var noNumericCheck = opts.noNumericCheck;
+    var returnArray = opts.returnArray;
+    var sclFunc;
 
     if(noNumericCheck && returnArray) {
         sclFunc = _sclFunc;

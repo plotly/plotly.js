@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -130,17 +130,17 @@ function someFiltersActive(view) {
 }
 
 function model(layout, d, i) {
-    var cd0 = unwrap(d),
-        trace = cd0.trace,
-        lineColor = cd0.lineColor,
-        line = trace.line,
-        cscale = line.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale,
-        domain = trace.domain,
-        dimensions = trace.dimensions,
-        width = layout.width,
-        labelFont = trace.labelfont,
-        tickFont = trace.tickfont,
-        rangeFont = trace.rangefont;
+    var cd0 = unwrap(d);
+    var trace = cd0.trace;
+    var lineColor = cd0.lineColor;
+    var line = trace.line;
+    var cscale = line.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
+    var domain = trace.domain;
+    var dimensions = trace.dimensions;
+    var width = layout.width;
+    var labelFont = trace.labelfont;
+    var tickFont = trace.tickfont;
+    var rangeFont = trace.rangefont;
 
     var lines = Lib.extendDeepNoArrays({}, line, {
         color: lineColor.map(d3.scale.linear().domain(dimensionExtent({

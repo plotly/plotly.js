@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,7 +12,8 @@ module.exports = function makePath(xp, yp, isBicubic) {
     // Prevent d3 errors that would result otherwise:
     if(xp.length === 0) return '';
 
-    var i, path = [];
+    var i;
+    var path = [];
     var stride = isBicubic ? 3 : 1;
     for(i = 0; i < xp.length; i += stride) {
         path.push(xp[i] + ',' + yp[i]);

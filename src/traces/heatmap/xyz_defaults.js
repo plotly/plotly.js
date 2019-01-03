@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -64,10 +64,10 @@ function coordDefaults(coordStr, coerce) {
 }
 
 function isValidZ(z) {
-    var allRowsAreArrays = true,
-        oneRowIsFilled = false,
-        hasOneNumber = false,
-        zi;
+    var allRowsAreArrays = true;
+    var oneRowIsFilled = false;
+    var hasOneNumber = false;
+    var zi;
 
     /*
      * Without this step:

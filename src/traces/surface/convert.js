@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -117,8 +117,8 @@ proto.handlePick = function(selection) {
 };
 
 function isColormapCircular(colormap) {
-    var first = colormap[0].rgb,
-        last = colormap[colormap.length - 1].rgb;
+    var first = colormap[0].rgb;
+    var last = colormap[colormap.length - 1].rgb;
 
     return (
         first[0] === last[0] &&
@@ -360,15 +360,15 @@ proto.setContourLevels = function() {
 };
 
 proto.update = function(data) {
-    var scene = this.scene,
-        sceneLayout = scene.fullSceneLayout,
-        surface = this.surface,
-        alpha = data.opacity,
-        colormap = parseColorScale(data.colorscale, alpha),
-        scaleFactor = scene.dataScale,
-        xlen = data.z[0].length,
-        ylen = data._ylength,
-        contourLevels = scene.contourLevels;
+    var scene = this.scene;
+    var sceneLayout = scene.fullSceneLayout;
+    var surface = this.surface;
+    var alpha = data.opacity;
+    var colormap = parseColorScale(data.colorscale, alpha);
+    var scaleFactor = scene.dataScale;
+    var xlen = data.z[0].length;
+    var ylen = data._ylength;
+    var contourLevels = scene.contourLevels;
 
     // Save data
     this.data = data;

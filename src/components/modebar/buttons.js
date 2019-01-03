@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -197,10 +197,9 @@ function handleCartesian(gd, ev) {
     var ax, i;
 
     if(astr === 'zoom') {
-        var mag = (val === 'in') ? 0.5 : 2,
-            r0 = (1 + mag) / 2,
-            r1 = (1 - mag) / 2;
-
+        var mag = (val === 'in') ? 0.5 : 2;
+        var r0 = (1 + mag) / 2;
+        var r1 = (1 - mag) / 2;
         var axName;
 
         for(i = 0; i < axList.length; i++) {
@@ -344,9 +343,9 @@ function handleCamera3d(gd, ev) {
     var aobj = {};
 
     for(var i = 0; i < sceneIds.length; i++) {
-        var sceneId = sceneIds[i],
-            key = sceneId + '.camera',
-            scene = fullLayout[sceneId]._scene;
+        var sceneId = sceneIds[i];
+        var key = sceneId + '.camera';
+        var scene = fullLayout[sceneId]._scene;
 
         if(attr === 'resetDefault') {
             aobj[key] = null;

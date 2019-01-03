@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -120,8 +120,8 @@ function convertTickWidth(gd, xa, trace) {
     var minDiff = trace._minDiff;
 
     if(!minDiff) {
-        var fullData = gd._fullData,
-            ohlcTracesOnThisXaxis = [];
+        var fullData = gd._fullData;
+        var ohlcTracesOnThisXaxis = [];
 
         minDiff = Infinity;
 

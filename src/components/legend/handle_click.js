@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -93,8 +93,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 
     if(Registry.traceIs(fullTrace, 'pie')) {
-        var thisLabel = legendItem.label,
-            thisLabelIndex = hiddenSlices.indexOf(thisLabel);
+        var thisLabel = legendItem.label;
+        var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 
         if(numClicks === 1) {
             if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);

@@ -647,11 +647,11 @@ describe('Test click interactions:', function() {
     });
 
     describe('double click interactions', function() {
-        var setRangeX = [-3, 1],
-            setRangeY = [-0.5, 1];
+        var setRangeX = [-3, 1];
+        var setRangeY = [-0.5, 1];
 
-        var zoomRangeX = [-2, 0],
-            zoomRangeY = [0, 0.5];
+        var zoomRangeX = [-2, 0];
+        var zoomRangeY = [0, 0.5];
 
         var update = {
             'xaxis.range[0]': zoomRangeX[0],
@@ -758,8 +758,8 @@ describe('Test click interactions:', function() {
                 y: [[30, 0, 30]]
             };
 
-            var newAutoRangeX = [-4.482371794871794, 3.4823717948717943],
-                newAutoRangeY = [-0.8892256657741471, 1.6689872212461876];
+            var newAutoRangeX = [-4.482371794871794, 3.4823717948717943];
+            var newAutoRangeY = [-0.8892256657741471, 1.6689872212461876];
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -1037,8 +1037,8 @@ describe('Test click interactions:', function() {
                 }
             };
 
-            var translate = Drawing.getTranslate(mockEl),
-                scale = Drawing.getScale(mockEl);
+            var translate = Drawing.getTranslate(mockEl);
+            var scale = Drawing.getScale(mockEl);
 
             expect([translate.x, translate.y]).toBeCloseToArray([13.93, 62.86]);
             expect([scale.x, scale.y]).toBeCloseToArray([1.105, 1.105]);
@@ -1071,9 +1071,9 @@ describe('Test click interactions:', function() {
 
 
         it('should move the plot when panning', function() {
-            var start = 100,
-                end = 300,
-                plot = gd._fullLayout._plots.xy.plot;
+            var start = 100;
+            var end = 300;
+            var plot = gd._fullLayout._plots.xy.plot;
 
             mouseEvent('mousemove', start, start);
             mouseEvent('mousedown', start, start);

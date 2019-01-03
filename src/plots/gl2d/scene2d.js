@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -193,9 +193,9 @@ proto.toImage = function(format) {
 
 
     // grab context and yank out pixels
-    var gl = this.glplot.gl,
-        w = gl.drawingBufferWidth,
-        h = gl.drawingBufferHeight;
+    var gl = this.glplot.gl;
+    var w = gl.drawingBufferWidth;
+    var h = gl.drawingBufferHeight;
 
     // force redraw
     gl.clearColor(1, 1, 1, 0);
@@ -249,13 +249,13 @@ proto.toImage = function(format) {
 proto.updateSize = function(canvas) {
     if(!canvas) canvas = this.canvas;
 
-    var pixelRatio = this.pixelRatio,
-        fullLayout = this.fullLayout;
+    var pixelRatio = this.pixelRatio;
+    var fullLayout = this.fullLayout;
 
-    var width = fullLayout.width,
-        height = fullLayout.height,
-        pixelWidth = Math.ceil(pixelRatio * width) |0,
-        pixelHeight = Math.ceil(pixelRatio * height) |0;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    var pixelWidth = Math.ceil(pixelRatio * width) |0;
+    var pixelHeight = Math.ceil(pixelRatio * height) |0;
 
     // check for resize
     if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
@@ -287,8 +287,8 @@ proto.computeTickMarks = function() {
 
 function compareTicks(a, b) {
     for(var i = 0; i < 2; ++i) {
-        var aticks = a[i],
-            bticks = b[i];
+        var aticks = a[i];
+        var bticks = b[i];
 
         if(aticks.length !== bticks.length) return true;
 
@@ -357,8 +357,8 @@ proto.cameraChanged = function() {
 };
 
 proto.handleAnnotations = function() {
-    var gd = this.graphDiv,
-        annotations = this.fullLayout.annotations;
+    var gd = this.graphDiv;
+    var annotations = this.fullLayout.annotations;
 
     for(var i = 0; i < annotations.length; i++) {
         var ann = annotations[i];
@@ -403,8 +403,8 @@ proto.plot = function(fullData, calcData, fullLayout) {
     this.updateTraces(fullData, calcData);
     this.updateFx(fullLayout.dragmode);
 
-    var width = fullLayout.width,
-        height = fullLayout.height;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
 
     this.updateSize(this.canvas);
 
@@ -421,9 +421,9 @@ proto.plot = function(fullData, calcData, fullLayout) {
     cleanAxisConstraints(mockGraphDiv, this.xaxis);
     cleanAxisConstraints(mockGraphDiv, this.yaxis);
 
-    var size = fullLayout._size,
-        domainX = this.xaxis.domain,
-        domainY = this.yaxis.domain;
+    var size = fullLayout._size;
+    var domainX = this.xaxis.domain;
+    var domainY = this.yaxis.domain;
 
     options.viewBox = [
         size.l + domainX[0] * size.w,
@@ -462,21 +462,21 @@ proto.plot = function(fullData, calcData, fullLayout) {
 };
 
 proto.calcDataBox = function() {
-    var xaxis = this.xaxis,
-        yaxis = this.yaxis,
-        xrange = xaxis.range,
-        yrange = yaxis.range,
-        xr2l = xaxis.r2l,
-        yr2l = yaxis.r2l;
+    var xaxis = this.xaxis;
+    var yaxis = this.yaxis;
+    var xrange = xaxis.range;
+    var yrange = yaxis.range;
+    var xr2l = xaxis.r2l;
+    var yr2l = yaxis.r2l;
 
     return [xr2l(xrange[0]), yr2l(yrange[0]), xr2l(xrange[1]), yr2l(yrange[1])];
 };
 
 proto.setRanges = function(dataBox) {
-    var xaxis = this.xaxis,
-        yaxis = this.yaxis,
-        xl2r = xaxis.l2r,
-        yl2r = yaxis.l2r;
+    var xaxis = this.xaxis;
+    var yaxis = this.yaxis;
+    var xl2r = xaxis.l2r;
+    var yl2r = yaxis.l2r;
 
     xaxis.range = [xl2r(dataBox[0]), xl2r(dataBox[2])];
     yaxis.range = [yl2r(dataBox[1]), yl2r(dataBox[3])];
@@ -489,16 +489,16 @@ proto.updateTraces = function(fullData, calcData) {
     this.fullData = fullData;
 
     // remove empty traces
-    trace_id_loop:
+    traceIdLoop:
     for(i = 0; i < traceIds.length; i++) {
-        var oldUid = traceIds[i],
-            oldTrace = this.traces[oldUid];
+        var oldUid = traceIds[i];
+        var oldTrace = this.traces[oldUid];
 
         for(j = 0; j < fullData.length; j++) {
             fullTrace = fullData[j];
 
             if(fullTrace.uid === oldUid && fullTrace.type === oldTrace.type) {
-                continue trace_id_loop;
+                continue traceIdLoop;
             }
         }
 
@@ -509,8 +509,8 @@ proto.updateTraces = function(fullData, calcData) {
     // update / create trace objects
     for(i = 0; i < fullData.length; i++) {
         fullTrace = fullData[i];
-        var calcTrace = calcData[i],
-            traceObj = this.traces[fullTrace.uid];
+        var calcTrace = calcData[i];
+        var traceObj = this.traces[fullTrace.uid];
 
         if(traceObj) traceObj.update(fullTrace, calcTrace);
         else {
@@ -579,11 +579,11 @@ proto.draw = function() {
 
     requestAnimationFrame(this.redraw);
 
-    var glplot = this.glplot,
-        camera = this.camera,
-        mouseListener = camera.mouseListener,
-        mouseUp = this.lastButtonState === 1 && mouseListener.buttons === 0,
-        fullLayout = this.fullLayout;
+    var glplot = this.glplot;
+    var camera = this.camera;
+    var mouseListener = camera.mouseListener;
+    var mouseUp = this.lastButtonState === 1 && mouseListener.buttons === 0;
+    var fullLayout = this.fullLayout;
 
     this.lastButtonState = mouseListener.buttons;
 
@@ -617,9 +617,9 @@ proto.draw = function() {
     else if(!camera.panning && this.isMouseOver) {
         this.selectBox.enabled = false;
 
-        var size = fullLayout._size,
-            domainX = this.xaxis.domain,
-            domainY = this.yaxis.domain;
+        var size = fullLayout._size;
+        var domainX = this.xaxis.domain;
+        var domainY = this.yaxis.domain;
 
         result = glplot.pick(
             (x / glplot.pixelRatio) + size.l + domainX[0] * size.w,

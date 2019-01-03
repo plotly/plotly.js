@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -45,9 +45,9 @@ var proto = ModeBar.prototype;
 proto.update = function(graphInfo, buttons) {
     this.graphInfo = graphInfo;
 
-    var context = this.graphInfo._context,
-        fullLayout = this.graphInfo._fullLayout,
-        modeBarId = 'modebar-' + fullLayout._uid;
+    var context = this.graphInfo._context;
+    var fullLayout = this.graphInfo._fullLayout;
+    var modeBarId = 'modebar-' + fullLayout._uid;
 
     this.element.setAttribute('id', modeBarId);
     this._uid = modeBarId;
@@ -145,8 +145,8 @@ proto.createGroup = function() {
  * @Return {HTMLelement}
  */
 proto.createButton = function(config) {
-    var _this = this,
-        button = document.createElement('a');
+    var _this = this;
+    var button = document.createElement('a');
 
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
@@ -204,10 +204,10 @@ proto.createButton = function(config) {
  */
 proto.createIcon = function(thisIcon) {
     var iconHeight = isNumeric(thisIcon.height) ?
-            Number(thisIcon.height) :
-            thisIcon.ascent - thisIcon.descent,
-        svgNS = 'http://www.w3.org/2000/svg',
-        icon;
+        Number(thisIcon.height) :
+        thisIcon.ascent - thisIcon.descent;
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var icon;
 
     if(thisIcon.path) {
         icon = document.createElementNS(svgNS, 'svg');
@@ -245,16 +245,16 @@ proto.createIcon = function(thisIcon) {
  * @Return {HTMLelement}
  */
 proto.updateActiveButton = function(buttonClicked) {
-    var fullLayout = this.graphInfo._fullLayout,
-        dataAttrClicked = (buttonClicked !== undefined) ?
-            buttonClicked.getAttribute('data-attr') :
-            null;
+    var fullLayout = this.graphInfo._fullLayout;
+    var dataAttrClicked = (buttonClicked !== undefined) ?
+        buttonClicked.getAttribute('data-attr') :
+        null;
 
     this.buttonElements.forEach(function(button) {
-        var thisval = button.getAttribute('data-val') || true,
-            dataAttr = button.getAttribute('data-attr'),
-            isToggleButton = (button.getAttribute('data-toggle') === 'true'),
-            button3 = d3.select(button);
+        var thisval = button.getAttribute('data-val') || true;
+        var dataAttr = button.getAttribute('data-attr');
+        var isToggleButton = (button.getAttribute('data-toggle') === 'true');
+        var button3 = d3.select(button);
 
         // Use 'data-toggle' and 'buttonClicked' to toggle buttons
         // that have no one-to-one equivalent in fullLayout
@@ -301,8 +301,8 @@ proto.hasButtons = function(buttons) {
  * @return {HTMLDivElement} The logo image wrapped in a group
  */
 proto.getLogo = function() {
-    var group = this.createGroup(),
-        a = document.createElement('a');
+    var group = this.createGroup();
+    var a = document.createElement('a');
 
     a.href = 'https://plot.ly/';
     a.target = '_blank';

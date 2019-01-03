@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -646,10 +646,10 @@ exports.newPlot = function(gd, data, layout, config) {
  * @param {Number} maxIndex The maximum index allowable (arr.length - 1)
  */
 function positivifyIndices(indices, maxIndex) {
-    var parentLength = maxIndex + 1,
-        positiveIndices = [],
-        i,
-        index;
+    var parentLength = maxIndex + 1;
+    var positiveIndices = [];
+    var i;
+    var index;
 
     for(i = 0; i < indices.length; i++) {
         index = indices[i];
@@ -837,8 +837,8 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  */
 function getExtendProperties(gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = Lib.isPlainObject(maxPoints),
-        updateProps = [];
+    var maxPointsIsObject = Lib.isPlainObject(maxPoints);
+    var updateProps = [];
     var trace, target, prop, insert, maxp;
 
     // allow scalar index to represent a single trace position
@@ -1091,13 +1091,13 @@ exports.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
 exports.addTraces = function addTraces(gd, traces, newIndices) {
     gd = Lib.getGraphDiv(gd);
 
-    var currentIndices = [],
-        undoFunc = exports.deleteTraces,
-        redoFunc = addTraces,
-        undoArgs = [gd, currentIndices],
-        redoArgs = [gd, traces],  // no newIndices here
-        i,
-        promise;
+    var currentIndices = [];
+    var undoFunc = exports.deleteTraces;
+    var redoFunc = addTraces;
+    var undoArgs = [gd, currentIndices];
+    var redoArgs = [gd, traces];  // no newIndices here
+    var i;
+    var promise;
 
     // all validation is done elsewhere to remove clutter here
     checkAddTracesArgs(gd, traces, newIndices);
@@ -1168,13 +1168,13 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
 exports.deleteTraces = function deleteTraces(gd, indices) {
     gd = Lib.getGraphDiv(gd);
 
-    var traces = [],
-        undoFunc = exports.addTraces,
-        redoFunc = deleteTraces,
-        undoArgs = [gd, traces, indices],
-        redoArgs = [gd, indices],
-        i,
-        deletedTrace;
+    var traces = [];
+    var undoFunc = exports.addTraces;
+    var redoFunc = deleteTraces;
+    var undoArgs = [gd, traces, indices];
+    var redoArgs = [gd, indices];
+    var i;
+    var deletedTrace;
 
     // make sure indices are defined
     if(typeof indices === 'undefined') {
@@ -1234,13 +1234,13 @@ exports.deleteTraces = function deleteTraces(gd, indices) {
 exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     gd = Lib.getGraphDiv(gd);
 
-    var newData = [],
-        movingTraceMap = [],
-        undoFunc = moveTraces,
-        redoFunc = moveTraces,
-        undoArgs = [gd, newIndices, currentIndices],
-        redoArgs = [gd, currentIndices, newIndices],
-        i;
+    var newData = [];
+    var movingTraceMap = [];
+    var undoFunc = moveTraces;
+    var redoFunc = moveTraces;
+    var undoArgs = [gd, newIndices, currentIndices];
+    var redoArgs = [gd, currentIndices, newIndices];
+    var i;
 
     // to reduce complexity here, check args elsewhere
     // this throws errors where appropriate
@@ -1485,9 +1485,9 @@ function _restyle(gd, aobj, traces) {
 
     // copies of the change (and previous values of anything affected)
     // for the undo / redo queue
-    var redoit = {},
-        undoit = {},
-        axlist;
+    var redoit = {};
+    var undoit = {};
+    var axlist;
 
     // make a new empty vals array for undoit
     function a0() { return traces.map(function() { return undefined; }); }
@@ -1564,13 +1564,13 @@ function _restyle(gd, aobj, traces) {
             throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
         }
 
-        var vi = aobj[ai],
-            cont,
-            contFull,
-            param,
-            oldVal,
-            newVal,
-            valObject;
+        var vi = aobj[ai];
+        var cont;
+        var contFull;
+        var param;
+        var oldVal;
+        var newVal;
+        var valObject;
 
         // Backward compatibility shim for turning histogram autobin on,
         // or freezing previous autobinned values.
@@ -1649,8 +1649,8 @@ function _restyle(gd, aobj, traces) {
             }
 
             else if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
-                var labelsTo = 'x',
-                    valuesTo = 'y';
+                var labelsTo = 'x';
+                var valuesTo = 'y';
                 if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
                     labelsTo = 'y';
                     valuesTo = 'x';
@@ -1983,9 +1983,9 @@ function _relayout(gd, aobj) {
     for(i = 0; i < keys.length; i++) {
         if(keys[i].indexOf('allaxes') === 0) {
             for(j = 0; j < axes.length; j++) {
-                var scene = axes[j]._id.substr(1),
-                    axisAttr = (scene.indexOf('scene') !== -1) ? (scene + '.') : '',
-                    newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
+                var scene = axes[j]._id.substr(1);
+                var axisAttr = (scene.indexOf('scene') !== -1) ? (scene + '.') : '';
+                var newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
 
                 if(!aobj[newkey]) aobj[newkey] = aobj[keys[i]];
             }
@@ -1999,8 +1999,8 @@ function _relayout(gd, aobj) {
 
     // copies of the change (and previous values of anything affected)
     // for the undo / redo queue
-    var redoit = {},
-        undoit = {};
+    var redoit = {};
+    var undoit = {};
 
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
@@ -2121,9 +2121,9 @@ function _relayout(gd, aobj) {
         // previously we did this for log <-> not-log, but now only do it
         // for log <-> linear
         if(pleaf === 'type') {
-            var ax = parentIn,
-                toLog = parentFull.type === 'linear' && vi === 'log',
-                fromLog = parentFull.type === 'log' && vi === 'linear';
+            var ax = parentIn;
+            var toLog = parentFull.type === 'linear' && vi === 'log';
+            var fromLog = parentFull.type === 'log' && vi === 'linear';
 
             if(toLog || fromLog) {
                 if(!ax || !ax.range) {
@@ -2135,8 +2135,8 @@ function _relayout(gd, aobj) {
                 else if(!parentFull.autorange) {
                     // toggling log without autorange: need to also recalculate ranges
                     // because log axes use linearized values for range endpoints
-                    var r0 = ax.range[0],
-                        r1 = ax.range[1];
+                    var r0 = ax.range[0];
+                    var r1 = ax.range[1];
                     if(toLog) {
                         // if both limits are negative, autorange
                         if(r0 <= 0 && r1 <= 0) {
@@ -2184,8 +2184,8 @@ function _relayout(gd, aobj) {
             nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }
         else if(pleaf.match(AX_NAME_PATTERN)) {
-            var fullProp = nestedProperty(fullLayout, ai).get(),
-                newType = (vi || {}).type;
+            var fullProp = nestedProperty(fullLayout, ai).get();
+            var newType = (vi || {}).type;
 
             // This can potentially cause strange behavior if the autotype is not
             // numeric (linear, because we don't auto-log) but the previous type
@@ -2367,8 +2367,8 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
     var seq = [];
 
     if(restyleFlags.fullReplot && relayoutFlags.layoutReplot) {
-        var data = gd.data,
-            layout = gd.layout;
+        var data = gd.data;
+        var layout = gd.layout;
 
         // clear existing data/layout on gd
         // so that Plotly.plot doesn't try to extend them
@@ -3558,10 +3558,10 @@ exports.addFrames = function(gd, frameList, indices) {
         }
     }
 
-    var undoFunc = Plots.modifyFrames,
-        redoFunc = Plots.modifyFrames,
-        undoArgs = [gd, revops],
-        redoArgs = [gd, ops];
+    var undoFunc = Plots.modifyFrames;
+    var redoFunc = Plots.modifyFrames;
+    var undoArgs = [gd, revops];
+    var redoArgs = [gd, ops];
 
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
@@ -3605,10 +3605,10 @@ exports.deleteFrames = function(gd, frameList) {
         revops.unshift({type: 'insert', index: idx, value: _frames[idx]});
     }
 
-    var undoFunc = Plots.modifyFrames,
-        redoFunc = Plots.modifyFrames,
-        undoArgs = [gd, revops],
-        redoArgs = [gd, ops];
+    var undoFunc = Plots.modifyFrames;
+    var redoFunc = Plots.modifyFrames;
+    var undoArgs = [gd, revops];
+    var redoArgs = [gd, ops];
 
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 

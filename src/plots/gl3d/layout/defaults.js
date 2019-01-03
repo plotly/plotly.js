@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58,8 +58,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
      * attributes like aspectratio can be written back dynamically.
      */
 
-    var bgcolor = coerce('bgcolor'),
-        bgColorCombined = Color.combine(bgcolor, opts.paper_bgcolor);
+    var bgcolor = coerce('bgcolor');
+    var bgColorCombined = Color.combine(bgcolor, opts.paper_bgcolor);
 
     var cameraKeys = ['up', 'center', 'eye'];
 

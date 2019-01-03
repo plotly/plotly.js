@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56,16 +56,16 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         makeCrossings(pathinfo);
         findAllPaths(pathinfo);
 
-        var leftedge = xa.c2p(x[0], true),
-            rightedge = xa.c2p(x[x.length - 1], true),
-            bottomedge = ya.c2p(y[0], true),
-            topedge = ya.c2p(y[y.length - 1], true),
-            perimeter = [
-                [leftedge, topedge],
-                [rightedge, topedge],
-                [rightedge, bottomedge],
-                [leftedge, bottomedge]
-            ];
+        var leftedge = xa.c2p(x[0], true);
+        var rightedge = xa.c2p(x[x.length - 1], true);
+        var bottomedge = ya.c2p(y[0], true);
+        var topedge = ya.c2p(y[y.length - 1], true);
+        var perimeter = [
+            [leftedge, topedge],
+            [rightedge, topedge],
+            [rightedge, bottomedge],
+            [leftedge, bottomedge]
+        ];
 
         var fillPathinfo = pathinfo;
         if(contours.type === 'constraint') {
@@ -129,16 +129,16 @@ function initFullPath(pi, perimeter) {
 }
 
 function joinAllPaths(pi, perimeter) {
-    var fullpath = initFullPath(pi, perimeter),
-        i = 0,
-        startsleft = pi.edgepaths.map(function(v, i) { return i; }),
-        newloop = true,
-        endpt,
-        newendpt,
-        cnt,
-        nexti,
-        possiblei,
-        addpath;
+    var fullpath = initFullPath(pi, perimeter);
+    var i = 0;
+    var startsleft = pi.edgepaths.map(function(v, i) { return i; });
+    var newloop = true;
+    var endpt;
+    var newendpt;
+    var cnt;
+    var nexti;
+    var possiblei;
+    var addpath;
 
     function istop(pt) { return Math.abs(pt[1] - perimeter[0][1]) < 0.01; }
     function isbottom(pt) { return Math.abs(pt[1] - perimeter[2][1]) < 0.01; }
@@ -664,13 +664,13 @@ function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
 }
 
 function makeClipMask(cd0) {
-    var empties = cd0.trace._emptypoints,
-        z = [],
-        m = cd0.z.length,
-        n = cd0.z[0].length,
-        i,
-        row = [],
-        emptyPoint;
+    var empties = cd0.trace._emptypoints;
+    var z = [];
+    var m = cd0.z.length;
+    var n = cd0.z[0].length;
+    var i;
+    var row = [];
+    var emptyPoint;
 
     for(i = 0; i < n; i++) row.push(1);
     for(i = 0; i < m; i++) z.push(row.slice());

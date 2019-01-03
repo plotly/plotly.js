@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -494,19 +494,19 @@ function transformInsideText(textBB, pt, cd0) {
     var textAspect = textBB.width / textBB.height;
     var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
     var ring = 1 - cd0.trace.hole;
-    var rInscribed = getInscribedRadiusFraction(pt, cd0),
+    var rInscribed = getInscribedRadiusFraction(pt, cd0);
 
-        // max size text can be inserted inside without rotating it
-        // this inscribes the text rectangle in a circle, which is then inscribed
-        // in the slice, so it will be an underestimate, which some day we may want
-        // to improve so this case can get more use
-        transform = {
-            scale: rInscribed * cd0.r * 2 / textDiameter,
+    // max size text can be inserted inside without rotating it
+    // this inscribes the text rectangle in a circle, which is then inscribed
+    // in the slice, so it will be an underestimate, which some day we may want
+    // to improve so this case can get more use
+    var transform = {
+        scale: rInscribed * cd0.r * 2 / textDiameter,
 
-            // and the center position and rotation in this case
-            rCenter: 1 - rInscribed,
-            rotate: 0
-        };
+        // and the center position and rotation in this case
+        rCenter: 1 - rInscribed,
+        rotate: 0
+    };
 
     if(transform.scale >= 1) return transform;
 
@@ -584,7 +584,10 @@ function positionTitleInside(cd0) {
 }
 
 function positionTitleOutside(cd0, plotSize) {
-    var scaleX = 1, scaleY = 1, maxWidth, maxPull;
+    var scaleX = 1;
+    var scaleY = 1;
+    var maxWidth, maxPull;
+
     var trace = cd0.trace;
     // position of the baseline point of the text box in the plot, before scaling.
     // we anchored the text in the middle, so the baseline is on the bottom middle
@@ -644,7 +647,8 @@ function getTitleSpace(cd0, plotSize) {
 }
 
 function getMaxPull(trace) {
-    var maxPull = trace.pull, j;
+    var maxPull = trace.pull;
+    var j;
     if(Array.isArray(maxPull)) {
         maxPull = 0;
         for(j = 0; j < trace.pull.length; j++) {

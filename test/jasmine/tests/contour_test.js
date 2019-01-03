@@ -20,14 +20,14 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 describe('contour defaults', function() {
     'use strict';
 
-    var traceIn,
-        traceOut;
+    var traceIn;
+    var traceOut;
 
-    var defaultColor = '#444',
-        layout = {
-            font: Plots.layoutAttributes.font,
-            _dfltTitle: {colorbar: 'cb'}
-        };
+    var defaultColor = '#444';
+    var layout = {
+        font: Plots.layoutAttributes.font,
+        _dfltTitle: {colorbar: 'cb'}
+    };
 
     var supplyDefaults = Contour.supplyDefaults;
 
@@ -184,9 +184,9 @@ describe('contour calc', function() {
     'use strict';
 
     function _calc(opts) {
-        var base = { type: 'contour' },
-            trace = Lib.extendFlat({}, base, opts),
-            gd = { data: [trace] };
+        var base = { type: 'contour' };
+        var trace = Lib.extendFlat({}, base, opts);
+        var gd = { data: [trace] };
 
         supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
@@ -326,9 +326,9 @@ describe('contour calc', function() {
                 [spec.start, spec.end, 'normal'],
                 [spec.end, spec.start, 'reversed']
             ].forEach(function(v) {
-                var startIn = v[0],
-                    endIn = v[1],
-                    order = v[2];
+                var startIn = v[0];
+                var endIn = v[1];
+                var order = v[2];
 
                 var out = _calc({
                     z: [[1, 2], [3, 4]],

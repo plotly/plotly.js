@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -71,8 +71,8 @@ module.exports = function setConvert(ax, fullLayout) {
         else if(v <= 0 && clip && ax.range && ax.range.length === 2) {
             // clip NaN (ie past negative infinity) to LOG_CLIP axis
             // length past the negative edge
-            var r0 = ax.range[0],
-                r1 = ax.range[1];
+            var r0 = ax.range[0];
+            var r1 = ax.range[1];
             return 0.5 * (r0 + r1 - 2 * LOG_CLIP * Math.abs(r0 - r1));
         }
 
@@ -356,15 +356,15 @@ module.exports = function setConvert(ax, fullLayout) {
 
     // find the range value at the specified (linear) fraction of the axis
     ax.fraction2r = function(v) {
-        var rl0 = ax.r2l(ax.range[0]),
-            rl1 = ax.r2l(ax.range[1]);
+        var rl0 = ax.r2l(ax.range[0]);
+        var rl1 = ax.r2l(ax.range[1]);
         return ax.l2r(rl0 + v * (rl1 - rl0));
     };
 
     // find the fraction of the range at the specified range value
     ax.r2fraction = function(v) {
-        var rl0 = ax.r2l(ax.range[0]),
-            rl1 = ax.r2l(ax.range[1]);
+        var rl0 = ax.r2l(ax.range[0]);
+        var rl1 = ax.r2l(ax.range[1]);
         return (ax.r2l(v) - rl0) / (rl1 - rl0);
     };
 
@@ -457,12 +457,12 @@ module.exports = function setConvert(ax, fullLayout) {
         // issue if we transform the drawn layer *and* use the new axis range to
         // draw the data. This allows us to construct setConvert using the pre-
         // interaction values of the range:
-        var rangeAttr = (usePrivateRange && ax._r) ? '_r' : 'range',
-            calendar = ax.calendar;
+        var rangeAttr = (usePrivateRange && ax._r) ? '_r' : 'range';
+        var calendar = ax.calendar;
         ax.cleanRange(rangeAttr);
 
-        var rl0 = ax.r2l(ax[rangeAttr][0], calendar),
-            rl1 = ax.r2l(ax[rangeAttr][1], calendar);
+        var rl0 = ax.r2l(ax[rangeAttr][0], calendar);
+        var rl1 = ax.r2l(ax[rangeAttr][1], calendar);
 
         if(axLetter === 'y') {
             ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
