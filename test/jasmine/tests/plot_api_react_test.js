@@ -1870,4 +1870,64 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('geo subplots should preserve viewport changes after panning', function(done) {
+        function _react() {
+            return Plotly.react(gd, [{
+                type: 'scattergeo',
+                lon: [3, 1, 2],
+                lat: [2, 3, 1]
+            }], {
+                width: 500,
+                height: 500,
+                uirevision: true
+            });
+        }
+
+        function _drag(x0, y0, dx, dy) {
+            mouseEvent('mousemove', x0, y0);
+            mouseEvent('mousedown', x0, y0);
+            mouseEvent('mousemove', x0 + dx, y0 + dy);
+            mouseEvent('mouseup', x0 + dx, y0 + dy);
+        }
+
+        // should be same before & after 2nd react()
+        function _assertGUI(msg) {
+            var TOL = 2;
+
+            var geo = gd.layout.geo || {};
+            expect(((geo.projection || {}).rotation || {}).lon).toBeCloseTo(-52.94, TOL, msg);
+            expect((geo.center || {}).lon).toBeCloseTo(-52.94, TOL, msg);
+            expect((geo.center || {}).lat).toBeCloseTo(52.94, TOL, msg);
+
+            var fullGeo = gd._fullLayout.geo;
+            expect(fullGeo.projection.rotation.lon).toBeCloseTo(-52.94, TOL, msg);
+            expect(fullGeo.center.lon).toBeCloseTo(-52.94, TOL, msg);
+            expect(fullGeo.center.lat).toBeCloseTo(52.94, TOL, msg);
+
+            var preGUI = gd._fullLayout._preGUI;
+            expect(preGUI['geo.projection.rotation.lon']).toBe(null, msg);
+            expect(preGUI['geo.center.lon']).toBe(null, msg);
+            expect(preGUI['geo.center.lat']).toBe(null, msg);
+            expect(preGUI['geo.projection.scale']).toBe(null, msg);
+        }
+
+        _react()
+        .then(function() {
+            expect(gd.layout.geo).toEqual({});
+
+            var fullGeo = gd._fullLayout.geo;
+            expect(fullGeo.projection.rotation.lon).toBe(0);
+            expect(fullGeo.center.lon).toBe(0);
+            expect(fullGeo.center.lat).toBe(0);
+
+            expect(gd._fullLayout._preGUI).toEqual({});
+        })
+        .then(function() { return _drag(200, 200, 50, 50); })
+        .then(function() { _assertGUI('before'); })
+        .then(_react)
+        .then(function() { _assertGUI('after'); })
+        .catch(failTest)
+        .then(done);
+    });
 });
