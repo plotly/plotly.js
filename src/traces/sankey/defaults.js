@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -24,7 +24,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var hoverlabelDefault = Lib.extendDeep(layout.hoverlabel, traceIn.hoverlabel);
 
     // node attributes
-    var nodeIn = traceIn.node, nodeOut = Template.newContainer(traceOut, 'node');
+    var nodeIn = traceIn.node;
+    var nodeOut = Template.newContainer(traceOut, 'node');
+
     function coerceNode(attr, dflt) {
         return Lib.coerce(nodeIn, nodeOut, attributes.node, attr, dflt);
     }
@@ -46,7 +48,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }));
 
     // link attributes
-    var linkIn = traceIn.link, linkOut = Template.newContainer(traceOut, 'link');
+    var linkIn = traceIn.link;
+    var linkOut = Template.newContainer(traceOut, 'link');
+
     function coerceLink(attr, dflt) {
         return Lib.coerce(linkIn, linkOut, attributes.link, attr, dflt);
     }

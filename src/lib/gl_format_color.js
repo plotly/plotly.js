@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48,11 +48,7 @@ function formatColor(containerIn, opacityIn, len) {
 
     if(containerIn.colorscale !== undefined) {
         sclFunc = Colorscale.makeColorScaleFunc(
-            Colorscale.extractScale(
-                containerIn.colorscale,
-                containerIn.cmin,
-                containerIn.cmax
-            )
+            Colorscale.extractScale(containerIn, {cLetter: 'c'})
         );
     }
     else {

@@ -174,8 +174,8 @@ describe('ternary plots', function() {
         });
 
         it('should respond to hover interactions by', function() {
-            var hoverCnt = 0,
-                unhoverCnt = 0;
+            var hoverCnt = 0;
+            var unhoverCnt = 0;
 
             var hoverData, unhoverData;
 
@@ -625,8 +625,8 @@ describe('Test event property of interactions on a ternary plot:', function() {
 
     var mockCopy, gd;
 
-    var blankPos = [10, 10],
-        pointPos;
+    var blankPos = [10, 10];
+    var pointPos;
 
     beforeAll(function(done) {
         gd = createGraphDiv();
@@ -666,8 +666,8 @@ describe('Test event property of interactions on a ternary plot:', function() {
         it('should contain the correct fields', function() {
             click(pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -777,12 +777,12 @@ describe('Test event property of interactions on a ternary plot:', function() {
             mouseEvent('mousemove', blankPos[0], blankPos[1]);
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event,
-                xaxes0 = futureData.xaxes[0],
-                xvals0 = futureData.xvals[0],
-                yaxes0 = futureData.yaxes[0],
-                yvals0 = futureData.yvals[0];
+            var pt = futureData.points[0];
+            var evt = futureData.event;
+            var xaxes0 = futureData.xaxes[0];
+            var xvals0 = futureData.xvals[0];
+            var yaxes0 = futureData.yaxes[0];
+            var yvals0 = futureData.yvals[0];
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -825,8 +825,8 @@ describe('Test event property of interactions on a ternary plot:', function() {
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
             mouseEvent('mouseout', pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',

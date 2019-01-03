@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -123,7 +123,9 @@ function calcSpan(trace, cdi, valAxis, bandwidth) {
 
     function calcSpanItem(index) {
         var s = spanIn[index];
-        var sc = valAxis.d2c(s, 0, trace[cdi.valLetter + 'calendar']);
+        var sc = valAxis.type === 'multicategory' ?
+            valAxis.r2c(s) :
+            valAxis.d2c(s, 0, trace[cdi.valLetter + 'calendar']);
         return sc === BADNUM ? spanLoose[index] : sc;
     }
 

@@ -673,6 +673,77 @@ describe('axis zoom/pan and main plot zoom', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should compute correct multicategory tick label span during drag', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/multicategory.json'));
+
+        var dragCoverNode;
+        var p1;
+
+        function _dragStart(draggerClassName, p0, dp) {
+            var node = getDragger('xy', draggerClassName);
+            mouseEvent('mousemove', p0[0], p0[1], {element: node});
+            mouseEvent('mousedown', p0[0], p0[1], {element: node});
+
+            var promise = drag.waitForDragCover().then(function(dcn) {
+                dragCoverNode = dcn;
+                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
+                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
+            });
+            return promise;
+        }
+
+        function _assertAndDragEnd(msg, exp) {
+            _assertLabels(msg, exp);
+            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
+            return drag.waitForDragCoverRemoval();
+        }
+
+        function _assertLabels(msg, exp) {
+            var tickLabels = d3.select(gd).selectAll('.xtick > text');
+            expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
+
+            tickLabels.each(function(_, i) {
+                var t = d3.select(this).attr('transform');
+                var rotate = (t.split('rotate(')[1] || '').split(')')[0];
+                var angle = rotate.split(',')[0];
+                expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
+
+            });
+
+            var tickLabels2 = d3.select(gd).selectAll('.xtick2 > text');
+            expect(tickLabels2.size()).toBe(exp.y.length, msg + ' - # of secondary labels');
+
+            tickLabels2.each(function(_, i) {
+                var y = d3.select(this).attr('y');
+                expect(Number(y)).toBeWithin(exp.y[i], 5, msg + ' - node ' + i);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            _assertLabels('base', {
+                angle: [0, 0, 0, 0, 0, 0, 0],
+                y: [406, 406]
+            });
+        })
+        .then(function() { return _dragStart('edrag', [585, 390], [-340, 0]); })
+        .then(function() {
+            return _assertAndDragEnd('drag to wide-range -> rotates labels', {
+                angle: [90, 90, 90, 90, 90, 90, 90],
+                y: [430, 430]
+            });
+        })
+        .then(function() { return _dragStart('edrag', [585, 390], [100, 0]); })
+        .then(function() {
+            return _assertAndDragEnd('drag to narrow-range -> un-rotates labels', {
+                angle: [0, 0, 0, 0, 0, 0, 0],
+                y: [406, 406]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Event data:', function() {

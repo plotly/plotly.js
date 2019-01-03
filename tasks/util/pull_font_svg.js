@@ -8,20 +8,20 @@ module.exports = function pullFontSVG(data, pathOut) {
     parser.parseString(data, function(err, result) {
         if(err) throw err;
 
-        var font_obj = result.svg.defs[0].font[0],
-            default_width = Number(font_obj.$['horiz-adv-x']),
-            ascent = Number(font_obj['font-face'][0].$.ascent),
-            descent = Number(font_obj['font-face'][0].$.descent),
-            chars = {};
+        var fontObj = result.svg.defs[0].font[0];
+        var defaultWidth = Number(fontObj.$['horiz-adv-x']);
+        var ascent = Number(fontObj['font-face'][0].$.ascent);
+        var descent = Number(fontObj['font-face'][0].$.descent);
+        var chars = {};
 
-        font_obj.glyph.forEach(function(glyph) {
-            var name = glyph.$['glyph-name'],
-                transform = name === 'spikeline' ?
-                    'matrix(1.5 0 0 -1.5 0 ' + ascent + ')' :
-                    'matrix(1 0 0 -1 0 ' + ascent + ')';
+        fontObj.glyph.forEach(function(glyph) {
+            var name = glyph.$['glyph-name'];
+            var transform = name === 'spikeline' ?
+                'matrix(1.5 0 0 -1.5 0 ' + ascent + ')' :
+                'matrix(1 0 0 -1 0 ' + ascent + ')';
 
             chars[name] = {
-                width: Number(glyph.$['horiz-adv-x']) || default_width,
+                width: Number(glyph.$['horiz-adv-x']) || defaultWidth,
                 height: ascent - descent,
                 path: glyph.$.d,
                 transform: transform,

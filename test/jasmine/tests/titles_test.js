@@ -1072,11 +1072,11 @@ describe('Editable titles', function() {
         expect(titleEl.text()).toBe(text);
         expect(+(titleEl.node().style.opacity || 1)).toBe(opacityOut);
 
-        var bb = titleEl.node().getBoundingClientRect(),
-            xCenter = (bb.left + bb.right) / 2,
-            yCenter = (bb.top + bb.bottom) / 2,
-            done,
-            promise = new Promise(function(resolve) { done = resolve; });
+        var bb = titleEl.node().getBoundingClientRect();
+        var xCenter = (bb.left + bb.right) / 2;
+        var yCenter = (bb.top + bb.bottom) / 2;
+        var done;
+        var promise = new Promise(function(resolve) { done = resolve; });
 
         mouseEvent('mouseover', xCenter, yCenter);
         setTimeout(function() {

@@ -52,8 +52,8 @@ describe('Test plot structure', function() {
             beforeEach(function(done) {
                 gd = createGraphDiv();
 
-                var mockData = Lib.extendDeep([], mock.data),
-                    mockLayout = Lib.extendDeep({}, mock.layout);
+                var mockData = Lib.extendDeep([], mock.data);
+                var mockLayout = Lib.extendDeep({}, mock.layout);
 
                 Plotly.plot(gd, mockData, mockLayout).then(done);
             });
@@ -169,8 +169,8 @@ describe('Test plot structure', function() {
             var gd;
 
             function extendMock() {
-                var mockData = Lib.extendDeep([], mock.data),
-                    mockLayout = Lib.extendDeep({}, mock.layout);
+                var mockData = Lib.extendDeep([], mock.data);
+                var mockLayout = Lib.extendDeep({}, mock.layout);
 
                 // add a colorbar for testing
                 mockData[0].showscale = true;
@@ -404,8 +404,8 @@ describe('Test plot structure', function() {
             beforeEach(function(done) {
                 gd = createGraphDiv();
 
-                var mockData = Lib.extendDeep([], mock.data),
-                    mockLayout = Lib.extendDeep({}, mock.layout);
+                var mockData = Lib.extendDeep([], mock.data);
+                var mockLayout = Lib.extendDeep({}, mock.layout);
 
                 Plotly.plot(gd, mockData, mockLayout).then(done);
             });

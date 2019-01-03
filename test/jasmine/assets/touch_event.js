@@ -1,8 +1,8 @@
 var Lib = require('../../../src/lib');
 
 module.exports = function(type, x, y, opts) {
-    var el = (opts && opts.element) || document.elementFromPoint(x, y),
-        ev;
+    var el = (opts && opts.element) || document.elementFromPoint(x, y);
+    var ev;
 
     var touchObj = new Touch({
         identifier: Date.now(),

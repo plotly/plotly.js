@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -18,9 +18,9 @@ var parcats = require('./parcats');
  * @param {Array.<ParcatsModel>} parcatsModels
  */
 module.exports = function plot(graphDiv, parcatsModels, transitionOpts, makeOnCompleteCallback) {
-    var fullLayout = graphDiv._fullLayout,
-        svg = fullLayout._paper,
-        size = fullLayout._size;
+    var fullLayout = graphDiv._fullLayout;
+    var svg = fullLayout._paper;
+    var size = fullLayout._size;
 
     parcats(
         graphDiv,

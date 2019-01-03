@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -67,7 +67,7 @@ module.exports = {
         // '-' means we haven't yet run autotype or couldn't find any data
         // it gets turned into linear in gd._fullLayout but not copied back
         // to gd.data like the others are.
-        values: ['-', 'linear', 'log', 'date', 'category'],
+        values: ['-', 'linear', 'log', 'date', 'category', 'multicategory'],
         dflt: '-',
         role: 'info',
         editType: 'calc',
@@ -323,7 +323,7 @@ module.exports = {
         description: [
             'Determines where ticks and grid lines are drawn with respect to their',
             'corresponding tick labels.',
-            'Only has an effect for axes of `type` *category*.',
+            'Only has an effect for axes of `type` *category* or *multicategory*.',
             'When set to *boundaries*, ticks and grid lines are drawn half a category',
             'to the left/bottom of labels.'
         ].join(' ')
@@ -675,6 +675,40 @@ module.exports = {
         editType: 'ticks',
         description: 'Sets the width (in px) of the zero line.'
     },
+
+    showdividers: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Determines whether or not a dividers are drawn',
+            'between the category levels of this axis.',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    dividercolor: {
+        valType: 'color',
+        dflt: colorAttrs.defaultLine,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Sets the color of the dividers',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    dividerwidth: {
+        valType: 'number',
+        dflt: 1,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Sets the width (in px) of the dividers',
+            'Only has an effect on *multicategory* axes.'
+        ].join(' ')
+    },
+    // TODO dividerlen: that would override "to label base" length?
+
     // positioning attributes
     // anchor: not used directly, just put here for reference
     // values are any opposite-letter axis id

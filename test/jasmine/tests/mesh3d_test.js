@@ -14,11 +14,11 @@ describe('Test mesh3d restyle', function() {
             var fullTrace = gd._fullData[0];
 
             expect(trace.cauto).toBe(user[0], 'user cauto');
-            expect(trace.cmin).toEqual(user[1], 'user cmin');
-            expect(trace.cmax).toEqual(user[2], 'user cmax');
+            expect(trace.cmin).toBe(user[1], 'user cmin');
+            expect(trace.cmax).toBe(user[2], 'user cmax');
             expect(fullTrace.cauto).toBe(full[0], 'full cauto');
-            expect(fullTrace.cmin).toEqual(full[1], 'full cmin');
-            expect(fullTrace.cmax).toEqual(full[2], 'full cmax');
+            expect(fullTrace.cmin).toBe(full[1], 'full cmin');
+            expect(fullTrace.cmax).toBe(full[2], 'full cmax');
         }
 
         Plotly.plot(gd, [{
@@ -32,12 +32,12 @@ describe('Test mesh3d restyle', function() {
             intensity: [0, 0.33, 0.66, 3]
         }])
         .then(function() {
-            _assert([true, 0, 3], [true, 0, 3]);
+            _assert([undefined, undefined, undefined], [true, 0, 3]);
 
             return Plotly.restyle(gd, 'cmin', 0);
         })
         .then(function() {
-            _assert([false, 0, 3], [false, 0, 3]);
+            _assert([false, 0, undefined], [false, 0, 3]);
 
             return Plotly.restyle(gd, 'cmax', 10);
         })
@@ -47,7 +47,7 @@ describe('Test mesh3d restyle', function() {
             return Plotly.restyle(gd, 'cauto', true);
         })
         .then(function() {
-            _assert([true, 0, 3], [true, 0, 3]);
+            _assert([true, 0, 10], [true, 0, 3]);
 
             return Plotly.purge(gd);
         })

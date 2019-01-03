@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -24,8 +24,8 @@ var constants = require('./constants');
 var ScrollBox = require('./scrollbox');
 
 module.exports = function draw(gd) {
-    var fullLayout = gd._fullLayout,
-        menuData = Lib.filterVisible(fullLayout[constants.name]);
+    var fullLayout = gd._fullLayout;
+    var menuData = Lib.filterVisible(fullLayout[constants.name]);
 
     /* Update menu data is bound to the header-group.
      * The items in the header group are always present.
@@ -99,8 +99,8 @@ module.exports = function draw(gd) {
     }
 
     // setup scrollbox
-    var scrollBoxId = 'updatemenus' + fullLayout._uid,
-        scrollBox = new ScrollBox(gd, gButton, scrollBoxId);
+    var scrollBoxId = 'updatemenus' + fullLayout._uid;
+    var scrollBox = new ScrollBox(gd, gButton, scrollBoxId);
 
     // remove exiting header, remove dropped buttons and reset margins
     if(headerGroups.enter().size()) {
@@ -356,9 +356,9 @@ function drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts, position) {
     var isVertical = (direction === 'up' || direction === 'down');
     var dims = menuOpts._dims;
 
-    var active = menuOpts.active,
-        translateX, translateY,
-        i;
+    var active = menuOpts.active;
+    var translateX, translateY;
+    var i;
     if(isVertical) {
         translateY = 0;
         for(i = 0; i < active; i++) {
@@ -390,8 +390,8 @@ function drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts, position) {
 }
 
 function hideScrollBox(scrollBox) {
-    var hasHBar = !!scrollBox.hbar,
-        hasVBar = !!scrollBox.vbar;
+    var hasHBar = !!scrollBox.hbar;
+    var hasVBar = !!scrollBox.vbar;
 
     if(hasHBar) {
         scrollBox.hbar

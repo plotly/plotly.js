@@ -15,15 +15,15 @@ describe('Test lib.js:', function() {
 
     describe('interp() should', function() {
         it('return 1.75 as Q1 of [1, 2, 3, 4, 5]:', function() {
-            var input = [1, 2, 3, 4, 5],
-                res = Lib.interp(input, 0.25),
-                res0 = 1.75;
+            var input = [1, 2, 3, 4, 5];
+            var res = Lib.interp(input, 0.25);
+            var res0 = 1.75;
             expect(res).toEqual(res0);
         });
         it('return 4.25 as Q3 of [1, 2, 3, 4, 5]:', function() {
-            var input = [1, 2, 3, 4, 5],
-                res = Lib.interp(input, 0.75),
-                res0 = 4.25;
+            var input = [1, 2, 3, 4, 5];
+            var res = Lib.interp(input, 0.75);
+            var res0 = 4.25;
             expect(res).toEqual(res0);
         });
         it('error if second input argument is a string:', function() {
@@ -33,16 +33,16 @@ describe('Test lib.js:', function() {
             }).toThrow('n should be a finite number');
         });
         it('error if second input argument is a date:', function() {
-            var in1 = [1, 2, 3, 4, 5],
-                in2 = new Date(2014, 11, 1);
+            var in1 = [1, 2, 3, 4, 5];
+            var in2 = new Date(2014, 11, 1);
             expect(function() {
                 Lib.interp(in1, in2);
             }).toThrow('n should be a finite number');
         });
         it('return the right boundary on input [-Inf, Inf]:', function() {
-            var input = [-Infinity, Infinity],
-                res = Lib.interp(input, 1),
-                res0 = Infinity;
+            var input = [-Infinity, Infinity];
+            var res = Lib.interp(input, 1);
+            var res0 = Infinity;
             expect(res).toEqual(res0);
         });
     });
@@ -50,15 +50,15 @@ describe('Test lib.js:', function() {
     describe('transposeRagged()', function() {
         it('should transpose and return a rectangular array', function() {
             var input = [
-                    [1],
-                    [2, 3, 4],
-                    [5, 6],
-                    [7]],
-                output = [
-                    [1, 2, 5, 7],
-                    [undefined, 3, 6, undefined],
-                    [undefined, 4, undefined, undefined]
-                ];
+                [1],
+                [2, 3, 4],
+                [5, 6],
+                [7]];
+            var output = [
+                [1, 2, 5, 7],
+                [undefined, 3, 6, undefined],
+                [undefined, 4, undefined, undefined]
+            ];
 
             expect(Lib.transposeRagged(input)).toEqual(output);
         });
@@ -93,8 +93,8 @@ describe('Test lib.js:', function() {
         function summation(a, b) { return a + b; }
 
         it('should work with 1D and 2D inputs and ignore non-numerics', function() {
-            var in1D = [1, 2, 3, 4, 'goose!', 5, 6],
-                in2D = [[1, 2, 3], ['', 4], [5, 'hi!', 6]];
+            var in1D = [1, 2, 3, 4, 'goose!', 5, 6];
+            var in2D = [[1, 2, 3], ['', 4], [5, 'hi!', 6]];
 
             expect(aggNums(Math.min, null, in1D)).toEqual(1);
             expect(aggNums(Math.min, null, in2D)).toEqual(1);
@@ -109,100 +109,100 @@ describe('Test lib.js:', function() {
 
     describe('mean() should', function() {
         it('toss out non-numerics (strings)', function() {
-            var input = [1, 2, 'apple', 'orange'],
-                res = Lib.mean(input);
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
         it('toss out non-numerics (NaN)', function() {
-            var input = [1, 2, NaN],
-                res = Lib.mean(input);
+            var input = [1, 2, NaN];
+            var res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
         it('evaluate numbers which are passed around as text strings:', function() {
-            var input = ['1', '2'],
-                res = Lib.mean(input);
+            var input = ['1', '2'];
+            var res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
     });
 
     describe('midRange() should', function() {
         it('should calculate the arithmetic mean of the maximum and minimum value of a given array', function() {
-            var input = [1, 5.5, 6, 15, 10, 13],
-                res = Lib.midRange(input);
+            var input = [1, 5.5, 6, 15, 10, 13];
+            var res = Lib.midRange(input);
             expect(res).toEqual(8);
         });
         it('toss out non-numerics (strings)', function() {
-            var input = [1, 2, 'apple', 'orange'],
-                res = Lib.midRange(input);
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.midRange(input);
             expect(res).toEqual(1.5);
         });
         it('toss out non-numerics (NaN)', function() {
-            var input = [1, 2, NaN],
-                res = Lib.midRange(input);
+            var input = [1, 2, NaN];
+            var res = Lib.midRange(input);
             expect(res).toEqual(1.5);
         });
         it('should be able to deal with array of length 1', function() {
-            var input = [10],
-                res = Lib.midRange(input);
+            var input = [10];
+            var res = Lib.midRange(input);
             expect(res).toEqual(10);
         });
         it('should return undefined for an empty array', function() {
-            var input = [],
-                res = Lib.midRange(input);
+            var input = [];
+            var res = Lib.midRange(input);
             expect(res).toBeUndefined();
         });
     });
 
     describe('variance() should', function() {
         it('return 0 on input [2, 2, 2, 2, 2]:', function() {
-            var input = [2, 2, 2, 2],
-                res = Lib.variance(input);
+            var input = [2, 2, 2, 2];
+            var res = Lib.variance(input);
             expect(res).toEqual(0);
         });
         it('return 2/3 on input [-1, 0, 1]:', function() {
-            var input = [-1, 0, 1],
-                res = Lib.variance(input);
+            var input = [-1, 0, 1];
+            var res = Lib.variance(input);
             expect(res).toEqual(2 / 3);
         });
         it('toss out non-numerics (strings):', function() {
-            var input = [1, 2, 'apple', 'orange'],
-                res = Lib.variance(input);
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.variance(input);
             expect(res).toEqual(0.25);
         });
         it('toss out non-numerics (NaN):', function() {
-            var input = [1, 2, NaN],
-                res = Lib.variance(input);
+            var input = [1, 2, NaN];
+            var res = Lib.variance(input);
             expect(res).toEqual(0.25);
         });
     });
 
     describe('stdev() should', function() {
         it('return 0 on input [2, 2, 2, 2, 2]:', function() {
-            var input = [2, 2, 2, 2],
-                res = Lib.stdev(input);
+            var input = [2, 2, 2, 2];
+            var res = Lib.stdev(input);
             expect(res).toEqual(0);
         });
         it('return sqrt(2/3) on input [-1, 0, 1]:', function() {
-            var input = [-1, 0, 1],
-                res = Lib.stdev(input);
+            var input = [-1, 0, 1];
+            var res = Lib.stdev(input);
             expect(res).toEqual(Math.sqrt(2 / 3));
         });
         it('toss out non-numerics (strings):', function() {
-            var input = [1, 2, 'apple', 'orange'],
-                res = Lib.stdev(input);
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.stdev(input);
             expect(res).toEqual(0.5);
         });
         it('toss out non-numerics (NaN):', function() {
-            var input = [1, 2, NaN],
-                res = Lib.stdev(input);
+            var input = [1, 2, NaN];
+            var res = Lib.stdev(input);
             expect(res).toEqual(0.5);
         });
     });
 
     describe('smooth()', function() {
         it('should not alter the input for FWHM < 1.5', function() {
-            var input = [1, 2, 1, 2, 1],
-                output = Lib.smooth(input.slice(), 1.49);
+            var input = [1, 2, 1, 2, 1];
+            var output = Lib.smooth(input.slice(), 1.49);
 
             expect(output).toEqual(input);
 
@@ -212,12 +212,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should preserve the length and integral even with multiple bounces', function() {
-            var input = [1, 2, 4, 8, 16, 8, 10, 12],
-                output2 = Lib.smooth(input.slice(), 2),
-                output30 = Lib.smooth(input.slice(), 30),
-                sumIn = 0,
-                sum2 = 0,
-                sum30 = 0;
+            var input = [1, 2, 4, 8, 16, 8, 10, 12];
+            var output2 = Lib.smooth(input.slice(), 2);
+            var output30 = Lib.smooth(input.slice(), 30);
+            var sumIn = 0;
+            var sum2 = 0;
+            var sum30 = 0;
 
             for(var i = 0; i < input.length; i++) {
                 sumIn += input[i];
@@ -232,15 +232,15 @@ describe('Test lib.js:', function() {
         });
 
         it('should use a hann window and bounce', function() {
-            var input = [0, 0, 0, 7, 0, 0, 0],
-                out4 = Lib.smooth(input, 4),
-                out7 = Lib.smooth(input, 7),
-                expected4 = [
-                    0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
-                    1.493718433538229, 0.875, 0.25628156646177086
-                ],
-                expected7 = [1, 1, 1, 1, 1, 1, 1],
-                i;
+            var input = [0, 0, 0, 7, 0, 0, 0];
+            var out4 = Lib.smooth(input, 4);
+            var out7 = Lib.smooth(input, 7);
+            var expected4 = [
+                0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
+                1.493718433538229, 0.875, 0.25628156646177086
+            ];
+            var expected7 = [1, 1, 1, 1, 1, 1, 1];
+            var i;
 
             for(i = 0; i < input.length; i++) {
                 expect(out4[i]).toBeCloseTo(expected4[i], 6);
@@ -253,9 +253,9 @@ describe('Test lib.js:', function() {
         var np = Lib.nestedProperty;
 
         it('should access simple objects', function() {
-            var obj = {a: 'b', c: 'd'},
-                propA = np(obj, 'a'),
-                propB = np(obj, 'b');
+            var obj = {a: 'b', c: 'd'};
+            var propA = np(obj, 'a');
+            var propB = np(obj, 'b');
 
             expect(propA.get()).toBe('b');
             // making and reading nestedProperties shouldn't change anything
@@ -273,9 +273,9 @@ describe('Test lib.js:', function() {
         });
 
         it('should access arrays', function() {
-            var arr = [1, 2, 3],
-                prop1 = np(arr, 1),
-                prop5 = np(arr, '5');
+            var arr = [1, 2, 3];
+            var prop1 = np(arr, 1);
+            var prop5 = np(arr, '5');
 
             expect(prop1.get()).toBe(2);
             expect(arr).toEqual([1, 2, 3]);
@@ -307,8 +307,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should access properties of objects in an array with index -1', function() {
-            var obj = {arr: [{a: 1}, {a: 2}, {b: 3}]},
-                prop = np(obj, 'arr[-1].a');
+            var obj = {arr: [{a: 1}, {a: 2}, {b: 3}]};
+            var prop = np(obj, 'arr[-1].a');
 
             expect(prop.get()).toEqual([1, 2, undefined]);
             expect(obj).toEqual({arr: [{a: 1}, {a: 2}, {b: 3}]});
@@ -341,9 +341,9 @@ describe('Test lib.js:', function() {
         });
 
         it('should remove a property only with undefined or null', function() {
-            var obj = {a: 'b', c: 'd'},
-                propA = np(obj, 'a'),
-                propC = np(obj, 'c');
+            var obj = {a: 'b', c: 'd'};
+            var propA = np(obj, 'a');
+            var propC = np(obj, 'c');
 
             propA.set(null);
             propC.set(undefined);
@@ -358,18 +358,18 @@ describe('Test lib.js:', function() {
 
         it('should not remove arrays or empty objects inside container arrays', function() {
             var obj = {
-                    annotations: [{a: [1, 2, 3]}],
-                    c: [1, 2, 3],
-                    domain: [1, 2],
-                    range: [2, 3],
-                    shapes: ['elephant']
-                },
-                propA = np(obj, 'annotations[-1].a'),
-                propC = np(obj, 'c'),
-                propD0 = np(obj, 'domain[0]'),
-                propD1 = np(obj, 'domain[1]'),
-                propR = np(obj, 'range'),
-                propS = np(obj, 'shapes[0]');
+                annotations: [{a: [1, 2, 3]}],
+                c: [1, 2, 3],
+                domain: [1, 2],
+                range: [2, 3],
+                shapes: ['elephant']
+            };
+            var propA = np(obj, 'annotations[-1].a');
+            var propC = np(obj, 'c');
+            var propD0 = np(obj, 'domain[0]');
+            var propD1 = np(obj, 'domain[1]');
+            var propR = np(obj, 'range');
+            var propS = np(obj, 'shapes[0]');
 
             propA.set([[]]);
             propC.set([]);
@@ -390,10 +390,10 @@ describe('Test lib.js:', function() {
 
 
         it('should allow empty object sub-containers', function() {
-            var obj = {},
-                prop = np(obj, 'a[1].b.c'),
-                // we never set a value into a[0] so it doesn't even get {}
-                expectedArr = [undefined, {b: {c: 'pizza'}}];
+            var obj = {};
+            var prop = np(obj, 'a[1].b.c');
+            // we never set a value into a[0] so it doesn't even get {}
+            var expectedArr = [undefined, {b: {c: 'pizza'}}];
 
             expect(prop.get()).toBe(undefined);
             expect(obj).toEqual({});
@@ -408,8 +408,8 @@ describe('Test lib.js:', function() {
         });
 
         it('does not prune inside `args` arrays', function() {
-            var obj = {},
-                args = np(obj, 'args');
+            var obj = {};
+            var args = np(obj, 'args');
 
             args.set([]);
             expect(obj.args).toEqual([]);
@@ -664,20 +664,20 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerce', function() {
-        var coerce = Lib.coerce,
-            out;
+        var coerce = Lib.coerce;
+        var out;
 
         // TODO: I tested font and string because I changed them, but all the other types need tests still
 
         it('should set a value and return the value it sets', function() {
-            var aVal = 'aaaaah!',
-                cVal = {1: 2, 3: 4},
-                attrs = {a: {valType: 'any', dflt: aVal}, b: {c: {valType: 'any'}}},
-                obj = {b: {c: cVal}},
-                outObj = {},
+            var aVal = 'aaaaah!';
+            var cVal = {1: 2, 3: 4};
+            var attrs = {a: {valType: 'any', dflt: aVal}, b: {c: {valType: 'any'}}};
+            var obj = {b: {c: cVal}};
+            var outObj = {};
 
-                aOut = coerce(obj, outObj, attrs, 'a'),
-                cOut = coerce(obj, outObj, attrs, 'b.c');
+            var aOut = coerce(obj, outObj, attrs, 'a');
+            var cOut = coerce(obj, outObj, attrs, 'b.c');
 
             expect(aOut).toBe(aVal);
             expect(aOut).toBe(outObj.a);
@@ -704,11 +704,11 @@ describe('Test lib.js:', function() {
         });
 
         describe('string valType', function() {
-            var dflt = 'Jabberwock',
-                stringAttrs = {
-                    s: {valType: 'string', dflt: dflt},
-                    noBlank: {valType: 'string', dflt: dflt, noBlank: true}
-                };
+            var dflt = 'Jabberwock';
+            var stringAttrs = {
+                s: {valType: 'string', dflt: dflt},
+                noBlank: {valType: 'string', dflt: dflt, noBlank: true}
+            };
 
             it('should insert the default if input is missing, or blank with noBlank', function() {
                 out = coerce(undefined, {}, stringAttrs, 's');
@@ -746,14 +746,18 @@ describe('Test lib.js:', function() {
             var coerce2 = Lib.coerce2;
 
             it('should set a value and return the value it sets when user input is valid', function() {
-                var colVal = 'red',
-                    sizeVal = 0, // 0 is valid but falsey
-                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}}},
-                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                    outObj = {},
-                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+                var colVal = 'red';
+                var sizeVal = 0; // 0 is valid but falsey
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var outObj = {};
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
                 expect(colOut).toBe(colVal);
                 expect(colOut).toBe(outObj.testMarker.testColor);
@@ -762,14 +766,18 @@ describe('Test lib.js:', function() {
             });
 
             it('should set and return the default if the user input is not valid', function() {
-                var colVal = 'r',
-                    sizeVal = 'aaaaah!',
-                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}}},
-                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                    outObj = {},
-                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+                var colVal = 'r';
+                var sizeVal = 'aaaaah!';
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var outObj = {};
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
                 expect(colOut).toBe('rgba(0, 0, 0, 0)');
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
@@ -778,14 +786,18 @@ describe('Test lib.js:', function() {
             });
 
             it('should return false if there is no user input', function() {
-                var colVal = null,
-                    sizeVal, // undefined
-                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}}},
-                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                    outObj = {},
-                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+                var colVal = null;
+                var sizeVal; // undefined
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var outObj = {};
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
                 expect(colOut).toBe(false);
                 expect(sizeOut).toBe(false);
@@ -1000,9 +1012,9 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerceFont', function() {
-        var fontAttrs = Plots.fontAttrs({}),
-            extendFlat = Lib.extendFlat,
-            coerceFont = Lib.coerceFont;
+        var fontAttrs = Plots.fontAttrs({});
+        var extendFlat = Lib.extendFlat;
+        var coerceFont = Lib.coerceFont;
 
         var defaultFont = {
             family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
@@ -1048,12 +1060,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should pass through individual valid pieces', function() {
-            var goodFamily = 'A fish', // for now any non-blank string is OK
-                badFamily = 42,
-                goodSize = 123.456,
-                badSize = 'ginormous',
-                goodColor = 'red',
-                badColor = 'a dark and stormy night';
+            var goodFamily = 'A fish'; // for now any non-blank string is OK
+            var badFamily = 42;
+            var goodSize = 123.456;
+            var badSize = 'ginormous';
+            var goodColor = 'red';
+            var badColor = 'a dark and stormy night';
 
             containerIn = {
                 fontWithDefault: {family: goodFamily, size: badSize, color: badColor}
@@ -1099,8 +1111,8 @@ describe('Test lib.js:', function() {
         }
 
         it('should work for valType \'data_array\' where', function() {
-            var shouldPass = [[20], []],
-                shouldFail = ['a', {}, 20, undefined, null];
+            var shouldPass = [[20], []];
+            var shouldFail = ['a', {}, 20, undefined, null];
 
             assert(shouldPass, shouldFail, {
                 valType: 'data_array'
@@ -1141,8 +1153,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'boolean\' where', function() {
-            var shouldPass = [true, false],
-                shouldFail = ['a', 1, {}, [], null, undefined, ''];
+            var shouldPass = [true, false];
+            var shouldFail = ['a', 1, {}, [], null, undefined, ''];
 
             assert(shouldPass, shouldFail, {
                 valType: 'boolean',
@@ -1156,8 +1168,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'number\' where', function() {
-            var shouldPass = [20, '20', 1e6],
-                shouldFail = ['a', [], {}, null, undefined, ''];
+            var shouldPass = [20, '20', 1e6];
+            var shouldFail = ['a', [], {}, null, undefined, ''];
 
             assert(shouldPass, shouldFail, {
                 valType: 'number'
@@ -1224,8 +1236,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'color\' where', function() {
-            var shouldPass = ['red', '#d3d3d3', 'rgba(0,255,255,0.1)'],
-                shouldFail = [1, {}, [], 'rgq(233,122,332,1)', null, undefined];
+            var shouldPass = ['red', '#d3d3d3', 'rgba(0,255,255,0.1)'];
+            var shouldFail = [1, {}, [], 'rgq(233,122,332,1)', null, undefined];
 
             assert(shouldPass, shouldFail, {
                 valType: 'color'
@@ -1233,8 +1245,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'colorlist\' where', function() {
-            var shouldPass = [['red'], ['#ffffff'], ['rgba(0,0,0,1)'], ['red', 'green', 'blue']],
-                shouldFail = [1, null, undefined, {}, [], 'red', ['red', null]];
+            var shouldPass = [['red'], ['#ffffff'], ['rgba(0,0,0,1)'], ['red', 'green', 'blue']];
+            var shouldFail = [1, null, undefined, {}, [], 'red', ['red', null]];
 
             assert(shouldPass, shouldFail, {
                 valType: 'colorlist'
@@ -1242,14 +1254,14 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'colorscale\' where', function() {
-            var good = [ [0, 'red'], [1, 'blue'] ],
-                bad = [ [0.1, 'red'], [1, 'blue'] ],
-                bad2 = [ [0], [1] ],
-                bad3 = [ ['red'], ['blue']],
-                bad4 = ['red', 'blue'];
+            var good = [ [0, 'red'], [1, 'blue'] ];
+            var bad = [ [0.1, 'red'], [1, 'blue'] ];
+            var bad2 = [ [0], [1] ];
+            var bad3 = [ ['red'], ['blue']];
+            var bad4 = ['red', 'blue'];
 
-            var shouldPass = ['Viridis', 'Greens', good],
-                shouldFail = ['red', 1, undefined, null, {}, [], bad, bad2, bad3, bad4];
+            var shouldPass = ['Viridis', 'Greens', good];
+            var shouldFail = ['red', 1, undefined, null, {}, [], bad, bad2, bad3, bad4];
 
             assert(shouldPass, shouldFail, {
                 valType: 'colorscale'
@@ -1257,8 +1269,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'angle\' where', function() {
-            var shouldPass = ['auto', '120', 270],
-                shouldFail = [{}, [], 'red', null, undefined, ''];
+            var shouldPass = ['auto', '120', 270];
+            var shouldFail = [{}, [], 'red', null, undefined, ''];
 
             assert(shouldPass, shouldFail, {
                 valType: 'angle',
@@ -1267,8 +1279,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'subplotid\' where', function() {
-            var shouldPass = ['sp', 'sp4', 'sp10'],
-                shouldFail = [{}, [], 'sp1', 'sp0', 'spee1', null, undefined, true];
+            var shouldPass = ['sp', 'sp4', 'sp10'];
+            var shouldFail = [{}, [], 'sp1', 'sp0', 'spee1', null, undefined, true];
 
             assert(shouldPass, shouldFail, {
                 valType: 'subplotid',
@@ -1277,8 +1289,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'flaglist\' where', function() {
-            var shouldPass = ['a', 'b', 'a+b', 'b+a', 'c'],
-                shouldFail = [{}, [], 'red', null, undefined, '', 'a + b'];
+            var shouldPass = ['a', 'b', 'a+b', 'b+a', 'c'];
+            var shouldFail = [{}, [], 'red', null, undefined, '', 'a + b'];
 
             assert(shouldPass, shouldFail, {
                 valType: 'flaglist',
@@ -1288,8 +1300,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'any\' where', function() {
-            var shouldPass = ['', '120', null, false, {}, []],
-                shouldFail = [undefined];
+            var shouldPass = ['', '120', null, false, {}, []];
+            var shouldFail = [undefined];
 
             assert(shouldPass, shouldFail, {
                 valType: 'any'
@@ -1297,12 +1309,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'info_array\' where', function() {
-            var shouldPass = [[1, 2], [-20, '20']],
-                shouldFail = [
-                    {}, [], [10], [null, 10], ['aads', null],
-                    'red', null, undefined, '',
-                    [1, 10, null]
-                ];
+            var shouldPass = [[1, 2], [-20, '20']];
+            var shouldFail = [
+                {}, [], [10], [null, 10], ['aads', null],
+                'red', null, undefined, '',
+                [1, 10, null]
+            ];
 
             assert(shouldPass, shouldFail, {
                 valType: 'info_array',
@@ -1480,8 +1492,8 @@ describe('Test lib.js:', function() {
         it('should recognize matching RegExps', function() {
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
-            var r1 = /a/,
-                r2 = /a/;
+            var r1 = /a/;
+            var r2 = /a/;
             Lib.pushUnique(this.array, r1);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, r1]);
 
@@ -2194,7 +2206,8 @@ describe('Test lib.js:', function() {
         });
 
         it('uses the value from the first object with the specified key', function() {
-            var obj1 = {a: 'first'}, obj2 = {a: 'second', foo: {bar: 'bar'}};
+            var obj1 = {a: 'first'};
+            var obj2 = {a: 'second', foo: {bar: 'bar'}};
 
             // Simple key
             expect(Lib.hovertemplateString('foo %{a}', {}, obj1, obj2)).toEqual('foo first');

@@ -19,15 +19,15 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 describe('carpet supplyDefaults', function() {
     'use strict';
 
-    var traceIn,
-        traceOut;
+    var traceIn;
+    var traceOut;
 
     var supplyDefaults = Carpet.supplyDefaults;
 
-    var defaultColor = '#444',
-        layout = {
-            font: Plots.layoutAttributes.font
-        };
+    var defaultColor = '#444';
+    var layout = {
+        font: Plots.layoutAttributes.font
+    };
 
     beforeEach(function() {
         traceOut = {};

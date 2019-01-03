@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -181,7 +181,9 @@ function createCamera(element, options) {
         return false;
     });
 
-    var lastX = 0, lastY = 0, lastMods = {shift: false, control: false, alt: false, meta: false};
+    var lastX = 0;
+    var lastY = 0;
+    var lastMods = {shift: false, control: false, alt: false, meta: false};
     camera.mouseListener = mouseChange(element, handleInteraction);
 
     // enable simple touch interactions

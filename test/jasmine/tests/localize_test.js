@@ -202,7 +202,7 @@ describe('localization', function() {
         // four locales, highest to lowest priority
         // hopefully nobody will supply this many conflicting locales, but
         // if they do, this is what should happen!
-        var ctx_fr_QC = {
+        var ctxFrQC = {
             dictionary: {a: 'a-ctx-QC'},
             format: {decimal: '~'}
         };
@@ -212,7 +212,7 @@ describe('localization', function() {
             dictionary: {a: 'a-reg-QC', b: 'b-reg-QC'},
             format: {decimal: 'X', thousands: '@'}
         });
-        var ctx_fr = {
+        var ctxFr = {
             dictionary: {a: 'a-ctx', b: 'b-ctx', c: 'c-ctx'},
             format: {decimal: 'X', thousands: 'X', shortMonths: monthNums}
         };
@@ -223,7 +223,7 @@ describe('localization', function() {
             format: {decimal: 'X', thousands: 'X', shortMonths: monthLetters, shortDays: dayLetters}
         });
 
-        plot('fr-QC', {fr: ctx_fr, 'fr-QC': ctx_fr_QC})
+        plot('fr-QC', {fr: ctxFr, 'fr-QC': ctxFrQC})
         .then(function() {
             expect(_(gd, 'a')).toBe('a-ctx-QC');
             expect(_(gd, 'b')).toBe('b-reg-QC');

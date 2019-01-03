@@ -84,8 +84,8 @@ describe('Layout images', function() {
 
     describe('drawing', function() {
 
-        var gd,
-            data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
+        var gd;
+        var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -172,8 +172,8 @@ describe('Layout images', function() {
                     sizing: sizing
                 }]});
 
-                var image = Plotly.d3.select('image'),
-                    parValue = image.attr('preserveAspectRatio');
+                var image = Plotly.d3.select('image');
+                var parValue = image.attr('preserveAspectRatio');
 
                 expect(parValue).toBe(expected);
             }
@@ -203,8 +203,8 @@ describe('Layout images', function() {
     });
 
     describe('when the plot is dragged', function() {
-        var gd,
-            data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
+        var gd;
+        var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -229,8 +229,8 @@ describe('Layout images', function() {
                 width: 600,
                 height: 400
             }).then(function() {
-                var img = Plotly.d3.select('image').node(),
-                    oldPos = img.getBoundingClientRect();
+                var img = Plotly.d3.select('image').node();
+                var oldPos = img.getBoundingClientRect();
 
                 mouseEvent('mousedown', 250, 200);
                 mouseEvent('mousemove', 300, 250);
@@ -261,8 +261,8 @@ describe('Layout images', function() {
                 width: 600,
                 height: 400
             }).then(function() {
-                var img = Plotly.d3.select('image').node(),
-                    oldPos = img.getBoundingClientRect();
+                var img = Plotly.d3.select('image').node();
+                var oldPos = img.getBoundingClientRect();
 
                 mouseEvent('mousedown', 250, 200);
                 mouseEvent('mousemove', 300, 250);
@@ -280,8 +280,8 @@ describe('Layout images', function() {
 
     describe('when relayout', function() {
 
-        var gd,
-            data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
+        var gd;
+        var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -301,12 +301,12 @@ describe('Layout images', function() {
         afterEach(destroyGraphDiv);
 
         it('should update the image if changed', function(done) {
-            var img = Plotly.d3.select('image'),
-                url = img.attr('xlink:href');
+            var img = Plotly.d3.select('image');
+            var url = img.attr('xlink:href');
 
             Plotly.relayout(gd, 'images[0].source', pythonLogo).then(function() {
-                var newImg = Plotly.d3.select('image'),
-                    newUrl = newImg.attr('xlink:href');
+                var newImg = Plotly.d3.select('image');
+                var newUrl = newImg.attr('xlink:href');
                 expect(url).not.toBe(newUrl);
             }).then(done);
         });
@@ -344,9 +344,9 @@ describe('Layout images', function() {
         afterEach(destroyGraphDiv);
 
         it('should properly add and remove image', function(done) {
-            var gd = createGraphDiv(),
-                data = [{ x: [1, 2, 3], y: [1, 2, 3] }],
-                layout = { width: 500, height: 400 };
+            var gd = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
+            var layout = { width: 500, height: 400 };
 
             function makeImage(source, x, y) {
                 return {
@@ -449,8 +449,8 @@ describe('images log/linear axis changes', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        var mockData = Lib.extendDeep([], mock.data),
-            mockLayout = Lib.extendDeep({}, mock.layout);
+        var mockData = Lib.extendDeep([], mock.data);
+        var mockLayout = Lib.extendDeep({}, mock.layout);
 
         Plotly.plot(gd, mockData, mockLayout).then(done);
     });

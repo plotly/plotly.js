@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,6 @@ var Axes = require('../../plots/cartesian/axes');
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
 var convertColumnData = require('./convert_column_xyz');
-var maxRowLength = require('./max_row_length');
 var clean2dArray = require('./clean_2d_array');
 var interp2d = require('./interp2d');
 var findEmpties = require('./find_empties');
@@ -26,21 +25,21 @@ var makeBoundArray = require('./make_bound_array');
 module.exports = function calc(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
-        ya = Axes.getFromId(gd, trace.yaxis || 'y'),
-        isContour = Registry.traceIs(trace, 'contour'),
-        isHist = Registry.traceIs(trace, 'histogram'),
-        isGL2D = Registry.traceIs(trace, 'gl2d'),
-        zsmooth = isContour ? 'best' : trace.zsmooth,
-        x,
-        x0,
-        dx,
-        y,
-        y0,
-        dy,
-        z,
-        i,
-        binned;
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
+    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var isContour = Registry.traceIs(trace, 'contour');
+    var isHist = Registry.traceIs(trace, 'histogram');
+    var isGL2D = Registry.traceIs(trace, 'gl2d');
+    var zsmooth = isContour ? 'best' : trace.zsmooth;
+    var x;
+    var x0;
+    var dx;
+    var y;
+    var y0;
+    var dy;
+    var z;
+    var i;
+    var binned;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
@@ -93,8 +92,8 @@ module.exports = function calc(gd, trace) {
         }
         else if(!isHist) {
             if(x.length) {
-                var avgdx = (x[x.length - 1] - x[0]) / (x.length - 1),
-                    maxErrX = Math.abs(avgdx / 100);
+                var avgdx = (x[x.length - 1] - x[0]) / (x.length - 1);
+                var maxErrX = Math.abs(avgdx / 100);
                 for(i = 0; i < x.length - 1; i++) {
                     if(Math.abs(x[i + 1] - x[i] - avgdx) > maxErrX) {
                         noZsmooth('x scale is not linear');
@@ -103,8 +102,8 @@ module.exports = function calc(gd, trace) {
                 }
             }
             if(y.length && zsmooth === 'fast') {
-                var avgdy = (y[y.length - 1] - y[0]) / (y.length - 1),
-                    maxErrY = Math.abs(avgdy / 100);
+                var avgdy = (y[y.length - 1] - y[0]) / (y.length - 1);
+                var maxErrY = Math.abs(avgdy / 100);
                 for(i = 0; i < y.length - 1; i++) {
                     if(Math.abs(y[i + 1] - y[i] - avgdy) > maxErrY) {
                         noZsmooth('y scale is not linear');
@@ -116,7 +115,7 @@ module.exports = function calc(gd, trace) {
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = maxRowLength(z);
+    var xlen = Lib.maxRowLength(z);
     var xIn = trace.xtype === 'scaled' ? '' : x;
     var xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa);
     var yIn = trace.ytype === 'scaled' ? '' : y;

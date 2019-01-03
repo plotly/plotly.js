@@ -29,9 +29,9 @@ describe('scattermapbox defaults', function() {
     'use strict';
 
     function _supply(traceIn) {
-        var traceOut = { visible: true },
-            defaultColor = '#444',
-            layout = { _dataLength: 1 };
+        var traceOut = { visible: true };
+        var defaultColor = '#444';
+        var layout = { _dataLength: 1 };
 
         ScatterMapbox.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -418,11 +418,11 @@ describe('scattermapbox convert', function() {
 
         assertVisibility(opts, ['visible', 'visible', 'visible', 'none']);
 
-        var segment1 = [[10, 20], [20, 20], [30, 10]],
-            segment2 = [[20, 10], [10, 20]];
+        var segment1 = [[10, 20], [20, 20], [30, 10]];
+        var segment2 = [[20, 10], [10, 20]];
 
-        var lineCoords = [segment1, segment2],
-            fillCoords = [[segment1], [segment2]];
+        var lineCoords = [segment1, segment2];
+        var fillCoords = [[segment1], [segment2]];
 
         expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'line coords');
         expect(opts.fill.geojson.coordinates).toEqual(fillCoords, 'fill coords');
@@ -602,8 +602,8 @@ describe('@noCI scattermapbox hover', function() {
     }
 
     it('should generate hover label info (base case)', function() {
-        var xval = 11,
-            yval = 11;
+        var xval = 11;
+        var yval = 11;
 
         var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
@@ -629,9 +629,9 @@ describe('@noCI scattermapbox hover', function() {
     });
 
     it('should skip over blank and non-string text items', function(done) {
-        var xval = 11,
-            yval = 11,
-            out;
+        var xval = 11;
+        var yval = 11;
+        var out;
 
         Plotly.restyle(gd, 'text', [['', 'B', 'C']]).then(function() {
             out = hoverPoints(getPointData(gd), xval, yval)[0];
@@ -659,8 +659,8 @@ describe('@noCI scattermapbox hover', function() {
     });
 
     it('should generate hover label info (positive winding case)', function() {
-        var xval = 11 + 720,
-            yval = 11;
+        var xval = 11 + 720;
+        var yval = 11;
 
         var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
@@ -673,8 +673,8 @@ describe('@noCI scattermapbox hover', function() {
     });
 
     it('should generate hover label info (negative winding case)', function() {
-        var xval = 11 - 1080,
-            yval = 11;
+        var xval = 11 - 1080;
+        var yval = 11;
 
         var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
@@ -688,8 +688,8 @@ describe('@noCI scattermapbox hover', function() {
 
     it('should generate hover label info (hoverinfo: \'lon\' case)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'lon').then(function() {
-            var xval = 11,
-                yval = 11;
+            var xval = 11;
+            var yval = 11;
 
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
@@ -700,8 +700,8 @@ describe('@noCI scattermapbox hover', function() {
 
     it('should generate hover label info (hoverinfo: \'lat\' case)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'lat').then(function() {
-            var xval = 11,
-                yval = 11;
+            var xval = 11;
+            var yval = 11;
 
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
@@ -712,8 +712,8 @@ describe('@noCI scattermapbox hover', function() {
 
     it('should generate hover label info (hoverinfo: \'text\' + \'text\' array case)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'text').then(function() {
-            var xval = 11,
-                yval = 11;
+            var xval = 11;
+            var yval = 11;
 
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
@@ -724,8 +724,8 @@ describe('@noCI scattermapbox hover', function() {
 
     it('should generate hover label info (hoverinfo: \'text\' + \'hovertext\' array case)', function(done) {
         Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
-            var xval = 11,
-                yval = 11;
+            var xval = 11;
+            var yval = 11;
 
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
@@ -820,8 +820,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
         it('should contain the correct fields', function() {
             click(pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
