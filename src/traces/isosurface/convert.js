@@ -140,6 +140,8 @@ function generateIsosurfaceMesh(data) {
         beginVertextLength = numVertices;
     }
 
+    beginSection();
+
     function getVertexId(x, y, z) {
         for(var f = beginVertextLength; f < allVs.length - 1; f++) {
             if(
@@ -170,8 +172,6 @@ function generateIsosurfaceMesh(data) {
     }
 
     function drawTri(debug, xyzv) {
-
-        beginSection(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         var pnts = [];
         for(var g = 0; g < 3; g++) {
@@ -224,15 +224,14 @@ function generateIsosurfaceMesh(data) {
     }
 
     function inRange(value) {
-
-        if(vMin <= value && value <= vMax) return true;
+        if(vMin - vDif * 0.005 < value && value < vMax + vDif * 0.005) return true;
 
         var dA = Math.abs(value - vMin);
         var dB = Math.abs(value - vMax);
         var closeness = Math.min(dA, dB) / vDif;
 
         // tolerate certain error i.e. based on distances ...
-        if(closeness < 0.001) return true;
+        if(closeness < 0.01) return true;
 
         return false;
     }
@@ -266,12 +265,12 @@ function generateIsosurfaceMesh(data) {
             inRange(xyzv[3][3])
         ];
 
-        if(ok[0] && ok[1] && ok[2] && ok[3]) {
-            drawTetra(debug, xyzv);
+        if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
             return;
         }
 
-        if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
+        if(ok[0] && ok[1] && ok[2] && ok[3]) {
+            drawTetra(debug, xyzv);
             return;
         }
 
@@ -291,10 +290,10 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(D, B);
                 var p3 = calcIntersection(D, C);
 
-                drawQuad(debug, [A, B, p2, p1]);
-                drawQuad(debug, [B, C, p3, p2]);
-                drawQuad(debug, [C, A, p1, p3]);
-                drawTri(debug, [A, B, C]);
+//                drawQuad(debug, [A, B, p2, p1]);
+//                drawQuad(debug, [B, C, p3, p2]);
+//                drawQuad(debug, [C, A, p1, p3]);
+//                drawTri(debug, [A, B, C]);
                 drawTri(debug, [p1, p2, p3]);
                 return;
             }
@@ -303,7 +302,7 @@ function generateIsosurfaceMesh(data) {
         [
             [0, 1, 2, 3],
             [0, 2, 1, 3],
-            [0, 3, 1, 3],
+            [0, 3, 1, 2],
             [1, 2, 0, 3],
             [1, 3, 0, 2],
             [2, 3, 0, 1]
@@ -319,11 +318,11 @@ function generateIsosurfaceMesh(data) {
                 var p3 = calcIntersection(D, B);
                 var p4 = calcIntersection(D, A);
 
-                drawQuad(debug, [A, B, p2, p1]);
-                drawQuad(debug, [A, B, p3, p4]);
+//                drawQuad(debug, [A, B, p2, p1]);
+//                drawQuad(debug, [A, B, p3, p4]);
                 drawQuad(debug, [p1, p2, p3, p4]);
-                drawTri(debug, [A, p4, p1]);
-                drawTri(debug, [B, p3, p2]);
+//                drawTri(debug, [A, p1, p4]);
+//                drawTri(debug, [B, p2, p3]);
                 return;
             }
         });
@@ -332,7 +331,7 @@ function generateIsosurfaceMesh(data) {
             [0, 1, 2, 3],
             [1, 0, 2, 3],
             [2, 0, 1, 3],
-            [3, 0, 2, 3]
+            [3, 0, 2, 1]
         ].forEach(function(e) {
             if(ok[e[0]]) {
                 var A = xyzv[e[0]];
@@ -344,9 +343,9 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(C, A);
                 var p3 = calcIntersection(D, A);
 
-                drawTri(debug, [A, p1, p2]);
-                drawTri(debug, [A, p2, p3]);
-                drawTri(debug, [A, p3, p1]);
+//                drawTri(debug, [A, p1, p2]);
+//                drawTri(debug, [A, p2, p3]);
+//                drawTri(debug, [A, p3, p1]);
                 drawTri(debug, [p1, p2, p3]);
                 return;
             }
@@ -358,22 +357,27 @@ function generateIsosurfaceMesh(data) {
         tryCreateTetra(p011, p001, p010, p111);
         tryCreateTetra(p101, p100, p111, p001);
         tryCreateTetra(p110, p100, p111, p010);
+        tryCreateTetra(p001, p010, p100, p111);
     }
 
     if(data.isocap && vDif > 0) {
         for(k = 1; k < depth; k++) {
             for(j = 1; j < height; j++) {
                 for(i = 1; i < width; i++) {
-                    addCube(
-                        getIndex(i - 1, j - 1, k - 1),
-                        getIndex(i - 1, j - 1, k),
-                        getIndex(i - 1, j, k - 1),
-                        getIndex(i - 1, j, k),
-                        getIndex(i, j - 1, k - 1),
-                        getIndex(i, j - 1, k),
-                        getIndex(i, j, k - 1),
-                        getIndex(i, j, k)
-                    );
+                    var p000 = getIndex(i - 1, j - 1, k - 1);
+                    var p001 = getIndex(i - 1, j - 1, k);
+                    var p010 = getIndex(i - 1, j, k - 1);
+                    var p011 = getIndex(i - 1, j, k);
+                    var p100 = getIndex(i, j - 1, k - 1);
+                    var p101 = getIndex(i, j - 1, k);
+                    var p110 = getIndex(i, j, k - 1);
+                    var p111 = getIndex(i, j, k);
+
+                    if((i + j + k) % 2 === 0) {
+                        addCube(p000, p001, p010, p011, p100, p101, p110, p111);
+                    } else {
+                        addCube(p111, p110, p101, p100, p011, p010, p001, p000);
+                    }
                 }
             }
         }
