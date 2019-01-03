@@ -55,7 +55,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceIn.j && Lib.isArrayOrTypedArray(traceIn.j) &&
         traceIn.k && Lib.isArrayOrTypedArray(traceIn.k)
     ) {
-        if( traceIn.k.length !== 0 && (
+        if(traceIn.k.length !== 0 && (
             traceIn.i.length !== traceIn.j.length ||
             traceIn.j.length !== traceIn.k.length)) {
             traceOut.visible = false;
