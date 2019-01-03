@@ -34,11 +34,22 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var coords = readComponents(['x', 'y', 'z']);
-    readComponents(['i', 'j', 'k']);
-
     if(!coords) {
         traceOut.visible = false;
         return;
+    }
+    var numVertices = coords[0].length;
+
+    var indices = readComponents(['i', 'j', 'k']);
+    if(indices) {
+        indices.forEach(function(arr) {
+            for(var i = 0; i < arr.length; ++i) {
+                if(!Lib.isIndex(arr, numVertices)) {
+                    traceOut.visible = false;
+                    return;
+                }
+            }
+        });
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');

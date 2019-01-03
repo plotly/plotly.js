@@ -71,19 +71,21 @@ proto.update = function(data) {
     var positions = zip3(
         toDataCoords(layout.xaxis, data.x, scene.dataScale[0], data.xcalendar),
         toDataCoords(layout.yaxis, data.y, scene.dataScale[1], data.ycalendar),
-        toDataCoords(layout.zaxis, data.z, scene.dataScale[2], data.zcalendar));
+        toDataCoords(layout.zaxis, data.z, scene.dataScale[2], data.zcalendar)
+    );
 
     var cells;
     if(data.i && data.j && data.k) {
-        cells = zip3(data.i, data.j, data.k);
-    }
-    else if(data.alphahull === 0) {
+        cells = zip3(
+            data.i.map(function(e) { return Math.round(e); }),
+            data.j.map(function(e) { return Math.round(e); }),
+            data.k.map(function(e) { return Math.round(e); })
+        );
+    } else if(data.alphahull === 0) {
         cells = convexHull(positions);
-    }
-    else if(data.alphahull > 0) {
+    } else if(data.alphahull > 0) {
         cells = alphaShape(data.alphahull, positions);
-    }
-    else {
+    } else {
         var d = ['x', 'y', 'z'].indexOf(data.delaunayaxis);
         cells = triangulate(positions.map(function(c) {
             return [c[(d + 1) % 3], c[(d + 2) % 3]];
@@ -113,16 +115,13 @@ proto.update = function(data) {
         config.vertexIntensity = data.intensity;
         config.vertexIntensityBounds = [data.cmin, data.cmax];
         config.colormap = parseColorScale(data.colorscale);
-    }
-    else if(data.vertexcolor) {
+    } else if(data.vertexcolor) {
         this.color = data.vertexcolor[0];
         config.vertexColors = parseColorArray(data.vertexcolor);
-    }
-    else if(data.facecolor) {
+    } else if(data.facecolor) {
         this.color = data.facecolor[0];
         config.cellColors = parseColorArray(data.facecolor);
-    }
-    else {
+    } else {
         this.color = data.color;
         config.meshColor = str2RgbaArray(data.color);
     }
