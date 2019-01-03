@@ -13,6 +13,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var mockLists = require('../assets/mock_lists');
+var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
@@ -1804,5 +1805,69 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkEdited = checkState([], attrs());
 
         _run(fig, editComponents, checkInitial, checkEdited).then(done);
+    });
+});
+
+describe('Test Plotly.react + interactions under uirevision:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl gl3d subplots preserve camera changes on interactions', function(done) {
+        function _react() {
+            return Plotly.react(gd, [{
+                type: 'surface',
+                z: [[1, 2, 3], [3, 1, 2], [2, 3, 1]]
+            }], {
+                width: 500,
+                height: 500,
+                uirevision: true
+            });
+        }
+
+        // mocking panning/scrolling is brittle,
+        // this here is enough to to trigger the relayoutCallback
+        function _mouseup() {
+            var target = gd.querySelector('.svg-container .gl-container #scene canvas');
+            return new Promise(function(resolve) {
+                mouseEvent('mouseup', 200, 200, {element: target});
+                setTimeout(resolve, 0);
+            });
+        }
+
+        // should be same before & after 2nd react()
+        function _assertGUI(msg) {
+            var preGUI = gd._fullLayout._preGUI;
+            expect(preGUI['scene.camera']).toBe(null, msg);
+        }
+
+        _react()
+        .then(function() {
+            expect(gd.layout.scene).toEqual(jasmine.objectContaining({
+                aspectratio: {x: 1, y: 1, z: 1},
+                aspectmode: 'auto'
+            }));
+            expect(gd.layout.scene.camera).toBe(undefined);
+
+            var fullEye = gd._fullLayout.scene.camera.eye;
+            expect(fullEye.x).toBe(1.25);
+            expect(fullEye.y).toBe(1.25);
+            expect(fullEye.z).toBe(1.25);
+
+            expect(gd._fullLayout._preGUI).toEqual({});
+        })
+        .then(function() { return _mouseup(); })
+        .then(function() { _assertGUI('before'); })
+        .then(_react)
+        .then(function() { _assertGUI('after'); })
+        .catch(failTest)
+        .then(done);
     });
 });

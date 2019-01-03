@@ -702,6 +702,7 @@ proto.setCamera = function setCamera(cameraData) {
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
+    var fullLayout = this.fullLayout;
     var cameraData = this.getCamera();
     var cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
     var cameraDataLastSave = cameraNestedProp.get();
@@ -713,8 +714,9 @@ proto.saveCamera = function saveCamera(layout) {
         return y[vectors[i]] && (x[vectors[i]][components[j]] === y[vectors[i]][components[j]]);
     }
 
-    if(cameraDataLastSave === undefined) hasChanged = true;
-    else {
+    if(cameraDataLastSave === undefined) {
+        hasChanged = true;
+    } else {
         for(var i = 0; i < 3; i++) {
             for(var j = 0; j < 3; j++) {
                 if(!same(cameraData, cameraDataLastSave, i, j)) {
@@ -726,12 +728,14 @@ proto.saveCamera = function saveCamera(layout) {
     }
 
     if(hasChanged) {
+        var preGUI = {};
+        preGUI[this.id + '.camera'] = cameraDataLastSave;
+        Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, preGUI);
+
         cameraNestedProp.set(cameraData);
 
-        var fullLayout = this.fullLayout;
         var cameraFullNP = Lib.nestedProperty(fullLayout, this.id + '.camera');
         cameraFullNP.set(cameraData);
-        Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, cameraData);
     }
 
     return hasChanged;
