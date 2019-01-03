@@ -140,8 +140,6 @@ function generateIsosurfaceMesh(data) {
         beginVertextLength = numVertices;
     }
 
-    beginSection();
-
     function getVertexId(x, y, z) {
         for(var f = beginVertextLength; f < allVs.length - 1; f++) {
             if(
@@ -172,6 +170,8 @@ function generateIsosurfaceMesh(data) {
     }
 
     function drawTri(debug, xyzv) {
+
+        beginSection(); // <<<<<<<<<<<<<<<<<<
 
         var pnts = [];
         for(var g = 0; g < 3; g++) {
