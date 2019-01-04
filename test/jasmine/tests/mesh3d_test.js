@@ -76,7 +76,7 @@ describe('Test mesh3d', function() {
             expect(gd._fullData[0].visible).toBe(exp, msg);
         }
 
-        it('@gl mesh3d should be invisible when the indices are not integer', function(done) {
+        it('@gl mesh3d should be visible when the indices are not integer', function(done) {
             Plotly.plot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],

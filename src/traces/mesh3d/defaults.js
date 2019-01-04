@@ -48,45 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
-
-    // test for size of indices
-    if(
-        traceIn.i && Lib.isArrayOrTypedArray(traceIn.i) &&
-        traceIn.j && Lib.isArrayOrTypedArray(traceIn.j) &&
-        traceIn.k && Lib.isArrayOrTypedArray(traceIn.k)
-    ) {
-        if(traceIn.k.length !== 0 && (
-            traceIn.i.length !== traceIn.j.length ||
-            traceIn.j.length !== traceIn.k.length)) {
-            traceOut.visible = false;
-            return;
-        }
-    }
-
-    var allIndices = readComponents(['i', 'j', 'k']);
-    if(allIndices) {
-        var numVertices = coords[0].length;
-        allIndices.forEach(function(indices) {
-            indices.forEach(function(index) {
-                if(!Lib.isIndex(index, numVertices)) {
-                    traceOut.visible = false;
-                    return;
-                }
-            });
-        });
-
-        var numFaces = allIndices[0].length;
-        for(var q = 0; q < numFaces; q++) {
-            if(
-                allIndices[0][q] === allIndices[1][q] ||
-                allIndices[0][q] === allIndices[2][q] ||
-                allIndices[1][q] === allIndices[2][q]
-            ) {
-                traceOut.visible = false;
-                return;
-            }
-        }
-    }
+    readComponents(['i', 'j', 'k']);
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);

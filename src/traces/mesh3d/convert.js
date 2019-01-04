@@ -14,6 +14,7 @@ var triangulate = require('delaunay-triangulate');
 var alphaShape = require('alpha-shape');
 var convexHull = require('convex-hull');
 
+var isIndex = require('../../lib').isIndex;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var zip3 = require('../../plots/gl3d/zip3');
@@ -91,11 +92,39 @@ function delaunayCells(delaunayaxis, positions) {
     return triangulate(b);
 }
 
+// validate indices
+function hasValidIndices(list, numVertices) {
+    var len = list.length;
+    for(var i = 0; i < len; i++) {
+        if(!isIndex(list[i], numVertices)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// avoid pointing to an identical vertex twice
+function isTriangle(lists) {
+    var len = lists[0].length;
+    for(var i = 0; i < len; i++) {
+        if(
+            lists[0][i] === lists[1][i] ||
+            lists[1][i] === lists[2][i] ||
+            lists[2][i] === lists[0][i]
+        ) {
+            return false;
+        }
+    }
+    return true;
+}
+
 proto.update = function(data) {
     var scene = this.scene;
     var layout = scene.fullSceneLayout;
 
     this.data = data;
+
+    var numVertices = data.x.length;
 
     var positions = zip3(
         toDataCoords(layout.xaxis, data.x, scene.dataScale[0], data.xcalendar),
@@ -105,6 +134,18 @@ proto.update = function(data) {
 
     var cells;
     if(data.i && data.j && data.k) {
+
+        if(
+            data.i.length !== data.j.length ||
+            data.j.length !== data.k.length ||
+            !hasValidIndices(data.i, numVertices) ||
+            !hasValidIndices(data.j, numVertices) ||
+            !hasValidIndices(data.k, numVertices) ||
+            !isTriangle([data.i, data.j, data.k])
+        ) {
+            data.visible = false;
+            return;
+        }
         cells = zip3(
             toIndex(data.i),
             toIndex(data.j),
