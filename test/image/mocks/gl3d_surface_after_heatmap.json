@@ -39,7 +39,7 @@
           "yaxis": {
             "hovertitle": "lat",
             "title": {
-              "text": "Latitiue"
+              "text": "Latitude"
             }
           },
           "zaxis": {
