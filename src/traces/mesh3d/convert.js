@@ -52,7 +52,43 @@ proto.handlePick = function(selection) {
 };
 
 function parseColorArray(colors) {
-    return colors.map(str2RgbaArray);
+    var b = [];
+    var len = colors.length;
+    for(var i = 0; i < len; i++) {
+        b[i] = str2RgbaArray(colors[i]);
+    }
+    return b;
+}
+
+// Unpack position data
+function toDataCoords(axis, coord, scale, calendar) {
+    var b = [];
+    var len = coord.length;
+    for(var i = 0; i < len; i++) {
+        b[i] = axis.d2l(coord[i], 0, calendar) * scale;
+    }
+    return b;
+}
+
+// round indices if passed as floats
+function toIndex(a) {
+    var b = [];
+    var len = a.length;
+    for(var i = 0; i < len; i++) {
+        b[i] = Math.round(a[i]);
+    }
+    return b;
+}
+
+// create cells
+function delaunayCells(delaunayaxis, positions) {
+    var d = ['x', 'y', 'z'].indexOf(delaunayaxis);
+    var b = [];
+    var len = positions.length;
+    for(var i = 0; i < len; i++) {
+        b[i] = [positions[i][(d + 1) % 3], positions[i][(d + 2) % 3]];
+    }
+    return triangulate(b);
 }
 
 proto.update = function(data) {
@@ -60,13 +96,6 @@ proto.update = function(data) {
     var layout = scene.fullSceneLayout;
 
     this.data = data;
-
-    // Unpack position data
-    function toDataCoords(axis, coord, scale, calendar) {
-        return coord.map(function(x) {
-            return axis.d2l(x, 0, calendar) * scale;
-        });
-    }
 
     var positions = zip3(
         toDataCoords(layout.xaxis, data.x, scene.dataScale[0], data.xcalendar),
@@ -77,19 +106,16 @@ proto.update = function(data) {
     var cells;
     if(data.i && data.j && data.k) {
         cells = zip3(
-            data.i.map(function(e) { return Math.round(e); }),
-            data.j.map(function(e) { return Math.round(e); }),
-            data.k.map(function(e) { return Math.round(e); })
+            toIndex(data.i),
+            toIndex(data.j),
+            toIndex(data.k)
         );
     } else if(data.alphahull === 0) {
         cells = convexHull(positions);
     } else if(data.alphahull > 0) {
         cells = alphaShape(data.alphahull, positions);
     } else {
-        var d = ['x', 'y', 'z'].indexOf(data.delaunayaxis);
-        cells = triangulate(positions.map(function(c) {
-            return [c[(d + 1) % 3], c[(d + 2) % 3]];
-        }));
+        cells = delaunayCells(data.delaunayaxis, positions);
     }
 
     var config = {
