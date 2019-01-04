@@ -82,18 +82,18 @@ describe('Test mesh3d', function() {
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
                 i: [0, 0, 0, 1.00001],
-                j: [1, 1, 2, 2],
-                k: [2, 3, 3, 2.99999],
+                j: [1, 1, 2, 1.99999],
+                k: [2, 3, 3, 3.00001],
                 type: 'mesh3d'
             }])
             .then(function() {
-                assertVisibility(false, 'not to be visible');
+                assertVisibility(true, 'to be visible');
             })
             .catch(failTest)
             .then(done);
         });
 
-        it('@gl mesh3d should be invisible when the indices are equal or greater than the number of vertices', function(done) {
+        it('@gl mesh3d should be visible when the indices are equal or greater than the number of vertices', function(done) {
             Plotly.plot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
@@ -104,13 +104,13 @@ describe('Test mesh3d', function() {
                 type: 'mesh3d'
             }])
             .then(function() {
-                assertVisibility(false, 'not to be visible');
+                assertVisibility(true, 'to be visible');
             })
             .catch(failTest)
             .then(done);
         });
 
-        it('@gl mesh3d should be invisible when the indices are negative', function(done) {
+        it('@gl mesh3d should be visible when the indices are negative', function(done) {
             Plotly.plot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
@@ -121,13 +121,13 @@ describe('Test mesh3d', function() {
                 type: 'mesh3d'
             }])
             .then(function() {
-                assertVisibility(false, 'not to be visible');
+                assertVisibility(true, 'to be visible');
             })
             .catch(failTest)
             .then(done);
         });
 
-        it('@gl mesh3d should be invisible when the indices have different sizes', function(done) {
+        it('@gl mesh3d should be visible when the indices have different sizes', function(done) {
             Plotly.plot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
@@ -138,24 +138,7 @@ describe('Test mesh3d', function() {
                 type: 'mesh3d'
             }])
             .then(function() {
-                assertVisibility(false, 'not to be visible');
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('@gl mesh3d should be invisible when the indices of a triangle point to identical vertex twice', function(done) {
-            Plotly.plot(gd, [{
-                x: [0, 1, 0.5, 0.5],
-                y: [0, 0.5, 1, 0.5],
-                z: [0, 0.5, 0.5, 1],
-                i: [0, 0, 0, 1],
-                j: [1, 1, 2, 3],
-                k: [2, 3, 3, 3],
-                type: 'mesh3d'
-            }])
-            .then(function() {
-                assertVisibility(false, 'not to be visible');
+                assertVisibility(true, 'to be visible');
             })
             .catch(failTest)
             .then(done);
@@ -222,6 +205,23 @@ describe('Test mesh3d', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('@gl mesh3d should be visible when values are passed in string format', function(done) {
+            Plotly.plot(gd, [{
+                x: ['0', '1', '0.5', '0.5'],
+                y: ['0', '0.5', '1', '0.5'],
+                z: ['0', '0.5', '0.5', '1'],
+                i: ['0', '0', '0', '1'],
+                j: ['1', '1', '2', '2'],
+                k: ['2', '3', '3', '3'],
+                type: 'mesh3d'
+            }]).then(function() {
+                assertVisibility(true, 'not to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
     });
 
 });

@@ -14,7 +14,6 @@ var triangulate = require('delaunay-triangulate');
 var alphaShape = require('alpha-shape');
 var convexHull = require('convex-hull');
 
-var isIndex = require('../../lib').isIndex;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var zip3 = require('../../plots/gl3d/zip3');
@@ -71,8 +70,8 @@ function toDataCoords(axis, coord, scale, calendar) {
     return b;
 }
 
-// round indices if passed as floats
-function toIndex(a) {
+// Round indices if passed as floats
+function toRoundIndex(a) {
     var b = [];
     var len = a.length;
     for(var i = 0; i < len; i++) {
@@ -81,7 +80,6 @@ function toIndex(a) {
     return b;
 }
 
-// create cells
 function delaunayCells(delaunayaxis, positions) {
     var d = ['x', 'y', 'z'].indexOf(delaunayaxis);
     var b = [];
@@ -92,26 +90,11 @@ function delaunayCells(delaunayaxis, positions) {
     return triangulate(b);
 }
 
-// validate indices
+// Validate indices
 function hasValidIndices(list, numVertices) {
     var len = list.length;
     for(var i = 0; i < len; i++) {
-        if(!isIndex(list[i], numVertices)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-// avoid pointing to an identical vertex twice
-function isTriangle(lists) {
-    var len = lists[0].length;
-    for(var i = 0; i < len; i++) {
-        if(
-            lists[0][i] === lists[1][i] ||
-            lists[1][i] === lists[2][i] ||
-            lists[2][i] === lists[0][i]
-        ) {
+        if(list[i] < 0 || list[i] >= numVertices) {
             return false;
         }
     }
@@ -140,16 +123,14 @@ proto.update = function(data) {
             data.j.length !== data.k.length ||
             !hasValidIndices(data.i, numVertices) ||
             !hasValidIndices(data.j, numVertices) ||
-            !hasValidIndices(data.k, numVertices) ||
-            !isTriangle([data.i, data.j, data.k])
+            !hasValidIndices(data.k, numVertices)
         ) {
-            data.visible = false;
             return;
         }
         cells = zip3(
-            toIndex(data.i),
-            toIndex(data.j),
-            toIndex(data.k)
+            toRoundIndex(data.i),
+            toRoundIndex(data.j),
+            toRoundIndex(data.k)
         );
     } else if(data.alphahull === 0) {
         cells = convexHull(positions);
