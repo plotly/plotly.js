@@ -145,14 +145,25 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     // box plots: each "point" gets many labels
     var usedVals = {};
-    var attrs = ['med', 'min', 'q1', 'q3', 'max'];
+    var attrs = ['min'];
+
+    if(trace.boxpoints || trace.points) {
+        attrs.push('lf');
+    }
+
+    attrs.push('q1', 'med');
 
     if(trace.boxmean || (trace.meanline || {}).visible) {
         attrs.push('mean');
     }
+
+    attrs.push('q3');
+
     if(trace.boxpoints || trace.points) {
-        attrs.push('lf', 'uf');
+        attrs.push('uf');
     }
+
+    attrs.push('max');
 
     for(var i = 0; i < attrs.length; i++) {
         var attr = attrs[i];
