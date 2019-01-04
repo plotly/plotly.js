@@ -1313,7 +1313,7 @@ describe('ModeBar', function() {
                 button = selectButton(gd._fullLayout._modeBar, targetBtn);
                 checkButtonColor(button, colors[0]);
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.color', colors[1]);})
+            .then(function() { return Plotly.relayout(gd, 'modebar.color', colors[1]); })
             .then(function() {
                 checkButtonColor(button, colors[1]);
             })
@@ -1353,7 +1353,7 @@ describe('ModeBar', function() {
                 expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
                 expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.bgcolor', colors[1]);})
+            .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
                 expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
@@ -1380,7 +1380,7 @@ describe('ModeBar', function() {
                 expect(style.backgroundColor).toBe(colors[0]);
                 expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.bgcolor', colors[1]);})
+            .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
                 expect(style.backgroundColor).toBe(colors[1]);
@@ -1399,7 +1399,7 @@ describe('ModeBar', function() {
                 size = modeBarEl.getBoundingClientRect();
                 expect(size.width < size.height).toBeTruthy();
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.orientation', 'h');})
+            .then(function() { return Plotly.relayout(gd, 'modebar.orientation', 'h'); })
             .catch(failTest)
             .then(function() {
                 size = modeBarEl.getBoundingClientRect();
