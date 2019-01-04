@@ -78,7 +78,7 @@ proto.update = function(data) {
         fresnel: data.lighting.fresnel,
         vertexNormalsEpsilon: data.lighting.vertexnormalsepsilon,
         faceNormalsEpsilon: data.lighting.facenormalsepsilon,
-        opacity: data.opacity,
+        opacity: 1, // Note: we do NOT use data.opacity directly
         contourEnable: data.contour.show,
         contourColor: str2RgbaArray(data.contour.color).slice(0, 3),
         contourWidth: data.contour.width,
@@ -100,6 +100,8 @@ proto.dispose = function() {
 
 
 function generateIsosurfaceMesh(data) {
+
+    var opacity = data.opacity;
 
     data.intensity = [];
 
@@ -169,31 +171,72 @@ function generateIsosurfaceMesh(data) {
         data.k.push(c);
     }
 
+    function getCenter(A, B, C) {
+        var M = [];
+        for(var i = 0; i < A.length; i++) {
+            M[i] = (A[i] + B[i] + C[i]) / 3.0;
+        }
+        return M;
+    }
+
+    function getBetween(A, B, r) {
+        var M = [];
+        for(var i = 0; i < A.length; i++) {
+            M[i] = A[i] * (1 -r) + r * B[i];
+        }
+        return M;
+    }
+
     function drawTri(debug, xyzv) {
 
         beginSection(); // <<<<<<<<<<<<<<<<<<
 
-        var pnts = [];
-        for(var g = 0; g < 3; g++) {
+        var allXYZVs = [];
+        if(opacity >= 1) { allXYZVs = [xyzv]; }
+        else if(opacity > 0) {
+            var A = xyzv[0];
+            var B = xyzv[1];
+            var C = xyzv[2];
+            var G = getCenter(A, B, C);
 
-            var x = xyzv[g][0];
-            var y = xyzv[g][1];
-            var z = xyzv[g][2];
-            var v = xyzv[g][3];
+            var r = Math.sqrt(opacity);
+            var p1 = getBetween(G, A, r);
+            var p2 = getBetween(G, B, r);
+            var p3 = getBetween(G, C, r);
 
-            var id = getVertexId(x, y, z);
-            if(id > -1) {
-                pnts[g] = id;
-            } else {
-                if(debug === undefined) {
-                    pnts[g] = addVertex(x, y, z, v);
-                } else {
-                    pnts[g] = addVertex(x, y, z, debug);
-                }
-            }
+            allXYZVs = [
+                [A, B, p2], [p2, p1, A],
+                [B, C, p3], [p3, p2, B],
+                [C, A, p1], [p1, p3, C]
+            ];
         }
 
-        addFace(pnts[0], pnts[1], pnts[2]);
+        for(var f = 0; f < allXYZVs.length; f++) {
+
+            xyzv = allXYZVs[f];
+
+            var pnts = [];
+            for(var i = 0; i < 3; i++) {
+
+                var x = xyzv[i][0];
+                var y = xyzv[i][1];
+                var z = xyzv[i][2];
+                var v = xyzv[i][3];
+
+                var id = -1; // getVertexId(x, y, z); // <<<<<<<<<<<<<<<<<<<<<<<<<
+                if(id > -1) {
+                    pnts[i] = id;
+                } else {
+                    if(debug === undefined) {
+                        pnts[i] = addVertex(x, y, z, v);
+                    } else {
+                        pnts[i] = addVertex(x, y, z, debug);
+                    }
+                }
+            }
+
+            addFace(pnts[0], pnts[1], pnts[2]);
+        }
     }
 
     function drawQuad(debug, xyzv) {
@@ -232,8 +275,8 @@ function generateIsosurfaceMesh(data) {
         var indecies = [a, b, c, d];
         var xyzv = [];
 
-        for(var g = 0; g < 4; g++) {
-            var index = indecies[g];
+        for(var q = 0; q < 4; q++) {
+            var index = indecies[q];
 
             var k = Math.floor(index / (width * height));
             var j = Math.floor((index - k * width * height) / width);
