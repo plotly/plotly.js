@@ -312,6 +312,29 @@ describe('Test box hover:', function() {
         },
         nums: 'look:0.7',
         name: ''
+    }, {
+        desc: 'orientation:h | hovermode;y',
+        mock: require('@mocks/box_grouped_horz.json'),
+        pos: [430, 130],
+        nums: [
+            'max: 1', 'mean ± σ: 0.6833333 ± 0.2409472', 'min: 0.3',
+            'q1: 0.5', 'q3: 0.9', 'median: 0.7'],
+        name: ['', '', '', '', '', 'carrots'],
+        axis: 'day 2',
+        hOrder: [0, 4, 5, 1, 3, 2]
+    }, {
+        desc: 'orientation:h | hovermode:closest',
+        mock: require('@mocks/box_grouped_horz.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        pos: [430, 130],
+        nums: [
+            '(max: 1, day 2)', '(mean ± σ: 0.6833333 ± 0.2409472, day 2)', '(min: 0.3, day 2)',
+            '(q1: 0.5, day 2)', '(q3: 0.9, day 2)', '(median: 0.7, day 2)'],
+        name: ['', '', '', '', '', 'carrots'],
+        hOrder: [0, 4, 5, 1, 3, 2]
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);
