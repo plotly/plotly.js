@@ -8,6 +8,8 @@
 
 'use strict';
 
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var barAttrs = require('../bar/attributes');
@@ -69,6 +71,9 @@ module.exports = {
     marker: barAttrs.marker,
 
     hoverinfo: scatterPolarAttrs.hoverinfo,
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
 
     selected: barAttrs.selected,
     unselected: barAttrs.unselected

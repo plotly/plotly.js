@@ -8,6 +8,8 @@
 
 'use strict';
 
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
@@ -130,6 +132,9 @@ module.exports = {
         flags: ['r', 'theta', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
 
     selected: scatterAttrs.selected,
     unselected: scatterAttrs.unselected

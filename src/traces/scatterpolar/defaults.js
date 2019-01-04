@@ -35,6 +35,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
     coerce('hovertext');
+    coerce('hovertemplate');
 
     if(subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
