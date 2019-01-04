@@ -59,7 +59,7 @@ describe('Test mesh3d', function() {
         });
     });
 
-    describe('dimension and expected visibility tests', function() {
+    describe('dimension and expected visibility check and cell/position tests', function() {
         var gd;
 
         beforeEach(function() {
@@ -76,6 +76,14 @@ describe('Test mesh3d', function() {
             expect(gd._fullData[0].visible).toBe(exp, msg);
         }
 
+        function assertPositions(exp, msg) {
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].positions.length !== undefined).toBe(exp, msg);
+        }
+
+        function assertCells(exp, msg) {
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].cells.length !== undefined).toBe(exp, msg);
+        }
+
         it('@gl mesh3d should be visible when the indices are not integer', function(done) {
             Plotly.plot(gd, [{
                 x: [0, 1, 0.5, 0.5],
@@ -88,6 +96,12 @@ describe('Test mesh3d', function() {
             }])
             .then(function() {
                 assertVisibility(true, 'to be visible');
+            })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
             })
             .catch(failTest)
             .then(done);
@@ -106,6 +120,12 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(true, 'to be visible');
             })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
+            })
             .catch(failTest)
             .then(done);
         });
@@ -122,6 +142,12 @@ describe('Test mesh3d', function() {
             }])
             .then(function() {
                 assertVisibility(true, 'to be visible');
+            })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
             })
             .catch(failTest)
             .then(done);
@@ -140,6 +166,12 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(true, 'to be visible');
             })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
+            })
             .catch(failTest)
             .then(done);
         });
@@ -156,6 +188,34 @@ describe('Test mesh3d', function() {
             }])
             .then(function() {
                 assertVisibility(true, 'to be visible');
+            })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be visible when values are passed in string format', function(done) {
+            Plotly.plot(gd, [{
+                x: ['0', '1', '0.5', '0.5'],
+                y: ['0', '0.5', '1', '0.5'],
+                z: ['0', '0.5', '0.5', '1'],
+                i: ['0', '0', '0', '1'],
+                j: ['1', '1', '2', '2'],
+                k: ['2', '3', '3', '3'],
+                type: 'mesh3d'
+            }]).then(function() {
+                assertVisibility(true, 'not to be visible');
+            })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
             })
             .catch(failTest)
             .then(done);
@@ -174,6 +234,12 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(true, 'to be visible');
             })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
+            })
             .catch(failTest)
             .then(done);
         });
@@ -188,11 +254,17 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(true, 'to be visible');
             })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
+            })
             .catch(failTest)
             .then(done);
         });
 
-        it('@gl mesh3d should be visible when the vertex array are empty', function(done) {
+        it('@gl mesh3d should be visible when the vertex arrays are empty', function(done) {
             Plotly.plot(gd, [{
                 x: [],
                 y: [],
@@ -202,21 +274,22 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(true, 'not to be visible');
             })
+            .then(function() {
+                assertPositions(true, 'not to be false');
+            })
+            .then(function() {
+                assertCells(true, 'not to be false');
+            })
             .catch(failTest)
             .then(done);
         });
 
-        it('@gl mesh3d should be visible when values are passed in string format', function(done) {
+        it('@gl mesh3d should be invisible when the vertex arrays missing', function(done) {
             Plotly.plot(gd, [{
-                x: ['0', '1', '0.5', '0.5'],
-                y: ['0', '0.5', '1', '0.5'],
-                z: ['0', '0.5', '0.5', '1'],
-                i: ['0', '0', '0', '1'],
-                j: ['1', '1', '2', '2'],
-                k: ['2', '3', '3', '3'],
                 type: 'mesh3d'
-            }]).then(function() {
-                assertVisibility(true, 'not to be visible');
+            }])
+            .then(function() {
+                assertVisibility(false, 'to be visible');
             })
             .catch(failTest)
             .then(done);
