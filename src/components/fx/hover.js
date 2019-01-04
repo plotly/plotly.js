@@ -25,6 +25,8 @@ var Registry = require('../../registry');
 var helpers = require('./helpers');
 var constants = require('./constants');
 
+var majorVerion = require('../../core').version.split('.')[0];
+
 // hover labels for multiple horizontal bars get tilted by some angle,
 // then need to be offset differently if they overlap
 var YANGLE = constants.YANGLE;
@@ -939,13 +941,29 @@ function createHoverText(hoverData, opts, gd) {
         var zLetter = 'z';
 
         if(gd._fullLayout.scene) {
-            if(gd._fullLayout.scene.xaxis.hovertitle) xLetter = gd._fullLayout.scene.xaxis.title.text || 'x';
-            if(gd._fullLayout.scene.yaxis.hovertitle) yLetter = gd._fullLayout.scene.yaxis.title.text || 'y';
-            if(gd._fullLayout.scene.zaxis.hovertitle) zLetter = gd._fullLayout.scene.zaxis.title.text || 'z';
+            xLetter = (majorVerion < 2) ? 'x' :
+                gd._fullLayout.scene.xaxis.title.text || 'x';
+            yLetter = (majorVerion < 2) ? 'y' :
+                gd._fullLayout.scene.yaxis.title.text || 'y';
+            zLetter = (majorVerion < 2) ? 'z' :
+                gd._fullLayout.scene.zaxis.title.text || 'z';
+            xLetter = (gd._fullLayout.scene.xaxis.hovertitle === '') ? xLetter :
+                gd._fullLayout.scene.xaxis.hovertitle || xLetter;
+            yLetter = (gd._fullLayout.scene.yaxis.hovertitle === '') ? yLetter :
+                gd._fullLayout.scene.yaxis.hovertitle || yLetter;
+            zLetter = (gd._fullLayout.scene.zaxis.hovertitle === '') ? zLetter :
+                gd._fullLayout.scene.zaxis.hovertitle || zLetter;
         }
         else if(!gd._fullLayout.ternary && !gd._fullLayout.title) {
-            if(gd._fullLayout.xaxis.hovertitle) xLetter = gd._fullLayout.xaxis.title.text || 'x';
-            if(gd._fullLayout.yaxis.hovertitle) yLetter = gd._fullLayout.yaxis.title.text || 'y';
+            xLetter = (majorVerion < 2) ? 'x' :
+                gd._fullLayout.xaxis.title.text || 'x';
+            yLetter = (majorVerion < 2) ? 'y' :
+                gd._fullLayout.yaxis.title.text || 'y';
+
+            xLetter = (gd._fullLayout.xaxis.hovertitle === '') ? xLetter :
+                gd._fullLayout.xaxis.hovertitle || xLetter;
+            yLetter = (gd._fullLayout.yaxis.hovertitle === '') ? yLetter :
+                gd._fullLayout.yaxis.hovertitle || yLetter;
         }
 
         if(d.zLabel !== undefined) {

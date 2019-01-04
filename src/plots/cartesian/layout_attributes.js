@@ -594,12 +594,12 @@ module.exports = {
         ].join(' ')
     },
     hovertitle: {
-        valType: 'boolean',
-        dflt: false,
+        valType: 'string',
+        dflt: '',
         role: 'info',
         editType: 'none',
         description: [
-            'Enable axis title(s) to be displayed in the hovering popup'
+            'Sets axis title(s) to be displayed in the hovering popup'
         ].join(' ')
     },
     // lines and grids
