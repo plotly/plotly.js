@@ -1832,9 +1832,17 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             });
         }
 
-        // mocking panning/scrolling is brittle,
+        // mocking panning/scrolling with mouse events is brittle,
         // this here is enough to to trigger the relayoutCallback
         function _mouseup() {
+            var sceneLayout = gd._fullLayout.scene;
+            var cameraOld = sceneLayout.camera;
+            sceneLayout._scene.setCamera({
+                eye: {x: 2, y: 2, z: 2},
+                center: cameraOld.center,
+                up: cameraOld.up
+            });
+
             var target = gd.querySelector('.svg-container .gl-container #scene canvas');
             return new Promise(function(resolve) {
                 mouseEvent('mouseup', 200, 200, {element: target});
@@ -1844,6 +1852,18 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
 
         // should be same before & after 2nd react()
         function _assertGUI(msg) {
+            var TOL = 2;
+
+            var eye = ((gd.layout.scene || {}).camera || {}).eye || {};
+            expect(eye.x).toBeCloseTo(2, TOL, msg);
+            expect(eye.y).toBeCloseTo(2, TOL, msg);
+            expect(eye.z).toBeCloseTo(2, TOL, msg);
+
+            var fullEye = gd._fullLayout.scene.camera.eye;
+            expect(fullEye.x).toBeCloseTo(2, TOL, msg);
+            expect(fullEye.y).toBeCloseTo(2, TOL, msg);
+            expect(fullEye.z).toBeCloseTo(2, TOL, msg);
+
             var preGUI = gd._fullLayout._preGUI;
             expect(preGUI['scene.camera']).toBe(null, msg);
         }
