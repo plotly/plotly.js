@@ -53,11 +53,14 @@ function sync(geo, projection, cb) {
     var fullLayout = gd._fullLayout;
     var fullOpts = fullLayout[id];
 
+    var preGUI = {};
     var eventData = {};
 
     function set(propStr, val) {
-        var fullNp = Lib.nestedProperty(fullOpts, propStr);
+        preGUI[id + '.' + propStr] = Lib.nestedProperty(userOpts, propStr).get();
+        Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, preGUI);
 
+        var fullNp = Lib.nestedProperty(fullOpts, propStr);
         if(fullNp.get() !== val) {
             fullNp.set(val);
             Lib.nestedProperty(userOpts, propStr).set(val);
@@ -67,7 +70,6 @@ function sync(geo, projection, cb) {
 
     cb(set);
     set('projection.scale', projection.scale() / geo.fitScale);
-    Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, eventData);
     gd.emit('plotly_relayout', eventData);
 }
 
