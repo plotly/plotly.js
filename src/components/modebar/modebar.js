@@ -52,21 +52,22 @@ proto.update = function(graphInfo, buttons) {
     this.element.setAttribute('id', modeBarId);
     this._uid = modeBarId;
 
-    if(context.displayModeBar === 'hover') {
-        this.element.className = 'modebar modebar--hover';
-    }
-    else this.element.className = 'modebar';
+    this.element.className = 'modebar';
+    if(context.displayModeBar === 'hover') this.element.className += ' modebar--hover ease-bg';
 
     if(fullLayout.modebar.orientation === 'v') {
         this.element.className += ' vertical';
         buttons = buttons.reverse();
     }
 
+    var style = fullLayout.modebar;
+    var bgSelector = context.displayModeBar === 'hover' ? '.js-plotly-plot .plotly:hover ' : '';
+
     Lib.deleteRelatedStyleRule(modeBarId);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId, 'background-color: ' + fullLayout.modebar.bgcolor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + fullLayout.modebar.color);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + fullLayout.modebar.activecolor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + fullLayout.modebar.activecolor);
+    Lib.addRelatedStyleRule(modeBarId, bgSelector + '#' + modeBarId, 'background-color: ' + style.bgcolor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + style.color);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + style.activecolor);
+    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + style.activecolor);
 
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
@@ -135,7 +136,6 @@ proto.updateButtons = function(buttons) {
 proto.createGroup = function() {
     var group = document.createElement('div');
     group.className = 'modebar-group';
-
     return group;
 };
 

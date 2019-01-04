@@ -1336,16 +1336,55 @@ describe('ModeBar', function() {
             .then(done);
         });
 
-        it('changes background color', function(done) {
+        it('changes background color (displayModeBar: hover)', function(done) {
+            function getStyleRule() {
+                var uid = gd._fullLayout._uid;
+                var ownerNode = document.getElementById('plotly.js-style-modebar-' + uid);
+                var styleSheets = document.styleSheets;
+                for(var i = 0; i < styleSheets.length; i++) {
+                    var ss = styleSheets[i];
+                    if(ss.ownerNode === ownerNode) return ss;
+                }
+            }
+
             Plotly.plot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
+            })
+            .then(function() {Plotly.relayout(gd, 'modebar.bgcolor', colors[1]);})
+            .then(function() {
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('changes background color (displayModeBar: true)', function(done) {
+            function getStyleRule() {
+                var uid = gd._fullLayout._uid;
+                var ownerNode = document.getElementById('plotly.js-style-modebar-' + uid);
+                var styleSheets = document.styleSheets;
+                for(var i = 0; i < styleSheets.length; i++) {
+                    var ss = styleSheets[i];
+                    if(ss.ownerNode === ownerNode) return ss;
+                }
+            }
+
+            Plotly.plot(gd, [], {modebar: {bgcolor: colors[0]}}, {displayModeBar: true})
+            .then(function() {
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
                 expect(style.backgroundColor).toBe(colors[0]);
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
             })
             .then(function() {Plotly.relayout(gd, 'modebar.bgcolor', colors[1]);})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
                 expect(style.backgroundColor).toBe(colors[1]);
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
             })
             .catch(failTest)
             .then(done);
