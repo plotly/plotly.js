@@ -175,6 +175,28 @@ var attrs = module.exports = overrideAll({
             role: 'info',
             description: 'Sets the opacity of the layer.'
         },
+        minzoom: {
+            valType: 'number',
+            min: 0,
+            max: 24,
+            dflt: 0,
+            role: 'info',
+            description: [
+                'Sets the minimum zoom level.',
+                'At zoom levels less than the minzoom, the layer will be hidden.'
+            ].join(' ')
+        },
+        maxzoom: {
+            valType: 'number',
+            min: 0,
+            max: 24,
+            dflt: 24,
+            role: 'info',
+            description: [
+                'Sets the maximum zoom level.',
+                'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
+            ].join(' ')
+        },
 
         // type-specific style attributes
         circle: {
@@ -238,6 +260,18 @@ var attrs = module.exports = overrideAll({
                 role: 'info',
                 description: [
                     'Sets the symbol text.'
+                ].join(' ')
+            },
+            placement: {
+                valType: 'enumerated',
+                values: ['point', 'line', 'line-center'],
+                dflt: 'point',
+                role: 'info',
+                description: [
+                    'Sets the symbol placement.',
+                    'If `placement` is *point*, the label is placed where the geometry is located',
+                    'If `placement` is *line*, the label is placed along the line of the geometry',
+                    'If `placement` is *line-center*, the label is placed on the center of the geometry',
                 ].join(' ')
             },
             textfont: fontAttr,

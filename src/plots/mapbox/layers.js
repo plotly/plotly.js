@@ -97,6 +97,8 @@ proto.updateLayer = function(opts) {
             source: this.idSource,
             'source-layer': opts.sourcelayer || '',
             type: opts.type,
+            minzoom: opts.minzoom,
+            maxzoom: opts.maxzoom,
             layout: convertedOpts.layout,
             paint: convertedOpts.paint
         }, opts.below);
@@ -176,7 +178,8 @@ function convertOpts(opts) {
                 'text-field': symbol.text,
                 'text-size': symbol.textfont.size,
                 'text-anchor': textOpts.anchor,
-                'text-offset': textOpts.offset
+                'text-offset': textOpts.offset,
+                'symbol-placement': symbol.placement,
 
                 // TODO font family
                 // 'text-font': symbol.textfont.family.split(', '),

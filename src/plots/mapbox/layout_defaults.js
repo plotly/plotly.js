@@ -62,6 +62,8 @@ function handleLayerDefaults(layerIn, layerOut) {
         coerce('below');
         coerce('color');
         coerce('opacity');
+        coerce('minzoom');
+        coerce('maxzoom');
 
         if(type === 'circle') {
             coerce('circle.radius');
@@ -82,6 +84,7 @@ function handleLayerDefaults(layerIn, layerOut) {
             coerce('symbol.text');
             Lib.coerceFont(coerce, 'symbol.textfont');
             coerce('symbol.textposition');
+            coerce('symbol.placement');
         }
     }
 }
