@@ -25,7 +25,7 @@ var Registry = require('../../registry');
 var helpers = require('./helpers');
 var constants = require('./constants');
 
-var majorVerion = require('../../core').version.split('.')[0];
+var MAJOR_VERSION = 1; // i.e. Plotly version
 
 // hover labels for multiple horizontal bars get tilted by some angle,
 // then need to be offset differently if they overlap
@@ -941,11 +941,11 @@ function createHoverText(hoverData, opts, gd) {
         var zLetter = 'z';
 
         if(gd._fullLayout.scene) {
-            xLetter = (majorVerion < 2) ? 'x' :
+            xLetter = (MAJOR_VERSION < 2) ? 'x' :
                 gd._fullLayout.scene.xaxis.title.text || 'x';
-            yLetter = (majorVerion < 2) ? 'y' :
+            yLetter = (MAJOR_VERSION < 2) ? 'y' :
                 gd._fullLayout.scene.yaxis.title.text || 'y';
-            zLetter = (majorVerion < 2) ? 'z' :
+            zLetter = (MAJOR_VERSION < 2) ? 'z' :
                 gd._fullLayout.scene.zaxis.title.text || 'z';
             xLetter = (gd._fullLayout.scene.xaxis.hovertitle === '') ? xLetter :
                 gd._fullLayout.scene.xaxis.hovertitle || xLetter;
@@ -955,9 +955,9 @@ function createHoverText(hoverData, opts, gd) {
                 gd._fullLayout.scene.zaxis.hovertitle || zLetter;
         }
         else if(!gd._fullLayout.ternary && !gd._fullLayout.title) {
-            xLetter = (majorVerion < 2) ? 'x' :
+            xLetter = (MAJOR_VERSION < 2) ? 'x' :
                 gd._fullLayout.xaxis.title.text || 'x';
-            yLetter = (majorVerion < 2) ? 'y' :
+            yLetter = (MAJOR_VERSION < 2) ? 'y' :
                 gd._fullLayout.yaxis.title.text || 'y';
 
             xLetter = (gd._fullLayout.xaxis.hovertitle === '') ? xLetter :
