@@ -492,15 +492,26 @@ describe('Test violin hover:', function() {
     }, {
         desc: 'orientation:h | hovermode;y',
         mock: require('@mocks/violin_grouped_horz-multicategory.json'),
+        patch: function(fig) {
+            // don't hover on kde, to avoid local vs CI discrepancies
+            fig.data.forEach(function(t) {
+                t.hoveron = 'violins';
+            });
+            return fig;
+        },
         pos: [430, 130],
-        nums: ['max: 0.9', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'x: 0.7963605, kde: 0.445', 'median: 0.4'],
-        name: ['', '', '', '', '', 'kale'],
+        nums: ['max: 0.9', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'median: 0.4'],
+        name: ['', '', '', '', 'kale'],
         axis: '2018 - day 2',
-        hOrder: [0, 4, 3, 5, 2, 1]
+        hOrder: [0, 3, 4, 2, 1]
     }, {
         desc: 'orientation:h | hovermode:closest',
         mock: require('@mocks/violin_grouped_horz-multicategory.json'),
         patch: function(fig) {
+            // don't hover on kde, to avoid local vs CI discrepancies
+            fig.data.forEach(function(t) {
+                t.hoveron = 'violins';
+            });
             fig.layout.hovermode = 'closest';
             return fig;
         },
@@ -508,10 +519,10 @@ describe('Test violin hover:', function() {
         nums: [
             '(max: 0.9, 2018 - day 2)', '(min: 0.1, 2018 - day 2)',
             '(q1: 0.2, 2018 - day 2)', '(q3: 0.7, 2018 - day 2)',
-            '(x: 0.7963605, kde: 0.445, 2018 - day 2)', '(median: 0.4, 2018 - day 2)'
+            '(median: 0.4, 2018 - day 2)'
         ],
-        name: ['', '', '', '', '', 'kale'],
-        hOrder: [0, 4, 3, 5, 2, 1]
+        name: ['', '', '', '', 'kale'],
+        hOrder: [0, 3, 4, 2, 1]
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
