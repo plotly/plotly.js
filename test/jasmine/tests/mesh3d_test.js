@@ -77,11 +77,11 @@ describe('Test mesh3d', function() {
         }
 
         function assertPositions(exp, msg) {
-            expect(gd._fullLayout.scene._scene.glplot.objects[0].positions.length !== undefined).toBe(exp, msg);
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].positions.length).toBe(exp, msg);
         }
 
         function assertCells(exp, msg) {
-            expect(gd._fullLayout.scene._scene.glplot.objects[0].cells.length !== undefined).toBe(exp, msg);
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].cells.length).toBe(exp, msg);
         }
 
         it('@gl mesh3d should be visible when the indices are not integer', function(done) {
@@ -98,10 +98,33 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(4, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(4, 'to be OK cells');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be visible when the indices could be rounded to be in vertex range', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: [0, 0.5, 0.5, 1],
+                i: [-0.49, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: [2, 3, 3, 3.49],
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be visible');
+            })
+            .then(function() {
+                assertPositions(4, 'to be OK positions');
+            })
+            .then(function() {
+                assertCells(4, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);
@@ -121,10 +144,10 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(0, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(0, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);
@@ -144,10 +167,10 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(0, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(0, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);
@@ -167,10 +190,10 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(0, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(0, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);
@@ -190,10 +213,10 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(4, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(4, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);
@@ -212,10 +235,10 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'not to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(4, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(4, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);
@@ -235,10 +258,10 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(4, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(0, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);
@@ -255,10 +278,10 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(4, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(3, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);
@@ -275,10 +298,10 @@ describe('Test mesh3d', function() {
                 assertVisibility(true, 'not to be visible');
             })
             .then(function() {
-                assertPositions(true, 'not to be false');
+                assertPositions(0, 'to be OK positions');
             })
             .then(function() {
-                assertCells(true, 'not to be false');
+                assertCells(0, 'to be OK cells');
             })
             .catch(failTest)
             .then(done);

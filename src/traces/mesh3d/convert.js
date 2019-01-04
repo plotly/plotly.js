@@ -94,7 +94,7 @@ function delaunayCells(delaunayaxis, positions) {
 function hasValidIndices(list, numVertices) {
     var len = list.length;
     for(var i = 0; i < len; i++) {
-        if(list[i] < 0 || list[i] >= numVertices) {
+        if(list[i] <= -0.5 || list[i] >= numVertices - 0.5) { // Note: the indices would be rounded -0.49 is valid.
             return false;
         }
     }
