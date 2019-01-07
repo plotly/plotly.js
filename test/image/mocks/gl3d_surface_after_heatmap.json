@@ -2,6 +2,7 @@
     "data": [
       {
         "type": "heatmap",
+        "zsmooth": "best",
         "x": [0, 1, 2, 3, 4],
         "y": [0, 1, 2, 3, 4],
         "z": [
@@ -29,6 +30,18 @@
         "title": "Surface 3d plot on top of 2d heatmap!",
         "width": 600,
         "height": 400,
+        "xaxis": {
+          "hovertitle": "lon",
+          "title": {
+            "text": "Longitude"
+          }
+        },
+        "yaxis": {
+          "hovertitle": "lat",
+          "title": {
+            "text": "Latitude"
+          }
+        },
         "scene": {
           "xaxis": {
             "hovertitle": "lon",

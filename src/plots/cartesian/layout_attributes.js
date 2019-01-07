@@ -595,7 +595,6 @@ module.exports = {
     },
     hovertitle: {
         valType: 'string',
-        dflt: '',
         role: 'info',
         editType: 'none',
         description: [
