@@ -41,9 +41,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // three indices should be all provided or not
     if(
-        (traceIn.i && (!traceIn.j || !traceIn.k)) ||
-        (traceIn.j && (!traceIn.k || !traceIn.i)) ||
-        (traceIn.k && (!traceIn.i || !traceIn.j))
+        (traceOut.i && (!traceOut.j || !traceOut.k)) ||
+        (traceOut.j && (!traceOut.k || !traceOut.i)) ||
+        (traceOut.k && (!traceOut.i || !traceOut.j))
     ) {
         traceOut.visible = false;
         return;

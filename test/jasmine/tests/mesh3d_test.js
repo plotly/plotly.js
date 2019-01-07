@@ -318,6 +318,165 @@ describe('Test mesh3d', function() {
             .then(done);
         });
 
-    });
+        it('@gl mesh3d should be invisible when the vertex arrays are not arrays - number case', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: 1,
+                i: [0, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: [2, 3, 3, 3],
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(false, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
 
+        it('@gl mesh3d should be invisible when the vertex arrays are not arrays - boolean case', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: true,
+                i: [0, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: [2, 3, 3, 3],
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(false, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be invisible when the vertex arrays are not arrays - object case', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: {},
+                i: [0, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: [2, 3, 3, 3],
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(false, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be invisible when the vertex arrays are not arrays - string case', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: '[0, 0.5, 0.5, 1]',
+                i: [0, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: [2, 3, 3, 3],
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(false, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be visible when the index arrays are not arrays - string case', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: [0, 0.5, 0.5, 1],
+                i: [0, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: '[2, 3, 3, 3]',
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be invisible');
+            })
+            .then(function() {
+                assertPositions(4, 'to be OK positions');
+            })
+            .then(function() {
+                assertCells(3, 'to be OK cells');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be visible when the index arrays are not arrays - object case', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: [0, 0.5, 0.5, 1],
+                i: [0, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: {},
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be invisible');
+            })
+            .then(function() {
+                assertPositions(4, 'to be OK positions');
+            })
+            .then(function() {
+                assertCells(3, 'to be OK cells');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be visible when the index arrays are not arrays - boolean case', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: [0, 0.5, 0.5, 1],
+                i: [0, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: true,
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be invisible');
+            })
+            .then(function() {
+                assertPositions(4, 'to be OK positions');
+            })
+            .then(function() {
+                assertCells(3, 'to be OK cells');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl mesh3d should be visible when the index arrays are not arrays - number case', function(done) {
+            Plotly.plot(gd, [{
+                x: [0, 1, 0.5, 0.5],
+                y: [0, 0.5, 1, 0.5],
+                z: [0, 0.5, 0.5, 1],
+                i: [0, 0, 0, 1],
+                j: [1, 1, 2, 2],
+                k: 1,
+                type: 'mesh3d'
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be invisible');
+            })
+            .then(function() {
+                assertPositions(4, 'to be OK positions');
+            })
+            .then(function() {
+                assertCells(3, 'to be OK cells');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+    });
 });
