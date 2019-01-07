@@ -239,72 +239,72 @@ describe('sankey tests', function() {
         });
     });
 
-    describe('sankey calc', function() {
-
-        function _calc(trace) {
-            var gd = { data: [trace] };
-
-            supplyAllDefaults(gd);
-            var fullTrace = gd._fullData[0];
-            Sankey.calc(gd, fullTrace);
-            return fullTrace;
-        }
-
-        var base = { type: 'sankey' };
-
-        describe('remove nodes if encountering circularity', function() {
-            var errors;
-
-            beforeEach(function() {
-                errors = [];
-                spyOn(Lib, 'error').and.callFake(function(msg) {
-                    errors.push(msg);
-                });
-            });
-
-            it('removing a single self-pointing node', function() {
-                expect(errors.length).toBe(0);
-
-                var fullTrace = _calc(Lib.extendDeep({}, base, {
-                    node: {
-                        label: ['a']
-                    },
-                    link: {
-                        value: [1],
-                        source: [0],
-                        target: [0]
-                    }
-                }));
-
-                expect(fullTrace.node.label).toEqual([], 'node label(s) removed');
-                expect(fullTrace.link.value).toEqual([], 'link value(s) removed');
-                expect(fullTrace.link.source).toEqual([], 'link source(s) removed');
-                expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
-                expect(errors.length).toBe(1);
-            });
-
-            it('removing everything if detecting a circle', function() {
-                expect(errors.length).toBe(0);
-
-                var fullTrace = _calc(Lib.extendDeep({}, base, {
-                    node: {
-                        label: ['a', 'b', 'c', 'd', 'e']
-                    },
-                    link: {
-                        value: [1, 1, 1, 1, 1, 1, 1, 1],
-                        source: [0, 1, 2, 3],
-                        target: [1, 2, 0, 4]
-                    }
-                }));
-
-                expect(fullTrace.node.label).toEqual([], 'node label(s) removed');
-                expect(fullTrace.link.value).toEqual([], 'link value(s) removed');
-                expect(fullTrace.link.source).toEqual([], 'link source(s) removed');
-                expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
-                expect(errors.length).toBe(1);
-            });
-        });
-    });
+    // describe('sankey calc', function() {
+    //
+    //     function _calc(trace) {
+    //         var gd = { data: [trace] };
+    //
+    //         supplyAllDefaults(gd);
+    //         var fullTrace = gd._fullData[0];
+    //         Sankey.calc(gd, fullTrace);
+    //         return fullTrace;
+    //     }
+    //
+    //     var base = { type: 'sankey' };
+    //
+    //     describe('remove nodes if encountering circularity', function() {
+    //         var errors;
+    //
+    //         beforeEach(function() {
+    //             errors = [];
+    //             spyOn(Lib, 'error').and.callFake(function(msg) {
+    //                 errors.push(msg);
+    //             });
+    //         });
+    //
+    //         it('removing a single self-pointing node', function() {
+    //             expect(errors.length).toBe(0);
+    //
+    //             var fullTrace = _calc(Lib.extendDeep({}, base, {
+    //                 node: {
+    //                     label: ['a']
+    //                 },
+    //                 link: {
+    //                     value: [1],
+    //                     source: [0],
+    //                     target: [0]
+    //                 }
+    //             }));
+    //
+    //             expect(fullTrace.node.label).toEqual([], 'node label(s) removed');
+    //             expect(fullTrace.link.value).toEqual([], 'link value(s) removed');
+    //             expect(fullTrace.link.source).toEqual([], 'link source(s) removed');
+    //             expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
+    //             expect(errors.length).toBe(1);
+    //         });
+    //
+    //         it('removing everything if detecting a circle', function() {
+    //             expect(errors.length).toBe(0);
+    //
+    //             var fullTrace = _calc(Lib.extendDeep({}, base, {
+    //                 node: {
+    //                     label: ['a', 'b', 'c', 'd', 'e']
+    //                 },
+    //                 link: {
+    //                     value: [1, 1, 1, 1, 1, 1, 1, 1],
+    //                     source: [0, 1, 2, 3],
+    //                     target: [1, 2, 0, 4]
+    //                 }
+    //             }));
+    //
+    //             expect(fullTrace.node.label).toEqual([], 'node label(s) removed');
+    //             expect(fullTrace.link.value).toEqual([], 'link value(s) removed');
+    //             expect(fullTrace.link.source).toEqual([], 'link source(s) removed');
+    //             expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
+    //             expect(errors.length).toBe(1);
+    //         });
+    //     });
+    // });
 
     describe('lifecycle methods', function() {
         afterEach(destroyGraphDiv);

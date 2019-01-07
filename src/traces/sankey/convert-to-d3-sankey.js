@@ -35,9 +35,12 @@ module.exports = function(trace) {
         target = +target;
         linkedNodes[source] = linkedNodes[target] = true;
 
+        var label = '';
+        if(linkSpec.label && linkSpec.label[i]) label = linkSpec.label[i];
+
         links.push({
             pointNumber: i,
-            label: linkSpec.label[i],
+            label: label,
             color: hasLinkColorArray ? linkSpec.color[i] : linkSpec.color,
             source: source,
             target: target,

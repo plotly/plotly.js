@@ -94,6 +94,13 @@ describe('d3-sankey', function() {
         expect(node_names).toEqual(['node0', 'node1', 'node2', 'node3', 'node4']);
     });
 
+    it('keep a list of nodes with x values', function() {
+        var node_names = s().nodes.map(function(obj) {
+            return Math.floor(obj.x0);
+        });
+        expect(node_names).toEqual([0, 0, 381, 762, 1144]);
+    });
+
     it('keep a list of links', function() {
         var link_widths = s().links.map(function(obj) {
             return (obj.width);

@@ -38,14 +38,15 @@ function circularityPresent(nodeList, sources, targets) {
 }
 
 module.exports = function calc(gd, trace) {
-
-    if(!circularityPresent(trace.node.label, trace.link.source, trace.link.target)) {
-        // TODO: swap to original sankey engine
+    var circular = false;
+    if(circularityPresent(trace.node.label, trace.link.source, trace.link.target)) {
+        circular = true;
     }
 
     var result = convertToD3Sankey(trace);
 
     return wrap({
+        circular: circular,
         _nodes: result.nodes,
         _links: result.links
     });
