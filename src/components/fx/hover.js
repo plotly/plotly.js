@@ -1082,7 +1082,6 @@ function createHoverText(hoverData, opts, gd) {
 // information then.
 function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
     var nummoves = 0;
-
     var axSign = 1;
 
     // make groups of touching points
@@ -1328,7 +1327,7 @@ function cleanPoint(d, hovermode) {
     fill('fontColor', 'htc', 'hoverlabel.font.color');
     fill('nameLength', 'hnl', 'hoverlabel.namelength');
 
-    d.posref = hovermode === 'y' ?
+    d.posref = (hovermode === 'y' || (hovermode === 'closest' && trace.orientation === 'h')) ?
         (d.xa._offset + (d.x0 + d.x1) / 2) :
         (d.ya._offset + (d.y0 + d.y1) / 2);
 
