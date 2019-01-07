@@ -48,9 +48,13 @@ function sankeyModel(layout, d, traceIndex) {
         .nodePadding(nodePad)
         .circularLinkGap(2)
         .nodes(nodes)
-        .links(links);
+        .links(links)
+        .nodeId(function(d) {
+            return d.pointNumber;
+        });
 
     var graph = sankey();
+
     if(sankey.nodePadding() < nodePad) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
@@ -160,6 +164,7 @@ function nodeModel(d, n, i) {
     n.dy = n.y1 - n.y0;
 
     return {
+        index: n.pointNumber,
         key: key,
         traceId: d.key,
         node: n,
@@ -185,7 +190,7 @@ function nodeModel(d, n, i) {
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
-        graph: d.sankey.graph,
+        graph: d.graph,
         arrangement: d.arrangement,
         uniqueNodeLabelPathId: [d.guid, d.key, key].join('_'),
         interactionState: d.interactionState
@@ -540,8 +545,8 @@ module.exports = function(svg, calcData, layout, callbacks) {
         .call(updateNodePositions)
         .call(attachPointerEvents, sankey, callbacks.nodeEvents);
 
-    // sankeyNode
-    //     .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
+    sankeyNode
+        .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
 
     sankeyNode.transition()
         .ease(c.ease).duration(c.duration)

@@ -4,7 +4,7 @@
             "type": "sankey",
             "node": {
                 "pad": 1,
-                "label": ["0", "1", "2", "3", "4", "5"]
+                "label": ["0", "1", "2", "3", "4", "5", "6"]
             },
             "link": {
                 "source": [
@@ -15,15 +15,11 @@
                 ],
                 "value": [
                     1, 2, 1, 1, 1, 1, 1
-                ],
-                "label": ["1", "2", "3", "4", "5"]
+                ]
             }
         }],
     "layout": {
         "title": "Sankey with circular data",
-        "margin": {
-          "l": 25, "r": 25, "t": 25, "b": 25
-        },
         "width": 800,
         "height": 800
     }
