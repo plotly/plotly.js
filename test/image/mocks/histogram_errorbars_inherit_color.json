@@ -1,0 +1,71 @@
+{
+  "data": [
+    {
+      "x": [0, 1, 5, 6, 0],
+      "type": "histogram",
+      "barmode": "stack",
+      "error_y": {
+        "type": "sqrt"
+      }
+    },
+    {
+      "x": [1, 2, 6, 7, 1],
+      "type": "histogram",
+      "barmode": "stack",
+      "marker": {
+        "line": {
+          "width": 2,
+          "color": "gray"
+        }
+      },
+      "error_y": {
+        "type": "sqrt"
+      }
+    },
+    {
+      "x": [2, 3, 7, 8, 2],
+      "type": "histogram",
+      "barmode": "stack",
+      "marker": {
+        "color": "red"
+      },
+      "error_y": {
+        "type": "sqrt"
+      }
+    },
+    {
+      "x": [3, 4, 8, 9, 3],
+      "type": "histogram",
+      "barmode": "stack",
+      "marker": {
+        "line": {
+            "color": "green"
+        }
+      },
+      "error_y": {
+        "type": "sqrt"
+      }
+    },
+    {
+      "x": [4, 5, 9, 10, 4],
+      "type": "histogram",
+      "barmode": "stack",
+      "marker": {
+        "line": {
+            "color": "blue"
+          },
+        "color": "black"
+      },
+      "error_y": {
+        "type": "sqrt"
+      }
+    }
+  ],
+  "layout": {
+      "width": 600,
+      "heigh": 600,
+      "title": {
+          "text": "Histogram error bars inherit color from marker.line or marker"
+      }
+  }
+}
