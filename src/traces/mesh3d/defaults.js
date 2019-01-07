@@ -39,6 +39,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
+    readComponents(['i', 'j', 'k']);
     // three indices should be all provided or not
     if(
         (traceOut.i && (!traceOut.j || !traceOut.k)) ||
@@ -48,7 +49,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
-    readComponents(['i', 'j', 'k']);
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
