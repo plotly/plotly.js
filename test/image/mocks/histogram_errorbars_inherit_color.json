@@ -27,7 +27,7 @@
       "type": "histogram",
       "barmode": "stack",
       "marker": {
-        "color": "red"
+        "color": "yellow"
       },
       "error_y": {
         "type": "sqrt"
@@ -65,7 +65,7 @@
       "width": 600,
       "heigh": 600,
       "title": {
-          "text": "Histogram error bars inherit color from marker.line or marker"
+          "text": "Histogram error bars inherit color from marker.line not marker"
       }
   }
 }

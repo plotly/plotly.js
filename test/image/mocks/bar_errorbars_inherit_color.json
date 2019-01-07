@@ -30,7 +30,7 @@
       "type": "bar",
       "barmode": "group",
       "marker": {
-        "color": "red"
+        "color": "yellow"
       },
       "error_y": {
         "type": "sqrt"
@@ -70,7 +70,7 @@
       "width": 600,
       "heigh": 600,
       "title": {
-          "text": "Bar chart error bars inherit color from marker.line or marker"
+          "text": "Bar chart error bars inherit color from marker.line not marker"
       }
   }
 }
