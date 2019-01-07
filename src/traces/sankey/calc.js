@@ -39,15 +39,8 @@ function circularityPresent(nodeList, sources, targets) {
 
 module.exports = function calc(gd, trace) {
 
-    if(circularityPresent(trace.node.label, trace.link.source, trace.link.target)) {
-        Lib.error('Circularity is present in the Sankey data. Removing all nodes and links.');
-        trace.link.label = [];
-        trace.link.source = [];
-        trace.link.target = [];
-        trace.link.value = [];
-        trace.link.color = [];
-        trace.node.label = [];
-        trace.node.color = [];
+    if(!circularityPresent(trace.node.label, trace.link.source, trace.link.target)) {
+        // TODO: swap to original sankey engine
     }
 
     var result = convertToD3Sankey(trace);

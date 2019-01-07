@@ -13,14 +13,16 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-var d3sankey = require('d3-sankey');
+// TODO: allow swapping Sankey engine
+// var d3Sankey = require('d3-sankey');
+var d3SankeyCircular = require('d3-sankey-circular');
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
 var gup = require('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
-var interpolateNumber = require('d3-interpolate').interpolateNumber;
+// var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
 // view models
 
@@ -38,12 +40,13 @@ function sankeyModel(layout, d, traceIndex) {
     var nodes = calcData._nodes;
     var links = calcData._links;
 
-    var sankey = d3sankey
-        .sankey()
+    var sankey = d3SankeyCircular
+        .sankeyCircular()
         .iterations(c.sankeyIterations)
         .size(horizontal ? [width, height] : [height, width])
         .nodeWidth(nodeThickness)
         .nodePadding(nodePad)
+        .circularLinkGap(2)
         .nodes(nodes)
         .links(links);
 
@@ -108,29 +111,34 @@ function linkModel(d, l, i) {
 }
 
 function linkPath() {
-    var curvature = 0.5;
-
-    function shape(d) {
-        var x0 = d.link.source.x1,
-            x1 = d.link.target.x0,
-            xi = interpolateNumber(x0, x1),
-            x2 = xi(curvature),
-            x3 = xi(1 - curvature),
-            y0a = d.link.y0 - d.link.width / 2,
-            y0b = d.link.y0 + d.link.width / 2,
-            y1a = d.link.y1 - d.link.width / 2,
-            y1b = d.link.y1 + d.link.width / 2;
-        return 'M' + x0 + ',' + y0a +
-             'C' + x2 + ',' + y0a +
-             ' ' + x3 + ',' + y1a +
-             ' ' + x1 + ',' + y1a +
-             'L' + x1 + ',' + y1b +
-             'C' + x3 + ',' + y1b +
-             ' ' + x2 + ',' + y0b +
-             ' ' + x0 + ',' + y0b +
-             'Z';
+    function circular(d) {
+        return d.link.path;
     }
-    return shape;
+
+    return circular;
+    // var curvature = 0.5;
+
+    // function shape(d) {
+    //     var x0 = d.link.source.x1,
+    //         x1 = d.link.target.x0,
+    //         xi = interpolateNumber(x0, x1),
+    //         x2 = xi(curvature),
+    //         x3 = xi(1 - curvature),
+    //         y0a = d.link.y0 - d.link.width / 2,
+    //         y0b = d.link.y0 + d.link.width / 2,
+    //         y1a = d.link.y1 - d.link.width / 2,
+    //         y1b = d.link.y1 + d.link.width / 2;
+    //     return 'M' + x0 + ',' + y0a +
+    //          'C' + x2 + ',' + y0a +
+    //          ' ' + x3 + ',' + y1a +
+    //          ' ' + x1 + ',' + y1a +
+    //          'L' + x1 + ',' + y1b +
+    //          'C' + x3 + ',' + y1b +
+    //          ' ' + x2 + ',' + y0b +
+    //          ' ' + x0 + ',' + y0b +
+    //          'Z';
+    // }
+    // return shape;
 }
 
 function nodeModel(d, n, i) {
@@ -177,7 +185,7 @@ function nodeModel(d, n, i) {
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
-        graph: d.sankey(),
+        graph: d.sankey.graph,
         arrangement: d.arrangement,
         uniqueNodeLabelPathId: [d.guid, d.key, key].join('_'),
         interactionState: d.interactionState
@@ -466,7 +474,8 @@ module.exports = function(svg, calcData, layout, callbacks) {
 
     var sankeyLink = sankeyLinks.selectAll('.' + c.cn.sankeyLink)
           .data(function(d) {
-              return d.sankey().links
+              var links = d.graph.links;
+              return links
                 .filter(function(l) {return l.value;})
                 .map(linkModel.bind(null, d));
           }, keyFun);
@@ -479,14 +488,17 @@ module.exports = function(svg, calcData, layout, callbacks) {
 
     sankeyLink
         .style('stroke', function(d) {
-            return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
+            return d.tinyColorHue;
+            // return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
         })
         .style('stroke-opacity', function(d) {
-            return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
+            return d.tinyColorAlpha;
+            // return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
         })
-        .style('stroke-width', function(d) {return salientEnough(d) ? d.linkLineWidth : 1;})
-        .style('fill', function(d) {return d.tinyColorHue;})
-        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+        // .style('stroke-width', function(d) {return salientEnough(d) ? d.linkLineWidth : 1;})
+        //.style('fill', function(d) {return d.link.color;})
+        //.style('fill-opacity', function(d) {return d.tinyColorAlpha;})
+        .style('stroke-width', function(d) {return d.link.width;});
 
     sankeyLink.transition()
        .ease(c.ease).duration(c.duration)
@@ -515,7 +527,7 @@ module.exports = function(svg, calcData, layout, callbacks) {
 
     var sankeyNode = sankeyNodeSet.selectAll('.' + c.cn.sankeyNode)
         .data(function(d) {
-            var nodes = d.sankey().nodes;
+            var nodes = d.graph.nodes;
             persistOriginalPlace(nodes);
             return nodes
                 .filter(function(n) {return n.value;})
@@ -528,8 +540,8 @@ module.exports = function(svg, calcData, layout, callbacks) {
         .call(updateNodePositions)
         .call(attachPointerEvents, sankey, callbacks.nodeEvents);
 
-    sankeyNode
-        .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
+    // sankeyNode
+    //     .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
 
     sankeyNode.transition()
         .ease(c.ease).duration(c.duration)
