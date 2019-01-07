@@ -72,7 +72,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         // in the axes popover to hide domain for the overlaying axis.
         // perhaps I should make a private version _domain that all axes get???
         var domain = coerce('domain', dfltDomain);
-        if(domain[0] > domain[1] - 0.001) containerOut.domain = dfltDomain;
+        if(domain[0] > domain[1] - (1 / 32768.0)) containerOut.domain = dfltDomain;
         Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
     }
 
