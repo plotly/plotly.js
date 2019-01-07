@@ -1290,6 +1290,16 @@ describe('ModeBar', function() {
             expect(style.fill).toBe(color);
         }
 
+        function getStyleRule() {
+            var uid = gd._fullLayout._uid;
+            var ownerNode = document.getElementById('plotly.js-style-modebar-' + uid);
+            var styleSheets = document.styleSheets;
+            for(var i = 0; i < styleSheets.length; i++) {
+                var ss = styleSheets[i];
+                if(ss.ownerNode === ownerNode) return ss;
+            }
+        }
+
         it('create an associated style element and destroy it on purge', function(done) {
             var styleSelector, style;
             Plotly.plot(gd, [], {})
@@ -1337,16 +1347,6 @@ describe('ModeBar', function() {
         });
 
         it('changes background color (displayModeBar: hover)', function(done) {
-            function getStyleRule() {
-                var uid = gd._fullLayout._uid;
-                var ownerNode = document.getElementById('plotly.js-style-modebar-' + uid);
-                var styleSheets = document.styleSheets;
-                for(var i = 0; i < styleSheets.length; i++) {
-                    var ss = styleSheets[i];
-                    if(ss.ownerNode === ownerNode) return ss;
-                }
-            }
-
             Plotly.plot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
@@ -1364,16 +1364,6 @@ describe('ModeBar', function() {
         });
 
         it('changes background color (displayModeBar: true)', function(done) {
-            function getStyleRule() {
-                var uid = gd._fullLayout._uid;
-                var ownerNode = document.getElementById('plotly.js-style-modebar-' + uid);
-                var styleSheets = document.styleSheets;
-                for(var i = 0; i < styleSheets.length; i++) {
-                    var ss = styleSheets[i];
-                    if(ss.ownerNode === ownerNode) return ss;
-                }
-            }
-
             Plotly.plot(gd, [], {modebar: {bgcolor: colors[0]}}, {displayModeBar: true})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
