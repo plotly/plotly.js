@@ -313,7 +313,7 @@ describe('Test box hover:', function() {
         nums: 'look:0.7',
         name: ''
     }, {
-        desc: 'orientation:h | hovermode;y',
+        desc: 'orientation:h | hovermode:y',
         mock: require('@mocks/box_grouped_horz.json'),
         pos: [430, 130],
         nums: [

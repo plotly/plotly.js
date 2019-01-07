@@ -490,7 +490,7 @@ describe('Test violin hover:', function() {
         name: '',
         isRotated: false
     }, {
-        desc: 'orientation:h | hovermode;y',
+        desc: 'orientation:h | hovermode:y',
         mock: require('@mocks/violin_grouped_horz-multicategory.json'),
         patch: function(fig) {
             // don't hover on kde, to avoid local vs CI discrepancies
