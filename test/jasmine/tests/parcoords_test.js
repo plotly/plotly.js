@@ -109,9 +109,9 @@ describe('parcoords initialization tests', function() {
     describe('parcoords defaults', function() {
 
         function _supply(traceIn) {
-            var traceOut = { visible: true },
-                defaultColor = '#444',
-                layout = { font: Plots.layoutAttributes.font };
+            var traceOut = { visible: true };
+            var defaultColor = '#444';
+            var layout = { font: Plots.layoutAttributes.font };
 
             Parcoords.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -284,6 +284,8 @@ describe('parcoords initialization tests', function() {
                 cauto: true,
                 cmin: 21,
                 cmax: 63,
+                _cmin: 21,
+                _cmax: 63,
                 autocolorscale: false,
                 reversescale: false,
                 showscale: false
@@ -848,7 +850,7 @@ describe('parcoords Lifecycle methods', function() {
 
     it('@gl line.color `Plotly.restyle` should not change context layer', function(done) {
         var testLayer = '.gl-canvas-context';
-        var old_rgb, new_rgb;
+        var oldRGB, newRGB;
 
         Plotly.plot(gd, [{
             type: 'parcoords',
@@ -864,19 +866,19 @@ describe('parcoords Lifecycle methods', function() {
         })
         .then(function() {
             var rgb = getAvgPixelByChannel(testLayer);
-            old_rgb = rgb[0] + rgb[1] + rgb[2] / 3.0;
-            expect(old_rgb).toBeGreaterThan(0, 'not all black');
-            expect(old_rgb).toBeLessThan(255, 'not all white');
+            oldRGB = rgb[0] + rgb[1] + rgb[2] / 3.0;
+            expect(oldRGB).toBeGreaterThan(0, 'not all black');
+            expect(oldRGB).toBeLessThan(255, 'not all white');
 
             return Plotly.restyle(gd, 'line.color', 'red');
         })
         .then(function() {
             var rgb = getAvgPixelByChannel(testLayer);
-            new_rgb = rgb[0] + rgb[1] + rgb[2] / 3.0;
-            expect(new_rgb).toBeGreaterThan(0, 'not all black');
-            expect(new_rgb).toBeLessThan(255, 'not all white');
+            newRGB = rgb[0] + rgb[1] + rgb[2] / 3.0;
+            expect(newRGB).toBeGreaterThan(0, 'not all black');
+            expect(newRGB).toBeLessThan(255, 'not all white');
 
-            expect(new_rgb).toBe(old_rgb, 'no change to context');
+            expect(newRGB).toBe(oldRGB, 'no change to context');
         })
         .catch(failTest)
         .then(done);

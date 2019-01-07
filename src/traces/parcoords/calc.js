@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-var hasColorscale = require('../../components/colorscale/has_colorscale');
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var calcColorscale = require('../../components/colorscale/calc');
 var Lib = require('../../lib');
 var wrap = require('../../lib/gup').wrap;

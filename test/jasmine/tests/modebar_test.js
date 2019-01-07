@@ -820,8 +820,8 @@ describe('ModeBar', function() {
             var gd = setupGraphInfo();
             manageModeBar(gd);
 
-            var initialGroupCount = countGroups(gd._fullLayout._modeBar),
-                initialButtonCount = countButtons(gd._fullLayout._modeBar);
+            var initialGroupCount = countGroups(gd._fullLayout._modeBar);
+            var initialButtonCount = countButtons(gd._fullLayout._modeBar);
 
             gd._context.modeBarButtonsToAdd = [{
                 name: 'some button',
@@ -1032,10 +1032,10 @@ describe('ModeBar', function() {
 
             describe('buttons zoomIn2d, zoomOut2d, autoScale2d and resetScale2d', function() {
                 it('should update axis ranges', function() {
-                    var buttonZoomIn = selectButton(modeBar, 'zoomIn2d'),
-                        buttonZoomOut = selectButton(modeBar, 'zoomOut2d'),
-                        buttonAutoScale = selectButton(modeBar, 'autoScale2d'),
-                        buttonResetScale = selectButton(modeBar, 'resetScale2d');
+                    var buttonZoomIn = selectButton(modeBar, 'zoomIn2d');
+                    var buttonZoomOut = selectButton(modeBar, 'zoomOut2d');
+                    var buttonAutoScale = selectButton(modeBar, 'autoScale2d');
+                    var buttonResetScale = selectButton(modeBar, 'resetScale2d');
 
                     assertRange('xaxis', ['2016-01-01', '2016-04-01']);
                     assertRange('yaxis', [1, 3]);
@@ -1071,11 +1071,11 @@ describe('ModeBar', function() {
 
             describe('buttons zoom2d, pan2d, select2d and lasso2d', function() {
                 it('should update the layout dragmode', function() {
-                    var zoom2d = selectButton(modeBar, 'zoom2d'),
-                        pan2d = selectButton(modeBar, 'pan2d'),
-                        select2d = selectButton(modeBar, 'select2d'),
-                        lasso2d = selectButton(modeBar, 'lasso2d'),
-                        buttons = [zoom2d, pan2d, select2d, lasso2d];
+                    var zoom2d = selectButton(modeBar, 'zoom2d');
+                    var pan2d = selectButton(modeBar, 'pan2d');
+                    var select2d = selectButton(modeBar, 'select2d');
+                    var lasso2d = selectButton(modeBar, 'lasso2d');
+                    var buttons = [zoom2d, pan2d, select2d, lasso2d];
 
                     expect(gd._fullLayout.dragmode).toBe('zoom');
                     assertActive(buttons, zoom2d);
@@ -1270,9 +1270,10 @@ describe('ModeBar', function() {
     });
 
     describe('modebar styling', function() {
-        var gd,
-            colors = ['rgba(128, 128, 128, 0.7)', 'rgba(255, 0, 128, 0.2)'],
-            targetBtn = 'pan2d', button, style;
+        var gd;
+        var colors = ['rgba(128, 128, 128, 0.7)', 'rgba(255, 0, 128, 0.2)'];
+        var targetBtn = 'pan2d';
+        var button, style;
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -1287,6 +1288,16 @@ describe('ModeBar', function() {
             var paths = button.node.querySelector('path');
             var style = window.getComputedStyle(paths);
             expect(style.fill).toBe(color);
+        }
+
+        function getStyleRule() {
+            var uid = gd._fullLayout._uid;
+            var ownerNode = document.getElementById('plotly.js-style-modebar-' + uid);
+            var styleSheets = document.styleSheets;
+            for(var i = 0; i < styleSheets.length; i++) {
+                var ss = styleSheets[i];
+                if(ss.ownerNode === ownerNode) return ss;
+            }
         }
 
         it('create an associated style element and destroy it on purge', function(done) {
@@ -1312,7 +1323,7 @@ describe('ModeBar', function() {
                 button = selectButton(gd._fullLayout._modeBar, targetBtn);
                 checkButtonColor(button, colors[0]);
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.color', colors[1]);})
+            .then(function() { return Plotly.relayout(gd, 'modebar.color', colors[1]); })
             .then(function() {
                 checkButtonColor(button, colors[1]);
             })
@@ -1335,16 +1346,35 @@ describe('ModeBar', function() {
             .then(done);
         });
 
-        it('changes background color', function(done) {
+        it('changes background color (displayModeBar: hover)', function(done) {
             Plotly.plot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
-                expect(style.backgroundColor).toBe(colors[0]);
+                expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.bgcolor', colors[1]);})
+            .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
+            .then(function() {
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('changes background color (displayModeBar: true)', function(done) {
+            Plotly.plot(gd, [], {modebar: {bgcolor: colors[0]}}, {displayModeBar: true})
+            .then(function() {
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                expect(style.backgroundColor).toBe(colors[0]);
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
+            })
+            .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
                 expect(style.backgroundColor).toBe(colors[1]);
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
             })
             .catch(failTest)
             .then(done);
@@ -1359,7 +1389,7 @@ describe('ModeBar', function() {
                 size = modeBarEl.getBoundingClientRect();
                 expect(size.width < size.height).toBeTruthy();
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.orientation', 'h');})
+            .then(function() { return Plotly.relayout(gd, 'modebar.orientation', 'h'); })
             .catch(failTest)
             .then(function() {
                 size = modeBarEl.getBoundingClientRect();

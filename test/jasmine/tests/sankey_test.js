@@ -19,9 +19,9 @@ describe('sankey tests', function() {
     'use strict';
 
     function _supply(traceIn) {
-        var traceOut = { visible: true },
-            defaultColor = '#444',
-            layout = { colorway: defaultColors };
+        var traceOut = { visible: true };
+        var defaultColor = '#444';
+        var layout = { colorway: defaultColors };
 
         Sankey.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -29,8 +29,8 @@ describe('sankey tests', function() {
     }
 
     function _supplyWithLayout(traceIn, layout) {
-        var traceOut = { visible: true },
-            defaultColor = '#444';
+        var traceOut = { visible: true };
+        var defaultColor = '#444';
 
         Sankey.supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({colorway: defaultColors}, layout));
 
@@ -394,8 +394,8 @@ describe('sankey tests', function() {
             Lib.clearThrottle();
         }
 
-        var node = [404, 302],
-            link = [450, 300];
+        var node = [404, 302];
+        var link = [450, 300];
 
         it('should show the correct hover labels', function(done) {
             var gd = createGraphDiv();

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -23,17 +23,22 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    var x = coerce('x');
+    var y = coerce('y');
+
     var z = coerce('z');
-    if(!z) {
+    if(!z || !z.length ||
+       (x ? (x.length < 1) : false) ||
+       (y ? (y.length < 1) : false)
+    ) {
         traceOut.visible = false;
         return;
     }
 
-    var x = coerce('x');
-    coerce('y');
-
     traceOut._xlength = (Array.isArray(x) && Lib.isArrayOrTypedArray(x[0])) ? z.length : z[0].length;
     traceOut._ylength = z.length;
+
+    traceOut._objectOffset = [0, 0, 0];
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);

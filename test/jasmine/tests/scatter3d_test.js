@@ -9,8 +9,8 @@ describe('Scatter3D defaults', function() {
     var defaultColor = '#d3d3d3';
 
     function _supply(traceIn, layoutEdits) {
-        var traceOut = { visible: true },
-            layout = Lib.extendFlat({ _dataLength: 1 }, layoutEdits);
+        var traceOut = { visible: true };
+        var layout = Lib.extendFlat({ _dataLength: 1 }, layoutEdits);
 
         Scatter3D.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         return traceOut;

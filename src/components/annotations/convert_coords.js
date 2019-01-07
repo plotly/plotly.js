@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -28,19 +28,19 @@ var toLogRange = require('../../lib/to_log_range');
 module.exports = function convertCoords(gd, ax, newType, doExtra) {
     ax = ax || {};
 
-    var toLog = (newType === 'log') && (ax.type === 'linear'),
-        fromLog = (newType === 'linear') && (ax.type === 'log');
+    var toLog = (newType === 'log') && (ax.type === 'linear');
+    var fromLog = (newType === 'linear') && (ax.type === 'log');
 
     if(!(toLog || fromLog)) return;
 
-    var annotations = gd._fullLayout.annotations,
-        axLetter = ax._id.charAt(0),
-        ann,
-        attrPrefix;
+    var annotations = gd._fullLayout.annotations;
+    var axLetter = ax._id.charAt(0);
+    var ann;
+    var attrPrefix;
 
     function convert(attr) {
-        var currentVal = ann[attr],
-            newVal = null;
+        var currentVal = ann[attr];
+        var newVal = null;
 
         if(toLog) newVal = toLogRange(currentVal, ax.range);
         else newVal = Math.pow(10, currentVal);

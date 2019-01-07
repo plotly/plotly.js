@@ -9,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var mouseEvent = require('../assets/mouse_event');
 
 var mockMulti = require('@mocks/table_latex_multitrace_scatter.json');
 
@@ -68,9 +69,9 @@ describe('table initialization tests', function() {
     describe('table defaults', function() {
 
         function _supply(traceIn) {
-            var traceOut = { visible: true },
-                defaultColor = '#777',
-                layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
+            var traceOut = { visible: true };
+            var defaultColor = '#777';
+            var layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
 
             Table.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -385,8 +386,7 @@ describe('table', function() {
     });
 
     describe('more restyling tests with scenegraph queries', function() {
-        var mockCopy,
-            gd;
+        var mockCopy, gd;
 
         beforeEach(function(done) {
             mockCopy = Lib.extendDeep({}, mock2);
@@ -423,6 +423,104 @@ describe('table', function() {
                 .then(restyleValues('header.line.width', function(gd) {return gd.data[0].header.line.width;}, [[2, 6]]))
                 .then(restyleValues('header.format', function(gd) {return gd.data[0].header.format;}, [['', '']]))
                 .then(done);
+        });
+    });
+
+    describe('scroll effects', function() {
+        var mockCopy, gd, gdWheelEventCount;
+
+        beforeEach(function(done) {
+            mockCopy = Lib.extendDeep({}, mockMulti);
+            gd = createGraphDiv();
+            gdWheelEventCount = 0;
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                gd.addEventListener('mousewheel', function(evt) {
+                    gdWheelEventCount++;
+                    // make sure we don't *really* scroll the page.
+                    // that would be annoying!
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                });
+            })
+            .then(done);
+        });
+
+        function assertBubbledEvents(cnt) {
+            expect(gdWheelEventCount).toBe(cnt);
+            gdWheelEventCount = 0;
+        }
+
+        function getCenter(el) {
+            var bBox = el.getBoundingClientRect();
+            // actually above center, since these bboxes are bigger than the
+            // visible table area
+            return {x: bBox.left + bBox.width / 2, y: bBox.top + bBox.height / 4};
+        }
+
+        function scroll(pos, dy) {
+            mouseEvent('mousemove', pos.x, pos.y);
+            mouseEvent('mousewheel', pos.x, pos.y, {deltaX: 0, deltaY: dy});
+        }
+
+        it('bubbles scroll events iff they did not scroll a table', function() {
+            var allTableControls = document.querySelectorAll('.' + cn.tableControlView);
+            var smallCenter = getCenter(allTableControls[0]);
+            var bigCenter = getCenter(allTableControls[1]);
+
+            // table with no scroll bars - events always bubble
+            scroll(smallCenter, -20);
+            assertBubbledEvents(1);
+            scroll(smallCenter, 20);
+            assertBubbledEvents(1);
+
+            // table with scrollbars - events bubble if we don't use them
+            scroll(bigCenter, -20); // up from the top - bubbles
+            assertBubbledEvents(1);
+            scroll(bigCenter, 20); // down from the top - scrolled, so no bubble
+            assertBubbledEvents(0);
+            scroll(bigCenter, -40); // back to the top, with extra dy discarded
+            assertBubbledEvents(0);
+            scroll(bigCenter, -20); // now it bubbles
+            assertBubbledEvents(1);
+            scroll(bigCenter, 200000); // all the way to the bottom
+            assertBubbledEvents(0);
+            scroll(bigCenter, 20); // now it bubbles from the bottom..
+            assertBubbledEvents(1);
+        });
+
+        it('does not scroll any tables with staticPlot', function(done) {
+            var allTableControls = document.querySelectorAll('.' + cn.tableControlView);
+            var bigCenter = getCenter(allTableControls[1]);
+
+            var mock = Lib.extendDeep({}, mockMulti);
+
+            // make sure initially with staticPlot: false, scrolling works
+            // (copied from previous test)
+            scroll(bigCenter, 20);
+            assertBubbledEvents(0);
+            scroll(bigCenter, -40);
+            assertBubbledEvents(0);
+
+            Plotly.react(gd, mock.data, mock.layout, {staticPlot: true})
+            .then(function() {
+                // now the same scrolls bubble
+                scroll(bigCenter, 20);
+                assertBubbledEvents(1);
+                scroll(bigCenter, -40);
+                assertBubbledEvents(1);
+
+                return Plotly.react(gd, mock.data, mock.layout, {staticPlot: false});
+            })
+            .then(function() {
+                // scroll works again!
+                scroll(bigCenter, 20);
+                assertBubbledEvents(0);
+                scroll(bigCenter, -40);
+                assertBubbledEvents(0);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });

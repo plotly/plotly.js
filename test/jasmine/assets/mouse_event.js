@@ -33,11 +33,14 @@ module.exports = function(type, x, y, opts) {
         fullOpts.shiftKey = opts.shiftKey;
     }
 
-    var el = (opts && opts.element) || document.elementFromPoint(x, y),
-        ev;
+    var el = (opts && opts.element) || document.elementFromPoint(x, y);
+    var ev;
 
-    if(type === 'scroll') {
-        ev = new window.WheelEvent('wheel', Lib.extendFlat({}, fullOpts, opts));
+    if(type === 'scroll' || type === 'mousewheel') {
+        // somehow table needs this to be mouswheel but others need wheel.
+        // yet they all work the same in the browser?
+        type = (type === 'scroll') ? 'wheel' : 'mousewheel';
+        ev = new window.WheelEvent(type, Lib.extendFlat({}, fullOpts, opts));
     } else {
         ev = new window.MouseEvent(type, fullOpts);
     }

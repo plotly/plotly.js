@@ -711,9 +711,9 @@ describe('legend orientation change:', function() {
     afterEach(destroyGraphDiv);
 
     it('should update plot background', function(done) {
-        var mock = require('@mocks/legend_horizontal_autowrap.json'),
-            gd = createGraphDiv(),
-            initialLegendBGColor;
+        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var gd = createGraphDiv();
+        var initialLegendBGColor;
 
         Plotly.plot(gd, mock.data, mock.layout).then(function() {
             initialLegendBGColor = gd._fullLayout.legend.bgcolor;
@@ -734,9 +734,9 @@ describe('legend restyle update', function() {
     afterEach(destroyGraphDiv);
 
     it('should update trace toggle background rectangle', function(done) {
-        var mock = require('@mocks/0.json'),
-            mockCopy = Lib.extendDeep({}, mock),
-            gd = createGraphDiv();
+        var mock = require('@mocks/0.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        var gd = createGraphDiv();
 
         mockCopy.data[0].visible = false;
         mockCopy.data[0].showlegend = false;

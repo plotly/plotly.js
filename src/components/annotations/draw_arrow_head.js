@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -69,8 +69,8 @@ module.exports = function drawArrowHead(el3, ends, options) {
                 hideLine();
                 return;
             }
-            var backOffX = backOff * Math.cos(startRot),
-                backOffY = backOff * Math.sin(startRot);
+            var backOffX = backOff * Math.cos(startRot);
+            var backOffY = backOff * Math.sin(startRot);
 
             end.x += backOffX;
             end.y += backOffY;
@@ -83,8 +83,8 @@ module.exports = function drawArrowHead(el3, ends, options) {
                 hideLine();
                 return;
             }
-            var startBackOffX = startBackOff * Math.cos(startRot),
-                startbackOffY = startBackOff * Math.sin(startRot);
+            var startBackOffX = startBackOff * Math.cos(startRot);
+            var startbackOffY = startBackOff * Math.sin(startRot);
 
             start.x -= startBackOffX;
             start.y -= startbackOffY;
@@ -93,12 +93,12 @@ module.exports = function drawArrowHead(el3, ends, options) {
         }
     }
     else if(el.nodeName === 'path') {
-        var pathlen = el.getTotalLength(),
-            // using dash to hide the backOff region of the path.
-            // if we ever allow dash for the arrow we'll have to
-            // do better than this hack... maybe just manually
-            // combine the two
-            dashArray = '';
+        var pathlen = el.getTotalLength();
+        // using dash to hide the backOff region of the path.
+        // if we ever allow dash for the arrow we'll have to
+        // do better than this hack... maybe just manually
+        // combine the two
+        var dashArray = '';
 
         if(pathlen < backOff + startBackOff) {
             hideLine();

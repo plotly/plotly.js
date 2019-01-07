@@ -207,8 +207,8 @@ describe('Plotly.Snapshot', function() {
             Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
                 return Plotly.Snapshot.toSVG(gd);
             }).then(function(svg) {
-                var svgDOM = parser.parseFromString(svg, 'image/svg+xml'),
-                    svgElements = svgDOM.getElementsByTagName('svg');
+                var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
+                var svgElements = svgDOM.getElementsByTagName('svg');
 
                 expect(svgElements.length).toBe(1);
             }).then(done);
@@ -218,8 +218,8 @@ describe('Plotly.Snapshot', function() {
             Plotly.plot(gd, annotationMock.data, annotationMock.layout).then(function() {
                 return Plotly.Snapshot.toSVG(gd);
             }).then(function(svg) {
-                var svgDOM = parser.parseFromString(svg, 'image/svg+xml'),
-                    svgElements = svgDOM.getElementsByTagName('svg');
+                var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
+                var svgElements = svgDOM.getElementsByTagName('svg');
 
                 expect(svgElements.length).toBe(1);
             }).then(done);
@@ -240,8 +240,8 @@ describe('Plotly.Snapshot', function() {
                 return Plotly.Snapshot.toSVG(gd);
             })
             .then(function(svg) {
-                var svgDOM = parser.parseFromString(svg, 'image/svg+xml'),
-                    textElements = svgDOM.getElementsByTagName('text');
+                var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
+                var textElements = svgDOM.getElementsByTagName('text');
 
                 for(var i = 0; i < textElements.length; i++) {
                     expect(textElements[i].style.visibility).toEqual('');

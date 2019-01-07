@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,8 +17,8 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
 
     if(traceOut.marker) {
         // don't try to inherit a color array
-        var markerColor = traceOut.marker.color,
-            markerLineColor = (traceOut.marker.line || {}).color;
+        var markerColor = traceOut.marker.color;
+        var markerLineColor = (traceOut.marker.line || {}).color;
 
         if(markerColor && !isArrayOrTypedArray(markerColor)) {
             inheritColorFromMarker = markerColor;

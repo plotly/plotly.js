@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -207,9 +207,9 @@ proto.hasAxisInAltrPos = function(axisName, ax) {
 };
 
 proto.getLabelPad = function(axisName, ax) {
-    var offsetBase = 1.5,
-        fontSize = ax.title.font.size,
-        showticklabels = ax.showticklabels;
+    var offsetBase = 1.5;
+    var fontSize = ax.title.font.size;
+    var showticklabels = ax.showticklabels;
 
     if(axisName === 'xaxis') {
         return (ax.side === 'top') ?

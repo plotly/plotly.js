@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,8 +9,7 @@
 'use strict';
 
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
-var calcColorscales = require('../scatter/colorscale_calc');
-
+var calcColorscale = require('../scatter/colorscale_calc');
 
 /**
  * This is a kludge to put the array attributes into
@@ -21,7 +20,7 @@ module.exports = function calc(gd, trace) {
     var cd = [{x: false, y: false, trace: trace, t: {}}];
 
     arraysToCalcdata(cd, trace);
-    calcColorscales(gd, trace);
+    calcColorscale(gd, trace);
 
     return cd;
 };

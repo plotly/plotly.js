@@ -1,16 +1,15 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Color = require('../../components/color');
-var hasColorscale = require('../../components/colorscale/has_colorscale');
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
 var subTypes = require('./subtypes');
@@ -22,9 +21,9 @@ var subTypes = require('./subtypes');
  *   noSelect: caller does not support selected/unselected attribute containers
  */
 module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
-    var isBubble = subTypes.isBubble(traceIn),
-        lineColor = (traceIn.line || {}).color,
-        defaultMLC;
+    var isBubble = subTypes.isBubble(traceIn);
+    var lineColor = (traceIn.line || {}).color;
+    var defaultMLC;
 
     opts = opts || {};
 

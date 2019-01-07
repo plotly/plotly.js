@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58,7 +58,8 @@ module.exports = function calc(gd, trace) {
     var maxLineWidth = Math.max(arrayMax(trace.header.line.width), arrayMax(trace.cells.line.width));
 
     var calcdata = {
-        key: trace.index,
+        // include staticPlot in the key so if it changes we delete and redraw
+        key: trace.uid + gd._context.staticPlot,
         translateX: domain.x[0] * gd._fullLayout._size.w,
         translateY: gd._fullLayout._size.h * (1 - domain.y[1]),
         size: gd._fullLayout._size,

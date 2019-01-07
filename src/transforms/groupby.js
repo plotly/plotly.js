@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -176,9 +176,9 @@ function transformOne(trace, state) {
         return [trace];
     }
 
-    var groupNames = Lib.filterUnique(groups),
-        newData = new Array(groupNames.length),
-        len = groups.length;
+    var groupNames = Lib.filterUnique(groups);
+    var newData = new Array(groupNames.length);
+    var len = groups.length;
 
     var arrayAttrs = PlotSchema.findArrayAttributes(trace);
 
@@ -204,9 +204,6 @@ function transformOne(trace, state) {
         // Start with a deep extend that just copies array references.
         newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
         newTrace._group = groupName;
-        // helper function for when we need to push updates back to the input,
-        // outside of the normal restyle/relayout pathway, like filling in auto values
-        newTrace.updateStyle = styleUpdater(groupName, transformIndex);
         newTrace.transforms[transformIndex]._indexToPoints = {};
 
         var suppliedName = null;
@@ -282,15 +279,4 @@ function transformOne(trace, state) {
     }
 
     return newData;
-}
-
-function styleUpdater(groupName, transformIndex) {
-    return function(trace, attr, value) {
-        Lib.keyedContainer(
-            trace,
-            'transforms[' + transformIndex + '].styles',
-            'target',
-            'value.' + attr
-        ).set(String(groupName), value);
-    };
 }

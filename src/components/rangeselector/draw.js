@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -44,9 +44,9 @@ module.exports = function draw(gd) {
     });
 
     selectors.each(function(d) {
-        var selector = d3.select(this),
-            axisLayout = d,
-            selectorLayout = axisLayout.rangeselector;
+        var selector = d3.select(this);
+        var axisLayout = d;
+        var selectorLayout = axisLayout.rangeselector;
 
         var buttons = selector.selectAll('g.button')
             .data(Lib.filterVisible(selectorLayout.buttons));

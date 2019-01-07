@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,16 +20,17 @@
  */
 var CatmullRomExp = 0.5;
 module.exports = function makeControlPoints(p0, p1, p2, smoothness) {
-    var d1x = p0[0] - p1[0],
-        d1y = p0[1] - p1[1],
-        d2x = p2[0] - p1[0],
-        d2y = p2[1] - p1[1],
-        d1a = Math.pow(d1x * d1x + d1y * d1y, CatmullRomExp / 2),
-        d2a = Math.pow(d2x * d2x + d2y * d2y, CatmullRomExp / 2),
-        numx = (d2a * d2a * d1x - d1a * d1a * d2x) * smoothness,
-        numy = (d2a * d2a * d1y - d1a * d1a * d2y) * smoothness,
-        denom1 = d2a * (d1a + d2a) * 3,
-        denom2 = d1a * (d1a + d2a) * 3;
+    var d1x = p0[0] - p1[0];
+    var d1y = p0[1] - p1[1];
+    var d2x = p2[0] - p1[0];
+    var d2y = p2[1] - p1[1];
+    var d1a = Math.pow(d1x * d1x + d1y * d1y, CatmullRomExp / 2);
+    var d2a = Math.pow(d2x * d2x + d2y * d2y, CatmullRomExp / 2);
+    var numx = (d2a * d2a * d1x - d1a * d1a * d2x) * smoothness;
+    var numy = (d2a * d2a * d1y - d1a * d1a * d2y) * smoothness;
+    var denom1 = d2a * (d1a + d2a) * 3;
+    var denom2 = d1a * (d1a + d2a) * 3;
+
     return [[
         p1[0] + (denom1 && numx / denom1),
         p1[1] + (denom1 && numy / denom1)

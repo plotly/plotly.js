@@ -54,13 +54,13 @@ var graph = {
 
 describe('d3-sankey', function() {
     var margin = {
-            top: 10,
-            right: 10,
-            bottom: 10,
-            left: 10
-        },
-        width = 1200 - margin.left - margin.right,
-        height = 740 - margin.top - margin.bottom;
+        top: 10,
+        right: 10,
+        bottom: 10,
+        left: 10
+    };
+    var width = 1200 - margin.left - margin.right;
+    var height = 740 - margin.top - margin.bottom;
 
     var s;
 
@@ -88,24 +88,24 @@ describe('d3-sankey', function() {
     });
 
     it('keep a list of nodes', function() {
-        var node_names = s().nodes.map(function(obj) {
+        var nodeNames = s().nodes.map(function(obj) {
             return obj.name;
         });
-        expect(node_names).toEqual(['node0', 'node1', 'node2', 'node3', 'node4']);
+        expect(nodeNames).toEqual(['node0', 'node1', 'node2', 'node3', 'node4']);
     });
 
     it('keep a list of nodes with x values', function() {
-        var node_names = s().nodes.map(function(obj) {
+        var nodeNames = s().nodes.map(function(obj) {
             return Math.floor(obj.x0);
         });
-        expect(node_names).toEqual([0, 0, 381, 762, 1144]);
+        expect(nodeNames).toEqual([0, 0, 381, 762, 1144]);
     });
 
     it('keep a list of links', function() {
-        var link_widths = s().links.map(function(obj) {
+        var linkWidths = s().links.map(function(obj) {
             return (obj.width);
         });
-        expect(link_widths).toEqual([177.5, 177.5, 177.5, 177.5, 177.5, 177.5, 355]);
+        expect(linkWidths).toEqual([177.5, 177.5, 177.5, 177.5, 177.5, 177.5, 355]);
     });
 
     it('controls the size of the figure', function() {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -74,14 +74,13 @@ var isRemoveVal = exports.isRemoveVal = function isRemoveVal(val) {
  *  `false` would mean the parent should replot.
  */
 exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np, edits, flags, _nestedProperty) {
-    var componentType = np.astr,
-        supplyComponentDefaults = Registry.getComponentMethod(componentType, 'supplyLayoutDefaults'),
-        draw = Registry.getComponentMethod(componentType, 'draw'),
-        drawOne = Registry.getComponentMethod(componentType, 'drawOne'),
-        replotLater = flags.replot || flags.recalc || (supplyComponentDefaults === noop) ||
-            (draw === noop),
-        layout = gd.layout,
-        fullLayout = gd._fullLayout;
+    var componentType = np.astr;
+    var supplyComponentDefaults = Registry.getComponentMethod(componentType, 'supplyLayoutDefaults');
+    var draw = Registry.getComponentMethod(componentType, 'draw');
+    var drawOne = Registry.getComponentMethod(componentType, 'drawOne');
+    var replotLater = flags.replot || flags.recalc || (supplyComponentDefaults === noop) || (draw === noop);
+    var layout = gd.layout;
+    var fullLayout = gd._fullLayout;
 
     if(edits['']) {
         if(Object.keys(edits).length > 1) {
@@ -105,26 +104,26 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
         return true;
     }
 
-    var componentNums = Object.keys(edits).map(Number).sort(sorterAsc),
-        componentArrayIn = np.get(),
-        componentArray = componentArrayIn || [],
-        // componentArrayFull is used just to keep splices in line between
-        // full and input arrays, so private keys can be copied over after
-        // redoing supplyDefaults
-        // TODO: this assumes componentArray is in gd.layout - which will not be
-        // true after we extend this to restyle
-        componentArrayFull = _nestedProperty(fullLayout, componentType).get();
+    var componentNums = Object.keys(edits).map(Number).sort(sorterAsc);
+    var componentArrayIn = np.get();
+    var componentArray = componentArrayIn || [];
+    // componentArrayFull is used just to keep splices in line between
+    // full and input arrays, so private keys can be copied over after
+    // redoing supplyDefaults
+    // TODO: this assumes componentArray is in gd.layout - which will not be
+    // true after we extend this to restyle
+    var componentArrayFull = _nestedProperty(fullLayout, componentType).get();
 
-    var deletes = [],
-        firstIndexChange = -1,
-        maxIndex = componentArray.length,
-        i,
-        j,
-        componentNum,
-        objEdits,
-        objKeys,
-        objVal,
-        adding, prefix;
+    var deletes = [];
+    var firstIndexChange = -1;
+    var maxIndex = componentArray.length;
+    var i;
+    var j;
+    var componentNum;
+    var objEdits;
+    var objKeys;
+    var objVal;
+    var adding, prefix;
 
     // first make the add and edit changes
     for(i = 0; i < componentNums.length; i++) {

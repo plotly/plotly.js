@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,9 +8,10 @@
 
 'use strict';
 
-var scales = require('./scales');
+var scales = require('./scales').scales;
 
 var msg = 'Note that `autocolorscale` must be true for this attribute to work.';
+
 module.exports = {
     editType: 'calc',
     sequential: {

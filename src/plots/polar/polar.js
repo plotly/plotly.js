@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -643,6 +643,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         Axes.drawLabels(gd, ax, {
             vals: vals,
             layer: layers['angular-axis'],
+            repositionOnUpdate: true,
             transFn: transFn,
             labelXFn: labelXFn,
             labelYFn: labelYFn,

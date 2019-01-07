@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -129,15 +129,15 @@ function linkPath() {
         if(d.circular) {
             return d.link.path;
         } else {
-            var x0 = d.link.source.x1,
-                x1 = d.link.target.x0,
-                xi = interpolateNumber(x0, x1),
-                x2 = xi(curvature),
-                x3 = xi(1 - curvature),
-                y0a = d.link.y0 - d.link.width / 2,
-                y0b = d.link.y0 + d.link.width / 2,
-                y1a = d.link.y1 - d.link.width / 2,
-                y1b = d.link.y1 + d.link.width / 2;
+            var x0 = d.link.source.x1;
+            var x1 = d.link.target.x0;
+            var xi = interpolateNumber(x0, x1);
+            var x2 = xi(curvature);
+            var x3 = xi(1 - curvature);
+            var y0a = d.link.y0 - d.link.width / 2;
+            var y0b = d.link.y0 + d.link.width / 2;
+            var y1a = d.link.y1 - d.link.width / 2;
+            var y1b = d.link.y1 + d.link.width / 2;
             return 'M' + x0 + ',' + y0a +
                  'C' + x2 + ',' + y0a +
                  ' ' + x3 + ',' + y1a +
@@ -153,11 +153,11 @@ function linkPath() {
 }
 
 function nodeModel(d, n, i) {
-    var tc = tinycolor(n.color),
-        zoneThicknessPad = c.nodePadAcross,
-        zoneLengthPad = d.nodePad / 2,
-        visibleThickness = n.x1 - n.x0,
-        visibleLength = Math.max(0.5, (n.y1 - n.y0));
+    var tc = tinycolor(n.color);
+    var zoneThicknessPad = c.nodePadAcross;
+    var zoneLengthPad = d.nodePad / 2;
+    var visibleThickness = n.x1 - n.x0;
+    var visibleLength = Math.max(0.5, (n.y1 - n.y0));
 
     var basicKey = n.label;
     var key = basicKey + '__' + i;
@@ -406,7 +406,8 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
 // basic data utilities
 
 function persistOriginalPlace(nodes) {
-    var i, distinctLayerPositions = [];
+    var distinctLayerPositions = [];
+    var i;
     for(i = 0; i < nodes.length; i++) {
         nodes[i].originalX = (nodes[i].x0 + nodes[i].x1) / 2;
         nodes[i].originalY = (nodes[i].y0 + nodes[i].y1) / 2;

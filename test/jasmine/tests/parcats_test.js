@@ -12,14 +12,14 @@ var CALLBACK_DELAY = 500;
 
 // Testing constants
 // =================
-var basic_mock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
-var margin = basic_mock.layout.margin;
-var domain = basic_mock.data[0].domain;
+var basicMock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
+var margin = basicMock.layout.margin;
+var domain = basicMock.data[0].domain;
 
-var categoryLabelPad = 40,
-    dimWidth = 16,
-    catSpacing = 8,
-    dimDx = (256 - 2 * categoryLabelPad - dimWidth) / 2;
+var categoryLabelPad = 40;
+var dimWidth = 16;
+var catSpacing = 8;
+var dimDx = (256 - 2 * categoryLabelPad - dimWidth) / 2;
 
 // Validation helpers
 // ==================
@@ -110,9 +110,9 @@ function checkParcatsSvg(gd) {
         .selectAll('g.dimension');
 
     dimensionSelection.each(function(dimension, dimInd) {
-        var expectedX = categoryLabelPad + dimInd * dimDx,
-            expectedY = 0,
-            expectedTransform = makeTranslate(expectedX, expectedY);
+        var expectedX = categoryLabelPad + dimInd * dimDx;
+        var expectedY = 0;
+        var expectedTransform = makeTranslate(expectedX, expectedY);
         expect(d3.select(this).attr('transform')).toEqual(expectedTransform);
     });
 
@@ -123,23 +123,23 @@ function checkParcatsSvg(gd) {
         var nextY = (3 - categorySelection.size()) * catSpacing / 2;
 
         categorySelection.each(function(category) {
-            var catSel = d3.select(this),
-                catWidth = catSel.datum().width,
-                catHeight = catSel.datum().height;
+            var catSel = d3.select(this);
+            var catWidth = catSel.datum().width;
+            var catHeight = catSel.datum().height;
 
             var expectedTransform = 'translate(0, ' + nextY + ')';
             expect(catSel.attr('transform')).toEqual(expectedTransform);
             nextY += category.height + catSpacing;
 
             // Check category label position
-            var isRightDim = dimDisplayInd === 2,
-                catLabel = catSel.select('text.catlabel');
+            var isRightDim = dimDisplayInd === 2;
+            var catLabel = catSel.select('text.catlabel');
 
             // Compute expected text properties based on
             // whether this is the right-most dimension
-            var expectedTextAnchor = isRightDim ? 'start' : 'end',
-                expectedX = isRightDim ? catWidth + 5 : -5,
-                expectedY = catHeight / 2;
+            var expectedTextAnchor = isRightDim ? 'start' : 'end';
+            var expectedX = isRightDim ? catWidth + 5 : -5;
+            var expectedY = catHeight / 2;
 
             expect(catLabel.attr('text-anchor')).toEqual(expectedTextAnchor);
             expect(catLabel.attr('x')).toEqual(expectedX.toString());
@@ -160,8 +160,8 @@ describe('Basic parcats trace', function() {
     // Variable declarations
     // ---------------------
     // ### Trace level ###
-    var gd,
-        mock;
+    var gd;
+    var mock;
 
     // Fixtures
     // --------
@@ -175,7 +175,7 @@ describe('Basic parcats trace', function() {
     // Tests
     // -----
     it('should create trace properly', function(done) {
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
                 // Check trace properties
                 var trace = gd.data[0];
@@ -188,7 +188,7 @@ describe('Basic parcats trace', function() {
     });
 
     it('should compute initial model properly', function(done) {
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
 
                 // Var check calc data
@@ -271,18 +271,15 @@ describe('Basic parcats trace', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
 
-                // Var check calc data
-                var gd_traceData = gd.data[0];
-
                 // Check that trace data matches input
-                expect(gd_traceData).toEqual(mock.data[0]);
+                expect(gd.data[0]).toEqual(mock.data[0]);
             })
             .catch(failTest)
             .then(done);
     });
 
     it('should compute initial fullData properly', function(done) {
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
                 // Check that some of the defaults are computed properly
                 var fullTrace = gd._fullData[0];
@@ -296,7 +293,7 @@ describe('Basic parcats trace', function() {
 
     it('should compute initial model views properly', function(done) {
 
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
                 checkParcatsModelView(gd);
             })
@@ -306,7 +303,7 @@ describe('Basic parcats trace', function() {
     });
 
     it('should compute initial svg properly', function(done) {
-        Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basicMock)
             .then(function() {
                 checkParcatsSvg(gd);
             })
@@ -320,8 +317,8 @@ describe('Dimension reordered parcats trace', function() {
     // Variable declarations
     // ---------------------
     // ### Trace level ###
-    var gd,
-        mock;
+    var gd;
+    var mock;
 
     // Fixtures
     // --------
@@ -495,9 +492,9 @@ describe('Drag to reordered dimensions', function() {
     // Variable declarations
     // ---------------------
     // ### Trace level ###
-    var gd,
-        restyleCallback,
-        mock;
+    var gd;
+    var restyleCallback;
+    var mock;
 
     // Fixtures
     // --------
@@ -514,20 +511,20 @@ describe('Drag to reordered dimensions', function() {
         // Start mouse in the middle of the dimension label on the
         // second dimensions (dimension display index 1)
         var dragDimStartX = parcatsViewModel.dimensions[1].x;
-        var mouseStartY = parcatsViewModel.y - 5,
-            mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
+        var mouseStartY = parcatsViewModel.y - 5;
+        var mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
 
         // Pause mouse half-way between the original location of
         // the first and second dimensions. Also move mosue
         // downward a bit to make sure drag 'sticks'
-        var mouseMidY = parcatsViewModel.y + 50,
-            mouseMidX = mouseStartX + dimDx / 2;
+        var mouseMidY = parcatsViewModel.y + 50;
+        var mouseMidX = mouseStartX + dimDx / 2;
 
         // End mouse drag in the middle of the original
         // position of the dimension label of the third dimension
         // (dimension display index 2)
-        var mouseEndY = parcatsViewModel.y + 100,
-            mouseEndX = parcatsViewModel.x + parcatsViewModel.dimensions[2].x + dimWidth / 2;
+        var mouseEndY = parcatsViewModel.y + 100;
+        var mouseEndX = parcatsViewModel.x + parcatsViewModel.dimensions[2].x + dimWidth / 2;
         return {
             mouseStartY: mouseStartY,
             mouseStartX: mouseStartX,
@@ -784,9 +781,9 @@ describe('Drag to reordered categories', function() {
     // Variable declarations
     // ---------------------
     // ### Trace level ###
-    var gd,
-        restyleCallback,
-        mock;
+    var gd;
+    var restyleCallback;
+    var mock;
 
     // Fixtures
     // --------
@@ -800,20 +797,20 @@ describe('Drag to reordered categories', function() {
     function getDragPositions(parcatsViewModel) {
         var dragDimStartX = parcatsViewModel.dimensions[1].x;
 
-        var mouseStartY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
-            mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
+        var mouseStartY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+        var mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
 
         // Pause mouse half-way between the original location of
         // the first and second dimensions. Also move mouse
         // upward enough to swap position with middle category
-        var mouseMidY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[1].y,
-            mouseMidX = mouseStartX + dimDx / 2;
+        var mouseMidY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[1].y;
+        var mouseMidX = mouseStartX + dimDx / 2;
 
         // End mouse drag in the middle of the original
         // position of the dimension label of the third dimension
         // (dimension display index 2), and at the height of the original top category
-        var mouseEndY = parcatsViewModel.y,
-            mouseEndX = parcatsViewModel.x + parcatsViewModel.dimensions[2].x + dimWidth / 2;
+        var mouseEndY = parcatsViewModel.y;
+        var mouseEndX = parcatsViewModel.x + parcatsViewModel.dimensions[2].x + dimWidth / 2;
         return {
             dragDimStartX: dragDimStartX,
             mouseStartY: mouseStartY,
@@ -1165,8 +1162,8 @@ describe('Click events', function() {
     // Variable declarations
     // ---------------------
     // ### Trace level ###
-    var gd,
-        mock;
+    var gd;
+    var mock;
 
     // Fixtures
     // --------
@@ -1191,8 +1188,8 @@ describe('Click events', function() {
 
                 // Click on the lowest category in the middle dimension (category "C")
                 var dimStartX = parcatsViewModel.dimensions[1].x;
-                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
-                    mouseX = parcatsViewModel.x + dimStartX + dimWidth / 2;
+                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                var mouseX = parcatsViewModel.x + dimStartX + dimWidth / 2;
 
                 // Position mouse for start of drag
                 // --------------------------------
@@ -1234,8 +1231,8 @@ describe('Click events', function() {
 
                 // Click on the lowest category in the middle dimension (category "C")
                 var dimStartX = parcatsViewModel.dimensions[1].x;
-                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
-                    mouseX = parcatsViewModel.x + dimStartX + dimWidth / 2;
+                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                var mouseX = parcatsViewModel.x + dimStartX + dimWidth / 2;
 
                 // Position mouse for start of drag
                 // --------------------------------
@@ -1265,8 +1262,8 @@ describe('Click events', function() {
 
                 // Click on the top path to the right of the lowest category in the middle dimension (category "C")
                 var dimStartX = parcatsViewModel.dimensions[1].x;
-                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
-                    mouseX = parcatsViewModel.x + dimStartX + dimWidth + 10;
+                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                var mouseX = parcatsViewModel.x + dimStartX + dimWidth + 10;
 
                 // Position mouse for start of drag
                 // --------------------------------
@@ -1307,8 +1304,8 @@ describe('Click events', function() {
 
                 // Click on the top path to the right of the lowest category in the middle dimension (category "C")
                 var dimStartX = parcatsViewModel.dimensions[1].x;
-                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
-                    mouseX = parcatsViewModel.x + dimStartX + dimWidth + 10;
+                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                var mouseX = parcatsViewModel.x + dimStartX + dimWidth + 10;
 
                 // Position mouse for start of drag
                 // --------------------------------
@@ -1329,8 +1326,8 @@ describe('Click events with hoveron color', function() {
     // Variable declarations
     // ---------------------
     // ### Trace level ###
-    var gd,
-        mock;
+    var gd;
+    var mock;
 
     // Fixtures
     // --------
@@ -1355,8 +1352,8 @@ describe('Click events with hoveron color', function() {
 
                 // Click on the top of the lowest category in the middle dimension (category "C")
                 var dimStartX = parcatsViewModel.dimensions[1].x;
-                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
-                    mouseX = parcatsViewModel.x + dimStartX + dimWidth / 2;
+                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                var mouseX = parcatsViewModel.x + dimStartX + dimWidth / 2;
 
                 // Position mouse for start of drag
                 // --------------------------------
@@ -1396,8 +1393,8 @@ describe('Click events with hoveron color', function() {
 
                 // Click on the top path to the right of the lowest category in the middle dimension (category "C")
                 var dimStartX = parcatsViewModel.dimensions[1].x;
-                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
-                    mouseX = parcatsViewModel.x + dimStartX + dimWidth + 10;
+                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                var mouseX = parcatsViewModel.x + dimStartX + dimWidth + 10;
 
                 // Position mouse for start of drag
                 // --------------------------------
@@ -1427,8 +1424,8 @@ describe('Hover events', function() {
     // Variable declarations
     // ---------------------
     // ### Trace level ###
-    var gd,
-        mock;
+    var gd;
+    var mock;
 
     // Fixtures
     // --------
@@ -1441,10 +1438,10 @@ describe('Hover events', function() {
 
     it('hover and unhover should fire on category', function(done) {
 
-        var hoverData,
-            unhoverData,
-            mouseY0,
-            mouseX0;
+        var hoverData;
+        var unhoverData;
+        var mouseY0;
+        var mouseX0;
 
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -1512,10 +1509,10 @@ describe('Hover events', function() {
 
     it('hover and unhover should fire on path', function(done) {
 
-        var hoverData,
-            unhoverData,
-            mouseY0,
-            mouseX0;
+        var hoverData;
+        var unhoverData;
+        var mouseY0;
+        var mouseX0;
 
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -1584,8 +1581,8 @@ describe('Hover events with hoveron color', function() {
     // Variable declarations
     // ---------------------
     // ### Trace level ###
-    var gd,
-        mock;
+    var gd;
+    var mock;
 
     // Fixtures
     // --------
@@ -1598,10 +1595,10 @@ describe('Hover events with hoveron color', function() {
 
     it('hover and unhover should fire on category hoveron color', function(done) {
 
-        var hoverData,
-            unhoverData,
-            mouseY0,
-            mouseX0;
+        var hoverData;
+        var unhoverData;
+        var mouseY0;
+        var mouseX0;
 
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -1665,10 +1662,10 @@ describe('Hover events with hoveron color', function() {
 
     it('hover and unhover should fire on path hoveron color', function(done) {
 
-        var hoverData,
-            unhoverData,
-            mouseY0,
-            mouseX0;
+        var hoverData;
+        var unhoverData;
+        var mouseY0;
+        var mouseX0;
 
         Plotly.newPlot(gd, mock)
             .then(function() {

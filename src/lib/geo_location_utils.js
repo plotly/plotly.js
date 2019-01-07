@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50,8 +50,8 @@ function getLocationId(locationmode, location) {
 
 function countryNameToISO3(countryName) {
     for(var i = 0; i < countryIds.length; i++) {
-        var iso3 = countryIds[i],
-            regex = new RegExp(countryRegex[iso3]);
+        var iso3 = countryIds[i];
+        var regex = new RegExp(countryRegex[iso3]);
 
         if(regex.test(countryName.trim().toLowerCase())) return iso3;
     }

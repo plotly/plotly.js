@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-var maxRowLength = require('./max_row_length');
+var maxRowLength = require('../../lib').maxRowLength;
 
 /* Return a list of empty points in 2D array z
  * each empty point z[i][j] gives an array [i, j, neighborCount]
@@ -18,21 +18,21 @@ var maxRowLength = require('./max_row_length');
  * neighbors, and add a fractional neighborCount
  */
 module.exports = function findEmpties(z) {
-    var empties = [],
-        neighborHash = {},
-        noNeighborList = [],
-        nextRow = z[0],
-        row = [],
-        blank = [0, 0, 0],
-        rowLength = maxRowLength(z),
-        prevRow,
-        i,
-        j,
-        thisPt,
-        p,
-        neighborCount,
-        newNeighborHash,
-        foundNewNeighbors;
+    var empties = [];
+    var neighborHash = {};
+    var noNeighborList = [];
+    var nextRow = z[0];
+    var row = [];
+    var blank = [0, 0, 0];
+    var rowLength = maxRowLength(z);
+    var prevRow;
+    var i;
+    var j;
+    var thisPt;
+    var p;
+    var neighborCount;
+    var newNeighborHash;
+    var foundNewNeighbors;
 
     for(i = 0; i < z.length; i++) {
         prevRow = row;

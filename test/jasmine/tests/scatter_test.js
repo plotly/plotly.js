@@ -30,11 +30,11 @@ describe('Test scatter', function() {
     'use strict';
 
     describe('supplyDefaults', function() {
-        var traceIn,
-            traceOut;
+        var traceIn;
+        var traceOut;
 
-        var defaultColor = '#444',
-            layout = {};
+        var defaultColor = '#444';
+        var layout = {};
 
         var supplyDefaults = Scatter.supplyDefaults;
 
@@ -203,49 +203,115 @@ describe('Test scatter', function() {
             });
         });
 
+        describe('should find correct coordinate length', function() {
+            function _supply() {
+                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            }
+
+            it('- x 2d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- y 2d', function() {
+                traceIn = {
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 2d / y 1d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                    y: [1, 2, 3, 4, 5, 6]
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 1d / y 2d', function() {
+                traceIn = {
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                    x: [1, 2, 3, 4, 5, 6]
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 2d / y 2d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b', 'c', 'c']
+                    ],
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b', 'c', 'c', 'd', 'd']
+                    ]
+                };
+                _supply();
+                expect(traceOut._length).toBe(6);
+            });
+        });
     });
 
     describe('isBubble', function() {
         it('should return true when marker.size is an Array', function() {
             var trace = {
-                    marker: {
-                        size: [1, 4, 2, 10]
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    size: [1, 4, 2, 10]
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(true);
         });
 
         it('should return false when marker.size is an number', function() {
             var trace = {
-                    marker: {
-                        size: 10
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    size: 10
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
 
         it('should return false when marker.size is not defined', function() {
             var trace = {
-                    marker: {
-                        color: 'red'
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    color: 'red'
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
 
         it('should return false when marker is not defined', function() {
             var trace = {
-                    line: {
-                        color: 'red'
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                line: {
+                    color: 'red'
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
@@ -254,10 +320,10 @@ describe('Test scatter', function() {
 
     describe('makeBubbleSizeFn', function() {
         var markerSizes = [
-                0, '1', 2.21321321, 'not-a-number',
-                100, 1000.213213, 1e7, undefined, null, -100
-            ],
-            trace = { marker: {} };
+            0, '1', 2.21321321, 'not-a-number',
+            100, 1000.213213, 1e7, undefined, null, -100
+        ];
+        var trace = { marker: {} };
 
         var sizeFn, expected;
 
@@ -308,15 +374,15 @@ describe('Test scatter', function() {
 
     describe('linePoints', function() {
         // test axes are unit-scaled and 100 units long
-        var ax = {_length: 100, c2p: Lib.identity},
-            baseOpts = {
-                xaxis: ax,
-                yaxis: ax,
-                connectGaps: false,
-                baseTolerance: 1,
-                shape: 'linear',
-                simplify: true
-            };
+        var ax = {_length: 100, c2p: Lib.identity};
+        var baseOpts = {
+            xaxis: ax,
+            yaxis: ax,
+            connectGaps: false,
+            baseTolerance: 1,
+            shape: 'linear',
+            simplify: true
+        };
 
         function makeCalcData(ptsIn) {
             return ptsIn.map(function(pt) {

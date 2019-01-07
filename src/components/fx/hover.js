@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -198,9 +198,8 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
     });
 
 
-    var container3 = d3.select(opts.container),
-        outerContainer3 = opts.outerContainer ?
-            d3.select(opts.outerContainer) : container3;
+    var container3 = d3.select(opts.container);
+    var outerContainer3 = opts.outerContainer ? d3.select(opts.outerContainer) : container3;
 
     var fullOpts = {
         hovermode: 'closest',
@@ -330,12 +329,14 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // user specified an array of points to highlight
         hovermode = 'array';
         for(itemnum = 0; itemnum < evt.length; itemnum++) {
-            cd = gd.calcdata[evt[itemnum].curveNumber||0];
-            trace = cd[0].trace;
-            if(cd[0].trace.hoverinfo !== 'skip') {
-                searchData.push(cd);
-                if(trace.orientation === 'h') {
-                    hasOneHorizontalTrace = true;
+            cd = gd.calcdata[evt[itemnum].curveNumber || 0];
+            if(cd) {
+                trace = cd[0].trace;
+                if(cd[0].trace.hoverinfo !== 'skip') {
+                    searchData.push(cd);
+                    if(trace.orientation === 'h') {
+                        hasOneHorizontalTrace = true;
+                    }
                 }
             }
         }
@@ -618,11 +619,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         outerContainer: fullLayout._paperdiv,
         event: evt
     };
-    var oldspikepoints = gd._spikepoints,
-        newspikepoints = {
-            vLinePoint: spikePoints.vLinePoint,
-            hLinePoint: spikePoints.hLinePoint
-        };
+    var oldspikepoints = gd._spikepoints;
+    var newspikepoints = {
+        vLinePoint: spikePoints.vLinePoint,
+        hLinePoint: spikePoints.hLinePoint
+    };
     gd._spikepoints = newspikepoints;
 
     // Now if it is not restricted by spikedistance option, set the points to draw the spikelines
@@ -1081,7 +1082,6 @@ function createHoverText(hoverData, opts, gd) {
 // information then.
 function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
     var nummoves = 0;
-
     var axSign = 1;
 
     // make groups of touching points
@@ -1327,7 +1327,7 @@ function cleanPoint(d, hovermode) {
     fill('fontColor', 'htc', 'hoverlabel.font.color');
     fill('nameLength', 'hnl', 'hoverlabel.namelength');
 
-    d.posref = hovermode === 'y' ?
+    d.posref = (hovermode === 'y' || (hovermode === 'closest' && trace.orientation === 'h')) ?
         (d.xa._offset + (d.x0 + d.x1) / 2) :
         (d.ya._offset + (d.y0 + d.y1) / 2);
 
@@ -1565,8 +1565,11 @@ function hoverChanged(gd, evt, oldhoverdata) {
     for(var i = oldhoverdata.length - 1; i >= 0; i--) {
         var oldPt = oldhoverdata[i];
         var newPt = gd._hoverdata[i];
+
         if(oldPt.curveNumber !== newPt.curveNumber ||
-                String(oldPt.pointNumber) !== String(newPt.pointNumber)) {
+            String(oldPt.pointNumber) !== String(newPt.pointNumber) ||
+            String(oldPt.pointNumbers) !== String(newPt.pointNumbers)
+        ) {
             return true;
         }
     }
