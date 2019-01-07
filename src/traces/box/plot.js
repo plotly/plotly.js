@@ -100,6 +100,8 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
     paths.exit().remove();
 
     paths.each(function(d) {
+        if(d.empty) return 'M0,0Z';
+
         var pos = d.pos;
         var posc = posAxis.c2p(pos + bPos, true) + bPosPxOffset;
         var pos0 = posAxis.c2p(pos + bPos - bdPos0, true) + bPosPxOffset;
