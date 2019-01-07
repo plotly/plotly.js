@@ -1290,6 +1290,16 @@ describe('ModeBar', function() {
             expect(style.fill).toBe(color);
         }
 
+        function getStyleRule() {
+            var uid = gd._fullLayout._uid;
+            var ownerNode = document.getElementById('plotly.js-style-modebar-' + uid);
+            var styleSheets = document.styleSheets;
+            for(var i = 0; i < styleSheets.length; i++) {
+                var ss = styleSheets[i];
+                if(ss.ownerNode === ownerNode) return ss;
+            }
+        }
+
         it('create an associated style element and destroy it on purge', function(done) {
             var styleSelector, style;
             Plotly.plot(gd, [], {})
@@ -1313,7 +1323,7 @@ describe('ModeBar', function() {
                 button = selectButton(gd._fullLayout._modeBar, targetBtn);
                 checkButtonColor(button, colors[0]);
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.color', colors[1]);})
+            .then(function() { return Plotly.relayout(gd, 'modebar.color', colors[1]); })
             .then(function() {
                 checkButtonColor(button, colors[1]);
             })
@@ -1336,16 +1346,35 @@ describe('ModeBar', function() {
             .then(done);
         });
 
-        it('changes background color', function(done) {
+        it('changes background color (displayModeBar: hover)', function(done) {
             Plotly.plot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
-                expect(style.backgroundColor).toBe(colors[0]);
+                expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.bgcolor', colors[1]);})
+            .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
+            .then(function() {
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('changes background color (displayModeBar: true)', function(done) {
+            Plotly.plot(gd, [], {modebar: {bgcolor: colors[0]}}, {displayModeBar: true})
+            .then(function() {
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                expect(style.backgroundColor).toBe(colors[0]);
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
+            })
+            .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element);
                 expect(style.backgroundColor).toBe(colors[1]);
+                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
             })
             .catch(failTest)
             .then(done);
@@ -1360,7 +1389,7 @@ describe('ModeBar', function() {
                 size = modeBarEl.getBoundingClientRect();
                 expect(size.width < size.height).toBeTruthy();
             })
-            .then(function() {Plotly.relayout(gd, 'modebar.orientation', 'h');})
+            .then(function() { return Plotly.relayout(gd, 'modebar.orientation', 'h'); })
             .catch(failTest)
             .then(function() {
                 size = modeBarEl.getBoundingClientRect();
