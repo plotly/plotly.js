@@ -77,10 +77,10 @@ describe('main plot pan', function() {
         var mock = require('@mocks/10.json');
         var precision = 5;
 
-        var originalX = [-0.6225, 5.5];
+        var originalX = [-0.5251046025104602, 5.5];
         var originalY = [-1.6340975059013805, 7.166241526218911];
 
-        var newX = [-2.0255729166666665, 4.096927083333333];
+        var newX = [-1.905857740585774, 4.119246861924687];
         var newY = [-0.3769062155984817, 8.42343281652181];
 
         function _drag(x0, y0, x1, y1) {
