@@ -5,6 +5,10 @@
     z-index: 1001;
 }
 
+.ease-bg {
+    @include vendor('transition', background-color 0.3s ease 0s);
+}
+
 .modebar--hover > :not(.watermark) {
     opacity: 0;
     @include vendor('transition', opacity 0.3s ease 0s);

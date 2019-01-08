@@ -10,6 +10,22 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.43.2] -- 2019-01-08
+
+First 2019 release.
+
+### Fixed
+- Fix `uirevision` behavior for `gl3d`, `geo` and `mapbox` subplots [#3394]
+- Fix `reversescale` behavior for `surface`, `mesh3d` and `streamtube`
+  traces (bug introduced in 1.43.0) [#3418]
+- Fix modebar hover styling (bug introduced in 1.43.0) [#3397]
+- Fix horizontal `box` / `violin` hover label misalignment under
+  `hovermode:'closest'` [#3401]
+- Fix `ohlc` and `candlestick` hover for traces with empty items [#3366]
+- Fix `surface` trace `visible` logic [#3365]
+- Fix `mesh3d` trace `visible` logic [#3369]
+
+
 ## [1.43.1] -- 2018-12-21
 
 ### Fixed

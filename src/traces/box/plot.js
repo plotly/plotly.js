@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85,6 +85,8 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
     paths.exit().remove();
 
     paths.each(function(d) {
+        if(d.empty) return 'M0,0Z';
+
         var pos = d.pos;
         var posc = posAxis.c2p(pos + bPos, true) + bPosPxOffset;
         var pos0 = posAxis.c2p(pos + bPos - bdPos0, true) + bPosPxOffset;
