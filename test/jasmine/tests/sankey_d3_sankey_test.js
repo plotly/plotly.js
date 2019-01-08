@@ -94,7 +94,7 @@ describe('d3-sankey', function() {
         expect(nodeNames).toEqual(['node0', 'node1', 'node2', 'node3', 'node4']);
     });
 
-    it('keep a list of nodes with x values', function() {
+    it('keep a list of nodes with x  values', function() {
         var nodeNames = s().nodes.map(function(obj) {
             return Math.floor(obj.x0);
         });
