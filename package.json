@@ -82,7 +82,7 @@
     "gl-plot3d": "git://github.com/gl-vis/gl-plot3d.git#c474376c3c7d808a16e503421405f3e6c12dfe7d",
     "gl-pointcloud2d": "git://github.com/gl-vis/gl-pointcloud2d#651213c548f922e85a590acc8fef2dc70b2f67c3",
     "gl-scatter3d": "git://github.com/gl-vis/gl-scatter3d.git#d6e7b4a05149a21c225e36377175f020ccb52bc4",
-    "gl-select-box": "^1.0.2",
+    "gl-select-box": "git://github.com/gl-vis/gl-select-box#53da9c59ebaebbe4ff46752c958214e467ab06ae",
     "gl-spikes2d": "^1.0.1",
     "gl-streamtube3d": "git://github.com/gl-vis/gl-streamtube3d.git#5068aab603fb11ded0238e9ce7075c4b4d496ba0",
     "gl-surface3d": "git://github.com/gl-vis/gl-surface3d.git#f964bcfda07c847375c74206ce806d56df5149d9",
