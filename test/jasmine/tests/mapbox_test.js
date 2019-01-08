@@ -976,6 +976,51 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('should respect scrollZoom config option', function(done) {
+        var relayoutCnt = 0;
+        gd.on('plotly_relayout', function() { relayoutCnt++; });
+
+        function _scroll() {
+            relayoutCnt = 0;
+            return new Promise(function(resolve) {
+                mouseEvent('mousemove', pointPos[0], pointPos[1]);
+                mouseEvent('scroll', pointPos[0], pointPos[1], {deltaY: -400});
+                setTimeout(resolve, 500);
+            });
+        }
+
+        var zoom = getMapInfo(gd).zoom;
+        expect(zoom).toBeCloseTo(1.234);
+
+        _scroll().then(function() {
+            expect(relayoutCnt).toBe(1, 'scroll relayout cnt');
+
+            var zoomNew = getMapInfo(gd).zoom;
+            expect(zoomNew).toBeGreaterThan(zoom);
+            zoom = zoomNew;
+        })
+        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: false}); })
+        .then(_scroll)
+        .then(function() {
+            expect(relayoutCnt).toBe(0, 'no additional relayout call');
+
+            var zoomNew = getMapInfo(gd).zoom;
+            expect(zoomNew).toBe(zoom);
+            zoom = zoomNew;
+        })
+        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: true}); })
+        .then(_scroll)
+        .then(function() {
+            expect(relayoutCnt).toBe(1, 'scroll relayout cnt');
+
+            var zoomNew = getMapInfo(gd).zoom;
+            expect(zoomNew).toBeGreaterThan(zoom);
+            zoom = zoomNew;
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     function getMapInfo(gd) {
         var subplot = gd._fullLayout.mapbox._subplot;
         var map = subplot.map;
