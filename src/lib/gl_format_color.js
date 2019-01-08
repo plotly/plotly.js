@@ -82,8 +82,12 @@ function formatColor(containerIn, opacityIn, len) {
     return colorOut;
 }
 
-function parseColorScale(colorscale, alpha) {
+function parseColorScale(cont, alpha) {
     if(alpha === undefined) alpha = 1;
+
+    var colorscale = cont.reversescale ?
+        Colorscale.flipScale(cont.colorscale) :
+        cont.colorscale;
 
     return colorscale.map(function(elem) {
         var index = elem[0];
