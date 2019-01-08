@@ -2254,6 +2254,52 @@ describe('Test plot api', function() {
 
         afterEach(destroyGraphDiv);
 
+        it('should rename \'scl\' to \'colorscale\' when colorscale is not defined', function() {
+            var data = [{
+                type: 'heatmap',
+                scl: 'Blues'
+            }];
+
+            Plotly.plot(gd, data);
+            expect(gd.data[0].colorscale).toBe('Blues');
+            expect(gd.data[0].scl).toBe(undefined);
+        });
+
+        it('should not rename \'scl\' to \'colorscale\' when colorscale is defined ', function() {
+            var data = [{
+                type: 'heatmap',
+                colorscale: 'Greens',
+                scl: 'Reds'
+            }];
+
+            Plotly.plot(gd, data);
+            expect(gd.data[0].colorscale).toBe('Greens');
+            expect(gd.data[0].scl).toBe(undefined);
+        });
+
+        it('should rename \'reversescl\' to \'reversescale\' when colorscale is not defined', function() {
+            var data = [{
+                type: 'heatmap',
+                reversescl: true
+            }];
+
+            Plotly.plot(gd, data);
+            expect(gd.data[0].reversescale).toBe(true);
+            expect(gd.data[0].reversescl).toBe(undefined);
+        });
+
+        it('should not rename \'scl\' to \'colorscale\' when colorscale is defined ', function() {
+            var data = [{
+                type: 'heatmap',
+                reversescale: true,
+                reversescl: false
+            }];
+
+            Plotly.plot(gd, data);
+            expect(gd.data[0].reversescale).toBe(true);
+            expect(gd.data[0].reversescl).toBe(undefined);
+        });
+
         it('should rename \'YIGnBu\' colorscales YlGnBu (2dMap case)', function() {
             var data = [{
                 type: 'heatmap',
