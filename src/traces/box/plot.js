@@ -175,10 +175,7 @@ function plotPoints(sel, axes, trace, t) {
     var paths = gPoints.selectAll('path')
         .data(function(d) {
             var i;
-
-            var pts = mode === 'all' ?
-                d.pts :
-                d.pts.filter(function(pt) { return (pt.v < d.lf || pt.v > d.uf); });
+            var pts = d.pts2;
 
             // normally use IQR, but if this is 0 or too small, use max-min
             var typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1);
