@@ -87,7 +87,7 @@
     "gl-streamtube3d": "git://github.com/gl-vis/gl-streamtube3d.git#5068aab603fb11ded0238e9ce7075c4b4d496ba0",
     "gl-surface3d": "git://github.com/gl-vis/gl-surface3d.git#f964bcfda07c847375c74206ce806d56df5149d9",
     "gl-text": "^1.1.6",
-    "glslify": "^6.3.1",
+    "glslify": "^6.4.1",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
     "mapbox-gl": "0.45.0",
