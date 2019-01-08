@@ -420,6 +420,9 @@ proto.updateFx = function(fullLayout, geoLayout) {
         bgRect.node().onmousedown = null;
         bgRect.call(createGeoZoom(_this, geoLayout));
         bgRect.on('dblclick.zoom', zoomReset);
+        if(!gd._context._scrollZoom.geo) {
+            bgRect.on('wheel.zoom', null);
+        }
     }
     else if(dragMode === 'select' || dragMode === 'lasso') {
         bgRect.on('.zoom', null);
