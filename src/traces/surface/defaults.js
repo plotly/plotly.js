@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -14,7 +13,6 @@ var Lib = require('../../lib');
 
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var i, j;
@@ -60,8 +58,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     ].forEach(function(x) { coerce(x); });
 
     var surfaceColor = coerce('surfacecolor');
-
-    coerce('colorscale');
 
     var dims = ['x', 'y', 'z'];
     for(i = 0; i < 3; ++i) {
