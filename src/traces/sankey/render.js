@@ -46,7 +46,7 @@ function sankeyModel(layout, d, traceIndex) {
             .sankeyCircular()
             .circularLinkGap(2)
             .nodeId(function(d) {
-                return d.pointNumber;
+                return d.index;
             });
     } else {
         sankey = d3Sankey.sankey();
