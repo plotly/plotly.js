@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -23,6 +23,8 @@ module.exports = function style(gd, cd) {
         var trace = d[0].trace;
 
         d3.select(this).selectAll('path').each(function(di) {
+            if(di.empty) return;
+
             var dirLine = trace[di.dir].line;
             d3.select(this)
                 .style('fill', 'none')

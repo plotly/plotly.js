@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -364,7 +364,7 @@ proto.update = function(data) {
     var sceneLayout = scene.fullSceneLayout;
     var surface = this.surface;
     var alpha = data.opacity;
-    var colormap = parseColorScale(data.colorscale, alpha);
+    var colormap = parseColorScale(data, alpha);
     var scaleFactor = scene.dataScale;
     var xlen = data.z[0].length;
     var ylen = data._ylength;
