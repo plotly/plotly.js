@@ -56,12 +56,14 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
 
     var i, j, calcTrace;
     var pointList = [];
+    var shownPts = 0;
 
     // make list of box points
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
         for(j = 0; j < calcTrace.length; j++) {
             pointList.push(calcTrace[j].pos);
+            shownPts += (calcTrace[j].pts2 || []).length;
         }
     }
 
@@ -92,7 +94,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
         var t = calcTrace[0].t;
         var width = trace.width;
         var side = trace.side;
-        var pointpos = trace.pointpos;
 
         // position coordinate delta
         var dPos;
@@ -118,39 +119,84 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
         t.bdPos = bdPos;
         t.wHover = wHover;
 
+        // box/violin-only value-space push value
+        var pushplus;
+        var pushminus;
+        // edge of box/violin
         var edge = bPos + bdPos;
-        // data-space padding
-        var vpadplus = 0;
-        var vpadminus = 0;
+        var edgeplus;
+        var edgeminus;
+
+        if(side === 'positive') {
+            pushplus = dPos / 2;
+            edgeplus = edge;
+            pushminus = edgeplus = bPos;
+        } else if(side === 'negative') {
+            pushplus = edgeplus = bPos;
+            pushminus = dPos / 2;
+            edgeminus = edge;
+        } else {
+            pushplus = pushminus = dPos;
+            edgeplus = edgeminus = edge;
+        }
+
+        // value-space padding
+        var vpadplus;
+        var vpadminus;
         // pixel-space padding
         var ppadplus;
         var ppadminus;
+        // do we add 5% of both sides (for points beyond box/violin)
+        var padded = false;
+        // does this trace show points?
+        var hasPts = (trace.boxpoints || trace.points) && (shownPts > 0);
 
-        if(side === 'positive') {
-            vpadplus = edge;
-            vpadminus = bPos;
-        } else if(side === 'negative') {
-            vpadplus = bPos;
-            vpadminus = edge;
-        } else {
-            vpadplus = edge;
-            vpadminus = edge;
-        }
-
-        if(trace.boxpoints || trace.points) {
+        if(hasPts) {
+            var pointpos = trace.pointpos;
             var jitter = trace.jitter;
             var ms = trace.marker.size / 2;
 
+            var pp = 0;
             if((pointpos + jitter) >= 0) {
-                ppadplus = ms;
-                var pp = bPos + bdPos * (pointpos + jitter);
-                if(pp > vpadplus) vpadplus = pp;
+                pp = edge * (pointpos + jitter);
+                if(pp > pushplus) {
+                    // (++) beyond plus-value, use pp
+                    padded = true;
+                    ppadplus = ms;
+                    vpadplus = pp;
+                } else if(pp > edgeplus) {
+                    // (+), use push-value (it's bigger), but add px-pad
+                    ppadplus = ms;
+                    vpadplus = pushplus;
+                }
             }
+            if(pp <= pushplus) {
+                // (->) fallback to push value
+                vpadplus = pushplus;
+            }
+
+            var pm = 0;
             if((pointpos - jitter) <= 0) {
-                ppadminus = ms;
-                var pm = -bPos - bdPos * (pointpos - jitter);
-                if(pm > vpadminus) vpadminus = pm;
+                pm = -edge * (pointpos - jitter);
+                if(pm > pushminus) {
+                    // (--) beyond plus-value, use pp
+                    padded = true;
+                    ppadminus = ms;
+                    vpadminus = pm;
+                } else if(pm > edgeminus) {
+                    // (-), use push-value (it's bigger), but add px-pad
+                    ppadminus = ms;
+                    vpadminus = pushminus;
+                }
             }
+            if(pm <= pushminus) {
+                // (<-) fallback to push value
+                vpadminus = pushminus;
+            }
+
+        } else {
+            vpadplus = pushplus;
+            vpadminus = pushminus;
         }
 
         // calcdata[i][j] are in ascending order
@@ -158,13 +204,12 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
         var lastPos = calcTrace[calcTrace.length - 1].pos;
 
         trace._extremes[axId] = Axes.findExtremes(posAxis, [firstPos, lastPos], {
+            padded: padded,
             vpadminus: vpadminus,
             vpadplus: vpadplus,
             // N.B. SVG px-space positive/negative
             ppadminus: {x: ppadminus, y: ppadplus}[axLetter],
             ppadplus: {x: ppadplus, y: ppadminus}[axLetter],
-            // add 5% of both sides
-            padded: true
         });
     }
 }
