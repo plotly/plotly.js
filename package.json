@@ -74,7 +74,7 @@
     "gl-cone3d": "git://github.com/gl-vis/gl-cone3d.git#ca3a4fe005cb046af953e124560c71dffeec91b3",
     "gl-contour2d": "git://github.com/gl-vis/gl-contour2d.git#794a2bb2e98e01f7f27386c9c99d739cbd3205f4",
     "gl-error3d": "git://github.com/gl-vis/gl-error3d.git#bc6cf55c45ebdf00ba02e3140b6d983183edcbac",
-    "gl-heatmap2d": "^1.0.4",
+    "gl-heatmap2d": "git://github.com/gl-vis/gl-heatmap2d.git#02e4dd4d10194e642e17f9e37f378688a513418d",
     "gl-line3d": "git://github.com/gl-vis/gl-line3d.git#4f7eade60903fc460c012cbc46b06c6232655718",
     "gl-mat4": "^1.2.0",
     "gl-mesh3d": "git://github.com/gl-vis/gl-mesh3d.git#de3de665842135a27cbdf9f0622f448645e98a69",
