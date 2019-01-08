@@ -73,12 +73,14 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     var label = sankeyLink.datum().link.label;
 
     sankeyLink.style('fill-opacity', 0.4);
+    sankeyLink.style('stroke-opacity', 0.4);
 
     if(label) {
         ownTrace(sankey, d)
             .selectAll('.' + cn.sankeyLink)
             .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', 0.4);
+            .style('fill-opacity', 0.4)
+            .style('stroke-opacity', 0.4);
     }
 
     if(visitNodes) {
@@ -94,12 +96,13 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     var label = sankeyLink.datum().link.label;
 
     sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
-
+    sankeyLink.style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
     if(label) {
         ownTrace(sankey, d)
             .selectAll('.' + cn.sankeyLink)
             .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+            .style('fill-opacity', function(d) {return d.tinyColorAlpha;})
+            .style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
     }
 
     if(visitNodes) {
