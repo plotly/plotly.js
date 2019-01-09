@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,12 +22,17 @@ module.exports = function plot(gd, cdparcoords) {
 
     var gdDimensions = {};
     var gdDimensionsOriginalOrder = {};
+    var fullIndices = {};
+    var inputIndices = {};
 
     var size = fullLayout._size;
 
     cdparcoords.forEach(function(d, i) {
-        gdDimensions[i] = gd.data[i].dimensions;
-        gdDimensionsOriginalOrder[i] = gd.data[i].dimensions.slice();
+        var trace = d[0].trace;
+        fullIndices[i] = trace.index;
+        var iIn = inputIndices[i] = trace._fullInput.index;
+        gdDimensions[i] = gd.data[iIn].dimensions;
+        gdDimensionsOriginalOrder[i] = gd.data[iIn].dimensions.slice();
     });
 
     var filterChanged = function(i, originalDimensionIndex, newRanges) {
@@ -37,21 +42,36 @@ module.exports = function plot(gd, cdparcoords) {
 
         var gdDimension = gdDimensionsOriginalOrder[i][originalDimensionIndex];
         var newConstraints = newRanges.map(function(r) { return r.slice(); });
+
+        // Store constraint range in preGUI
+        // This one doesn't work if it's stored in pieces in _storeDirectGUIEdit
+        // because it's an array of variable dimensionality. So store the whole
+        // thing at once manually.
+        var aStr = 'dimensions[' + originalDimensionIndex + '].constraintrange';
+        var preGUI = fullLayout._tracePreGUI[gd._fullData[fullIndices[i]]._fullInput.uid];
+        if(preGUI[aStr] === undefined) {
+            var initialVal = gdDimension.constraintrange;
+            preGUI[aStr] = initialVal || null;
+        }
+
+        var fullDimension = gd._fullData[fullIndices[i]].dimensions[originalDimensionIndex];
+
         if(!newConstraints.length) {
             delete gdDimension.constraintrange;
+            delete fullDimension.constraintrange;
             newConstraints = null;
         }
         else {
             if(newConstraints.length === 1) newConstraints = newConstraints[0];
             gdDimension.constraintrange = newConstraints;
+            fullDimension.constraintrange = newConstraints.slice();
             // wrap in another array for restyle event data
             newConstraints = [newConstraints];
         }
 
         var restyleData = {};
-        var aStr = 'dimensions[' + originalDimensionIndex + '].constraintrange';
         restyleData[aStr] = newConstraints;
-        gd.emit('plotly_restyle', [restyleData, [i]]);
+        gd.emit('plotly_restyle', [restyleData, [inputIndices[i]]]);
     };
 
     var hover = function(eventData) {
@@ -103,7 +123,17 @@ module.exports = function plot(gd, cdparcoords) {
                 gdDimensions[i].splice(gdDimensionsOriginalOrder[i].indexOf(d), 0, d); // insert at original index
             });
 
-        gd.emit('plotly_restyle');
+        // TODO: we can't really store this part of the interaction state
+        // directly as below, since it incudes data arrays. If we want to
+        // persist column order we may have to do something special for this
+        // case to just store the order itself.
+        // Registry.call('_storeDirectGUIEdit',
+        //     gd.data[inputIndices[i]],
+        //     fullLayout._tracePreGUI[gd._fullData[fullIndices[i]]._fullInput.uid],
+        //     {dimensions: gdDimensions[i]}
+        // );
+
+        gd.emit('plotly_restyle', [{dimensions: [gdDimensions[i]]}, [inputIndices[i]]]);
     };
 
     parcoords(

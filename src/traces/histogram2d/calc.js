@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -79,10 +79,10 @@ module.exports = function calc(gd, trace) {
     }
 
     // decrease end a little in case of rounding errors
-    var binSpec = trace.xbins,
-        binStart = xr2c(binSpec.start),
-        binEnd = xr2c(binSpec.end) +
-            (binStart - Axes.tickIncrement(binStart, binSpec.size, false, xcalendar)) / 1e6;
+    var binSpec = trace.xbins;
+    var binStart = xr2c(binSpec.start);
+    var binEnd = xr2c(binSpec.end) +
+        (binStart - Axes.tickIncrement(binStart, binSpec.size, false, xcalendar)) / 1e6;
 
     for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, xcalendar)) {
         onecol.push(sizeinit);

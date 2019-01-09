@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -46,6 +46,17 @@ var attrs = module.exports = overrideAll({
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
+        shape: {
+            valType: 'enumerated',
+            values: ['linear', 'hv', 'vh', 'hvh', 'vhv'],
+            dflt: 'linear',
+            role: 'style',
+            editType: 'plot',
+            description: [
+                'Determines the line shape.',
+                'The values correspond to step-wise line shapes.'
+            ].join(' ')
+        },
         dash: {
             valType: 'enumerated',
             values: Object.keys(DASHES),
@@ -86,3 +97,4 @@ var attrs = module.exports = overrideAll({
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
+attrs.hovertemplate = scatterAttrs.hovertemplate;

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -37,7 +37,8 @@ function render(scene) {
     // update size of svg container
     var svgContainer = scene.svgContainer;
     var clientRect = scene.container.getBoundingClientRect();
-    var width = clientRect.width, height = clientRect.height;
+    var width = clientRect.width;
+    var height = clientRect.height;
     svgContainer.setAttributeNS(null, 'viewBox', '0 0 ' + width + ' ' + height);
     svgContainer.setAttributeNS(null, 'width', width);
     svgContainer.setAttributeNS(null, 'height', height);
@@ -169,7 +170,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function initializeGLPlot(scene, fullLayout, canvas, gl) {
+function initializeGLPlot(scene, canvas, gl) {
     var gd = scene.graphDiv;
 
     var glplotOptions = {
@@ -318,7 +319,7 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    if(!initializeGLPlot(this, fullLayout)) return; // todo check the necessity for this line
+    if(!initializeGLPlot(this)) return; // todo check the necessity for this line
 }
 
 var proto = Scene.prototype;
@@ -334,7 +335,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, scene.fullLayout, canvas, gl)) {
+        if(!initializeGLPlot(scene, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
@@ -435,16 +436,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
     var dataScale = [1, 1, 1];
     for(j = 0; j < 3; ++j) {
-        if(dataBounds[0][j] > dataBounds[1][j]) {
+        if(dataBounds[1][j] === dataBounds[0][j]) {
             dataScale[j] = 1.0;
         }
         else {
-            if(dataBounds[1][j] === dataBounds[0][j]) {
-                dataScale[j] = 1.0;
-            }
-            else {
-                dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
-            }
+            dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
         }
     }
 
@@ -479,11 +475,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Remove empty traces
     var traceIds = Object.keys(this.traces);
 
-    trace_id_loop:
+    traceIdLoop:
     for(i = 0; i < traceIds.length; ++i) {
         for(j = 0; j < sceneData.length; ++j) {
             if(sceneData[j].uid === traceIds[i] && sceneData[j].visible === true) {
-                continue trace_id_loop;
+                continue traceIdLoop;
             }
         }
         trace = this.traces[traceIds[i]];
@@ -497,9 +493,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     });
 
     // Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = [[0, 0, 0], [0, 0, 0]],
-        axisDataRange = [],
-        axisTypeRatios = {};
+    var sceneBounds = [[0, 0, 0], [0, 0, 0]];
+    var axisDataRange = [];
+    var axisTypeRatios = {};
 
     for(i = 0; i < 3; ++i) {
         axis = fullSceneLayout[axisProperties[i]];
@@ -559,6 +555,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 var d = sceneBounds[1][i] - sceneBounds[0][i];
                 sceneBounds[0][i] -= d / 32.0;
                 sceneBounds[1][i] += d / 32.0;
+            }
+
+            if(axis.autorange === 'reversed') {
+                // swap bounds:
+                var tmp = sceneBounds[0][i];
+                sceneBounds[0][i] = sceneBounds[1][i];
+                sceneBounds[1][i] = tmp;
             }
         } else {
             var range = axis.range;
@@ -639,8 +642,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
 
     // Update frame position for multi plots
-    var domain = fullSceneLayout.domain || null,
-        size = fullLayout._size || null;
+    var domain = fullSceneLayout.domain || null;
+    var size = fullLayout._size || null;
 
     if(domain && size) {
         var containerStyle = this.container.style;
@@ -699,19 +702,21 @@ proto.setCamera = function setCamera(cameraData) {
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
-    var cameraData = this.getCamera(),
-        cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera'),
-        cameraDataLastSave = cameraNestedProp.get(),
-        hasChanged = false;
+    var fullLayout = this.fullLayout;
+    var cameraData = this.getCamera();
+    var cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
+    var cameraDataLastSave = cameraNestedProp.get();
+    var hasChanged = false;
 
     function same(x, y, i, j) {
-        var vectors = ['up', 'center', 'eye'],
-            components = ['x', 'y', 'z'];
+        var vectors = ['up', 'center', 'eye'];
+        var components = ['x', 'y', 'z'];
         return y[vectors[i]] && (x[vectors[i]][components[j]] === y[vectors[i]][components[j]]);
     }
 
-    if(cameraDataLastSave === undefined) hasChanged = true;
-    else {
+    if(cameraDataLastSave === undefined) {
+        hasChanged = true;
+    } else {
         for(var i = 0; i < 3; i++) {
             for(var j = 0; j < 3; j++) {
                 if(!same(cameraData, cameraDataLastSave, i, j)) {
@@ -722,7 +727,16 @@ proto.saveCamera = function saveCamera(layout) {
         }
     }
 
-    if(hasChanged) cameraNestedProp.set(cameraData);
+    if(hasChanged) {
+        var preGUI = {};
+        preGUI[this.id + '.camera'] = cameraDataLastSave;
+        Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, preGUI);
+
+        cameraNestedProp.set(cameraData);
+
+        var cameraFullNP = Lib.nestedProperty(fullLayout, this.id + '.camera');
+        cameraFullNP.set(cameraData);
+    }
 
     return hasChanged;
 };
@@ -741,6 +755,26 @@ proto.updateFx = function(dragmode, hovermode) {
             camera.mode = 'turntable';
             camera.keyBindingMode = 'rotate';
 
+            // The setter for camera.mode animates the transition to z-up,
+            // but only if we *don't* explicitly set z-up earlier via the
+            // relayout. So push `up` back to layout & fullLayout manually now.
+            var gd = this.graphDiv;
+            var fullLayout = gd._fullLayout;
+            var fullCamera = this.fullSceneLayout.camera;
+            var x = fullCamera.up.x;
+            var y = fullCamera.up.y;
+            var z = fullCamera.up.z;
+            // only push `up` back to (full)layout if it's going to change
+            if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) return;
+
+            var attr = this.id + '.camera.up';
+            var zUp = {x: 0, y: 0, z: 1};
+            var edits = {};
+            edits[attr] = zUp;
+            var layout = gd.layout;
+            Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
+            fullCamera.up = zUp;
+            Lib.nestedProperty(layout, attr).set(zUp);
         } else {
 
             // none rotation modes [pan or zoom]

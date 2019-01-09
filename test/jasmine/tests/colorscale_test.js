@@ -1,16 +1,35 @@
+var Plotly = require('@lib');
+
 var Colorscale = require('@src/components/colorscale');
+
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
 var Heatmap = require('@src/traces/heatmap');
 var Scatter = require('@src/traces/scatter');
 
+var d3 = require('d3');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
+var supplyAllDefaults = require('../assets/supply_defaults');
+
+function _supply(trace, layout) {
+    var gd = {
+        data: [trace],
+        layout: layout || {}
+    };
+
+    supplyAllDefaults(gd);
+
+    return gd;
+}
 
 describe('Test colorscale:', function() {
     'use strict';
 
     describe('isValidScale', function() {
-        var isValidScale = Colorscale.isValidScale,
-            scl;
+        var isValidScale = Colorscale.isValidScale;
+        var scl;
 
         it('should accept colorscale strings', function() {
             expect(isValidScale('Earth')).toBe(true);
@@ -65,8 +84,8 @@ describe('Test colorscale:', function() {
     });
 
     describe('flipScale', function() {
-        var flipScale = Colorscale.flipScale,
-            scl;
+        var flipScale = Colorscale.flipScale;
+        var scl;
 
         it('should flip a colorscale', function() {
             scl = [[0, 'rgb(0, 0, 200)'], ['0.5', 'rgb(0, 0, 0)'], ['1.0', 'rgb(200, 0, 0)']];
@@ -78,8 +97,8 @@ describe('Test colorscale:', function() {
     });
 
     describe('hasColorscale', function() {
-        var hasColorscale = Colorscale.hasColorscale,
-            trace;
+        var hasColorscale = Colorscale.hasColorscale;
+        var trace;
 
         it('should return false when marker is not defined', function() {
             var shouldBeFalse = [
@@ -228,12 +247,12 @@ describe('Test colorscale:', function() {
     });
 
     describe('handleDefaults (heatmap-like version)', function() {
-        var handleDefaults = Colorscale.handleDefaults,
-            layout = {
-                font: Plots.layoutAttributes.font,
-                _dfltTitle: {colorbar: 'cb'}
-            },
-            opts = {prefix: '', cLetter: 'z'};
+        var handleDefaults = Colorscale.handleDefaults;
+        var layout = {
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
+        };
+        var opts = {prefix: '', cLetter: 'z'};
         var traceIn, traceOut;
 
         function coerce(attr, dflt) {
@@ -299,12 +318,12 @@ describe('Test colorscale:', function() {
     });
 
     describe('handleDefaults (scatter-like version)', function() {
-        var handleDefaults = Colorscale.handleDefaults,
-            layout = {
-                font: Plots.layoutAttributes.font,
-                _dfltTitle: {colorbar: 'cb'}
-            },
-            opts = {prefix: 'marker.', cLetter: 'c'};
+        var handleDefaults = Colorscale.handleDefaults;
+        var layout = {
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
+        };
+        var opts = {prefix: 'marker.', cLetter: 'c'};
         var traceIn, traceOut;
 
         function coerce(attr, dflt) {
@@ -348,41 +367,50 @@ describe('Test colorscale:', function() {
             handleDefaults(traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.showscale).toBe(true);
         });
+
     });
 
     describe('calc', function() {
         var calcColorscale = Colorscale.calc;
         var trace, z;
+        var gd;
 
         beforeEach(function() {
             trace = {};
             z = {};
+            gd = {};
         });
 
         it('should be RdBuNeg when autocolorscale and z <= 0', function() {
             trace = {
                 type: 'heatmap',
-                z: [[0, -1.5], [-2, -10]],
+                z: [[-0, -1.5], [-2, -10]],
                 autocolorscale: true,
                 _input: {autocolorscale: true}
             };
-            z = [[0, -1.5], [-2, -10]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
         });
 
-        it('should set autocolorscale to false if it wasn\'t explicitly set true in input', function() {
+        it('should be layout.colorscale.sequentialminus when autocolorscale and z <= 0', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
             trace = {
                 type: 'heatmap',
-                z: [[0, -1.5], [-2, -10]],
+                z: [[-0, -1.5], [-2, -10]],
                 autocolorscale: true,
-                _input: {}
+                _input: {autocolorscale: true}
             };
-            z = [[0, -1.5], [-2, -10]];
-            calcColorscale(trace, z, '', 'z');
-            expect(trace.autocolorscale).toBe(false);
-            expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
+            var layout = {
+                colorscale: {
+                    sequentialminus: colorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
         });
 
         it('should be Blues when the only numerical z <= -0.5', function() {
@@ -393,9 +421,30 @@ describe('Test colorscale:', function() {
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [-0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
+        });
+
+        it('should be layout.colorscale.sequentialminus when autocolorscale and the only numerical z <= -0.5', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            trace = {
+                type: 'heatmap',
+                z: [['a', 'b'], [-0.5, 'd']],
+                autocolorscale: true,
+                _input: {autocolorscale: true}
+            };
+            z = [[undefined, undefined], [-0.5, undefined]];
+            var layout = {
+                colorscale: {
+                    sequentialminus: colorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
         });
 
         it('should be Reds when the only numerical z >= 0.5', function() {
@@ -406,26 +455,73 @@ describe('Test colorscale:', function() {
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[0]).toEqual([0, 'rgb(220,220,220)']);
         });
 
-        it('should be reverse the auto scale when reversescale is true', function() {
+        it('should be layout.colorscale.sequential when autocolorscale and the only numerical z >= 0.5', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
             trace = {
                 type: 'heatmap',
                 z: [['a', 'b'], [0.5, 'd']],
                 autocolorscale: true,
-                reversescale: true,
                 _input: {autocolorscale: true}
             };
             z = [[undefined, undefined], [0.5, undefined]];
-            calcColorscale(trace, z, '', 'z');
+            var layout = {
+                colorscale: {
+                    sequential: colorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
             expect(trace.autocolorscale).toBe(true);
-            expect(trace.colorscale[trace.colorscale.length - 1])
-                .toEqual([1, 'rgb(220,220,220)']);
+            expect(trace.colorscale).toEqual(colorscale);
         });
 
+        it('should be layout.colorscale.diverging when autocolorscale and there are positive and negative values', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            trace = {
+                type: 'heatmap',
+                z: [[-1.0, 'b'], [0.5, 'd']],
+                autocolorscale: true,
+                _input: {autocolorscale: true}
+            };
+            z = [[-1.0, undefined], [0.5, undefined]];
+            var layout = {
+                colorscale: {
+                    diverging: colorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
+        });
+
+        it('should ignore layout.colorscale.diverging when colorscale is defined at trace-level', function() {
+            var colorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            var layoutColorscale = [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']];
+            trace = {
+                type: 'heatmap',
+                z: [[-1.0, 'b'], [0.5, 'd']],
+                autocolorscale: true,
+                _input: {autocolorscale: true},
+                colorscale: colorscale
+            };
+            z = [[-1.0, undefined], [0.5, undefined]];
+            var layout = {
+                colorscale: {
+                    diverging: layoutColorscale
+                }
+            };
+            gd = _supply(trace, layout);
+            calcColorscale(gd, trace, {vals: z, containerStr: '', cLetter: 'z'});
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale).toEqual(colorscale);
+        });
     });
 
     describe('extractScale + makeColorScaleFunc', function() {
@@ -438,19 +534,372 @@ describe('Test colorscale:', function() {
             [1, 'rgb(178,10,28)']
         ];
 
-        var specs = Colorscale.extractScale(scale, 2, 3);
-        var sclFunc = Colorscale.makeColorScaleFunc(specs);
-
         it('should constrain color array values between cmin and cmax', function() {
-            var color1 = sclFunc(1),
-                color2 = sclFunc(2),
-                color3 = sclFunc(3),
-                color4 = sclFunc(4);
+            var trace = {
+                colorscale: scale,
+                pmin: 2,
+                pmax: 3
+            };
+
+            var specs = Colorscale.extractScale(trace, {cLetter: 'p'});
+            var sclFunc = Colorscale.makeColorScaleFunc(specs);
+
+            var color1 = sclFunc(1);
+            var color2 = sclFunc(2);
+            var color3 = sclFunc(3);
+            var color4 = sclFunc(4);
 
             expect(color1).toEqual(color2);
             expect(color1).toEqual('rgb(5, 10, 172)');
             expect(color3).toEqual(color4);
             expect(color4).toEqual('rgb(178, 10, 28)');
         });
+
+        it('should flip color range when reversescale is true', function() {
+            var trace = {
+                colorscale: scale,
+                reversescale: true,
+                pmin: 2,
+                pmax: 3
+            };
+
+            var specs = Colorscale.extractScale(trace, {cLetter: 'p'});
+            var sclFunc = Colorscale.makeColorScaleFunc(specs);
+
+            var color1 = sclFunc(1);
+            var color2 = sclFunc(2);
+            var color3 = sclFunc(3);
+            var color4 = sclFunc(4);
+
+            expect(color1).toEqual(color2);
+            expect(color1).toEqual('rgb(178, 10, 28)');
+            expect(color3).toEqual(color4);
+            expect(color4).toEqual('rgb(5, 10, 172)');
+        });
+    });
+});
+
+describe('Test colorscale restyle calls:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function getFill(q) {
+        return d3.select(q).node().style.fill;
+    }
+
+    it('should be able to toggle between autocolorscale true/false and set colorscales (contour case)', function(done) {
+        function _assert(msg, exp) {
+            var cc = [];
+            cc.push(getFill('.contourbg > path'));
+            d3.selectAll('.contourfill > path').each(function() {
+                cc.push(getFill(this));
+            });
+            expect(cc).toEqual(exp.contourColors);
+
+            expect(gd._fullData[0].colorscale).toEqual(exp.colorscale);
+            expect(gd._fullData[0].autocolorscale).toBe(exp.autocolorscale, msg);
+
+            expect(gd.data[0].colorscale).toEqual(exp.colorscaleIn);
+            expect(gd.data[0].autocolorscale).toBe(exp.autocolorscaleIn, msg);
+        }
+
+        // update via, assert then assert again (and again ;) after non-calc edits
+        function _run(msg, restyleObj, exp) {
+            return Plotly.restyle(gd, restyleObj)
+                .then(function() { _assert(msg, exp); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.range', [-1, 5]); })
+                .then(function() { _assert(msg + ' after axrange relayout', exp); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.autorange', true); })
+                .then(function() { _assert(msg + ' after autorange', exp); })
+                .then(function() { return Plotly.restyle(gd, 'contours.showlines', true); })
+                .then(function() { _assert(msg + ' after contours.showlines restyle', exp); })
+                .then(function() { return Plotly.restyle(gd, 'contours.showlines', false); })
+                .then(function() { _assert(msg + ' back to original contours.showlines', exp); });
+        }
+
+        var rdbu = ['rgb(5, 10, 172)', 'rgb(190, 190, 190)', 'rgb(178, 10, 28)'];
+        var reds = ['rgb(220, 220, 220)', 'rgb(234, 135, 92)', 'rgb(178, 10, 28)'];
+        var grns = ['rgb(0, 68, 27)', 'rgb(116, 196, 118)', 'rgb(247, 252, 245)'];
+
+        Plotly.plot(gd, [{
+            type: 'contour',
+            z: [
+                [1, 20, 30],
+                [20, 1, 60],
+                [30, 60, 1]
+            ],
+            ncontours: 3
+        }])
+        .then(function() {
+            _assert('base (autocolorscale:false by dflt)', {
+                contourColors: rdbu,
+                autocolorscale: false,
+                autocolorscaleIn: undefined,
+                colorscale: Colorscale.scales.RdBu,
+                colorscaleIn: undefined
+            });
+        })
+        .then(function() {
+            return _run('restyle to autocolorscale:true', {autocolorscale: true}, {
+                contourColors: reds,
+                autocolorscale: true,
+                autocolorscaleIn: true,
+                colorscale: Colorscale.scales.Reds,
+                colorscaleIn: undefined
+            });
+        })
+        .then(function() {
+            return _run('restyle to reversescale:true with autocolorscale:true', {reversescale: true}, {
+                contourColors: reds.slice().reverse(),
+                autocolorscale: true,
+                autocolorscaleIn: true,
+                colorscale: Colorscale.scales.Reds,
+                colorscaleIn: undefined
+            });
+        })
+        .then(function() {
+            return _run('restyle back to autocolorscale:false with reversescale:true', {autocolorscale: false}, {
+                contourColors: rdbu.slice().reverse(),
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.RdBu,
+                colorscaleIn: undefined
+            });
+        })
+        .then(function() {
+            return _run('restyle to *Greens* colorscale', {colorscale: 'Greens', reversescale: false}, {
+                contourColors: grns,
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.Greens,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .then(function() {
+            return _run('restyle back again to autocolorscale:true', {autocolorscale: true}, {
+                contourColors: reds,
+                autocolorscale: true,
+                autocolorscaleIn: true,
+                colorscale: Colorscale.scales.Reds,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .then(function() {
+            return _run('restyle back to autocolorscale:false with colorscale:Greens', {autocolorscale: false}, {
+                contourColors: grns,
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.Greens,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to toggle between autocolorscale true/false and set colorscales (scatter marker case)', function(done) {
+        function _assert(msg, exp) {
+            var mcc = [];
+            d3.selectAll('path.point').each(function() {
+                mcc.push(getFill(this));
+            });
+            expect(mcc).toEqual(exp.mcc);
+
+            expect(gd._fullData[0].marker.colorscale).toEqual(exp.colorscale);
+            expect(gd._fullData[0].marker.autocolorscale).toBe(exp.autocolorscale, msg);
+
+            expect(gd.data[0].marker.colorscale).toEqual(exp.colorscaleIn);
+            expect(gd.data[0].marker.autocolorscale).toBe(exp.autocolorscaleIn, msg);
+        }
+
+        // update via, assert then assert again (and again ;) after non-calc edits
+        function _run(msg, restyleObj, exp) {
+            return Plotly.restyle(gd, restyleObj)
+                .then(function() { _assert(msg, exp); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.range', [-1, 5]); })
+                .then(function() { _assert(msg + ' after axrange relayout', exp); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.autorange', true); })
+                .then(function() { _assert(msg + ' after autorange', exp); })
+                .then(function() { return Plotly.restyle(gd, 'marker.symbol', 'square'); })
+                .then(function() { _assert(msg + ' after marker.symbol restyle', exp); })
+                .then(function() { return Plotly.restyle(gd, 'marker.symbol', null); })
+                .then(function() { _assert(msg + ' back to original marker.symbol', exp); });
+        }
+
+        var rdbu = ['rgb(5, 10, 172)', 'rgb(77, 101, 226)', 'rgb(178, 10, 28)'];
+        var grns = ['rgb(0, 68, 27)', 'rgb(35, 139, 69)', 'rgb(247, 252, 245)'];
+
+        Plotly.plot(gd, [{
+            mode: 'markers',
+            y: [1, 2, 3],
+            marker: {color: [-1, 0, 3]}
+        }])
+        .then(function() {
+            _assert('base (autocolorscale:true by dflt)', {
+                mcc: rdbu,
+                autocolorscale: true,
+                autocolorscaleIn: undefined,
+                colorscale: Colorscale.scales.RdBu,
+                colorscaleIn: undefined
+            });
+        })
+        .then(function() {
+            return _run('set *Greens* colorscale', {'marker.colorscale': 'Greens'}, {
+                mcc: grns,
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.Greens,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .then(function() {
+            return _run('back to autocolorscale:true', {'marker.autocolorscale': true}, {
+                mcc: rdbu,
+                autocolorscale: true,
+                autocolorscaleIn: true,
+                colorscale: Colorscale.scales.RdBu,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .then(function() {
+            return _run('back to autocolorscale:false w/ colorscale set', {'marker.autocolorscale': false}, {
+                mcc: grns,
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.Greens,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to toggle between autocolorscale true/false and set colorscales (scatter marker line case)', function(done) {
+        var mlw0 = 5;
+
+        function _assert(msg, exp) {
+            var mlcc = [];
+            d3.selectAll('path.point').each(function() {
+                mlcc.push(d3.select(this).node().style.stroke);
+            });
+            expect(mlcc).toEqual(exp.mlcc);
+
+            expect(gd._fullData[0].marker.line.colorscale).toEqual(exp.colorscale);
+            expect(gd._fullData[0].marker.line.autocolorscale).toBe(exp.autocolorscale, msg);
+
+            expect(gd.data[0].marker.line.colorscale).toEqual(exp.colorscaleIn);
+            expect(gd.data[0].marker.line.autocolorscale).toBe(exp.autocolorscaleIn, msg);
+        }
+
+        // update via, assert then assert again (and again ;) after non-calc edits
+        function _run(msg, restyleObj, exp) {
+            return Plotly.restyle(gd, restyleObj)
+                .then(function() { _assert(msg, exp); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.range', [-1, 5]); })
+                .then(function() { _assert(msg + ' after axrange relayout', exp); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.autorange', true); })
+                .then(function() { _assert(msg + ' after autorange', exp); })
+                .then(function() { return Plotly.restyle(gd, 'marker.line.width', 10); })
+                .then(function() { _assert(msg + ' after marker lw restyle', exp); })
+                .then(function() { return Plotly.restyle(gd, 'marker.line.width', mlw0); })
+                .then(function() { _assert(msg + ' back to original marker lw', exp); });
+        }
+
+        var blues = ['rgb(220, 220, 220)', 'rgb(70, 100, 245)', 'rgb(5, 10, 172)'];
+        var grns = ['rgb(247, 252, 245)', 'rgb(116, 196, 118)', 'rgb(0, 68, 27)'];
+
+        Plotly.plot(gd, [{
+            mode: 'markers',
+            y: [1, 2, 3],
+            marker: {
+                size: 20,
+                line: {
+                    color: [-1, -2, -3],
+                    width: mlw0
+                }
+            }
+        }])
+        .then(function() {
+            _assert('base (autocolorscale:true by dflt)', {
+                mlcc: blues,
+                autocolorscale: true,
+                autocolorscaleIn: undefined,
+                colorscale: Colorscale.scales.Blues,
+                colorscaleIn: undefined
+            });
+        })
+        .then(function() {
+            return _run('set *Greens* colorscale', {'marker.line.colorscale': 'Greens'}, {
+                mlcc: grns,
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.Greens,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .then(function() {
+            return _run('back to autocolorscale:true', {'marker.line.autocolorscale': true}, {
+                mlcc: blues,
+                autocolorscale: true,
+                autocolorscaleIn: true,
+                colorscale: Colorscale.scales.Blues,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .then(function() {
+            return _run('back to autocolorscale:false w/ colorscale set', {'marker.line.autocolorscale': false}, {
+                mlcc: grns,
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.Greens,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work with templates', function(done) {
+        function _assert(msg, exp) {
+            var mcc = [];
+            d3.selectAll('path.point').each(function() {
+                mcc.push(getFill(this));
+            });
+
+            expect(mcc).toEqual(exp.mcc);
+        }
+
+        var template = {
+            data: {
+                scatter: [{
+                    marker: {colorscale: 'Viridis'}
+                }]
+            }
+        };
+
+        Plotly.plot(gd, [{
+            y: [1, 2, 3],
+            marker: {color: [1, 2, 3]}
+        }])
+        .then(function() {
+            _assert('base - no templates', {
+                mcc: ['rgb(220, 220, 220)', 'rgb(234, 135, 92)', 'rgb(178, 10, 28)']
+            });
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'template', template);
+        })
+        .then(function() {
+            _assert('after relayouting in template', {
+                mcc: ['rgb(68, 1, 84)', 'rgb(33, 145, 140)', 'rgb(253, 231, 37)']
+            });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

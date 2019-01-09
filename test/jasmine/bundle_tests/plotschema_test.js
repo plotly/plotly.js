@@ -18,11 +18,11 @@ var updatemenuAttrs = require('@src/components/updatemenus').layoutAttributes;
 describe('plot schema', function() {
     'use strict';
 
-    var plotSchema = Plotly.PlotSchema.get(),
-        valObjects = plotSchema.defs.valObjects;
+    var plotSchema = Plotly.PlotSchema.get();
+    var valObjects = plotSchema.defs.valObjects;
 
-    var isValObject = Plotly.PlotSchema.isValObject,
-        isPlainObject = Lib.isPlainObject;
+    var isValObject = Plotly.PlotSchema.isValObject;
+    var isPlainObject = Lib.isPlainObject;
 
     var VALTYPES = Object.keys(valObjects);
     var ROLES = ['info', 'style', 'data'];
@@ -112,14 +112,14 @@ describe('plot schema', function() {
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    var valObject = valObjects[attr.valType],
-                        opts = valObject.requiredOpts
-                            .concat(valObject.otherOpts)
-                            .concat([
-                                'valType', 'description', 'role',
-                                'editType', 'impliedEdits',
-                                '_compareAsJSON', '_noTemplating'
-                            ]);
+                    var valObject = valObjects[attr.valType];
+                    var opts = valObject.requiredOpts
+                        .concat(valObject.otherOpts)
+                        .concat([
+                            'valType', 'description', 'role',
+                            'editType', 'impliedEdits',
+                            '_compareAsJSON', '_noTemplating'
+                        ]);
 
                     Object.keys(attr).forEach(function(key) {
                         expect(opts.indexOf(key) !== -1).toBe(true, key, attr);
@@ -177,11 +177,11 @@ describe('plot schema', function() {
                 plotSchema.layout.layoutAttributes, astr
             );
 
-            var name = np.parts[np.parts.length - 1],
-                itemName = name.substr(0, name.length - 1);
+            var name = np.parts[np.parts.length - 1];
+            var itemName = name.substr(0, name.length - 1);
 
-            var itemsObj = np.get().items,
-                itemObj = itemsObj[itemName];
+            var itemsObj = np.get().items;
+            var itemObj = itemsObj[itemName];
 
             // N.B. the specs below must be satisfied for plotly.py
             expect(isPlainObject(itemsObj)).toBe(true);
@@ -228,7 +228,7 @@ describe('plot schema', function() {
 
         assertPlotSchema(
             function(attr, attrName, attrs, level, attrString) {
-                if(attr && isPlainObject(attr[DEPRECATED])) {
+                if(attr && isPlainObject(attr[DEPRECATED]) && isValObject(attr[DEPRECATED])) {
                     Object.keys(attr[DEPRECATED]).forEach(function(dAttrName) {
                         var dAttr = attr[DEPRECATED][dAttrName];
 
@@ -284,8 +284,8 @@ describe('plot schema', function() {
     });
 
     it('should work with registered transforms', function() {
-        var valObjects = plotSchema.transforms.filter.attributes,
-            attrNames = Object.keys(valObjects);
+        var valObjects = plotSchema.transforms.filter.attributes;
+        var attrNames = Object.keys(valObjects);
 
         ['operation', 'value', 'target'].forEach(function(k) {
             expect(attrNames).toContain(k);
@@ -362,6 +362,11 @@ describe('plot schema', function() {
         expect(typeof splomAttrs.yaxes.items.regex).toBe('string');
         expect(splomAttrs.yaxes.items.regex).toBe('/^y([2-9]|[1-9][0-9]+)?$/');
     });
+
+    it('should prune unsupported global-level trace attributes', function() {
+        expect(Plotly.PlotSchema.get().traces.sankey.attributes.hoverinfo.flags.length).toBe(0);
+    });
+
 });
 
 describe('getTraceValObject', function() {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -36,8 +36,8 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
 
     if(visible === false) return;
 
-    var type = coerce('type', 'array' in containerIn ? 'data' : 'percent'),
-        symmetric = true;
+    var type = coerce('type', 'array' in containerIn ? 'data' : 'percent');
+    var symmetric = true;
 
     if(type !== 'sqrt') {
         symmetric = coerce('symmetric',

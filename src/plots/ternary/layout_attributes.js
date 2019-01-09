@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,7 +17,6 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var ternaryAxesAttrs = {
     title: axesAttrs.title,
-    titlefont: axesAttrs.titlefont,
     color: axesAttrs.color,
     // ticks
     tickmode: axesAttrs.tickmode,
@@ -63,10 +62,14 @@ var ternaryAxesAttrs = {
             'values of the other two axes. The full view corresponds to',
             'all the minima set to zero.'
         ].join(' ')
+    },
+    _deprecated: {
+        title: axesAttrs._deprecated.title,
+        titlefont: axesAttrs._deprecated.titlefont
     }
 };
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'ternary'}),
 
     bgcolor: {
@@ -89,3 +92,26 @@ module.exports = overrideAll({
     baxis: ternaryAxesAttrs,
     caxis: ternaryAxesAttrs
 }, 'plot', 'from-root');
+
+// set uirevisions outside of `overrideAll` so we can get `editType: none`
+attrs.uirevision = {
+    valType: 'any',
+    role: 'info',
+    editType: 'none',
+    description: [
+        'Controls persistence of user-driven changes in axis `min` and `title`,',
+        'if not overridden in the individual axes.',
+        'Defaults to `layout.uirevision`.'
+    ].join(' ')
+};
+
+attrs.aaxis.uirevision = attrs.baxis.uirevision = attrs.caxis.uirevision = {
+    valType: 'any',
+    role: 'info',
+    editType: 'none',
+    description: [
+        'Controls persistence of user-driven changes in axis `min`,',
+        'and `title` if in `editable: true` configuration.',
+        'Defaults to `ternary<N>.uirevision`.'
+    ].join(' ')
+};

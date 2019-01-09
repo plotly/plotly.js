@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57,8 +57,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 };
 
 function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
-    var len = 0,
-        locations = coerce('locations');
+    var len = 0;
+    var locations = coerce('locations');
 
     var lon, lat;
 

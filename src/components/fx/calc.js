@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -33,6 +33,8 @@ module.exports = function calc(gd) {
         var fillFn = Registry.traceIs(trace, '2dMap') ? paste : Lib.fillArray;
 
         fillFn(trace.hoverinfo, cd, 'hi', makeCoerceHoverInfo(trace));
+
+        if(trace.hovertemplate) fillFn(trace.hovertemplate, cd, 'ht');
 
         if(!trace.hoverlabel) continue;
 

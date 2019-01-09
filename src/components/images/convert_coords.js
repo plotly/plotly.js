@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -33,25 +33,25 @@ var toLogRange = require('../../lib/to_log_range');
 module.exports = function convertCoords(gd, ax, newType, doExtra) {
     ax = ax || {};
 
-    var toLog = (newType === 'log') && (ax.type === 'linear'),
-        fromLog = (newType === 'linear') && (ax.type === 'log');
+    var toLog = (newType === 'log') && (ax.type === 'linear');
+    var fromLog = (newType === 'linear') && (ax.type === 'log');
 
     if(!(toLog || fromLog)) return;
 
-    var images = gd._fullLayout.images,
-        axLetter = ax._id.charAt(0),
-        image,
-        attrPrefix;
+    var images = gd._fullLayout.images;
+    var axLetter = ax._id.charAt(0);
+    var image;
+    var attrPrefix;
 
     for(var i = 0; i < images.length; i++) {
         image = images[i];
         attrPrefix = 'images[' + i + '].';
 
         if(image[axLetter + 'ref'] === ax._id) {
-            var currentPos = image[axLetter],
-                currentSize = image['size' + axLetter],
-                newPos = null,
-                newSize = null;
+            var currentPos = image[axLetter];
+            var currentSize = image['size' + axLetter];
+            var newPos = null;
+            var newSize = null;
 
             if(toLog) {
                 newPos = toLogRange(currentPos, ax.range);

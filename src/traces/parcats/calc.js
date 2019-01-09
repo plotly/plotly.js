@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,7 +11,7 @@
 // Requirements
 // ============
 var wrap = require('../../lib/gup').wrap;
-var hasColorscale = require('../../components/colorscale/has_colorscale');
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleCalc = require('../../components/colorscale/calc');
 var filterUnique = require('../../lib/filter_unique.js');
 var Drawing = require('../../components/drawing');
@@ -73,7 +73,11 @@ module.exports = function calc(gd, trace) {
     // Process colorscale
     if(line) {
         if(hasColorscale(trace, 'line')) {
-            colorscaleCalc(trace, trace.line.color, 'line', 'c');
+            colorscaleCalc(gd, trace, {
+                vals: trace.line.color,
+                containerStr: 'line',
+                cLetter: 'c'
+            });
         }
         markerColorscale = Drawing.tryColorscale(line);
     } else {
@@ -393,9 +397,9 @@ function getUniqueInfo(values, uniqueValues) {
     }
 
     // Initialize Variables
-    var uniqueValueCounts = {},
-        uniqueValueInds = {},
-        inds = [];
+    var uniqueValueCounts = {};
+    var uniqueValueInds = {};
+    var inds = [];
 
     // Initialize uniqueValueCounts and
     uniqueValues.forEach(function(uniqueVal, valInd) {

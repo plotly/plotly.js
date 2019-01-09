@@ -29,7 +29,9 @@ describe('Test axes', function() {
                 data: [{x: [1, 2, 3], y: [1, 2, 3]}],
                 layout: {
                     xaxis: {
-                        title: 'A Title!!!',
+                        title: {
+                            text: 'A Title!!!'
+                        },
                         type: 'log',
                         autorange: 'reversed',
                         rangemode: 'tozero',
@@ -42,16 +44,20 @@ describe('Test axes', function() {
                         tickcolor: '#f00'
                     },
                     yaxis: {
-                        title: 'Click to enter Y axis title',
+                        title: {
+                            text: 'Click to enter Y axis title'
+                        },
                         type: 'date'
                     }
                 }
             };
-            var expectedYaxis = Lib.extendDeep({}, gd.layout.xaxis),
-                expectedXaxis = {
-                    title: 'Click to enter X axis title',
-                    type: 'date'
-                };
+            var expectedYaxis = Lib.extendDeep({}, gd.layout.xaxis);
+            var expectedXaxis = {
+                title: {
+                    text: 'Click to enter X axis title'
+                },
+                type: 'date'
+            };
 
             supplyDefaults(gd);
 
@@ -132,37 +138,37 @@ describe('Test axes', function() {
                 }
             };
             var expectedXaxis = {
-                    type: 'category',
-                    ticks: 'inside',
-                    ticklen: 10,
-                    tickcolor: '#f00',
-                    tickwidth: 2,
-                    showline: true,
-                    side: 'top',
-                    domain: [0, 0.45]
-                },
-                expectedXaxis2 = {
-                    type: 'category',
-                    ticks: 'inside',
-                    ticklen: 10,
-                    tickcolor: '#f00',
-                    tickwidth: 3,
-                    showline: true,
-                    side: 'top',
-                    domain: [0.55, 1]
-                },
-                expectedYaxis = {
-                    type: 'linear',
-                    ticks: 'outside',
-                    ticklen: 5,
-                    tickwidth: 4,
-                    side: 'right'
-                },
-                expectedAnnotations = [
-                    {x: 3, y: 2},
-                    {x: 4, y: 3, xref: 'x2', yref: 'y'},
-                    {x: 5, y: 0.5, xref: 'x', yref: 'paper'}
-                ];
+                type: 'category',
+                ticks: 'inside',
+                ticklen: 10,
+                tickcolor: '#f00',
+                tickwidth: 2,
+                showline: true,
+                side: 'top',
+                domain: [0, 0.45]
+            };
+            var expectedXaxis2 = {
+                type: 'category',
+                ticks: 'inside',
+                ticklen: 10,
+                tickcolor: '#f00',
+                tickwidth: 3,
+                showline: true,
+                side: 'top',
+                domain: [0.55, 1]
+            };
+            var expectedYaxis = {
+                type: 'linear',
+                ticks: 'outside',
+                ticklen: 5,
+                tickwidth: 4,
+                side: 'right'
+            };
+            var expectedAnnotations = [
+                {x: 3, y: 2},
+                {x: 4, y: 3, xref: 'x2', yref: 'y'},
+                {x: 5, y: 0.5, xref: 'x', yref: 'paper'}
+            ];
 
             supplyDefaults(gd);
 
@@ -261,6 +267,68 @@ describe('Test axes', function() {
                 });
                 checkTypes('date', 'linear');
             });
+
+            it('2d coordinate array are considered *multicategory*', function() {
+                supplyWithTrace({
+                    x: [
+                        [2018, 2018, 2017, 2017],
+                        ['a', 'b', 'a', 'b']
+                    ],
+                    y: [
+                        ['a', 'b', 'c'],
+                        ['d', 'e', 'f']
+                    ]
+                });
+                checkTypes('multicategory', 'multicategory');
+
+                supplyWithTrace({
+                    x: [
+                        [2018, 2018, 2017, 2017],
+                        [2018, 2018, 2017, 2017]
+                    ],
+                    y: [
+                        ['2018', '2018', '2017', '2017'],
+                        ['2018', '2018', '2017', '2017']
+                    ]
+                });
+                checkTypes('multicategory', 'multicategory');
+
+                supplyWithTrace({
+                    x: [
+                        new Float32Array([2018, 2018, 2017, 2017]),
+                        [2018, 2018, 2017, 2017]
+                    ],
+                    y: [
+                        [2018, 2018, 2017, 2017],
+                        new Float64Array([2018, 2018, 2017, 2017])
+                    ]
+                });
+                checkTypes('multicategory', 'multicategory');
+
+                supplyWithTrace({
+                    x: [
+                        [2018, 2018, 2017, 2017]
+                    ],
+                    y: [
+                        null,
+                        ['d', 'e', 'f']
+                    ]
+                });
+                checkTypes('linear', 'linear');
+
+                supplyWithTrace({
+                    type: 'carpet',
+                    x: [
+                        [2018, 2018, 2017, 2017],
+                        ['a', 'b', 'a', 'b']
+                    ],
+                    y: [
+                        ['a', 'b', 'c'],
+                        ['d', 'e', 'f']
+                    ]
+                });
+                checkTypes('linear', 'linear');
+            });
         });
 
         it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
@@ -345,11 +413,11 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis.zerolinecolor).toBe(undefined);
         });
 
-        it('should use \'axis.color\' as default for \'axis.titlefont.color\'', function() {
+        it('should use \'axis.color\' as default for \'axis.title.font.color\'', function() {
             layoutIn = {
                 xaxis: { color: 'red' },
                 yaxis: {},
-                yaxis2: { titlefont: { color: 'yellow' } }
+                yaxis2: { title: { font: { color: 'yellow' } } }
             };
 
             layoutOut.font = { color: 'blue' };
@@ -357,9 +425,9 @@ describe('Test axes', function() {
             layoutOut._subplots.yaxis.push('y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.titlefont.color).toEqual('red');
-            expect(layoutOut.yaxis.titlefont.color).toEqual('blue');
-            expect(layoutOut.yaxis2.titlefont.color).toEqual('yellow');
+            expect(layoutOut.xaxis.title.font.color).toEqual('red');
+            expect(layoutOut.yaxis.title.font.color).toEqual('blue');
+            expect(layoutOut.yaxis2.title.font.color).toEqual('yellow');
         });
 
         it('should use \'axis.color\' as default for \'axis.linecolor\'', function() {
@@ -403,8 +471,8 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('xy2');
             layoutOut._subplots.yaxis.push('y2');
 
-            var bgColor = Color.combine('yellow', 'green'),
-                frac = 100 * (0xe - 0x4) / (0xf - 0x4);
+            var bgColor = Color.combine('yellow', 'green');
+            var frac = 100 * (0xe - 0x4) / (0xf - 0x4);
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.gridcolor)
@@ -1079,8 +1147,8 @@ describe('Test axes', function() {
     });
 
     describe('handleTickDefaults', function() {
-        var data = [{ x: [1, 2, 3], y: [3, 4, 5] }],
-            gd;
+        var data = [{ x: [1, 2, 3], y: [3, 4, 5] }];
+        var gd;
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -1161,8 +1229,8 @@ describe('Test axes', function() {
         }
 
         it('should set default tickmode correctly', function() {
-            var axIn = {},
-                axOut = {};
+            var axIn = {};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
             // and not push it back to axIn (which we used to do)
@@ -1194,8 +1262,8 @@ describe('Test axes', function() {
         });
 
         it('should set nticks iff tickmode=auto', function() {
-            var axIn = {},
-                axOut = {};
+            var axIn = {};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.nticks).toBe(0);
 
@@ -1211,8 +1279,8 @@ describe('Test axes', function() {
         });
 
         it('should set tick0 and dtick iff tickmode=linear', function() {
-            var axIn = {tickmode: 'auto', tick0: 1, dtick: 1},
-                axOut = {};
+            var axIn = {tickmode: 'auto', tick0: 1, dtick: 1};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tick0).toBe(undefined);
             expect(axOut.dtick).toBe(undefined);
@@ -1237,11 +1305,11 @@ describe('Test axes', function() {
         });
 
         it('should handle tick0 and dtick for date axes', function() {
-            var someMs = 123456789,
-                someMsDate = Lib.ms2DateTimeLocal(someMs),
-                oneDay = 24 * 3600 * 1000,
-                axIn = {tick0: someMs, dtick: String(3 * oneDay)},
-                axOut = {};
+            var someMs = 123456789;
+            var someMsDate = Lib.ms2DateTimeLocal(someMs);
+            var oneDay = 24 * 3600 * 1000;
+            var axIn = {tick0: someMs, dtick: String(3 * oneDay)};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'date');
             expect(axOut.tick0).toBe(someMsDate);
             expect(axOut.dtick).toBe(3 * oneDay);
@@ -1283,8 +1351,8 @@ describe('Test axes', function() {
         });
 
         it('should handle tick0 and dtick for log axes', function() {
-            var axIn = {tick0: '0.2', dtick: 0.3},
-                axOut = {};
+            var axIn = {tick0: '0.2', dtick: 0.3};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'log');
             expect(axOut.tick0).toBe(0.2);
             expect(axOut.dtick).toBe(0.3);
@@ -1329,8 +1397,8 @@ describe('Test axes', function() {
         });
 
         it('should set tickvals and ticktext iff tickmode=array', function() {
-            var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']},
-                axOut = {};
+            var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
+            var axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickvals).toBe(undefined);
             expect(axOut.ticktext).toBe(undefined);
@@ -1340,6 +1408,14 @@ describe('Test axes', function() {
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickvals).toEqual([2, 4, 6, 8]);
             expect(axOut.ticktext).toEqual(['who', 'do', 'we', 'appreciate']);
+        });
+
+        it('should not coerce ticktext/tickvals on multicategory axes', function() {
+            var axIn = {tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
+            var axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'multicategory');
+            expect(axOut.tickvals).toBe(undefined);
+            expect(axOut.ticktext).toBe(undefined);
         });
     });
 
@@ -2647,6 +2723,8 @@ describe('Test axes', function() {
             ax = {type: axType};
             Axes.setConvert(ax);
             ax._categories = [];
+            ax._traceIndices = [0];
+            if(axType === 'multicategory') ax.setupMultiCategory([trace]);
             return ax.makeCalcdata(trace, axLetter);
         }
 
@@ -2763,26 +2841,132 @@ describe('Test axes', function() {
                 expect(out).toEqual([946684800000, 978307200000, 1009843200000]);
             });
         });
+
+        describe('should set up category maps correctly for multicategory axes', function() {
+            it('case 1', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '1', '2', '2'], ['a', 'b', 'a', 'b']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1, 2, 3]);
+                expect(ax._categories).toEqual([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,a': 0, '1,b': 1, '2,a': 2, '2,b': 3});
+            });
+
+            it('case 2', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '2', '1', '2'], ['a', 'a', 'b', 'b']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 2, 1, 3]);
+                expect(ax._categories).toEqual([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,a': 0, '1,b': 1, '2,a': 2, '2,b': 3});
+            });
+
+            it('case invalid in x[0]', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '2', null, '2'], ['a', 'a', 'b', 'b']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1, BADNUM, 2]);
+                expect(ax._categories).toEqual([['1', 'a'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,a': 0, '2,a': 1, '2,b': 2});
+            });
+
+            it('case invalid in x[1]', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '2', '1', '2'], ['a', 'a', null, 'b']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1, BADNUM, 2]);
+                expect(ax._categories).toEqual([['1', 'a'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,a': 0, '2,a': 1, '2,b': 2});
+            });
+
+            it('case 1D coordinate array', function() {
+                var out = _makeCalcdata({
+                    x: ['a', 'b', 'c']
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([BADNUM, BADNUM, BADNUM]);
+                expect(ax._categories).toEqual([]);
+                expect(ax._categoriesMap).toEqual(undefined);
+            });
+
+            it('case 2D 1-row coordinate array', function() {
+                var out = _makeCalcdata({
+                    x: [['a', 'b', 'c']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([BADNUM, BADNUM, BADNUM]);
+                expect(ax._categories).toEqual([]);
+                expect(ax._categoriesMap).toEqual(undefined);
+            });
+
+            it('case 2D with empty x[0] row coordinate array', function() {
+                var out = _makeCalcdata({
+                    x: [null, ['a', 'b', 'c']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([BADNUM, BADNUM]);
+                expect(ax._categories).toEqual([]);
+                expect(ax._categoriesMap).toEqual(undefined);
+            });
+
+            it('case with inner typed arrays and set type:multicategory', function() {
+                var out = _makeCalcdata({
+                    x: [
+                        new Float32Array([1, 2, 1, 2]),
+                        new Float32Array([10, 10, 20, 20])
+                    ]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 2, 1, 3]);
+                expect(ax._categories).toEqual([[1, 10], [1, 20], [2, 10], [2, 20]]);
+                expect(ax._categoriesMap).toEqual({'1,10': 0, '1,20': 1, '2,10': 2, '2,20': 3});
+            });
+        });
+
+        describe('2d coordinate array on non-multicategory axes should return BADNUMs', function() {
+            var axTypes = ['linear', 'log', 'date'];
+
+            axTypes.forEach(function(t) {
+                it('- case ' + t, function() {
+                    var out = _makeCalcdata({
+                        x: [['1', '1', '2', '2'], ['a', 'b', 'a', 'b']]
+                    }, 'x', t);
+                    expect(out).toEqual([BADNUM, BADNUM, BADNUM, BADNUM]);
+                });
+            });
+
+            it('- case category', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '1', '2', '2'], ['a', 'b', 'a', 'b']]
+                }, 'x', 'category');
+                // picks out length=4
+                expect(out).toEqual([0, 1, undefined, undefined]);
+            });
+        });
     });
 
     describe('automargin', function() {
         var data = [{
-                x: [
-                    'short label 1', 'loooooong label 1',
-                    'short label 2', 'loooooong label 2',
-                    'short label 3', 'loooooong label 3',
-                    'short label 4', 'loooooongloooooongloooooong label 4',
-                    'short label 5', 'loooooong label 5'
-                ],
-                y: [
-                    'short label 1', 'loooooong label 1',
-                    'short label 2', 'loooooong label 2',
-                    'short label 3', 'loooooong label 3',
-                    'short label 4', 'loooooong label 4',
-                    'short label 5', 'loooooong label 5'
-                ]
-            }],
-            gd, initialSize, previousSize, savedBottom;
+            x: [
+                'short label 1', 'loooooong label 1',
+                'short label 2', 'loooooong label 2',
+                'short label 3', 'loooooong label 3',
+                'short label 4', 'loooooongloooooongloooooong label 4',
+                'short label 5', 'loooooong label 5'
+            ],
+            y: [
+                'short label 1', 'loooooong label 1',
+                'short label 2', 'loooooong label 2',
+                'short label 3', 'loooooong label 3',
+                'short label 4', 'loooooong label 4',
+                'short label 5', 'loooooong label 5'
+            ]
+        }];
+        var gd, initialSize, previousSize, savedBottom;
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -2794,7 +2978,7 @@ describe('Test axes', function() {
 
             Plotly.plot(gd, data)
             .then(function() {
-                expect(gd._fullLayout.xaxis._lastangle).toBe(30);
+                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBe(30);
 
                 initialSize = previousSize = Lib.extendDeep({}, gd._fullLayout._size);
                 return Plotly.relayout(gd, {'yaxis.automargin': true});
@@ -2882,14 +3066,14 @@ describe('Test axes', function() {
                 expect(size.t).toBe(previousSize.t);
 
                 previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.titlefont.size': 30});
+                return Plotly.relayout(gd, {'yaxis.title.font.size': 30});
             })
             .then(function() {
                 var size = gd._fullLayout._size;
                 expect(size).toEqual(previousSize);
 
                 previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.title': 'hello'});
+                return Plotly.relayout(gd, {'yaxis.title.text': 'hello'});
             })
             .then(function() {
                 var size = gd._fullLayout._size;
@@ -3094,6 +3278,131 @@ describe('Test axes', function() {
             })
             .then(function() {
                 assertZeroLines([]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('*tickson*:', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should respond to relayout', function(done) {
+            function getPositions(query) {
+                var pos = [];
+                d3.selectAll(query).each(function() {
+                    pos.push(this.getBoundingClientRect().x);
+                });
+                return pos;
+            }
+
+            function _assert(msg, exp) {
+                var ticks = getPositions('path.xtick');
+                var gridLines = getPositions('path.xgrid');
+                var tickLabels = getPositions('.xtick > text');
+
+                expect(ticks).toBeCloseToArray(exp.ticks, 1, msg + '- ticks');
+                expect(gridLines).toBeCloseToArray(exp.gridLines, 1, msg + '- grid lines');
+                expect(tickLabels.length).toBe(exp.tickLabels.length, msg + '- # of tick labels');
+                tickLabels.forEach(function(tl, i) {
+                    expect(tl).toBeWithin(exp.tickLabels[i], 2, msg + '- tick label ' + i);
+                });
+            }
+
+            Plotly.plot(gd, [{
+                x: ['a', 'b', 'c'],
+                y: [1, 2, 1]
+            }], {
+                xaxis: {
+                    ticks: 'inside',
+                    showgrid: true
+                }
+            })
+            .then(function() {
+                _assert('on labels (defaults)', {
+                    ticks: [110.75, 350, 589.25],
+                    gridLines: [110.75, 350, 589.25],
+                    tickLabels: [106.421, 345.671, 585.25]
+                });
+                return Plotly.relayout(gd, 'xaxis.tickson', 'boundaries');
+            })
+            .then(function() {
+                _assert('inside on boundaries', {
+                    ticks: [230.369, 469.619], // N.B. first and last tick are clipped
+                    gridLines: [230.369, 469.619],
+                    tickLabels: [106.421875, 345.671875, 585.25]
+                });
+                return Plotly.relayout(gd, 'xaxis.ticks', 'outside');
+            })
+            .then(function() {
+                _assert('outside on boundaries', {
+                    ticks: [230.369, 469.619],
+                    gridLines: [230.369, 469.619],
+                    tickLabels: [106.421875, 345.671875, 585.25]
+                });
+                return Plotly.restyle(gd, 'x', [[1, 2, 1]]);
+            })
+            .then(function() {
+                _assert('fallback to *labels* on non-category axes', {
+                    ticks: [110.75, 206.449, 302.149, 397.85, 493.549, 589.25],
+                    gridLines: [110.75, 206.449, 302.149, 397.85, 493.549, 589.25],
+                    tickLabels: [106.421, 197.121, 292.821, 388.521, 484.221, 584.921]
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should rotate labels to avoid overlaps', function(done) {
+            function _assert(msg, exp) {
+                var tickLabels = d3.selectAll('.xtick > text');
+
+                expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
+
+                tickLabels.each(function(_, i) {
+                    var t = d3.select(this).attr('transform');
+                    var rotate = (t.split('rotate(')[1] || '').split(')')[0];
+                    var angle = rotate.split(',')[0];
+                    expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
+                });
+            }
+
+            Plotly.plot(gd, [{
+                x: ['A very long title', 'short', 'Another very long title'],
+                y: [1, 4, 2]
+            }], {
+                xaxis: {
+                    domain: [0.22, 0.78],
+                    tickson: 'boundaries',
+                    ticks: 'outside'
+                },
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                _assert('base - rotated', {
+                    angle: [90, 90, 90]
+                });
+
+                return Plotly.relayout(gd, 'xaxis.range', [-0.4, 1.4]);
+            })
+            .then(function() {
+                _assert('narrower range - unrotated', {
+                    angle: [0, 0]
+                });
+
+                return Plotly.relayout(gd, 'xaxis.tickwidth', 30);
+            })
+            .then(function() {
+                _assert('narrow range / wide ticks - rotated', {
+                    angle: [90, 90]
+                });
             })
             .catch(failTest)
             .then(done);

@@ -5,12 +5,16 @@
     z-index: 1001;
 }
 
-.modebar--hover {
+.ease-bg {
+    @include vendor('transition', background-color 0.3s ease 0s);
+}
+
+.modebar--hover > :not(.watermark) {
     opacity: 0;
     @include vendor('transition', opacity 0.3s ease 0s);
 }
 
-&:hover .modebar--hover {
+&:hover .modebar--hover .modebar-group {
     opacity: 1;
 }
 
@@ -45,7 +49,14 @@
 }
 
 .modebar.vertical {
-    top: -1px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    max-height: 100%;
+    svg {
+      top: -1px;
+    }
     .modebar-group {
         display: block;
         float: none;

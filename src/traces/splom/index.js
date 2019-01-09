@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,7 +19,7 @@ var AxisIDs = require('../../plots/cartesian/axis_ids');
 var subTypes = require('../scatter/subtypes');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
-var calcColorscales = require('../scatter/colorscale_calc');
+var calcColorscale = require('../scatter/colorscale_calc');
 var convertMarkerSelection = require('../scattergl/convert').markerSelection;
 var convertMarkerStyle = require('../scattergl/convert').markerStyle;
 var calcHover = require('../scattergl').calcHover;
@@ -80,7 +80,7 @@ function calc(gd, trace) {
         }
     }
 
-    calcColorscales(trace);
+    calcColorscale(gd, trace);
     Lib.extendFlat(opts, convertMarkerStyle(trace));
 
     var visibleLength = cdata.length;
@@ -309,15 +309,17 @@ function editStyle(gd, cd0) {
     var trace = cd0.trace;
     var scene = gd._fullLayout._splomScenes[trace.uid];
 
-    calcColorscales(trace);
+    if(scene) {
+        calcColorscale(gd, trace);
 
-    Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(trace));
-    // TODO [un]selected styles?
+        Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(trace));
+        // TODO [un]selected styles?
 
-    var opts = Lib.extendFlat({}, scene.matrixOptions, scene.viewOpts);
+        var opts = Lib.extendFlat({}, scene.matrixOptions, scene.viewOpts);
 
-    // TODO this is too long for arrayOk attributes!
-    scene.matrix.update(opts, null);
+        // TODO this is too long for arrayOk attributes!
+        scene.matrix.update(opts, null);
+    }
 }
 
 function hoverPoints(pointData, xval, yval) {

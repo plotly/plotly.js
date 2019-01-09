@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -111,6 +111,7 @@ module.exports = extendFlat({
             'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
         ].join(' ')
     },
+    transforms: undefined
 },
     colorscaleAttrs('', {
         cLetter: 'z',

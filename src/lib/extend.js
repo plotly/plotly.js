@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60,8 +60,8 @@ exports.extendDeepNoArrays = function() {
  *
  */
 function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
-    var target = inputs[0],
-        length = inputs.length;
+    var target = inputs[0];
+    var length = inputs.length;
 
     var input, key, src, copy, copyIsArray, clone, allPrimitives;
 

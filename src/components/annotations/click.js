@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82,11 +82,11 @@ function onClick(gd, hoverData) {
  * }
  */
 function getToggleSets(gd, hoverData) {
-    var annotations = gd._fullLayout.annotations,
-        onSet = [],
-        offSet = [],
-        explicitOffSet = [],
-        hoverLen = (hoverData || []).length;
+    var annotations = gd._fullLayout.annotations;
+    var onSet = [];
+    var offSet = [];
+    var explicitOffSet = [];
+    var hoverLen = (hoverData || []).length;
 
     var i, j, anni, showMode, pointj, xa, ya, toggleType;
 

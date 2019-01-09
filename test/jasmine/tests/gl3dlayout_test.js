@@ -261,8 +261,8 @@ describe('Test Gl3d layout defaults', function() {
                 }
             };
 
-            var bgColor = Color.combine('yellow', 'green'),
-                frac = 100 * (204 - 0x44) / (255 - 0x44);
+            var bgColor = Color.combine('yellow', 'green');
+            var frac = 100 * (204 - 0x44) / (255 - 0x44);
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.xaxis.gridcolor)

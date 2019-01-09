@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -31,7 +31,7 @@ var dfltConfig = require('./plot_config');
  *     `layout.template` in another figure.
  */
 exports.makeTemplate = function(figure) {
-    figure = Lib.extendDeep({_context: dfltConfig}, figure);
+    figure = Lib.extendDeep({_context: dfltConfig}, {data: figure.data, layout: figure.layout});
     Plots.supplyDefaults(figure);
     var data = figure.data || [];
     var layout = figure.layout || {};

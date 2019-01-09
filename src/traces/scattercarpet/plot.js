@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -37,6 +37,6 @@ module.exports = function plot(gd, plotinfoproxy, data, layer) {
         // separately to all scattercarpet traces, but that would require
         // lots of reorganization of scatter traces that is otherwise not
         // necessary. That makes this a potential optimization.
-        Drawing.setClipUrl(node, carpet._clipPathId);
+        Drawing.setClipUrl(node, carpet._clipPathId, gd);
     }
 };

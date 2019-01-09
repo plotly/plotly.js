@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -119,14 +119,11 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     }
 
     function ticksAndAnnotations(xa, ya) {
-        var activeAxIds = [],
-            i;
+        var activeAxIds = [xa._id, ya._id];
+        var i;
 
-        activeAxIds = [xa._id, ya._id];
-
-        for(i = 0; i < activeAxIds.length; i++) {
-            Axes.doTicksSingle(gd, activeAxIds[i], true);
-        }
+        Axes.drawOne(gd, xa, {skipTitle: true});
+        Axes.drawOne(gd, ya, {skipTitle: true});
 
         function redrawObjs(objArray, method, shortCircuit) {
             for(i = 0; i < objArray.length; i++) {
@@ -221,17 +218,17 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         var editX = !!xUpdate;
         var editY = !!yUpdate;
 
-        var xScaleFactor = editX ? xa2._length / viewBox[2] : 1,
-            yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
+        var xScaleFactor = editX ? xa2._length / viewBox[2] : 1;
+        var yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
 
-        var clipDx = editX ? viewBox[0] : 0,
-            clipDy = editY ? viewBox[1] : 0;
+        var clipDx = editX ? viewBox[0] : 0;
+        var clipDy = editY ? viewBox[1] : 0;
 
-        var fracDx = editX ? (viewBox[0] / viewBox[2] * xa2._length) : 0,
-            fracDy = editY ? (viewBox[1] / viewBox[3] * ya2._length) : 0;
+        var fracDx = editX ? (viewBox[0] / viewBox[2] * xa2._length) : 0;
+        var fracDy = editY ? (viewBox[1] / viewBox[3] * ya2._length) : 0;
 
-        var plotDx = xa2._offset - fracDx,
-            plotDy = ya2._offset - fracDy;
+        var plotDx = xa2._offset - fracDx;
+        var plotDy = ya2._offset - fracDy;
 
         subplot.clipRect
             .call(Drawing.setTranslate, clipDx, clipDy)

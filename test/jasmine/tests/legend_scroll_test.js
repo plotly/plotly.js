@@ -237,10 +237,10 @@ describe('The legend', function() {
         });
 
         it('should keep the scrollbar position after a toggle event', function(done) {
-            var legend = getLegend(),
-                scrollBox = getScrollBox(),
-                toggle = getToggle(),
-                wheelDeltaY = 100;
+            var legend = getLegend();
+            var scrollBox = getScrollBox();
+            var toggle = getToggle();
+            var wheelDeltaY = 100;
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
 
@@ -257,13 +257,13 @@ describe('The legend', function() {
         });
 
         it('should be restored and functional after relayout', function(done) {
-            var wheelDeltaY = 100,
-                legend = getLegend(),
-                scrollBox,
-                scrollBar,
-                scrollBarX,
-                scrollBarY,
-                toggle;
+            var wheelDeltaY = 100;
+            var legend = getLegend();
+            var scrollBox;
+            var scrollBar;
+            var scrollBarX;
+            var scrollBarY;
+            var toggle;
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
             scrollBar = legend.getElementsByClassName('scrollbar')[0];
@@ -297,8 +297,8 @@ describe('The legend', function() {
         });
 
         it('should constrain scrolling to the contents', function() {
-            var legend = getLegend(),
-                scrollBox = getScrollBox();
+            var legend = getLegend();
+            var scrollBox = getScrollBox();
 
             legend.dispatchEvent(scrollTo(-100));
             expect(scrollBox.getAttribute('transform')).toBe('translate(0, 0)');
@@ -308,9 +308,9 @@ describe('The legend', function() {
         });
 
         it('should scale the scrollbar movement from top to bottom', function() {
-            var legend = getLegend(),
-                scrollBar = getScrollBar(),
-                legendHeight = getLegendHeight(gd);
+            var legend = getLegend();
+            var scrollBar = getScrollBar();
+            var legendHeight = getLegendHeight(gd);
 
             // The scrollbar is >20px tall and has 4px margins
             var scrollBarHeight = scrollBar.getBoundingClientRect().height;

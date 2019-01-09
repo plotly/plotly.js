@@ -49,6 +49,37 @@ describe('Test splom trace defaults:', function() {
         });
 
         expect(gd._fullData[0].visible).toBe(false);
+
+        // make sure these are still coerced - so you can get back via GUI!
+        expect(gd._fullData[0].showupperhalf).toBe(false);
+        expect(gd._fullData[0].showlowerhalf).toBe(false);
+        expect(gd._fullData[0].diagonal.visible).toBe(false);
+    });
+
+    it('still coerces partial visibilities even if all are false with transforms', function() {
+        _supply({
+            dimensions: [{
+                values: [1, 2, 3]
+            }],
+            showupperhalf: false,
+            showlowerhalf: false,
+            diagonal: {visible: false},
+            transforms: [{
+                type: 'filter',
+                target: 'dimensions[0].values',
+                operation: '>',
+                value: 2
+            }]
+        });
+
+        expect(gd._fullData[0].visible).toBe(false);
+
+        expect(gd._fullData[0].transforms[0].enabled).toBe(true);
+
+        // make sure these are still coerced - so you can get back via GUI!
+        expect(gd._fullData[0].showupperhalf).toBe(false);
+        expect(gd._fullData[0].showlowerhalf).toBe(false);
+        expect(gd._fullData[0].diagonal.visible).toBe(false);
     });
 
     it('should set `visible: false` to values-less dimensions', function() {
@@ -294,10 +325,10 @@ describe('Test splom trace defaults:', function() {
         });
 
         var fullLayout = gd._fullLayout;
-        expect(fullLayout.xaxis.title).toBe('A');
-        expect(fullLayout.yaxis.title).toBe('A');
-        expect(fullLayout.xaxis2.title).toBe('B');
-        expect(fullLayout.yaxis2.title).toBe('B');
+        expect(fullLayout.xaxis.title.text).toBe('A');
+        expect(fullLayout.yaxis.title.text).toBe('A');
+        expect(fullLayout.xaxis2.title.text).toBe('B');
+        expect(fullLayout.yaxis2.title.text).toBe('B');
     });
 
     it('should set axis title default using dimensions *label* (even visible false dimensions)', function() {
@@ -315,12 +346,12 @@ describe('Test splom trace defaults:', function() {
         });
 
         var fullLayout = gd._fullLayout;
-        expect(fullLayout.xaxis.title).toBe('A');
-        expect(fullLayout.yaxis.title).toBe('A');
-        expect(fullLayout.xaxis2.title).toBe('B');
-        expect(fullLayout.yaxis2.title).toBe('B');
-        expect(fullLayout.xaxis3.title).toBe('C');
-        expect(fullLayout.yaxis3.title).toBe('C');
+        expect(fullLayout.xaxis.title.text).toBe('A');
+        expect(fullLayout.yaxis.title.text).toBe('A');
+        expect(fullLayout.xaxis2.title.text).toBe('B');
+        expect(fullLayout.yaxis2.title.text).toBe('B');
+        expect(fullLayout.xaxis3.title.text).toBe('C');
+        expect(fullLayout.yaxis3.title.text).toBe('C');
     });
 
     it('should ignore (x|y)axes values beyond dimensions length', function() {
@@ -351,12 +382,12 @@ describe('Test splom trace defaults:', function() {
             'x2y', 'x2y2', 'x2y3',
             'x3y', 'x3y2', 'x3y3'
         ]);
-        expect(fullLayout.xaxis.title).toBe('A');
-        expect(fullLayout.yaxis.title).toBe('A');
-        expect(fullLayout.xaxis2.title).toBe('B');
-        expect(fullLayout.yaxis2.title).toBe('B');
-        expect(fullLayout.xaxis3.title).toBe('C');
-        expect(fullLayout.yaxis3.title).toBe('C');
+        expect(fullLayout.xaxis.title.text).toBe('A');
+        expect(fullLayout.yaxis.title.text).toBe('A');
+        expect(fullLayout.xaxis2.title.text).toBe('B');
+        expect(fullLayout.yaxis2.title.text).toBe('B');
+        expect(fullLayout.xaxis3.title.text).toBe('C');
+        expect(fullLayout.yaxis3.title.text).toBe('C');
         expect(fullLayout.xaxis4).toBe(undefined);
         expect(fullLayout.yaxis4).toBe(undefined);
     });
@@ -391,12 +422,12 @@ describe('Test splom trace defaults:', function() {
         ]);
         expect(fullLayout.xaxis).toBe(undefined);
         expect(fullLayout.yaxis).toBe(undefined);
-        expect(fullLayout.xaxis2.title).toBe('A');
-        expect(fullLayout.yaxis2.title).toBe('A');
-        expect(fullLayout.xaxis3.title).toBe('B');
-        expect(fullLayout.yaxis3.title).toBe('B');
-        expect(fullLayout.xaxis4.title).toBe('C');
-        expect(fullLayout.yaxis4.title).toBe('C');
+        expect(fullLayout.xaxis2.title.text).toBe('A');
+        expect(fullLayout.yaxis2.title.text).toBe('A');
+        expect(fullLayout.xaxis3.title.text).toBe('B');
+        expect(fullLayout.yaxis3.title.text).toBe('B');
+        expect(fullLayout.xaxis4.title.text).toBe('C');
+        expect(fullLayout.yaxis4.title.text).toBe('C');
         expect(fullLayout.xaxis5).toBe(undefined);
         expect(fullLayout.yaxis5).toBe(undefined);
     });
@@ -789,11 +820,11 @@ describe('Test splom interactions:', function() {
 
         function _assert(msg, exp) {
             var splomScenes = gd._fullLayout._splomScenes;
-            var ids = Object.keys(splomScenes);
+            var ids = gd._fullData.map(function(trace) { return trace.uid; });
 
             for(var i = 0; i < 3; i++) {
                 var drawFn = splomScenes[ids[i]].draw;
-                expect(drawFn).toHaveBeenCalledTimes(exp[i], msg + ' - trace ' + i);
+                expect(drawFn.calls.count()).toBe(exp[i], msg + ' - trace ' + i);
                 drawFn.calls.reset();
             }
         }
@@ -838,7 +869,7 @@ describe('Test splom interactions:', function() {
 
         methods.forEach(function(m) { spyOn(Plots, m).and.callThrough(); });
 
-        function assetsFnCall(msg, exp) {
+        function assertFnCall(msg, exp) {
             methods.forEach(function(m) {
                 expect(Plots[m]).toHaveBeenCalledTimes(exp[m], msg);
                 Plots[m].calls.reset();
@@ -848,7 +879,7 @@ describe('Test splom interactions:', function() {
         spyOn(Lib, 'log');
 
         Plotly.plot(gd, fig).then(function() {
-            assetsFnCall('base', {
+            assertFnCall('base', {
                 cleanPlot: 1,       // called once from inside Plots.supplyDefaults
                 supplyDefaults: 1,
                 doCalcdata: 1
@@ -861,9 +892,9 @@ describe('Test splom interactions:', function() {
             return Plotly.relayout(gd, {width: 4810, height: 3656});
         })
         .then(function() {
-            assetsFnCall('after', {
-                cleanPlot: 4,       // 3 three from supplyDefaults, once in drawFramework
-                supplyDefaults: 3,  // 1 from relayout, 1 from automargin, 1 in drawFramework
+            assertFnCall('after', {
+                cleanPlot: 3,       // 2 from supplyDefaults, once in drawFramework
+                supplyDefaults: 2,  // 1 from relayout, 1 in drawFramework
                 doCalcdata: 1       // once in drawFramework
             });
             assertDims('after', 4810, 3656);
@@ -952,6 +983,50 @@ describe('Test splom interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should not fail when editing graph with visible:false traces', function(done) {
+        Plotly.plot(gd, [{
+            type: 'splom',
+            dimensions: [{values: []}, {values: []}]
+        }, {
+            type: 'splom',
+            dimensions: [{values: [1, 2, 3]}, {values: [2, 3, 4]}]
+        }])
+        .then(function() {
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+            var splomScenes = fullLayout._splomScenes;
+            var opts = splomScenes[fullData[1].uid].matrixOptions;
+
+            expect(fullData[0].visible).toBe(false, 'trace 0 visible');
+            expect(fullData[1].visible).toBe(true, 'trace 1 visible');
+            expect(Object.keys(splomScenes).length).toBe(1, '# of splom scenes');
+
+            expect(opts.opacity).toBe(1, 'marker opacity');
+            expect(opts.color).toEqual(new Uint8Array([255, 127, 14, 255]), 'marker color');
+            expect(opts.colors).toBe(undefined, 'marker colors');
+
+            return Plotly.restyle(gd, 'marker.opacity', [undefined, [0.2, 0.3, 0.4]]);
+        })
+        .then(function() {
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+            var opts = fullLayout._splomScenes[fullData[1].uid].matrixOptions;
+
+            // ignored by regl-splom
+            expect(opts.opacity).toBe(1, 'marker opacity');
+            // ignored by regl-splom
+            expect(opts.color).toEqual(new Uint8Array([255, 127, 14, 255]), 'marker color');
+            // marker.opacity applied here
+            expect(opts.colors).toBeCloseTo2DArray([
+                [1, 0.498, 0.0549, 0.2],
+                [1, 0.498, 0.0549, 0.3],
+                [1, 0.498, 0.0549, 0.4]
+            ], 'marker colors');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test splom update switchboard:', function() {
@@ -1004,7 +1079,7 @@ describe('Test splom update switchboard:', function() {
 
             methods = [
                 [Plots, 'supplyDefaults'],
-                [Axes, 'doTicks'],
+                [Axes, 'draw'],
                 [regl, 'clear'],
                 [splomGrid, 'update']
             ];
@@ -1019,7 +1094,7 @@ describe('Test splom update switchboard:', function() {
 
             assertSpies(msg, [
                 ['supplyDefaults', 0],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['splom grid update', 1],
                 ['splom grid draw', 1],
@@ -1048,7 +1123,7 @@ describe('Test splom update switchboard:', function() {
             methods = [
                 [Plots, 'supplyDefaults'],
                 [Plots, 'doCalcdata'],
-                [Axes, 'doTicks'],
+                [Axes, 'draw'],
                 [regl, 'clear'],
                 [matrix, 'update'],
                 [matrix, 'draw']
@@ -1068,7 +1143,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1085,7 +1160,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 0],
-                ['doTicks', 0],
+                ['Axes.draw', 0],
                 ['clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1098,6 +1173,31 @@ describe('Test splom update switchboard:', function() {
             expect(toPlainArray(scene.matrixOptions.colors[2]))
                 .toBeCloseToArray([0, 0, 1, 1], 1, msg + '- 2');
 
+            return Plotly.restyle(gd, {
+                'marker.cmin': -3,
+                'marker.cmax': 3,
+                'marker.color': [[1, 2, 3]]
+            });
+        })
+        .then(function() {
+            var msg = 'after colorscale marker.color restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['Axes.draw', 0],
+                ['clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(toPlainArray(scene.matrixOptions.colors[0]))
+                .toBeCloseToArray([0.890, 0.6, 0.4078, 1], 1, msg + '- 0');
+            expect(toPlainArray(scene.matrixOptions.colors[1]))
+                .toBeCloseToArray([0.81176, 0.3333, 0.2431, 1], 1, msg + '- 1');
+            expect(toPlainArray(scene.matrixOptions.colors[2]))
+                .toBeCloseToArray([0.6980, 0.0392, 0.1098, 1], 1, msg + '- 2');
+
             return Plotly.restyle(gd, 'marker.size', 20);
         })
         .then(function() {
@@ -1106,7 +1206,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 1],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1124,7 +1224,7 @@ describe('Test splom update switchboard:', function() {
             assertSpies(msg, [
                 ['supplyDefaults', 1],
                 ['doCalcdata', 1],
-                ['doTicks', 1],
+                ['Axes.draw', 1],
                 ['regl clear', 1],
                 ['update', 1],
                 ['draw', 1]
@@ -1133,6 +1233,22 @@ describe('Test splom update switchboard:', function() {
             expect(scene.matrixOptions.sizes).toBeCloseToArray([2, 5, 10], 1, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
+
+            return Plotly.restyle(gd, 'marker.symbol', 'square');
+        })
+        .then(function() {
+            var msg = 'after scalar marker.symbol restyle';
+
+            assertSpies(msg, [
+                ['supplyDefaults', 1],
+                ['doCalcdata', 0],
+                ['Axes.draw', 0],
+                ['clear', 1],
+                ['update', 1],
+                ['draw', 1]
+            ]);
+
+            expect(scene.matrixOptions.marker).not.toBeNull(msg);
         })
         .catch(failTest)
         .then(done);

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -64,8 +64,8 @@ module.exports = function draw(gd, id) {
     opts.zrange = null;
 
     function component() {
-        var fullLayout = gd._fullLayout,
-            gs = fullLayout._size;
+        var fullLayout = gd._fullLayout;
+        var gs = fullLayout._size;
         if((typeof opts.fillcolor !== 'function') &&
                 (typeof opts.line.color !== 'function') &&
                 !opts.fillgradient) {
@@ -83,10 +83,10 @@ module.exports = function draw(gd, id) {
         var l;
         var i;
 
-        var l0 = opts.levels.end + opts.levels.size / 100,
-            ls = opts.levels.size,
-            zr0 = (1.001 * zrange[0] - 0.001 * zrange[1]),
-            zr1 = (1.001 * zrange[1] - 0.001 * zrange[0]);
+        var l0 = opts.levels.end + opts.levels.size / 100;
+        var ls = opts.levels.size;
+        var zr0 = (1.001 * zrange[0] - 0.001 * zrange[1]);
+        var zr1 = (1.001 * zrange[1] - 0.001 * zrange[0]);
         for(i = 0; i < 1e5; i++) {
             l = opts.levels.start + i * ls;
             if(ls > 0 ? (l >= l0) : (l <= l0)) break;
@@ -134,71 +134,70 @@ module.exports = function draw(gd, id) {
         // when the colorbar itself is pushing the margins.
         // but then the fractional size is calculated based on the
         // actual graph size, so that the axes will size correctly.
-        var plotHeight = gs.h,
-            plotWidth = gs.w,
-            thickPx = Math.round(opts.thickness *
-                (opts.thicknessmode === 'fraction' ? plotWidth : 1)),
-            thickFrac = thickPx / gs.w,
-            lenPx = Math.round(opts.len *
-                (opts.lenmode === 'fraction' ? plotHeight : 1)),
-            lenFrac = lenPx / gs.h,
-            xpadFrac = opts.xpad / gs.w,
-            yExtraPx = (opts.borderwidth + opts.outlinewidth) / 2,
-            ypadFrac = opts.ypad / gs.h,
+        var plotHeight = gs.h;
+        var plotWidth = gs.w;
+        var thickPx = Math.round(opts.thickness * (opts.thicknessmode === 'fraction' ? plotWidth : 1));
+        var thickFrac = thickPx / gs.w;
+        var lenPx = Math.round(opts.len * (opts.lenmode === 'fraction' ? plotHeight : 1));
+        var lenFrac = lenPx / gs.h;
+        var xpadFrac = opts.xpad / gs.w;
+        var yExtraPx = (opts.borderwidth + opts.outlinewidth) / 2;
+        var ypadFrac = opts.ypad / gs.h;
 
-            // x positioning: do it initially just for left anchor,
-            // then fix at the end (since we don't know the width yet)
-            xLeft = Math.round(opts.x * gs.w + opts.xpad),
-            // for dragging... this is getting a little muddled...
-            xLeftFrac = opts.x - thickFrac *
-                ({middle: 0.5, right: 1}[opts.xanchor]||0),
+        // x positioning: do it initially just for left anchor,
+        // then fix at the end (since we don't know the width yet)
+        var xLeft = Math.round(opts.x * gs.w + opts.xpad);
+        // for dragging... this is getting a little muddled...
+        var xLeftFrac = opts.x - thickFrac * ({middle: 0.5, right: 1}[opts.xanchor]||0);
 
-            // y positioning we can do correctly from the start
-            yBottomFrac = opts.y + lenFrac *
-                (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5),
-            yBottomPx = Math.round(gs.h * (1 - yBottomFrac)),
-            yTopPx = yBottomPx - lenPx,
-            titleEl,
-            cbAxisIn = {
-                type: 'linear',
-                range: zrange,
-                tickmode: opts.tickmode,
-                nticks: opts.nticks,
-                tick0: opts.tick0,
-                dtick: opts.dtick,
-                tickvals: opts.tickvals,
-                ticktext: opts.ticktext,
-                ticks: opts.ticks,
-                ticklen: opts.ticklen,
-                tickwidth: opts.tickwidth,
-                tickcolor: opts.tickcolor,
-                showticklabels: opts.showticklabels,
-                tickfont: opts.tickfont,
-                tickangle: opts.tickangle,
-                tickformat: opts.tickformat,
-                exponentformat: opts.exponentformat,
-                separatethousands: opts.separatethousands,
-                showexponent: opts.showexponent,
-                showtickprefix: opts.showtickprefix,
-                tickprefix: opts.tickprefix,
-                showticksuffix: opts.showticksuffix,
-                ticksuffix: opts.ticksuffix,
-                title: opts.title,
-                titlefont: opts.titlefont,
-                showline: true,
-                anchor: 'free',
-                position: 1
-            },
-            cbAxisOut = {
-                type: 'linear',
-                _id: 'y' + id
-            },
-            axisOptions = {
-                letter: 'y',
-                font: fullLayout.font,
-                noHover: true,
-                calendar: fullLayout.calendar  // not really necessary (yet?)
-            };
+        // y positioning we can do correctly from the start
+        var yBottomFrac = opts.y + lenFrac * (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5);
+        var yBottomPx = Math.round(gs.h * (1 - yBottomFrac));
+        var yTopPx = yBottomPx - lenPx;
+
+        var titleEl;
+
+        var cbAxisIn = {
+            type: 'linear',
+            range: zrange,
+            tickmode: opts.tickmode,
+            nticks: opts.nticks,
+            tick0: opts.tick0,
+            dtick: opts.dtick,
+            tickvals: opts.tickvals,
+            ticktext: opts.ticktext,
+            ticks: opts.ticks,
+            ticklen: opts.ticklen,
+            tickwidth: opts.tickwidth,
+            tickcolor: opts.tickcolor,
+            showticklabels: opts.showticklabels,
+            tickfont: opts.tickfont,
+            tickangle: opts.tickangle,
+            tickformat: opts.tickformat,
+            exponentformat: opts.exponentformat,
+            separatethousands: opts.separatethousands,
+            showexponent: opts.showexponent,
+            showtickprefix: opts.showtickprefix,
+            tickprefix: opts.tickprefix,
+            showticksuffix: opts.showticksuffix,
+            ticksuffix: opts.ticksuffix,
+            title: opts.title,
+            showline: true,
+            anchor: 'free',
+            side: 'right',
+            position: 1
+        };
+        var cbAxisOut = {
+            type: 'linear',
+            _id: 'y' + id
+        };
+        var axisOptions = {
+            letter: 'y',
+            font: fullLayout.font,
+            noHover: true,
+            noTickson: true,
+            calendar: fullLayout.calendar  // not really necessary (yet?)
+        };
 
         // Coerce w.r.t. Axes layoutAttributes:
         // re-use axes.js logic without updating _fullData
@@ -217,11 +216,11 @@ module.exports = function draw(gd, id) {
         // save for other callers to access this axis
         component.axis = cbAxisOut;
 
-        if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
-            cbAxisOut.titleside = opts.titleside;
+        if(['top', 'bottom'].indexOf(opts.title.side) !== -1) {
+            cbAxisOut.title.side = opts.title.side;
             cbAxisOut.titlex = opts.x + xpadFrac;
             cbAxisOut.titley = yBottomFrac +
-                (opts.titleside === 'top' ? lenFrac - ypadFrac : ypadFrac);
+                (opts.title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
         }
 
         if(opts.line.color && opts.tickmode === 'auto') {
@@ -229,10 +228,8 @@ module.exports = function draw(gd, id) {
             cbAxisOut.tick0 = opts.levels.start;
             var dtick = opts.levels.size;
             // expand if too many contours, so we don't get too many ticks
-            var autoNtick = Lib.constrain(
-                    (yBottomPx - yTopPx) / 50, 4, 15) + 1,
-                dtFactor = (zrange[1] - zrange[0]) /
-                    ((opts.nticks || autoNtick) * dtick);
+            var autoNtick = Lib.constrain((yBottomPx - yTopPx) / 50, 4, 15) + 1;
+            var dtFactor = (zrange[1] - zrange[0]) / ((opts.nticks || autoNtick) * dtick);
             if(dtFactor > 1) {
                 var dtexp = Math.pow(10, Math.floor(
                     Math.log(dtFactor) / Math.LN10));
@@ -281,17 +278,18 @@ module.exports = function draw(gd, id) {
                 Math.round(gs.l) + ',-' +
                 Math.round(gs.t) + ')');
 
-        cbAxisOut._axislayer = container.select('.cbaxis');
+        var axisLayer = container.select('.cbaxis');
+
         var titleHeight = 0;
-        if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
+        if(['top', 'bottom'].indexOf(opts.title.side) !== -1) {
             // draw the title so we know how much room it needs
             // when we squish the axis. This one only applies to
             // top or bottom titles, not right side.
-            var x = gs.l + (opts.x + xpadFrac) * gs.w,
-                fontSize = cbAxisOut.titlefont.size,
-                y;
+            var x = gs.l + (opts.x + xpadFrac) * gs.w;
+            var fontSize = cbAxisOut.title.font.size;
+            var y;
 
-            if(opts.titleside === 'top') {
+            if(opts.title.side === 'top') {
                 y = (1 - (yBottomFrac + lenFrac - ypadFrac)) * gs.h +
                     gs.t + 3 + fontSize * 0.75;
             }
@@ -305,16 +303,15 @@ module.exports = function draw(gd, id) {
         }
 
         function drawAxis() {
-            if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
+            if(['top', 'bottom'].indexOf(opts.title.side) !== -1) {
                 // squish the axis top to make room for the title
-                var titleGroup = container.select('.cbtitle'),
-                    titleText = titleGroup.select('text'),
-                    titleTrans =
-                        [-opts.outlinewidth / 2, opts.outlinewidth / 2],
-                    mathJaxNode = titleGroup
-                        .select('.h' + cbAxisOut._id + 'title-math-group')
-                        .node(),
-                    lineSize = 15.6;
+                var titleGroup = container.select('.cbtitle');
+                var titleText = titleGroup.select('text');
+                var titleTrans = [-opts.outlinewidth / 2, opts.outlinewidth / 2];
+                var mathJaxNode = titleGroup
+                    .select('.h' + cbAxisOut._id + 'title-math-group')
+                    .node();
+                var lineSize = 15.6;
                 if(titleText.node()) {
                     lineSize =
                         parseInt(titleText.node().style.fontSize, 10) * LINE_SPACING;
@@ -336,7 +333,7 @@ module.exports = function draw(gd, id) {
                     // TODO: configurable
                     titleHeight += 5;
 
-                    if(opts.titleside === 'top') {
+                    if(opts.title.side === 'top') {
                         cbAxisOut.domain[1] -= titleHeight / gs.h;
                         titleTrans[1] *= -1;
                     }
@@ -357,8 +354,7 @@ module.exports = function draw(gd, id) {
                 .attr('transform', 'translate(0,' +
                     Math.round(gs.h * (1 - cbAxisOut.domain[1])) + ')');
 
-            cbAxisOut._axislayer.attr('transform', 'translate(0,' +
-                Math.round(-gs.t) + ')');
+            axisLayer.attr('transform', 'translate(0,' + Math.round(-gs.t) + ')');
 
             var fills = container.select('.cbfills')
                 .selectAll('rect.cbfill')
@@ -425,12 +421,7 @@ module.exports = function draw(gd, id) {
             });
 
             // force full redraw of labels and ticks
-            cbAxisOut._axislayer.selectAll('g.' + cbAxisOut._id + 'tick,path')
-                .remove();
-
-            cbAxisOut._pos = xLeft + thickPx +
-                (opts.outlinewidth||0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
-            cbAxisOut.side = 'right';
+            axisLayer.selectAll('g.' + cbAxisOut._id + 'tick,path').remove();
 
             // separate out axis and title drawing,
             // so we don't need such complicated logic in Titles.draw
@@ -438,15 +429,37 @@ module.exports = function draw(gd, id) {
             // this title call only handles side=right
             return Lib.syncOrAsync([
                 function() {
-                    return Axes.doTicksSingle(gd, cbAxisOut, true);
+                    var shift = xLeft + thickPx +
+                        (opts.outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
+
+                    var vals = Axes.calcTicks(cbAxisOut);
+                    var transFn = Axes.makeTransFn(cbAxisOut);
+                    var labelFns = Axes.makeLabelFns(cbAxisOut, shift);
+                    var tickSign = Axes.getTickSigns(cbAxisOut)[2];
+
+                    Axes.drawTicks(gd, cbAxisOut, {
+                        vals: cbAxisOut.ticks === 'inside' ? Axes.clipEnds(cbAxisOut, vals) : vals,
+                        layer: axisLayer,
+                        path: Axes.makeTickPath(cbAxisOut, shift, tickSign),
+                        transFn: transFn
+                    });
+
+                    return Axes.drawLabels(gd, cbAxisOut, {
+                        vals: vals,
+                        layer: axisLayer,
+                        transFn: transFn,
+                        labelXFn: labelFns.labelXFn,
+                        labelYFn: labelFns.labelYFn,
+                        labelAnchorFn: labelFns.labelAnchorFn
+                    });
                 },
                 function() {
-                    if(['top', 'bottom'].indexOf(opts.titleside) === -1) {
-                        var fontSize = cbAxisOut.titlefont.size,
-                            y = cbAxisOut._offset + cbAxisOut._length / 2,
-                            x = gs.l + (cbAxisOut.position || 0) * gs.w + ((cbAxisOut.side === 'right') ?
-                                10 + fontSize * ((cbAxisOut.showticklabels ? 1 : 0.5)) :
-                                -10 - fontSize * ((cbAxisOut.showticklabels ? 0.5 : 0)));
+                    if(['top', 'bottom'].indexOf(opts.title.side) === -1) {
+                        var fontSize = cbAxisOut.title.font.size;
+                        var y = cbAxisOut._offset + cbAxisOut._length / 2;
+                        var x = gs.l + (cbAxisOut.position || 0) * gs.w + ((cbAxisOut.side === 'right') ?
+                            10 + fontSize * ((cbAxisOut.showticklabels ? 1 : 0.5)) :
+                            -10 - fontSize * ((cbAxisOut.showticklabels ? 0.5 : 0)));
 
                         // the 'h' + is a hack to get around the fact that
                         // convertToTspans rotates any 'y...' class by 90 degrees.
@@ -454,7 +467,7 @@ module.exports = function draw(gd, id) {
                         drawTitle('h' + cbAxisOut._id + 'title', {
                             avoid: {
                                 selection: d3.select(gd).selectAll('g.' + cbAxisOut._id + 'tick'),
-                                side: opts.titleside,
+                                side: opts.title.side,
                                 offsetLeft: gs.l,
                                 offsetTop: 0,
                                 maxShift: fullLayout.width
@@ -467,15 +480,10 @@ module.exports = function draw(gd, id) {
         }
 
         function drawTitle(titleClass, titleOpts) {
-            var trace = getTrace();
-            var propName = 'colorbar.title';
-            var containerName = trace._module.colorbar.container;
-            if(containerName) propName = containerName + '.' + propName;
-
             var dfltTitleOpts = {
                 propContainer: cbAxisOut,
-                propName: propName,
-                traceIndex: trace.index,
+                propName: getPropName('title'),
+                traceIndex: getTrace().index,
                 placeholder: fullLayout._dfltTitle.colorbar,
                 containerGroup: container.select('.cbtitle')
             };
@@ -499,19 +507,19 @@ module.exports = function draw(gd, id) {
             // TODO: why are we redrawing multiple times now with this?
             // I guess autoMargin doesn't like being post-promise?
             var innerWidth = thickPx + opts.outlinewidth / 2 +
-                    Drawing.bBox(cbAxisOut._axislayer.node()).width;
+                    Drawing.bBox(axisLayer.node()).width;
             titleEl = titleCont.select('text');
             if(titleEl.node() && !titleEl.classed(cn.jsPlaceholder)) {
                 var mathJaxNode = titleCont
                         .select('.h' + cbAxisOut._id + 'title-math-group')
-                        .node(),
-                    titleWidth;
+                        .node();
+                var titleWidth;
                 if(mathJaxNode &&
-                        ['top', 'bottom'].indexOf(opts.titleside) !== -1) {
+                        ['top', 'bottom'].indexOf(opts.title.side) !== -1) {
                     titleWidth = Drawing.bBox(mathJaxNode).width;
                 }
                 else {
-                    // note: the formula below works for all titlesides,
+                    // note: the formula below works for all title sides,
                     // (except for top/bottom mathjax, above)
                     // but the weird gs.l is because the titleunshift
                     // transform gets removed by Drawing.bBox
@@ -523,8 +531,8 @@ module.exports = function draw(gd, id) {
             }
 
             var outerwidth = 2 * opts.xpad + innerWidth +
-                    opts.borderwidth + opts.outlinewidth / 2,
-                outerheight = yBottomPx - yTopPx;
+                    opts.borderwidth + opts.outlinewidth / 2;
+            var outerheight = yBottomPx - yTopPx;
 
             container.select('.cbbg').attr({
                 x: xLeft - opts.xpad -
@@ -540,7 +548,7 @@ module.exports = function draw(gd, id) {
             container.selectAll('.cboutline').attr({
                 x: xLeft,
                 y: yTopPx + opts.ypad +
-                    (opts.titleside === 'top' ? titleHeight : 0),
+                    (opts.title.side === 'top' ? titleHeight : 0),
                 width: Math.max(thickPx, 2),
                 height: Math.max(outerheight - 2 * opts.ypad - titleHeight, 2)
             })
@@ -627,11 +635,10 @@ module.exports = function draw(gd, id) {
                     setCursor(container);
 
                     if(xf !== undefined && yf !== undefined) {
-                        Registry.call('restyle',
-                            gd,
-                            {'colorbar.x': xf, 'colorbar.y': yf},
-                            getTrace().index
-                        );
+                        var update = {};
+                        update[getPropName('x')] = xf;
+                        update[getPropName('y')] = yf;
+                        Registry.call('_guiRestyle', gd, update, getTrace().index);
                     }
                 }
             });
@@ -640,13 +647,19 @@ module.exports = function draw(gd, id) {
     }
 
     function getTrace() {
-        var idNum = id.substr(2),
-            i,
-            trace;
-        for(i = 0; i < gd._fullData.length; i++) {
-            trace = gd._fullData[i];
+        var idNum = id.substr(2);
+        for(var i = 0; i < gd._fullData.length; i++) {
+            var trace = gd._fullData[i];
             if(trace.uid === idNum) return trace;
         }
+    }
+
+    function getPropName(suffix) {
+        var trace = getTrace();
+        var propName = 'colorbar.';
+        var containerName = trace._module.colorbar.container;
+        if(containerName) propName = containerName + '.' + propName;
+        return propName + suffix;
     }
 
     // setter/getters for every item defined in opts

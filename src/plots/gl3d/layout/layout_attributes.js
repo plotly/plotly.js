@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -140,7 +140,6 @@ module.exports = {
         valType: 'enumerated',
         role: 'info',
         values: ['orbit', 'turntable', 'zoom', 'pan', false],
-        dflt: 'turntable',
         editType: 'plot',
         description: [
             'Determines the mode of drag interactions for this scene.'
@@ -154,6 +153,15 @@ module.exports = {
         editType: 'modebar',
         description: [
             'Determines the mode of hover interactions for this scene.'
+        ].join(' ')
+    },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in camera attributes.',
+            'Defaults to `layout.uirevision`.'
         ].join(' ')
     },
     editType: 'plot',

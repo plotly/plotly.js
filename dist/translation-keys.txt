@@ -1,59 +1,59 @@
 Autoscale                                              // components/modebar/buttons.js:150
 Box Select                                             // components/modebar/buttons.js:114
-Click to enter Colorscale title                        // plots/plots.js:330
-Click to enter Component A title                       // plots/ternary/ternary.js:424
-Click to enter Component B title                       // plots/ternary/ternary.js:439
-Click to enter Component C title                       // plots/ternary/ternary.js:450
-Click to enter Plot title                              // plot_api/plot_api.js:547
-Click to enter X axis title                            // plots/plots.js:328
-Click to enter Y axis title                            // plots/plots.js:329
-Click to enter radial axis title                       // plots/polar/polar.js:481
+Click to enter Colorscale title                        // plots/plots.js:329
+Click to enter Component A title                       // plots/ternary/ternary.js:377
+Click to enter Component B title                       // plots/ternary/ternary.js:387
+Click to enter Component C title                       // plots/ternary/ternary.js:397
+Click to enter Plot title                              // plot_api/plot_api.js:566
+Click to enter X axis title                            // plots/plots.js:327
+Click to enter Y axis title                            // plots/plots.js:328
+Click to enter radial axis title                       // plots/polar/polar.js:501
 Compare data on hover                                  // components/modebar/buttons.js:178
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:89
-Double-click to zoom back out                          // plots/cartesian/dragbox.js:1038
+Double-click to zoom back out                          // plots/cartesian/dragbox.js:1040
 Download plot                                          // components/modebar/buttons.js:55
 Download plot as a png                                 // components/modebar/buttons.js:54
 Edit in Chart Studio                                   // components/modebar/buttons.js:87
 IE only supports svg.  Changing format to svg.         // components/modebar/buttons.js:65
 Lasso Select                                           // components/modebar/buttons.js:123
-Orbital rotation                                       // components/modebar/buttons.js:287
+Orbital rotation                                       // components/modebar/buttons.js:286
 Pan                                                    // components/modebar/buttons.js:105
-Produced with Plotly                                   // components/modebar/modebar.js:272
-Reset                                                  // components/modebar/buttons.js:443
+Produced with Plotly                                   // components/modebar/modebar.js:309
+Reset                                                  // components/modebar/buttons.js:436
 Reset axes                                             // components/modebar/buttons.js:159
-Reset camera to default                                // components/modebar/buttons.js:325
-Reset camera to last save                              // components/modebar/buttons.js:333
-Reset view                                             // components/modebar/buttons.js:592
-Reset views                                            // components/modebar/buttons.js:540
+Reset camera to default                                // components/modebar/buttons.js:324
+Reset camera to last save                              // components/modebar/buttons.js:332
+Reset view                                             // components/modebar/buttons.js:585
+Reset views                                            // components/modebar/buttons.js:533
 Show closest data on hover                             // components/modebar/buttons.js:168
 Snapshot succeeded                                     // components/modebar/buttons.js:77
 Sorry, there was a problem downloading your snapshot!  // components/modebar/buttons.js:80
 Taking snapshot - this may take a few seconds          // components/modebar/buttons.js:62
-Toggle Spike Lines                                     // components/modebar/buttons.js:559
-Toggle show closest data on hover                      // components/modebar/buttons.js:364
-Turntable rotation                                     // components/modebar/buttons.js:296
+Toggle Spike Lines                                     // components/modebar/buttons.js:552
+Toggle show closest data on hover                      // components/modebar/buttons.js:363
+Turntable rotation                                     // components/modebar/buttons.js:295
 Zoom                                                   // components/modebar/buttons.js:96
 Zoom in                                                // components/modebar/buttons.js:132
 Zoom out                                               // components/modebar/buttons.js:141
-close:                                                 // traces/ohlc/calc.js:103
-high:                                                  // traces/ohlc/calc.js:101
-incoming flow count:                                   // traces/sankey/plot.js:143
+close:                                                 // traces/ohlc/calc.js:105
+high:                                                  // traces/ohlc/calc.js:103
+incoming flow count:                                   // traces/sankey/plot.js:147
 kde:                                                   // traces/violin/calc.js:77
 lat:                                                   // traces/scattergeo/calc.js:48
 lon:                                                   // traces/scattergeo/calc.js:49
-low:                                                   // traces/ohlc/calc.js:102
+low:                                                   // traces/ohlc/calc.js:104
 lower fence:                                           // traces/box/calc.js:141
 max:                                                   // traces/box/calc.js:139
 mean ± σ:                                              // traces/box/calc.js:140
 mean:                                                  // traces/box/calc.js:140
 median:                                                // traces/box/calc.js:135
 min:                                                   // traces/box/calc.js:136
-new text                                               // plots/plots.js:331
-open:                                                  // traces/ohlc/calc.js:100
-outgoing flow count:                                   // traces/sankey/plot.js:144
+new text                                               // plots/plots.js:330
+open:                                                  // traces/ohlc/calc.js:102
+outgoing flow count:                                   // traces/sankey/plot.js:148
 q1:                                                    // traces/box/calc.js:137
 q3:                                                    // traces/box/calc.js:138
-source:                                                // traces/sankey/plot.js:141
-target:                                                // traces/sankey/plot.js:142
-trace                                                  // plots/plots.js:333
+source:                                                // traces/sankey/plot.js:145
+target:                                                // traces/sankey/plot.js:146
+trace                                                  // plots/plots.js:332
 upper fence:                                           // traces/box/calc.js:142

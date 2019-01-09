@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61,7 +61,9 @@ function getClosestPoint(pointData, xval, yval, hovermode) {
     }
 
     function dy(di) {
-        return Fx.inbox(di[minAttr] - yval, di[maxAttr] - yval, hoverPseudoDistance);
+        var min = di[minAttr];
+        var max = di[maxAttr];
+        return min === max || Fx.inbox(min - yval, max - yval, hoverPseudoDistance);
     }
 
     function dxy(di) { return (dx(di) + dy(di)) / 2; }
@@ -101,7 +103,9 @@ function hoverSplit(pointData, xval, yval, hovermode) {
     // skip the rest (for this trace) if we didn't find a close point
     if(!closestPoint) return [];
 
-    var hoverinfo = trace.hoverinfo;
+    var cdIndex = closestPoint.index;
+    var di = cd[cdIndex];
+    var hoverinfo = di.hi || trace.hoverinfo;
     var hoverParts = hoverinfo.split('+');
     var isAll = hoverinfo === 'all';
     var hasY = isAll || hoverParts.indexOf('y') !== -1;
@@ -166,7 +170,7 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
         return t.labels[attr] + Axes.hoverLabelText(ya, trace[attr][i]);
     }
 
-    var hoverinfo = trace.hoverinfo;
+    var hoverinfo = di.hi || trace.hoverinfo;
     var hoverParts = hoverinfo.split('+');
     var isAll = hoverinfo === 'all';
     var hasY = isAll || hoverParts.indexOf('y') !== -1;

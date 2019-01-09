@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,7 +11,6 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -20,12 +19,11 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Registry = require('../../registry');
 
-var attributes = require('./attributes'),
-    attributeText = attributes.text,
-    attributeTextPosition = attributes.textposition,
-    attributeTextFont = attributes.textfont,
-    attributeInsideTextFont = attributes.insidetextfont,
-    attributeOutsideTextFont = attributes.outsidetextfont;
+var attributes = require('./attributes');
+var attributeText = attributes.text;
+var attributeTextPosition = attributes.textposition;
+var helpers = require('./helpers');
+var style = require('./style');
 
 // padding in pixels around text
 var TEXTPAD = 3;
@@ -86,8 +84,8 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
             }
 
             var lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
-                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1,
-                offset = d3.round((lw / 2) % 1, 2);
+                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
+            var offset = d3.round((lw / 2) % 1, 2);
 
             function roundWithLine(v) {
                 // if there are explicit gaps, don't round,
@@ -113,9 +111,8 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 // pixelation. if the bars ARE fully opaque and have
                 // no line, expand to a full pixel to make sure we
                 // can see them
-                var op = Color.opacity(di.mc || trace.marker.color),
-                    fixpx = (op < 1 || lw > 0.01) ?
-                        roundWithLine : expandToVisible;
+                var op = Color.opacity(di.mc || trace.marker.color);
+                var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
                 x0 = fixpx(x0, x1);
                 x1 = fixpx(x1, x0);
                 y0 = fixpx(y0, y1);
@@ -126,7 +123,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 .style('vector-effect', 'non-scaling-stroke')
                 .attr('d',
                     'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
-                .call(Drawing.setClipUrl, plotinfo.layerClipId);
+                .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
             appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
 
@@ -138,11 +135,11 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
         // lastly, clip points groups of `cliponaxis !== false` traces
         // on `plotinfo._hasClipOnAxisFalse === true` subplots
         var hasClipOnAxisFalse = cd0.trace.cliponaxis === false;
-        Drawing.setClipUrl(plotGroup, hasClipOnAxisFalse ? null : plotinfo.layerClipId);
+        Drawing.setClipUrl(plotGroup, hasClipOnAxisFalse ? null : plotinfo.layerClipId, gd);
     });
 
     // error bars are on the top
-    Registry.getComponentMethod('errorbars', 'plot')(bartraces, plotinfo);
+    Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo);
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
@@ -166,8 +163,8 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     }
 
     // get trace attributes
-    var trace = calcTrace[0].trace,
-        orientation = trace.orientation;
+    var trace = calcTrace[0].trace;
+    var orientation = trace.orientation;
 
     var text = getText(trace, i);
     textPosition = getTextPosition(trace, i);
@@ -177,29 +174,30 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         return;
     }
 
-    var textFont = getTextFont(trace, i, gd._fullLayout.font),
-        insideTextFont = getInsideTextFont(trace, i, textFont),
-        outsideTextFont = getOutsideTextFont(trace, i, textFont);
+    var layoutFont = gd._fullLayout.font;
+    var barColor = style.getBarColor(calcTrace[i], trace);
+    var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
+    var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
 
     // compute text position
-    var barmode = gd._fullLayout.barmode,
-        inStackMode = (barmode === 'stack'),
-        inRelativeMode = (barmode === 'relative'),
-        inStackOrRelativeMode = inStackMode || inRelativeMode,
+    var barmode = gd._fullLayout.barmode;
+    var inStackMode = (barmode === 'stack');
+    var inRelativeMode = (barmode === 'relative');
+    var inStackOrRelativeMode = inStackMode || inRelativeMode;
 
-        calcBar = calcTrace[i],
-        isOutmostBar = !inStackOrRelativeMode || calcBar._outmost,
+    var calcBar = calcTrace[i];
+    var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
 
-        barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD,  // padding excluded
-        barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD,  // padding excluded
+    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;  // padding excluded
+    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;  // padding excluded
 
-        textSelection,
-        textBB,
-        textWidth,
-        textHeight;
+    var textSelection;
+    var textBB;
+    var textWidth;
+    var textHeight;
 
     if(textPosition === 'outside') {
-        if(!isOutmostBar) textPosition = 'inside';
+        if(!isOutmostBar && !calcBar.hasB) textPosition = 'inside';
     }
 
     if(textPosition === 'auto') {
@@ -212,14 +210,13 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
             textWidth = textBB.width,
             textHeight = textBB.height;
 
-            var textHasSize = (textWidth > 0 && textHeight > 0),
-                fitsInside =
-                    (textWidth <= barWidth && textHeight <= barHeight),
-                fitsInsideIfRotated =
-                    (textWidth <= barHeight && textHeight <= barWidth),
-                fitsInsideIfShrunk = (orientation === 'h') ?
-                    (barWidth >= textWidth * (barHeight / textHeight)) :
-                    (barHeight >= textHeight * (barWidth / textWidth));
+            var textHasSize = (textWidth > 0 && textHeight > 0);
+            var fitsInside = (textWidth <= barWidth && textHeight <= barHeight);
+            var fitsInsideIfRotated = (textWidth <= barHeight && textHeight <= barWidth);
+            var fitsInsideIfShrunk = (orientation === 'h') ?
+                (barWidth >= textWidth * (barHeight / textHeight)) :
+                (barHeight >= textHeight * (barWidth / textWidth));
+
             if(textHasSize &&
                     (fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk)) {
                 textPosition = 'inside';
@@ -266,16 +263,16 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
 
 function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
     // compute text and target positions
-    var textWidth = textBB.width,
-        textHeight = textBB.height,
-        textX = (textBB.left + textBB.right) / 2,
-        textY = (textBB.top + textBB.bottom) / 2,
-        barWidth = Math.abs(x1 - x0),
-        barHeight = Math.abs(y1 - y0),
-        targetWidth,
-        targetHeight,
-        targetX,
-        targetY;
+    var textWidth = textBB.width;
+    var textHeight = textBB.height;
+    var textX = (textBB.left + textBB.right) / 2;
+    var textY = (textBB.top + textBB.bottom) / 2;
+    var barWidth = Math.abs(x1 - x0);
+    var barHeight = Math.abs(y1 - y0);
+    var targetWidth;
+    var targetHeight;
+    var targetX;
+    var targetY;
 
     // apply text padding
     var textpad;
@@ -351,9 +348,9 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
 
 function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
     var barWidth = (orientation === 'h') ?
-            Math.abs(y1 - y0) :
-            Math.abs(x1 - x0),
-        textpad;
+        Math.abs(y1 - y0) :
+        Math.abs(x1 - x0);
+    var textpad;
 
     // Keep the padding so the text doesn't sit right against
     // the bars, but don't factor it into barWidth
@@ -370,12 +367,12 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
     }
 
     // compute text and target positions
-    var textX = (textBB.left + textBB.right) / 2,
-        textY = (textBB.top + textBB.bottom) / 2,
-        targetWidth,
-        targetHeight,
-        targetX,
-        targetY;
+    var textX = (textBB.left + textBB.right) / 2;
+    var textY = (textBB.top + textBB.bottom) / 2;
+    var targetWidth;
+    var targetHeight;
+    var targetX;
+    var targetY;
 
     targetWidth = scale * textBB.width;
     targetHeight = scale * textBB.height;
@@ -407,9 +404,9 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
 }
 
 function getTransform(textX, textY, targetX, targetY, scale, rotate) {
-    var transformScale,
-        transformRotate,
-        transformTranslate;
+    var transformScale;
+    var transformRotate;
+    var transformTranslate;
 
     if(scale < 1) transformScale = 'scale(' + scale + ') ';
     else {
@@ -421,106 +418,19 @@ function getTransform(textX, textY, targetX, targetY, scale, rotate) {
         'rotate(' + rotate + ' ' + textX + ' ' + textY + ') ' : '';
 
     // Note that scaling also affects the center of the text box
-    var translateX = (targetX - scale * textX),
-        translateY = (targetY - scale * textY);
+    var translateX = (targetX - scale * textX);
+    var translateY = (targetY - scale * textY);
     transformTranslate = 'translate(' + translateX + ' ' + translateY + ')';
 
     return transformTranslate + transformScale + transformRotate;
 }
 
 function getText(trace, index) {
-    var value = getValue(trace.text, index);
-    return coerceString(attributeText, value);
+    var value = helpers.getValue(trace.text, index);
+    return helpers.coerceString(attributeText, value);
 }
 
 function getTextPosition(trace, index) {
-    var value = getValue(trace.textposition, index);
-    return coerceEnumerated(attributeTextPosition, value);
-}
-
-function getTextFont(trace, index, defaultValue) {
-    return getFontValue(
-        attributeTextFont, trace.textfont, index, defaultValue);
-}
-
-function getInsideTextFont(trace, index, defaultValue) {
-    return getFontValue(
-        attributeInsideTextFont, trace.insidetextfont, index, defaultValue);
-}
-
-function getOutsideTextFont(trace, index, defaultValue) {
-    return getFontValue(
-        attributeOutsideTextFont, trace.outsidetextfont, index, defaultValue);
-}
-
-function getFontValue(attributeDefinition, attributeValue, index, defaultValue) {
-    attributeValue = attributeValue || {};
-
-    var familyValue = getValue(attributeValue.family, index),
-        sizeValue = getValue(attributeValue.size, index),
-        colorValue = getValue(attributeValue.color, index);
-
-    return {
-        family: coerceString(
-            attributeDefinition.family, familyValue, defaultValue.family),
-        size: coerceNumber(
-            attributeDefinition.size, sizeValue, defaultValue.size),
-        color: coerceColor(
-            attributeDefinition.color, colorValue, defaultValue.color)
-    };
-}
-
-function getValue(arrayOrScalar, index) {
-    var value;
-    if(!Array.isArray(arrayOrScalar)) value = arrayOrScalar;
-    else if(index < arrayOrScalar.length) value = arrayOrScalar[index];
-    return value;
-}
-
-function coerceString(attributeDefinition, value, defaultValue) {
-    if(typeof value === 'string') {
-        if(value || !attributeDefinition.noBlank) return value;
-    }
-    else if(typeof value === 'number') {
-        if(!attributeDefinition.strict) return String(value);
-    }
-
-    return (defaultValue !== undefined) ?
-        defaultValue :
-        attributeDefinition.dflt;
-}
-
-function coerceEnumerated(attributeDefinition, value, defaultValue) {
-    if(attributeDefinition.coerceNumber) value = +value;
-
-    if(attributeDefinition.values.indexOf(value) !== -1) return value;
-
-    return (defaultValue !== undefined) ?
-        defaultValue :
-        attributeDefinition.dflt;
-}
-
-function coerceNumber(attributeDefinition, value, defaultValue) {
-    if(isNumeric(value)) {
-        value = +value;
-
-        var min = attributeDefinition.min,
-            max = attributeDefinition.max,
-            isOutOfBounds = (min !== undefined && value < min) ||
-                (max !== undefined && value > max);
-
-        if(!isOutOfBounds) return value;
-    }
-
-    return (defaultValue !== undefined) ?
-        defaultValue :
-        attributeDefinition.dflt;
-}
-
-function coerceColor(attributeDefinition, value, defaultValue) {
-    if(tinycolor(value).isValid()) return value;
-
-    return (defaultValue !== undefined) ?
-        defaultValue :
-        attributeDefinition.dflt;
+    var value = helpers.getValue(trace.textposition, index);
+    return helpers.coerceEnumerated(attributeTextPosition, value);
 }

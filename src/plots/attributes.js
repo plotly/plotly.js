@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -163,6 +163,28 @@ module.exports = {
         description: [
             'An array of operations that manipulate the trace data,',
             'for example filtering or sorting the data arrays.'
+        ].join(' ')
+    },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of some user-driven changes to the trace:',
+            '`constraintrange` in `parcoords` traces, as well as some',
+            '`editable: true` modifications such as `name` and `colorbar.title`.',
+            'Defaults to `layout.uirevision`.',
+            'Note that other user-driven trace attribute changes are controlled',
+            'by `layout` attributes:',
+            '`trace.visible` is controlled by `layout.legend.uirevision`,',
+            '`selectedpoints` is controlled by `layout.selectionrevision`,',
+            'and `colorbar.(x|y)` (accessible with `config: {editable: true}`)',
+            'is controlled by `layout.editrevision`.',
+            'Trace changes are tracked by `uid`, which only falls back on trace',
+            'index if no `uid` is provided. So if your app can add/remove traces',
+            'before the end of the `data` array, such that the same trace has a',
+            'different index, you can still preserve user-driven changes if you',
+            'give each trace a `uid` that stays with it as it moves.'
         ].join(' ')
     }
 };

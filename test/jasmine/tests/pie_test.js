@@ -9,19 +9,21 @@ var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var rgb = require('../../../src/components/color').rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var SLICES_SELECTOR = '.slice path';
+var SLICES_TEXT_SELECTOR = '.pielayer text.slicetext';
 var LEGEND_ENTRIES_SELECTOR = '.legendpoints path';
 
 describe('Pie defaults', function() {
-    function _supply(trace) {
+    function _supply(trace, layout) {
         var gd = {
             data: [trace],
-            layout: {}
+            layout: layout || {}
         };
 
         supplyAllDefaults(gd);
@@ -59,10 +61,23 @@ describe('Pie defaults', function() {
         out = _supply({type: 'pie', labels: ['A', 'B'], values: []});
         expect(out.visible).toBe(false);
     });
+
+    it('does not apply layout.font.color to insidetextfont.color (it\'ll be contrasting instead)', function() {
+        var out = _supply({type: 'pie', values: [1, 2]}, {font: {color: 'blue'}});
+        expect(out.insidetextfont.color).toBe(undefined);
+    });
+
+    it('does apply textfont.color to insidetextfont.color if not set', function() {
+        var out = _supply({type: 'pie', values: [1, 2], textfont: {color: 'blue'}}, {font: {color: 'red'}});
+        expect(out.insidetextfont.color).toBe('blue');
+    });
 });
 
-describe('Pie traces:', function() {
+describe('Pie traces', function() {
     'use strict';
+
+    var DARK = '#444';
+    var LIGHT = '#fff';
 
     var gd;
 
@@ -149,7 +164,31 @@ describe('Pie traces:', function() {
         };
     }
 
-    it('propagates explicit colors to the same labels in earlier OR later traces', function(done) {
+    function _checkFontColors(expFontColors) {
+        return function() {
+            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+                expect(this.style.fill).toBe(rgb(expFontColors[i]), 'fill color of ' + i);
+            });
+        };
+    }
+
+    function _checkFontFamilies(expFontFamilies) {
+        return function() {
+            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+                expect(this.style.fontFamily).toBe(expFontFamilies[i], 'fontFamily of ' + i);
+            });
+        };
+    }
+
+    function _checkFontSizes(expFontSizes) {
+        return function() {
+            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+                expect(this.style.fontSize).toBe(expFontSizes[i] + 'px', 'fontSize of ' + i);
+            });
+        };
+    }
+
+    it('propagate explicit colors to the same labels in earlier OR later traces', function(done) {
         var data1 = [
             {type: 'pie', values: [3, 2], marker: {colors: ['red', 'black']}, domain: {x: [0.5, 1]}},
             {type: 'pie', values: [2, 5], domain: {x: [0, 0.5]}}
@@ -432,7 +471,7 @@ describe('Pie traces:', function() {
         .then(done);
     });
 
-    it('supports separate stroke width values per slice', function(done) {
+    it('support separate stroke width values per slice', function(done) {
         var data = [
             {
                 values: [20, 26, 55],
@@ -465,14 +504,328 @@ describe('Pie traces:', function() {
           .catch(failTest)
           .then(done);
     });
+
+    [
+        {fontAttr: 'textfont', textposition: 'outside'},
+        {fontAttr: 'textfont', textposition: 'inside'},
+        {fontAttr: 'outsidetextfont', textposition: 'outside'},
+        {fontAttr: 'insidetextfont', textposition: 'inside'}
+    ].forEach(function(spec) {
+        var desc = 'allow to specify ' + spec.fontAttr +
+          ' properties per individual slice (textposition ' + spec.textposition + ')';
+        it(desc, function(done) {
+            var data = {
+                values: [3, 2, 1],
+                type: 'pie',
+                textposition: spec.textposition
+            };
+            data[spec.fontAttr] = {
+                color: ['red', 'green', 'blue'],
+                family: ['Arial', 'Gravitas', 'Roboto'],
+                size: [12, 20, 16]
+            };
+
+            Plotly.plot(gd, [data])
+              .then(_checkFontColors(['red', 'green', 'blue']))
+              .then(_checkFontFamilies(['Arial', 'Gravitas', 'Roboto']))
+              .then(_checkFontSizes([12, 20, 16]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+
+    var insideTextTestsTrace = {
+        values: [6, 5, 4, 3, 2, 1],
+        type: 'pie',
+        marker: {
+            colors: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
+        }
+    };
+
+    it('should use inside text colors contrasting to explicitly set slice colors by default', function(done) {
+        Plotly.plot(gd, [insideTextTestsTrace])
+          .then(_checkFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use inside text colors contrasting to standard slice colors by default', function(done) {
+        var noMarkerTrace = Lib.extendFlat({}, insideTextTestsTrace);
+        delete noMarkerTrace.marker;
+
+        Plotly.plot(gd, [noMarkerTrace])
+          .then(_checkFontColors([LIGHT, DARK, LIGHT, LIGHT, LIGHT, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use textfont.color for inside text instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, {textfont: {color: 'red'}});
+        Plotly.plot(gd, [data])
+          .then(_checkFontColors(Lib.repeat('red', 6)))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use matching color from textfont.color array for inside text, contrasting otherwise', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, {textfont: {color: ['red', 'blue']}});
+        Plotly.plot(gd, [data])
+          .then(_checkFontColors(['red', 'blue', LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should not use layout.font.color for inside text, but a contrasting color instead', function(done) {
+        Plotly.plot(gd, [insideTextTestsTrace], {font: {color: 'green'}})
+          .then(_checkFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use matching color from insidetextfont.color array instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, {textfont: {color: ['orange', 'purple']}});
+        Plotly.plot(gd, [data])
+          .then(_checkFontColors(['orange', 'purple', LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    [
+        {fontAttr: 'outsidetextfont', textposition: 'outside'},
+        {fontAttr: 'insidetextfont', textposition: 'inside'}
+    ].forEach(function(spec) {
+        it('should fall back to textfont scalar values if ' + spec.fontAttr + ' value ' +
+          'arrays don\'t cover all slices', function(done) {
+            var data = Lib.extendFlat({}, insideTextTestsTrace, {
+                textposition: spec.textposition,
+                textfont: {color: 'orange', family: 'Gravitas', size: 12}
+            });
+            data[spec.fontAttr] = {color: ['blue', 'yellow'], family: ['Arial', 'Arial'], size: [24, 34]};
+
+            Plotly.plot(gd, [data])
+              .then(_checkFontColors(['blue', 'yellow', 'orange', 'orange', 'orange', 'orange']))
+              .then(_checkFontFamilies(['Arial', 'Arial', 'Gravitas', 'Gravitas', 'Gravitas', 'Gravitas']))
+              .then(_checkFontSizes([24, 34, 12, 12, 12, 12]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+
+    it('should fall back to textfont array values and layout.font scalar (except color)' +
+      ' values for inside text', function(done) {
+        var layout = {font: {color: 'orange', family: 'serif', size: 16}};
+        var data = Lib.extendFlat({}, insideTextTestsTrace, {
+            textfont: {
+                color: ['blue', 'blue'], family: ['Arial', 'Arial'], size: [18, 18]
+            },
+            insidetextfont: {
+                color: ['purple'], family: ['Roboto'], size: [24]
+            }
+        });
+
+        Plotly.plot(gd, [data], layout)
+          .then(_checkFontColors(['purple', 'blue', LIGHT, LIGHT, DARK, LIGHT]))
+          .then(_checkFontFamilies(['Roboto', 'Arial', 'serif', 'serif', 'serif', 'serif']))
+          .then(_checkFontSizes([24, 18, 16, 16, 16, 16]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should fall back to textfont array values and layout.font scalar' +
+      ' values for outside text', function(done) {
+        var layout = {font: {color: 'orange', family: 'serif', size: 16}};
+        var data = Lib.extendFlat({}, insideTextTestsTrace, {
+            textposition: 'outside',
+            textfont: {
+                color: ['blue', 'blue'], family: ['Arial', 'Arial'], size: [18, 18]
+            },
+            outsidetextfont: {
+                color: ['purple'], family: ['Roboto'], size: [24]
+            }
+        });
+
+        Plotly.plot(gd, [data], layout)
+          .then(_checkFontColors(['purple', 'blue', 'orange', 'orange', 'orange', 'orange']))
+          .then(_checkFontFamilies(['Roboto', 'Arial', 'serif', 'serif', 'serif', 'serif']))
+          .then(_checkFontSizes([24, 18, 16, 16, 16, 16]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    [
+        {fontAttr: 'textfont'},
+        {fontAttr: 'insidetextfont'}
+    ].forEach(function(spec) {
+        it('should fall back to layout.font scalar values for inside text (except color) if ' + spec.fontAttr + ' value ' +
+          'arrays don\'t cover all slices', function(done) {
+            var layout = {font: {color: 'orange', family: 'serif', size: 16}};
+            var data = Lib.extendFlat({}, insideTextTestsTrace);
+            data.textposition = 'inside';
+            data[spec.fontAttr] = {color: ['blue', 'yellow'], family: ['Arial', 'Arial'], size: [24, 34]};
+
+            Plotly.plot(gd, [data], layout)
+              .then(_checkFontColors(['blue', 'yellow', LIGHT, LIGHT, DARK, LIGHT]))
+              .then(_checkFontFamilies(['Arial', 'Arial', 'serif', 'serif', 'serif', 'serif']))
+              .then(_checkFontSizes([24, 34, 16, 16, 16, 16]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+
+    [
+        {fontAttr: 'textfont'},
+        {fontAttr: 'outsidetextfont'}
+    ].forEach(function(spec) {
+        it('should fall back to layout.font scalar values for outside text if ' + spec.fontAttr + ' value ' +
+          'arrays don\'t cover all slices', function(done) {
+            var layout = {font: {color: 'orange', family: 'serif', size: 16}};
+            var data = Lib.extendFlat({}, insideTextTestsTrace);
+            data.textposition = 'outside';
+            data[spec.fontAttr] = {color: ['blue', 'yellow'], family: ['Arial', 'Arial'], size: [24, 34]};
+
+            Plotly.plot(gd, [data], layout)
+              .then(_checkFontColors(['blue', 'yellow', 'orange', 'orange', 'orange', 'orange']))
+              .then(_checkFontFamilies(['Arial', 'Arial', 'serif', 'serif', 'serif', 'serif']))
+              .then(_checkFontSizes([24, 34, 16, 16, 16, 16]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+
+    function _assertTitle(msg, expText, expColor) {
+        var title = d3.select('.titletext > text');
+        expect(title.text()).toBe(expText, msg + ' text');
+        expect(title.node().style.fill).toBe(expColor, msg + ' color');
+    }
+
+    it('show a user-defined title with a custom position and font', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: {
+                text: 'yo',
+                font: {color: 'blue'},
+                position: 'top left'
+            }
+        }])
+          .then(function() {
+              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
+              _verifyTitle(true, false, true, false, false);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('still support the deprecated `title` structure (backwards-compatibility)', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: 'yo',
+            titlefont: {color: 'blue'},
+            titleposition: 'top left'
+        }])
+          .then(function() {
+              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
+              _verifyTitle(true, false, true, false, false);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should be able to restyle title', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: {
+                text: 'yo',
+                font: {color: 'blue'},
+                position: 'top left'
+            }
+        }])
+        .then(function() {
+            _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
+            _verifyTitle(true, false, true, false, false);
+
+            return Plotly.restyle(gd, {
+                'title.text': 'oy',
+                'title.font.color': 'red',
+                'title.position': 'bottom right'
+            });
+        })
+        .then(function() {
+            _assertTitle('base', 'oy', 'rgb(255, 0, 0)');
+            _verifyTitle(false, true, false, true, false);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to restyle title despite using the deprecated attributes', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            title: 'yo',
+            titlefont: {color: 'blue'},
+            titleposition: 'top left'
+        }])
+          .then(function() {
+              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
+              _verifyTitle(true, false, true, false, false);
+
+              return Plotly.restyle(gd, {
+                  'title': 'oy',
+                  'titlefont.color': 'red',
+                  'titleposition': 'bottom right'
+              });
+          })
+          .then(function() {
+              _assertTitle('base', 'oy', 'rgb(255, 0, 0)');
+              _verifyTitle(false, true, false, true, false);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should be able to react with new text colors', function(done) {
+        Plotly.plot(gd, [{
+            type: 'pie',
+            values: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside'
+        }])
+        .then(_checkFontColors(['rgb(255, 255, 255)', 'rgb(68, 68, 68)', 'rgb(255, 255, 255)']))
+        .then(function() {
+            gd.data[0].insidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .then(function() {
+            delete gd.data[0].insidetextfont.color;
+            gd.data[0].textfont = {color: 'blue'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].textposition = 'outside';
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].outsidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(_checkFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {
     var mock = require('@mocks/pie_simple.json');
 
     describe('with hoverinfo set to none', function() {
-        var mockCopy = Lib.extendDeep({}, mock),
-            gd;
+        var mockCopy = Lib.extendDeep({}, mock);
+        var gd;
 
         mockCopy.data[0].hoverinfo = 'none';
 
@@ -486,8 +839,8 @@ describe('pie hovering', function() {
         afterEach(destroyGraphDiv);
 
         it('should fire hover event when moving from one slice to another', function(done) {
-            var count = 0,
-                hoverData = [];
+            var count = 0;
+            var hoverData = [];
 
             gd.on('plotly_hover', function(data) {
                 count++;
@@ -504,8 +857,8 @@ describe('pie hovering', function() {
         });
 
         it('should fire unhover event when the mouse moves off the graph', function(done) {
-            var count = 0,
-                unhoverData = [];
+            var count = 0;
+            var unhoverData = [];
 
             gd.on('plotly_unhover', function(data) {
                 count++;
@@ -525,10 +878,10 @@ describe('pie hovering', function() {
     });
 
     describe('event data', function() {
-        var mockCopy = Lib.extendDeep({}, mock),
-            width = mockCopy.layout.width,
-            height = mockCopy.layout.height,
-            gd;
+        var mockCopy = Lib.extendDeep({}, mock);
+        var width = mockCopy.layout.width;
+        var height = mockCopy.layout.height;
+        var gd;
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -540,10 +893,8 @@ describe('pie hovering', function() {
         afterEach(destroyGraphDiv);
 
         it('should contain the correct fields', function() {
-
-            var hoverData,
-                unhoverData;
-
+            var hoverData;
+            var unhoverData;
 
             gd.on('plotly_hover', function(data) {
                 hoverData = data;
@@ -563,7 +914,7 @@ describe('pie hovering', function() {
                 'curveNumber', 'pointNumber', 'pointNumbers',
                 'data', 'fullData',
                 'label', 'color', 'value',
-                'i', 'v'
+                'i', 'v', 'percent', 'text'
             ];
 
             expect(Object.keys(hoverData.points[0]).sort()).toEqual(fields.sort());
@@ -574,8 +925,8 @@ describe('pie hovering', function() {
         });
 
         it('should fire hover event when moving from one slice to another', function(done) {
-            var count = 0,
-                hoverData = [];
+            var count = 0;
+            var hoverData = [];
 
             gd.on('plotly_hover', function(data) {
                 count++;
@@ -592,8 +943,8 @@ describe('pie hovering', function() {
         });
 
         it('should fire unhover event when the mouse moves off the graph', function(done) {
-            var count = 0,
-                unhoverData = [];
+            var count = 0;
+            var unhoverData = [];
 
             gd.on('plotly_unhover', function(data) {
                 count++;
@@ -731,6 +1082,72 @@ describe('pie hovering', function() {
             })
             .then(done);
         });
+
+        it('should use hovertemplate if specified', function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['4', '5', '33.3%'].join('\n'),
+                    ['rgb(31, 119, 180)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)'],
+                    'initial'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{value}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['5'].join('\n'),
+                    null,
+                    'hovertemplate %{value}'
+                );
+
+                return Plotly.restyle(gd, {
+                    'text': [['A', 'B', 'C', 'D', 'E']],
+                    'hovertemplate': '%{text}<extra></extra>'
+                });
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['E'].join('\n'),
+                    null,
+                    'hovertemplate %{text}'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{percent}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['33.3%'].join('\n'),
+                    null,
+                    'hovertemplate %{percent}'
+                );
+
+                return Plotly.restyle(gd, 'hovertemplate', '%{label}<extra></extra>');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['4'].join('\n'),
+                    null,
+                    'hovertemplate %{label}'
+                );
+            })
+            .then(function() { return Plotly.restyle(gd, 'hovertemplate', [['', '', '', '', 'ht 5 %{percent:0.2%}<extra></extra>']]); })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['ht 5 33.33%'].join('\n'),
+                    null,
+                    'hovertemplate arrayOK'
+                );
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 });
 
@@ -740,8 +1157,8 @@ describe('Test event data of interactions on a pie plot:', function() {
 
     var mockCopy, gd;
 
-    var blankPos = [10, 10],
-        pointPos;
+    var blankPos = [10, 10];
+    var pointPos;
 
     beforeAll(function(done) {
         gd = createGraphDiv();
@@ -830,12 +1247,12 @@ describe('Test event data of interactions on a pie plot:', function() {
 
     describe('modified click events', function() {
         var clickOpts = {
-                altKey: true,
-                ctrlKey: true,
-                metaKey: true,
-                shiftKey: true
-            },
-            futureData;
+            altKey: true,
+            ctrlKey: true,
+            metaKey: true,
+            shiftKey: true
+        };
+        var futureData;
 
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);

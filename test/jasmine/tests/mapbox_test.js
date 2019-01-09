@@ -300,11 +300,11 @@ describe('mapbox credentials', function() {
 describe('@noCI, mapbox plots', function() {
     'use strict';
 
-    var mock = require('@mocks/mapbox_0.json'),
-        gd;
+    var mock = require('@mocks/mapbox_0.json');
+    var gd;
 
-    var pointPos = [579, 276],
-        blankPos = [650, 120];
+    var pointPos = [579, 276];
+    var blankPos = [650, 120];
 
     beforeEach(function(done) {
         gd = createGraphDiv();
@@ -398,8 +398,8 @@ describe('@noCI, mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to restyle', function(done) {
-        var restyleCnt = 0,
-            relayoutCnt = 0;
+        var restyleCnt = 0;
+        var relayoutCnt = 0;
 
         gd.on('plotly_restyle', function() {
             restyleCnt++;
@@ -457,8 +457,8 @@ describe('@noCI, mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to relayout', function(done) {
-        var restyleCnt = 0,
-            relayoutCnt = 0;
+        var restyleCnt = 0;
+        var relayoutCnt = 0;
 
         gd.on('plotly_restyle', function() {
             restyleCnt++;
@@ -540,8 +540,8 @@ describe('@noCI, mapbox plots', function() {
     it('should be able to add, update and remove layers', function(done) {
         var mockWithLayers = require('@mocks/mapbox_layers');
 
-        var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]),
-            layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[1]);
+        var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
+        var layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[1]);
 
         var mapUpdate = {
             'mapbox.zoom': mockWithLayers.layout.mapbox.zoom,
@@ -564,8 +564,8 @@ describe('@noCI, mapbox plots', function() {
         function countVisibleLayers(gd) {
             var mapInfo = getMapInfo(gd);
 
-            var sourceLen = mapInfo.layoutSources.length,
-                layerLen = mapInfo.layoutLayers.length;
+            var sourceLen = mapInfo.layoutSources.length;
+            var layerLen = mapInfo.layoutLayers.length;
 
             if(sourceLen !== layerLen) return null;
 
@@ -577,9 +577,9 @@ describe('@noCI, mapbox plots', function() {
         }
 
         function assertLayerStyle(gd, expectations, index) {
-            var mapInfo = getMapInfo(gd),
-                layers = mapInfo.layers,
-                layerNames = mapInfo.layoutLayers;
+            var mapInfo = getMapInfo(gd);
+            var layers = mapInfo.layers;
+            var layerNames = mapInfo.layoutLayers;
 
             var layer = layers[layerNames[index]];
             expect(layer).toBeDefined(layerNames[index]);
@@ -762,8 +762,8 @@ describe('@noCI, mapbox plots', function() {
 
     it('should be able to update traces', function(done) {
         function assertDataPts(lengths) {
-            var lines = getGeoJsonData(gd, 'lines'),
-                markers = getGeoJsonData(gd, 'markers');
+            var lines = getGeoJsonData(gd, 'lines');
+            var markers = getGeoJsonData(gd, 'markers');
 
             lines.forEach(function(obj, i) {
                 expect(obj.coordinates[0].length).toEqual(lengths[i]);
@@ -837,8 +837,8 @@ describe('@noCI, mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should respond to hover interactions by', function(done) {
-        var hoverCnt = 0,
-            unhoverCnt = 0;
+        var hoverCnt = 0;
+        var unhoverCnt = 0;
 
         var hoverData, unhoverData;
 
@@ -977,12 +977,12 @@ describe('@noCI, mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     function getMapInfo(gd) {
-        var subplot = gd._fullLayout.mapbox._subplot,
-            map = subplot.map;
+        var subplot = gd._fullLayout.mapbox._subplot;
+        var map = subplot.map;
 
-        var sources = map.style.sourceCaches,
-            layers = map.style._layers,
-            uid = subplot.uid;
+        var sources = map.style.sourceCaches;
+        var layers = map.style._layers;
+        var uid = subplot.uid;
 
         var traceSources = Object.keys(sources).filter(function(k) {
             return k.indexOf('-source-') !== -1;
@@ -1016,8 +1016,8 @@ describe('@noCI, mapbox plots', function() {
     }
 
     function countVisibleTraces(gd, modes) {
-        var mapInfo = getMapInfo(gd),
-            cnts = [];
+        var mapInfo = getMapInfo(gd);
+        var cnts = [];
 
         // 'modes' are the ScatterMapbox layers names
         // e.g. 'fill', 'line', 'circle', 'symbol'
@@ -1046,8 +1046,8 @@ describe('@noCI, mapbox plots', function() {
     }
 
     function getStyle(gd, mode, prop) {
-        var mapInfo = getMapInfo(gd),
-            values = [];
+        var mapInfo = getMapInfo(gd);
+        var values = [];
 
         mapInfo.traceLayers.forEach(function(l) {
             var info = mapInfo.layers[l];
@@ -1061,8 +1061,8 @@ describe('@noCI, mapbox plots', function() {
     }
 
     function getGeoJsonData(gd, mode) {
-        var mapInfo = getMapInfo(gd),
-            out = [];
+        var mapInfo = getMapInfo(gd);
+        var out = [];
 
         mapInfo.traceSources.forEach(function(s) {
             var info = mapInfo.sources[s];

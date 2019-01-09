@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,6 @@
 
 'use strict';
 
-var convertHTMLToUnicode = require('../../../lib/html2unicode');
 var str2RgbaArray = require('../../../lib/str2rgbarray');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
@@ -32,7 +31,6 @@ function AxesOptions() {
     this.labelEnable = [ true, true, true ];
     this.labelFont = ['Open Sans', 'Open Sans', 'Open Sans'];
     this.labelSize = [ 20, 20, 20 ];
-    this.labelAngle = [ 0, 0, 0 ];
     this.labelColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
     this.labelPad = [ 30, 30, 30 ];
 
@@ -85,11 +83,11 @@ proto.merge = function(sceneLayout) {
         }
 
         // Axes labels
-        opts.labels[i] = convertHTMLToUnicode(axes.title);
-        if('titlefont' in axes) {
-            if(axes.titlefont.color) opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
-            if(axes.titlefont.family) opts.labelFont[i] = axes.titlefont.family;
-            if(axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
+        opts.labels[i] = axes.title.text;
+        if('font' in axes.title) {
+            if(axes.title.font.color) opts.labelColor[i] = str2RgbaArray(axes.title.font.color);
+            if(axes.title.font.family) opts.labelFont[i] = axes.title.font.family;
+            if(axes.title.font.size) opts.labelSize[i] = axes.title.font.size;
         }
 
         // Lines
@@ -119,9 +117,10 @@ proto.merge = function(sceneLayout) {
         if('tickwidth' in axes) opts.lineTickWidth[i] = axes.tickwidth;
         if('tickangle' in axes) {
             opts.tickAngle[i] = (axes.tickangle === 'auto') ?
-                0 :
+                -3600 : // i.e. special number to set auto option
                 Math.PI * -axes.tickangle / 180;
         }
+
         // tick labels
         if('showticklabels' in axes) opts.tickEnable[i] = axes.showticklabels;
         if('tickfont' in axes) {

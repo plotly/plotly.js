@@ -1,6 +1,7 @@
 var Annotations = require('@src/components/annotations');
 
 var Plotly = require('@lib/index');
+var Queue = require('@src/lib/queue');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Loggers = require('@src/lib/loggers');
@@ -179,8 +180,8 @@ describe('annotations relayout', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        var mockData = Lib.extendDeep([], mock.data),
-            mockLayout = Lib.extendDeep({}, mock.layout);
+        var mockData = Lib.extendDeep([], mock.data);
+        var mockLayout = Lib.extendDeep({}, mock.layout);
 
         // insert some MathJax text - to make sure we fall back correctly
         // when MathJax is not provided (as is the case in our normal
@@ -191,17 +192,26 @@ describe('annotations relayout', function() {
         Plotly.plot(gd, mockData, mockLayout).then(done);
 
         spyOn(Loggers, 'warn');
+
+        Plotly.setPlotConfig({queueLength: 3});
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        destroyGraphDiv();
+        Plotly.setPlotConfig({queueLength: 0});
+    });
 
     function countAnnotations() {
+        // also check that no annotations are empty objects
+        (gd.layout.annotations || []).forEach(function(ann, i) {
+            expect(JSON.stringify(ann)).not.toBe(JSON.stringify({}), i);
+        });
         return d3.selectAll('g.annotation').size();
     }
 
     function assertText(index, expected) {
-        var query = '.annotation[data-index="' + index + '"]',
-            actual = d3.select(query).select('text').text();
+        var query = '.annotation[data-index="' + index + '"]';
+        var actual = d3.select(query).select('text').text();
 
         expect(actual).toEqual(expected);
     }
@@ -220,10 +230,30 @@ describe('annotations relayout', function() {
         .then(function() {
             expect(countAnnotations()).toEqual(len);
 
+            return Queue.undo(gd);
+        })
+        .then(function() {
+            expect(countAnnotations()).toBe(len + 1);
+
+            return Queue.redo(gd);
+        })
+        .then(function() {
+            expect(countAnnotations()).toBe(len);
+
             return Plotly.relayout(gd, 'annotations[0]', null);
         })
         .then(function() {
             expect(countAnnotations()).toEqual(len - 1);
+
+            return Queue.undo(gd);
+        })
+        .then(function() {
+            expect(countAnnotations()).toBe(len);
+
+            return Queue.redo(gd);
+        })
+        .then(function() {
+            expect(countAnnotations()).toBe(len - 1);
 
             return Plotly.relayout(gd, 'annotations[0].visible', false);
         })
@@ -331,10 +361,10 @@ describe('annotations relayout', function() {
 
     it('can update several annotations and add and delete in one call', function(done) {
         expect(countAnnotations()).toEqual(len);
-        var annos = gd.layout.annotations,
-            anno0 = Lib.extendFlat(annos[0]),
-            anno1 = Lib.extendFlat(annos[1]),
-            anno3 = Lib.extendFlat(annos[3]);
+        var annos = gd.layout.annotations;
+        var anno0 = Lib.extendFlat(annos[0]);
+        var anno1 = Lib.extendFlat(annos[1]);
+        var anno3 = Lib.extendFlat(annos[3]);
 
         // store some (unused) private keys and make sure they are copied over
         // correctly during relayout
@@ -356,8 +386,8 @@ describe('annotations relayout', function() {
         .then(function() {
             expect(countAnnotations()).toEqual(len);
 
-            var fullAnnosAfter = gd._fullLayout.annotations,
-                fullStr = JSON.stringify(fullAnnosAfter);
+            var fullAnnosAfter = gd._fullLayout.annotations;
+            var fullStr = JSON.stringify(fullAnnosAfter);
 
             assertText(0, 'tortilla');
             anno0.text = 'tortilla';
@@ -476,8 +506,8 @@ describe('annotations log/linear axis changes', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        var mockData = Lib.extendDeep([], mock.data),
-            mockLayout = Lib.extendDeep({}, mock.layout);
+        var mockData = Lib.extendDeep([], mock.data);
+        var mockLayout = Lib.extendDeep({}, mock.layout);
 
         Plotly.plot(gd, mockData, mockLayout).then(done);
     });
@@ -1083,11 +1113,11 @@ describe('annotation effects', function() {
     // for annotations with arrows: check that dragging the text moves only
     // ax and ay (and the textbox itself)
     function checkTextDrag() {
-        var ann = gd.layout.annotations[0],
-            x0 = ann.x,
-            y0 = ann.y,
-            ax0 = ann.ax,
-            ay0 = ann.ay;
+        var ann = gd.layout.annotations[0];
+        var x0 = ann.x;
+        var y0 = ann.y;
+        var ax0 = ann.ax;
+        var ay0 = ann.ay;
 
         var bboxInitial = textBox().getBoundingClientRect();
 

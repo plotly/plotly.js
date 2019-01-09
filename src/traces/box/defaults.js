@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -45,16 +45,15 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     if(y && y.length) {
         defaultOrientation = 'v';
         if(hasX) {
-            len = Math.min(x.length, y.length);
-        }
-        else {
+            len = Math.min(Lib.minRowLength(x), Lib.minRowLength(y));
+        } else {
             coerce('x0');
-            len = y.length;
+            len = Lib.minRowLength(y);
         }
     } else if(hasX) {
         defaultOrientation = 'h';
         coerce('y0');
-        len = x.length;
+        len = Lib.minRowLength(x);
     } else {
         traceOut.visible = false;
         return;

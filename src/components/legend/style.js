@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -24,6 +24,19 @@ module.exports = function style(s, gd) {
 
         var layers = Lib.ensureSingle(traceGroup, 'g', 'layers');
         layers.style('opacity', d[0].trace.opacity);
+
+        // Marker vertical alignment
+        var valign = gd._fullLayout.legend.valign;
+        var lineHeight = d[0].lineHeight;
+        var height = d[0].height;
+
+        if(valign === 'middle' || !lineHeight || !height) {
+            layers.attr('transform', null); // this here is a fun d3 trick to unset DOM attributes
+        } else {
+            var factor = {top: 1, bottom: -1}[valign];
+            var markerOffsetY = factor * (0.5 * (lineHeight - height + 3));
+            layers.attr('transform', 'translate(0,' + markerOffsetY + ')');
+        }
 
         var fill = layers
             .selectAll('g.legendfill')
@@ -148,7 +161,7 @@ module.exports = function style(s, gd) {
 
         function boundVal(attrIn, arrayToValFn, bounds) {
             var valIn = Lib.nestedProperty(trace, attrIn).get();
-            var valToBound = (Array.isArray(valIn) && arrayToValFn) ?
+            var valToBound = (Lib.isArrayOrTypedArray(valIn) && arrayToValFn) ?
                 arrayToValFn(valIn) :
                 valIn;
 
@@ -229,20 +242,22 @@ module.exports = function style(s, gd) {
     }
 
     function styleBars(d) {
-        var trace = d[0].trace,
-            marker = trace.marker || {},
-            markerLine = marker.line || {},
-            barpath = d3.select(this).select('g.legendpoints')
-                .selectAll('path.legendbar')
-                .data(Registry.traceIs(trace, 'bar') ? [d] : []);
+        var trace = d[0].trace;
+        var marker = trace.marker || {};
+        var markerLine = marker.line || {};
+
+        var barpath = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendbar')
+            .data(Registry.traceIs(trace, 'bar') ? [d] : []);
         barpath.enter().append('path').classed('legendbar', true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');
         barpath.exit().remove();
+
         barpath.each(function(d) {
-            var p = d3.select(this),
-                d0 = d[0],
-                w = (d0.mlw + 1 || markerLine.width + 1) - 1;
+            var p = d3.select(this);
+            var d0 = d[0];
+            var w = (d0.mlw + 1 || markerLine.width + 1) - 1;
 
             p.style('stroke-width', w + 'px')
                 .call(Color.fill, d0.mc || marker.color);
@@ -254,18 +269,20 @@ module.exports = function style(s, gd) {
     }
 
     function styleBoxes(d) {
-        var trace = d[0].trace,
-            pts = d3.select(this).select('g.legendpoints')
-                .selectAll('path.legendbox')
-                .data(Registry.traceIs(trace, 'box-violin') && trace.visible ? [d] : []);
+        var trace = d[0].trace;
+
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendbox')
+            .data(Registry.traceIs(trace, 'box-violin') && trace.visible ? [d] : []);
         pts.enter().append('path').classed('legendbox', true)
             // if we want the median bar, prepend M6,0H-6
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');
         pts.exit().remove();
+
         pts.each(function() {
-            var w = trace.line.width,
-                p = d3.select(this);
+            var w = trace.line.width;
+            var p = d3.select(this);
 
             p.style('stroke-width', w + 'px')
                 .call(Color.fill, trace.fillcolor);
@@ -277,10 +294,11 @@ module.exports = function style(s, gd) {
     }
 
     function styleCandles(d) {
-        var trace = d[0].trace,
-            pts = d3.select(this).select('g.legendpoints')
-                .selectAll('path.legendcandle')
-                .data(trace.type === 'candlestick' && trace.visible ? [d, d] : []);
+        var trace = d[0].trace;
+
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendcandle')
+            .data(trace.type === 'candlestick' && trace.visible ? [d, d] : []);
         pts.enter().append('path').classed('legendcandle', true)
             .attr('d', function(_, i) {
                 if(i) return 'M-15,0H-8M-8,6V-6H8Z'; // increasing
@@ -289,10 +307,11 @@ module.exports = function style(s, gd) {
             .attr('transform', 'translate(20,0)')
             .style('stroke-miterlimit', 1);
         pts.exit().remove();
+
         pts.each(function(_, i) {
             var container = trace[i ? 'increasing' : 'decreasing'];
-            var w = container.line.width,
-                p = d3.select(this);
+            var w = container.line.width;
+            var p = d3.select(this);
 
             p.style('stroke-width', w + 'px')
                 .call(Color.fill, container.fillcolor);
@@ -304,10 +323,11 @@ module.exports = function style(s, gd) {
     }
 
     function styleOHLC(d) {
-        var trace = d[0].trace,
-            pts = d3.select(this).select('g.legendpoints')
-                .selectAll('path.legendohlc')
-                .data(trace.type === 'ohlc' && trace.visible ? [d, d] : []);
+        var trace = d[0].trace;
+
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendohlc')
+            .data(trace.type === 'ohlc' && trace.visible ? [d, d] : []);
         pts.enter().append('path').classed('legendohlc', true)
             .attr('d', function(_, i) {
                 if(i) return 'M-15,0H0M-8,-6V0'; // increasing
@@ -316,10 +336,11 @@ module.exports = function style(s, gd) {
             .attr('transform', 'translate(20,0)')
             .style('stroke-miterlimit', 1);
         pts.exit().remove();
+
         pts.each(function(_, i) {
             var container = trace[i ? 'increasing' : 'decreasing'];
-            var w = container.line.width,
-                p = d3.select(this);
+            var w = container.line.width;
+            var p = d3.select(this);
 
             p.style('fill', 'none')
                 .call(Drawing.dashLine, container.line.dash, w);
@@ -331,10 +352,11 @@ module.exports = function style(s, gd) {
     }
 
     function stylePies(d) {
-        var trace = d[0].trace,
-            pts = d3.select(this).select('g.legendpoints')
-                .selectAll('path.legendpie')
-                .data(Registry.traceIs(trace, 'pie') && trace.visible ? [d] : []);
+        var trace = d[0].trace;
+
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendpie')
+            .data(Registry.traceIs(trace, 'pie') && trace.visible ? [d] : []);
         pts.enter().append('path').classed('legendpie', true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');

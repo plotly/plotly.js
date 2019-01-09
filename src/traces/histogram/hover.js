@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -26,6 +26,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         pointData[posLetter + 'Label'] = hoverLabelText(pointData[posLetter + 'a'], di.ph0, di.ph1);
     }
+
+    if(trace.hovermplate) pointData.hovertemplate = trace.hovertemplate;
 
     return pts;
 };

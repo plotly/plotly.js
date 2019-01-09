@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,9 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var makeBinAttrs = require('./bin_attributes');
+var constants = require('./constants');
 
 module.exports = {
     x: {
@@ -172,11 +174,6 @@ module.exports = {
         dflt: null,
         role: 'style',
         editType: 'calc',
-        impliedEdits: {
-            'ybins.start': undefined,
-            'ybins.end': undefined,
-            'ybins.size': undefined
-        },
         description: [
             'Obsolete: since v1.42 each bin attribute is auto-determined',
             'separately and `autobiny` is not needed. However, we accept',
@@ -184,6 +181,10 @@ module.exports = {
             'before deleting `autobiny` from the trace.'
         ].join(' ')
     },
+
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
 
     marker: barAttrs.marker,
 

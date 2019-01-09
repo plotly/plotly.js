@@ -19,8 +19,8 @@ describe('Test histogram2d', function() {
     }
 
     describe('supplyDefaults', function() {
-        var traceIn,
-            traceOut;
+        var traceIn;
+        var traceOut;
 
         beforeEach(function() {
             traceOut = {};
@@ -117,9 +117,9 @@ describe('Test histogram2d', function() {
 
     describe('calc', function() {
         function _calc(opts) {
-            var base = { type: 'histogram2d' },
-                trace = Lib.extendFlat({}, base, opts),
-                gd = { data: [trace] };
+            var base = { type: 'histogram2d' };
+            var trace = Lib.extendFlat({}, base, opts);
+            var gd = { data: [trace] };
 
             supplyAllDefaults(gd);
             var fullTrace = gd._fullData[0];

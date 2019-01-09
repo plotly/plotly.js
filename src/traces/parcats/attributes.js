@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -41,7 +41,8 @@ module.exports = {
     domain: domainAttrs({name: 'parcats', trace: true, editType: 'calc'}),
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['count', 'probability'],
-        editType: 'plot'
+        editType: 'plot',
+        arrayOk: false
         // plotAttrs.hoverinfo description is appropriate
     }),
     hoveron: {

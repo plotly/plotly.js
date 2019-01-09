@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -153,7 +153,7 @@ function convert(scene, trace) {
         tubeOpts.startingPositions = startingPositions;
     }
 
-    tubeOpts.colormap = parseColorScale(trace.colorscale);
+    tubeOpts.colormap = parseColorScale(trace);
     tubeOpts.tubeSize = trace.sizeref;
     tubeOpts.maxLength = trace.maxdisplayed;
 

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47,8 +47,8 @@ function equalPts(pt1, pt2, xtol, ytol) {
 
 // distance in index units - uses the 3rd and 4th items in points
 function ptDist(pt1, pt2) {
-    var dx = pt1[2] - pt2[2],
-        dy = pt1[3] - pt2[3];
+    var dx = pt1[2] - pt2[2];
+    var dy = pt1[3] - pt2[3];
     return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -90,8 +90,8 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
         locStr = loc.join(',');
 
         var atEdge = (marchStep[0] && (loc[0] < 0 || loc[0] > n - 2)) ||
-                (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2)),
-            closedLoop = (locStr === startLocStr) && (marchStep.join(',') === startStepStr);
+                (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2));
+        var closedLoop = (locStr === startLocStr) && (marchStep.join(',') === startStepStr);
 
         // have we completed a loop, or reached an edge?
         if((closedLoop) || (edgeflag && atEdge)) break;
@@ -240,8 +240,8 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
 // special function to get the marching step of the
 // first point in the path (leading to loc)
 function startStep(mi, edgeflag, loc) {
-    var dx = 0,
-        dy = 0;
+    var dx = 0;
+    var dy = 0;
     if(mi > 20 && edgeflag) {
         // these saddles start at +/- x
         if(mi === 208 || mi === 1114) {
@@ -276,11 +276,11 @@ function startStep(mi, edgeflag, loc) {
  *   points into a path, because those routines require length-2 points.
  */
 function getInterpPx(pi, loc, step) {
-    var locx = loc[0] + Math.max(step[0], 0),
-        locy = loc[1] + Math.max(step[1], 0),
-        zxy = pi.z[locy][locx],
-        xa = pi.xaxis,
-        ya = pi.yaxis;
+    var locx = loc[0] + Math.max(step[0], 0);
+    var locy = loc[1] + Math.max(step[1], 0);
+    var zxy = pi.z[locy][locx];
+    var xa = pi.xaxis;
+    var ya = pi.yaxis;
 
     if(step[1]) {
         var dx = (pi.level - zxy) / (pi.z[locy][locx + 1] - zxy);

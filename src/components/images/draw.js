@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,12 +14,12 @@ var Axes = require('../../plots/cartesian/axes');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 module.exports = function draw(gd) {
-    var fullLayout = gd._fullLayout,
-        imageDataAbove = [],
-        imageDataSubplot = {},
-        imageDataBelow = [],
-        subplot,
-        i;
+    var fullLayout = gd._fullLayout;
+    var imageDataAbove = [];
+    var imageDataSubplot = {};
+    var imageDataBelow = [];
+    var subplot;
+    var i;
 
     // Sort into top, subplot, and bottom layers
     for(i = 0; i < fullLayout.images.length; i++) {
@@ -124,23 +124,22 @@ module.exports = function draw(gd) {
         var thisImage = d3.select(this);
 
         // Axes if specified
-        var xa = Axes.getFromId(gd, d.xref),
-            ya = Axes.getFromId(gd, d.yref);
+        var xa = Axes.getFromId(gd, d.xref);
+        var ya = Axes.getFromId(gd, d.yref);
 
-        var size = fullLayout._size,
-            width = xa ? Math.abs(xa.l2p(d.sizex) - xa.l2p(0)) : d.sizex * size.w,
-            height = ya ? Math.abs(ya.l2p(d.sizey) - ya.l2p(0)) : d.sizey * size.h;
+        var size = fullLayout._size;
+        var width = xa ? Math.abs(xa.l2p(d.sizex) - xa.l2p(0)) : d.sizex * size.w;
+        var height = ya ? Math.abs(ya.l2p(d.sizey) - ya.l2p(0)) : d.sizey * size.h;
 
         // Offsets for anchor positioning
-        var xOffset = width * anchors.x[d.xanchor].offset,
-            yOffset = height * anchors.y[d.yanchor].offset;
+        var xOffset = width * anchors.x[d.xanchor].offset;
+        var yOffset = height * anchors.y[d.yanchor].offset;
 
         var sizing = anchors.x[d.xanchor].sizing + anchors.y[d.yanchor].sizing;
 
         // Final positions
-        var xPos = (xa ? xa.r2p(d.x) + xa._offset : d.x * size.w + size.l) + xOffset,
-            yPos = (ya ? ya.r2p(d.y) + ya._offset : size.h - d.y * size.h + size.t) + yOffset;
-
+        var xPos = (xa ? xa.r2p(d.x) + xa._offset : d.x * size.w + size.l) + xOffset;
+        var yPos = (ya ? ya.r2p(d.y) + ya._offset : size.h - d.y * size.h + size.t) + yOffset;
 
         // Construct the proper aspectRatio attribute
         switch(d.sizing) {
@@ -164,20 +163,21 @@ module.exports = function draw(gd) {
 
 
         // Set proper clipping on images
-        var xId = xa ? xa._id : '',
-            yId = ya ? ya._id : '',
-            clipAxes = xId + yId;
+        var xId = xa ? xa._id : '';
+        var yId = ya ? ya._id : '';
+        var clipAxes = xId + yId;
 
-        thisImage.call(Drawing.setClipUrl, clipAxes ?
-            ('clip' + fullLayout._uid + clipAxes) :
-            null
+        Drawing.setClipUrl(
+            thisImage,
+            clipAxes ? ('clip' + fullLayout._uid + clipAxes) : null,
+            gd
         );
     }
 
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
-            .data(imageDataBelow),
-        imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
-            .data(imageDataAbove);
+        .data(imageDataBelow);
+    var imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
+        .data(imageDataAbove);
 
     imagesBelow.enter().append('image');
     imagesAbove.enter().append('image');

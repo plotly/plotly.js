@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,6 +17,25 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+
+var markerLineAttrs = extendFlat(colorAttrs('marker.line', {editTypeOverride: 'calc'}), {
+    width: extendFlat({}, scatterMarkerLineAttrs.width, {editType: 'calc'}),
+    editType: 'calc'
+});
+
+var markerAttrs = extendFlat(colorAttrs('marker'), {
+    symbol: scatterMarkerAttrs.symbol,
+    size: extendFlat({}, scatterMarkerAttrs.size, {editType: 'markerSize'}),
+    sizeref: scatterMarkerAttrs.sizeref,
+    sizemin: scatterMarkerAttrs.sizemin,
+    sizemode: scatterMarkerAttrs.sizemode,
+    opacity: scatterMarkerAttrs.opacity,
+    colorbar: scatterMarkerAttrs.colorbar,
+    line: markerLineAttrs,
+    editType: 'calc'
+});
+
+markerAttrs.color.editType = markerAttrs.cmin.editType = markerAttrs.cmax.editType = 'style';
 
 function makeAxesValObject(axLetter) {
     return {
@@ -105,20 +124,7 @@ module.exports = {
         ].join(' ')
     }),
 
-    marker: extendFlat({}, colorAttrs('marker'), {
-        symbol: scatterMarkerAttrs.symbol,
-        size: extendFlat({}, scatterMarkerAttrs.size, {editType: 'markerSize'}),
-        sizeref: scatterMarkerAttrs.sizeref,
-        sizemin: scatterMarkerAttrs.sizemin,
-        sizemode: scatterMarkerAttrs.sizemode,
-        opacity: scatterMarkerAttrs.opacity,
-        colorbar: scatterMarkerAttrs.colorbar,
-        line: extendFlat({}, colorAttrs('marker.line'), {
-            width: scatterMarkerLineAttrs.width,
-            editType: 'calc'
-        }),
-        editType: 'calc'
-    }),
+    marker: markerAttrs,
 
     xaxes: makeAxesValObject('x'),
     yaxes: makeAxesValObject('y'),

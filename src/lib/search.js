@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -75,10 +75,10 @@ exports.distinctVals = function(valsIn) {
     var vals = valsIn.slice();  // otherwise we sort the original array...
     vals.sort(exports.sorterAsc);
 
-    var l = vals.length - 1,
-        minDiff = (vals[l] - vals[0]) || 1,
-        errDiff = minDiff / (l || 1) / 10000,
-        v2 = [vals[0]];
+    var l = vals.length - 1;
+    var minDiff = (vals[l] - vals[0]) || 1;
+    var errDiff = minDiff / (l || 1) / 10000;
+    var v2 = [vals[0]];
 
     for(var i = 0; i < l; i++) {
         // make sure values aren't just off by a rounding error
@@ -99,13 +99,13 @@ exports.distinctVals = function(valsIn) {
  * binary search is probably overkill here...
  */
 exports.roundUp = function(val, arrayIn, reverse) {
-    var low = 0,
-        high = arrayIn.length - 1,
-        mid,
-        c = 0,
-        dlow = reverse ? 0 : 1,
-        dhigh = reverse ? 1 : 0,
-        rounded = reverse ? Math.ceil : Math.floor;
+    var low = 0;
+    var high = arrayIn.length - 1;
+    var mid;
+    var c = 0;
+    var dlow = reverse ? 0 : 1;
+    var dhigh = reverse ? 1 : 0;
+    var rounded = reverse ? Math.ceil : Math.floor;
     // c is just to avoid infinite loops if there's an error
     while(low < high && c++ < 100) {
         mid = rounded((low + high) / 2);
@@ -117,6 +117,10 @@ exports.roundUp = function(val, arrayIn, reverse) {
 
 /**
  * Tweak to Array.sort(sortFn) that improves performance for pre-sorted arrays
+ *
+ * Note that newer browsers (such as Chrome v70+) are starting to pick up
+ * on pre-sorted arrays which may render the following optimization unnecessary
+ * in the future.
  *
  * Motivation: sometimes we need to sort arrays but the input is likely to
  * already be sorted. Browsers don't seem to pick up on pre-sorted arrays,

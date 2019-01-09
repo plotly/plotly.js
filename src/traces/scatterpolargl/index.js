@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,48 +12,67 @@ var cluster = require('point-cluster');
 var isNumeric = require('fast-isnumeric');
 
 var ScatterGl = require('../scattergl');
-var calcColorscales = require('../scatter/colorscale_calc');
+var calcColorscale = require('../scatter/colorscale_calc');
+var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
+var convert = require('../scattergl/convert');
+
+var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var makeHoverPointText = require('../scatterpolar/hover').makeHoverPointText;
-var subTypes = require('../scatter/subtypes');
 
 var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
 
-function calc(container, trace) {
-    var layout = container._fullLayout;
+function calc(gd, trace) {
+    var fullLayout = gd._fullLayout;
     var subplotId = trace.subplot;
-    var radialAxis = layout[subplotId].radialaxis;
-    var angularAxis = layout[subplotId].angularaxis;
+    var radialAxis = fullLayout[subplotId].radialaxis;
+    var angularAxis = fullLayout[subplotId].angularaxis;
     var rArray = radialAxis.makeCalcdata(trace, 'r');
     var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
+    var len = trace._length;
     var stash = {};
 
-    if(trace._length < rArray.length) rArray = rArray.slice(0, trace._length);
-    if(trace._length < thetaArray.length) thetaArray = thetaArray.slice(0, trace._length);
-
-    calcColorscales(trace);
+    if(len < rArray.length) rArray = rArray.slice(0, len);
+    if(len < thetaArray.length) thetaArray = thetaArray.slice(0, len);
 
     stash.r = rArray;
     stash.theta = thetaArray;
 
-    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {tozero: true});
+    calcColorscale(gd, trace);
+
+    // only compute 'style' options in calc, as position options
+    // depend on the radial range and must be set in plot
+    var opts = stash.opts = convert.style(gd, trace);
+
+    // For graphs with very large number of points and array marker.size,
+    // use average marker size instead to speed things up.
+    var ppad;
+    if(len < TOO_MANY_POINTS) {
+        ppad = calcMarkerSize(trace, len);
+    } else if(opts.marker) {
+        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+    }
+    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {ppad: ppad});
 
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
-function plot(container, subplot, cdata) {
+function plot(gd, subplot, cdata) {
+    if(!cdata.length) return;
+
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
+    var scene = ScatterGl.sceneUpdate(gd, subplot);
 
-    var scene = ScatterGl.sceneUpdate(container, subplot);
-
-    cdata.forEach(function(cdscatter, traceIndex) {
+    cdata.forEach(function(cdscatter) {
         if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
         var cd = cdscatter[0];
         var trace = cd.trace;
         var stash = cd.t;
+        var len = trace._length;
         var rArray = stash.r;
         var thetaArray = stash.theta;
+        var opts = stash.opts;
         var i;
 
         var subRArray = rArray.slice();
@@ -67,12 +86,11 @@ function plot(container, subplot, cdata) {
             }
         }
 
-        var count = rArray.length;
-        var positions = new Array(count * 2);
-        var x = Array(count);
-        var y = Array(count);
+        var positions = new Array(len * 2);
+        var x = Array(len);
+        var y = Array(len);
 
-        for(i = 0; i < count; i++) {
+        for(i = 0; i < len; i++) {
             var r = subRArray[i];
             var xx, yy;
 
@@ -88,43 +106,56 @@ function plot(container, subplot, cdata) {
             y[i] = positions[i * 2 + 1] = yy;
         }
 
-        var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
-
-        // set flags to create scene renderers
-        if(options.fill && !scene.fill2d) scene.fill2d = true;
-        if(options.marker && !scene.scatter2d) scene.scatter2d = true;
-        if(options.line && !scene.line2d) scene.line2d = true;
-        if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
-        if(options.text && !scene.glText) scene.glText = true;
-
         stash.tree = cluster(positions);
 
         // FIXME: see scattergl.js#109
-        if(options.marker && count >= TOO_MANY_POINTS) {
-            options.marker.cluster = stash.tree;
+        if(opts.marker && len >= TOO_MANY_POINTS) {
+            opts.marker.cluster = stash.tree;
         }
 
-        // bring positions to selected/unselected options
-        if(subTypes.hasMarkers(trace)) {
-            options.markerSel.positions = options.markerUnsel.positions = options.marker.positions;
+        if(opts.marker) {
+            opts.markerSel.positions = opts.markerUnsel.positions = opts.marker.positions = positions;
         }
 
-        // save scene options batch
-        scene.lineOptions.push(options.line);
-        scene.errorXOptions.push(options.errorX);
-        scene.errorYOptions.push(options.errorY);
-        scene.fillOptions.push(options.fill);
-        scene.markerOptions.push(options.marker);
-        scene.markerSelectedOptions.push(options.markerSel);
-        scene.markerUnselectedOptions.push(options.markerUnsel);
-        scene.textOptions.push(options.text);
-        scene.textSelectedOptions.push(options.textSel);
-        scene.textUnselectedOptions.push(options.textUnsel);
-        scene.count = cdata.length;
+        if(opts.line && positions.length > 1) {
+            Lib.extendFlat(
+                opts.line,
+                convert.linePositions(gd, trace, positions)
+            );
+        }
 
-        // stash scene ref
-        stash._scene = scene;
-        stash.index = traceIndex;
+        if(opts.text) {
+            Lib.extendFlat(
+                opts.text,
+                {positions: positions},
+                convert.textPosition(gd, trace, opts.text, opts.marker)
+            );
+            Lib.extendFlat(
+                opts.textSel,
+                {positions: positions},
+                convert.textPosition(gd, trace, opts.text, opts.markerSel)
+            );
+            Lib.extendFlat(
+                opts.textUnsel,
+                {positions: positions},
+                convert.textPosition(gd, trace, opts.text, opts.markerUnsel)
+            );
+        }
+
+        if(opts.fill && !scene.fill2d) scene.fill2d = true;
+        if(opts.marker && !scene.scatter2d) scene.scatter2d = true;
+        if(opts.line && !scene.line2d) scene.line2d = true;
+        if(opts.text && !scene.glText) scene.glText = true;
+
+        scene.lineOptions.push(opts.line);
+        scene.fillOptions.push(opts.fill);
+        scene.markerOptions.push(opts.marker);
+        scene.markerSelectedOptions.push(opts.markerSel);
+        scene.markerUnselectedOptions.push(opts.markerUnsel);
+        scene.textOptions.push(opts.text);
+        scene.textSelectedOptions.push(opts.textSel);
+        scene.textUnselectedOptions.push(opts.textUnsel);
+
         stash.x = x;
         stash.y = y;
         stash.rawx = x;
@@ -132,10 +163,12 @@ function plot(container, subplot, cdata) {
         stash.r = rArray;
         stash.theta = thetaArray;
         stash.positions = positions;
-        stash.count = count;
+        stash._scene = scene;
+        stash.index = scene.count;
+        scene.count++;
     });
 
-    return ScatterGl.plot(container, subplot, cdata);
+    return ScatterGl.plot(gd, subplot, cdata);
 }
 
 function hoverPoints(pointData, xval, yval, hovermode) {
