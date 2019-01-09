@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,10 +22,9 @@ exports.init2dArray = function(rowLength, colLength) {
  * transposing-a-2d-array-in-javascript
  */
 exports.transposeRagged = function(z) {
-    var maxlen = 0,
-        zlen = z.length,
-        i,
-        j;
+    var maxlen = 0;
+    var zlen = z.length;
+    var i, j;
     // Maximum row length:
     for(i = 0; i < zlen; i++) maxlen = Math.max(maxlen, z[i].length);
 
@@ -42,9 +41,9 @@ exports.transposeRagged = function(z) {
 exports.dot = function(x, y) {
     if(!(x.length && y.length) || x.length !== y.length) return null;
 
-    var len = x.length,
-        out,
-        i;
+    var len = x.length;
+    var out;
+    var i;
 
     if(x[0].length) {
         // mat-vec or mat-mat

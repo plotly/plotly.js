@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -27,7 +27,7 @@ var scatterCalc = require('../scatter/calc');
 var calcMarkerSize = scatterCalc.calcMarkerSize;
 var calcAxisExpansion = scatterCalc.calcAxisExpansion;
 var setFirstScatter = scatterCalc.setFirstScatter;
-var calcColorscales = require('../scatter/colorscale_calc');
+var calcColorscale = require('../scatter/colorscale_calc');
 var linkTraces = require('../scatter/link_traces');
 var getTraceColor = require('../scatter/get_trace_color');
 var fillHoverText = require('../scatter/fill_hover_text');
@@ -84,7 +84,7 @@ function calc(gd, trace) {
     }
 
     // create scene options and scene
-    calcColorscales(gd, trace);
+    calcColorscale(gd, trace);
     var opts = sceneOptions(gd, subplot, trace, positions, x, y);
     var scene = sceneUpdate(gd, subplot);
 
@@ -504,7 +504,8 @@ function plot(gd, subplot, cdata) {
                                 pos = srcPos.slice();
 
                                 for(i = Math.floor(nextPos.length / 2); i--;) {
-                                    var xx = nextPos[i * 2], yy = nextPos[i * 2 + 1];
+                                    var xx = nextPos[i * 2];
+                                    var yy = nextPos[i * 2 + 1];
                                     if(isNaN(xx) || isNaN(yy)) continue;
                                     pos.push(xx, yy);
                                 }

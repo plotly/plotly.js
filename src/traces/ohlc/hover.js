@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61,7 +61,9 @@ function getClosestPoint(pointData, xval, yval, hovermode) {
     }
 
     function dy(di) {
-        return Fx.inbox(di[minAttr] - yval, di[maxAttr] - yval, hoverPseudoDistance);
+        var min = di[minAttr];
+        var max = di[maxAttr];
+        return min === max || Fx.inbox(min - yval, max - yval, hoverPseudoDistance);
     }
 
     function dxy(di) { return (dx(di) + dy(di)) / 2; }

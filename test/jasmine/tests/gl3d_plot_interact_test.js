@@ -670,13 +670,11 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-
     it('@gl should avoid passing blank texts to webgl', function(done) {
         function assertIsFilled(msg) {
             var fullLayout = gd._fullLayout;
             expect(fullLayout.scene._scene.glplot.objects[0].glyphBuffer.length).not.toBe(0, msg);
         }
-
         Plotly.plot(gd, [{
             type: 'scatter3d',
             mode: 'text',
@@ -847,8 +845,8 @@ describe('Test gl3d modebar handlers', function() {
     });
 
     it('@gl button pan3d should updates the scene dragmode and dragmode button', function() {
-        var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-            buttonPan3d = selectButton(modeBar, 'pan3d');
+        var buttonTurntable = selectButton(modeBar, 'tableRotation');
+        var buttonPan3d = selectButton(modeBar, 'pan3d');
 
         assertScenes(gd._fullLayout, 'dragmode', 'turntable');
         expect(buttonTurntable.isActive()).toBe(true);
@@ -868,8 +866,8 @@ describe('Test gl3d modebar handlers', function() {
     });
 
     it('@gl button orbitRotation should updates the scene dragmode and dragmode button', function() {
-        var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-            buttonOrbit = selectButton(modeBar, 'orbitRotation');
+        var buttonTurntable = selectButton(modeBar, 'tableRotation');
+        var buttonOrbit = selectButton(modeBar, 'orbitRotation');
 
         assertScenes(gd._fullLayout, 'dragmode', 'turntable');
         expect(buttonTurntable.isActive()).toBe(true);
@@ -1053,7 +1051,8 @@ describe('Test gl3d drag and wheel interactions', function() {
             }
         };
 
-        var sceneTarget, relayoutCallback = jasmine.createSpy('relayoutCallback');
+        var sceneTarget;
+        var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         function assertEvent(e) {
             expect(e.defaultPrevented).toEqual(true);

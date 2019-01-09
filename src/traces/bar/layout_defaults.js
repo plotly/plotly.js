@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -21,10 +21,10 @@ module.exports = function(layoutIn, layoutOut, fullData) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
-    var hasBars = false,
-        shouldBeGapless = false,
-        gappedAnyway = false,
-        usedSubplots = {};
+    var hasBars = false;
+    var shouldBeGapless = false;
+    var gappedAnyway = false;
+    var usedSubplots = {};
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];

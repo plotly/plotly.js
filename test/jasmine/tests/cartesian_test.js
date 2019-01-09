@@ -110,10 +110,10 @@ describe('restyle', function() {
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_basic.json'));
 
             function assertScatterModeSizes(lineSize, pointSize, textSize) {
-                var gd3 = d3.select(gd),
-                    lines = gd3.selectAll('g.scatter.trace .js-line'),
-                    points = gd3.selectAll('g.scatter.trace path.point'),
-                    texts = gd3.selectAll('g.scatter.trace text');
+                var gd3 = d3.select(gd);
+                var lines = gd3.selectAll('g.scatter.trace .js-line');
+                var points = gd3.selectAll('g.scatter.trace path.point');
+                var texts = gd3.selectAll('g.scatter.trace text');
 
                 expect(lines.size()).toEqual(lineSize);
                 expect(points.size()).toEqual(pointSize);
@@ -280,9 +280,9 @@ describe('relayout', function() {
             function assertPointTranslate(pointT, textT) {
                 var TOLERANCE = 10;
 
-                var gd3 = d3.select(gd),
-                    points = gd3.selectAll('g.scatter.trace path.point'),
-                    texts = gd3.selectAll('g.scatter.trace text');
+                var gd3 = d3.select(gd);
+                var points = gd3.selectAll('g.scatter.trace path.point');
+                var texts = gd3.selectAll('g.scatter.trace text');
 
                 expect(points.size()).toEqual(1);
                 expect(texts.size()).toEqual(1);
@@ -845,6 +845,125 @@ describe('subplot creation / deletion:', function() {
         })
         .then(function() {
             _assert([5, 4, 1], [6, 6, 1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('clears secondary labels and divider when updating out of axis type multicategory', function(done) {
+        function _assert(msg, exp) {
+            var gd3 = d3.select(gd);
+            expect(gd3.selectAll('.xtick > text').size())
+                .toBe(exp.tickCnt, msg + ' # labels');
+            expect(gd3.selectAll('.xtick2 > text').size())
+                .toBe(exp.tick2Cnt, msg + ' # secondary labels');
+            expect(gd3.selectAll('.xdivider').size())
+                .toBe(exp.dividerCnt, msg + ' # dividers');
+        }
+
+        Plotly.react(gd, [{
+            type: 'bar',
+            x: ['a', 'b', 'c'],
+            y: [1, 2, 1]
+        }])
+        .then(function() {
+            _assert('base - category axis', {
+                tickCnt: 3,
+                tick2Cnt: 0,
+                dividerCnt: 0
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'bar',
+                x: [
+                    ['d', 'd', 'e'],
+                    ['a', 'b', 'c']
+                ],
+                y: [1, 2, 3]
+            }]);
+        })
+        .then(function() {
+            _assert('multicategory axis', {
+                tickCnt: 3,
+                tick2Cnt: 2,
+                dividerCnt: 3
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'bar',
+                x: ['a', 'b', 'c'],
+                y: [1, 2, 1]
+            }]);
+        })
+        .then(function() {
+            _assert('back to category axis', {
+                tickCnt: 3,
+                tick2Cnt: 0,
+                dividerCnt: 0
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('clears secondary labels and divider when updating out of axis type multicategory (y-axis case)', function(done) {
+        function _assert(msg, exp) {
+            var gd3 = d3.select(gd);
+            expect(gd3.selectAll('.ytick > text').size())
+                .toBe(exp.tickCnt, msg + ' # labels');
+            expect(gd3.selectAll('.ytick2 > text').size())
+                .toBe(exp.tick2Cnt, msg + ' # secondary labels');
+            expect(gd3.selectAll('.ydivider').size())
+                .toBe(exp.dividerCnt, msg + ' # dividers');
+        }
+
+        Plotly.react(gd, [{
+            type: 'bar',
+            orientation: 'h',
+            y: ['a', 'b', 'c'],
+            x: [1, 2, 1]
+        }])
+        .then(function() {
+            _assert('base - category axis', {
+                tickCnt: 3,
+                tick2Cnt: 0,
+                dividerCnt: 0
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'bar',
+                orientation: 'h',
+                y: [
+                    ['d', 'd', 'e'],
+                    ['a', 'b', 'c']
+                ],
+                x: [1, 2, 3]
+            }]);
+        })
+        .then(function() {
+            _assert('multicategory axis', {
+                tickCnt: 3,
+                tick2Cnt: 2,
+                dividerCnt: 3
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'bar',
+                orientation: 'h',
+                y: ['a', 'b', 'c'],
+                x: [1, 2, 1]
+            }]);
+        })
+        .then(function() {
+            _assert('back to category axis', {
+                tickCnt: 3,
+                tick2Cnt: 0,
+                dividerCnt: 0
+            });
         })
         .catch(failTest)
         .then(done);

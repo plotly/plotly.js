@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -134,8 +134,8 @@ function isVisible(opts) {
 }
 
 function convertOpts(opts) {
-    var layout = {},
-        paint = {};
+    var layout = {};
+    var paint = {};
 
     switch(opts.type) {
 
@@ -166,8 +166,8 @@ function convertOpts(opts) {
             break;
 
         case 'symbol':
-            var symbol = opts.symbol,
-                textOpts = convertTextOpts(symbol.textposition, symbol.iconsize);
+            var symbol = opts.symbol;
+            var textOpts = convertTextOpts(symbol.textposition, symbol.iconsize);
 
             Lib.extendFlat(layout, {
                 'icon-image': symbol.icon + '-15',

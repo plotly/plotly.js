@@ -69,9 +69,9 @@ describe('table initialization tests', function() {
     describe('table defaults', function() {
 
         function _supply(traceIn) {
-            var traceOut = { visible: true },
-                defaultColor = '#777',
-                layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
+            var traceOut = { visible: true };
+            var defaultColor = '#777';
+            var layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
 
             Table.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 

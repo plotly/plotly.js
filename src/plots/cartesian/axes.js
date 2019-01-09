@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -775,9 +775,9 @@ function autoTickRound(ax) {
         // not necessarily *all* the information in tick0 though, if it's really odd
         // minimal string length for tick0: 'd' is 10, 'M' is 16, 'S' is 19
         // take off a leading minus (year < 0) and i (intercalary month) so length is consistent
-        var tick0ms = ax.r2l(ax.tick0),
-            tick0str = ax.l2r(tick0ms).replace(/(^-|i)/g, ''),
-            tick0len = tick0str.length;
+        var tick0ms = ax.r2l(ax.tick0);
+        var tick0str = ax.l2r(tick0ms).replace(/(^-|i)/g, '');
+        var tick0len = tick0str.length;
 
         if(String(dtick).charAt(0) === 'M') {
             // any tick0 more specific than a year: alway show the full date
@@ -835,8 +835,8 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
     if(isNumeric(dtick)) return x + axSign * dtick;
 
     // everything else is a string, one character plus a number
-    var tType = dtick.charAt(0),
-        dtSigned = axSign * Number(dtick.substr(1));
+    var tType = dtick.charAt(0);
+    var dtSigned = axSign * Number(dtick.substr(1));
 
     // Dates: months (or years - see Lib.incrementMonth)
     if(tType === 'M') return Lib.incrementMonth(x, dtSigned, calendar);
@@ -847,9 +847,9 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
     // log10 of 2,5,10, or all digits (logs just have to be
     // close enough to round)
     else if(tType === 'D') {
-        var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
-            x2 = x + axSign * 0.01,
-            frac = Lib.roundUp(Lib.mod(x2, 1), tickset, axrev);
+        var tickset = (dtick === 'D2') ? roundLog2 : roundLog1;
+        var x2 = x + axSign * 0.01;
+        var frac = Lib.roundUp(Lib.mod(x2, 1), tickset, axrev);
 
         return Math.floor(x2) +
             Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
@@ -912,8 +912,8 @@ axes.tickFirst = function(ax) {
             (Math.pow(10, r0) - tick0) / dtNum) * dtNum + tick0) / Math.LN10;
     }
     else if(tType === 'D') {
-        var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
-            frac = Lib.roundUp(Lib.mod(r0, 1), tickset, axrev);
+        var tickset = (dtick === 'D2') ? roundLog2 : roundLog1;
+        var frac = Lib.roundUp(Lib.mod(r0, 1), tickset, axrev);
 
         return Math.floor(r0) +
             Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
@@ -1584,12 +1584,14 @@ axes.draw = function(gd, arg, opts) {
 
             plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
             plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
-            if(xa.type === 'multicategory') {
-                plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
-                plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
-            }
+            plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
+            plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick2').remove();
+            plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
+            plotinfo.yaxislayer.selectAll('.' + ya._id + 'divider').remove();
+
             if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
             if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
+
             fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
             fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
         });
@@ -1781,11 +1783,12 @@ axes.drawOne = function(gd, ax, opts) {
     if(ax.type === 'multicategory') {
         var labelLength = 0;
         var pad = {x: 2, y: 10}[axLetter];
+        var sgn = tickSigns[2] * (ax.ticks === 'inside' ? -1 : 1);
 
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick') + pad;
             labelLength += ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0;
-            var secondaryPosition = mainLinePosition + labelLength * tickSigns[2];
+            var secondaryPosition = mainLinePosition + labelLength * sgn;
             var secondaryLabelFns = axes.makeLabelFns(ax, secondaryPosition);
 
             return axes.drawLabels(gd, ax, {
@@ -1803,11 +1806,12 @@ axes.drawOne = function(gd, ax, opts) {
 
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick2');
+            ax._labelLength = labelLength;
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
                 layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePosition, tickSigns[2], labelLength),
+                path: axes.makeTickPath(ax, mainLinePosition, sgn, labelLength),
                 transFn: transFn
             });
         });
@@ -2608,7 +2612,7 @@ function drawTitle(gd, ax) {
 
     var titleStandoff;
     if(ax.type === 'multicategory') {
-        titleStandoff = ax._boundingBox[{x: 'height', y: 'width'}[axLetter]];
+        titleStandoff = ax._labelLength;
     } else {
         var offsetBase = 1.5;
         titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
@@ -2810,14 +2814,13 @@ axes.swap = function(gd, traces) {
 };
 
 function makeAxisGroups(gd, traces) {
-    var groups = [],
-        i,
-        j;
+    var groups = [];
+    var i, j;
 
     for(i = 0; i < traces.length; i++) {
-        var groupsi = [],
-            xi = gd._fullData[traces[i]].xaxis,
-            yi = gd._fullData[traces[i]].yaxis;
+        var groupsi = [];
+        var xi = gd._fullData[traces[i]].xaxis;
+        var yi = gd._fullData[traces[i]].yaxis;
         if(!xi || !yi) continue; // not a 2D cartesian trace?
 
         for(j = 0; j < groups.length; j++) {
@@ -2831,8 +2834,8 @@ function makeAxisGroups(gd, traces) {
             continue;
         }
 
-        var group0 = groups[groupsi[0]],
-            groupj;
+        var group0 = groups[groupsi[0]];
+        var groupj;
 
         if(groupsi.length > 1) {
             for(j = 1; j < groupsi.length; j++) {

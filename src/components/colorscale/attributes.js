@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-var palettes = require('./scales.js');
+var palettes = require('./scales.js').scales;
 var paletteStr = Object.keys(palettes);
 
 function code(s) {
@@ -203,7 +203,7 @@ module.exports = function colorScaleAttrs(context, opts) {
         valType: 'boolean',
         role: 'style',
         dflt: false,
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Reverses the color mapping if true.',
             effectDesc,

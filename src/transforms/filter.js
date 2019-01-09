@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -228,16 +228,16 @@ exports.calcTransform = function(gd, trace, opts) {
 };
 
 function getFilterFunc(opts, d2c, targetCalendar) {
-    var operation = opts.operation,
-        value = opts.value,
-        hasArrayValue = Array.isArray(value);
+    var operation = opts.operation;
+    var value = opts.value;
+    var hasArrayValue = Array.isArray(value);
 
     function isOperationIn(array) {
         return array.indexOf(operation) !== -1;
     }
 
-    var d2cValue = function(v) { return d2c(v, 0, opts.valuecalendar); },
-        d2cTarget = function(v) { return d2c(v, 0, targetCalendar); };
+    var d2cValue = function(v) { return d2c(v, 0, opts.valuecalendar); };
+    var d2cTarget = function(v) { return d2c(v, 0, targetCalendar); };
 
     var coercedValue;
 

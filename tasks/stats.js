@@ -223,8 +223,8 @@ function makeBundleInfo(pathObj) {
 }
 
 function findSizes(pathObj) {
-    var codeDist = fs.readFileSync(pathObj.dist, ENC),
-        codeDistMin = fs.readFileSync(pathObj.distMin, ENC);
+    var codeDist = fs.readFileSync(pathObj.dist, ENC);
+    var codeDistMin = fs.readFileSync(pathObj.distMin, ENC);
 
     var sizes = {
         raw: prettySize(codeDist.length),

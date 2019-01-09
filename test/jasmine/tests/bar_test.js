@@ -731,8 +731,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.barnorm).toBeUndefined();
 
-        var xa = gd._fullLayout.xaxis,
-            ya = gd._fullLayout.yaxis;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-5, 14], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-3.33, 3.33], undefined, '(ya.range)');
     });
@@ -758,8 +758,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.barnorm).toBeUndefined();
 
-        var xa = gd._fullLayout.xaxis,
-            ya = gd._fullLayout.yaxis;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
     });
@@ -781,8 +781,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.barnorm).toBe('');
 
-        var xa = gd._fullLayout.xaxis,
-            ya = gd._fullLayout.yaxis;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-4.44, 4.44], undefined, '(ya.range)');
     });
@@ -804,8 +804,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.barnorm).toBe('fraction');
 
-        var xa = gd._fullLayout.xaxis,
-            ya = gd._fullLayout.yaxis;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
@@ -921,8 +921,8 @@ describe('A bar plot', function() {
     }
 
     function assertTextIsInsidePath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(pathBB.left).not.toBeGreaterThan(textBB.left);
         expect(textBB.right).not.toBeGreaterThan(pathBB.right);
@@ -931,22 +931,22 @@ describe('A bar plot', function() {
     }
 
     function assertTextIsAbovePath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(textBB.bottom).not.toBeGreaterThan(pathBB.top);
     }
 
     function assertTextIsBelowPath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(pathBB.bottom).not.toBeGreaterThan(textBB.top);
     }
 
     function assertTextIsAfterPath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(pathBB.right).not.toBeGreaterThan(textBB.left);
     }
@@ -961,8 +961,8 @@ describe('A bar plot', function() {
     }
 
     function assertTextIsBeforePath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(textBB.right).not.toBeGreaterThan(pathBB.left);
     }
@@ -1014,14 +1014,14 @@ describe('A bar plot', function() {
         var layout = {};
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     assertTextIsInsidePath(textNode, pathNode);
@@ -1050,14 +1050,14 @@ describe('A bar plot', function() {
         var layout = {barmode: 'relative'};
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     assertTextIsInsidePath(textNode, pathNode);
@@ -1087,14 +1087,14 @@ describe('A bar plot', function() {
         var layout = {barmode: 'relative'};
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     assertTextIsAbovePath(textNode, pathNode);
@@ -1119,14 +1119,14 @@ describe('A bar plot', function() {
         };
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     if(data[0].y[i] > 0) assertTextIsAbovePath(textNode, pathNode);
@@ -1150,14 +1150,14 @@ describe('A bar plot', function() {
         var layout = {};
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     if(data[0].x[i] > 0) assertTextIsAfterPath(textNode, pathNode);
@@ -1184,14 +1184,14 @@ describe('A bar plot', function() {
         };
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     if(data[0].x[i] > 0) assertTextIsAfterPath(textNode, pathNode);
@@ -1483,19 +1483,19 @@ describe('A bar plot', function() {
             expect(cd[3][0].t.poffset).toBe(0);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
-            var traceNodes = getAllTraceNodes(gd),
-                trace0Bar3 = getAllBarNodes(traceNodes[0])[3],
-                path03 = trace0Bar3.querySelector('path'),
-                text03 = trace0Bar3.querySelector('text'),
-                trace1Bar2 = getAllBarNodes(traceNodes[1])[2],
-                path12 = trace1Bar2.querySelector('path'),
-                text12 = trace1Bar2.querySelector('text'),
-                trace2Bar0 = getAllBarNodes(traceNodes[2])[0],
-                path20 = trace2Bar0.querySelector('path'),
-                text20 = trace2Bar0.querySelector('text'),
-                trace3Bar0 = getAllBarNodes(traceNodes[3])[0],
-                path30 = trace3Bar0.querySelector('path'),
-                text30 = trace3Bar0.querySelector('text');
+            var traceNodes = getAllTraceNodes(gd);
+            var trace0Bar3 = getAllBarNodes(traceNodes[0])[3];
+            var path03 = trace0Bar3.querySelector('path');
+            var text03 = trace0Bar3.querySelector('text');
+            var trace1Bar2 = getAllBarNodes(traceNodes[1])[2];
+            var path12 = trace1Bar2.querySelector('path');
+            var text12 = trace1Bar2.querySelector('text');
+            var trace2Bar0 = getAllBarNodes(traceNodes[2])[0];
+            var path20 = trace2Bar0.querySelector('path');
+            var text20 = trace2Bar0.querySelector('text');
+            var trace3Bar0 = getAllBarNodes(traceNodes[3])[0];
+            var path30 = trace3Bar0.querySelector('path');
+            var text30 = trace3Bar0.querySelector('text');
 
             expect(text03.textContent).toBe('4');
             expect(text12.textContent).toBe('inside text');
@@ -1546,19 +1546,19 @@ describe('A bar plot', function() {
             expect(cd[3][0].t.poffset).toBe(0);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
-            var traceNodes = getAllTraceNodes(gd),
-                trace0Bar3 = getAllBarNodes(traceNodes[0])[3],
-                path03 = trace0Bar3.querySelector('path'),
-                text03 = trace0Bar3.querySelector('text'),
-                trace1Bar2 = getAllBarNodes(traceNodes[1])[2],
-                path12 = trace1Bar2.querySelector('path'),
-                text12 = trace1Bar2.querySelector('text'),
-                trace2Bar0 = getAllBarNodes(traceNodes[2])[0],
-                path20 = trace2Bar0.querySelector('path'),
-                text20 = trace2Bar0.querySelector('text'),
-                trace3Bar0 = getAllBarNodes(traceNodes[3])[0],
-                path30 = trace3Bar0.querySelector('path'),
-                text30 = trace3Bar0.querySelector('text');
+            var traceNodes = getAllTraceNodes(gd);
+            var trace0Bar3 = getAllBarNodes(traceNodes[0])[3];
+            var path03 = trace0Bar3.querySelector('path');
+            var text03 = trace0Bar3.querySelector('text');
+            var trace1Bar2 = getAllBarNodes(traceNodes[1])[2];
+            var path12 = trace1Bar2.querySelector('path');
+            var text12 = trace1Bar2.querySelector('text');
+            var trace2Bar0 = getAllBarNodes(traceNodes[2])[0];
+            var path20 = trace2Bar0.querySelector('path');
+            var text20 = trace2Bar0.querySelector('text');
+            var trace3Bar0 = getAllBarNodes(traceNodes[3])[0];
+            var path30 = trace3Bar0.querySelector('path');
+            var text30 = trace3Bar0.querySelector('text');
 
             expect(text03.textContent).toBe('4');
             expect(text12.textContent).toBe('inside text');
@@ -1622,21 +1622,21 @@ describe('A bar plot', function() {
         };
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                pathNodes = [
-                    barNodes[0].querySelector('path'),
-                    barNodes[1].querySelector('path'),
-                    barNodes[2].querySelector('path'),
-                    barNodes[3].querySelector('path')
-                ],
-                textNodes = [
-                    barNodes[0].querySelector('text'),
-                    barNodes[1].querySelector('text'),
-                    barNodes[2].querySelector('text'),
-                    barNodes[3].querySelector('text')
-                ],
-                i;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var pathNodes = [
+                barNodes[0].querySelector('path'),
+                barNodes[1].querySelector('path'),
+                barNodes[2].querySelector('path'),
+                barNodes[3].querySelector('path')
+            ];
+            var textNodes = [
+                barNodes[0].querySelector('text'),
+                barNodes[1].querySelector('text'),
+                barNodes[2].querySelector('text'),
+                barNodes[3].querySelector('text')
+            ];
+            var i;
 
             // assert bar texts
             for(i = 0; i < 3; i++) {
@@ -1926,8 +1926,8 @@ describe('bar hover', function() {
     afterEach(destroyGraphDiv);
 
     function getPointData(gd) {
-        var cd = gd.calcdata,
-            subplot = gd._fullLayout._plots.xy;
+        var cd = gd.calcdata;
+        var subplot = gd._fullLayout._plots.xy;
 
         return {
             index: false,
@@ -2000,31 +2000,31 @@ describe('bar hover', function() {
         });
 
         it('should return the correct hover point data (case y)', function() {
-            var out = _hover(gd, 0.75, 0.15, 'y'),
-                subplot = gd._fullLayout._plots.xy,
-                xa = subplot.xaxis,
-                ya = subplot.yaxis,
-                barDelta = 1 * 0.8 / 2,
-                x0 = xa.c2p(0.5, true),
-                x1 = x0,
-                y0 = ya.c2p(0 - barDelta, true),
-                y1 = ya.c2p(0 + barDelta, true);
+            var out = _hover(gd, 0.75, 0.15, 'y');
+            var subplot = gd._fullLayout._plots.xy;
+            var xa = subplot.xaxis;
+            var ya = subplot.yaxis;
+            var barDelta = 1 * 0.8 / 2;
+            var x0 = xa.c2p(0.5, true);
+            var x1 = x0;
+            var y0 = ya.c2p(0 - barDelta, true);
+            var y1 = ya.c2p(0 + barDelta, true);
 
             expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
             assertPos(out.pos, [x0, x1, y0, y1]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
-            var out = _hover(gd, 0.75, -0.15, 'closest'),
-                subplot = gd._fullLayout._plots.xy,
-                xa = subplot.xaxis,
-                ya = subplot.yaxis,
-                barDelta = 1 * 0.8 / 2 / 2,
-                barPos = 0 - 1 * 0.8 / 2 + barDelta,
-                x0 = xa.c2p(0.5, true),
-                x1 = x0,
-                y0 = ya.c2p(barPos - barDelta, true),
-                y1 = ya.c2p(barPos + barDelta, true);
+            var out = _hover(gd, 0.75, -0.15, 'closest');
+            var subplot = gd._fullLayout._plots.xy;
+            var xa = subplot.xaxis;
+            var ya = subplot.yaxis;
+            var barDelta = 1 * 0.8 / 2 / 2;
+            var barPos = 0 - 1 * 0.8 / 2 + barDelta;
+            var x0 = xa.c2p(0.5, true);
+            var x1 = x0;
+            var y0 = ya.c2p(barPos - barDelta, true);
+            var y1 = ya.c2p(barPos + barDelta, true);
 
             expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
             assertPos(out.pos, [x0, x1, y0, y1]);

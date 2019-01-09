@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,12 +14,11 @@ var helpers = require('./helpers');
 
 
 module.exports = function getLegendData(calcdata, opts) {
-    var lgroupToTraces = {},
-        lgroups = [],
-        hasOneNonBlankGroup = false,
-        slicesShown = {},
-        lgroupi = 0;
-
+    var lgroupToTraces = {};
+    var lgroups = [];
+    var hasOneNonBlankGroup = false;
+    var slicesShown = {};
+    var lgroupi = 0;
     var i, j;
 
     function addOneItem(legendGroup, legendItem) {
@@ -75,9 +74,9 @@ module.exports = function getLegendData(calcdata, opts) {
     if(!lgroups.length) return [];
 
     // rearrange lgroupToTraces into a d3-friendly array of arrays
-    var lgroupsLength = lgroups.length,
-        ltraces,
-        legendData;
+    var lgroupsLength = lgroups.length;
+    var ltraces;
+    var legendData;
 
     if(hasOneNonBlankGroup && helpers.isGrouped(opts)) {
         legendData = new Array(lgroupsLength);
