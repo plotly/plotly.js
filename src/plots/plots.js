@@ -2645,7 +2645,7 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
             // time. In other words, if there's an axis transition, then set the data transition
             // to instantaneous.
             var traceTransitionOpts;
-            var transitionedTraces = [];
+            var transitionedTraces;
 
             if(Object.keys(edits).length) {
                 for(i = 0; i < basePlotModules.length; i++) {
@@ -2654,13 +2654,13 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
                     }
                 }
 
-                traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
-                traceTransitionOpts.duration = 0;
                 // This means do not transition traces,
                 // this happens on layout-only (e.g. axis range) animations
+                traceTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
                 transitionedTraces = null;
             } else {
                 traceTransitionOpts = transitionOpts;
+                transitionedTraces = [];
                 for(i = 0; i < fullData.length; i++) {
                     transitionedTraces.push(i);
                 }

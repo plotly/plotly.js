@@ -2842,8 +2842,6 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
         flags: flags,
         immutable: immutable,
         transition: transition,
-        nChanges: 0,
-        nChangesAnim: 0,
         newDataRevision: newDataRevision,
         gd: gd
     };
