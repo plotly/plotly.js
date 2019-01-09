@@ -2541,8 +2541,6 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
     function prepareTransitions() {
         var fullLayout = gd._fullLayout;
         var subplots = fullLayout._plots;
-        var rangesAltered = relayoutFlags.rangesAltered;
-        var autorangedAxes = relayoutFlags.autorangedAxes;
 
         // no need to redraw at end of transition,
         // if all changes are animatable
@@ -2555,16 +2553,23 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
             var plotinfo = subplots[k];
             var xa = plotinfo.xaxis;
             var ya = plotinfo.yaxis;
+            var xr0 = oldFullLayout[xa._name].range.slice();
+            var yr0 = oldFullLayout[ya._name].range.slice();
+            var xr1 = xa.range.slice();
+            var yr1 = ya.range.slice();
 
-            if(rangesAltered[xa._name] || rangesAltered[ya._name] ||
-                autorangedAxes[xa._name] || autorangedAxes[ya._name]
+            xa.setScale();
+            ya.setScale();
+
+            if(xr0[0] !== xr1[0] || xr0[1] !== xr1[1] ||
+                yr0[0] !== yr1[0] || yr0[1] !== yr1[1]
             ) {
                 edits[k] = {
                     plotinfo: plotinfo,
-                    xr0: oldFullLayout[xa._name].range.slice(),
-                    yr0: oldFullLayout[ya._name].range.slice(),
-                    xr1: xa.range.slice(),
-                    yr1: ya.range.slice()
+                    xr0: xr0,
+                    yr0: yr0,
+                    xr1: xr1,
+                    yr1: yr1
                 };
             }
         }

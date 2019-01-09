@@ -643,7 +643,7 @@ describe('Plotly.react transitions:', function() {
         .then(done);
     });
 
-    it('should transition layout when one or more axes has *autorange:true*', function(done) {
+    it('should transition layout when one or more axis auto-ranged value changed', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
 
@@ -662,6 +662,7 @@ describe('Plotly.react transitions:', function() {
             assertAxAutorange('axes are autorange:true by default', true);
         })
         .then(function() {
+            // N.B. marker.size can expand axis range
             data[0].marker = {size: 30};
             return Plotly.react(gd, data, layout);
         })
@@ -693,6 +694,76 @@ describe('Plotly.react transitions:', function() {
                 ]],
             ]);
             assertAxAutorange('axes are still autorange:false', false);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not transition layout when axis auto-ranged value do not changed', function(done) {
+        var data = [{y: [1, 2, 1]}];
+        var layout = {transition: {duration: 10}};
+
+        function assertAxAutorange(msg, exp) {
+            expect(gd.layout.xaxis.autorange).toBe(exp, msg);
+            expect(gd.layout.yaxis.autorange).toBe(exp, msg);
+            expect(gd._fullLayout.xaxis.autorange).toBe(exp, msg);
+            expect(gd._fullLayout.yaxis.autorange).toBe(exp, msg);
+        }
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
+            methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes2']);
+            addSpies();
+            assertAxAutorange('axes are autorange:true by default', true);
+        })
+        .then(function() {
+            // N.B. different coordinate, but same auto-range value
+            data[0].y = [2, 1, 2];
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('do not transition autoranged axes, just the traces', [
+                [Plots, 'transition2', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes2', 0],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1]
+            ]);
+            assertAxAutorange('axes are still autorange:true', true);
+        })
+        .then(function() {
+            // N.B. different coordinates with different auto-range value
+            data[0].y = [20, 10, 20];
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('both trace and layout transitions', [
+                [Plots, 'transition2', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes2', 1],
+                [Registry, 'call', [
+                    // xaxis call to _storeDirectGUIEdit from doAutoRange
+                    ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
+                        'xaxis.range': [-0.12852664576802508, 2.128526645768025],
+                        'xaxis.autorange': true
+                    }],
+                    // yaxis call to _storeDirectGUIEdit from doAutoRange
+                    ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
+                        'yaxis.range': [9.26751592356688, 20.73248407643312],
+                        'yaxis.autorange': true
+                    }],
+                    ['relayout', gd, {
+                        'xaxis.range': [-0.12852664576802508, 2.128526645768025],
+                        'yaxis.range': [9.26751592356688, 20.73248407643312]
+                    }]]
+                ],
+                [gd._fullLayout._basePlotModules[0], 'plot', [
+                    // one instantaneous transition options to halt
+                    // other trace transitions (if any)
+                    [gd, null, {duration: 0, easing: 'cubic-in-out'}, 'function'],
+                    // one _module.plot call from the relayout at end of axis transition
+                    [gd]
+                ]],
+            ]);
+            assertAxAutorange('axes are now autorange:false', false);
         })
         .catch(failTest)
         .then(done);

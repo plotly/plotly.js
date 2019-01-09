@@ -2872,7 +2872,6 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
     var flags = editTypes.layoutFlags();
     flags.arrays = {};
     flags.rangesAltered = {};
-    flags.autorangedAxes = {};
     flags.nChanges = 0;
     flags.nChangesAnim = 0;
 
@@ -2947,11 +2946,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         var newVal = newContainer[key];
         var parts = outerparts.concat(key);
         astr = parts.join('.');
-
-        // track auto-ranged cartesian axes, changed or not
-        if(AX_AUTORANGE_RE.test(astr) && newVal === true) {
-            flags.autorangedAxes[outerparts[0]] = 1;
-        }
 
         if(key.charAt(0) === '_' || typeof oldVal === 'function' || oldVal === newVal) continue;
 
