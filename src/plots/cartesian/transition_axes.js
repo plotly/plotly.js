@@ -329,9 +329,8 @@ function transitionAxes2(gd, edits, transitionOpts, makeOnCompleteCallback) {
         var activeAxIds = [xa._id, ya._id];
         var i;
 
-        for(i = 0; i < activeAxIds.length; i++) {
-            Axes.doTicksSingle(gd, activeAxIds[i], true);
-        }
+        Axes.drawOne(gd, xa, {skipTitle: true});
+        Axes.drawOne(gd, ya, {skipTitle: true});
 
         function redrawObjs(objArray, method, shortCircuit) {
             for(i = 0; i < objArray.length; i++) {
