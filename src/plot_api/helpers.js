@@ -318,12 +318,12 @@ exports.cleanData = function(data) {
         }
 
         // scl->scale, reversescl->reversescale
-        if('scl' in trace) {
-            if(!('colorscale' in trace)) { trace.colorscale = trace.scl; }
+        if('scl' in trace && !('colorscale' in trace)) {
+            trace.colorscale = trace.scl;
             delete trace.scl;
         }
-        if('reversescl' in trace) {
-            if(!('reversescale' in trace)) { trace.reversescale = trace.reversescl; }
+        if('reversescl' in trace && !('reversescale' in trace)) {
+            trace.reversescale = trace.reversescl;
             delete trace.reversescl;
         }
 
