@@ -22,11 +22,16 @@ module.exports = function(trace) {
     var nodeCount = nodeSpec.label.length
 
     // Grouping
+
+
     var groups = trace.groups;
     var groupCount = groups.length;
     var groupLookup = {};
     groups.forEach(function(group, groupIndex) {
+        // Create a node per group
         nodeSpec.label[nodeCount + groupIndex] = 'Grouped ' + groupIndex;
+
+        // Build a lookup table to quickly find in which group a node is
         if(Array.isArray(group)) {
             group.forEach(function(nodeIndex) {
                 groupLookup[nodeIndex] = nodeCount + groupIndex;

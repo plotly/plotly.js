@@ -76,7 +76,10 @@ function sankeyModel(layout, d, traceIndex) {
             x0: groupingNode.x0,
             x1: groupingNode.x1,
             y0: groupingNode.y0,
-            y1: groupingNode.y1
+            y1: groupingNode.y1,
+            partOfGroup: true,
+            sourceLinks: [],
+            targetLinks: []
         });
     });
 
@@ -181,6 +184,9 @@ function nodeModel(d, n, i) {
     var visibleThickness = n.x1 - n.x0;
     var visibleLength = Math.max(0.5, (n.y1 - n.y0));
 
+    var partOfGroup = false;
+    if(n.partOfGroup) partOfGroup = n.partOfGroup;
+
     var key = n.key || n.pointNumber;
 
     // for event data
@@ -194,6 +200,7 @@ function nodeModel(d, n, i) {
     return {
         index: n.pointNumber,
         key: key,
+        partOfGroup: partOfGroup,
         traceId: d.key,
         node: n,
         nodePad: d.nodePad,
@@ -229,7 +236,6 @@ function nodeModel(d, n, i) {
 
 function updateNodePositions(sankeyNode) {
     sankeyNode
-        .style('opacity', 1)
         .attr('transform', function(d) {
             return 'translate(' + d.node.x0.toFixed(3) + ', ' + (d.node.y0).toFixed(3) + ')';
         });
@@ -278,19 +284,19 @@ function attachPointerEvents(selection, sankey, eventSet) {
     selection
         .on('.basic', null) // remove any preexisting handlers
         .on('mouseover.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.hover(this, d, sankey);
                 d.interactionState.hovered = [this, d];
             }
         })
         .on('mousemove.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.follow(this, d);
                 d.interactionState.hovered = [this, d];
             }
         })
         .on('mouseout.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
@@ -300,7 +306,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.select(this, d, sankey);
             }
         });
@@ -375,7 +381,9 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 function attachForce(sankeyNode, forceKey, d) {
     // Attach force to nodes in the same column (same x coordinate)
     switchToForceFormat(d.graph.nodes);
-    var nodes = d.graph.nodes.filter(function(n) {return n.originalX === d.node.originalX;});
+    var nodes = d.graph.nodes
+      .filter(function(n) {return n.originalX === d.node.originalX;})
+      .filter(function(n) {return !n.partOfGroup;});
     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
         .alphaDecay(0)
         .force('collide', d3Force.forceCollide()
@@ -609,20 +617,18 @@ module.exports = function(svg, calcData, layout, callbacks) {
         .append('g')
         // .style('opacity', 0)
         .classed(c.cn.sankeyNode, true)
-        .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(updateNodePositions)
         .style('opacity', 0)
-        .transition()
-        .ease(c.ease).duration(c.duration)
-        .style('opacity', 1);
 
 
     sankeyNode
+        .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
 
     sankeyNode.transition()
         .ease(c.ease).duration(c.duration)
-        .call(updateNodePositions);
+        .call(updateNodePositions)
+        .style('opacity', function(n) { return n.partOfGroup ? 0 : 1;});
 
     sankeyNode.exit().transition()
         .ease(c.ease).duration(c.duration)
