@@ -70,7 +70,7 @@ function sankeyModel(layout, d, traceIndex) {
         var groupingNode = graph.nodes.find(function(node) {
             return node.pointNumber === groupIndex;
         });
-        console.log(groupingNode);
+        groupingNode.key = groupingNode.key + ',' + nodePointNumber;
         graph.nodes.push({
             pointNumber: parseInt(nodePointNumber),
             x0: groupingNode.x0,
@@ -181,8 +181,7 @@ function nodeModel(d, n, i) {
     var visibleThickness = n.x1 - n.x0;
     var visibleLength = Math.max(0.5, (n.y1 - n.y0));
 
-    var basicKey = n.label;
-    var key = n.pointNumber;
+    var key = n.key || n.pointNumber;
 
     // for event data
     n.trace = d.trace;
