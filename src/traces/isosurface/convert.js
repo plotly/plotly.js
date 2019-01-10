@@ -269,12 +269,24 @@ function generateIsosurfaceMesh(data) {
     function inRange(value) {
         return (vMin <= value && value <= vMax);
     }
+/*
+    function inRange(value) {
 
-    function tryCreateTetra(a, b, c, d, isCore, debug) {
+        if(vMin <= value && value <= vMax) return true;
 
-        var indecies = [a, b, c, d];
+        var PA = Math.abs(value - vMin);
+        var PB = Math.abs(value - vMax);
+        var closeness = Math.min(PA, PB) / vDif;
+
+        // tolerate certain error i.e. based on distances ...
+        if(closeness < 0.001) return true;
+
+        return false;
+    }
+*/
+
+    function getXYZV(indecies) {
         var xyzv = [];
-
         for(var q = 0; q < 4; q++) {
             var index = indecies[q];
 
@@ -291,6 +303,183 @@ function generateIsosurfaceMesh(data) {
                 ]
             );
         }
+
+        return xyzv;
+    }
+
+
+
+
+
+
+
+
+
+    function tryCreateTri(a, b, c, isCore, debug) {
+        var indecies = [a, b, c];
+        var xyzv = [];
+
+        for(var g = 0; g < 3; g++) {
+            var index = indecies[g];
+
+            var k = Math.floor(index / (width * height));
+            var j = Math.floor((index - k * width * height) / width);
+            var i = Math.floor(index - k * width * height - j * width);
+
+            xyzv.push(
+                [
+                    Xs[i],
+                    Ys[j],
+                    Zs[k],
+                    data.value[index]
+                ]
+            );
+        }
+
+        var A = xyzv[0];
+        var B = xyzv[1];
+        var C = xyzv[2];
+
+        var vA = A[3];
+        var vB = B[3];
+        var vC = C[3];
+
+        var aOk = inRange(vA);
+        var bOk = inRange(vB);
+        var cOk = inRange(vC);
+
+        if(aOk && bOk && cOk) {
+            drawTri(debug, xyzv);
+            return;
+        }
+
+        if(!aOk && !bOk && !cOk) {
+            return;
+        }
+
+        var p1, p2;
+
+        if(aOk && bOk) {
+            p1 = calcIntersection(C, A);
+            p2 = calcIntersection(C, B);
+
+            drawTri(debug, [A, B, p2]);
+            drawTri(debug, [p2, p1, A]);
+            return;
+        }
+
+        if(bOk && cOk) {
+            p1 = calcIntersection(A, B);
+            p2 = calcIntersection(A, C);
+
+            drawTri(debug, [B, C, p2]);
+            drawTri(debug, [p2, p1, B]);
+            return;
+        }
+
+        if(cOk && aOk) {
+            p1 = calcIntersection(B, C);
+            p2 = calcIntersection(B, A);
+
+            drawTri(debug, [C, A, p2]);
+            drawTri(debug, [p2, p1, C]);
+            return;
+        }
+
+        if(aOk) {
+            p1 = calcIntersection(B, A);
+            p2 = calcIntersection(C, A);
+
+            drawTri(debug, [A, p1, p2]);
+            return;
+        }
+
+        if(bOk) {
+            p1 = calcIntersection(C, B);
+            p2 = calcIntersection(A, B);
+
+            drawTri(debug, [B, p1, p2]);
+            return;
+        }
+
+        if(cOk) {
+            p1 = calcIntersection(A, C);
+            p2 = calcIntersection(B, C);
+
+            drawTri(debug, [C, p1, p2]);
+            return;
+        }
+    }
+
+
+
+/*
+    function tryCreateTri(a, b, c, isCore, debug) {
+
+        var xyzv = getXYZV([a, b, c]);
+
+        var ok = [
+            inRange(xyzv[0][3]),
+            inRange(xyzv[1][3]),
+            inRange(xyzv[2][3])
+        ];
+
+        if(!ok[0] && !ok[1] && !ok[2]) {
+            return;
+        }
+
+        if(ok[0] && ok[1] && ok[2]) {
+            if(isCore) {
+                drawTetra(debug, xyzv);
+            }
+            return;
+        }
+
+        [
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 2, 0]
+        ].forEach(function(e) {
+            if(ok[e[0]] && ok[e[1]]) {
+                var A = xyzv[e[0]];
+                var B = xyzv[e[1]];
+                var C = xyzv[e[2]];
+
+                var p1 = calcIntersection(C, A);
+                var p2 = calcIntersection(C, B);
+
+                if(isCore) {
+                    drawQuad(debug, [A, B, p2, p1]);
+                }
+                return;
+            }
+        });
+
+        [
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 2, 0]
+        ].forEach(function(e) {
+            if(ok[e[0]]) {
+                var A = xyzv[e[0]];
+                var B = xyzv[e[1]];
+                var C = xyzv[e[2]];
+
+                var p1 = calcIntersection(C, A);
+                var p2 = calcIntersection(C, B);
+
+                if(isCore) {
+                    drawQuad(debug, [A, B, p2, p1]);
+                }
+                return;
+            }
+        });
+
+    }
+*/
+    function tryCreateTetra(a, b, c, d, isCore, debug) {
+
+        var xyzv = getXYZV([a, b, c, d]);
 
         var ok = [
             inRange(xyzv[0][3]),
@@ -403,6 +592,12 @@ function generateIsosurfaceMesh(data) {
         tryCreateTetra(p001, p010, p100, p111, true);
     }
 
+    function addRect(a, b, c, d) {
+        tryCreateTri(a, b, c, true);
+        tryCreateTri(c, d, a, true);
+    }
+
+/*
     if(data.isocap && vDif > 0) {
         for(k = 1; k < depth; k++) {
             for(j = 1; j < height; j++) {
@@ -420,6 +615,72 @@ function generateIsosurfaceMesh(data) {
                         addCube(p000, p001, p010, p011, p100, p101, p110, p111);
                     } else {
                         addCube(p111, p110, p101, p100, p011, p010, p001, p000);
+                    }
+                }
+            }
+        }
+    }
+*/
+
+    if(data.isocap && vDif > 0) {
+
+        var p00, p01, p10, p11;
+
+        for(k = 0; k < depth; k += depth - 1) {
+            beginSection();
+
+            for(j = 1; j < height; j++) {
+                for(i = 1; i < width; i++) {
+
+                    p00 = getIndex(i - 1, j - 1, k);
+                    p01 = getIndex(i - 1, j, k);
+                    p10 = getIndex(i, j - 1, k);
+                    p11 = getIndex(i, j, k);
+
+                    if((i + j + k) % 2 === 0) {
+                        addRect(p00, p01, p11, p10);
+                    } else {
+                        addRect(p01, p11, p10, p00);
+                    }
+                }
+            }
+        }
+
+        for(i = 0; i < width; i += width - 1) {
+            beginSection();
+
+            for(k = 1; k < depth; k++) {
+                for(j = 1; j < height; j++) {
+
+                    p00 = getIndex(i, j - 1, k - 1);
+                    p01 = getIndex(i, j - 1, k);
+                    p10 = getIndex(i, j, k - 1);
+                    p11 = getIndex(i, j, k);
+
+                    if((i + j + k) % 2 === 0) {
+                        addRect(p00, p01, p11, p10);
+                    } else {
+                        addRect(p01, p11, p10, p00);
+                    }
+                }
+            }
+        }
+
+        for(j = 0; j < height; j += height - 1) {
+            beginSection();
+
+            for(i = 1; i < width; i++) {
+                for(k = 1; k < depth; k++) {
+
+                    p00 = getIndex(i - 1, j, k - 1);
+                    p01 = getIndex(i, j, k - 1);
+                    p10 = getIndex(i - 1, j, k);
+                    p11 = getIndex(i, j, k);
+
+                    if((i + j + k) % 2 === 0) {
+                        addRect(p00, p01, p11, p10);
+                    } else {
+                        addRect(p01, p11, p10, p00);
                     }
                 }
             }
