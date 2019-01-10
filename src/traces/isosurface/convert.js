@@ -143,7 +143,7 @@ function generateIsosurfaceMesh(data) {
     var numVertices = 0;
     var beginVertextLength;
 
-    function beginSection() {
+    function beginGroup() {
         beginVertextLength = numVertices;
     }
 
@@ -194,7 +194,7 @@ function generateIsosurfaceMesh(data) {
 
     function drawTri(debug, xyzv) {
 
-        beginSection(); // <<<<<<<<<<<<<<<<<<
+        beginGroup(); // <<<<<<<<<<<<<<<<<<
 
         var allXYZVs = [];
         if(activeOpacity >= 1) { allXYZVs = [xyzv]; }
@@ -270,11 +270,12 @@ function generateIsosurfaceMesh(data) {
         }
         return result;
     }
-
+/*
     function inRange(value) {
         return (vMin <= value && value <= vMax);
     }
-/*
+*/
+
     function inRange(value) {
 
         if(vMin <= value && value <= vMax) return true;
@@ -288,7 +289,6 @@ function generateIsosurfaceMesh(data) {
 
         return false;
     }
-*/
 
     function getXYZV(indecies) {
         var xyzv = [];
@@ -494,40 +494,31 @@ function generateIsosurfaceMesh(data) {
         tryCreateTri(c, d, a, true);
     }
 
-    if(data.isocap && vDif > 0) {
 
-        for(k = 1; k < depth; k++) {
-            for(j = 1; j < height; j++) {
-                for(i = 1; i < width; i++) {
-                    var p000 = getIndex(i - 1, j - 1, k - 1);
-                    var p001 = getIndex(i - 1, j - 1, k);
-                    var p010 = getIndex(i - 1, j, k - 1);
-                    var p011 = getIndex(i - 1, j, k);
-                    var p100 = getIndex(i, j - 1, k - 1);
-                    var p101 = getIndex(i, j - 1, k);
-                    var p110 = getIndex(i, j, k - 1);
-                    var p111 = getIndex(i, j, k);
+    for(k = 1; k < depth; k++) {
+        for(j = 1; j < height; j++) {
+            for(i = 1; i < width; i++) {
+                var p000 = getIndex(i - 1, j - 1, k - 1);
+                var p001 = getIndex(i - 1, j - 1, k);
+                var p010 = getIndex(i - 1, j, k - 1);
+                var p011 = getIndex(i - 1, j, k);
+                var p100 = getIndex(i, j - 1, k - 1);
+                var p101 = getIndex(i, j - 1, k);
+                var p110 = getIndex(i, j, k - 1);
+                var p111 = getIndex(i, j, k);
 
-                    if((i + j + k) % 2 === 0) {
-                        addCube(p000, p001, p010, p011, p100, p101, p110, p111);
-                    } else {
-                        addCube(p111, p110, p101, p100, p011, p010, p001, p000);
-                    }
+                if((i + j + k) % 2 === 0) {
+                    addCube(p000, p001, p010, p011, p100, p101, p110, p111);
+                } else {
+                    addCube(p111, p110, p101, p100, p011, p010, p001, p000);
                 }
             }
         }
-
-        setOpacity(1);
-
-        drawCapsX();
-        drawCapsY();
-        drawCapsZ();
-
     }
 
-    function drawCapsX() {
-        for(var i = 0; i < width; i += width - 1) {
-            beginSection();
+    function drawSectionsX(items) {
+        items.forEach(function(i) {
+            beginGroup();
 
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
@@ -544,12 +535,12 @@ function generateIsosurfaceMesh(data) {
                     }
                 }
             }
-        }
+        });
     }
 
-    function drawCapsY() {
-        for(var j = 0; j < height; j += height - 1) {
-            beginSection();
+    function drawSectionsY(items) {
+        items.forEach(function(j) {
+            beginGroup();
 
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
@@ -566,12 +557,12 @@ function generateIsosurfaceMesh(data) {
                     }
                 }
             }
-        }
+        });
     }
 
-    function drawCapsZ() {
-        for(var k = 0; k < depth; k += depth - 1) {
-            beginSection();
+    function drawSectionsZ(items) {
+        items.forEach(function(k) {
+            beginGroup();
 
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
@@ -588,8 +579,18 @@ function generateIsosurfaceMesh(data) {
                     }
                 }
             }
-        }
+        });
     }
+
+    if(data.isocap && vDif > 0) {
+
+        setOpacity(1);
+
+        drawSectionsX([0, width - 1]);
+        drawSectionsY([0, height - 1]);
+        drawSectionsZ([0, depth - 1]);
+    }
+
 
 
     for(var layer = 0; layer < data.isovalue.length; layer++) {
