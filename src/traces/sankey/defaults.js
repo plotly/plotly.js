@@ -21,6 +21,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    // group attribute
+    coerce('groups');
+
     var hoverlabelDefault = Lib.extendDeep(layout.hoverlabel, traceIn.hoverlabel);
 
     // node attributes

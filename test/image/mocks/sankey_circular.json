@@ -2,8 +2,9 @@
     "data": [
         {
             "type": "sankey",
+            "groups": [[]],
             "node": {
-                "pad": 1,
+                "pad": 10,
                 "label": ["0", "1", "2", "3", "4", "5", "6"]
             },
             "link": {

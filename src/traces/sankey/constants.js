@@ -28,6 +28,8 @@ module.exports = {
         nodeCentered: 'node-entered',
         nodeLabelGuide: 'node-label-guide',
         nodeLabel: 'node-label',
-        nodeLabelTextPath: 'node-label-text-path'
+        nodeLabelTextPath: 'node-label-text-path',
+        sankeyColumnSet: 'sankey-column-set',
+        sankeyColumn: 'sankey-node'
     }
 };

@@ -46,7 +46,7 @@ function sankeyModel(layout, d, traceIndex) {
             .sankeyCircular()
             .circularLinkGap(2)
             .nodeId(function(d) {
-                return d.index;
+                return d.pointNumber;
             });
     } else {
         sankey = d3Sankey.sankey();
@@ -60,11 +60,25 @@ function sankeyModel(layout, d, traceIndex) {
       .nodes(nodes)
       .links(links);
 
-    var graph = sankey();
-
     if(sankey.nodePadding() < nodePad) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
+
+    var graph = sankey();
+    Object.keys(calcData._groupLookup).forEach(function(nodePointNumber) {
+        var groupIndex = parseInt(calcData._groupLookup[nodePointNumber]);
+        var groupingNode = graph.nodes.find(function(node) {
+            return node.pointNumber === groupIndex;
+        });
+        console.log(groupingNode);
+        graph.nodes.push({
+            pointNumber: parseInt(nodePointNumber),
+            x0: groupingNode.x0,
+            x1: groupingNode.x1,
+            y0: groupingNode.y0,
+            y1: groupingNode.y1
+        });
+    });
 
     return {
         circular: circular,
@@ -95,6 +109,14 @@ function sankeyModel(layout, d, traceIndex) {
             hovered: false
         }
     };
+}
+
+function columnModel(d, n) {
+    var column = {
+        key: 'column-' + n.column,
+        coords: [[ (n.x0 + n.x1) / 2, 0], [ (n.x0 + n.x1) / 2, d.height]]
+    };
+    return column;
 }
 
 function linkModel(d, l, i) {
@@ -160,7 +182,7 @@ function nodeModel(d, n, i) {
     var visibleLength = Math.max(0.5, (n.y1 - n.y0));
 
     var basicKey = n.label;
-    var key = basicKey + '__' + i;
+    var key = n.pointNumber;
 
     // for event data
     n.trace = d.trace;
@@ -208,6 +230,7 @@ function nodeModel(d, n, i) {
 
 function updateNodePositions(sankeyNode) {
     sankeyNode
+        .style('opacity', 1)
         .attr('transform', function(d) {
             return 'translate(' + d.node.x0.toFixed(3) + ', ' + (d.node.y0).toFixed(3) + ')';
         });
@@ -497,9 +520,13 @@ module.exports = function(svg, calcData, layout, callbacks) {
           .enter().append('path')
           .classed(c.cn.sankeyLink, true)
           .attr('d', linkPath())
-          .call(attachPointerEvents, sankey, callbacks.linkEvents);
+          .call(attachPointerEvents, sankey, callbacks.linkEvents)
+          .style('opacity', 0);
 
     sankeyLink
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .style('opacity', 1)
         .style('stroke', function(d) {
             if(!d.circular) return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
             return d.tinyColorHue;
@@ -517,16 +544,42 @@ module.exports = function(svg, calcData, layout, callbacks) {
         .style('stroke-width', function(d) {
             if(d.circular) return d.link.width;
             return salientEnough(d) ? d.linkLineWidth : 1;
-        });
-
-    sankeyLink.transition()
-       .ease(c.ease).duration(c.duration)
-       .attr('d', linkPath());
+        })
+        .attr('d', linkPath());
 
     sankeyLink.exit().transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
+
+    var sankeyColumnSet = sankey.selectAll('.sankeyColumnSet')
+        .data(repeat, keyFun);
+
+    sankeyColumnSet.enter()
+        .append('g')
+        .classed('sankeyColumnSet', true);
+
+    var sankeyColumn = sankeyColumnSet.selectAll('.sankeyColumn')
+        .data(function(d) {
+            var nodes = d.graph.nodes;
+            return nodes
+              .map(columnModel.bind(null, d));
+        }, keyFun);
+
+    sankeyColumn.enter()
+        .append('g')
+        .classed('sankeyColumn', true);
+
+    sankeyColumn
+        .append('path')
+        .attr('d', function(column) {
+            var d = column.coords;
+            return 'M' + d[0][0] + ',' + d[0][1] + 'V' + d[1][0] + ',' + d[1][1];
+        })
+        .style('stroke-width', function() {return '0px';})
+        .style('stroke-dasharray', function() { return '1 1';})
+        .style('stroke', function() {return 'black';})
+        .style('stroke-opacity', function() { return 0.4;});
 
     var sankeyNodeSet = sankey.selectAll('.' + c.cn.sankeyNodeSet)
         .data(repeat, keyFun);
@@ -549,15 +602,21 @@ module.exports = function(svg, calcData, layout, callbacks) {
             var nodes = d.graph.nodes;
             persistOriginalPlace(nodes);
             return nodes
-                .filter(function(n) {return n.value;})
+                // .filter(function(n) {return n.value;})
                 .map(nodeModel.bind(null, d));
         }, keyFun);
 
     sankeyNode.enter()
         .append('g')
+        // .style('opacity', 0)
         .classed(c.cn.sankeyNode, true)
+        .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(updateNodePositions)
-        .call(attachPointerEvents, sankey, callbacks.nodeEvents);
+        .style('opacity', 0)
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .style('opacity', 1);
+
 
     sankeyNode
         .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink

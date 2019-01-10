@@ -47,6 +47,8 @@ module.exports = function calc(gd, trace) {
 
     return wrap({
         circular: circular,
+        _groups: result.groups,
+        _groupLookup: result.groupLookup,
         _nodes: result.nodes,
         _links: result.links
     });

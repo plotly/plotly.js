@@ -80,6 +80,13 @@ var attrs = module.exports = overrideAll({
         description: 'Sets the font for node labels'
     }),
 
+    groups: {
+        valType: 'any',
+        dflt: [[]],
+        role: 'calc',
+        description: 'Grouping of nodes.'
+    },
+
     node: {
         label: {
             valType: 'data_array',
