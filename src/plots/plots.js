@@ -563,7 +563,10 @@ function getTraceUids(oldFullData, newData) {
     }
 
     for(i = 0; i < len; i++) {
-        if(tryUid(newData[i].uid, i)) continue;
+        var newUid = newData[i].uid;
+        if(typeof newUid === 'number') newUid = String(newUid);
+
+        if(tryUid(newUid, i)) continue;
         if(i < oldLen && tryUid(oldFullInput[i].uid, i)) continue;
         setUid(Lib.randstr(seenUids), i);
     }
