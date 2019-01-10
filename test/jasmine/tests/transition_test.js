@@ -3,6 +3,7 @@ var Lib = require('@src/lib');
 var Plots = Plotly.Plots;
 var plotApiHelpers = require('@src/plot_api/helpers');
 var Registry = require('@src/registry');
+var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -791,6 +792,90 @@ describe('Plotly.react transitions:', function() {
             for(var k in store) {
                 expect(store[k]).toHaveBeenCalledTimes(1);
             }
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should preserve trace object-constancy (out-of-order case)', function(done) {
+        var data1 = [{
+            uid: 1,
+            x: [5, 6, 7],
+            y: [5, 6, 7],
+            marker: {color: 'blue', size: 10}
+        }, {
+            uid: 2,
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            marker: {color: 'red', size: 10}
+        }];
+
+        var data2 = [{
+            uid: 2,
+            x: [5, 6, 7],
+            y: [5, 6, 7],
+            marker: {color: 'yellow', size: 10}
+        }, {
+            uid: 1,
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            marker: {color: 'green', size: 10}
+        }];
+
+        var layout = {
+            xaxis: {range: [-1, 8]},
+            yaxis: {range: [-1, 8]},
+            showlegend: false,
+            transition: {duration: 10}
+        };
+
+        var traceNodes;
+
+        function _assertTraceNodes(msg, traceNodesOrdered, ptsXY) {
+            var traceNodesNew = gd.querySelectorAll('.scatterlayer > .trace');
+            expect(traceNodesNew[0]).toBe(traceNodesOrdered[0], 'same trace node 0 - ' + msg);
+            expect(traceNodesNew[1]).toBe(traceNodesOrdered[1], 'same trace node 1 - ' + msg);
+
+            var pt0 = traceNodes[0].querySelector('.points > path');
+            var pt0XY = Drawing.getTranslate(pt0);
+            expect(pt0XY.x).toBeCloseTo(ptsXY[0][0], 1, 'pt0 x - ' + msg);
+            expect(pt0XY.y).toBeCloseTo(ptsXY[0][1], 1, 'pt0 y - ' + msg);
+
+            var pt1 = traceNodes[1].querySelector('.points > path');
+            var pt1XY = Drawing.getTranslate(pt1);
+            expect(pt1XY.x).toBeCloseTo(ptsXY[1][0], 1, 'pt1 x - ' + msg);
+            expect(pt1XY.y).toBeCloseTo(ptsXY[1][1], 1, 'pt1 y - ' + msg);
+        }
+
+        Plotly.react(gd, data1, layout)
+        .then(function() {
+            methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
+            methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes2']);
+            addSpies();
+
+            traceNodes = gd.querySelectorAll('.scatterlayer > .trace');
+            _assertTraceNodes('base', traceNodes, [[360, 90], [120, 210]]);
+        })
+        .then(function() { return Plotly.react(gd, data2, layout); })
+        .then(function() {
+            var msg = 'transition into data2';
+            assertSpies(msg, [
+                [Plots, 'transition2', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes2', 0]
+            ]);
+            // N.B. order is reversed, but the nodes are the *same*
+            _assertTraceNodes(msg, [traceNodes[1], traceNodes[0]], [[120, 210], [360, 90]]);
+        })
+        .then(function() { return Plotly.react(gd, data1, layout); })
+        .then(function() {
+            var msg = 'transition back to data1';
+            assertSpies(msg, [
+                [Plots, 'transition2', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes2', 0]
+            ]);
+            _assertTraceNodes(msg, traceNodes, [[360, 90], [120, 210]]);
         })
         .catch(failTest)
         .then(done);
