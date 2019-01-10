@@ -72,6 +72,10 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         // in the axes popover to hide domain for the overlaying axis.
         // perhaps I should make a private version _domain that all axes get???
         var domain = coerce('domain', dfltDomain);
+
+        // according to https://www.npmjs.com/package/canvas-size
+        // the minimum value of max canvas width across browsers and devices is 4096
+        // which applied in the calculation below:
         if(domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
         Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
     }
