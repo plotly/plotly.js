@@ -199,7 +199,7 @@ function generateIsosurfaceMesh(data) {
             var C = xyzv[2];
             var G = getCenter(A, B, C);
 
-            var r = Math.sqrt(opacity);
+            var r = Math.sqrt(1 - opacity);
             var p1 = getBetween(G, A, r);
             var p2 = getBetween(G, B, r);
             var p3 = getBetween(G, C, r);
