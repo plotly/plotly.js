@@ -2819,7 +2819,7 @@ exports.react = function(gd, data, layout, config) {
 };
 
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
-    if(oldFullData.length !== newFullData.length) {
+    if(!transition && oldFullData.length !== newFullData.length) {
         return {
             fullReplot: true,
             calc: true
@@ -2849,12 +2849,14 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
     var seenUIDs = {};
 
     for(i = 0; i < oldFullData.length; i++) {
-        trace = newFullData[i]._fullInput;
-        if(Plots.hasMakesDataTransform(trace)) trace = newFullData[i];
-        if(seenUIDs[trace.uid]) continue;
-        seenUIDs[trace.uid] = 1;
+        if(newFullData[i]) {
+            trace = newFullData[i]._fullInput;
+            if(Plots.hasMakesDataTransform(trace)) trace = newFullData[i];
+            if(seenUIDs[trace.uid]) continue;
+            seenUIDs[trace.uid] = 1;
 
-        getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
+            getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
+        }
     }
 
     if(flags.calc || flags.plot) {

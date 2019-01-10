@@ -880,4 +880,90 @@ describe('Plotly.react transitions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should preserve trace object-constancy (# of traces mismatch case)', function(done) {
+        var data1 = [{
+            uid: 1,
+            x: [5, 6, 7],
+            y: [5, 6, 7],
+            marker: {color: 'blue', size: 10}
+        }, {
+            uid: 2,
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            marker: {color: 'red', size: 10}
+        }];
+
+        var data2 = [{
+            uid: 1,
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            marker: {color: 'blue', size: 10}
+        }];
+
+        var layout = {
+            xaxis: {range: [-1, 8]},
+            yaxis: {range: [-1, 8]},
+            showlegend: false,
+            transition: {duration: 10}
+        };
+
+        var traceNodes;
+
+        function _assertTraceNodes(msg, traceNodesOrdered, ptsXY) {
+            var traceNodesNew = gd.querySelectorAll('.scatterlayer > .trace');
+            expect(traceNodesNew.length).toBe(traceNodesOrdered.length, 'same # of traces - ' + msg);
+
+            for(var i = 0; i < traceNodesNew.length; i++) {
+                var node = traceNodesOrdered[i];
+
+                expect(traceNodesNew[i]).toBe(node, 'same trace node ' + i + ' - ' + msg);
+
+                var pt0 = node.querySelector('.points > path');
+                var pt0XY = Drawing.getTranslate(pt0);
+                expect(pt0XY.x).toBeCloseTo(ptsXY[i][0], 1, 'pt' + i + ' x - ' + msg);
+                expect(pt0XY.y).toBeCloseTo(ptsXY[i][1], 1, 'pt' + i + ' y - ' + msg);
+            }
+        }
+
+        Plotly.react(gd, data1, layout)
+        .then(function() {
+            methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
+            methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes2']);
+            addSpies();
+
+            traceNodes = gd.querySelectorAll('.scatterlayer > .trace');
+            _assertTraceNodes('base', traceNodes, [[360, 90], [120, 210]]);
+        })
+        .then(function() { return Plotly.react(gd, data2, layout); })
+        .then(function() {
+            var msg = 'transition into data2';
+            assertSpies(msg, [
+                [Plots, 'transition2', 1],
+                [Registry, 'call', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 2],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes2', 0]
+            ]);
+
+            // N.B. traceNodes[1] is gone, but traceNodes[0] is the same
+            _assertTraceNodes(msg, [traceNodes[0]], [[120, 210]]);
+        })
+        .then(function() { return Plotly.react(gd, data1, layout); })
+        .then(function() {
+            var msg = 'transition back to data1';
+            assertSpies(msg, [
+                [Plots, 'transition2', 1],
+                [Registry, 'call', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 2],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes2', 0]
+            ]);
+
+            // N.B. we have a "new" traceNodes[1] here,
+            // the old one get removed from the DOM when transitioning into data2
+            var traceNodesNew = gd.querySelectorAll('.scatterlayer > .trace');
+            _assertTraceNodes(msg, [traceNodes[0], traceNodesNew[1]], [[360, 90], [120, 210]]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
