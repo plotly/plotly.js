@@ -148,7 +148,7 @@ function generateIsosurfaceMesh(data) {
     }
 
     function getVertexId(x, y, z) {
-        for(var f = beginVertextLength; f < allVs.length - 1; f++) {
+        for(var f = beginVertextLength; f < allVs.length; f++) {
             if(
                 x === allXs[f] &&
                 y === allYs[f] &&
@@ -261,8 +261,8 @@ function generateIsosurfaceMesh(data) {
 
         var value = dst[3];
 
-        if(value < vMin) value = vMin;
-        else if(value > vMax) value = vMax;
+        if(value <= vMin) value = vMin;
+        else if(value >= vMax) value = vMax;
         else return result;
 
         var ratio = (value - dst[3]) / (src[3] - dst[3]);
@@ -274,9 +274,8 @@ function generateIsosurfaceMesh(data) {
 
     function isQuiteClose(a) {
         // tolerate certain error i.e. based on distances ...
-        return (a < 0.02);
         //return (a < 0.01);
-        //return false;
+        return (a === 0);
     }
 
     function isCloseToMin(value) {
@@ -381,9 +380,35 @@ function generateIsosurfaceMesh(data) {
 
     }
 
-    function tryCreateTetra(a, b, c, d, isCore, debug) {
+
+    function hasEqualItems(arr, indices) {
+        for (var q = 1; q < indices.length; q++) {
+            if(arr[indices[q - 1]] !== arr[indices[q]]) return false;
+        }
+        return true;
+    }
+
+    function tryCreateTetra(a, b, c, d, isCore, debug, nCalled) {
+
+        if(!nCalled) nCalled = 0;
+        nCalled++;
+        if(nCalled > 2) return;
 
         var xyzv = getXYZV([a, b, c, d]);
+
+        var min = [
+            xyzv[0][3] >= vMin,
+            xyzv[1][3] >= vMin,
+            xyzv[2][3] >= vMin,
+            xyzv[3][3] >= vMin
+        ];
+
+        var max = [
+            xyzv[0][3] <= vMax,
+            xyzv[1][3] <= vMax,
+            xyzv[2][3] <= vMax,
+            xyzv[3][3] <= vMax
+        ];
 
         var ok = [
             inRange(xyzv[0][3]),
@@ -391,11 +416,40 @@ function generateIsosurfaceMesh(data) {
             inRange(xyzv[2][3]),
             inRange(xyzv[3][3])
         ];
-/*
+
         if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
-            return false;
+
+            if (
+                min[0] || min[1] || min[2] || min[3] ||
+                max[0] || max[1] || max[2] || max[3]
+            ) {
+                //console.log("solving... nCalled=", nCalled);
+                //console.log("max:", max[0], max[1], max[2], max[3]);
+                //console.log("max:", min[0], min[1], min[2], min[3]);
+
+                var AB = getBetween(a, b, 0.5);
+                var AC = getBetween(a, c, 0.5);
+                var AD = getBetween(a, d, 0.5);
+                var BC = getBetween(b, c, 0.5);
+                var BD = getBetween(b, d, 0.5);
+                var CD = getBetween(c, d, 0.5);
+
+                var r0 = tryCreateTetra(a, AB, AC, AD, isCore, debug, nCalled);
+                var r1 = tryCreateTetra(b, AB, BC, BD, isCore, debug, nCalled);
+                var r2 = tryCreateTetra(c, AC, BC, CD, isCore, debug, nCalled);
+                var r3 = tryCreateTetra(d, AD, BD, CD, isCore, debug, nCalled);
+
+                var r4 = tryCreateTetra(AB, AC, AD, CD, isCore, debug, nCalled);
+                var r5 = tryCreateTetra(AB, AC, BC, CD, isCore, debug, nCalled);
+                var r6 = tryCreateTetra(AB, AD, BD, CD, isCore, debug, nCalled);
+                var r7 = tryCreateTetra(AB, BC, BD, CD, isCore, debug, nCalled);
+
+                return (r0 || r1 || r2 || r3 || r4 || r5 || r6 || r7);
+            } else {
+                return false;
+            }
         }
-*/
+
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
             if(isCore) {
                 drawTetra(debug, xyzv);
@@ -409,7 +463,10 @@ function generateIsosurfaceMesh(data) {
             [0, 2, 3, 1],
             [1, 2, 3, 0]
         ].forEach(function(e) {
-            if(ok[e[0]] && ok[e[1]] && ok[e[2]]) {
+            if(ok[e[0]] && ok[e[1]] && ok[e[2]] && (
+                hasEqualItems(min, [e[0], e[1], e[2]]) &&
+                hasEqualItems(max, [e[0], e[1], e[2]])
+            )) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
@@ -438,7 +495,10 @@ function generateIsosurfaceMesh(data) {
             [1, 3, 0, 2],
             [2, 3, 0, 1]
         ].forEach(function(e) {
-            if(ok[e[0]] && ok[e[1]]) {
+            if(ok[e[0]] && ok[e[1]] && (
+                hasEqualItems(min, [e[0], e[1]]) &&
+                hasEqualItems(max, [e[0], e[1]])
+            )) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
