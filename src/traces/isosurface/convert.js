@@ -261,9 +261,8 @@ function generateIsosurfaceMesh(data) {
 
         var value = dst[3];
 
-        if(value <= vMin) value = vMin;
-        else if(value >= vMax) value = vMax;
-        else return result;
+        if(value < vMin) value = vMin;
+        if(value > vMax) value = vMax;
 
         var ratio = (value - dst[3]) / (src[3] - dst[3]);
         for(var l = 0; l < 4; l++) {
@@ -341,6 +340,8 @@ function generateIsosurfaceMesh(data) {
             return true;
         }
 
+        var shouldReturn = false;
+
         [
             [0, 1, 2],
             [0, 2, 1],
@@ -356,9 +357,10 @@ function generateIsosurfaceMesh(data) {
 
                 drawTri(debug, [A, B, p2]);
                 drawTri(debug, [p2, p1, A]);
-                return true;
+                shouldReturn = true;
             }
         });
+        if(shouldReturn) return shouldReturn;
 
         [
             [0, 1, 2],
@@ -374,10 +376,13 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(C, A);
 
                 drawTri(debug, [A, p1, p2]);
-                return true;
+                shouldReturn = true;
             }
         });
+        if(shouldReturn) return shouldReturn;
 
+        // We should never end up here! Anyway let's return from the function
+        return false;
     }
 
     function hasEqualItems(arr, indices) {
@@ -387,11 +392,7 @@ function generateIsosurfaceMesh(data) {
         return true;
     }
 
-    function tryCreateTetra(a, b, c, d, isCore, debug, nCalled) {
-
-        if(!nCalled) nCalled = 0;
-        nCalled++;
-        if(nCalled > 2) return;
+    function tryCreateTetra(a, b, c, d, isCore, debug) {
 
         var xyzv = getXYZV([a, b, c, d]);
 
@@ -417,39 +418,7 @@ function generateIsosurfaceMesh(data) {
         ];
 
         if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
-
-            if(
-                aboveMin[0] || aboveMin[1] || aboveMin[2] || aboveMin[3] ||
-                belowMax[0] || belowMax[1] || belowMax[2] || belowMax[3]
-            ) {
-                /*
-                // console.log("solving... nCalled=", nCalled);
-                // console.log("belowMax:", belowMax[0], belowMax[1], belowMax[2], belowMax[3]);
-                // console.log("belowMax:", aboveMin[0], aboveMin[1], aboveMin[2], aboveMin[3]);
-
-                var AB = getBetween(a, b, 0.5);
-                var AC = getBetween(a, c, 0.5);
-                var AD = getBetween(a, d, 0.5);
-                var BC = getBetween(b, c, 0.5);
-                var BD = getBetween(b, d, 0.5);
-                var CD = getBetween(c, d, 0.5);
-
-                var r0 = tryCreateTetra(a, AB, AC, AD, isCore, debug, nCalled);
-                var r1 = tryCreateTetra(b, AB, BC, BD, isCore, debug, nCalled);
-                var r2 = tryCreateTetra(c, AC, BC, CD, isCore, debug, nCalled);
-                var r3 = tryCreateTetra(d, AD, BD, CD, isCore, debug, nCalled);
-
-                var r4 = tryCreateTetra(AB, AC, AD, CD, isCore, debug, nCalled);
-                var r5 = tryCreateTetra(AB, AC, BC, CD, isCore, debug, nCalled);
-                var r6 = tryCreateTetra(AB, AD, BD, CD, isCore, debug, nCalled);
-                var r7 = tryCreateTetra(AB, BC, BD, CD, isCore, debug, nCalled);
-
-                return (r0 || r1 || r2 || r3 || r4 || r5 || r6 || r7);
-                */
-                return false;
-            } else {
-                return false;
-            }
+            return false;
         }
 
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
@@ -458,6 +427,8 @@ function generateIsosurfaceMesh(data) {
             }
             return false; // true;
         }
+
+        var shouldReturn = false;
 
         [
             [0, 1, 2, 3],
@@ -485,9 +456,10 @@ function generateIsosurfaceMesh(data) {
                     drawQuad(debug, [C, A, p1, p3]);
                     drawTri(debug, [A, B, C]);
                 }
-                return true;
+                shouldReturn = true;
             }
         });
+        if(shouldReturn) return shouldReturn;
 
         [
             [0, 1, 2, 3],
@@ -518,15 +490,16 @@ function generateIsosurfaceMesh(data) {
                     drawTri(debug, [A, p1, p4]);
                     drawTri(debug, [B, p2, p3]);
                 }
-                return true;
+                shouldReturn = true;
             }
         });
+        if(shouldReturn) return shouldReturn;
 
         [
             [0, 1, 2, 3],
             [1, 0, 2, 3],
             [2, 0, 1, 3],
-            [3, 0, 2, 1]
+            [3, 0, 1, 2]
         ].forEach(function(e) {
             if(ok[e[0]]) {
                 var A = xyzv[e[0]];
@@ -544,10 +517,13 @@ function generateIsosurfaceMesh(data) {
                     drawTri(debug, [A, p2, p3]);
                     drawTri(debug, [A, p3, p1]);
                 }
-                return true;
+                shouldReturn = true;
             }
         });
+        if(shouldReturn) return shouldReturn;
 
+        // We should never end up here! Anyway let's return from the function
+        return false;
     }
 
     function addCube(p000, p001, p010, p011, p100, p101, p110, p111) {
@@ -562,9 +538,11 @@ function generateIsosurfaceMesh(data) {
         tryCreateTetra(p110, p100, p111, p010, false);
 
         // if(a || b || c || d) {
-        if(data.isocap && vDif > 0) {
-            tryCreateTetra(p001, p010, p100, p111, true);
-        }
+        //if(data.isocap && vDif > 0) {
+            // tryCreateTetra(p001, p010, p100, p111, true);
+            tryCreateTetra(p001, p010, p100, p111, data.isocap && vDif > 0);
+            // tryCreateTetra(p001, p010, p100, p111, activeOpacity < 1);
+        //}
         // }
     }
 

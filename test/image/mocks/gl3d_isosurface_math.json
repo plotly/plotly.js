@@ -8,8 +8,8 @@
             "roughness": 0.25,
             "fresnel": 0.25
         },
-        "opacity": 1.0,
-        "colorscale": "Portland",
+        "opacity": 0.25,
+        "colorscale": "Reds",
         "reversescale": false,
         "isovalue": [4, 20],
         "isocap" : true,
@@ -1760,9 +1760,9 @@
             "zaxis": {"nticks": 12},
             "camera": {
                 "eye": {
-                    "x": -1.2,
-                    "y": 1.2,
-                    "z": 0.0
+                    "x": -1.5,
+                    "y": -0.125,
+                    "z": 0.25
                 }
             }
         }
