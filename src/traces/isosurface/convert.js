@@ -260,6 +260,7 @@ function generateIsosurfaceMesh(data) {
         var result = [dst[0], dst[1], dst[2], dst[3]];
 
         var value = dst[3];
+
         if(value < vMin) value = vMin;
         else if(value > vMax) value = vMax;
         else return result;
@@ -270,24 +271,32 @@ function generateIsosurfaceMesh(data) {
         }
         return result;
     }
-/*
-    function inRange(value) {
-        return (vMin <= value && value <= vMax);
-    }
-*/
 
-    function inRange(value) {
-
-        if(vMin <= value && value <= vMax) return true;
-
-        var PA = Math.abs(value - vMin);
-        var PB = Math.abs(value - vMax);
-        var closeness = Math.min(PA, PB) / vDif;
-
+    function isQuiteClose(a) {
         // tolerate certain error i.e. based on distances ...
-        if(closeness < 0.001) return true;
+        return (a < 0.02);
+        //return (a < 0.01);
+        //return false;
+    }
 
-        return false;
+    function isCloseToMin(value) {
+        return isQuiteClose(Math.abs(value - vMin) / vDif);
+    }
+
+    function isCloseToMax(value) {
+        return isQuiteClose(Math.abs(vMax - value) / vDif);
+    }
+
+    function isCloseToRanges(value) {
+        return (
+            isCloseToMin(value) ||
+            isCloseToMax(value)
+        );
+    }
+
+    function inRange(value) {
+        if(vMin <= value && value <= vMax) return true;
+        return isCloseToRanges(value);
     }
 
     function getXYZV(indecies) {
@@ -382,16 +391,16 @@ function generateIsosurfaceMesh(data) {
             inRange(xyzv[2][3]),
             inRange(xyzv[3][3])
         ];
-
+/*
         if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
-            return true;
+            return false;
         }
-
+*/
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
             if(isCore) {
                 drawTetra(debug, xyzv);
             }
-            return false;
+            return false; // true;
         }
 
         [
@@ -480,14 +489,17 @@ function generateIsosurfaceMesh(data) {
     }
 
     function addCube(p000, p001, p010, p011, p100, p101, p110, p111) {
+
         var a = tryCreateTetra(p000, p001, p010, p100, false);
         var b = tryCreateTetra(p011, p001, p010, p111, false);
         var c = tryCreateTetra(p101, p100, p111, p001, false);
         var d = tryCreateTetra(p110, p100, p111, p010, false);
 
-        if(a || b || c || d) {
-            tryCreateTetra(p001, p010, p100, p111, true);
-        }
+        //if(a || b || c || d) {
+            if(data.isocap && vDif > 0) {
+                tryCreateTetra(p001, p010, p100, p111, true);
+            }
+        //}
     }
 
     function addRect(a, b, c, d) {
@@ -580,8 +592,8 @@ function generateIsosurfaceMesh(data) {
 
     if(data.isocap && vDif > 0) {
 
-        // setOpacity(1);
-        setOpacity(0.5);
+        setOpacity(1);
+        //setOpacity(0.5);
 
         drawSectionsX([0, width - 1]);
         drawSectionsY([0, height - 1]);
