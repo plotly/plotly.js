@@ -82,9 +82,13 @@ var attrs = module.exports = overrideAll({
 
     groups: {
         valType: 'any',
-        dflt: [[]],
+        dflt: [],
         role: 'calc',
-        description: 'Grouping of nodes.'
+        description: [
+            'Groups of nodes.',
+            'Each group is defied by an array with the indices of nodes it contains.',
+            'Multiple groups can be specified.'
+        ].join(' ')
     },
 
     node: {

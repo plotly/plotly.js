@@ -19,13 +19,10 @@ module.exports = function(trace) {
     var links = [];
     var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
     var linkedNodes = {};
-    var nodeCount = nodeSpec.label.length
+    var nodeCount = nodeSpec.label.length;
 
     // Grouping
-
-
     var groups = trace.groups;
-    var groupCount = groups.length;
     var groupLookup = {};
     groups.forEach(function(group, groupIndex) {
         // Create a node per group
