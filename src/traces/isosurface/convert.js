@@ -139,8 +139,10 @@ function generateIsosurfaceMesh(data) {
     var vMin = Math.min.apply(null, data.isovalue);
     var vMax = Math.max.apply(null, data.isovalue);
     var vDif = vMax - vMin;
+    var vAvg = (vMax + vMin) * 0.5;
 
-    // var debug1 = 0.5 * (vMax + vMin);
+    var debug1 = 0.25 * vMax + 0.75 * vMin;
+    var debug2 = 0.75 * vMax + 0.25 * vMin;
 
     var numVertices = 0;
     var beginVertextLength;
@@ -270,6 +272,11 @@ function generateIsosurfaceMesh(data) {
         for(var s = 0; s < 4; s++) {
             result[s] = (1 - ratio) * dst[s] + ratio * src[s];
         }
+/*
+        if(?) {
+            console.log("different signs");
+        }
+*/
         return result;
     }
 
@@ -377,7 +384,7 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(B, A);
                 var p2 = calcIntersection(C, A);
 
-                drawTri(debug, [A, p1, p2]);
+                drawTri(debug, [A, p2, p1]);
                 shouldReturn = true;
             }
         });
@@ -476,7 +483,7 @@ function generateIsosurfaceMesh(data) {
                 if(isCore) {
                     drawQuad(debug, [A, B, p2, p1]);
                     drawQuad(debug, [A, B, p3, p4]);
-                    drawTri(debug, [A, p1, p4]);
+                    drawTri(debug, [A, p4, p1]);
                     drawTri(debug, [B, p2, p3]);
                 }
                 shouldReturn = true;
@@ -535,26 +542,31 @@ function generateIsosurfaceMesh(data) {
     for(k = 1; k < depth; k++) {
         for(j = 1; j < height; j++) {
             for(i = 1; i < width; i++) {
-                var p000 = getIndex(i - 1, j - 1, k - 1);
-                var p001 = getIndex(i - 1, j - 1, k);
-                var p010 = getIndex(i - 1, j, k - 1);
-                var p011 = getIndex(i - 1, j, k);
-                var p100 = getIndex(i, j - 1, k - 1);
-                var p101 = getIndex(i, j - 1, k);
-                var p110 = getIndex(i, j, k - 1);
-                var p111 = getIndex(i, j, k);
-
-                if((i + j + k) % 2 === 0) {
-                    addCube(p000, p001, p010, p011, p100, p101, p110, p111);
-                } else {
-                    addCube(p111, p110, p101, p100, p011, p010, p001, p000);
-                }
+                drawCube(
+                    getIndex(i - 1, j - 1, k - 1),
+                    getIndex(i - 1, j - 1, k),
+                    getIndex(i - 1, j, k - 1),
+                    getIndex(i - 1, j, k),
+                    getIndex(i, j - 1, k - 1),
+                    getIndex(i, j - 1, k),
+                    getIndex(i, j, k - 1),
+                    getIndex(i, j, k),
+                    (i + j + k) % 2
+                );
             }
         }
     }
 
-    function drawSlice(p00, p01, p10, p11, opt) {
-        if(opt) {
+    function drawCube(p000, p001, p010, p011, p100, p101, p110, p111, isEven) {
+        if(isEven) {
+            addCube(p000, p001, p010, p011, p100, p101, p110, p111);
+        } else {
+            addCube(p111, p110, p101, p100, p011, p010, p001, p000);
+        }
+    }
+
+    function drawSlice(p00, p01, p10, p11, isEven) {
+        if(isEven) {
             addRect(p00, p01, p11, p10);
         } else {
             addRect(p01, p11, p10, p00);
@@ -617,8 +629,8 @@ function generateIsosurfaceMesh(data) {
 
     if(data.isocap && vDif > 0) {
 
-        setOpacity(1);
-        // setOpacity(0.5);
+        // setOpacity(1);
+        setOpacity(0.5);
 
         drawSectionsX([0, width - 1]);
         drawSectionsY([0, height - 1]);
