@@ -124,22 +124,25 @@ function generateIsosurfaceMesh(data) {
     var height = data.y.length;
     var depth = data.z.length;
 
-    var i;
-    var j;
-    var k;
-
     function getIndex(i, j, k) {
         return i + width * j + width * height * k;
     }
 
-    var Xs = []; for(i = 0; i < width; i++) { Xs[i] = data.x[i]; }
-    var Ys = []; for(j = 0; j < height; j++) { Ys[j] = data.y[j]; }
-    var Zs = []; for(k = 0; k < depth; k++) { Zs[k] = data.z[k]; }
+    var Xs = [];
+    var Ys = [];
+    var Zs = [];
+
+    function fillXYZs() {
+        for(var i = 0; i < width; i++) { Xs[i] = data.x[i]; }
+        for(var j = 0; j < height; j++) { Ys[j] = data.y[j]; }
+        for(var k = 0; k < depth; k++) { Zs[k] = data.z[k]; }
+    }
+
+    fillXYZs();
 
     var vMin = Math.min.apply(null, data.isovalue);
     var vMax = Math.max.apply(null, data.isovalue);
     var vDif = vMax - vMin;
-    if(vDif === 0) return;
 
     var vAvg = (vMax + vMin) * 0.5;
 
@@ -274,38 +277,15 @@ function generateIsosurfaceMesh(data) {
         for(var s = 0; s < 4; s++) {
             result[s] = (1 - ratio) * dst[s] + ratio * src[s];
         }
-/*
-        if(?) {
-            console.log("different signs");
-        }
-*/
         return result;
     }
 
-    function isQuiteClose(a) {
-        // tolerate certain error i.e. based on distances ...
-        // return (a < 0.01);
-        return (a === 0);
-    }
-
-    function isCloseToMin(value) {
-        return isQuiteClose(Math.abs(value - vMin) / vDif);
-    }
-
-    function isCloseToMax(value) {
-        return isQuiteClose(Math.abs(vMax - value) / vDif);
-    }
-
-    function isCloseToRanges(value) {
-        return (
-            isCloseToMin(value) ||
-            isCloseToMax(value)
-        );
-    }
 
     function inRange(value) {
-        if(vMin <= value && value <= vMax) return true;
-        return isCloseToRanges(value);
+        return (
+            value >= vMin &&
+            value <= vMax
+        );
     }
 
     function getXYZV(indecies) {
@@ -543,24 +523,6 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    for(k = 1; k < depth; k++) {
-        for(j = 1; j < height; j++) {
-            for(i = 1; i < width; i++) {
-                drawCube(
-                    getIndex(i - 1, j - 1, k - 1),
-                    getIndex(i - 1, j - 1, k),
-                    getIndex(i - 1, j, k - 1),
-                    getIndex(i - 1, j, k),
-                    getIndex(i, j - 1, k - 1),
-                    getIndex(i, j - 1, k),
-                    getIndex(i, j, k - 1),
-                    getIndex(i, j, k),
-                    (i + j + k) % 2
-                );
-            }
-        }
-    }
-
     function drawSectionsX(items) {
         items.forEach(function(i) {
             beginGroup();
@@ -613,6 +575,30 @@ function generateIsosurfaceMesh(data) {
                 }
             }
         });
+    }
+
+    function drawVolumeAndIsosurface() {
+        for(var k = 1; k < depth; k++) {
+            for(var j = 1; j < height; j++) {
+                for(var i = 1; i < width; i++) {
+                    drawCube(
+                        getIndex(i - 1, j - 1, k - 1),
+                        getIndex(i - 1, j - 1, k),
+                        getIndex(i - 1, j, k - 1),
+                        getIndex(i - 1, j, k),
+                        getIndex(i, j - 1, k - 1),
+                        getIndex(i, j - 1, k),
+                        getIndex(i, j, k - 1),
+                        getIndex(i, j, k),
+                        (i + j + k) % 2
+                    );
+                }
+            }
+        }
+    }
+
+    if(vDif > 0) {
+        drawVolumeAndIsosurface();
     }
 
     if(data.isocap) {
