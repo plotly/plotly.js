@@ -23,14 +23,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var y = coerce('y');
     var z = coerce('z');
     var value = coerce('value');
-    var isovalue = coerce('isovalue');
 
     if(
         !x || !x.length ||
         !y || !y.length ||
         !z || !z.length ||
-        !value || !value.length ||
-        !isovalue || !isovalue.length
+        !value || !value.length
     ) {
         traceOut.visible = false;
         return;
@@ -58,11 +56,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'colorscale',
         'reversescale',
         'flatshading',
-        'surfaceopacity',
-        'volumeopacity',
-        'capopacity',
-        'isocap',
-        'isovolume'
+        'surfacefill',
+        'volumefill',
+        'slicefill',
+        'showslice',
+        'showvolume',
+        'showsurface',
+        'isomin',
+        'isomax'
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});

@@ -49,33 +49,49 @@ module.exports = extendFlat({
             'one dimensional array containing n=width*height*depth numbers.'
         ].join(' ')
     },
-    isocap: {
+    showsurface: {
         valType: 'boolean',
         role: 'info',
         editType: 'calc',
-        dflt: false,
+        dflt: true,
         description: [
-            'Enables caps between minimum and maximum iso values.'
+            'Hides/displays surfaces between minimum and maximum iso-values.'
         ].join(' ')
     },
-    isovolume: {
+    showslice: {
+        valType: 'boolean',
+        role: 'info',
+        editType: 'calc',
+        dflt: true,
+        description: [
+            'Hides/displays cap slices between minimum and maximum iso-values.'
+        ].join(' ')
+    },
+    showvolume: {
         valType: 'boolean',
         role: 'info',
         editType: 'calc',
         dflt: false,
         description: [
-            'Enables volume between minimum and maximum iso values.',
-            'When being enabled, lower \'surfaceopacity\' value could be applied',
+            'Displays/hides volume between minimum and maximum iso-values.',
+            'When being enabled, lower \'surfacefill\' value could often be applied',
             'to view volume plot.'
         ].join(' ')
     },
-    isovalue: {
-        valType: 'data_array',
+    isomin: {
+        valType: 'number',
         role: 'info',
         editType: 'calc',
-        dflt: [0],
         description: [
-            'Sets iso surface boundaries.'
+            'Sets the minimum boundary for iso-surface or volume plot.'
+        ].join(' ')
+    },
+    isomax: {
+        valType: 'number',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Sets the maximum boundary for iso-surface or volume plot.'
         ].join(' ')
     },
 
@@ -103,9 +119,32 @@ colorscaleAttrs('', {
 
     colorbar: colorbarAttrs,
 
-    surfaceopacity: surfaceAtts.opacity,
-    capopacity: surfaceAtts.opacity,
-    volumeopacity: surfaceAtts.opacity,
+    surfacefill: {
+        valType: 'number',
+        role: 'style',
+        min: 0,
+        max: 1,
+        dflt: 1,
+        description: 'Sets the opacity of the iso-surface.'
+    },
+
+    volumefill: {
+        valType: 'number',
+        role: 'style',
+        min: 0,
+        max: 1,
+        dflt: 0.15,
+        description: 'Sets the opacity of the iso-volume.'
+    },
+
+    slicefill: {
+        valType: 'number',
+        role: 'style',
+        min: 0,
+        max: 1,
+        dflt: 1,
+        description: 'Sets the opacity of the slices and caps.'
+    },
 
     // Flat shaded mode
     flatshading: {
