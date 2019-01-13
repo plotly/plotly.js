@@ -444,9 +444,9 @@ function generateIsosurfaceMesh(data) {
 
                 if(isCore) {
                     setOpacity(volumeFill);
-                    drawQuad(debug, [A, B, p2, p1]);
-                    drawQuad(debug, [B, C, p3, p2]);
-                    drawQuad(debug, [C, A, p1, p3]);
+                    // drawQuad(debug, [A, B, p2, p1]);
+                    // drawQuad(debug, [B, C, p3, p2]);
+                    // drawQuad(debug, [C, A, p1, p3]);
                     drawTri(debug, [A, B, C]);
                 }
                 shouldReturn = true;
@@ -480,8 +480,8 @@ function generateIsosurfaceMesh(data) {
 
                 if(isCore) {
                     setOpacity(volumeFill);
-                    drawQuad(debug, [A, B, p2, p1]);
-                    drawQuad(debug, [A, B, p3, p4]);
+                    // drawQuad(debug, [A, B, p2, p1]);
+                    // drawQuad(debug, [A, B, p3, p4]);
                     drawTri(debug, [A, p4, p1]);
                     drawTri(debug, [B, p2, p3]);
                 }
