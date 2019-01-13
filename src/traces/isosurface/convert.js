@@ -78,7 +78,7 @@ proto.update = function(data) {
         fresnel: data.lighting.fresnel,
         vertexNormalsEpsilon: data.lighting.vertexnormalsepsilon,
         faceNormalsEpsilon: data.lighting.facenormalsepsilon,
-        opacity: 1, // Note: we do NOT use data.opacity directly
+        opacity: 1, // Note: we do NOT use data.surfaceopacity directly
         contourEnable: data.contour.show,
         contourColor: str2RgbaArray(data.contour.color).slice(0, 3),
         contourWidth: data.contour.width,
@@ -100,13 +100,6 @@ proto.dispose = function() {
 
 
 function generateIsosurfaceMesh(data) {
-
-    var requestedOpacity = data.opacity;
-    var activeOpacity;
-    function setOpacity(opacity) {
-        activeOpacity = opacity;
-    }
-    setOpacity(requestedOpacity);
 
     data.intensity = [];
 
@@ -132,22 +125,34 @@ function generateIsosurfaceMesh(data) {
     var Ys = [];
     var Zs = [];
 
-    function fillXYZs() {
-        for(var i = 0; i < width; i++) { Xs[i] = data.x[i]; }
-        for(var j = 0; j < height; j++) { Ys[j] = data.y[j]; }
-        for(var k = 0; k < depth; k++) { Zs[k] = data.z[k]; }
+    function fillXs() {
+        for(var i = 0; i < width; i++) {
+            Xs[i] = data.x[i];
+        }
     }
 
-    fillXYZs();
+    function fillYs() {
+        for(var j = 0; j < height; j++) {
+            Ys[j] = data.y[j];
+        }
+    }
+
+    function fillZs() {
+        for(var k = 0; k < depth; k++) {
+            Zs[k] = data.z[k];
+        }
+    }
+
+    fillXs();
+    fillYs();
+    fillZs();
 
     var vMin = Math.min.apply(null, data.isovalue);
     var vMax = Math.max.apply(null, data.isovalue);
     var vDif = vMax - vMin;
 
-    var vAvg = (vMax + vMin) * 0.5;
-
-    var debug1 = 0.25 * vMax + 0.75 * vMin;
-    var debug2 = 0.75 * vMax + 0.25 * vMin;
+    // var debug1 = 0.25 * vMax + 0.75 * vMin;
+    // var debug2 = 0.75 * vMax + 0.25 * vMin;
 
     var numVertices = 0;
     var beginVertextLength;
@@ -201,29 +206,36 @@ function generateIsosurfaceMesh(data) {
         return M;
     }
 
+    var activeOpacity;
+    function setOpacity(opacity) {
+        activeOpacity = opacity;
+    }
+
+    function createTransparentTri(xyzv) {
+        var A = xyzv[0];
+        var B = xyzv[1];
+        var C = xyzv[2];
+        var G = getCenter(A, B, C);
+
+        var r = Math.sqrt(1 - activeOpacity);
+        var p1 = getBetween(G, A, r);
+        var p2 = getBetween(G, B, r);
+        var p3 = getBetween(G, C, r);
+
+        return [
+            [A, B, p2], [p2, p1, A],
+            [B, C, p3], [p3, p2, B],
+            [C, A, p1], [p1, p3, C]
+        ];
+    }
+
     function drawTri(debug, xyzv) {
 
         beginGroup(); // <<<<<<<<<<<<<<<<<<
 
-        var allXYZVs = [];
-        if(activeOpacity >= 1) { allXYZVs = [xyzv]; }
-        else if(activeOpacity > 0) {
-            var A = xyzv[0];
-            var B = xyzv[1];
-            var C = xyzv[2];
-            var G = getCenter(A, B, C);
-
-            var r = Math.sqrt(1 - activeOpacity);
-            var p1 = getBetween(G, A, r);
-            var p2 = getBetween(G, B, r);
-            var p3 = getBetween(G, C, r);
-
-            allXYZVs = [
-                [A, B, p2], [p2, p1, A],
-                [B, C, p3], [p3, p2, B],
-                [C, A, p1], [p1, p3, C]
-            ];
-        }
+        var allXYZVs =
+            (activeOpacity >= 1) ? [xyzv] :
+            (activeOpacity > 0) ? createTransparentTri(xyzv) : [];
 
         for(var f = 0; f < allXYZVs.length; f++) {
 
@@ -279,7 +291,6 @@ function generateIsosurfaceMesh(data) {
         }
         return result;
     }
-
 
     function inRange(value) {
         return (
@@ -351,7 +362,7 @@ function generateIsosurfaceMesh(data) {
                 shouldReturn = true;
             }
         });
-        if(shouldReturn) return shouldReturn;
+        if(shouldReturn) return true;
 
         [
             [0, 1, 2],
@@ -370,7 +381,7 @@ function generateIsosurfaceMesh(data) {
                 shouldReturn = true;
             }
         });
-        if(shouldReturn) return shouldReturn;
+        if(shouldReturn) return true;
 
         // We should never end up here! Anyway let's return from the function
         return false;
@@ -393,6 +404,7 @@ function generateIsosurfaceMesh(data) {
 
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
             if(isCore) {
+                setOpacity(data.volumeopacity);
                 drawTetra(debug, xyzv);
             }
             return false;
@@ -416,8 +428,10 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(D, B);
                 var p3 = calcIntersection(D, C);
 
+                setOpacity(data.surfaceopacity);
                 drawTri(debug, [p1, p2, p3]);
                 if(isCore) {
+                    setOpacity(data.volumeopacity);
                     drawQuad(debug, [A, B, p2, p1]);
                     drawQuad(debug, [B, C, p3, p2]);
                     drawQuad(debug, [C, A, p1, p3]);
@@ -426,7 +440,7 @@ function generateIsosurfaceMesh(data) {
                 shouldReturn = true;
             }
         });
-        if(shouldReturn) return shouldReturn;
+        if(shouldReturn) return true;
 
         [
             [0, 1, 2, 3],
@@ -447,8 +461,10 @@ function generateIsosurfaceMesh(data) {
                 var p3 = calcIntersection(D, B);
                 var p4 = calcIntersection(D, A);
 
+                setOpacity(data.surfaceopacity);
                 drawQuad(debug, [p1, p2, p3, p4]);
                 if(isCore) {
+                    setOpacity(data.volumeopacity);
                     drawQuad(debug, [A, B, p2, p1]);
                     drawQuad(debug, [A, B, p3, p4]);
                     drawTri(debug, [A, p4, p1]);
@@ -457,7 +473,7 @@ function generateIsosurfaceMesh(data) {
                 shouldReturn = true;
             }
         });
-        if(shouldReturn) return shouldReturn;
+        if(shouldReturn) return true;
 
         [
             [0, 1, 2, 3],
@@ -475,8 +491,10 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(C, A);
                 var p3 = calcIntersection(D, A);
 
+                setOpacity(data.surfaceopacity);
                 drawTri(debug, [p1, p2, p3]);
                 if(isCore) {
+                    setOpacity(data.volumeopacity);
                     drawTri(debug, [A, p1, p2]);
                     drawTri(debug, [A, p2, p3]);
                     drawTri(debug, [A, p3, p1]);
@@ -484,7 +502,7 @@ function generateIsosurfaceMesh(data) {
                 shouldReturn = true;
             }
         });
-        if(shouldReturn) return shouldReturn;
+        if(shouldReturn) return true;
 
         // We should never end up here! Anyway let's return from the function
         return false;
@@ -497,8 +515,12 @@ function generateIsosurfaceMesh(data) {
         var c = tryCreateTetra(p101, p100, p111, p001, false);
         var d = tryCreateTetra(p110, p100, p111, p010, false);
 
-        if(a || b || c || d) {
-            tryCreateTetra(p001, p010, p100, p111, data.isovolume);
+        if(!data.isovolume) {
+            if(a || b || c || d) {
+                tryCreateTetra(p001, p010, p100, p111, false);
+            }
+        } else {
+            tryCreateTetra(p001, p010, p100, p111, true);
         }
     }
 
@@ -507,7 +529,7 @@ function generateIsosurfaceMesh(data) {
         tryCreateTri(c, d, a, true);
     }
 
-    function drawRect(p00, p01, p10, p11, isEven) {
+    function beginSlice(p00, p01, p10, p11, isEven) {
         if(isEven) {
             addRect(p00, p01, p11, p10);
         } else {
@@ -515,7 +537,7 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    function drawCube(p000, p001, p010, p011, p100, p101, p110, p111, isEven) {
+    function beginCell(p000, p001, p010, p011, p100, p101, p110, p111, isEven) {
         if(isEven) {
             addCube(p000, p001, p010, p011, p100, p101, p110, p111);
         } else {
@@ -529,7 +551,7 @@ function generateIsosurfaceMesh(data) {
 
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
-                    drawRect(
+                    beginSlice(
                         getIndex(i, j - 1, k - 1),
                         getIndex(i, j - 1, k),
                         getIndex(i, j, k - 1),
@@ -547,7 +569,7 @@ function generateIsosurfaceMesh(data) {
 
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
-                    drawRect(
+                    beginSlice(
                         getIndex(i - 1, j, k - 1),
                         getIndex(i, j, k - 1),
                         getIndex(i - 1, j, k),
@@ -565,7 +587,7 @@ function generateIsosurfaceMesh(data) {
 
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
-                    drawRect(
+                    beginSlice(
                         getIndex(i - 1, j - 1, k),
                         getIndex(i - 1, j, k),
                         getIndex(i, j - 1, k),
@@ -581,7 +603,7 @@ function generateIsosurfaceMesh(data) {
         for(var k = 1; k < depth; k++) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
-                    drawCube(
+                    beginCell(
                         getIndex(i - 1, j - 1, k - 1),
                         getIndex(i - 1, j - 1, k),
                         getIndex(i - 1, j, k - 1),

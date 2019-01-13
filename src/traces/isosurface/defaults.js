@@ -58,7 +58,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'colorscale',
         'reversescale',
         'flatshading',
-        'opacity',
+        'surfaceopacity',
+        'volumeopacity',
         'capopacity',
         'isocap',
         'isovolume'

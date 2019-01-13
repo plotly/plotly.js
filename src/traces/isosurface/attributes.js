@@ -65,7 +65,7 @@ module.exports = extendFlat({
         dflt: false,
         description: [
             'Enables volume between minimum and maximum iso values.',
-            'When being enabled, lower \'opacity\' value could be applied',
+            'When being enabled, lower \'surfaceopacity\' value could be applied',
             'to view volume plot.'
         ].join(' ')
     },
@@ -103,8 +103,9 @@ colorscaleAttrs('', {
 
     colorbar: colorbarAttrs,
 
-    opacity: surfaceAtts.opacity,
+    surfaceopacity: surfaceAtts.opacity,
     capopacity: surfaceAtts.opacity,
+    volumeopacity: surfaceAtts.opacity,
 
     // Flat shaded mode
     flatshading: {
