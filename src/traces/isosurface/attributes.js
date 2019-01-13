@@ -55,7 +55,18 @@ module.exports = extendFlat({
         editType: 'calc',
         dflt: false,
         description: [
-            'Enable caps between minimum and maximum iso values.'
+            'Enables caps between minimum and maximum iso values.'
+        ].join(' ')
+    },
+    isovolume: {
+        valType: 'boolean',
+        role: 'info',
+        editType: 'calc',
+        dflt: false,
+        description: [
+            'Enables volume between minimum and maximum iso values.',
+            'When being enabled, lower \'opacity\' value could be applied',
+            'to view volume plot.'
         ].join(' ')
     },
     isovalue: {
@@ -93,6 +104,7 @@ colorscaleAttrs('', {
     colorbar: colorbarAttrs,
 
     opacity: surfaceAtts.opacity,
+    capopacity: surfaceAtts.opacity,
 
     // Flat shaded mode
     flatshading: {

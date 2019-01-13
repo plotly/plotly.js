@@ -41,7 +41,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // Coerce remaining properties
     [
-        'isocap',
         'text',
         'lighting.ambient',
         'lighting.diffuse',
@@ -59,7 +58,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'colorscale',
         'reversescale',
         'flatshading',
-        'opacity'
+        'opacity',
+        'capopacity',
+        'isocap',
+        'isovolume'
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});

@@ -498,7 +498,7 @@ function generateIsosurfaceMesh(data) {
         var d = tryCreateTetra(p110, p100, p111, p010, false);
 
         if(a || b || c || d) {
-            tryCreateTetra(p001, p010, p100, p111, data.isocap);
+            tryCreateTetra(p001, p010, p100, p111, data.isovolume);
         }
     }
 
@@ -602,8 +602,7 @@ function generateIsosurfaceMesh(data) {
     }
 
     if(data.isocap) {
-        // setOpacity(1);
-        setOpacity(0.5);
+        setOpacity(data.capopacity);
 
         drawSectionsX([0, width - 1]);
         drawSectionsY([0, height - 1]);
