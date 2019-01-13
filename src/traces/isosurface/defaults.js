@@ -63,7 +63,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'showvolume',
         'showsurface',
         'isomin',
-        'isomax'
+        'isomax',
+        'slicetype'
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});

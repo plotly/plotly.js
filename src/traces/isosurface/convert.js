@@ -637,17 +637,43 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    if((data.showsurface && surfaceFill) ||
-        (data.showvolume && volumeFill)) {
-        drawVolumeAndIsosurface();
+    function createRange(a, b) {
+        var range = [];
+        for(var q = a; q < b; q++) {
+            range.push(q);
+        }
+        return range;
     }
 
     if(data.showslice && data.slicefill) {
         setOpacity(data.slicefill);
 
-        drawSectionsX([0, width - 1]);
-        drawSectionsY([0, height - 1]);
-        drawSectionsZ([0, depth - 1]);
+        var xSlices = [];
+        var ySlices = [];
+        var zSlices = [];
+
+        if(data.slicetype.indexOf('x') !== -1) xSlices = createRange(1, width - 1);
+        if(data.slicetype.indexOf('y') !== -1) ySlices = createRange(1, height - 1);
+        if(data.slicetype.indexOf('z') !== -1) zSlices = createRange(1, depth - 1);
+
+        if(data.slicetype.indexOf('caps') !== -1) {
+            xSlices.push(0);
+            ySlices.push(0);
+            zSlices.push(0);
+
+            xSlices.push(width - 1);
+            ySlices.push(height - 1);
+            zSlices.push(depth - 1);
+        }
+
+        if(xSlices.length) drawSectionsX(xSlices);
+        if(ySlices.length) drawSectionsY(ySlices);
+        if(zSlices.length) drawSectionsZ(zSlices);
+    }
+
+    if((data.showsurface && surfaceFill) ||
+        (data.showvolume && volumeFill)) {
+        drawVolumeAndIsosurface();
     }
 
     data.x = allXs;
@@ -661,9 +687,7 @@ function generateIsosurfaceMesh(data) {
 function createIsosurfaceTrace(scene, data) {
 
     var gl = scene.glplot.gl;
-
     var mesh = createMesh({gl: gl});
-
     var result = new IsosurfaceTrace(scene, mesh, data.uid);
 
     mesh._trace = result;

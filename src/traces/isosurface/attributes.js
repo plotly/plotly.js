@@ -94,6 +94,17 @@ module.exports = extendFlat({
             'Sets the maximum boundary for iso-surface or volume plot.'
         ].join(' ')
     },
+    slicetype: {
+        valType: 'string',
+        role: 'info',
+        dflt: 'caps',
+        editType: 'calc',
+        description: [
+            'Sets the type of cutting slices.',
+            'It may include \'caps\', \'x\', \'y\', \'z\' for example caps+xz',
+            'The default is \'caps\'.'
+        ].join(' ')
+    },
 
     text: {
         valType: 'string',
