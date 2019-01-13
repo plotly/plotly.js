@@ -136,7 +136,8 @@ colorscaleAttrs('', {
         min: 0,
         max: 1,
         dflt: 1,
-        description: 'Sets the opacity of the iso-surface.'
+        editType: 'calc',
+        description: 'Sets the fill ratio (opacity) of the iso-surface.'
     },
 
     volumefill: {
@@ -145,7 +146,8 @@ colorscaleAttrs('', {
         min: 0,
         max: 1,
         dflt: 0.15,
-        description: 'Sets the opacity of the iso-volume.'
+        editType: 'calc',
+        description: 'Sets the fill ratio (opacity) of the iso-volume.'
     },
 
     slicefill: {
@@ -154,7 +156,8 @@ colorscaleAttrs('', {
         min: 0,
         max: 1,
         dflt: 1,
-        description: 'Sets the opacity of the slices and caps.'
+        editType: 'calc',
+        description: 'Sets the fill ratio (opacity) of the slices and caps.'
     },
 
     // Flat shaded mode
