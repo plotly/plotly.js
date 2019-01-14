@@ -1757,7 +1757,7 @@
             "z": 500
         },
         "contour": {
-            "show": true,
+            "show": false,
             "width": 4
         }
     }],

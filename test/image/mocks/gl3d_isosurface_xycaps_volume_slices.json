@@ -2,11 +2,11 @@
     "data": [{
         "type": "isosurface",
         "lighting": {
-            "ambient": 0.5,
-            "diffuse": 0.5,
-            "specular": 0.5,
-            "roughness": 0.5,
-            "fresnel": 0.5
+            "ambient": 0.25,
+            "diffuse": 0.75,
+            "specular": 0.75,
+            "roughness": 0.25,
+            "fresnel": 0.25
         },
         "colorscale": "Reds",
         "reversescale": false,

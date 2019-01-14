@@ -17,6 +17,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 function makeSliceAttr(axLetter) {
     return {
+        editType: 'calc',
         show: {
             valType: 'boolean',
             role: 'info',
@@ -41,6 +42,7 @@ function makeSliceAttr(axLetter) {
 
 function makeCapAttr(axLetter) {
     return {
+        editType: 'calc',
         show: {
             valType: 'boolean',
             role: 'info',
