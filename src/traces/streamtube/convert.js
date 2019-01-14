@@ -153,7 +153,7 @@ function convert(scene, trace) {
         tubeOpts.startingPositions = startingPositions;
     }
 
-    tubeOpts.colormap = parseColorScale(trace.colorscale);
+    tubeOpts.colormap = parseColorScale(trace);
     tubeOpts.tubeSize = trace.sizeref;
     tubeOpts.maxLength = trace.maxdisplayed;
 

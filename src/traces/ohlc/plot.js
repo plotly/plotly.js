@@ -37,6 +37,8 @@ module.exports = function plot(gd, plotinfo, cdOHLC, ohlcLayer) {
         paths.exit().remove();
 
         paths.attr('d', function(d) {
+            if(d.empty) return 'M0,0Z';
+
             var x = xa.c2p(d.pos, true);
             var xo = xa.c2p(d.pos - tickLen, true);
             var xc = xa.c2p(d.pos + tickLen, true);

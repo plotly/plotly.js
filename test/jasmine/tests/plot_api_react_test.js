@@ -13,6 +13,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var mockLists = require('../assets/mock_lists');
+var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
@@ -1804,5 +1805,223 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkEdited = checkState([], attrs());
 
         _run(fig, editComponents, checkInitial, checkEdited).then(done);
+    });
+});
+
+describe('Test Plotly.react + interactions under uirevision:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl gl3d subplots preserve camera changes on interactions', function(done) {
+        function _react() {
+            return Plotly.react(gd, [{
+                type: 'surface',
+                z: [[1, 2, 3], [3, 1, 2], [2, 3, 1]]
+            }], {
+                width: 500,
+                height: 500,
+                uirevision: true
+            });
+        }
+
+        // mocking panning/scrolling with mouse events is brittle,
+        // this here is enough to to trigger the relayoutCallback
+        function _mouseup() {
+            var sceneLayout = gd._fullLayout.scene;
+            var cameraOld = sceneLayout.camera;
+            sceneLayout._scene.setCamera({
+                eye: {x: 2, y: 2, z: 2},
+                center: cameraOld.center,
+                up: cameraOld.up
+            });
+
+            var target = gd.querySelector('.svg-container .gl-container #scene canvas');
+            return new Promise(function(resolve) {
+                mouseEvent('mouseup', 200, 200, {element: target});
+                setTimeout(resolve, 0);
+            });
+        }
+
+        // should be same before & after 2nd react()
+        function _assertGUI(msg) {
+            var TOL = 2;
+
+            var eye = ((gd.layout.scene || {}).camera || {}).eye || {};
+            expect(eye.x).toBeCloseTo(2, TOL, msg);
+            expect(eye.y).toBeCloseTo(2, TOL, msg);
+            expect(eye.z).toBeCloseTo(2, TOL, msg);
+
+            var fullEye = gd._fullLayout.scene.camera.eye;
+            expect(fullEye.x).toBeCloseTo(2, TOL, msg);
+            expect(fullEye.y).toBeCloseTo(2, TOL, msg);
+            expect(fullEye.z).toBeCloseTo(2, TOL, msg);
+
+            var preGUI = gd._fullLayout._preGUI;
+            expect(preGUI['scene.camera']).toBe(null, msg);
+        }
+
+        _react()
+        .then(function() {
+            expect(gd.layout.scene).toEqual(jasmine.objectContaining({
+                aspectratio: {x: 1, y: 1, z: 1},
+                aspectmode: 'auto'
+            }));
+            expect(gd.layout.scene.camera).toBe(undefined);
+
+            var fullEye = gd._fullLayout.scene.camera.eye;
+            expect(fullEye.x).toBe(1.25);
+            expect(fullEye.y).toBe(1.25);
+            expect(fullEye.z).toBe(1.25);
+
+            expect(gd._fullLayout._preGUI).toEqual({});
+        })
+        .then(function() { return _mouseup(); })
+        .then(function() { _assertGUI('before'); })
+        .then(_react)
+        .then(function() { _assertGUI('after'); })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('geo subplots should preserve viewport changes after panning', function(done) {
+        function _react() {
+            return Plotly.react(gd, [{
+                type: 'scattergeo',
+                lon: [3, 1, 2],
+                lat: [2, 3, 1]
+            }], {
+                width: 500,
+                height: 500,
+                uirevision: true
+            });
+        }
+
+        function _drag(x0, y0, dx, dy) {
+            mouseEvent('mousemove', x0, y0);
+            mouseEvent('mousedown', x0, y0);
+            mouseEvent('mousemove', x0 + dx, y0 + dy);
+            mouseEvent('mouseup', x0 + dx, y0 + dy);
+        }
+
+        // should be same before & after 2nd react()
+        function _assertGUI(msg) {
+            var TOL = 2;
+
+            var geo = gd.layout.geo || {};
+            expect(((geo.projection || {}).rotation || {}).lon).toBeCloseTo(-52.94, TOL, msg);
+            expect((geo.center || {}).lon).toBeCloseTo(-52.94, TOL, msg);
+            expect((geo.center || {}).lat).toBeCloseTo(52.94, TOL, msg);
+
+            var fullGeo = gd._fullLayout.geo;
+            expect(fullGeo.projection.rotation.lon).toBeCloseTo(-52.94, TOL, msg);
+            expect(fullGeo.center.lon).toBeCloseTo(-52.94, TOL, msg);
+            expect(fullGeo.center.lat).toBeCloseTo(52.94, TOL, msg);
+
+            var preGUI = gd._fullLayout._preGUI;
+            expect(preGUI['geo.projection.rotation.lon']).toBe(null, msg);
+            expect(preGUI['geo.center.lon']).toBe(null, msg);
+            expect(preGUI['geo.center.lat']).toBe(null, msg);
+            expect(preGUI['geo.projection.scale']).toBe(null, msg);
+        }
+
+        _react()
+        .then(function() {
+            expect(gd.layout.geo).toEqual({});
+
+            var fullGeo = gd._fullLayout.geo;
+            expect(fullGeo.projection.rotation.lon).toBe(0);
+            expect(fullGeo.center.lon).toBe(0);
+            expect(fullGeo.center.lat).toBe(0);
+
+            expect(gd._fullLayout._preGUI).toEqual({});
+        })
+        .then(function() { return _drag(200, 200, 50, 50); })
+        .then(function() { _assertGUI('before'); })
+        .then(_react)
+        .then(function() { _assertGUI('after'); })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl mapbox subplots should preserve viewport changes after panning', function(done) {
+        Plotly.setPlotConfig({
+            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+        });
+
+        function _react() {
+            return Plotly.react(gd, [{
+                type: 'scattermapbox',
+                lon: [3, 1, 2],
+                lat: [2, 3, 1]
+            }], {
+                width: 500,
+                height: 500,
+                uirevision: true
+            });
+        }
+
+        // see mapbox_test.js for rationale
+        function _mouseEvent(type, pos) {
+            return new Promise(function(resolve) {
+                mouseEvent(type, pos[0], pos[1]);
+                setTimeout(resolve, 100);
+            });
+        }
+
+        // see mapbox_test.js for rationale
+        function _drag(p0, p1) {
+            return _mouseEvent('mousemove', p0)
+                .then(function() { return _mouseEvent('mousedown', p0); })
+                .then(function() { return _mouseEvent('mousemove', p1); })
+                .then(function() { return _mouseEvent('mousemove', p1); })
+                .then(function() { return _mouseEvent('mouseup', p1); })
+                .then(function() { return _mouseEvent('mouseup', p1); });
+        }
+
+        // should be same before & after 2nd react()
+        function _assertGUI(msg) {
+            var TOL = 2;
+
+            var mapbox = gd.layout.mapbox || {};
+            expect((mapbox.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
+            expect((mapbox.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
+            expect(mapbox.zoom).toBe(1);
+
+            var fullMapbox = gd._fullLayout.mapbox || {};
+            expect(fullMapbox.center.lon).toBeCloseTo(-17.578, TOL, msg);
+            expect(fullMapbox.center.lat).toBeCloseTo(17.308, TOL, msg);
+            expect(fullMapbox.zoom).toBe(1);
+
+            var preGUI = gd._fullLayout._preGUI;
+            expect(preGUI['mapbox.center.lon']).toBe(null, msg);
+            expect(preGUI['mapbox.center.lat']).toBe(null, msg);
+            expect(preGUI['mapbox.zoom']).toBe(null, msg);
+        }
+
+        _react()
+        .then(function() {
+            expect(gd.layout.mapbox).toEqual({});
+
+            var fullMapbox = gd._fullLayout.mapbox;
+            expect(fullMapbox.center.lon).toBe(0);
+            expect(fullMapbox.center.lat).toBe(0);
+            expect(fullMapbox.zoom).toBe(1);
+
+            expect(gd._fullLayout._preGUI).toEqual({});
+        })
+        .then(function() { return _drag([200, 200], [250, 250]); })
+        .then(function() { _assertGUI('before'); })
+        .then(_react)
+        .then(function() { _assertGUI('after'); })
+        .catch(failTest)
+        .then(done);
     });
 });

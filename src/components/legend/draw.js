@@ -108,20 +108,20 @@ module.exports = function draw(gd) {
     traces.enter().append('g').attr('class', 'traces');
     traces.exit().remove();
 
-    traces.call(style, gd)
-        .style('opacity', function(d) {
-            var trace = d[0].trace;
-            if(Registry.traceIs(trace, 'pie')) {
-                return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
-            } else {
-                return trace.visible === 'legendonly' ? 0.5 : 1;
-            }
-        })
-        .each(function() {
-            d3.select(this)
-                .call(drawTexts, gd, maxLength)
-                .call(setupTraceToggle, gd);
-        });
+    traces.style('opacity', function(d) {
+        var trace = d[0].trace;
+        if(Registry.traceIs(trace, 'pie')) {
+            return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
+        } else {
+            return trace.visible === 'legendonly' ? 0.5 : 1;
+        }
+    })
+    .each(function() {
+        d3.select(this)
+            .call(drawTexts, gd, maxLength)
+            .call(setupTraceToggle, gd);
+    })
+    .call(style, gd);
 
     Lib.syncOrAsync([Plots.previousPromises,
         function() {
@@ -522,8 +522,7 @@ function computeTextDimensions(g, gd) {
         width = mathjaxBB.width;
 
         Drawing.setTranslate(mathjaxGroup, 0, (height / 4));
-    }
-    else {
+    } else {
         var text = g.select('.legendtext');
         var textLines = svgTextUtils.lineCount(text);
         var textNode = text.node();
@@ -535,12 +534,10 @@ function computeTextDimensions(g, gd) {
         // to avoid getBoundingClientRect
         var textY = lineHeight * (0.3 + (1 - textLines) / 2);
         svgTextUtils.positionText(text, constants.textOffsetX, textY);
-        legendItem.lineHeight = lineHeight;
     }
 
-    height = Math.max(height, 16) + 3;
-
-    legendItem.height = height;
+    legendItem.lineHeight = lineHeight;
+    legendItem.height = Math.max(height, 16) + 3;
     legendItem.width = width;
 }
 
