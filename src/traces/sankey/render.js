@@ -128,7 +128,7 @@ function linkPath() {
     var curvature = 0.5;
     function path(d) {
         if(d.circular) {
-            return d.link.path;
+            return d.link.path; // TODO: turn this into a closed path to support link.line.(width|color)
         } else {
             var x0 = d.link.source.x1;
             var x1 = d.link.target.x0;
