@@ -47,8 +47,8 @@ describe('d3-sankey-ciruclar', function() {
         expect(circularLinks.length).toEqual(2, 'there are two circular links');
     });
 
-    it('keep a list of nodes with positions in integer (col, height)', function() {
-        checkArray('column', [0, 0, 2, 3, 1, 1]);
+    it('keep a list of nodes with positions in integer (depth, height)', function() {
+        checkArray('depth', [0, 0, 2, 3, 1, 1]);
         checkArray('height', [1, 3, 1, 0, 2, 0]);
     });
 
@@ -59,6 +59,8 @@ describe('d3-sankey-ciruclar', function() {
 
     it('supports column reordering', function() {
         var reorder = [ 2, 2, 1, 1, 0, 0 ];
+
+        checkArray('column', [0, 0, 2, 3, 1, 1]);
 
         var a = graph.nodes[0].x0;
         sankey.nodeAlign(function(node) {

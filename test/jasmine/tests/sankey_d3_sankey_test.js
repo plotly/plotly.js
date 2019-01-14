@@ -3,7 +3,7 @@
 
 var d3sankey = require('d3-sankey');
 
-var graph = {
+var data = {
     'nodes': [{
         'node': 0,
         'name': 'node0'
@@ -53,6 +53,8 @@ var graph = {
 
 
 describe('d3-sankey', function() {
+    var sankey;
+    var graph;
     var margin = {
         top: 10,
         right: 10,
@@ -62,53 +64,67 @@ describe('d3-sankey', function() {
     var width = 1200 - margin.left - margin.right;
     var height = 740 - margin.top - margin.bottom;
 
-    var s;
-
     beforeEach(function() {
-        s = d3sankey
+        sankey = d3sankey
         .sankey()
         .nodeWidth(36)
         .nodePadding(10)
-        .nodes(graph.nodes)
-        .links(graph.links)
+        .nodes(data.nodes)
+        .links(data.links)
         .size([width, height])
         .iterations(32);
+
+        graph = sankey();
     });
+
+    function checkArray(key, result) {
+        var value = graph.nodes.map(function(obj) {
+            return obj[key];
+        });
+        expect(value).toEqual(result, 'invalid property named ' + key);
+    }
+
+    function checkRoundedArray(key, result) {
+        var value = graph.nodes.map(function(obj) {
+            return Math.round(obj[key]);
+        });
+        expect(value).toEqual(result, 'invalid property named ' + key);
+    }
 
     it('controls the width of nodes', function() {
-        expect(s.nodeWidth()).toEqual(36, 'incorrect nodeWidth');
+        expect(sankey.nodeWidth()).toEqual(36, 'incorrect nodeWidth');
     });
 
     it('controls the padding between nodes', function() {
-        expect(s.nodePadding()).toEqual(10, 'incorrect nodePadding');
+        expect(sankey.nodePadding()).toEqual(10, 'incorrect nodePadding');
     });
 
     it('controls the padding between nodes', function() {
-        expect(s.nodePadding()).toEqual(10, 'incorrect nodePadding');
+        expect(sankey.nodePadding()).toEqual(10, 'incorrect nodePadding');
     });
 
     it('keep a list of nodes', function() {
-        var nodeNames = s().nodes.map(function(obj) {
-            return obj.name;
-        });
-        expect(nodeNames).toEqual(['node0', 'node1', 'node2', 'node3', 'node4']);
+        checkArray('name', ['node0', 'node1', 'node2', 'node3', 'node4']);
     });
 
-    it('keep a list of nodes with x  values', function() {
-        var nodeNames = s().nodes.map(function(obj) {
-            return Math.floor(obj.x0);
-        });
-        expect(nodeNames).toEqual([0, 0, 381, 762, 1144]);
+    it('keep a list of nodes with x and y values', function() {
+        checkRoundedArray('x0', [0, 0, 381, 763, 1144]);
+        checkRoundedArray('y0', [0, 365, 184, 253, 0]);
+    });
+
+    it('keep a list of nodes with positions in integer (depth, height)', function() {
+        checkArray('depth', [0, 0, 1, 2, 3]);
+        checkArray('height', [3, 3, 2, 1, 0]);
     });
 
     it('keep a list of links', function() {
-        var linkWidths = s().links.map(function(obj) {
+        var linkWidths = sankey().links.map(function(obj) {
             return (obj.width);
         });
         expect(linkWidths).toEqual([177.5, 177.5, 177.5, 177.5, 177.5, 177.5, 355]);
     });
 
     it('controls the size of the figure', function() {
-        expect(s.size()).toEqual([1180, 720], 'incorrect size');
+        expect(sankey.size()).toEqual([1180, 720], 'incorrect size');
     });
 });
