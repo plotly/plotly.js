@@ -547,15 +547,15 @@ function generateIsosurfaceMesh(data) {
     }
 
     function addRect(a, b, c, d) {
-        tryCreateTri(a, b, d, true);
-        tryCreateTri(b, c, d, true);
+        tryCreateTri(a, b, c, true);
+        tryCreateTri(c, d, a, true);
     }
 
     function beginSlice(p00, p01, p10, p11, isEven) {
         if(isEven) {
             addRect(p00, p01, p11, p10);
         } else {
-            addRect(p00, p10, p11, p01);
+            addRect(p01, p11, p10, p00);
         }
     }
 
