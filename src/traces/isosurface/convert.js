@@ -354,13 +354,15 @@ function generateIsosurfaceMesh(data) {
             return false;
         }
 
-        var shouldReturn = false;
+        var arr, e, q;
 
-        [
+        arr = [
             [0, 1, 2],
             [2, 0, 1],
             [1, 2, 0]
-        ].forEach(function(e) {
+        ];
+        for (q = 0; q < arr.length; q++) {
+            e = arr[q];
             if(ok[e[0]] && ok[e[1]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
@@ -371,16 +373,17 @@ function generateIsosurfaceMesh(data) {
 
                 drawTri(debug, [A, B, p2]);
                 drawTri(debug, [p2, p1, A]);
-                shouldReturn = true;
+                return true;
             }
-        });
-        if(shouldReturn) return true;
+        }
 
-        [
+        arr = [
             [0, 1, 2],
             [1, 2, 0],
             [2, 0, 1]
-        ].forEach(function(e) {
+        ];
+        for (q = 0; q < arr.length; q++) {
+            e = arr[q];
             if(ok[e[0]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
@@ -390,10 +393,9 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(C, A);
 
                 drawTri(debug, [A, p2, p1]);
-                shouldReturn = true;
+                return true;
             }
-        });
-        if(shouldReturn) return true;
+        }
 
         // We should never end up here! Anyway let's return from the function
         return false;
@@ -422,14 +424,16 @@ function generateIsosurfaceMesh(data) {
             return false;
         }
 
-        var shouldReturn = false;
+        var arr, e, q;
 
-        [
+        arr = [
             [0, 1, 2, 3],
             [3, 0, 1, 2],
             [2, 3, 0, 1],
             [1, 2, 3, 0]
-        ].forEach(function(e) {
+        ];
+        for (q = 0; q < arr.length; q++) {
+            e = arr[q];
             if(ok[e[0]] && ok[e[1]] && ok[e[2]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
@@ -452,19 +456,21 @@ function generateIsosurfaceMesh(data) {
                     // drawQuad(debug, [C, A, p1, p3]); // parallel to axes
                     drawTri(debug, [A, B, C]);
                 }
-                shouldReturn = true;
+                return true;
             }
-        });
-        if(shouldReturn) return true;
+        }
 
-        [
+
+        arr = [
             [0, 1, 2, 3],
             [1, 2, 3, 0],
             [2, 3, 0, 1],
             [3, 0, 1, 2],
             [0, 2, 3, 1],
             [1, 3, 2, 0]
-        ].forEach(function(e) {
+        ];
+        for (q = 0; q < arr.length; q++) {
+            e = arr[q];
             if(ok[e[0]] && ok[e[1]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
@@ -488,17 +494,18 @@ function generateIsosurfaceMesh(data) {
                     drawTri(debug, [A, p4, p1]);
                     drawTri(debug, [B, p2, p3]);
                 }
-                shouldReturn = true;
+                return true;
             }
-        });
-        if(shouldReturn) return true;
+        }
 
-        [
+        arr = [
             [0, 1, 2, 3],
             [1, 2, 3, 0],
             [2, 3, 0, 1],
             [3, 0, 1, 2]
-        ].forEach(function(e) {
+        ];
+        for (q = 0; q < arr.length; q++) {
+            e = arr[q];
             if(ok[e[0]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
@@ -520,10 +527,9 @@ function generateIsosurfaceMesh(data) {
                     drawTri(debug, [A, p2, p3]);
                     drawTri(debug, [A, p3, p1]);
                 }
-                shouldReturn = true;
+                return true;
             }
-        });
-        if(shouldReturn) return true;
+        }
 
         // We should never end up here! Anyway let's return from the function
         return false;
