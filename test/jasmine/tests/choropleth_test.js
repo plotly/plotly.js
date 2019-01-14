@@ -114,6 +114,18 @@ describe('Test choropleth hover:', function() {
         .then(done);
     });
 
+    it('should use the hovertemplate', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+        fig.data[1].hovertemplate = 'tpl %{z}<extra>x</extra>';
+
+        run(
+            [400, 160],
+            fig,
+            ['tpl 10', 'x']
+        )
+        .then(done);
+    });
+
     it('should generate hover label info (\'text\' single value case)', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
         fig.data[1].text = 'tExT';
