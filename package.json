@@ -66,7 +66,7 @@
     "country-regex": "^1.1.0",
     "d3": "^3.5.12",
     "d3-sankey": "git://github.com/antoinerg/d3-sankey.git#4f37ed8d3578b545a8569ecd74583f373768e900",
-    "d3-sankey-circular": "git://github.com/antoinerg/d3-sankey-circular.git#b5c91d5db820f31b2ff0f21e6a29becb835de32d",
+    "d3-sankey-circular": "git://github.com/antoinerg/d3-sankey-circular.git#e5760737ef64afade7906bd018149bf1da080e2d",
     "d3-array": "1",
     "d3-collection": "1",
     "d3-force": "^1.0.6",
