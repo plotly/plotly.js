@@ -120,5 +120,16 @@ module.exports = {
             editType: 'none',
             description: 'The easing function used for the transition'
         },
+        ordering: {
+            valType: 'enumerated',
+            values: ['layout first', 'traces first'],
+            dflt: 'layout first',
+            role: 'info',
+            editType: 'none',
+            description: [
+                'Determines whether the figure\'s layout or traces smoothly transitions',
+                'during updates that make both traces and layout change.'
+            ].join(' ')
+        }
     }
 };

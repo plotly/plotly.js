@@ -1462,6 +1462,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     if(Lib.isPlainObject(layoutIn.transition)) {
         coerce('transition.duration');
         coerce('transition.easing');
+        coerce('transition.ordering');
     }
 
     Registry.getComponentMethod(
@@ -2509,39 +2510,50 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         var basePlotModules = fullLayout._basePlotModules;
         var i;
 
-        // Here handle the exception that we refuse to animate traces and axes at the same
-        // time. In other words, if there's an axis transition, then set the data transition
-        // to instantaneous.
+        var axisTransitionOpts;
         var traceTransitionOpts;
         var transitionedTraces;
 
-        if(axEdits.length) {
-            for(i = 0; i < basePlotModules.length; i++) {
-                if(basePlotModules[i].transitionAxes2) {
-                    basePlotModules[i].transitionAxes2(gd, axEdits, transitionOpts, makeCallback);
-                }
-            }
+        var allTraceIndices = [];
+        for(i = 0; i < fullData.length; i++) {
+            allTraceIndices.push(i);
+        }
 
-            // This means do not transition traces,
-            // this happens on layout-only (e.g. axis range) animations
-            traceTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
-            transitionedTraces = null;
-        } else {
-            traceTransitionOpts = transitionOpts;
-            transitionedTraces = [];
-            for(i = 0; i < fullData.length; i++) {
-                transitionedTraces.push(i);
+        function transitionAxes() {
+            for(var i = 0; i < basePlotModules.length; i++) {
+                if(basePlotModules[i].transitionAxes) {
+                    basePlotModules[i].transitionAxes(gd, axEdits, axisTransitionOpts, makeCallback);
+                }
             }
         }
 
-        // Note that we pass a callback to *create* the callback that must be invoked on completion.
-        // This is since not all traces know about transitions, so it greatly simplifies matters if
-        // the trace is responsible for creating a callback, if needed, and then executing it when
-        // the time is right.
-        if(restyleFlags.anim) {
-            for(i = 0; i < basePlotModules.length; i++) {
+        function transitionTraces() {
+            for(var i = 0; i < basePlotModules.length; i++) {
                 basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
             }
+        }
+
+        if(axEdits.length && restyleFlags.anim) {
+            if(transitionOpts.ordering === 'traces first') {
+                axisTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
+                transitionedTraces = allTraceIndices;
+                traceTransitionOpts = transitionOpts;
+                transitionTraces();
+                setTimeout(transitionAxes, transitionOpts.duration);
+            } else {
+                axisTransitionOpts = transitionOpts;
+                transitionedTraces = null;
+                traceTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
+                transitionAxes();
+                transitionTraces();
+            }
+        } else if(axEdits.length) {
+            axisTransitionOpts = transitionOpts;
+            transitionAxes();
+        } else if(restyleFlags.anim) {
+            transitionedTraces = allTraceIndices;
+            traceTransitionOpts = transitionOpts;
+            transitionTraces();
         }
     };
 

@@ -515,7 +515,7 @@ describe('Plotly.react transitions:', function() {
         .then(done);
     });
 
-    it('should only transition the layout when both traces and layout have animatable changes', function(done) {
+    it('should only transition the layout when both traces and layout have animatable changes by default', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {
             transition: {duration: 10},
@@ -566,10 +566,30 @@ describe('Plotly.react transitions:', function() {
                 [gd._fullLayout._basePlotModules[0], 'plot', [
                     // one instantaneous transition options to halt
                     // other trace transitions (if any)
-                    [gd, null, {duration: 0, easing: 'cubic-in-out'}, 'function'],
+                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
                     // one _module.plot call from the relayout at end of axis transition
                     [gd]
                 ]],
+            ]);
+        })
+        .then(function() {
+            data[0].marker.color = 'red';
+            layout.xaxis.range = [-2, 2];
+            layout.transition.ordering = 'traces first';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(delay(20))
+        .then(function() {
+            assertSpies('both trace and layout transitions under *ordering:traces first*', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', [
+                    // one smooth transition
+                    [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'traces first'}, 'function'],
+                    // one by relayout call  at the end of instantaneous axis transition
+                    [gd]
+                ]],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                [Registry, 'call', [['relayout', gd, {'xaxis.range': [-2, 2]}]]]
             ]);
         })
         .catch(failTest)
@@ -674,7 +694,7 @@ describe('Plotly.react transitions:', function() {
                 [gd._fullLayout._basePlotModules[0], 'plot', [
                     // one instantaneous transition options to halt
                     // other trace transitions (if any)
-                    [gd, null, {duration: 0, easing: 'cubic-in-out'}, 'function'],
+                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
                     // one _module.plot call from the relayout at end of axis transition
                     [gd]
                 ]],
@@ -690,8 +710,8 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0],
                 [gd._fullLayout._basePlotModules[0], 'plot', [
-                    [gd, [0], {duration: 10, easing: 'cubic-in-out'}, 'function'],
                     // called from Plots.transitionFromReact
+                    [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
                 ]],
             ]);
             assertAxAutorange('axes are still autorange:false', false);
@@ -762,7 +782,7 @@ describe('Plotly.react transitions:', function() {
                 [gd._fullLayout._basePlotModules[0], 'plot', [
                     // one instantaneous transition options to halt
                     // other trace transitions (if any)
-                    [gd, null, {duration: 0, easing: 'cubic-in-out'}, 'function'],
+                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
                     // one _module.plot call from the relayout at end of axis transition
                     [gd]
                 ]]
