@@ -171,7 +171,8 @@ function generateIsosurfaceMesh(data) {
     }
 
     function findVertexId(x, y, z) {
-        for(var f = beginVertextLength; f < allVs.length; f++) {
+        var len = allVs.length;
+        for(var f = beginVertextLength; f < len; f++) {
             if(
                 x === allXs[f] &&
                 y === allYs[f] &&
@@ -361,7 +362,7 @@ function generateIsosurfaceMesh(data) {
             [2, 0, 1],
             [1, 2, 0]
         ].forEach(function(e) {
-            if(ok[e[0]] && ok[e[1]]) {
+            if(ok[e[0]] && ok[e[1]] && !ok[e[2]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
@@ -381,7 +382,7 @@ function generateIsosurfaceMesh(data) {
             [1, 2, 0],
             [2, 0, 1]
         ].forEach(function(e) {
-            if(ok[e[0]]) {
+            if(ok[e[0]] && !ok[e[1]] && !ok[e[2]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
@@ -430,7 +431,7 @@ function generateIsosurfaceMesh(data) {
             [2, 3, 0, 1],
             [1, 2, 3, 0]
         ].forEach(function(e) {
-            if(ok[e[0]] && ok[e[1]] && ok[e[2]]) {
+            if(ok[e[0]] && ok[e[1]] && ok[e[2]] && !ok[e[3]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
@@ -465,7 +466,7 @@ function generateIsosurfaceMesh(data) {
             [0, 2, 3, 1],
             [1, 3, 2, 0]
         ].forEach(function(e) {
-            if(ok[e[0]] && ok[e[1]]) {
+            if(ok[e[0]] && ok[e[1]] && !ok[e[2]] && !ok[e[3]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
@@ -499,7 +500,7 @@ function generateIsosurfaceMesh(data) {
             [2, 3, 0, 1],
             [3, 0, 1, 2]
         ].forEach(function(e) {
-            if(ok[e[0]]) {
+            if(ok[e[0]] && !ok[e[1]] && !ok[e[2]] && !ok[e[3]]) {
                 var A = xyzv[e[0]];
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
@@ -546,15 +547,15 @@ function generateIsosurfaceMesh(data) {
     }
 
     function addRect(a, b, c, d) {
-        tryCreateTri(a, b, c, true);
-        tryCreateTri(c, d, a, true);
+        tryCreateTri(a, b, d, true);
+        tryCreateTri(b, c, d, true);
     }
 
     function beginSlice(p00, p01, p10, p11, isEven) {
         if(isEven) {
             addRect(p00, p01, p11, p10);
         } else {
-            addRect(p01, p11, p10, p00);
+            addRect(p00, p10, p11, p01);
         }
     }
 
