@@ -38,15 +38,16 @@ function sankeyModel(layout, d, traceIndex) {
 
     var nodes = calcData._nodes;
     var links = calcData._links;
-
     var circular = calcData.circular;
+
+    // Select Sankey generator
     var sankey;
     if(circular) {
         sankey = d3SankeyCircular
             .sankeyCircular()
             .circularLinkGap(2)
             .nodeId(function(d) {
-                return d.index;
+                return d.pointNumber;
             });
     } else {
         sankey = d3Sankey.sankey();
