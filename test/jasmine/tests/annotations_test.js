@@ -1603,7 +1603,7 @@ describe('animating annotations', function() {
             {
                 annotations: [{text: 'hello'}],
                 shapes: [{fillcolor: 'rgb(170, 170, 170)'}],
-                images: [{source: img1}]
+                images: [{source: img1, xref: 'x', yref: 'y'}]
             }
         ).then(function() {
             assertAnnotations(['hello']);

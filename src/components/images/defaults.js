@@ -52,6 +52,11 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
         var axLetter = axLetters[i];
         var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
 
+        if(axRef !== 'paper') {
+            var ax = Axes.getFromId(gdMock, axRef);
+            ax._imgIndices.push(imageOut._index);
+        }
+
         Axes.coercePosition(imageOut, gdMock, coerce, axRef, axLetter, 0);
     }
 

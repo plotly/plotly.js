@@ -132,6 +132,39 @@ axes.cleanPosition = function(pos, gd, axRef) {
     return cleanPos(pos);
 };
 
+axes.redrawComponents = function(gd, axIds) {
+    axIds = axIds ? axIds : axes.listIds(gd);
+
+    var fullLayout = gd._fullLayout;
+
+    function _redrawOneComp(moduleName, methodName, stashName, shortCircuit) {
+        var method = Registry.getComponentMethod(moduleName, methodName);
+        var stash = {};
+
+        for(var i = 0; i < axIds.length; i++) {
+            var ax = fullLayout[axes.id2name(axIds[i])];
+            var indices = ax[stashName];
+
+            for(var j = 0; j < indices.length; j++) {
+                var ind = indices[j];
+
+                if(!stash[ind]) {
+                    method(gd, ind);
+                    stash[ind] = 1;
+                    // once is enough for images (which doesn't use the `i` arg anyway)
+                    if(shortCircuit) return;
+                }
+            }
+        }
+    }
+
+    // annotations and shapes 'draw' method is slow,
+    // use the finer-grained 'drawOne' method instead
+    _redrawOneComp('annotations', 'drawOne', '_annIndices');
+    _redrawOneComp('shapes', 'drawOne', '_shapeIndices');
+    _redrawOneComp('images', 'draw', '_imgIndices', true);
+};
+
 var getDataConversions = axes.getDataConversions = function(gd, trace, target, targetArray) {
     var ax;
 
