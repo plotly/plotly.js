@@ -21,6 +21,7 @@ function makeSliceAttr(axLetter) {
             valType: 'boolean',
             role: 'info',
             dflt: false,
+            editType: 'calc',
             description: [
                 'Determines whether or not slice planes about the', axLetter,
                 'dimension are drawn.'
@@ -44,6 +45,7 @@ function makeCapAttr(axLetter) {
             valType: 'boolean',
             role: 'info',
             dflt: true,
+            editType: 'calc',
             description: [
                 'Determines whether or not cap planes about the', axLetter,
                 'dimension are drawn.'

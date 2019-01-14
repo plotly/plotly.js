@@ -243,7 +243,7 @@ function generateIsosurfaceMesh(data) {
 
     function drawTri(debug, xyzv) {
 
-        beginGroup(); // <<<<<<<<<<<<<<<<<<
+        beginGroup();
 
         var allXYZVs =
             (activeOpacity >= 1) ? [xyzv] :
@@ -261,7 +261,7 @@ function generateIsosurfaceMesh(data) {
                 var z = xyzv[i][2];
                 var v = xyzv[i][3];
 
-                var id = -1; // findVertexId(x, y, z); // <<<<<<<<<<<<<<<<<<<<<<<<<
+                var id = findVertexId(x, y, z);
                 if(id > -1) {
                     pnts[i] = id;
                 } else {
@@ -568,8 +568,6 @@ function generateIsosurfaceMesh(data) {
 
     function drawSectionsX(items) {
         items.forEach(function(i) {
-            beginGroup();
-
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
                     beginSlice(
@@ -586,8 +584,6 @@ function generateIsosurfaceMesh(data) {
 
     function drawSectionsY(items) {
         items.forEach(function(j) {
-            beginGroup();
-
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
                     beginSlice(
@@ -604,8 +600,6 @@ function generateIsosurfaceMesh(data) {
 
     function drawSectionsZ(items) {
         items.forEach(function(k) {
-            beginGroup();
-
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
                     beginSlice(
