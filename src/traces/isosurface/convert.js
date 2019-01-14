@@ -284,8 +284,8 @@ function generateIsosurfaceMesh(data) {
 
     function drawTetra(debug, xyzv) {
         drawTri(debug, [xyzv[0], xyzv[1], xyzv[2]]);
-        drawTri(debug, [xyzv[0], xyzv[1], xyzv[3]]);
-        drawTri(debug, [xyzv[0], xyzv[2], xyzv[3]]);
+        drawTri(debug, [xyzv[3], xyzv[0], xyzv[1]]);
+        drawTri(debug, [xyzv[2], xyzv[3], xyzv[0]]);
         drawTri(debug, [xyzv[1], xyzv[2], xyzv[3]]);
     }
 
@@ -532,9 +532,9 @@ function generateIsosurfaceMesh(data) {
     function addCube(p000, p001, p010, p011, p100, p101, p110, p111) {
 
         var a = tryCreateTetra(p000, p001, p010, p100, false);
-        var b = tryCreateTetra(p011, p001, p010, p111, false);
-        var c = tryCreateTetra(p101, p100, p111, p001, false);
-        var d = tryCreateTetra(p110, p100, p111, p010, false);
+        var b = tryCreateTetra(p001, p010, p011, p111, false);
+        var c = tryCreateTetra(p001, p100, p101, p111, false);
+        var d = tryCreateTetra(p010, p100, p110, p111, false);
 
         if(!showVolume) {
             if(a || b || c || d) {
