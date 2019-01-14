@@ -116,6 +116,7 @@ module.exports = extendFlat({
     },
 
     surface: {
+        editType: 'calc',
         show: {
             valType: 'boolean',
             role: 'info',
@@ -138,6 +139,7 @@ module.exports = extendFlat({
     },
 
     volume: {
+        editType: 'calc',
         show: {
             valType: 'boolean',
             role: 'info',
@@ -161,12 +163,14 @@ module.exports = extendFlat({
     },
 
     slices: {
+        editType: 'calc',
         x: makeSliceAttr('x'),
         y: makeSliceAttr('y'),
         z: makeSliceAttr('z')
     },
 
     caps: {
+        editType: 'calc',
         x: makeCapAttr('x'),
         y: makeCapAttr('y'),
         z: makeCapAttr('z')

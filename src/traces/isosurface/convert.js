@@ -289,17 +289,17 @@ function generateIsosurfaceMesh(data) {
         drawTri(debug, [xyzv[1], xyzv[2], xyzv[3]]);
     }
 
-    function calcIntersection(dst, src) {
-        var value = dst[3];
+    function calcIntersection(pointOut, pointIn) {
+        var value = pointOut[3];
 
         if(value < vMin) value = vMin;
         if(value > vMax) value = vMax;
 
-        var ratio = (value - dst[3]) / (src[3] - dst[3]);
+        var ratio = (pointOut[3] - value) / (pointOut[3] - pointIn[3]);
 
         var result = [];
         for(var s = 0; s < 4; s++) {
-            result[s] = (1 - ratio) * dst[s] + ratio * src[s];
+            result[s] = (1 - ratio) * pointOut[s] + ratio * pointIn[s];
         }
         return result;
     }
@@ -358,7 +358,7 @@ function generateIsosurfaceMesh(data) {
 
         [
             [0, 1, 2],
-            [0, 2, 1],
+            [2, 0, 1],
             [1, 2, 0]
         ].forEach(function(e) {
             if(ok[e[0]] && ok[e[1]]) {
@@ -379,7 +379,7 @@ function generateIsosurfaceMesh(data) {
         [
             [0, 1, 2],
             [1, 2, 0],
-            [2, 1, 0]
+            [2, 0, 1]
         ].forEach(function(e) {
             if(ok[e[0]]) {
                 var A = xyzv[e[0]];
@@ -426,8 +426,8 @@ function generateIsosurfaceMesh(data) {
 
         [
             [0, 1, 2, 3],
-            [0, 1, 3, 2],
-            [0, 2, 3, 1],
+            [3, 0, 1, 2],
+            [2, 3, 0, 1],
             [1, 2, 3, 0]
         ].forEach(function(e) {
             if(ok[e[0]] && ok[e[1]] && ok[e[2]]) {
@@ -459,11 +459,11 @@ function generateIsosurfaceMesh(data) {
 
         [
             [0, 1, 2, 3],
-            [0, 2, 1, 3],
-            [0, 3, 1, 2],
-            [1, 2, 0, 3],
-            [1, 3, 0, 2],
-            [2, 3, 0, 1]
+            [1, 2, 3, 0],
+            [2, 3, 0, 1],
+            [3, 0, 1, 2],
+            [0, 2, 3, 1],
+            [1, 3, 2, 0]
         ].forEach(function(e) {
             if(ok[e[0]] && ok[e[1]]) {
                 var A = xyzv[e[0]];
@@ -495,8 +495,8 @@ function generateIsosurfaceMesh(data) {
 
         [
             [0, 1, 2, 3],
-            [1, 0, 2, 3],
-            [2, 0, 1, 3],
+            [1, 2, 3, 0],
+            [2, 3, 0, 1],
             [3, 0, 1, 2]
         ].forEach(function(e) {
             if(ok[e[0]]) {
