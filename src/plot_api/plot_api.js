@@ -2819,7 +2819,9 @@ exports.react = function(gd, data, layout, config) {
 };
 
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
-    if(!transition && oldFullData.length !== newFullData.length) {
+    var sameTraceLength = oldFullData.length === newFullData.length;
+
+    if(!transition && !sameTraceLength) {
         return {
             fullReplot: true,
             calc: true
@@ -2864,7 +2866,7 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
     }
 
     if(transition && flags.nChanges && flags.nChangesAnim) {
-        flags.anim = flags.nChanges === flags.nChangesAnim ? 'all' : 'some';
+        flags.anim = flags.nChanges === flags.nChangesAnim && sameTraceLength ? 'all' : 'some';
     }
 
     return flags;
@@ -2918,7 +2920,10 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             return;
         }
         editTypes.update(flags, valObject);
-        flags.nChanges++;
+
+        if(editType !== 'none') {
+            flags.nChanges++;
+        }
 
         // track animatable changes
         if(opts.transition && valObject.anim) {
