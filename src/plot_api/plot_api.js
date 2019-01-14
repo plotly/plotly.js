@@ -2762,7 +2762,7 @@ exports.react = function(gd, data, layout, config) {
             subroutines.doAutoRangeAndConstraints(gd);
 
             seq.push(function() {
-                return Plots.transition2(gd, restyleFlags, relayoutFlags, oldFullLayout);
+                return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
             });
         }
         else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {

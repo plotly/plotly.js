@@ -2295,10 +2295,9 @@ plots.extendLayout = function(destLayout, srcLayout) {
 };
 
 /**
- * Transition to a set of new data and layout properties
+ * Transition to a set of new data and layout properties from Plotly.animate
  *
  * @param {DOM element} gd
- *      the DOM element of the graph container div
  * @param {Object[]} data
  *      an array of data objects following the normal Plotly data definition format
  * @param {Object} layout
@@ -2311,17 +2310,15 @@ plots.extendLayout = function(destLayout, srcLayout) {
  *      options for the transition
  */
 plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts) {
-    var i, traceIdx;
-
-    var dataLength = Array.isArray(data) ? data.length : 0;
-    var traceIndices = traces.slice(0, dataLength);
-
+    var opts = {redraw: frameOpts.redraw};
     var transitionedTraces = [];
+    var axEdits = [];
 
-    function prepareTransitions() {
-        var i;
+    opts.prepareFn = function() {
+        var dataLength = Array.isArray(data) ? data.length : 0;
+        var traceIndices = traces.slice(0, dataLength);
 
-        for(i = 0; i < traceIndices.length; i++) {
+        for(var i = 0; i < traceIndices.length; i++) {
             var traceIdx = traceIndices[i];
             var trace = gd._fullData[traceIdx];
             var module = trace._module;
@@ -2367,191 +2364,115 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         plots.supplyDefaults(gd);
         plots.doCalcdata(gd);
 
-        return Promise.resolve();
-    }
+        var newLayout = Lib.expandObjectPaths(layout);
 
-    function executeCallbacks(list) {
-        var p = Promise.resolve();
-        if(!list) return p;
-        while(list.length) {
-            p = p.then((list.shift()));
-        }
-        return p;
-    }
+        if(newLayout) {
+            var subplots = gd._fullLayout._plots;
 
-    function flushCallbacks(list) {
-        if(!list) return;
-        while(list.length) {
-            list.shift();
-        }
-    }
+            for(var k in subplots) {
+                var plotinfo = subplots[k];
+                var xa = plotinfo.xaxis;
+                var ya = plotinfo.yaxis;
+                var xr0 = xa.range.slice();
+                var yr0 = ya.range.slice();
 
-    var aborted = false;
+                var xr1;
+                if(Array.isArray(newLayout[xa._name + '.range'])) {
+                    xr1 = newLayout[xa._name + '.range'].slice();
+                } else if(Array.isArray((newLayout[xa._name] || {}).range)) {
+                    xr1 = newLayout[xa._name].range.slice();
+                }
 
-    function executeTransitions() {
-        gd.emit('plotly_transitioning', []);
+                var yr1;
+                if(Array.isArray(newLayout[ya._name + '.range'])) {
+                    yr1 = newLayout[ya._name + '.range'].slice();
+                } else if(Array.isArray((newLayout[ya._name] || {}).range)) {
+                    yr1 = newLayout[ya._name].range.slice();
+                }
 
-        return new Promise(function(resolve) {
-            // This flag is used to disabled things like autorange:
-            gd._transitioning = true;
+                var editX;
+                if(xr0 && xr1 && (xr0[0] !== xr1[0] || xr0[1] !== xr1[1])) {
+                    editX = {xr0: xr0, xr1: xr1};
+                }
 
-            // When instantaneous updates are coming through quickly, it's too much to simply disable
-            // all interaction, so store this flag so we can disambiguate whether mouse interactions
-            // should be fully disabled or not:
-            if(transitionOpts.duration > 0) {
-                gd._transitioningWithDuration = true;
-            }
+                var editY;
+                if(yr0 && yr1 && (yr0[0] !== yr1[0] || yr0[1] !== yr1[1])) {
+                    editY = {yr0: yr0, yr1: yr1};
+                }
 
-
-            // If another transition is triggered, this callback will be executed simply because it's
-            // in the interruptCallbacks queue. If this transition completes, it will instead flush
-            // that queue and forget about this callback.
-            gd._transitionData._interruptCallbacks.push(function() {
-                aborted = true;
-            });
-
-            if(frameOpts.redraw) {
-                gd._transitionData._interruptCallbacks.push(function() {
-                    return Registry.call('redraw', gd);
-                });
-            }
-
-            // Emit this and make sure it happens last:
-            gd._transitionData._interruptCallbacks.push(function() {
-                gd.emit('plotly_transitioninterrupted', []);
-            });
-
-            // Construct callbacks that are executed on transition end. This ensures the d3 transitions
-            // are *complete* before anything else is done.
-            var numCallbacks = 0;
-            var numCompleted = 0;
-            function makeCallback() {
-                numCallbacks++;
-                return function() {
-                    numCompleted++;
-                    // When all are complete, perform a redraw:
-                    if(!aborted && numCompleted === numCallbacks) {
-                        completeTransition(resolve);
-                    }
-                };
-            }
-
-            var traceTransitionOpts;
-            var j;
-            var basePlotModules = gd._fullLayout._basePlotModules;
-            var hasAxisTransition = false;
-
-            if(layout) {
-                for(j = 0; j < basePlotModules.length; j++) {
-                    if(basePlotModules[j].transitionAxes) {
-                        var newLayout = Lib.expandObjectPaths(layout);
-                        hasAxisTransition = basePlotModules[j].transitionAxes(gd, newLayout, transitionOpts, makeCallback) || hasAxisTransition;
-                    }
+                if(editX || editY) {
+                    axEdits.push(Lib.extendFlat({plotinfo: plotinfo}, editX, editY));
                 }
             }
+        }
 
-            // Here handle the exception that we refuse to animate scales and axes at the same
-            // time. In other words, if there's an axis transition, then set the data transition
-            // to instantaneous.
-            if(hasAxisTransition) {
-                traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
-                traceTransitionOpts.duration = 0;
-                // This means do not transition traces,
-                // this happens on layout-only (e.g. axis range) animations
-                transitionedTraces = null;
-            } else {
-                traceTransitionOpts = transitionOpts;
+        return Promise.resolve();
+    };
+
+    opts.runFn = function(makeCallback) {
+        var traceTransitionOpts;
+        var basePlotModules = gd._fullLayout._basePlotModules;
+        var hasAxisTransition = axEdits.length;
+        var i;
+
+        if(layout) {
+            for(i = 0; i < basePlotModules.length; i++) {
+                if(basePlotModules[i].transitionAxes) {
+                    basePlotModules[i].transitionAxes(gd, axEdits, transitionOpts, makeCallback);
+                }
             }
+        }
 
-            for(j = 0; j < basePlotModules.length; j++) {
-                // Note that we pass a callback to *create* the callback that must be invoked on completion.
-                // This is since not all traces know about transitions, so it greatly simplifies matters if
-                // the trace is responsible for creating a callback, if needed, and then executing it when
-                // the time is right.
-                basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
-            }
+        // Here handle the exception that we refuse to animate scales and axes at the same
+        // time. In other words, if there's an axis transition, then set the data transition
+        // to instantaneous.
+        if(hasAxisTransition) {
+            traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
+            traceTransitionOpts.duration = 0;
+            // This means do not transition traces,
+            // this happens on layout-only (e.g. axis range) animations
+            transitionedTraces = null;
+        } else {
+            traceTransitionOpts = transitionOpts;
+        }
 
-            // If nothing else creates a callback, then this will trigger the completion in the next tick:
-            setTimeout(makeCallback());
+        for(i = 0; i < basePlotModules.length; i++) {
+            // Note that we pass a callback to *create* the callback that must be invoked on completion.
+            // This is since not all traces know about transitions, so it greatly simplifies matters if
+            // the trace is responsible for creating a callback, if needed, and then executing it when
+            // the time is right.
+            basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+        }
+    };
 
-        });
-    }
-
-    function completeTransition(callback) {
-        // This a simple workaround for tests which purge the graph before animations
-        // have completed. That's not a very common case, so this is the simplest
-        // fix.
-        if(!gd._transitionData) return;
-
-        flushCallbacks(gd._transitionData._interruptCallbacks);
-
-        return Promise.resolve().then(function() {
-            if(frameOpts.redraw) {
-                return Registry.call('redraw', gd);
-            }
-        }).then(function() {
-            // Set transitioning false again once the redraw has occurred. This is used, for example,
-            // to prevent the trailing redraw from autoranging:
-            gd._transitioning = false;
-            gd._transitioningWithDuration = false;
-
-            gd.emit('plotly_transitioned', []);
-        }).then(callback);
-    }
-
-    function interruptPreviousTransitions() {
-        // Fail-safe against purged plot:
-        if(!gd._transitionData) return;
-
-        // If a transition is interrupted, set this to false. At the moment, the only thing that would
-        // interrupt a transition is another transition, so that it will momentarily be set to true
-        // again, but this determines whether autorange or dragbox work, so it's for the sake of
-        // cleanliness:
-        gd._transitioning = false;
-
-        return executeCallbacks(gd._transitionData._interruptCallbacks);
-    }
-
-    for(i = 0; i < traceIndices.length; i++) {
-        traceIdx = traceIndices[i];
-        var contFull = gd._fullData[traceIdx];
-        var module = contFull._module;
-
-        if(!module) continue;
-    }
-
-    var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, plots.rehover, executeTransitions];
-
-    var transitionStarting = Lib.syncOrAsync(seq, gd);
-
-    if(!transitionStarting || !transitionStarting.then) {
-        transitionStarting = Promise.resolve();
-    }
-
-    return transitionStarting.then(function() {
-        return gd;
-    });
+    return _transition(gd, transitionOpts, opts);
 };
 
 /**
- * Transition used in Plotly.react
+ * Transition to a set of new data and layout properties from Plotly.react
+ *
+ * @param {DOM element} gd
+ * @param {object} restyleFlags
+ * - anim {'all'|'some'}
+ * @param {object} relayoutFlags
+ * - anim {'all'|'some'}
+ * @param {object} oldFullLayout : old (pre Plotly.react) fullLayout
  */
-plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
-    var aborted = false;
-    var redraw = true;
-    var edits;
+plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
+    var fullLayout = gd._fullLayout;
+    var transitionOpts = fullLayout.transition;
+    var opts = {};
+    var axEdits = [];
 
-    function prepareTransitions() {
-        var fullLayout = gd._fullLayout;
+    opts.prepareFn = function() {
         var subplots = fullLayout._plots;
 
         // no need to redraw at end of transition,
         // if all changes are animatable
-        redraw = false;
-        if(restyleFlags.anim === 'some') redraw = true;
-        if(relayoutFlags.anim === 'some') redraw = true;
+        opts.redraw = false;
+        if(restyleFlags.anim === 'some') opts.redraw = true;
+        if(relayoutFlags.anim === 'some') opts.redraw = true;
 
-        edits = {};
         for(var k in subplots) {
             var plotinfo = subplots[k];
             var xa = plotinfo.xaxis;
@@ -2564,21 +2485,82 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
             xa.setScale();
             ya.setScale();
 
-            if(xr0[0] !== xr1[0] || xr0[1] !== xr1[1] ||
-                yr0[0] !== yr1[0] || yr0[1] !== yr1[1]
-            ) {
-                edits[k] = {
-                    plotinfo: plotinfo,
-                    xr0: xr0,
-                    yr0: yr0,
-                    xr1: xr1,
-                    yr1: yr1
-                };
+            var editX;
+            if(xr0[0] !== xr1[0] || xr0[1] !== xr1[1]) {
+                editX = {xr0: xr0, xr1: xr1};
+            }
+
+            var editY;
+            if(yr0[0] !== yr1[0] || yr0[1] !== yr1[1]) {
+                editY = {yr0: yr0, yr1: yr1};
+            }
+
+            if(editX || editY) {
+                axEdits.push(Lib.extendFlat({plotinfo: plotinfo}, editX, editY));
             }
         }
 
         return Promise.resolve();
-    }
+    };
+
+    opts.runFn = function(makeCallback) {
+        var fullData = gd._fullData;
+        var fullLayout = gd._fullLayout;
+        var basePlotModules = fullLayout._basePlotModules;
+        var i;
+
+        // Here handle the exception that we refuse to animate traces and axes at the same
+        // time. In other words, if there's an axis transition, then set the data transition
+        // to instantaneous.
+        var traceTransitionOpts;
+        var transitionedTraces;
+
+        if(axEdits.length) {
+            for(i = 0; i < basePlotModules.length; i++) {
+                if(basePlotModules[i].transitionAxes2) {
+                    basePlotModules[i].transitionAxes2(gd, axEdits, transitionOpts, makeCallback);
+                }
+            }
+
+            // This means do not transition traces,
+            // this happens on layout-only (e.g. axis range) animations
+            traceTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
+            transitionedTraces = null;
+        } else {
+            traceTransitionOpts = transitionOpts;
+            transitionedTraces = [];
+            for(i = 0; i < fullData.length; i++) {
+                transitionedTraces.push(i);
+            }
+        }
+
+        // Note that we pass a callback to *create* the callback that must be invoked on completion.
+        // This is since not all traces know about transitions, so it greatly simplifies matters if
+        // the trace is responsible for creating a callback, if needed, and then executing it when
+        // the time is right.
+        if(restyleFlags.anim) {
+            for(i = 0; i < basePlotModules.length; i++) {
+                basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+            }
+        }
+    };
+
+    return _transition(gd, transitionOpts, opts);
+};
+
+/**
+ * trace/layout transition wrapper that works
+ * for transitions initiated by Plotly.animate and Plotly.react.
+ *
+ * @param {DOM element} gd
+ * @param {object} transitionOpts
+ * @param {object} opts
+ * - redraw {boolean}
+ * - prepareFn {function} *should return a Promise*
+ * - runFn {function} ran inside executeTransitions
+ */
+function _transition(gd, transitionOpts, opts) {
+    var aborted = false;
 
     function executeCallbacks(list) {
         var p = Promise.resolve();
@@ -2600,12 +2582,6 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
         gd.emit('plotly_transitioning', []);
 
         return new Promise(function(resolve) {
-            var fullData = gd._fullData;
-            var fullLayout = gd._fullLayout;
-            var transitionOpts = fullLayout.transition;
-            var basePlotModules = fullLayout._basePlotModules;
-            var i;
-
             // This flag is used to disabled things like autorange:
             gd._transitioning = true;
 
@@ -2623,7 +2599,7 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
                 aborted = true;
             });
 
-            if(redraw) {
+            if(opts.redraw) {
                 gd._transitionData._interruptCallbacks.push(function() {
                     return Registry.call('redraw', gd);
                 });
@@ -2649,40 +2625,7 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
                 };
             }
 
-            // Here handle the exception that we refuse to animate traces and axes at the same
-            // time. In other words, if there's an axis transition, then set the data transition
-            // to instantaneous.
-            var traceTransitionOpts;
-            var transitionedTraces;
-
-            if(Object.keys(edits).length) {
-                for(i = 0; i < basePlotModules.length; i++) {
-                    if(basePlotModules[i].transitionAxes2) {
-                        basePlotModules[i].transitionAxes2(gd, edits, transitionOpts, makeCallback);
-                    }
-                }
-
-                // This means do not transition traces,
-                // this happens on layout-only (e.g. axis range) animations
-                traceTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
-                transitionedTraces = null;
-            } else {
-                traceTransitionOpts = transitionOpts;
-                transitionedTraces = [];
-                for(i = 0; i < fullData.length; i++) {
-                    transitionedTraces.push(i);
-                }
-            }
-
-            // Note that we pass a callback to *create* the callback that must be invoked on completion.
-            // This is since not all traces know about transitions, so it greatly simplifies matters if
-            // the trace is responsible for creating a callback, if needed, and then executing it when
-            // the time is right.
-            if(restyleFlags.anim) {
-                for(i = 0; i < basePlotModules.length; i++) {
-                    basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
-                }
-            }
+            opts.runFn(makeCallback);
 
             // If nothing else creates a callback, then this will trigger the completion in the next tick:
             setTimeout(makeCallback());
@@ -2698,7 +2641,7 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
         flushCallbacks(gd._transitionData._interruptCallbacks);
 
         return Promise.resolve().then(function() {
-            if(redraw) {
+            if(opts.redraw) {
                 return Registry.call('redraw', gd);
             }
         }).then(function() {
@@ -2727,7 +2670,7 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
     var seq = [
         plots.previousPromises,
         interruptPreviousTransitions,
-        prepareTransitions,
+        opts.prepareFn,
         plots.rehover,
         executeTransitions
     ];
@@ -2738,10 +2681,8 @@ plots.transition2 = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
         transitionStarting = Promise.resolve();
     }
 
-    return transitionStarting.then(function() {
-        return gd;
-    });
-};
+    return transitionStarting.then(function() { return gd; });
+}
 
 plots.doCalcdata = function(gd, traces) {
     var axList = axisIDs.list(gd);

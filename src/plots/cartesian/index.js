@@ -45,8 +45,7 @@ exports.layoutAttributes = require('./layout_attributes');
 
 exports.supplyLayoutDefaults = require('./layout_defaults');
 
-exports.transitionAxes = require('./transition_axes').transitionAxes;
-exports.transitionAxes2 = require('./transition_axes').transitionAxes2;
+exports.transitionAxes = require('./transition_axes');
 
 exports.finalizeSubplots = function(layoutIn, layoutOut) {
     var subplots = layoutOut._subplots;
