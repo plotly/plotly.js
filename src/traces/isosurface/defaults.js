@@ -37,6 +37,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
+    ['x', 'y', 'z'].forEach(function(dim) {
+        var sliceDim = 'slices.' + dim;
+        coerce(sliceDim + '.show');
+        coerce(sliceDim + '.fill');
+
+        var capDim = 'caps.' + dim;
+        coerce(capDim + '.show');
+        coerce(capDim + '.fill');
+    });
+
     // Coerce remaining properties
     [
         'text',
@@ -56,15 +66,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'colorscale',
         'reversescale',
         'flatshading',
-        'surfacefill',
-        'volumefill',
-        'slicefill',
-        'showslice',
-        'showvolume',
-        'showsurface',
         'isomin',
         'isomax',
-        'slicetype'
+        'surface.show',
+        'surface.fill',
+        'volume.show',
+        'volume.fill'
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});

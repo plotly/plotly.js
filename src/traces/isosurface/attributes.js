@@ -15,6 +15,53 @@ var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
+function makeSliceAttr(axLetter) {
+    return {
+        show: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            description: [
+                'Determines whether or not slice planes about the', axLetter,
+                'dimension are drawn.'
+            ].join(' ')
+        },
+        fill: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            max: 1,
+            dflt: 1,
+            editType: 'calc',
+            description: 'Sets the fill ratio (opacity) of the slices.'
+        }
+    };
+}
+
+function makeCapAttr(axLetter) {
+    return {
+        show: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            description: [
+                'Determines whether or not cap planes about the', axLetter,
+                'dimension are drawn.'
+            ].join(' ')
+        },
+        fill: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            max: 1,
+            dflt: 1,
+            editType: 'calc',
+            description: 'Sets the fill ratio (opacity) of the caps.'
+        }
+    };
+}
+
+
 module.exports = extendFlat({
     x: {
         valType: 'data_array',
@@ -49,35 +96,6 @@ module.exports = extendFlat({
             'one dimensional array containing n=width*height*depth numbers.'
         ].join(' ')
     },
-    showsurface: {
-        valType: 'boolean',
-        role: 'info',
-        editType: 'calc',
-        dflt: true,
-        description: [
-            'Hides/displays surfaces between minimum and maximum iso-values.'
-        ].join(' ')
-    },
-    showslice: {
-        valType: 'boolean',
-        role: 'info',
-        editType: 'calc',
-        dflt: true,
-        description: [
-            'Hides/displays cap slices between minimum and maximum iso-values.'
-        ].join(' ')
-    },
-    showvolume: {
-        valType: 'boolean',
-        role: 'info',
-        editType: 'calc',
-        dflt: false,
-        description: [
-            'Displays/hides volume between minimum and maximum iso-values.',
-            'When being enabled, lower \'surfacefill\' value could often be applied',
-            'to view volume plot.'
-        ].join(' ')
-    },
     isomin: {
         valType: 'number',
         role: 'info',
@@ -92,17 +110,6 @@ module.exports = extendFlat({
         editType: 'calc',
         description: [
             'Sets the maximum boundary for iso-surface or volume plot.'
-        ].join(' ')
-    },
-    slicetype: {
-        valType: 'string',
-        role: 'info',
-        dflt: 'caps',
-        editType: 'calc',
-        description: [
-            'Sets the type of cutting slices.',
-            'It may include \'caps\', \'x\', \'y\', \'z\' for example caps+xz',
-            'The default is \'caps\'.'
         ].join(' ')
     },
 
@@ -130,34 +137,61 @@ colorscaleAttrs('', {
 
     colorbar: colorbarAttrs,
 
-    surfacefill: {
-        valType: 'number',
-        role: 'style',
-        min: 0,
-        max: 1,
-        dflt: 1,
-        editType: 'calc',
-        description: 'Sets the fill ratio (opacity) of the iso-surface.'
+    surface: {
+        show: {
+            valType: 'boolean',
+            role: 'info',
+            editType: 'calc',
+            dflt: true,
+            description: [
+                'Hides/displays surfaces between minimum and maximum iso-values.'
+            ].join(' ')
+        },
+
+        fill: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            max: 1,
+            dflt: 1,
+            editType: 'calc',
+            description: 'Sets the fill ratio (opacity) of the iso-surface.'
+        }
     },
 
-    volumefill: {
-        valType: 'number',
-        role: 'style',
-        min: 0,
-        max: 1,
-        dflt: 0.15,
-        editType: 'calc',
-        description: 'Sets the fill ratio (opacity) of the iso-volume.'
+    volume: {
+        show: {
+            valType: 'boolean',
+            role: 'info',
+            editType: 'calc',
+            dflt: false,
+            description: [
+                'Displays/hides volume between minimum and maximum iso-values.',
+                'When being enabled, lower \'surfacefill\' value could often be applied',
+                'to view volume plot.'
+            ].join(' ')
+        },
+        fill: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            max: 1,
+            dflt: 0.15,
+            editType: 'calc',
+            description: 'Sets the fill ratio (opacity) of the iso-volume.'
+        }
     },
 
-    slicefill: {
-        valType: 'number',
-        role: 'style',
-        min: 0,
-        max: 1,
-        dflt: 1,
-        editType: 'calc',
-        description: 'Sets the fill ratio (opacity) of the slices and caps.'
+    slices: {
+        x: makeSliceAttr('x'),
+        y: makeSliceAttr('y'),
+        z: makeSliceAttr('z')
+    },
+
+    caps: {
+        x: makeCapAttr('x'),
+        y: makeCapAttr('y'),
+        z: makeCapAttr('z')
     },
 
     // Flat shaded mode

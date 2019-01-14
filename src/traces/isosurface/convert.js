@@ -78,7 +78,7 @@ proto.update = function(data) {
         fresnel: data.lighting.fresnel,
         vertexNormalsEpsilon: data.lighting.vertexnormalsepsilon,
         faceNormalsEpsilon: data.lighting.facenormalsepsilon,
-        opacity: 1, // Note: we do NOT use opacity.
+        opacity: 1, // Note: no need to create transparent surfaces
         contourEnable: data.contour.show,
         contourColor: str2RgbaArray(data.contour.color).slice(0, 3),
         contourWidth: data.contour.width,
@@ -101,8 +101,11 @@ proto.dispose = function() {
 
 function generateIsosurfaceMesh(data) {
 
-    var surfaceFill = data.surfacefill;
-    var volumeFill = data.volumefill;
+    var showSurface = data.surface.show;
+    var showVolume = data.volume.show;
+
+    var surfaceFill = data.surface.fill;
+    var volumeFill = data.volume.fill;
 
     data.i = [];
     data.j = [];
@@ -437,16 +440,16 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(D, B);
                 var p3 = calcIntersection(D, C);
 
-                if(data.showsurface) {
+                if(showSurface) {
                     setOpacity(surfaceFill);
                     drawTri(debug, [p1, p2, p3]);
                 }
 
                 if(isCore) {
                     setOpacity(volumeFill);
-                    // drawQuad(debug, [A, B, p2, p1]);
-                    // drawQuad(debug, [B, C, p3, p2]);
-                    // drawQuad(debug, [C, A, p1, p3]);
+                    // drawQuad(debug, [A, B, p2, p1]); // parallel to axes
+                    // drawQuad(debug, [B, C, p3, p2]); // parallel to axes
+                    // drawQuad(debug, [C, A, p1, p3]); // parallel to axes
                     drawTri(debug, [A, B, C]);
                 }
                 shouldReturn = true;
@@ -473,15 +476,15 @@ function generateIsosurfaceMesh(data) {
                 var p3 = calcIntersection(D, B);
                 var p4 = calcIntersection(D, A);
 
-                if(data.showsurface) {
+                if(showSurface) {
                     setOpacity(surfaceFill);
                     drawQuad(debug, [p1, p2, p3, p4]);
                 }
 
                 if(isCore) {
                     setOpacity(volumeFill);
-                    // drawQuad(debug, [A, B, p2, p1]);
-                    // drawQuad(debug, [A, B, p3, p4]);
+                    // drawQuad(debug, [A, B, p2, p1]); // parallel to axes
+                    // drawQuad(debug, [A, B, p3, p4]); // parallel to axes
                     drawTri(debug, [A, p4, p1]);
                     drawTri(debug, [B, p2, p3]);
                 }
@@ -506,7 +509,7 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(C, A);
                 var p3 = calcIntersection(D, A);
 
-                if(data.showsurface) {
+                if(showSurface) {
                     setOpacity(surfaceFill);
                     drawTri(debug, [p1, p2, p3]);
                 }
@@ -533,7 +536,7 @@ function generateIsosurfaceMesh(data) {
         var c = tryCreateTetra(p101, p100, p111, p001, false);
         var d = tryCreateTetra(p110, p100, p111, p010, false);
 
-        if(!data.showvolume) {
+        if(!showVolume) {
             if(a || b || c || d) {
                 tryCreateTetra(p001, p010, p100, p111, false);
             }
@@ -645,34 +648,31 @@ function generateIsosurfaceMesh(data) {
         return range;
     }
 
-    if(data.showslice && data.slicefill) {
-        setOpacity(data.slicefill);
-
-        var xSlices = [];
-        var ySlices = [];
-        var zSlices = [];
-
-        if(data.slicetype.indexOf('x') !== -1) xSlices = createRange(1, width - 1);
-        if(data.slicetype.indexOf('y') !== -1) ySlices = createRange(1, height - 1);
-        if(data.slicetype.indexOf('z') !== -1) zSlices = createRange(1, depth - 1);
-
-        if(data.slicetype.indexOf('caps') !== -1) {
-            xSlices.push(0);
-            ySlices.push(0);
-            zSlices.push(0);
-
-            xSlices.push(width - 1);
-            ySlices.push(height - 1);
-            zSlices.push(depth - 1);
+    // draw slices
+    ['x', 'y', 'z'].forEach(function(e) {
+        var axis = data.slices[e];
+        if(axis.show && axis.fill) {
+            setOpacity(axis.fill);
+            if(e === 'x') drawSectionsX(createRange(1, width - 1));
+            if(e === 'y') drawSectionsY(createRange(1, height - 1));
+            if(e === 'z') drawSectionsZ(createRange(1, depth - 1));
         }
+    });
 
-        if(xSlices.length) drawSectionsX(xSlices);
-        if(ySlices.length) drawSectionsY(ySlices);
-        if(zSlices.length) drawSectionsZ(zSlices);
-    }
+    // draw caps
+    ['x', 'y', 'z'].forEach(function(e) {
+        var axis = data.caps[e];
+        if(axis.show && axis.fill) {
+            setOpacity(axis.fill);
+            if(e === 'x') drawSectionsX([0, width - 1]);
+            if(e === 'y') drawSectionsY([0, height - 1]);
+            if(e === 'z') drawSectionsZ([0, depth - 1]);
+        }
+    });
 
-    if((data.showsurface && surfaceFill) ||
-        (data.showvolume && volumeFill)) {
+    // draw iso-surface & volume
+    if((showSurface && surfaceFill) ||
+        (showVolume && volumeFill)) {
         drawVolumeAndIsosurface();
     }
 
