@@ -36,7 +36,7 @@
             "y0": 0.2
     }],
     "layout": {
-        "title": "Joyplot - Violin with multiple widths",
+        "title": "Violins/boxes - with multiple widths",
         "legend": {"x": 0},
         "xaxis": {"zeroline": false},
         "yaxis": {"dtick": 0.1, "gridcolor": "black"}

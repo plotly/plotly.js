@@ -27,7 +27,7 @@
             "y0": 0.0
         }],
     "layout": {
-        "title": "Joyplot - only positive sided",
+        "title": "Violins - only positive sided",
         "legend": {"x": 0},
         "xaxis": {"zeroline": false},
         "yaxis": {"dtick": 0.1, "gridcolor": "black"}

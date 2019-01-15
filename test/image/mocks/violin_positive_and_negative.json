@@ -27,7 +27,7 @@
             "y0": 0.0
         }],
     "layout": {
-        "title": "Joyplot - positive and negative",
+        "title": "Violins - positive and negative",
         "showlegend": false,
         "xaxis": {"zeroline": false},
         "yaxis": {"dtick": 0.1, "gridcolor": "black"}
