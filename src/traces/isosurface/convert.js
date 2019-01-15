@@ -417,40 +417,15 @@ function generateIsosurfaceMesh(data) {
             inRange(xyzv[2][3])
         ];
 
-        var created = false;
+        var interpolated = false;
+
+        if(!ok[0] && !ok[1] && !ok[2]) {
+            return interpolated;
+        }
 
         if(ok[0] && ok[1] && ok[2]) {
             drawTri(debug, xyzv, abc);
-            return true;
-        }
-
-        if(!ok[0] && !ok[1] && !ok[2]) {
-
-            created = false;
-
-            var AA = xyzv[0];
-            var BB = xyzv[1];
-            var CC = xyzv[2];
-
-            if(
-                (AA[3] > activeMax && BB[3] < activeMin && CC[3] < activeMin) ||
-                (BB[3] > activeMax && CC[3] < activeMin && AA[3] < activeMin) ||
-                (CC[3] > activeMax && AA[3] < activeMin && BB[3] < activeMin) ||
-                (AA[3] < activeMin && BB[3] > activeMax && CC[3] > activeMax) ||
-                (BB[3] < activeMin && CC[3] > activeMax && AA[3] > activeMax) ||
-                (CC[3] < activeMin && AA[3] > activeMax && BB[3] > activeMax)
-            ) {
-
-                var AB = getBetween(AA, BB, 0.5);
-                var BC = getBetween(BB, CC, 0.5);
-                var AC = getBetween(AA, CC, 0.5);
-
-                // recursive call to tessellate
-                tryCreateTri([AB, BC, AC], [-1, -1, -1], debug);
-                tryCreateTri([AA, AB, AC], [abc[0], -1, -1], debug);
-                tryCreateTri([AB, BB, BC], [-1, abc[1], -1], debug);
-                tryCreateTri([AC, BC, CC], [-1, -1, abc[2]], debug);
-            }
+            return interpolated;
         }
 
         [
@@ -469,10 +444,10 @@ function generateIsosurfaceMesh(data) {
                 drawTri(debug, [A, B, p2], [abc[e[0]], abc[e[1]], -1]);
                 drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
 
-                created = true;
+                interpolated = true;
             }
         });
-        if(created) return true;
+        if(interpolated) return interpolated;
 
         [
             [0, 1, 2],
@@ -489,10 +464,10 @@ function generateIsosurfaceMesh(data) {
 
                 drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
 
-                created = true;
+                interpolated = true;
             }
         });
-        if(created) return true;
+        if(interpolated) return interpolated;
     }
 
     function tryCreateTetra(abcd, isCore, debug) {
@@ -506,18 +481,18 @@ function generateIsosurfaceMesh(data) {
             inRange(xyzv[3][3])
         ];
 
+        var interpolated = false;
+
         if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
-            return false;
+            return interpolated;
         }
 
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
             if(isCore) {
                 drawTetra(debug, xyzv, abcd);
             }
-            return false;
+            return interpolated;
         }
-
-        var created = false;
 
         [
             [0, 1, 2, 3],
@@ -541,10 +516,10 @@ function generateIsosurfaceMesh(data) {
                     drawTri(debug, [p1, p2, p3], [-1, -1, -1]);
                 }
 
-                created = true;
+                interpolated = true;
             }
         });
-        if(created) return true;
+        if(interpolated) return interpolated;
 
         [
             [0, 1, 2, 3],
@@ -572,10 +547,10 @@ function generateIsosurfaceMesh(data) {
                     drawQuad(debug, [p1, p2, p3, p4], [-1, -1, -1, -1]);
                 }
 
-                created = true;
+                interpolated = true;
             }
         });
-        if(created) return true;
+        if(interpolated) return interpolated;
 
         [
             [0, 1, 2, 3],
@@ -601,10 +576,10 @@ function generateIsosurfaceMesh(data) {
                     drawTri(debug, [p1, p2, p3], [-1, -1, -1]);
                 }
 
-                created = true;
+                interpolated = true;
             }
         });
-        if(created) return true;
+        if(interpolated) return interpolated;
     }
 
     function addCube(p000, p001, p010, p011, p100, p101, p110, p111) {
@@ -763,6 +738,9 @@ function generateIsosurfaceMesh(data) {
     // draw volume
     if(showVolume && volumeFill) {
         setFill(volumeFill);
+
+        activeMin = vMin;
+        activeMax = vMax;
         drawVolume();
     }
 
