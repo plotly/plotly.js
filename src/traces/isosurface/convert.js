@@ -343,9 +343,7 @@ function generateIsosurfaceMesh(data) {
         return xyzv;
     }
 
-    function tryCreateTri(a, b, c, debug) {
-
-        var xyzv = getXYZV([a, b, c]);
+    function tryCreateTri(xyzv, debug) {
 
         var ok = [
             inRange(xyzv[0][3]),
@@ -353,16 +351,41 @@ function generateIsosurfaceMesh(data) {
             inRange(xyzv[2][3])
         ];
 
-        if(!ok[0] && !ok[1] && !ok[2]) {
-            return false;
-        }
+        var created = false;
 
         if(ok[0] && ok[1] && ok[2]) {
             drawTri(debug, xyzv);
-            return false;
+            return true;
         }
 
-        var shouldReturn = false;
+        if(!ok[0] && !ok[1] && !ok[2]) {
+
+            created = false;
+
+            var AA = xyzv[0];
+            var BB = xyzv[1];
+            var CC = xyzv[2];
+
+            if(
+                (AA[3] > activeMax && BB[3] < activeMin && CC[3] < activeMin) ||
+                (BB[3] > activeMax && CC[3] < activeMin && AA[3] < activeMin) ||
+                (CC[3] > activeMax && AA[3] < activeMin && BB[3] < activeMin) ||
+                (AA[3] < activeMin && BB[3] > activeMax && CC[3] > activeMax) ||
+                (BB[3] < activeMin && CC[3] > activeMax && AA[3] > activeMax) ||
+                (CC[3] < activeMin && AA[3] > activeMax && BB[3] > activeMax)
+            ) {
+
+                var AB = getBetween(AA, BB, 0.5);
+                var BC = getBetween(BB, CC, 0.5);
+                var CA = getBetween(CC, AA, 0.5);
+
+                // recursive call to tessellate
+                tryCreateTri([AB, BC, CA], debug);
+                tryCreateTri([AA, AB, CA], debug);
+                tryCreateTri([BB, BC, AB], debug);
+                tryCreateTri([CC, CA, BC], debug);
+            }
+        }
 
         [
             [0, 1, 2],
@@ -379,10 +402,11 @@ function generateIsosurfaceMesh(data) {
 
                 drawTri(debug, [A, B, p2]);
                 drawTri(debug, [p2, p1, A]);
-                shouldReturn = true;
+
+                created = true;
             }
         });
-        if(shouldReturn) return true;
+        if(created) return true;
 
         [
             [0, 1, 2],
@@ -398,18 +422,14 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(C, A);
 
                 drawTri(debug, [A, p2, p1]);
-                shouldReturn = true;
+
+                created = true;
             }
         });
-        if(shouldReturn) return true;
-
-        // We should never end up here! Anyway let's return from the function
-        return false;
+        if(created) return true;
     }
 
-    function tryCreateTetra(a, b, c, d, isCore, debug) {
-
-        var xyzv = getXYZV([a, b, c, d]);
+    function tryCreateTetra(xyzv, isCore, debug) {
 
         var ok = [
             inRange(xyzv[0][3]),
@@ -429,7 +449,7 @@ function generateIsosurfaceMesh(data) {
             return false;
         }
 
-        var shouldReturn = false;
+        var created = false;
 
         [
             [0, 1, 2, 3],
@@ -453,10 +473,10 @@ function generateIsosurfaceMesh(data) {
                     drawTri(debug, [p1, p2, p3]);
                 }
 
-                shouldReturn = true;
+                created = true;
             }
         });
-        if(shouldReturn) return true;
+        if(created) return true;
 
         [
             [0, 1, 2, 3],
@@ -484,10 +504,10 @@ function generateIsosurfaceMesh(data) {
                     drawQuad(debug, [p1, p2, p3, p4]);
                 }
 
-                shouldReturn = true;
+                created = true;
             }
         });
-        if(shouldReturn) return true;
+        if(created) return true;
 
         [
             [0, 1, 2, 3],
@@ -513,33 +533,33 @@ function generateIsosurfaceMesh(data) {
                     drawTri(debug, [p1, p2, p3]);
                 }
 
-                shouldReturn = true;
+                created = true;
             }
         });
-        if(shouldReturn) return true;
+        if(created) return true;
     }
 
     function addCube(p000, p001, p010, p011, p100, p101, p110, p111) {
 
         if(drawingSurface) {
-            var a = tryCreateTetra(p000, p001, p010, p100, false);
-            var b = tryCreateTetra(p001, p010, p011, p111, false);
-            var c = tryCreateTetra(p001, p100, p101, p111, false);
-            var d = tryCreateTetra(p010, p100, p110, p111, false);
+            var a = tryCreateTetra(getXYZV([p000, p001, p010, p100]), false);
+            var b = tryCreateTetra(getXYZV([p001, p010, p011, p111]), false);
+            var c = tryCreateTetra(getXYZV([p001, p100, p101, p111]), false);
+            var d = tryCreateTetra(getXYZV([p010, p100, p110, p111]), false);
 
             if(a || b || c || d) {
-                tryCreateTetra(p001, p010, p100, p111, false);
+                tryCreateTetra(getXYZV([p001, p010, p100, p111]), false);
             }
         }
 
         if(drawingVolume) {
-            tryCreateTetra(p001, p010, p100, p111, true);
+            tryCreateTetra(getXYZV([p001, p010, p100, p111]), true);
         }
     }
 
     function addRect(a, b, c, d) {
-        tryCreateTri(a, b, c);
-        tryCreateTri(c, d, a);
+        tryCreateTri(getXYZV([a, b, c]));
+        tryCreateTri(getXYZV([c, d, a]));
     }
 
     function beginSlice(p00, p01, p10, p11, isEven) {
