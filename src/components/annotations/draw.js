@@ -209,9 +209,13 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var font = options.font;
 
+    var text = fullLayout.metatext ?
+        Lib.templateString(options.text, {metatext: fullLayout.metatext}) :
+        options.text;
+
     var annText = annTextGroupInner.append('text')
         .classed('annotation-text', true)
-        .text(options.text);
+        .text(text);
 
     function textLayout(s) {
         s.call(Drawing.font, font)
@@ -678,6 +682,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
+
                 this.call(textLayout);
 
                 modifyItem('text', _text);
