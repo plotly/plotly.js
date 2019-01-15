@@ -409,6 +409,17 @@ module.exports = {
         },
         editType: 'modebar'
     },
+    metatext: {
+        valType: 'data_array',
+        editType: 'plot',
+        description: [
+            'Assigns extra meta information that can be used in various `text` attributes.',
+            'Attributes such as the graph, axis and colorbar `title.text` and annotation `text`',
+            'support `metatext`. One can access `metatext` fields using template strings:',
+            '`%{metatext[i]}` where `i` is the index of the `metatext`',
+            'item in question.'
+        ].join(' ')
+    },
     _deprecated: {
         title: {
             valType: 'string',

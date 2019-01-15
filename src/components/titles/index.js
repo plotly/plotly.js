@@ -97,6 +97,10 @@ function draw(gd, titleClass, options) {
         if(!editable) txt = '';
     }
 
+    if(fullLayout.metatext) {
+        txt = Lib.templateString(txt, {metatext: fullLayout.metatext});
+    }
+
     var elShouldExist = txt || editable;
 
     if(!group) {
