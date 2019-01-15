@@ -34,18 +34,48 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
+    var isomin = coerce('isomin');
+    var isomax = coerce('isomax');
+
+    if(isomin > isomax) {
+        var tmp = isomin;
+        isomin = isomax;
+        isomax = tmp;
+    }
+
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     ['x', 'y', 'z'].forEach(function(dim) {
+
         var sliceDim = 'slices.' + dim;
-        coerce(sliceDim + '.show');
-        coerce(sliceDim + '.fill');
+        var showSlice = coerce(sliceDim + '.show');
+        if(showSlice) {
+            coerce(sliceDim + '.fill');
+        }
 
         var capDim = 'caps.' + dim;
-        coerce(capDim + '.show');
-        coerce(capDim + '.fill');
+        var showCap = coerce(capDim + '.show');
+        if(showCap) {
+            coerce(capDim + '.fill');
+        }
     });
+
+    var showVolume = coerce('volume.show');
+    if(showVolume) {
+        coerce('volume.fill');
+    }
+
+    var showSurface = coerce('surface.show');
+    if(showSurface) {
+        coerce('surface.fill');
+    }
+
+    var showContour = coerce('contour.show');
+    if(showContour) {
+        coerce('contour.color');
+        coerce('contour.width');
+    }
 
     // Coerce remaining properties
     [
@@ -60,18 +90,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lightposition.x',
         'lightposition.y',
         'lightposition.z',
-        'contour.show',
-        'contour.color',
-        'contour.width',
-        'colorscale',
-        'reversescale',
         'flatshading',
-        'isomin',
-        'isomax',
-        'surface.show',
-        'surface.fill',
-        'volume.show',
-        'volume.fill'
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});

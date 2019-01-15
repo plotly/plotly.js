@@ -178,15 +178,36 @@ function generateIsosurfaceMesh(data) {
     fillYs();
     fillZs();
 
-    var minValues = Math.min.apply(null, data.value);
-    var maxValues = Math.max.apply(null, data.value);
+    function findMin(arr) {
+        var min = Infinity;
+        var len = arr.length;
+        for(var q = 0; q < len; q++) {
+            if(min > arr[q]) {
+                min = arr[q];
+            }
+        }
+        return min;
+    }
+
+    function findMax(arr) {
+        var max = -Infinity;
+        var len = arr.length;
+        for(var q = 0; q < len; q++) {
+            if(max < arr[q]) {
+                max = arr[q];
+            }
+        }
+        return max;
+    }
+
+    var minValues = findMin(data.value);
+    var maxValues = findMax(data.value);
 
     var vMin = data.isomin;
     var vMax = data.isomax;
     if(vMin === undefined) vMin = minValues;
     if(vMax === undefined) vMax = maxValues;
 
-    if(vMin === vMax) return;
     if(vMin > vMax) {
         var vTmp = vMin;
         vMin = vMax;
@@ -778,37 +799,36 @@ function generateIsosurfaceMesh(data) {
         [ vMin, vMax ],
         [ vMin, maxValues ],
         [ minValues, vMax ]
-    ]
+    ];
 
-    for(var s = 0; s < 3; s++) {
+    ['x', 'y', 'z'].forEach(function(e) {
+        for(var s = 0; s < 3; s++) {
 
-        drawingEdge = (s === 0) ? false : true;
+            drawingEdge = (s === 0) ? false : true;
 
-        var activeMin = setupMinMax[s][0];
-        var activeMax = setupMinMax[s][1];
+            var activeMin = setupMinMax[s][0];
+            var activeMax = setupMinMax[s][1];
 
-        // draw slices
-        ['x', 'y', 'z'].forEach(function(e) {
-            var axis = data.slices[e];
-            if(axis.show && axis.fill) {
-                setFill(axis.fill);
+            // draw slices
+            var slice = data.slices[e];
+            if(slice.show && slice.fill) {
+                setFill(slice.fill);
                 if(e === 'x') drawSectionsX(createRange(1, width - 1), activeMin, activeMax);
                 if(e === 'y') drawSectionsY(createRange(1, height - 1), activeMin, activeMax);
                 if(e === 'z') drawSectionsZ(createRange(1, depth - 1), activeMin, activeMax);
             }
-        });
 
-        // draw caps
-        ['x', 'y', 'z'].forEach(function(e) {
-            var axis = data.caps[e];
-            if(axis.show && axis.fill) {
-                setFill(axis.fill);
+            // draw caps
+            var cap = data.caps[e];
+            if(cap.show && cap.fill) {
+                setFill(cap.fill);
                 if(e === 'x') drawSectionsX([0, width - 1], activeMin, activeMax);
                 if(e === 'y') drawSectionsY([0, height - 1], activeMin, activeMax);
                 if(e === 'z') drawSectionsZ([0, depth - 1], activeMin, activeMax);
             }
-        });
-    }
+
+        }
+    });
 
     data._Xs = Xs;
     data._Ys = Ys;
