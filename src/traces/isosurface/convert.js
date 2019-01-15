@@ -26,9 +26,32 @@ function IsosurfaceTrace(scene, mesh, uid) {
 
 var proto = IsosurfaceTrace.prototype;
 
+proto.findNearestOnAxis = function(w, arr) {
+    for(var q = arr.length - 1; q > 0; q--) {
+        var min = Math.min(arr[q], arr[q - 1]);
+        var max = Math.max(arr[q], arr[q - 1]);
+        if(w <= max && w > min) return q;
+    }
+    return 0;
+};
+
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
-        var selectIndex = selection.index = selection.data.index;
+
+        var rawId = selection.data.index;
+
+        var x = this.data.x[rawId];
+        var y = this.data.y[rawId];
+        var z = this.data.z[rawId];
+
+        var i = this.findNearestOnAxis(x, this.data._Xs);
+        var j = this.findNearestOnAxis(y, this.data._Ys);
+        var k = this.findNearestOnAxis(z, this.data._Zs);
+
+        var width = this.data._Xs.length;
+        var height = this.data._Ys.length;
+
+        var selectIndex = selection.index = i + width * j + width * height * k;
 
         selection.traceCoordinate = [
             this.data.x[selectIndex],
@@ -780,6 +803,10 @@ function generateIsosurfaceMesh(data) {
             if(e === 'z') drawSectionsZ([0, depth - 1]);
         }
     });
+
+    data._Xs = Xs;
+    data._Ys = Ys;
+    data._Zs = Zs;
 
     data.x = allXs;
     data.y = allYs;
