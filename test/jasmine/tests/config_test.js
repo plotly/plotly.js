@@ -9,6 +9,7 @@ var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
+
 var RESIZE_DELAY = 300;
 
 describe('config argument', function() {
@@ -794,6 +795,42 @@ describe('config argument', function() {
             }], {}, {
                 scrollZoom: true,
                 responsive: true
+            })
+            .then(function() {
+                xrng0 = gd._fullLayout.xaxis.range.slice();
+                yrng0 = gd._fullLayout.yaxis.range.slice();
+            })
+            .then(_scroll)
+            .then(function() {
+                var xrng = gd._fullLayout.xaxis.range;
+                expect(xrng[0]).toBeGreaterThan(xrng0[0], 'scrolled x-range[0]');
+                expect(xrng[1]).toBeLessThan(xrng0[1], 'scrolled x-range[1]');
+
+                var yrng = gd._fullLayout.yaxis.range;
+                expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
+                expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not disable scrollZoom when page is made scrollable by large graph', function(done) {
+            gd = document.createElement('div');
+            gd.id = 'graph';
+            document.body.appendChild(gd);
+
+            // locking down fix for:
+            // https://github.com/plotly/plotly.js/issues/2371
+
+            var xrng0;
+            var yrng0;
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 1]
+            }], {
+                width: 2 * window.innerWidth
+            }, {
+                scrollZoom: true
             })
             .then(function() {
                 xrng0 = gd._fullLayout.xaxis.range.slice();
