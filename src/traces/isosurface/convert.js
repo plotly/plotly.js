@@ -132,6 +132,7 @@ function generateIsosurfaceMesh(data) {
 
     var drawingSurface = false;
     var drawingVolume = false;
+    var drawingEdge = false;
 
     data.i = [];
     data.j = [];
@@ -424,7 +425,9 @@ function generateIsosurfaceMesh(data) {
         }
 
         if(ok[0] && ok[1] && ok[2]) {
-            drawTri(debug, xyzv, abc);
+            if(!drawingEdge) {
+                drawTri(debug, xyzv, abc);
+            }
             return interpolated;
         }
 
@@ -441,8 +444,29 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(C, A);
                 var p2 = calcIntersection(C, B);
 
-                drawTri(debug, [A, B, p2], [abc[e[0]], abc[e[1]], -1]);
-                drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
+                var draw1 = true;
+                var draw2 = true;
+                var drawA = true;
+                var drawB = true;
+                if(drawingEdge) {
+                    if(p1[3] < vMin || p1[3] > vMax) draw1 = false;
+                    if(p2[3] < vMin || p2[3] > vMax) draw2 = false;
+                    if(A[3] < vMin || A[3] > vMax) drawA = false;
+                    if(B[3] < vMin || B[3] > vMax) drawB = false;
+                }
+
+                if(draw1 && draw2 && drawA && drawB) {
+                    drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
+                    drawTri(debug, [A, B, p2], [abc[e[0]], abc[e[1]], -1]);
+                } else if(draw1 && draw2 && drawA) {
+                    drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
+                } else if(draw1 && draw2 && drawB) {
+                    drawTri(debug, [p1, p2, B], [-1, -1, abc[e[1]]]);
+                } else if(draw1 && drawA && drawB) {
+                    drawTri(debug, [p1, A, B], [-1, abc[e[0]], abc[e[1]]]);
+                } else if(draw2 && drawA && drawB) {
+                    drawTri(debug, [p2, A, B], [-1, abc[e[0]], abc[e[1]]]);
+                }
 
                 interpolated = true;
             }
@@ -462,7 +486,18 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(B, A);
                 var p2 = calcIntersection(C, A);
 
-                drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
+                var draw1 = true;
+                var draw2 = true;
+                var drawA = true;
+                if(drawingEdge) {
+                    if(p1[3] < vMin || p1[3] > vMax) draw1 = false;
+                    if(p2[3] < vMin || p2[3] > vMax) draw2 = false;
+                    if(A[3] < vMin || A[3] > vMax) drawA = false;
+                }
+
+                if(draw1 && draw2 && drawA) {
+                    drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
+                }
 
                 interpolated = true;
             }
@@ -757,30 +792,41 @@ function generateIsosurfaceMesh(data) {
         drawSurface();
     }
 
-    activeMin = vMin;
-    activeMax = vMax;
+    var setupMinMax = [
+        [ vMin, vMax ],
+        [ vMin, maxValues ],
+        [ minValues, vMax ]
+    ]
 
-    // draw slices
-    ['x', 'y', 'z'].forEach(function(e) {
-        var axis = data.slices[e];
-        if(axis.show && axis.fill) {
-            setFill(axis.fill);
-            if(e === 'x') drawSectionsX(createRange(1, width - 1));
-            if(e === 'y') drawSectionsY(createRange(1, height - 1));
-            if(e === 'z') drawSectionsZ(createRange(1, depth - 1));
-        }
-    });
+    for(var s = 0; s < 3; s++) {
 
-    // draw caps
-    ['x', 'y', 'z'].forEach(function(e) {
-        var axis = data.caps[e];
-        if(axis.show && axis.fill) {
-            setFill(axis.fill);
-            if(e === 'x') drawSectionsX([0, width - 1]);
-            if(e === 'y') drawSectionsY([0, height - 1]);
-            if(e === 'z') drawSectionsZ([0, depth - 1]);
-        }
-    });
+        drawingEdge = (s === 0) ? false : true;
+
+        activeMin = setupMinMax[s][0];
+        activeMax = setupMinMax[s][1];
+
+        // draw slices
+        ['x', 'y', 'z'].forEach(function(e) {
+            var axis = data.slices[e];
+            if(axis.show && axis.fill) {
+                setFill(axis.fill);
+                if(e === 'x') drawSectionsX(createRange(1, width - 1));
+                if(e === 'y') drawSectionsY(createRange(1, height - 1));
+                if(e === 'z') drawSectionsZ(createRange(1, depth - 1));
+            }
+        });
+
+        // draw caps
+        ['x', 'y', 'z'].forEach(function(e) {
+            var axis = data.caps[e];
+            if(axis.show && axis.fill) {
+                setFill(axis.fill);
+                if(e === 'x') drawSectionsX([0, width - 1]);
+                if(e === 'y') drawSectionsY([0, height - 1]);
+                if(e === 'z') drawSectionsZ([0, depth - 1]);
+            }
+        });
+    }
 
     data._Xs = Xs;
     data._Ys = Ys;
