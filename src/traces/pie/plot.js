@@ -334,7 +334,11 @@ module.exports = function plot(gd, cdpie) {
                     s.attr('data-notex', 1);
                 });
 
-                titleText.text(trace.title.text)
+                var txt = fullLayout.metatext ?
+                    Lib.templateString(trace.title.text, {metatext: fullLayout.metatext}) :
+                    trace.title.text;
+
+                titleText.text(txt)
                     .attr({
                         'class': 'titletext',
                         transform: '',
@@ -467,6 +471,8 @@ function determineInsideTextFont(trace, pt, layoutFont) {
 }
 
 function prerenderTitles(cdpie, gd) {
+    var fullLayout = gd._fullLayout;
+
     var cd0, trace;
     // Determine the width and height of the title for each pie.
     for(var i = 0; i < cdpie.length; i++) {
@@ -474,9 +480,13 @@ function prerenderTitles(cdpie, gd) {
         trace = cd0.trace;
 
         if(trace.title.text) {
+            var txt = fullLayout.metatext ?
+                Lib.templateString(trace.title.text, {metatext: fullLayout.metatext}) :
+                trace.title.text;
+
             var dummyTitle = Drawing.tester.append('text')
               .attr('data-notex', 1)
-              .text(trace.title.text)
+              .text(txt)
               .call(Drawing.font, trace.title.font)
               .call(svgTextUtils.convertToTspans, gd);
             var bBox = Drawing.bBox(dummyTitle.node(), true);
