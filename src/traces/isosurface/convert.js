@@ -193,9 +193,6 @@ function generateIsosurfaceMesh(data) {
         vMax = vTmp;
     }
 
-    var activeMin = vMin;
-    var activeMax = vMax;
-
     var numVertices = 0;
     var beginVertextLength;
 
@@ -362,11 +359,11 @@ function generateIsosurfaceMesh(data) {
         makeTri(1, 2, 3);
     }
 
-    function calcIntersection(pointOut, pointIn) {
+    function calcIntersection(pointOut, pointIn, min, max) {
         var value = pointOut[3];
 
-        if(value < activeMin) value = activeMin;
-        if(value > activeMax) value = activeMax;
+        if(value < min) value = min;
+        if(value > max) value = max;
 
         var ratio = (pointOut[3] - value) / (pointOut[3] - pointIn[3]);
 
@@ -377,10 +374,10 @@ function generateIsosurfaceMesh(data) {
         return result;
     }
 
-    function inRange(value) {
+    function inRange(value, min, max) {
         return (
-            value >= activeMin &&
-            value <= activeMax
+            value >= min &&
+            value <= max
         );
     }
 
@@ -406,16 +403,16 @@ function generateIsosurfaceMesh(data) {
         return xyzv;
     }
 
-    function tryCreateTri(xyzv, abc, debug) {
+    function tryCreateTri(xyzv, abc, min, max, debug) {
 
         abc = [-1, -1, -1]; // Note: for the moment we had to override indices
         // for planar surfaces (i.e. caps and slices) due to group shading
         // bug of gl-mesh3d. But don't worry this would run faster!
 
         var ok = [
-            inRange(xyzv[0][3]),
-            inRange(xyzv[1][3]),
-            inRange(xyzv[2][3])
+            inRange(xyzv[0][3], min, max),
+            inRange(xyzv[1][3], min, max),
+            inRange(xyzv[2][3], min, max)
         ];
 
         var interpolated = false;
@@ -441,8 +438,8 @@ function generateIsosurfaceMesh(data) {
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
 
-                var p1 = calcIntersection(C, A);
-                var p2 = calcIntersection(C, B);
+                var p1 = calcIntersection(C, A, min, max);
+                var p2 = calcIntersection(C, B, min, max);
 
                 var draw1 = true;
                 var draw2 = true;
@@ -483,8 +480,8 @@ function generateIsosurfaceMesh(data) {
                 var B = xyzv[e[1]];
                 var C = xyzv[e[2]];
 
-                var p1 = calcIntersection(B, A);
-                var p2 = calcIntersection(C, A);
+                var p1 = calcIntersection(B, A, min, max);
+                var p2 = calcIntersection(C, A, min, max);
 
                 var draw1 = true;
                 var draw2 = true;
@@ -505,15 +502,15 @@ function generateIsosurfaceMesh(data) {
         if(interpolated) return interpolated;
     }
 
-    function tryCreateTetra(abcd, isCore, debug) {
+    function tryCreateTetra(abcd, min, max, debug) {
 
         var xyzv = getXYZV(abcd);
 
         var ok = [
-            inRange(xyzv[0][3]),
-            inRange(xyzv[1][3]),
-            inRange(xyzv[2][3]),
-            inRange(xyzv[3][3])
+            inRange(xyzv[0][3], min, max),
+            inRange(xyzv[1][3], min, max),
+            inRange(xyzv[2][3], min, max),
+            inRange(xyzv[3][3], min, max)
         ];
 
         var interpolated = false;
@@ -523,7 +520,7 @@ function generateIsosurfaceMesh(data) {
         }
 
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
-            if(isCore) {
+            if(drawingVolume) {
                 drawTetra(debug, xyzv, abcd);
             }
             return interpolated;
@@ -541,12 +538,12 @@ function generateIsosurfaceMesh(data) {
                 var C = xyzv[e[2]];
                 var D = xyzv[e[3]];
 
-                if(isCore) {
+                if(drawingVolume) {
                     drawTri(debug, [A, B, C], [abcd[e[0]], abcd[e[1]], abcd[e[2]]]);
                 } else {
-                    var p1 = calcIntersection(D, A);
-                    var p2 = calcIntersection(D, B);
-                    var p3 = calcIntersection(D, C);
+                    var p1 = calcIntersection(D, A, min, max);
+                    var p2 = calcIntersection(D, B, min, max);
+                    var p3 = calcIntersection(D, C, min, max);
 
                     drawTri(debug, [p1, p2, p3], [-1, -1, -1]);
                 }
@@ -570,12 +567,12 @@ function generateIsosurfaceMesh(data) {
                 var C = xyzv[e[2]];
                 var D = xyzv[e[3]];
 
-                var p1 = calcIntersection(C, A);
-                var p2 = calcIntersection(C, B);
-                var p3 = calcIntersection(D, B);
-                var p4 = calcIntersection(D, A);
+                var p1 = calcIntersection(C, A, min, max);
+                var p2 = calcIntersection(C, B, min, max);
+                var p3 = calcIntersection(D, B, min, max);
+                var p4 = calcIntersection(D, A, min, max);
 
-                if(isCore) {
+                if(drawingVolume) {
                     drawTri(debug, [A, p4, p1], [abcd[e[0]], -1, -1]);
                     drawTri(debug, [B, p2, p3], [abcd[e[1]], -1, -1]);
                 } else {
@@ -599,11 +596,11 @@ function generateIsosurfaceMesh(data) {
                 var C = xyzv[e[2]];
                 var D = xyzv[e[3]];
 
-                var p1 = calcIntersection(B, A);
-                var p2 = calcIntersection(C, A);
-                var p3 = calcIntersection(D, A);
+                var p1 = calcIntersection(B, A, min, max);
+                var p2 = calcIntersection(C, A, min, max);
+                var p3 = calcIntersection(D, A, min, max);
 
-                if(isCore) {
+                if(drawingVolume) {
                     drawTri(debug, [A, p1, p2], [abcd[e[0]], -1, -1]);
                     drawTri(debug, [A, p2, p3], [abcd[e[0]], -1, -1]);
                     drawTri(debug, [A, p3, p1], [abcd[e[0]], -1, -1]);
@@ -617,46 +614,46 @@ function generateIsosurfaceMesh(data) {
         if(interpolated) return interpolated;
     }
 
-    function addCube(p000, p001, p010, p011, p100, p101, p110, p111) {
+    function addCube(p000, p001, p010, p011, p100, p101, p110, p111, min, max) {
 
         if(drawingSurface) {
-            var a = tryCreateTetra([p000, p001, p010, p100], false);
-            var b = tryCreateTetra([p001, p010, p011, p111], false);
-            var c = tryCreateTetra([p001, p100, p101, p111], false);
-            var d = tryCreateTetra([p010, p100, p110, p111], false);
+            var a = tryCreateTetra([p000, p001, p010, p100], min, max);
+            var b = tryCreateTetra([p001, p010, p011, p111], min, max);
+            var c = tryCreateTetra([p001, p100, p101, p111], min, max);
+            var d = tryCreateTetra([p010, p100, p110, p111], min, max);
 
             if(a || b || c || d) {
-                tryCreateTetra([p001, p010, p100, p111], false);
+                tryCreateTetra([p001, p010, p100, p111], min, max);
             }
         }
 
         if(drawingVolume) {
-            tryCreateTetra([p001, p010, p100, p111], true);
+            tryCreateTetra([p001, p010, p100, p111], min, max);
         }
     }
 
-    function addRect(a, b, c, d) {
-        tryCreateTri(getXYZV([a, b, c]), [a, b, c]);
-        tryCreateTri(getXYZV([c, d, a]), [c, d, a]);
+    function addRect(a, b, c, d, min, max) {
+        tryCreateTri(getXYZV([a, b, c]), [a, b, c], min, max);
+        tryCreateTri(getXYZV([c, d, a]), [c, d, a], min, max);
     }
 
-    function beginSlice(p00, p01, p10, p11, isEven) {
+    function beginSlice(p00, p01, p10, p11, min, max, isEven) {
         if(isEven) {
-            addRect(p00, p01, p11, p10);
+            addRect(p00, p01, p11, p10, min, max);
         } else {
-            addRect(p01, p11, p10, p00);
+            addRect(p01, p11, p10, p00, min, max);
         }
     }
 
-    function beginCell(p000, p001, p010, p011, p100, p101, p110, p111, isEven) {
+    function beginCell(p000, p001, p010, p011, p100, p101, p110, p111, min, max, isEven) {
         if(isEven) {
-            addCube(p000, p001, p010, p011, p100, p101, p110, p111);
+            addCube(p000, p001, p010, p011, p100, p101, p110, p111, min, max);
         } else {
-            addCube(p111, p110, p101, p100, p011, p010, p001, p000);
+            addCube(p111, p110, p101, p100, p011, p010, p001, p000, min, max);
         }
     }
 
-    function drawSectionsX(items) {
+    function drawSectionsX(items, min, max) {
         items.forEach(function(i) {
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
@@ -665,6 +662,8 @@ function generateIsosurfaceMesh(data) {
                         getIndex(i, j - 1, k),
                         getIndex(i, j, k - 1),
                         getIndex(i, j, k),
+                        min,
+                        max,
                         (i + j + k) % 2
                     );
                 }
@@ -672,7 +671,7 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawSectionsY(items) {
+    function drawSectionsY(items, min, max) {
         items.forEach(function(j) {
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
@@ -681,6 +680,8 @@ function generateIsosurfaceMesh(data) {
                         getIndex(i, j, k - 1),
                         getIndex(i - 1, j, k),
                         getIndex(i, j, k),
+                        min,
+                        max,
                         (i + j + k) % 2
                     );
                 }
@@ -688,7 +689,7 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawSectionsZ(items) {
+    function drawSectionsZ(items, min, max) {
         items.forEach(function(k) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
@@ -697,6 +698,8 @@ function generateIsosurfaceMesh(data) {
                         getIndex(i - 1, j, k),
                         getIndex(i, j - 1, k),
                         getIndex(i, j, k),
+                        min,
+                        max,
                         (i + j + k) % 2
                     );
                 }
@@ -704,7 +707,7 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawVolume() {
+    function drawVolume(min, max) {
         drawingVolume = true;
         for(var k = 1; k < depth; k++) {
             for(var j = 1; j < height; j++) {
@@ -718,6 +721,8 @@ function generateIsosurfaceMesh(data) {
                         getIndex(i, j - 1, k),
                         getIndex(i, j, k - 1),
                         getIndex(i, j, k),
+                        min,
+                        max,
                         (i + j + k) % 2
                     );
                 }
@@ -726,7 +731,7 @@ function generateIsosurfaceMesh(data) {
         drawingVolume = false;
     }
 
-    function drawSurface() {
+    function drawSurface(min, max) {
         drawingSurface = true;
         for(var k = 1; k < depth; k++) {
             for(var j = 1; j < height; j++) {
@@ -740,6 +745,8 @@ function generateIsosurfaceMesh(data) {
                         getIndex(i, j - 1, k),
                         getIndex(i, j, k - 1),
                         getIndex(i, j, k),
+                        min,
+                        max,
                         (i + j + k) % 2
                     );
                 }
@@ -774,22 +781,15 @@ function generateIsosurfaceMesh(data) {
     if(showVolume && volumeFill) {
         setFill(volumeFill);
 
-        activeMin = vMin;
-        activeMax = vMax;
-        drawVolume();
+        drawVolume(vMin, vMax);
     }
 
     // draw surfaces
     if(showSurface && surfaceFill) {
         setFill(surfaceFill);
 
-        activeMin = vMin;
-        activeMax = maxValues;
-        drawSurface();
-
-        activeMin = minValues;
-        activeMax = vMax;
-        drawSurface();
+        drawSurface(vMin, maxValues);
+        drawSurface(minValues, vMax);
     }
 
     var setupMinMax = [
@@ -802,17 +802,17 @@ function generateIsosurfaceMesh(data) {
 
         drawingEdge = (s === 0) ? false : true;
 
-        activeMin = setupMinMax[s][0];
-        activeMax = setupMinMax[s][1];
+        var activeMin = setupMinMax[s][0];
+        var activeMax = setupMinMax[s][1];
 
         // draw slices
         ['x', 'y', 'z'].forEach(function(e) {
             var axis = data.slices[e];
             if(axis.show && axis.fill) {
                 setFill(axis.fill);
-                if(e === 'x') drawSectionsX(createRange(1, width - 1));
-                if(e === 'y') drawSectionsY(createRange(1, height - 1));
-                if(e === 'z') drawSectionsZ(createRange(1, depth - 1));
+                if(e === 'x') drawSectionsX(createRange(1, width - 1), activeMin, activeMax);
+                if(e === 'y') drawSectionsY(createRange(1, height - 1), activeMin, activeMax);
+                if(e === 'z') drawSectionsZ(createRange(1, depth - 1), activeMin, activeMax);
             }
         });
 
@@ -821,9 +821,9 @@ function generateIsosurfaceMesh(data) {
             var axis = data.caps[e];
             if(axis.show && axis.fill) {
                 setFill(axis.fill);
-                if(e === 'x') drawSectionsX([0, width - 1]);
-                if(e === 'y') drawSectionsY([0, height - 1]);
-                if(e === 'z') drawSectionsZ([0, depth - 1]);
+                if(e === 'x') drawSectionsX([0, width - 1], activeMin, activeMax);
+                if(e === 'y') drawSectionsY([0, height - 1], activeMin, activeMax);
+                if(e === 'z') drawSectionsZ([0, depth - 1], activeMin, activeMax);
             }
         });
     }
