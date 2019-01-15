@@ -767,10 +767,7 @@ describe('config argument', function() {
     describe('scrollZoom interactions:', function() {
         var gd;
 
-        afterEach(function() {
-            Plotly.purge(gd);
-            destroyGraphDiv();
-        });
+        afterEach(destroyGraphDiv);
 
         function _scroll() {
             var mainDrag = d3.select('.nsewdrag[data-subplot="xy"]').node();
