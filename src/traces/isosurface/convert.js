@@ -179,6 +179,8 @@ function generateIsosurfaceMesh(data) {
         beginVertextLength = numVertices;
     }
 
+    beginGroup();
+
     function findVertexId(x, y, z) {
         var len = allVs.length;
         for(var f = beginVertextLength; f < len; f++) {
@@ -230,7 +232,7 @@ function generateIsosurfaceMesh(data) {
         activeFill = fill;
     }
 
-    function createOpenTri(xyzv) {
+    function createOpenTri(xyzv, abc) {
         var A = xyzv[0];
         var B = xyzv[1];
         var C = xyzv[2];
@@ -241,27 +243,56 @@ function generateIsosurfaceMesh(data) {
         var p2 = getBetween(G, B, r);
         var p3 = getBetween(G, C, r);
 
-        return [
-            [A, B, p2], [p2, p1, A],
-            [B, C, p3], [p3, p2, B],
-            [C, A, p1], [p1, p3, C]
-        ];
+        var a = abc[0];
+        var b = abc[1];
+        var c = abc[2];
+
+        return {
+            xyzv: [
+                [A, B, p2],
+                [p2, p1, A],
+
+                [B, C, p3],
+                [p3, p2, B],
+
+                [C, A, p1],
+                [p1, p3, C]
+            ],
+            abc: [
+                [a, b, -1],
+                [-1, -1, a],
+
+                [b, c, -1],
+                [-1, -1, b],
+
+                [c, a, -1],
+                [-1, -1, c]
+            ]
+        };
     }
 
     // var debug1 = 0.25 * vMax + 0.75 * vMin;
     // var debug2 = 0.75 * vMax + 0.25 * vMin;
 
-    function drawTri(debug, xyzv) {
+    function drawTri(debug, xyzv, abc) {
 
         beginGroup();
 
-        var allXYZVs =
-            (activeFill >= 1) ? [xyzv] :
-            (activeFill > 0) ? createOpenTri(xyzv) : [];
+        var allXYZVs = [xyzv];
+        var allABCs = [abc];
+        if(activeFill >= 1) {
+            allXYZVs = [xyzv];
+            allABCs = [abc];
+        } else if(activeFill > 0) {
+            var openTri = createOpenTri(xyzv, abc);
+            allXYZVs = openTri.xyzv;
+            allABCs = openTri.abc;
+        }
 
         for(var f = 0; f < allXYZVs.length; f++) {
 
             xyzv = allXYZVs[f];
+            abc = allABCs[f];
 
             var pnts = [];
             for(var i = 0; i < 3; i++) {
@@ -271,7 +302,7 @@ function generateIsosurfaceMesh(data) {
                 var z = xyzv[i][2];
                 var v = xyzv[i][3];
 
-                var id = findVertexId(x, y, z);
+                var id = (abc[i] > -1) ? abc[i] : findVertexId(x, y, z);
                 if(id > -1) {
                     pnts[i] = id;
                 } else {
@@ -287,16 +318,24 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    function drawQuad(debug, xyzv) {
-        drawTri(debug, [xyzv[0], xyzv[1], xyzv[2]]);
-        drawTri(debug, [xyzv[2], xyzv[3], xyzv[0]]);
+    function drawQuad(debug, xyzv, abcd) {
+        var makeTri = function(i, j, k) {
+            drawTri(debug, [xyzv[i], xyzv[j], xyzv[k]], [abcd[i], abcd[j], abcd[k]]);
+        };
+
+        makeTri(0, 1, 2);
+        makeTri(2, 3, 0);
     }
 
-    function drawTetra(debug, xyzv) {
-        drawTri(debug, [xyzv[0], xyzv[1], xyzv[2]]);
-        drawTri(debug, [xyzv[3], xyzv[0], xyzv[1]]);
-        drawTri(debug, [xyzv[2], xyzv[3], xyzv[0]]);
-        drawTri(debug, [xyzv[1], xyzv[2], xyzv[3]]);
+    function drawTetra(debug, xyzv, abcd) {
+        var makeTri = function(i, j, k) {
+            drawTri(debug, [xyzv[i], xyzv[j], xyzv[k]], [abcd[i], abcd[j], abcd[k]]);
+        };
+
+        makeTri(0, 1, 2);
+        makeTri(3, 0, 1);
+        makeTri(2, 3, 0);
+        makeTri(1, 2, 3);
     }
 
     function calcIntersection(pointOut, pointIn) {
@@ -343,7 +382,11 @@ function generateIsosurfaceMesh(data) {
         return xyzv;
     }
 
-    function tryCreateTri(xyzv, debug) {
+    function tryCreateTri(xyzv, abc, debug) {
+
+        abc = [-1, -1, -1]; // Note: for the moment we had to override indices
+        // for planar surfaces (i.e. caps and slices) due to group shading
+        // bug of gl-mesh3d. But don't worry this would run faster!
 
         var ok = [
             inRange(xyzv[0][3]),
@@ -354,7 +397,7 @@ function generateIsosurfaceMesh(data) {
         var created = false;
 
         if(ok[0] && ok[1] && ok[2]) {
-            drawTri(debug, xyzv);
+            drawTri(debug, xyzv, abc);
             return true;
         }
 
@@ -377,13 +420,13 @@ function generateIsosurfaceMesh(data) {
 
                 var AB = getBetween(AA, BB, 0.5);
                 var BC = getBetween(BB, CC, 0.5);
-                var CA = getBetween(CC, AA, 0.5);
+                var AC = getBetween(AA, CC, 0.5);
 
                 // recursive call to tessellate
-                tryCreateTri([AB, BC, CA], debug);
-                tryCreateTri([AA, AB, CA], debug);
-                tryCreateTri([BB, BC, AB], debug);
-                tryCreateTri([CC, CA, BC], debug);
+                tryCreateTri([AB, BC, AC], [-1, -1, -1], debug);
+                tryCreateTri([AA, AB, AC], [abc[0], -1, -1], debug);
+                tryCreateTri([AB, BB, BC], [-1, abc[1], -1], debug);
+                tryCreateTri([AC, BC, CC], [-1, -1, abc[2]], debug);
             }
         }
 
@@ -400,8 +443,8 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(C, A);
                 var p2 = calcIntersection(C, B);
 
-                drawTri(debug, [A, B, p2]);
-                drawTri(debug, [p2, p1, A]);
+                drawTri(debug, [A, B, p2], [abc[e[0]], abc[e[1]], -1]);
+                drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
 
                 created = true;
             }
@@ -421,7 +464,7 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(B, A);
                 var p2 = calcIntersection(C, A);
 
-                drawTri(debug, [A, p2, p1]);
+                drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
 
                 created = true;
             }
@@ -429,7 +472,9 @@ function generateIsosurfaceMesh(data) {
         if(created) return true;
     }
 
-    function tryCreateTetra(xyzv, isCore, debug) {
+    function tryCreateTetra(abcd, isCore, debug) {
+
+        var xyzv = getXYZV(abcd);
 
         var ok = [
             inRange(xyzv[0][3]),
@@ -444,7 +489,7 @@ function generateIsosurfaceMesh(data) {
 
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
             if(isCore) {
-                drawTetra(debug, xyzv);
+                drawTetra(debug, xyzv, abcd);
             }
             return false;
         }
@@ -464,13 +509,13 @@ function generateIsosurfaceMesh(data) {
                 var D = xyzv[e[3]];
 
                 if(isCore) {
-                    drawTri(debug, [A, B, C]);
+                    drawTri(debug, [A, B, C], [abcd[e[0]], abcd[e[1]], abcd[e[2]]]);
                 } else {
                     var p1 = calcIntersection(D, A);
                     var p2 = calcIntersection(D, B);
                     var p3 = calcIntersection(D, C);
 
-                    drawTri(debug, [p1, p2, p3]);
+                    drawTri(debug, [p1, p2, p3], [-1, -1, -1]);
                 }
 
                 created = true;
@@ -498,10 +543,10 @@ function generateIsosurfaceMesh(data) {
                 var p4 = calcIntersection(D, A);
 
                 if(isCore) {
-                    drawTri(debug, [A, p4, p1]);
-                    drawTri(debug, [B, p2, p3]);
+                    drawTri(debug, [A, p4, p1], [abcd[e[0]], -1, -1]);
+                    drawTri(debug, [B, p2, p3], [abcd[e[1]], -1, -1]);
                 } else {
-                    drawQuad(debug, [p1, p2, p3, p4]);
+                    drawQuad(debug, [p1, p2, p3, p4], [-1, -1, -1, -1]);
                 }
 
                 created = true;
@@ -526,11 +571,11 @@ function generateIsosurfaceMesh(data) {
                 var p3 = calcIntersection(D, A);
 
                 if(isCore) {
-                    drawTri(debug, [A, p1, p2]);
-                    drawTri(debug, [A, p2, p3]);
-                    drawTri(debug, [A, p3, p1]);
+                    drawTri(debug, [A, p1, p2], [abcd[e[0]], -1, -1]);
+                    drawTri(debug, [A, p2, p3], [abcd[e[0]], -1, -1]);
+                    drawTri(debug, [A, p3, p1], [abcd[e[0]], -1, -1]);
                 } else {
-                    drawTri(debug, [p1, p2, p3]);
+                    drawTri(debug, [p1, p2, p3], [-1, -1, -1]);
                 }
 
                 created = true;
@@ -542,24 +587,24 @@ function generateIsosurfaceMesh(data) {
     function addCube(p000, p001, p010, p011, p100, p101, p110, p111) {
 
         if(drawingSurface) {
-            var a = tryCreateTetra(getXYZV([p000, p001, p010, p100]), false);
-            var b = tryCreateTetra(getXYZV([p001, p010, p011, p111]), false);
-            var c = tryCreateTetra(getXYZV([p001, p100, p101, p111]), false);
-            var d = tryCreateTetra(getXYZV([p010, p100, p110, p111]), false);
+            var a = tryCreateTetra([p000, p001, p010, p100], false);
+            var b = tryCreateTetra([p001, p010, p011, p111], false);
+            var c = tryCreateTetra([p001, p100, p101, p111], false);
+            var d = tryCreateTetra([p010, p100, p110, p111], false);
 
             if(a || b || c || d) {
-                tryCreateTetra(getXYZV([p001, p010, p100, p111]), false);
+                tryCreateTetra([p001, p010, p100, p111], false);
             }
         }
 
         if(drawingVolume) {
-            tryCreateTetra(getXYZV([p001, p010, p100, p111]), true);
+            tryCreateTetra([p001, p010, p100, p111], true);
         }
     }
 
     function addRect(a, b, c, d) {
-        tryCreateTri(getXYZV([a, b, c]));
-        tryCreateTri(getXYZV([c, d, a]));
+        tryCreateTri(getXYZV([a, b, c]), [a, b, c]);
+        tryCreateTri(getXYZV([c, d, a]), [c, d, a]);
     }
 
     function beginSlice(p00, p01, p10, p11, isEven) {
@@ -678,6 +723,42 @@ function generateIsosurfaceMesh(data) {
         return range;
     }
 
+
+    function insertGridPoints() {
+        for(var k = 0; k < depth; k++) {
+            for(var j = 0; j < height; j++) {
+                for(var i = 0; i < width; i++) {
+                    addVertex(Xs[i], Ys[j], Zs[k], data.value[getIndex(i, j, k)]);
+                }
+            }
+        }
+    }
+
+    // insert grid points
+    insertGridPoints();
+
+    // draw volume
+    if(showVolume && volumeFill) {
+        setFill(volumeFill);
+        drawVolume();
+    }
+
+    // draw surfaces
+    if(showSurface && surfaceFill) {
+        setFill(surfaceFill);
+
+        activeMin = vMin;
+        activeMax = maxValues;
+        drawSurface();
+
+        activeMin = minValues;
+        activeMax = vMax;
+        drawSurface();
+    }
+
+    activeMin = vMin;
+    activeMax = vMax;
+
     // draw slices
     ['x', 'y', 'z'].forEach(function(e) {
         var axis = data.slices[e];
@@ -699,25 +780,6 @@ function generateIsosurfaceMesh(data) {
             if(e === 'z') drawSectionsZ([0, depth - 1]);
         }
     });
-
-    // draw volume
-    if(showVolume && volumeFill) {
-        setFill(volumeFill);
-        drawVolume();
-    }
-
-    // draw surfaces
-    if(showSurface && surfaceFill) {
-        setFill(surfaceFill);
-
-        activeMin = vMin;
-        activeMax = maxValues;
-        drawSurface();
-
-        activeMin = minValues;
-        activeMax = vMax;
-        drawSurface();
-    }
 
     data.x = allXs;
     data.y = allYs;
