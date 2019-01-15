@@ -6,10 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var str2RgbaArray = require('../../../lib/str2rgbarray');
+var Lib = require('../../../lib');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
@@ -66,7 +66,7 @@ function AxesOptions() {
 
 var proto = AxesOptions.prototype;
 
-proto.merge = function(sceneLayout) {
+proto.merge = function(fullLayout, sceneLayout) {
     var opts = this;
     for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
@@ -83,7 +83,10 @@ proto.merge = function(sceneLayout) {
         }
 
         // Axes labels
-        opts.labels[i] = axes.title.text;
+        opts.labels[i] = fullLayout.metatext ?
+            Lib.templateString(axes.title.text, {metatext: fullLayout.metatext}) :
+            axes.title.text;
+
         if('font' in axes.title) {
             if(axes.title.font.color) opts.labelColor[i] = str2RgbaArray(axes.title.font.color);
             if(axes.title.font.family) opts.labelFont[i] = axes.title.font.family;
@@ -151,9 +154,9 @@ proto.merge = function(sceneLayout) {
 };
 
 
-function createAxesOptions(plotlyOptions) {
+function createAxesOptions(fullLayout, sceneLayout) {
     var result = new AxesOptions();
-    result.merge(plotlyOptions);
+    result.merge(fullLayout, sceneLayout);
     return result;
 }
 
