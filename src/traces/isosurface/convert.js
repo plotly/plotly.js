@@ -409,6 +409,20 @@ function generateIsosurfaceMesh(data) {
         // for planar surfaces (i.e. caps and slices) due to group shading
         // bug of gl-mesh3d. But don't worry this would run faster!
 
+        var isFirstPass = (min !== vMin || max !== vMax);
+
+        var tryDrawTri = function(debug, xyzv, abc) {
+            if(
+                inRange(xyzv[0][3], vMin, vMax) &&
+                inRange(xyzv[1][3], vMin, vMax) &&
+                inRange(xyzv[2][3], vMin, vMax)
+            ) {
+                drawTri(debug, xyzv, abc);
+            } else if(isFirstPass) {
+                tryCreateTri(xyzv, abc, vMin, vMax, debug);
+            }
+        };
+
         var ok = [
             inRange(xyzv[0][3], min, max),
             inRange(xyzv[1][3], min, max),
@@ -423,7 +437,7 @@ function generateIsosurfaceMesh(data) {
 
         if(ok[0] && ok[1] && ok[2]) {
             if(!drawingEdge) {
-                drawTri(debug, xyzv, abc);
+                tryDrawTri(debug, xyzv, abc);
             }
             return interpolated;
         }
@@ -441,29 +455,8 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(C, A, min, max);
                 var p2 = calcIntersection(C, B, min, max);
 
-                var draw1 = true;
-                var draw2 = true;
-                var drawA = true;
-                var drawB = true;
-                if(drawingEdge) {
-                    if(p1[3] < vMin || p1[3] > vMax) draw1 = false;
-                    if(p2[3] < vMin || p2[3] > vMax) draw2 = false;
-                    if(A[3] < vMin || A[3] > vMax) drawA = false;
-                    if(B[3] < vMin || B[3] > vMax) drawB = false;
-                }
-
-                if(draw1 && draw2 && drawA && drawB) {
-                    drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
-                    drawTri(debug, [A, B, p2], [abc[e[0]], abc[e[1]], -1]);
-                } else if(draw1 && draw2 && drawA) {
-                    drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
-                } else if(draw1 && draw2 && drawB) {
-                    drawTri(debug, [p1, p2, B], [-1, -1, abc[e[1]]]);
-                } else if(draw1 && drawA && drawB) {
-                    drawTri(debug, [p1, A, B], [-1, abc[e[0]], abc[e[1]]]);
-                } else if(draw2 && drawA && drawB) {
-                    drawTri(debug, [p2, A, B], [-1, abc[e[0]], abc[e[1]]]);
-                }
+                tryDrawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
+                tryDrawTri(debug, [A, B, p2], [abc[e[0]], abc[e[1]], -1]);
 
                 interpolated = true;
             }
@@ -483,23 +476,12 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(B, A, min, max);
                 var p2 = calcIntersection(C, A, min, max);
 
-                var draw1 = true;
-                var draw2 = true;
-                var drawA = true;
-                if(drawingEdge) {
-                    if(p1[3] < vMin || p1[3] > vMax) draw1 = false;
-                    if(p2[3] < vMin || p2[3] > vMax) draw2 = false;
-                    if(A[3] < vMin || A[3] > vMax) drawA = false;
-                }
-
-                if(draw1 && draw2 && drawA) {
-                    drawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
-                }
+                tryDrawTri(debug, [p2, p1, A], [-1, -1, abc[e[0]]]);
 
                 interpolated = true;
             }
         });
-        if(interpolated) return interpolated;
+        return interpolated;
     }
 
     function tryCreateTetra(abcd, min, max, debug) {
@@ -611,7 +593,7 @@ function generateIsosurfaceMesh(data) {
                 interpolated = true;
             }
         });
-        if(interpolated) return interpolated;
+        return interpolated;
     }
 
     function addCube(p000, p001, p010, p011, p100, p101, p110, p111, min, max) {
