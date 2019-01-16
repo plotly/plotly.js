@@ -741,10 +741,15 @@
         }
     }],
     "layout": {
-        "title": "isosurface trace",
+        "title": "isosurface trace with volume fill, open xy caps and scene aspect ratio: 2",
         "width": 1200,
         "height": 900,
         "scene": {
+            "aspectratio": {
+                "x": 2,
+                "y": 1,
+                "z": 1
+            },
             "xaxis": {"nticks": 12},
             "yaxis": {"nticks": 12},
             "zaxis": {"nticks": 12},
