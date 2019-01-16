@@ -48,6 +48,7 @@ function createCamera(element, options) {
 
     var camera = {
         keyBindingMode: 'rotate',
+        enableWheel: true,
         view: view,
         element: element,
         delay: options.delay || 16,
@@ -257,7 +258,9 @@ function createCamera(element, options) {
     }
 
     camera.wheelListener = mouseWheel(element, function(dx, dy) {
+        // TODO remove now that we can disable scroll via scrollZoom?
         if(camera.keyBindingMode === false) return;
+        if(!camera.enableWheel) return;
 
         var flipX = camera.flipX ? 1 : -1;
         var flipY = camera.flipY ? 1 : -1;

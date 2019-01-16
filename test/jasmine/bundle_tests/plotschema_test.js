@@ -328,6 +328,11 @@ describe('plot schema', function() {
         expect(plotSchema.frames.items.frames_entry.role).toEqual('object');
     });
 
+    it('should list config attributes', function() {
+        expect(plotSchema.config).toBeDefined();
+        expect(plotSchema.config.scrollZoom).toBeDefined();
+    });
+
     it('should list trace-dependent & direction-dependent error bar attributes', function() {
         var scatterSchema = plotSchema.traces.scatter.attributes;
         expect(scatterSchema.error_x.copy_ystyle).toBeDefined();

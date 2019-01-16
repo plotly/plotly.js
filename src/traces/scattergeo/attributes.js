@@ -8,6 +8,7 @@
 
 'use strict';
 
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
@@ -122,5 +123,6 @@ module.exports = overrideAll({
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
-    })
+    }),
+    hovertemplate: hovertemplateAttrs(),
 }, 'calc', 'nested');

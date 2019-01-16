@@ -291,6 +291,14 @@ describe('Test scattergeo hover', function() {
         .then(done);
     });
 
+    it('should use the hovertemplate', function(done) {
+        Plotly.restyle(gd, 'hovertemplate', 'tpl %{lat}<extra>x</extra>').then(function() {
+            check([381, 221], ['tpl 10', 'x']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should generate hover label info (\'text\' single value case)', function(done) {
         Plotly.restyle(gd, 'text', 'text').then(function() {
             check([381, 221], ['(10°, 10°)\ntext', null]);
