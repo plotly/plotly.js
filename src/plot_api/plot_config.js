@@ -167,7 +167,7 @@ var configAttributes = {
             'If *false*, double click is disable.',
             'If *reset*, double click resets the axis ranges to their initial values.',
             'If *autosize*, double click set the axis ranges to their autorange values.',
-            'If *reset+autosize, the odd double clicks resets the axis ranges',
+            'If *reset+autosize*, the odd double clicks resets the axis ranges',
             'to their initial values and even double clicks set the axis ranges',
             'to their autorange values.'
         ].join(' ')
@@ -309,7 +309,7 @@ var configAttributes = {
     plotGlPixelRatio: {
         valType: 'number',
         dflt: 2,
-        min: 0,
+        min: 1,
         max: 4,
         description: [
             'Set the pixel ratio during WebGL image export.',
