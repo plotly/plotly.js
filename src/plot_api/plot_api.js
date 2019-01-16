@@ -33,7 +33,7 @@ var initInteractions = require('../plots/cartesian/graph_interact').initInteract
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
 
-var defaultConfig = require('./plot_config');
+var dfltConfig = require('./plot_config').dfltConfig;
 var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
@@ -405,7 +405,7 @@ function emitAfterPlot(gd) {
 }
 
 exports.setPlotConfig = function setPlotConfig(obj) {
-    return Lib.extendFlat(defaultConfig, obj);
+    return Lib.extendFlat(dfltConfig, obj);
 };
 
 function setBackground(gd, bgColor) {
@@ -423,7 +423,7 @@ function opaqueSetBackground(gd, bgColor) {
 
 function setPlotContext(gd, config) {
     if(!gd._context) {
-        gd._context = Lib.extendDeep({}, defaultConfig);
+        gd._context = Lib.extendDeep({}, dfltConfig);
 
         // stash <base> href, used to make robust clipPath URLs
         var base = d3.select('base');
@@ -507,6 +507,25 @@ function setPlotContext(gd, config) {
     // Check if gd has a specified widht/height to begin with
     context._hasZeroHeight = context._hasZeroHeight || gd.clientHeight === 0;
     context._hasZeroWidth = context._hasZeroWidth || gd.clientWidth === 0;
+
+    // fill context._scrollZoom helper to help manage scrollZoom flaglist
+    var szIn = context.scrollZoom;
+    var szOut = context._scrollZoom = {};
+    if(szIn === true) {
+        szOut.cartesian = 1;
+        szOut.gl3d = 1;
+        szOut.geo = 1;
+        szOut.mapbox = 1;
+    } else if(typeof szIn === 'string') {
+        var parts = szIn.split('+');
+        for(i = 0; i < parts.length; i++) {
+            szOut[parts[i]] = 1;
+        }
+    } else if(szIn !== false) {
+        szOut.gl3d = 1;
+        szOut.geo = 1;
+        szOut.mapbox = 1;
+    }
 }
 
 function plotLegacyPolar(gd, data, layout) {

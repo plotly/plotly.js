@@ -15,7 +15,7 @@ var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
 var plotAttributes = require('../plots/attributes');
 var Template = require('./plot_template');
-var dfltConfig = require('./plot_config');
+var dfltConfig = require('./plot_config').dfltConfig;
 
 /**
  * Plotly.makeTemplate: create a template off an existing figure to reuse

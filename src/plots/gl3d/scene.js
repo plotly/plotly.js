@@ -227,8 +227,15 @@ function initializeGLPlot(scene, canvas, gl) {
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
-    scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
-    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
+    scene.glplot.canvas.addEventListener('mouseup', function() {
+        relayoutCallback(scene);
+    });
+
+    scene.glplot.canvas.addEventListener('wheel', function() {
+        if(gd._context._scrollZoom.gl3d) {
+            relayoutCallback(scene);
+        }
+    }, passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
@@ -385,7 +392,6 @@ function computeTraceBounds(scene, trace, bounds) {
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
-
     // Save parameters
     this.plotArgs = [sceneData, fullLayout, layout];
 
@@ -412,6 +418,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Update camera and camera mode
     this.setCamera(fullSceneLayout.camera);
     this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
+    this.camera.enableWheel = this.graphDiv._context._scrollZoom.gl3d;
 
     // Update scene
     this.glplot.update({});
@@ -776,7 +783,6 @@ proto.updateFx = function(dragmode, hovermode) {
             fullCamera.up = zUp;
             Lib.nestedProperty(layout, attr).set(zUp);
         } else {
-
             // none rotation modes [pan or zoom]
             camera.keyBindingMode = dragmode;
         }

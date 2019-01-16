@@ -764,6 +764,65 @@ describe('config argument', function() {
         });
     });
 
+    describe('scrollZoom:', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        function plot(config) {
+            return Plotly.plot(gd, [], {}, config);
+        }
+
+        it('should fill in scrollZoom default', function(done) {
+            plot(undefined).then(function() {
+                expect(gd._context.scrollZoom).toBe('gl3d+geo+mapbox');
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should fill in blank scrollZoom value', function(done) {
+            plot({scrollZoom: null}).then(function() {
+                expect(gd._context.scrollZoom).toBe(null);
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom:true', function(done) {
+            plot({scrollZoom: true}).then(function() {
+                expect(gd._context.scrollZoom).toBe(true);
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom:false', function(done) {
+            plot({scrollZoom: false}).then(function() {
+                expect(gd._context.scrollZoom).toBe(false);
+                expect(gd._context._scrollZoom).toEqual({});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom flaglist', function(done) {
+            plot({scrollZoom: 'mapbox+cartesian'}).then(function() {
+                expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
+                expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
     describe('scrollZoom interactions:', function() {
         var gd;
 
