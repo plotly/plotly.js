@@ -305,7 +305,7 @@ function Scene(options, fullLayout) {
     /*
      * Move this to calc step? Why does it work here?
      */
-    this.axesOptions = createAxesOptions(fullLayout[this.id]);
+    this.axesOptions = createAxesOptions(fullLayout, fullLayout[this.id]);
     this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
     this.container = sceneContainer;
     this.staticMode = !!options.staticPlot;
@@ -406,7 +406,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.fullSceneLayout = fullSceneLayout;
 
     this.glplotLayout = fullSceneLayout;
-    this.axesOptions.merge(fullSceneLayout);
+    this.axesOptions.merge(fullLayout, fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
 
     // Update camera and camera mode
