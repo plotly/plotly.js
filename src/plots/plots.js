@@ -1455,7 +1455,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
     coerce('modebar.uirevision', uirevision);
 
-    coerce('metatext');
+    coerce('meta');
 
     Registry.getComponentMethod(
         'calendars',

@@ -334,8 +334,8 @@ module.exports = function plot(gd, cdpie) {
                     s.attr('data-notex', 1);
                 });
 
-                var txt = fullLayout.metatext ?
-                    Lib.templateString(trace.title.text, {metatext: fullLayout.metatext}) :
+                var txt = fullLayout.meta ?
+                    Lib.templateString(trace.title.text, {meta: fullLayout.meta}) :
                     trace.title.text;
 
                 titleText.text(txt)
@@ -480,8 +480,8 @@ function prerenderTitles(cdpie, gd) {
         trace = cd0.trace;
 
         if(trace.title.text) {
-            var txt = fullLayout.metatext ?
-                Lib.templateString(trace.title.text, {metatext: fullLayout.metatext}) :
+            var txt = fullLayout.meta ?
+                Lib.templateString(trace.title.text, {meta: fullLayout.meta}) :
                 trace.title.text;
 
             var dummyTitle = Drawing.tester.append('text')

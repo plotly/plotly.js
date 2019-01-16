@@ -13,7 +13,7 @@
     "type": "surface",
     "z": [[1, 2, 3], [1, 2, 1], [3, 2, 1]],
     "colorbar": {
-      "title": {"text": "Product %{metatext[0]}", "side": "right"},
+      "title": {"text": "Product %{meta[0]}", "side": "right"},
       "len": 0.3
     }
   }, {
@@ -21,49 +21,49 @@
     "labels": ["a", "b", "c"],
     "values": [1, 2, 3],
     "domain": {"row": 0, "column": 1},
-    "title": {"text": "Employee %{metatext[1]}"}
+    "title": {"text": "Employee %{meta[1]}"}
   }],
   "layout": {
-    "metatext": ["A", "B", "<b>IMPORTANT</b>", "company<sup>TM</sup>", 1000],
+    "meta": ["A", "B", "<b>IMPORTANT</b>", "company<sup>TM</sup>", 1000],
     "grid": {"rows": 3, "columns": 2, "xgap": 0.2, "ygap": 0.35},
     "width": 700,
     "height": 800,
     "margin": {"b": 40},
     "showlegend": false,
 
-    "title": {"text": "This graph is %{metatext[2]}"},
+    "title": {"text": "This graph is %{meta[2]}"},
     "xaxis": {
       "domain": {"row": 0, "column": 0},
-      "title": {"text": "Worth more than %{metatext[4]} %{metatext[1]}"}
+      "title": {"text": "Worth more than %{meta[4]} %{meta[1]}"}
     },
     "yaxis": {
       "domain": {"row": 0, "column": 0},
-      "title": {"text": "$ by %{metatext[3]}"}
+      "title": {"text": "$ by %{meta[3]}"}
     },
     "polar": {
       "bgcolor": "#d3d3d3",
       "domain": {"row": 1, "column": 0},
       "radialaxis": {
         "title": {
-          "text": "%{metatext[3]} -> %{metatext[4]}",
+          "text": "%{meta[3]} -> %{meta[4]}",
           "font": {"color": "red"}
         }
       }
     },
     "ternary": {
       "domain": {"row": 2, "column": 0},
-      "aaxis": {"title": {"text": "%{metatext[2]}"}},
-      "baxis": {"title": {"text": "%{metatext[1]}"}},
-      "caxis": {"title": {"text": "%{metatext[4]}"}}
+      "aaxis": {"title": {"text": "%{meta[2]}"}},
+      "baxis": {"title": {"text": "%{meta[1]}"}},
+      "caxis": {"title": {"text": "%{meta[4]}"}}
     },
     "scene": {
       "domain": {"row": 1, "column": 1},
       "camera": {"eye": {"x": 0.01, "y": 0.01, "z": 2.165}},
-      "xaxis": {"title": {"text": "AX:%{metatext[1]}"}},
-      "yaxis": {"title": {"text": "AX:%{metatext[0]}"}},
-      "zaxis": {"title": {"text": "%{metatext[1]}%{metatext[0]}"}},
+      "xaxis": {"title": {"text": "AX:%{meta[1]}"}},
+      "yaxis": {"title": {"text": "AX:%{meta[0]}"}},
+      "zaxis": {"title": {"text": "%{meta[1]}%{meta[0]}"}},
       "annotations": [{
-        "text": "Look at %{metatext[1]}",
+        "text": "Look at %{meta[1]}",
         "bgcolor": "#d3d3d3",
         "borderpad": 2,
         "bordercolor": "#000",
@@ -75,7 +75,7 @@
     },
 
     "annotations": [{
-      "text": "<i>N.B.</i> %{metatext[2]}",
+      "text": "<i>N.B.</i> %{meta[2]}",
       "xref": "x",
       "yref": "y",
       "x": 1,
