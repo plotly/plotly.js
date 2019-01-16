@@ -97,7 +97,7 @@ module.exports = extendFlat({
         editType: 'calc',
         description: [
             'Sets the 4th dimension of the vertices. It should be',
-            'one dimensional array containing n=width*height*depth numbers.'
+            'one dimensional array containing n=X.length*Y.length*Z.length numbers.'
         ].join(' ')
     },
     isomin: {
