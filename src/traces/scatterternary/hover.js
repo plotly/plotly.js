@@ -52,19 +52,18 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = newPointData.trace;
     var ternary = newPointData.subplot;
     var hoverinfo = cdi.hi || trace.hoverinfo;
-    var parts = hoverinfo.split('+');
     var text = [];
-
     function textPart(ax, val) {
         text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
     }
-
-    if(parts.indexOf('all') !== -1) parts = ['a', 'b', 'c'];
-    if(parts.indexOf('a') !== -1) textPart(ternary.aaxis, cdi.a);
-    if(parts.indexOf('b') !== -1) textPart(ternary.baxis, cdi.b);
-    if(parts.indexOf('c') !== -1) textPart(ternary.caxis, cdi.c);
-
+    if(!trace.hovertemplate) {
+        var parts = hoverinfo.split('+');
+        if(parts.indexOf('all') !== -1) parts = ['a', 'b', 'c'];
+        if(parts.indexOf('a') !== -1) textPart(ternary.aaxis, cdi.a);
+        if(parts.indexOf('b') !== -1) textPart(ternary.baxis, cdi.b);
+        if(parts.indexOf('c') !== -1) textPart(ternary.caxis, cdi.c);
+    }
     newPointData.extraText = text.join('<br>');
-
+    newPointData.hovertemplate = trace.hovertemplate;
     return scatterPointData;
 };

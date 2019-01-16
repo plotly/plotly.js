@@ -47,6 +47,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.index = pt.index;
     pointData.location = pt.loc;
     pointData.z = pt.z;
+    pointData.hovertemplate = pt.hovertemplate;
 
     makeHoverInfo(pointData, trace, pt, geo.mockAxis);
 
@@ -54,6 +55,10 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 };
 
 function makeHoverInfo(pointData, trace, pt, axis) {
+    if(trace.hovertemplate) {
+        return;
+    }
+
     var hoverinfo = pt.hi || trace.hoverinfo;
 
     var parts = (hoverinfo === 'all') ?

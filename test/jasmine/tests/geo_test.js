@@ -1961,4 +1961,52 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should respect scrollZoom config option', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_winkel-tripel'));
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'pan';
+
+        function _assert(step, attr, proj, eventKeys) {
+            var msg = '[' + step + '] ';
+
+            var geoLayout = gd._fullLayout.geo;
+            var scale = geoLayout.projection.scale;
+            expect(scale).toBeCloseTo(attr[0], 1, msg + 'zoom');
+
+            var geo = geoLayout._subplot;
+            var _scale = geo.projection.scale();
+            expect(_scale).toBeCloseTo(proj[0], 0, msg + 'scale');
+
+            assertEventData(msg, eventKeys);
+        }
+
+        plot(fig)
+        .then(function() {
+            _assert('base', [1], [101.9], undefined);
+        })
+        .then(function() { return scroll([200, 250], [-200, -200]); })
+        .then(function() {
+            _assert('with scroll enable (by default)',
+                [1.3], [134.4],
+                ['geo.projection.rotation.lon', 'geo.center.lon', 'geo.center.lat', 'geo.projection.scale']
+            );
+        })
+        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: false}); })
+        .then(function() { return scroll([200, 250], [-200, -200]); })
+        .then(function() {
+            _assert('with scrollZoom:false', [1.3], [134.4], undefined);
+        })
+        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: 'geo'}); })
+        .then(function() { return scroll([200, 250], [-200, -200]); })
+        .then(function() {
+            _assert('with scrollZoom:geo',
+                [1.74], [177.34],
+                ['geo.projection.rotation.lon', 'geo.center.lon', 'geo.center.lat', 'geo.projection.scale']
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

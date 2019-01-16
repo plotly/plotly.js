@@ -1,12 +1,15 @@
 var Plotly = require('@lib/index');
 var Plots = Plotly.Plots;
 var Lib = require('@src/lib');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
+
 var RESIZE_DELAY = 300;
 
 describe('config argument', function() {
@@ -755,6 +758,149 @@ describe('config argument', function() {
                 expect(gd.clientHeight).toBe(500);
                 // The plot should overflow the container!
                 checkLayoutSize(1200, 700);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('scrollZoom:', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        function plot(config) {
+            return Plotly.plot(gd, [], {}, config);
+        }
+
+        it('should fill in scrollZoom default', function(done) {
+            plot(undefined).then(function() {
+                expect(gd._context.scrollZoom).toBe('gl3d+geo+mapbox');
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should fill in blank scrollZoom value', function(done) {
+            plot({scrollZoom: null}).then(function() {
+                expect(gd._context.scrollZoom).toBe(null);
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom:true', function(done) {
+            plot({scrollZoom: true}).then(function() {
+                expect(gd._context.scrollZoom).toBe(true);
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom:false', function(done) {
+            plot({scrollZoom: false}).then(function() {
+                expect(gd._context.scrollZoom).toBe(false);
+                expect(gd._context._scrollZoom).toEqual({});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom flaglist', function(done) {
+            plot({scrollZoom: 'mapbox+cartesian'}).then(function() {
+                expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
+                expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('scrollZoom interactions:', function() {
+        var gd;
+
+        afterEach(destroyGraphDiv);
+
+        function _scroll() {
+            var mainDrag = d3.select('.nsewdrag[data-subplot="xy"]').node();
+            mouseEvent('scroll', 200, 200, {deltaY: -200, element: mainDrag});
+        }
+
+        it('should not disable scrollZoom when *responsive:true*', function(done) {
+            gd = document.createElement('div');
+            gd.id = 'graph';
+            gd.style.height = '85vh';
+            gd.style.minHeight = '300px';
+            document.body.appendChild(gd);
+
+            // locking down fix for:
+            // https://github.com/plotly/plotly.js/issues/3337
+
+            var xrng0;
+            var yrng0;
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 1]
+            }], {}, {
+                scrollZoom: true,
+                responsive: true
+            })
+            .then(function() {
+                xrng0 = gd._fullLayout.xaxis.range.slice();
+                yrng0 = gd._fullLayout.yaxis.range.slice();
+            })
+            .then(_scroll)
+            .then(function() {
+                var xrng = gd._fullLayout.xaxis.range;
+                expect(xrng[0]).toBeGreaterThan(xrng0[0], 'scrolled x-range[0]');
+                expect(xrng[1]).toBeLessThan(xrng0[1], 'scrolled x-range[1]');
+
+                var yrng = gd._fullLayout.yaxis.range;
+                expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
+                expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not disable scrollZoom when page is made scrollable by large graph', function(done) {
+            gd = document.createElement('div');
+            gd.id = 'graph';
+            document.body.appendChild(gd);
+
+            // locking down fix for:
+            // https://github.com/plotly/plotly.js/issues/2371
+
+            var xrng0;
+            var yrng0;
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 1]
+            }], {
+                width: 2 * window.innerWidth
+            }, {
+                scrollZoom: true
+            })
+            .then(function() {
+                xrng0 = gd._fullLayout.xaxis.range.slice();
+                yrng0 = gd._fullLayout.yaxis.range.slice();
+            })
+            .then(_scroll)
+            .then(function() {
+                var xrng = gd._fullLayout.xaxis.range;
+                expect(xrng[0]).toBeGreaterThan(xrng0[0], 'scrolled x-range[0]');
+                expect(xrng[1]).toBeLessThan(xrng0[1], 'scrolled x-range[1]');
+
+                var yrng = gd._fullLayout.yaxis.range;
+                expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
+                expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
             })
             .catch(failTest)
             .then(done);

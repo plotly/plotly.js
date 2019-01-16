@@ -411,6 +411,18 @@ module.exports = {
         editType: 'modebar'
     },
 
+    meta: {
+        valType: 'data_array',
+        editType: 'plot',
+        description: [
+            'Assigns extra meta information that can be used in various `text` attributes.',
+            'Attributes such as the graph, axis and colorbar `title.text` and annotation `text`',
+            'support `meta`. One can access `meta` fields using template strings:',
+            '`%{meta[i]}` where `i` is the index of the `meta`',
+            'item in question.'
+        ].join(' ')
+    },
+
     transition: extendFlat({}, animationAttrs.transition, {
         description: [
             'Sets transition options used during Plotly.react updates.'

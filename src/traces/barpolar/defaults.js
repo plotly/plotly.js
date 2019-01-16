@@ -33,6 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('width');
 
     coerce('text');
+    coerce('hovertemplate');
     // coerce('hovertext');
 
     // var textPosition = coerce('textposition');
