@@ -776,6 +776,18 @@ describe('@noCI scattermapbox hover', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should pass along hovertemplate', function(done) {
+        Plotly.restyle(gd, 'hovertemplate', 'tpl').then(function() {
+            var xval = 11;
+            var yval = 11;
+
+            var out = hoverPoints(getPointData(gd), xval, yval)[0];
+
+            expect(out.hovertemplate).toEqual('tpl');
+            done();
+        });
+    });
 });
 
 describe('@noCI Test plotly events on a scattermapbox plot:', function() {

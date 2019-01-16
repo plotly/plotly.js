@@ -8,6 +8,7 @@
 
 'use strict';
 
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
@@ -115,5 +116,6 @@ module.exports = overrideAll({
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']
-    })
+    }),
+    hovertemplate: hovertemplateAttrs(),
 }, 'calc', 'nested');

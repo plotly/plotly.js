@@ -24,13 +24,14 @@ var dfltConfig = require('./plot_config').dfltConfig;
  * Note: separated from the rest of templates because otherwise we get circular
  * references due to PlotSchema.
  *
- * @param {object|DOM element} figure: The figure to base the template on
+ * @param {object|DOM element|string} figure: The figure to base the template on
  *     should contain a trace array `figure.data`
  *     and a layout object `figure.layout`
  * @returns {object} template: the extracted template - can then be used as
  *     `layout.template` in another figure.
  */
 exports.makeTemplate = function(figure) {
+    figure = Lib.isPlainObject(figure) ? figure : Lib.getGraphDiv(figure);
     figure = Lib.extendDeep({_context: dfltConfig}, {data: figure.data, layout: figure.layout});
     Plots.supplyDefaults(figure);
     var data = figure.data || [];

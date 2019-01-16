@@ -32,41 +32,44 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
     makeHoverPointText(cdi, trace, subplot, newPointData);
-
+    newPointData.hovertemplate = trace.hovertemplate;
     return scatterPointData;
 }
 
 function makeHoverPointText(cdi, trace, subplot, pointData) {
+
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
-    var hoverinfo = cdi.hi || trace.hoverinfo;
-    var parts = hoverinfo.split('+');
-    var text = [];
-
     radialAxis._hovertitle = 'r';
     angularAxis._hovertitle = 'θ';
 
+    var hoverinfo = cdi.hi || trace.hoverinfo;
+    var text = [];
     function textPart(ax, val) {
         text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
     }
 
-    if(parts.indexOf('all') !== -1) parts = ['r', 'theta', 'text'];
-    if(parts.indexOf('r') !== -1) {
-        textPart(radialAxis, radialAxis.c2l(cdi.r));
-    }
-    if(parts.indexOf('theta') !== -1) {
-        var theta = cdi.theta;
-        textPart(
-            angularAxis,
-            angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(theta) : theta
-        );
-    }
-    if(parts.indexOf('text') !== -1 && pointData.text) {
-        text.push(pointData.text);
-        delete pointData.text;
-    }
+    if(!trace.hovertemplate) {
+        var parts = hoverinfo.split('+');
 
-    pointData.extraText = text.join('<br>');
+        if(parts.indexOf('all') !== -1) parts = ['r', 'theta', 'text'];
+        if(parts.indexOf('r') !== -1) {
+            textPart(radialAxis, radialAxis.c2l(cdi.r));
+        }
+        if(parts.indexOf('theta') !== -1) {
+            var theta = cdi.theta;
+            textPart(
+                angularAxis,
+                angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(theta) : theta
+            );
+        }
+        if(parts.indexOf('text') !== -1 && pointData.text) {
+            text.push(pointData.text);
+            delete pointData.text;
+        }
+
+        pointData.extraText = text.join('<br>');
+    }
 }
 
 module.exports = {
