@@ -776,6 +776,7 @@ describe('config argument', function() {
             plot(undefined).then(function() {
                 expect(gd._context.scrollZoom).toBe('gl3d+geo+mapbox');
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .catch(failTest)
             .then(done);
@@ -785,6 +786,7 @@ describe('config argument', function() {
             plot({scrollZoom: null}).then(function() {
                 expect(gd._context.scrollZoom).toBe(null);
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .catch(failTest)
             .then(done);
