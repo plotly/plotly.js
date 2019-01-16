@@ -417,7 +417,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // deactivate mousewheel scrolling on embedded graphs
         // devs can override this with layout._enablescrollzoom,
         // but _ ensures this setting won't leave their page
-        if(!gd._context.scrollZoom && !gd._fullLayout._enablescrollzoom) {
+        if(!gd._context._scrollZoom.cartesian && !gd._fullLayout._enablescrollzoom) {
             return;
         }
 

@@ -507,6 +507,25 @@ function setPlotContext(gd, config) {
     // Check if gd has a specified widht/height to begin with
     context._hasZeroHeight = context._hasZeroHeight || gd.clientHeight === 0;
     context._hasZeroWidth = context._hasZeroWidth || gd.clientWidth === 0;
+
+    // fill context._scrollZoom helper to help manage scrollZoom flaglist
+    var szIn = context.scrollZoom;
+    var szOut = context._scrollZoom = {};
+    if(szIn === true) {
+        szOut.cartesian = 1;
+        szOut.gl3d = 1;
+        szOut.geo = 1;
+        szOut.mapbox = 1;
+    } else if(typeof szIn === 'string') {
+        var parts = szIn.split('+');
+        for(i = 0; i < parts.length; i++) {
+            szOut[parts[i]] = 1;
+        }
+    } else if(szIn !== false) {
+        szOut.gl3d = 1;
+        szOut.geo = 1;
+        szOut.mapbox = 1;
+    }
 }
 
 function plotLegacyPolar(gd, data, layout) {
