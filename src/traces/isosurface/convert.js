@@ -178,35 +178,11 @@ function generateIsosurfaceMesh(data) {
     fillYs();
     fillZs();
 
-    function findMin(arr) {
-        var min = Infinity;
-        var len = arr.length;
-        for(var q = 0; q < len; q++) {
-            if(min > arr[q]) {
-                min = arr[q];
-            }
-        }
-        return min;
-    }
+    var minValues = data._minValues;
+    var maxValues = data._maxValues;
 
-    function findMax(arr) {
-        var max = -Infinity;
-        var len = arr.length;
-        for(var q = 0; q < len; q++) {
-            if(max < arr[q]) {
-                max = arr[q];
-            }
-        }
-        return max;
-    }
-
-    var minValues = findMin(data.value);
-    var maxValues = findMax(data.value);
-
-    var vMin = data.isomin;
-    var vMax = data.isomax;
-    if(vMin === undefined) vMin = minValues;
-    if(vMax === undefined) vMax = maxValues;
+    var vMin = data._vMin;
+    var vMax = data._vMax;
 
     if(vMin > vMax) {
         var vTmp = vMin;
@@ -424,13 +400,11 @@ function generateIsosurfaceMesh(data) {
         return xyzv;
     }
 
-    function tryCreateTri(xyzv, abc, min, max, debug) {
+    function tryCreateTri(xyzv, abc, min, max, debug, isSecondPass) {
 
         abc = [-1, -1, -1]; // Note: for the moment we had to override indices
         // for planar surfaces (i.e. caps and slices) due to group shading
         // bug of gl-mesh3d. But don't worry this would run faster!
-
-        var isFirstPass = (min !== vMin || max !== vMax);
 
         var tryDrawTri = function(debug, xyzv, abc) {
             if(
@@ -439,8 +413,8 @@ function generateIsosurfaceMesh(data) {
                 inRange(xyzv[2][3], vMin, vMax)
             ) {
                 drawTri(debug, xyzv, abc);
-            } else if(isFirstPass) {
-                tryCreateTri(xyzv, abc, vMin, vMax, debug);
+            } else if(!isSecondPass) {
+                tryCreateTri(xyzv, abc, vMin, vMax, debug, true);
             }
         };
 

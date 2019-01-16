@@ -12,35 +12,23 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 
 module.exports = function calc(gd, trace) {
 
-    function findMin(arr) {
-        var min = Infinity;
-        var len = arr.length;
-        for(var q = 0; q < len; q++) {
-            if(min > arr[q]) {
-                min = arr[q];
-            }
-        }
-        return min;
+    var min = Infinity;
+    var max = -Infinity;
+    var len = trace.value.length;
+    for(var i = 0; i < len; i++) {
+        var v = trace.value[i];
+        min = Math.min(min, v);
+        max = Math.max(max, v);
     }
 
-    function findMax(arr) {
-        var max = -Infinity;
-        var len = arr.length;
-        for(var q = 0; q < len; q++) {
-            if(max < arr[q]) {
-                max = arr[q];
-            }
-        }
-        return max;
-    }
+    trace._minValues = min;
+    trace._maxValues = max;
 
-    var vMin = trace.isomin;
-    var vMax = trace.isomax;
-    if(vMin === undefined) vMin = findMin(trace.value);
-    if(vMax === undefined) vMax = findMax(trace.value);
+    trace._vMin = (trace.isomin === undefined) ? min : trace.isomin;
+    trace._vMax = (trace.isomax === undefined) ? max : trace.isomax;
 
     colorscaleCalc(gd, trace, {
-        vals: [vMin, vMax],
+        vals: [trace._vMin, trace._vMax],
         containerStr: '',
         cLetter: 'c'
     });
