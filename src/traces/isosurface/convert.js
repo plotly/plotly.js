@@ -56,7 +56,8 @@ proto.handlePick = function(selection) {
         selection.traceCoordinate = [
             this.data.x[selectIndex],
             this.data.y[selectIndex],
-            this.data.z[selectIndex]
+            this.data.z[selectIndex],
+            this.data.value[selectIndex]
         ];
 
         var text = this.data.text;
@@ -121,7 +122,6 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-
 function generateIsosurfaceMesh(data) {
 
     var showSurface = data.surface.show;
@@ -138,11 +138,15 @@ function generateIsosurfaceMesh(data) {
     data.j = [];
     data.k = [];
 
-    var allXs = [];
-    var allYs = [];
-    var allZs = [];
+    var numFaces = 0;
+    var numVertices;
+    var beginVertextLength;
 
-    var allVs = [];
+    var allXs;
+    var allYs;
+    var allZs;
+    var allVs;
+    emptyVertices();
 
     var width = data.x.length;
     var height = data.y.length;
@@ -190,16 +194,9 @@ function generateIsosurfaceMesh(data) {
         vMax = vTmp;
     }
 
-    var numVertices = 0;
-    var beginVertextLength;
-
-    function beginGroup() {
-        beginVertextLength = numVertices;
-    }
-
-    beginGroup();
-
     function findVertexId(x, y, z) {
+        // could be used to find the vertex id of previously generated vertex within the group
+
         var len = allVs.length;
         for(var f = beginVertextLength; f < len; f++) {
             if(
@@ -211,6 +208,20 @@ function generateIsosurfaceMesh(data) {
             }
         }
         return -1;
+    }
+
+    function beginGroup() {
+        beginVertextLength = numVertices;
+    }
+
+    function emptyVertices(x, y, z, v) {
+        allXs = [];
+        allYs = [];
+        allZs = [];
+        allVs = [];
+        numVertices = 0;
+
+        beginGroup();
     }
 
     function addVertex(x, y, z, v) {
@@ -227,6 +238,9 @@ function generateIsosurfaceMesh(data) {
         data.i.push(a);
         data.j.push(b);
         data.k.push(c);
+        numFaces++;
+
+        return numFaces - 1;
     }
 
     function getCenter(A, B, C) {
@@ -267,24 +281,14 @@ function generateIsosurfaceMesh(data) {
 
         return {
             xyzv: [
-                [A, B, p2],
-                [p2, p1, A],
-
-                [B, C, p3],
-                [p3, p2, B],
-
-                [C, A, p1],
-                [p1, p3, C]
+                [A, B, p2], [p2, p1, A],
+                [B, C, p3], [p3, p2, B],
+                [C, A, p1], [p1, p3, C]
             ],
             abc: [
-                [a, b, -1],
-                [-1, -1, a],
-
-                [b, c, -1],
-                [-1, -1, b],
-
-                [c, a, -1],
-                [-1, -1, c]
+                [a, b, -1], [-1, -1, a],
+                [b, c, -1], [-1, -1, b],
+                [c, a, -1], [-1, -1, c]
             ]
         };
     }
@@ -827,6 +831,11 @@ function generateIsosurfaceMesh(data) {
             }
         }
     });
+
+    // remove vertices arrays (i.e. grid points) in case no faces was created created.
+    if(numFaces === 0)  {
+        emptyVertices();
+    }
 
     data._Xs = Xs;
     data._Ys = Ys;
