@@ -378,6 +378,15 @@ function generateIsosurfaceMesh(data) {
         );
     }
 
+
+    function almostInFinalRange(value) {
+        var vErr = 0.01 * (vMax - vMin);
+        return (
+            value >= vMin - vErr &&
+            value <= vMax + vErr
+        );
+    }
+
     function getXYZV(indecies) {
         var xyzv = [];
         for(var q = 0; q < 4; q++) {
@@ -407,14 +416,14 @@ function generateIsosurfaceMesh(data) {
         // bug of gl-mesh3d. But don't worry this would run faster!
 
         var tryDrawTri = function(debug, xyzv, abc) {
-            if(
-                inRange(xyzv[0][3], vMin, vMax) &&
-                inRange(xyzv[1][3], vMin, vMax) &&
-                inRange(xyzv[2][3], vMin, vMax)
+            if( // we check here if the points are in `real` iso-min/max range
+                almostInFinalRange(xyzv[0][3]) &&
+                almostInFinalRange(xyzv[1][3]) &&
+                almostInFinalRange(xyzv[2][3])
             ) {
                 drawTri(debug, xyzv, abc);
             } else if(!isSecondPass) {
-                tryCreateTri(xyzv, abc, vMin, vMax, debug, true);
+                tryCreateTri(xyzv, abc, vMin, vMax, debug, true); // i.e. second pass
             }
         };
 
@@ -740,7 +749,6 @@ function generateIsosurfaceMesh(data) {
         return range;
     }
 
-
     function insertGridPoints() {
         for(var k = 0; k < depth; k++) {
             for(var j = 0; j < height; j++) {
@@ -770,13 +778,12 @@ function generateIsosurfaceMesh(data) {
     }
 
     var setupMinMax = [
-        [ vMin, vMax ],
         [ vMin, maxValues ],
         [ minValues, vMax ]
     ];
 
     ['x', 'y', 'z'].forEach(function(e) {
-        for(var s = 0; s < 3; s++) {
+        for(var s = 0; s < setupMinMax.length; s++) {
 
             drawingEdge = (s === 0) ? false : true;
 
