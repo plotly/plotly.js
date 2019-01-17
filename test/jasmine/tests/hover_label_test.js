@@ -248,7 +248,7 @@ describe('hover info', function() {
 
             assertHoverLabelContent({
                 nums: '1\nhover text',
-                name: '&lt;img src=x o...',
+                name: '',
                 axis: '0.388'
             });
         });
