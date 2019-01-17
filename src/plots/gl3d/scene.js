@@ -876,6 +876,6 @@ proto.make4thDimension = function() {
         exponentformat: 'B'
     };
     Axes.setConvert(_this.mockAxis, fullLayout);
-}
+};
 
 module.exports = Scene;

@@ -214,7 +214,7 @@ function generateIsosurfaceMesh(data) {
         beginVertextLength = numVertices;
     }
 
-    function emptyVertices(x, y, z, v) {
+    function emptyVertices() {
         allXs = [];
         allYs = [];
         allZs = [];
@@ -833,7 +833,7 @@ function generateIsosurfaceMesh(data) {
     });
 
     // remove vertices arrays (i.e. grid points) in case no faces was created created.
-    if(numFaces === 0)  {
+    if(numFaces === 0) {
         emptyVertices();
     }
 
