@@ -335,6 +335,21 @@ describe('Test box hover:', function() {
             '(q1: 0.5, day 2)', '(q3: 0.9, day 2)', '(median: 0.7, day 2)'],
         name: ['', '', '', '', '', 'carrots'],
         hOrder: [0, 4, 5, 1, 3, 2]
+    }, {
+        desc: 'on boxpoints with numeric positions | hovermode:closest',
+        mock: {
+            data: [{
+                type: 'box',
+                boxpoints: 'all',
+                jitter: 0,
+                x: [2, 2, 2, 2, 2],
+                y: [13.1, 14.2, 14, 13, 13.3]
+            }],
+            layout: {hovermode: 'closest'}
+        },
+        pos: [202, 335],
+        nums: '(2, 13.1)',
+        name: ''
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);

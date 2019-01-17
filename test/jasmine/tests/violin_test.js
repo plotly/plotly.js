@@ -523,6 +523,22 @@ describe('Test violin hover:', function() {
         ],
         name: ['', '', '', '', 'kale'],
         hOrder: [0, 3, 4, 2, 1]
+    }, {
+        desc: 'on points with numeric positions | orientation:h | hovermode:closest',
+        mock: {
+            data: [{
+                type: 'violin',
+                points: 'all',
+                jitter: 0,
+                orientation: 'h',
+                y: [2, 2, 2, 2, 2],
+                x: [13.1, 14.2, 14, 13, 13.3]
+            }],
+            layout: {hovermode: 'closest'}
+        },
+        pos: [417, 309],
+        nums: '(14, 2)',
+        name: ''
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
