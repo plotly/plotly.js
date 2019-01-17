@@ -501,7 +501,9 @@
         }
     }],
     "layout": {
-        "title": "isosurface trace with non-uniform axes & reversed ranges<br>isomin: -200, isomax: null (auto computed)<br><sup>fn(X, Y, Z): sin(TWO_PI * X) + sin(TWO_PI * Y) + sin(TWO_PI * Z)</sup>",
+        "title": {
+            "text": "isosurface trace with non-uniform axes & reversed ranges<br>isomin: -200, isomax: null (auto computed)<br><sup>fn(X, Y, Z): sin(TWO_PI * X) + sin(TWO_PI * Y) + sin(TWO_PI * Z)</sup>"
+        },
         "width": 1200,
         "height": 900,
         "scene": {

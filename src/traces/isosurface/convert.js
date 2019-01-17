@@ -762,25 +762,25 @@ function generateIsosurfaceMesh(data) {
     // insert grid points
     insertGridPoints();
 
-    // draw interior tetras
+    // draw braces
     if(showBrace && braceFill) {
         setFill(braceFill);
 
         drawInteriorTetras(activeStyle, vMin, vMax);
     }
 
-    // draw surfaces
+    var setupMinMax = [
+        [ Math.min(vMin, maxValues), Math.max(vMin, maxValues) ],
+        [ Math.min(minValues, vMax), Math.max(minValues, vMax) ]
+    ];
+
+    // draw iso-surfaces
     if(showSurface && surfaceFill) {
         setFill(surfaceFill);
 
-        drawSurface(activeStyle, vMin, maxValues);
-        drawSurface(activeStyle, minValues, vMax);
+        drawSurface(activeStyle, setupMinMax[0][0], setupMinMax[0][1]);
+        drawSurface(activeStyle, setupMinMax[1][0], setupMinMax[1][1]);
     }
-
-    var setupMinMax = [
-        [ vMin, maxValues ],
-        [ minValues, vMax ]
-    ];
 
     ['x', 'y', 'z'].forEach(function(e) {
         for(var s = 0; s < setupMinMax.length; s++) {
@@ -825,7 +825,6 @@ function generateIsosurfaceMesh(data) {
                 if(e === 'y') drawSectionsY(activeStyle, [0, height - 1], activeMin, activeMax);
                 if(e === 'z') drawSectionsZ(activeStyle, [0, depth - 1], activeMin, activeMax);
             }
-
         }
     });
 

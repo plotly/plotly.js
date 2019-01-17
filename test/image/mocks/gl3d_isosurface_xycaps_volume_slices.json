@@ -741,7 +741,9 @@
         }
     }],
     "layout": {
-        "title": "isosurface trace with volume fill, open xy caps and scene aspect ratio: 2",
+        "title": {
+            "text": "isosurface trace with volume fill, open xy caps and scene aspect ratio: 2"
+        },
         "width": 1200,
         "height": 900,
         "scene": {

@@ -1762,7 +1762,9 @@
         }
     }],
     "layout": {
-        "title": "isosurface trace",
+        "title": {
+            "text": "isosurface trace"
+        },
         "width": 1200,
         "height": 900,
         "scene": {
