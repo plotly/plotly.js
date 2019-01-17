@@ -28,6 +28,17 @@ function makeSliceAttr(axLetter) {
                 'dimension are drawn.'
             ].join(' ')
         },
+        locations: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Specifies the location(s) of slices on the axis [0, n].',
+                'When not locations specified slices would be created for',
+                'all (0, n) i.e. except start and end caps.'
+            ].join(' ')
+        },
         fill: {
             valType: 'number',
             role: 'style',
@@ -35,7 +46,7 @@ function makeSliceAttr(axLetter) {
             max: 1,
             dflt: 1,
             editType: 'calc',
-            description: 'Sets the fill ratio (opacity) of the slices.'
+            description: 'Sets the fill ratio of the interior slices.'
         }
     };
 }
@@ -60,7 +71,7 @@ function makeCapAttr(axLetter) {
             max: 1,
             dflt: 1,
             editType: 'calc',
-            description: 'Sets the fill ratio (opacity) of the caps.'
+            description: 'Sets the fill ratio of the caps.'
         }
     };
 }
@@ -105,7 +116,7 @@ module.exports = extendFlat({
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the minimum boundary for iso-surface or volume plot.'
+            'Sets the minimum boundary for iso-surface plot.'
         ].join(' ')
     },
     isomax: {
@@ -113,7 +124,7 @@ module.exports = extendFlat({
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the maximum boundary for iso-surface or volume plot.'
+            'Sets the maximum boundary for iso-surface plot.'
         ].join(' ')
     },
 
@@ -136,11 +147,11 @@ module.exports = extendFlat({
             max: 1,
             dflt: 1,
             editType: 'calc',
-            description: 'Sets the fill ratio (opacity) of the iso-surface.'
+            description: 'Sets the fill ratio of the iso-surface.'
         }
     },
 
-    volume: {
+    brace: {
         editType: 'calc',
         show: {
             valType: 'boolean',
@@ -148,9 +159,8 @@ module.exports = extendFlat({
             editType: 'calc',
             dflt: false,
             description: [
-                'Displays/hides volume between minimum and maximum iso-values.',
-                'When being enabled, lower \'surfacefill\' value could often be applied',
-                'to view volume plot.'
+                'Displays/hides tetrahedron shapes between minimum and maximum iso-values.',
+                'When being enabled, lower \'surfacefill\' value could often be applied'
             ].join(' ')
         },
         fill: {
@@ -160,7 +170,7 @@ module.exports = extendFlat({
             max: 1,
             dflt: 0.15,
             editType: 'calc',
-            description: 'Sets the fill ratio (opacity) of the iso-volume.'
+            description: 'Sets the fill ratio of the interior braces (tetrahedron fills).'
         }
     },
 

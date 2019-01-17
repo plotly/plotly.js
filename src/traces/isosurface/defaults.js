@@ -48,22 +48,23 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     ['x', 'y', 'z'].forEach(function(dim) {
 
-        var sliceDim = 'slices.' + dim;
-        var showSlice = coerce(sliceDim + '.show');
-        if(showSlice) {
-            coerce(sliceDim + '.fill');
-        }
-
         var capDim = 'caps.' + dim;
         var showCap = coerce(capDim + '.show');
         if(showCap) {
             coerce(capDim + '.fill');
         }
+
+        var sliceDim = 'slices.' + dim;
+        var showSlice = coerce(sliceDim + '.show');
+        if(showSlice) {
+            coerce(sliceDim + '.fill');
+            coerce(sliceDim + '.locations');
+        }
     });
 
-    var showVolume = coerce('volume.show');
-    if(showVolume) {
-        coerce('volume.fill');
+    var showBrace = coerce('brace.show');
+    if(showBrace) {
+        coerce('brace.fill');
     }
 
     var showSurface = coerce('surface.show');

@@ -4,9 +4,9 @@
         "colorscale": "Portland",
         "reversescale": false,
         "surface": { "show": true, "fill": 0.8 },
-        "volume": { "show": false },
+        "brace": { "show": false },
         "slices": {
-            "x": { "show": false },
+            "x": { "show": true, "fill": 1, "locations": [0, -0.45, -0.9, -1.8] },
             "y": { "show": false },
             "z": { "show": true, "fill": 1 }
         },
@@ -501,7 +501,7 @@
         }
     }],
     "layout": {
-        "title": "Spherical isosurface trace on logarithmic axes with horizontal slices and caps enabled",
+        "title": "Spherical isosurface trace on logarithmic axes with horizontal caps & slices as well as vertical slices on desired locations",
         "width": 1200,
         "height": 900,
         "scene": {

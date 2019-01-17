@@ -26,14 +26,14 @@ function IsosurfaceTrace(scene, mesh, uid) {
 
 var proto = IsosurfaceTrace.prototype;
 
-proto.findNearestOnAxis = function(w, arr) {
+function findNearestOnAxis(w, arr) {
     for(var q = arr.length - 1; q > 0; q--) {
         var min = Math.min(arr[q], arr[q - 1]);
         var max = Math.max(arr[q], arr[q - 1]);
         if(w <= max && w > min) return q;
     }
     return 0;
-};
+}
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
@@ -44,9 +44,9 @@ proto.handlePick = function(selection) {
         var y = this.data.y[rawId];
         var z = this.data.z[rawId];
 
-        var i = this.findNearestOnAxis(x, this.data._Xs);
-        var j = this.findNearestOnAxis(y, this.data._Ys);
-        var k = this.findNearestOnAxis(z, this.data._Zs);
+        var i = findNearestOnAxis(x, this.data._Xs);
+        var j = findNearestOnAxis(y, this.data._Ys);
+        var k = findNearestOnAxis(z, this.data._Zs);
 
         var width = this.data._Xs.length;
         var height = this.data._Ys.length;
@@ -125,13 +125,13 @@ proto.dispose = function() {
 function generateIsosurfaceMesh(data) {
 
     var showSurface = data.surface.show;
-    var showVolume = data.volume.show;
+    var showBrace = data.brace.show;
 
     var surfaceFill = data.surface.fill;
-    var volumeFill = data.volume.fill;
+    var braceFill = data.brace.fill;
 
     var drawingSurface = false;
-    var drawingVolume = false;
+    var drawingBrace = false;
     var drawingEdge = false;
 
     data.i = [];
@@ -504,7 +504,7 @@ function generateIsosurfaceMesh(data) {
         }
 
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
-            if(drawingVolume) {
+            if(drawingBrace) {
                 drawTetra(style, xyzv, abcd);
             }
             return interpolated;
@@ -522,7 +522,7 @@ function generateIsosurfaceMesh(data) {
                 var C = xyzv[e[2]];
                 var D = xyzv[e[3]];
 
-                if(drawingVolume) {
+                if(drawingBrace) {
                     drawTri(style, [A, B, C], [abcd[e[0]], abcd[e[1]], abcd[e[2]]]);
                 } else {
                     var p1 = calcIntersection(D, A, min, max);
@@ -556,7 +556,7 @@ function generateIsosurfaceMesh(data) {
                 var p3 = calcIntersection(D, B, min, max);
                 var p4 = calcIntersection(D, A, min, max);
 
-                if(drawingVolume) {
+                if(drawingBrace) {
                     drawTri(style, [A, p4, p1], [abcd[e[0]], -1, -1]);
                     drawTri(style, [B, p2, p3], [abcd[e[1]], -1, -1]);
                 } else {
@@ -584,7 +584,7 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(C, A, min, max);
                 var p3 = calcIntersection(D, A, min, max);
 
-                if(drawingVolume) {
+                if(drawingBrace) {
                     drawTri(style, [A, p1, p2], [abcd[e[0]], -1, -1]);
                     drawTri(style, [A, p2, p3], [abcd[e[0]], -1, -1]);
                     drawTri(style, [A, p3, p1], [abcd[e[0]], -1, -1]);
@@ -611,7 +611,7 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        if(drawingVolume) {
+        if(drawingBrace) {
             tryCreateTetra(style, [p001, p010, p100, p111], min, max);
         }
     }
@@ -691,8 +691,8 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawVolume(style, min, max) {
-        drawingVolume = true;
+    function drawInteriorTetras(style, min, max) {
+        drawingBrace = true;
         for(var k = 1; k < depth; k++) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
@@ -712,7 +712,7 @@ function generateIsosurfaceMesh(data) {
                 }
             }
         }
-        drawingVolume = false;
+        drawingBrace = false;
     }
 
     function drawSurface(style, min, max) {
@@ -762,11 +762,11 @@ function generateIsosurfaceMesh(data) {
     // insert grid points
     insertGridPoints();
 
-    // draw volume
-    if(showVolume && volumeFill) {
-        setFill(volumeFill);
+    // draw interior tetras
+    if(showBrace && braceFill) {
+        setFill(braceFill);
 
-        drawVolume(activeStyle, vMin, vMax);
+        drawInteriorTetras(activeStyle, vMin, vMax);
     }
 
     // draw surfaces
@@ -794,9 +794,27 @@ function generateIsosurfaceMesh(data) {
             var slice = data.slices[e];
             if(slice.show && slice.fill) {
                 setFill(slice.fill);
-                if(e === 'x') drawSectionsX(activeStyle, createRange(1, width - 1), activeMin, activeMax);
-                if(e === 'y') drawSectionsY(activeStyle, createRange(1, height - 1), activeMin, activeMax);
-                if(e === 'z') drawSectionsZ(activeStyle, createRange(1, depth - 1), activeMin, activeMax);
+
+                var indices = [];
+                if(slice.locations.length) {
+                    for(var q = 0; q < slice.locations.length; q++) {
+                        indices.push(
+                            findNearestOnAxis(
+                                slice.locations[q],
+                                (e === 'x') ? Xs :
+                                (e === 'y') ? Ys : Zs
+                            )
+                        );
+                    }
+                } else {
+                    if(e === 'x') indices = createRange(1, width - 1);
+                    if(e === 'y') indices = createRange(1, height - 1);
+                    if(e === 'z') indices = createRange(1, depth - 1);
+                }
+
+                if(e === 'x') drawSectionsX(activeStyle, indices, activeMin, activeMax);
+                if(e === 'y') drawSectionsY(activeStyle, indices, activeMin, activeMax);
+                if(e === 'z') drawSectionsZ(activeStyle, indices, activeMin, activeMax);
             }
 
             // draw caps
