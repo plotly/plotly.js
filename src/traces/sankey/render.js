@@ -276,8 +276,10 @@ function nodeModel(d, n, i) {
     var tc = tinycolor(n.color);
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
-    var visibleThickness = n.x1 - n.x0;
-    var visibleLength = Math.max(0.5, (n.y1 - n.y0));
+    n.dx = n.x1 - n.x0;
+    n.dy = n.y1 - n.y0;
+    var visibleThickness = n.dx;
+    var visibleLength = Math.max(0.5, n.dy);
 
     var basicKey = n.label;
     var key = basicKey + '__' + i;
@@ -285,10 +287,6 @@ function nodeModel(d, n, i) {
     // for event data
     n.trace = d.trace;
     n.curveNumber = d.trace.index;
-
-    // additionnal coordinates
-    n.dx = n.x1 - n.x0;
-    n.dy = n.y1 - n.y0;
 
     return {
         index: n.pointNumber,
@@ -370,7 +368,7 @@ function textFlip(d) {return d.horizontal ? 'scale(1 1)' : 'scale(-1 1)';}
 function nodeTextColor(d) {return d.darkBackground && !d.horizontal ? 'rgb(255,255,255)' : 'rgb(0,0,0)';}
 function nodeTextOffset(d) {return d.horizontal && d.left ? '100%' : '0%';}
 
-// // event handling
+// event handling
 
 function attachPointerEvents(selection, sankey, eventSet) {
     selection
@@ -447,9 +445,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 if(d.arrangement === 'freeform') {
                     d.node.x0 = x - d.visibleWidth / 2;
                     d.node.x1 = x + d.visibleWidth / 2;
-                    // d.x0 = x;
                 }
-                // d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
                 d.node.y0 = Math.max(0, Math.min(d.size - d.visibleHeight, y));
                 d.node.y1 = d.node.y0 + d.visibleHeight;
             }
