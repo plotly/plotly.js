@@ -120,6 +120,7 @@ function linkModel(d, l, i) {
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
+        parent: d,
         interactionState: d.interactionState
     };
 }
