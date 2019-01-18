@@ -124,11 +124,130 @@ function linkModel(d, l, i) {
     };
 }
 
+function createCircularClosedPathString(link) {
+    // Using coordinates computed by d3-sankey-circular
+    var pathString = '';
+    var offset = link.width / 2;
+    var coords = link.circularPathData;
+    if(link.circularLinkType === 'top') {
+        // Top path
+        pathString =
+          // start at the left of the target node
+          'M ' +
+          coords.targetX + ' ' + (coords.targetY + offset) + ' ' +
+          'L' +
+          coords.rightInnerExtent + ' ' + (coords.targetY + offset) +
+          'A' +
+          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 1 ' +
+          (coords.rightFullExtent - offset) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
+          'L' +
+          (coords.rightFullExtent - offset) + ' ' + coords.verticalRightInnerExtent +
+          'A' +
+          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 1 ' +
+          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          'L' +
+          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          'A' +
+          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 1 ' +
+          (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent +
+          'L' +
+          (coords.leftFullExtent + offset) + ' ' + (coords.sourceY - coords.leftSmallArcRadius) +
+          'A' +
+          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 1 ' +
+          coords.leftInnerExtent + ' ' + (coords.sourceY + offset) +
+          'L' +
+          coords.sourceX + ' ' + (coords.sourceY + offset) +
+
+          // Walking back
+          'L' +
+          coords.sourceX + ' ' + (coords.sourceY - offset) +
+          'L' +
+          coords.leftInnerExtent + ' ' + (coords.sourceY - offset) +
+          'A' +
+          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftSmallArcRadius - offset) + ' 0 0 0 ' +
+          (coords.leftFullExtent - offset) + ' ' + (coords.sourceY - coords.leftSmallArcRadius) +
+          'L' +
+          (coords.leftFullExtent - offset) + ' ' + coords.verticalLeftInnerExtent +
+          'A' +
+          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 0 ' +
+          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          'L' +
+          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          'A' +
+          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 0 ' +
+          (coords.rightFullExtent + offset) + ' ' + coords.verticalRightInnerExtent +
+          'L' +
+          (coords.rightFullExtent + offset) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
+          'A' +
+          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 0 ' +
+          coords.rightInnerExtent + ' ' + (coords.targetY - offset) +
+          'L' +
+          coords.targetX + ' ' + (coords.targetY - offset) +
+          'Z';
+    } else {
+        // Bottom path
+        pathString =
+          // start at the left of the target node
+          'M ' +
+          coords.targetX + ' ' + (coords.targetY - offset) + ' ' +
+          'L' +
+          coords.rightInnerExtent + ' ' + (coords.targetY - offset) +
+          'A' +
+          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 0 ' +
+          (coords.rightFullExtent - offset) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
+          'L' +
+          (coords.rightFullExtent - offset) + ' ' + coords.verticalRightInnerExtent +
+          'A' +
+          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' +
+          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          'L' +
+          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          'A' +
+          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 0 ' +
+          (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent +
+          'L' +
+          (coords.leftFullExtent + offset) + ' ' + (coords.sourceY + coords.leftSmallArcRadius) +
+          'A' +
+          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 0 ' +
+          coords.leftInnerExtent + ' ' + (coords.sourceY - offset) +
+          'L' +
+          coords.sourceX + ' ' + (coords.sourceY - offset) +
+
+          // Walking back
+          'L' +
+          coords.sourceX + ' ' + (coords.sourceY + offset) +
+          'L' +
+          coords.leftInnerExtent + ' ' + (coords.sourceY + offset) +
+          'A' +
+          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftSmallArcRadius - offset) + ' 0 0 1 ' +
+          (coords.leftFullExtent - offset) + ' ' + (coords.sourceY + coords.leftSmallArcRadius) +
+          'L' +
+          (coords.leftFullExtent - offset) + ' ' + coords.verticalLeftInnerExtent +
+          'A' +
+          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 1 ' +
+          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          'L' +
+          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          'A' +
+          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 1 ' +
+          (coords.rightFullExtent + offset) + ' ' + coords.verticalRightInnerExtent +
+          'L' +
+          (coords.rightFullExtent + offset) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
+          'A' +
+          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' +
+          coords.rightInnerExtent + ' ' + (coords.targetY + offset) +
+          'L' +
+          coords.targetX + ' ' + (coords.targetY + offset) +
+          'Z';
+    }
+    return pathString;
+}
+
 function linkPath() {
     var curvature = 0.5;
     function path(d) {
-        if(d.circular) {
-            return d.link.path; // TODO: turn this into a closed path to support link.line.(width|color)
+        if(d.link.circular) {
+            return createCircularClosedPathString(d.link);
         } else {
             var x0 = d.link.source.x1;
             var x1 = d.link.target.x0;
@@ -502,21 +621,18 @@ module.exports = function(svg, calcData, layout, callbacks) {
 
     sankeyLink
         .style('stroke', function(d) {
-            if(!d.circular) return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
-            return d.tinyColorHue;
+            return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
         })
         .style('stroke-opacity', function(d) {
-            if(!d.circular) return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
-            return d.tinyColorAlpha;
+            return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
         })
         .style('fill', function(d) {
-            if(!d.circular) return d.tinyColorHue;
+            return d.tinyColorHue;
         })
         .style('fill-opacity', function(d) {
-            if(!d.circular) return d.tinyColorAlpha;
+            return d.tinyColorAlpha;
         })
         .style('stroke-width', function(d) {
-            if(d.circular) return d.link.width;
             return salientEnough(d) ? d.linkLineWidth : 1;
         });
 

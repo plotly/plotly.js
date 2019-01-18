@@ -177,8 +177,7 @@ var attrs = module.exports = overrideAll({
                 dflt: colorAttrs.defaultLine,
                 arrayOk: true,
                 description: [
-                    'Sets the color of the `line` around each `link`.',
-                    'Note that in the presence of circular links this attribute is ignored.'
+                    'Sets the color of the `line` around each `link`.'
                 ].join(' ')
             },
             width: {
@@ -188,8 +187,7 @@ var attrs = module.exports = overrideAll({
                 dflt: 0,
                 arrayOk: true,
                 description: [
-                    'Sets the width (in px) of the `line` around each `link`.',
-                    'Note that in the presence of circular links this attribute is ignored.'
+                    'Sets the width (in px) of the `line` around each `link`.'
                 ].join(' ')
             }
         },
