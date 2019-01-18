@@ -36,7 +36,10 @@ function makeSliceAttr(axLetter) {
             description: [
                 'Specifies the location(s) of slices on the axis [0, n].',
                 'When not locations specified slices would be created for',
-                'all (0, n) i.e. except start and end caps.'
+                'all (0, n) i.e. except start and end caps. Please note that',
+                'if a location do not match the point on the (x|y|z) axis,',
+                'the slicing plane would simply be located on the closest',
+                'point on the axis in question (no interpolation on the axis).'
             ].join(' ')
         },
         fill: {
