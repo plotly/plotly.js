@@ -159,7 +159,7 @@ module.exports = extendFlat({
         }
     },
 
-    brace: {
+    spaceframe: {
         editType: 'calc',
         show: {
             valType: 'boolean',
@@ -179,7 +179,7 @@ module.exports = extendFlat({
             max: 1,
             dflt: 0.15,
             editType: 'calc',
-            description: 'Sets the fill ratio of the interior braces (tetrahedron fills).'
+            description: 'Sets the fill ratio of the interior spaceframes (tetrahedron fills).'
         }
     },
 

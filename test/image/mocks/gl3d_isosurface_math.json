@@ -4,7 +4,7 @@
         "colorscale": "Reds",
         "reversescale": false,
         "surface": { "show": true, "fill": 0.4 },
-        "brace": { "show": true, "fill": 0.1 },
+        "spaceframe": { "show": true, "fill": 0.1 },
         "slices": {
             "x": { "show": false, "fill": 0.5 },
             "y": { "show": false, "fill": 0.5 },

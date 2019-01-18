@@ -4,7 +4,7 @@
         "colorscale": "Blues",
         "reversescale": true,
         "surface": { "show": true, "fill": 1.0, "pattern": "AC" },
-        "brace": { "show": false },
+        "spaceframe": { "show": false },
         "slices": {
             "x": { "show": false },
             "y": { "show": false },

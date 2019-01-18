@@ -4,7 +4,7 @@
         "colorscale": "Portland",
         "reversescale": false,
         "surface": { "show": true, "fill": 0.8 },
-        "brace": { "show": false },
+        "spaceframe": { "show": false },
         "slices": {
             "x": { "show": true, "fill": 1, "locations": [-10] },
             "y": { "show": true, "fill": 1, "locations": [-10] },

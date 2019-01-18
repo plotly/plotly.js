@@ -63,9 +63,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     });
 
-    var showBrace = coerce('brace.show');
-    if(showBrace) {
-        coerce('brace.fill');
+    var showSpaceframe = coerce('spaceframe.show');
+    if(showSpaceframe) {
+        coerce('spaceframe.fill');
     }
 
     var showSurface = coerce('surface.show');

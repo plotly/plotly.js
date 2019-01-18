@@ -125,13 +125,13 @@ proto.dispose = function() {
 function generateIsosurfaceMesh(data) {
 
     var showSurface = data.surface.show;
-    var showBrace = data.brace.show;
+    var showSpaceframe = data.spaceframe.show;
 
     var surfaceFill = data.surface.fill;
-    var braceFill = data.brace.fill;
+    var spaceframeFill = data.spaceframe.fill;
 
     var drawingSurface = false;
-    var drawingBrace = false;
+    var drawingSpaceframe = false;
     var drawingEdge = false;
 
     data.i = [];
@@ -512,7 +512,7 @@ function generateIsosurfaceMesh(data) {
         }
 
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
-            if(drawingBrace) {
+            if(drawingSpaceframe) {
                 drawTetra(style, xyzv, abcd);
             }
             return interpolated;
@@ -530,7 +530,7 @@ function generateIsosurfaceMesh(data) {
                 var C = xyzv[e[2]];
                 var D = xyzv[e[3]];
 
-                if(drawingBrace) {
+                if(drawingSpaceframe) {
                     drawTri(style, [A, B, C], [abcd[e[0]], abcd[e[1]], abcd[e[2]]]);
                 } else {
                     var p1 = calcIntersection(D, A, min, max);
@@ -566,7 +566,7 @@ function generateIsosurfaceMesh(data) {
                 var p3 = calcIntersection(D, B, min, max);
                 var p4 = calcIntersection(D, A, min, max);
 
-                if(drawingBrace) {
+                if(drawingSpaceframe) {
                     drawTri(style, [A, p4, p1], [abcd[e[0]], -1, -1]);
                     drawTri(style, [B, p2, p3], [abcd[e[1]], -1, -1]);
                 } else {
@@ -596,7 +596,7 @@ function generateIsosurfaceMesh(data) {
                 var p2 = calcIntersection(C, A, min, max);
                 var p3 = calcIntersection(D, A, min, max);
 
-                if(drawingBrace) {
+                if(drawingSpaceframe) {
                     drawTri(style, [A, p1, p2], [abcd[e[0]], -1, -1]);
                     drawTri(style, [A, p2, p3], [abcd[e[0]], -1, -1]);
                     drawTri(style, [A, p3, p1], [abcd[e[0]], -1, -1]);
@@ -625,7 +625,7 @@ function generateIsosurfaceMesh(data) {
             }
         }
 
-        if(drawingBrace) {
+        if(drawingSpaceframe) {
             tryCreateTetra(style, [p001, p010, p100, p111], min, max);
         }
     }
@@ -708,8 +708,8 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawInteriorTetras(style, min, max) {
-        drawingBrace = true;
+    function drawSpaceframe(style, min, max) {
+        drawingSpaceframe = true;
         for(var k = 1; k < depth; k++) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
@@ -729,7 +729,7 @@ function generateIsosurfaceMesh(data) {
                 }
             }
         }
-        drawingBrace = false;
+        drawingSpaceframe = false;
     }
 
     function drawSurface(style, min, max) {
@@ -779,11 +779,11 @@ function generateIsosurfaceMesh(data) {
     // insert grid points
     insertGridPoints();
 
-    // draw braces
-    if(showBrace && braceFill) {
-        setFill(braceFill);
+    // draw spaceframes
+    if(showSpaceframe && spaceframeFill) {
+        setFill(spaceframeFill);
 
-        drawInteriorTetras(activeStyle, vMin, vMax);
+        drawSpaceframe(activeStyle, vMin, vMax);
     }
 
     var setupMinMax = [

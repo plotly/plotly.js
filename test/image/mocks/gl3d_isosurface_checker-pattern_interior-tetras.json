@@ -4,7 +4,7 @@
         "colorscale": "Blackbody",
         "reversescale": true,
         "surface": { "show": true, "fill": 1.0, "pattern": "checker1" },
-        "brace": { "show": true, "fill": 0.25 },
+        "spaceframe": { "show": true, "fill": 0.25 },
         "slices": {
             "x": { "show": false },
             "y": { "show": false },
