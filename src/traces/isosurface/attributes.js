@@ -36,9 +36,9 @@ function makeSliceAttr(axLetter) {
                 'Specifies the location(s) of slices on the axis [0, n].',
                 'When not locations specified slices would be created for',
                 'all (0, n) i.e. except start and end caps. Please note that',
-                'if a location do not match the point on the (x|y|z) axis,',
+                'if a location do not match the point on the', axLetter, 'axis,',
                 'the slicing plane would simply be located on the closest',
-                'point on the axis in question (no interpolation on the axis).'
+                'point on the axis (does not interpolate on the axis).'
             ].join(' ')
         },
         fill: {
@@ -64,7 +64,7 @@ function makeCapAttr(axLetter) {
             role: 'info',
             dflt: true,
             description: [
-                'Sets the fill ratio of the `slices`. The default fill value of the',
+                'Sets the fill ratio of the `slices`. The default fill value of the', axLetter,
                 '`slices` is 1 meaning that they are entirely shaded. On the other hand',
                 'Applying a `fill` ratio less than one would allow the creation of',
                 'openings parallel to the edges.'
@@ -169,7 +169,14 @@ var attrs = module.exports = overrideAll(extendFlat({
             values: ['all', 'checker1', 'checker2', 'A', 'B', 'C', 'AB', 'AC', 'BC', 'ABC'],
             dflt: 'all',
             role: 'style',
-            description: 'Sets the fill ratio of the iso-surface.'
+            description: [
+                'Sets the surface pattern of the iso-surface 3-D sections. The default pattern of',
+                'the surface is `all` meaning that the rest of surface elements would be shaded.',
+                'The checker options (either 1 or 2) could be used to draw half of the squares',
+                'on the surface. Using various combinations of capital `A`, `B`, and `C` may also',
+                'be used to reduce the number of triangles on the iso-surfaces and creating other',
+                'patterns of interest.'
+            ].join(' ')
         }
     },
 

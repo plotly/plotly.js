@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 // var Lib = require('@src/lib');
 
+var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -49,73 +50,110 @@ describe('Test isosurface', function() {
 
     var gd;
 
-    beforeEach(function() {
-        gd = createGraphDiv();
-    });
-
-    afterEach(function() {
-        Plotly.purge(gd);
-        destroyGraphDiv();
-    });
-
-    function assertVisibility(exp, msg) {
-        expect(gd._fullData[0]).not.toBe(undefined, 'no visibility!');
-        expect(gd._fullData[0].visible).toBe(exp, msg);
-    }
-
-    function assertPositions(exp, msg) {
-        expect(gd._fullLayout.scene._scene.glplot.objects[0].positions.length).toBe(exp, msg);
-    }
-
-    function assertCells(exp, msg) {
-        expect(gd._fullLayout.scene._scene.glplot.objects[0].cells.length).toBe(exp, msg);
-    }
-
-
     describe('defaults', function() {
 
-        it('@gl isosurface should not set `visible: false` for traces with x,y,z,value arrays', function(done) {
-            Plotly.plot(gd, createIsosurfaceFig())
-            .then(function() {
-                assertVisibility(true, 'to be visible');
-            })
-            .catch(failTest)
-            .then(done);
+        function assertVisibility(exp, msg) {
+            expect(gd._fullData[0]).not.toBe(undefined, 'no visibility!');
+            expect(gd._fullData[0].visible).toBe(exp, msg);
+        }
+
+        it('@gl isosurface should not set `visible: false` for traces with x,y,z,value arrays', function() {
+            gd = createIsosurfaceFig();
+
+            supplyAllDefaults(gd);
+            assertVisibility(true, 'to be visible');
         });
 
-        it('@gl isosurface should set `visible: false` for traces missing x,y,z,value arrays', function(done) {
+        it('@gl isosurface should set `visible: false` for traces missing x,y,z,value arrays', function() {
             var keysToChange = ['x', 'y', 'z', 'value'];
 
             keysToChange.forEach(function(k) {
-                var fig = createIsosurfaceFig();
-                delete fig.data[0][k];
+                gd = createIsosurfaceFig();
+                delete gd.data[0][k];
 
-                Plotly.plot(gd, fig)
-                .then(function() {
-                    assertVisibility(false, 'to be invisible after changing key: ' + keysToChange[k]);
-                })
-
-                .catch(failTest)
-                .then(done);
+                supplyAllDefaults(gd);
+                assertVisibility(false, 'to be invisible after changing key: ' + keysToChange[k]);
             });
         });
 
-        it('@gl isosurface should set `visible: false` for traces with empty x,y,z,value arrays', function(done) {
+        it('@gl isosurface should set `visible: false` for traces with empty x,y,z,value arrays', function() {
             var keysToChange = ['x', 'y', 'z', 'value'];
 
             keysToChange.forEach(function(k) {
-                var fig = createIsosurfaceFig();
-                fig.data[0][k] = [];
+                gd = createIsosurfaceFig();
+                gd.data[0][k] = [];
 
-                Plotly.plot(gd, fig)
-                .then(function() {
-                    assertVisibility(false, 'to be invisible after changing key: ' + keysToChange[k]);
-                })
-
-                .catch(failTest)
-                .then(done);
+                supplyAllDefaults(gd);
+                assertVisibility(false, 'to be invisible after changing key: ' + keysToChange[k]);
             });
         });
+
+        it('@gl isosurface should be invisible when the vertex arrays are not arrays', function() {
+            var keysToChange = ['x', 'y', 'z', 'value'];
+            var casesToCheck = [0, 1, true, false, NaN, Infinity, -Infinity, null, undefined, [], {}, '', 'text'];
+
+            keysToChange.forEach(function(k) {
+                for(var q = 0; q < casesToCheck.length; q++) {
+                    gd = createIsosurfaceFig();
+                    gd.data[0][k] = casesToCheck[q];
+
+                    supplyAllDefaults(gd);
+                    assertVisibility(false, 'to be invisible after changing key: ' + keysToChange[k]) + ' to: ' + casesToCheck[q];
+                }
+            });
+        });
+
+        it('@gl isosurface should not set `visible: false` when isomin > isomax', function() {
+            gd = createIsosurfaceFig();
+            gd.data[0].isomin = 0.9;
+            gd.data[0].isomax = 0.1;
+
+            supplyAllDefaults(gd);
+            assertVisibility(true, 'to be visible');
+        });
+
+        it('@gl isosurface should set `isomin: null` and `isomax: null` when isomin > isomax', function() {
+            gd = createIsosurfaceFig();
+            gd.data[0].isomin = 0.9;
+            gd.data[0].isomax = 0.1;
+
+            supplyAllDefaults(gd);
+            expect(gd._fullData[0].isomin).toBe(null, 'isomin not set to default');
+            expect(gd._fullData[0].isomax).toBe(null, 'isomax not set to default');
+        });
+
+        it('@gl isosurface should accept cases where isomin === isomax', function() {
+            gd = createIsosurfaceFig();
+            gd.data[0].isomin = 1e-2;
+            gd.data[0].isomax = 0.01;
+
+            supplyAllDefaults(gd);
+            expect(gd._fullData[0].isomin).not.toBe(null, 'isomin not set');
+            expect(gd._fullData[0].isomax).not.toBe(null, 'isomax not set');
+        });
+
+    });
+
+    describe('mesh_generation', function() {
+
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
+
+        function assertPositions(exp, msg) {
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].positions.length).toBe(exp, msg);
+        }
+
+        function assertCells(exp, msg) {
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].cells.length).toBe(exp, msg);
+        }
 
         it('@gl isosurface should create no iso-surface and set `gl-positions: []` for traces when all the data is between isomin and isomax', function(done) {
             var fig = createIsosurfaceFig();
@@ -159,74 +197,20 @@ describe('Test isosurface', function() {
             .then(done);
         });
 
-        it('@gl isosurface should be invisible when the vertex arrays are not arrays', function(done) {
-
-            var keysToChange = ['x', 'y', 'z', 'value'];
-            var casesToCheck = [0, 1, true, false, NaN, Infinity, -Infinity, null, undefined, [], {}, '', 'text'];
-
-            function _testUsing(k, q) {
-                assertVisibility(false, 'to be invisible after changing key: ' + keysToChange[k]) + ' to: ' + casesToCheck[q];
-            }
-
-            keysToChange.forEach(function(k) {
-                for(var q = 0; q < casesToCheck.length; q++) {
-
-                    var fig = createIsosurfaceFig();
-                    fig.data[0][k] = casesToCheck[q];
-
-                    Plotly.plot(gd, fig)
-                    .then(_testUsing)
-                    .catch(failTest)
-                    .then(done);
-                }
-            });
-        });
-
-        it('@gl isosurface should not set `visible: false` when isomin > isomax', function(done) {
-            var fig = createIsosurfaceFig();
-            fig.data[0].isomin = 0.9;
-            fig.data[0].isomax = 0.1;
-
-            Plotly.plot(gd, createIsosurfaceFig())
-            .then(function() {
-                assertVisibility(true, 'to be visible');
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('@gl isosurface should set `isomin: null` and `isomax: null` when isomin > isomax', function(done) {
-            var fig = createIsosurfaceFig();
-            fig.data[0].isomin = 0.9;
-            fig.data[0].isomax = 0.1;
-
-            Plotly.plot(gd, fig)
-            .then(function() {
-                expect(gd._fullData[0].isomin).toBe(null, 'isomin not set to default');
-                expect(gd._fullData[0].isomax).toBe(null, 'isomax not set to default');
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('@gl isosurface should accept cases where isomin === isomax', function(done) {
-            var fig = createIsosurfaceFig();
-            fig.data[0].isomin = 1e-2;
-            fig.data[0].isomax = 0.01;
-
-            Plotly.plot(gd, fig)
-            .then(function() {
-                expect(gd._fullData[0].isomin).not.toBe(null, 'isomin not set');
-                expect(gd._fullData[0].isomax).not.toBe(null, 'isomax not set');
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
     });
 
-
     describe('restyle', function() {
+
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
 
         it('should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
 
