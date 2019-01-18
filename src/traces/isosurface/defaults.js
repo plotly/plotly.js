@@ -70,6 +70,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var showSurface = coerce('surface.show');
     if(showSurface) {
+        coerce('surface.count');
         coerce('surface.fill');
         coerce('surface.pattern');
     }

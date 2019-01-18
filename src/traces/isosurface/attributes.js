@@ -140,6 +140,18 @@ module.exports = extendFlat({
                 'Hides/displays surfaces between minimum and maximum iso-values.'
             ].join(' ')
         },
+        count: {
+            valType: 'integer',
+            role: 'info',
+            editType: 'calc',
+            dflt: 2,
+            min: 1,
+            description: [
+                'Sets the number of iso-surfaces between minimum and maximum iso-values.',
+                'By default this value is 2 meaning that only minimum and maximum surfaces',
+                'would be drawn.'
+            ].join(' ')
+        },
         fill: {
             valType: 'number',
             role: 'style',

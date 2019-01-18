@@ -124,6 +124,10 @@ proto.dispose = function() {
 
 function generateIsosurfaceMesh(data) {
 
+    data.i = [];
+    data.j = [];
+    data.k = [];
+
     var showSurface = data.surface.show;
     var showSpaceframe = data.spaceframe.show;
 
@@ -134,19 +138,9 @@ function generateIsosurfaceMesh(data) {
     var drawingSpaceframe = false;
     var drawingEdge = false;
 
-    data.i = [];
-    data.j = [];
-    data.k = [];
-
     var numFaces = 0;
     var numVertices;
     var beginVertextLength;
-
-    var allXs;
-    var allYs;
-    var allZs;
-    var allVs;
-    emptyVertices();
 
     var width = data.x.length;
     var height = data.y.length;
@@ -156,31 +150,17 @@ function generateIsosurfaceMesh(data) {
         return i + width * j + width * height * k;
     }
 
-    var Xs = [];
-    var Ys = [];
-    var Zs = [];
-
-    function fillXs() {
-        for(var i = 0; i < width; i++) {
-            Xs[i] = data.x[i];
+    function copyElements(src) {
+        var dst = [];
+        for(var i = 0; i < src.length; i++) {
+            dst[i] = src[i];
         }
+        return dst;
     }
 
-    function fillYs() {
-        for(var j = 0; j < height; j++) {
-            Ys[j] = data.y[j];
-        }
-    }
-
-    function fillZs() {
-        for(var k = 0; k < depth; k++) {
-            Zs[k] = data.z[k];
-        }
-    }
-
-    fillXs();
-    fillYs();
-    fillZs();
+    var Xs = copyElements(data.x);
+    var Ys = copyElements(data.y);
+    var Zs = copyElements(data.z);
 
     var minValues = data._minValues;
     var maxValues = data._maxValues;
@@ -188,11 +168,10 @@ function generateIsosurfaceMesh(data) {
     var vMin = data._vMin;
     var vMax = data._vMax;
 
-    if(vMin > vMax) {
-        var vTmp = vMin;
-        vMin = vMax;
-        vMax = vTmp;
-    }
+    var allXs;
+    var allYs;
+    var allZs;
+    var allVs;
 
     function findVertexId(x, y, z) {
         // could be used to find the vertex id of previously generated vertex within the group
@@ -774,92 +753,111 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    var activeStyle = null;
+    function voidMain() {
 
-    // insert grid points
-    insertGridPoints();
+        emptyVertices();
 
-    // draw spaceframes
-    if(showSpaceframe && spaceframeFill) {
-        setFill(spaceframeFill);
+        // insert grid points
+        insertGridPoints();
 
-        drawSpaceframe(activeStyle, vMin, vMax);
-    }
+        var activeStyle = null;
 
-    var setupMinMax = [
-        [ Math.min(vMin, maxValues), Math.max(vMin, maxValues) ],
-        [ Math.min(minValues, vMax), Math.max(minValues, vMax) ]
-    ];
+        // draw spaceframes
+        if(showSpaceframe && spaceframeFill) {
+            setFill(spaceframeFill);
 
-    // draw iso-surfaces
-    if(showSurface && surfaceFill) {
-        setFill(surfaceFill);
+            drawSpaceframe(activeStyle, vMin, vMax);
+        }
 
-        var surfacePattern = data.surface.pattern;
 
-        drawSurface(surfacePattern, setupMinMax[0][0], setupMinMax[0][1]);
-        drawSurface(surfacePattern, setupMinMax[1][0], setupMinMax[1][1]);
-    }
+        // draw iso-surfaces
+        if(showSurface && surfaceFill) {
+            setFill(surfaceFill);
 
-    ['x', 'y', 'z'].forEach(function(e) {
-        for(var s = 0; s < setupMinMax.length; s++) {
+            var surfacePattern = data.surface.pattern;
+            var surfaceCount = data.surface.count;
+            for(var q = 0; q < surfaceCount; q++) {
+                var ratio = q / (surfaceCount - 1);
+                var level = (1 - ratio) * vMin + ratio * vMax;
 
-            drawingEdge = (s === 0) ? false : true;
+                var d1 = Math.abs(level - minValues);
+                var d2 = Math.abs(level - maxValues);
+                var ranges = (d1 > d2) ?
+                    [minValues, level] :
+                    [level, maxValues];
 
-            var activeMin = setupMinMax[s][0];
-            var activeMax = setupMinMax[s][1];
-
-            // draw slices
-            var slice = data.slices[e];
-            if(slice.show && slice.fill) {
-                setFill(slice.fill);
-
-                var indices = [];
-                if(slice.locations.length) {
-                    for(var q = 0; q < slice.locations.length; q++) {
-                        indices.push(
-                            findNearestOnAxis(
-                                slice.locations[q],
-                                (e === 'x') ? Xs :
-                                (e === 'y') ? Ys : Zs
-                            )
-                        );
-                    }
-                } else {
-                    if(e === 'x') indices = createRange(1, width - 1);
-                    if(e === 'y') indices = createRange(1, height - 1);
-                    if(e === 'z') indices = createRange(1, depth - 1);
-                }
-
-                if(e === 'x') drawSectionsX(activeStyle, indices, activeMin, activeMax);
-                if(e === 'y') drawSectionsY(activeStyle, indices, activeMin, activeMax);
-                if(e === 'z') drawSectionsZ(activeStyle, indices, activeMin, activeMax);
-            }
-
-            // draw caps
-            var cap = data.caps[e];
-            if(cap.show && cap.fill) {
-                setFill(cap.fill);
-                if(e === 'x') drawSectionsX(activeStyle, [0, width - 1], activeMin, activeMax);
-                if(e === 'y') drawSectionsY(activeStyle, [0, height - 1], activeMin, activeMax);
-                if(e === 'z') drawSectionsZ(activeStyle, [0, depth - 1], activeMin, activeMax);
+                drawSurface(surfacePattern, ranges[0], ranges[1]);
             }
         }
-    });
 
-    // remove vertices arrays (i.e. grid points) in case no faces was created created.
-    if(numFaces === 0) {
-        emptyVertices();
+        var setupMinMax = [
+            [ Math.min(vMin, maxValues), Math.max(vMin, maxValues) ],
+            [ Math.min(minValues, vMax), Math.max(minValues, vMax) ]
+        ];
+
+        ['x', 'y', 'z'].forEach(function(e) {
+            for(var s = 0; s < setupMinMax.length; s++) {
+
+                drawingEdge = (s === 0) ? false : true;
+
+                var activeMin = setupMinMax[s][0];
+                var activeMax = setupMinMax[s][1];
+
+                // draw slices
+                var slice = data.slices[e];
+                if(slice.show && slice.fill) {
+                    setFill(slice.fill);
+
+                    var indices = [];
+                    if(slice.locations.length) {
+                        for(var q = 0; q < slice.locations.length; q++) {
+                            indices.push(
+                                findNearestOnAxis(
+                                    slice.locations[q],
+                                    (e === 'x') ? Xs :
+                                    (e === 'y') ? Ys : Zs
+                                )
+                            );
+                        }
+                    } else {
+                        if(e === 'x') indices = createRange(1, width - 1);
+                        if(e === 'y') indices = createRange(1, height - 1);
+                        if(e === 'z') indices = createRange(1, depth - 1);
+                    }
+
+                    if(e === 'x') drawSectionsX(activeStyle, indices, activeMin, activeMax);
+                    if(e === 'y') drawSectionsY(activeStyle, indices, activeMin, activeMax);
+                    if(e === 'z') drawSectionsZ(activeStyle, indices, activeMin, activeMax);
+                }
+
+                // draw caps
+                var cap = data.caps[e];
+                if(cap.show && cap.fill) {
+                    setFill(cap.fill);
+                    if(e === 'x') drawSectionsX(activeStyle, [0, width - 1], activeMin, activeMax);
+                    if(e === 'y') drawSectionsY(activeStyle, [0, height - 1], activeMin, activeMax);
+                    if(e === 'z') drawSectionsZ(activeStyle, [0, depth - 1], activeMin, activeMax);
+                }
+            }
+        });
+
+        // remove vertices arrays (i.e. grid points) in case no faces was created created.
+        if(numFaces === 0) {
+            emptyVertices();
+        }
+
+        data._Xs = Xs;
+        data._Ys = Ys;
+        data._Zs = Zs;
+
+        data.x = allXs;
+        data.y = allYs;
+        data.z = allZs;
+        data.intensity = allVs;
+
     }
 
-    data._Xs = Xs;
-    data._Ys = Ys;
-    data._Zs = Zs;
-
-    data.x = allXs;
-    data.y = allYs;
-    data.z = allZs;
-    data.intensity = allVs;
+    voidMain();
 
     return data;
 }
