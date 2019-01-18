@@ -19,6 +19,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    var isomin = coerce('isomin');
+    var isomax = coerce('isomax');
+
+    if(isomax !== undefined && isomax !== null &&
+        isomin !== undefined && isomin !== null &&
+         isomin > isomax) { // Note isomin === isomax case would be accepted.
+        traceOut.visible = false;
+        return;
+    }
+
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
@@ -32,15 +42,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     ) {
         traceOut.visible = false;
         return;
-    }
-
-    var isomin = coerce('isomin');
-    var isomax = coerce('isomax');
-
-    if(isomin > isomax) {
-        var tmp = isomin;
-        isomin = isomax;
-        isomax = tmp;
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
@@ -70,6 +71,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var showSurface = coerce('surface.show');
     if(showSurface) {
         coerce('surface.fill');
+        coerce('surface.pattern');
     }
 
     var showContour = coerce('contour.show');

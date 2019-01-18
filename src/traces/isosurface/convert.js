@@ -533,7 +533,9 @@ function generateIsosurfaceMesh(data) {
                     var p2 = calcIntersection(D, B, min, max);
                     var p3 = calcIntersection(D, C, min, max);
 
-                    drawTri(style, [p1, p2, p3], [-1, -1, -1]);
+                    if(style.indexOf('A') > -1) {
+                        drawTri(null, [p1, p2, p3], [-1, -1, -1]);
+                    }
                 }
 
                 interpolated = true;
@@ -564,7 +566,9 @@ function generateIsosurfaceMesh(data) {
                     drawTri(style, [A, p4, p1], [abcd[e[0]], -1, -1]);
                     drawTri(style, [B, p2, p3], [abcd[e[1]], -1, -1]);
                 } else {
-                    drawQuad(style, [p1, p2, p3, p4], [-1, -1, -1, -1]);
+                    if(style.indexOf('B') > -1) {
+                        drawQuad(null, [p1, p2, p3, p4], [-1, -1, -1, -1]);
+                    }
                 }
 
                 interpolated = true;
@@ -593,7 +597,9 @@ function generateIsosurfaceMesh(data) {
                     drawTri(style, [A, p2, p3], [abcd[e[0]], -1, -1]);
                     drawTri(style, [A, p3, p1], [abcd[e[0]], -1, -1]);
                 } else {
-                    drawTri(style, [p1, p2, p3], [-1, -1, -1]);
+                    if(style.indexOf('C') > -1) {
+                        drawTri(null, [p1, p2, p3], [-1, -1, -1]);
+                    }
                 }
 
                 interpolated = true;
@@ -782,8 +788,10 @@ function generateIsosurfaceMesh(data) {
     if(showSurface && surfaceFill) {
         setFill(surfaceFill);
 
-        drawSurface(activeStyle, setupMinMax[0][0], setupMinMax[0][1]);
-        drawSurface(activeStyle, setupMinMax[1][0], setupMinMax[1][1]);
+        var surfacePattern = data.surface.pattern;
+
+        drawSurface(surfacePattern, setupMinMax[0][0], setupMinMax[0][1]);
+        drawSurface(surfacePattern, setupMinMax[1][0], setupMinMax[1][1]);
     }
 
     ['x', 'y', 'z'].forEach(function(e) {

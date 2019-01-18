@@ -60,8 +60,9 @@ function makeCapAttr(axLetter) {
             dflt: true,
             editType: 'calc',
             description: [
-                'Determines whether or not cap planes about the', axLetter,
-                'dimension are drawn.'
+                'Determines whether or not cap planes on both sides of the', axLetter,
+                'dimension are drawn. Note: it is possible to use `slices` in order to',
+                'display a cap only on one side.'
             ].join(' ')
         },
         fill: {
@@ -139,13 +140,20 @@ module.exports = extendFlat({
                 'Hides/displays surfaces between minimum and maximum iso-values.'
             ].join(' ')
         },
-
         fill: {
             valType: 'number',
             role: 'style',
             min: 0,
             max: 1,
             dflt: 1,
+            editType: 'calc',
+            description: 'Sets the fill ratio of the iso-surface.'
+        },
+        pattern: {
+            valType: 'enumerated',
+            values: ['all', 'A', 'B', 'C', 'AB', 'AC', 'BC', 'ABC'],
+            dflt: 'all',
+            role: 'style',
             editType: 'calc',
             description: 'Sets the fill ratio of the iso-surface.'
         }
@@ -159,8 +167,9 @@ module.exports = extendFlat({
             editType: 'calc',
             dflt: false,
             description: [
-                'Displays/hides tetrahedron shapes between minimum and maximum iso-values.',
-                'When being enabled, lower \'surfacefill\' value could often be applied'
+                'Displays/hides tetrahedron shapes between minimum and',
+                'maximum iso-values. Often useful when either caps or',
+                'surfaces are disabled or filled with values less than 1.'
             ].join(' ')
         },
         fill: {
@@ -227,7 +236,8 @@ colorscaleAttrs('', {
     contour: {
         show: extendFlat({}, surfaceAtts.contours.x.show, {
             description: [
-                'Sets whether or not dynamic contours are shown on hover'
+                'Sets whether or not dynamic contours are shown on hover.',
+                'Contours are more useful when hovering on caps and slices.'
             ].join(' ')
         }),
         color: surfaceAtts.contours.x.color,
