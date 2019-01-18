@@ -12,7 +12,76 @@ var tarjan = require('strongly-connected-components');
 var Lib = require('../../lib');
 var wrap = require('../../lib/gup').wrap;
 
-var convertToD3Sankey = require('./convert-to-d3-sankey');
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
+var isIndex = Lib.isIndex;
+
+
+function convertToD3Sankey(trace) {
+    var nodeSpec = trace.node;
+    var linkSpec = trace.link;
+
+    var links = [];
+    var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
+    var linkedNodes = {};
+
+    var nodeCount = nodeSpec.label.length;
+    var i;
+    for(i = 0; i < linkSpec.value.length; i++) {
+        var val = linkSpec.value[i];
+        // remove negative values, but keep zeros with special treatment
+        var source = linkSpec.source[i];
+        var target = linkSpec.target[i];
+        if(!(val > 0 && isIndex(source, nodeCount) && isIndex(target, nodeCount))) {
+            continue;
+        }
+
+        source = +source;
+        target = +target;
+        linkedNodes[source] = linkedNodes[target] = true;
+
+        var label = '';
+        if(linkSpec.label && linkSpec.label[i]) label = linkSpec.label[i];
+
+        links.push({
+            pointNumber: i,
+            label: label,
+            color: hasLinkColorArray ? linkSpec.color[i] : linkSpec.color,
+            source: source,
+            target: target,
+            value: +val
+        });
+    }
+
+    var hasNodeColorArray = isArrayOrTypedArray(nodeSpec.color);
+    var nodes = [];
+    var removedNodes = false;
+    var nodeIndices = {};
+
+    for(i = 0; i < nodeCount; i++) {
+        if(linkedNodes[i]) {
+            var l = nodeSpec.label[i];
+            nodeIndices[i] = nodes.length;
+            nodes.push({
+                pointNumber: i,
+                label: l,
+                color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
+            });
+        } else removedNodes = true;
+    }
+
+    // need to re-index links now, since we didn't put all the nodes in
+    if(removedNodes) {
+        for(i = 0; i < links.length; i++) {
+            links[i].source = nodeIndices[links[i].source];
+            links[i].target = nodeIndices[links[i].target];
+        }
+    }
+
+    return {
+        links: links,
+        nodes: nodes
+    };
+}
 
 function circularityPresent(nodeList, sources, targets) {
 
