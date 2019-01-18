@@ -11,6 +11,7 @@
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var surfaceAtts = require('../surface/attributes');
+var meshAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -258,24 +259,7 @@ colorscaleAttrs('', {
         y: extendFlat({}, surfaceAtts.lightposition.y, {dflt: 1e5}),
         z: extendFlat({}, surfaceAtts.lightposition.z, {dflt: 0})
     },
-    lighting: extendFlat({
-        vertexnormalsepsilon: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 1,
-            dflt: 1e-12, // otherwise finely tessellated things eg. the brain will have no specular light reflection
-            description: 'Epsilon for vertex normals calculation avoids math issues arising from degenerate geometry.'
-        },
-        facenormalsepsilon: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 1,
-            dflt: 1e-6, // even the brain model doesn't appear to need finer than this
-            description: 'Epsilon for face normals calculation avoids math issues arising from degenerate geometry.'
-        }
-    }, surfaceAtts.lighting),
+    lighting: meshAttrs.lighting,
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }), 'calc', 'nested');
