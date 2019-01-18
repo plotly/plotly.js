@@ -293,6 +293,11 @@ function generateIsosurfaceMesh(data) {
         };
     }
 
+    function styleIncludes(style, char) {
+        if(style === 'all' || style === null) return true;
+        return (style.indexOf(char) > -1);
+    }
+
     function mapValue(style, value) {
         if(style === null) return value;
         return style;
@@ -491,11 +496,6 @@ function generateIsosurfaceMesh(data) {
 
     function tryCreateTetra(style, abcd, min, max) {
 
-        function styleIncludes(char) {
-            if(style === 'all' || style === null) return true;
-            return (style.indexOf(char) > -1);
-        }
-
         var xyzv = getXYZV(abcd);
 
         var ok = [
@@ -537,7 +537,7 @@ function generateIsosurfaceMesh(data) {
                     var p2 = calcIntersection(D, B, min, max);
                     var p3 = calcIntersection(D, C, min, max);
 
-                    if(styleIncludes('A')) {
+                    if(styleIncludes(style, 'A')) {
                         drawTri(null, [p1, p2, p3], [-1, -1, -1]);
                     }
                 }
@@ -570,7 +570,7 @@ function generateIsosurfaceMesh(data) {
                     drawTri(style, [A, p4, p1], [abcd[e[0]], -1, -1]);
                     drawTri(style, [B, p2, p3], [abcd[e[1]], -1, -1]);
                 } else {
-                    if(styleIncludes('B')) {
+                    if(styleIncludes(style, 'B')) {
                         drawQuad(null, [p1, p2, p3, p4], [-1, -1, -1, -1]);
                     }
                 }
@@ -601,7 +601,7 @@ function generateIsosurfaceMesh(data) {
                     drawTri(style, [A, p2, p3], [abcd[e[0]], -1, -1]);
                     drawTri(style, [A, p3, p1], [abcd[e[0]], -1, -1]);
                 } else {
-                    if(styleIncludes('C')) {
+                    if(styleIncludes(style, 'C')) {
                         drawTri(null, [p1, p2, p3], [-1, -1, -1]);
                     }
                 }
@@ -644,10 +644,13 @@ function generateIsosurfaceMesh(data) {
     }
 
     function beginCell(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max, isEven) {
+        var cellStyle = style;
         if(isEven) {
-            addCube(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max);
+            if(drawingSurface && styleIncludes(style, 'checker2')) cellStyle = null;
+            addCube(cellStyle, p000, p001, p010, p011, p100, p101, p110, p111, min, max);
         } else {
-            addCube(style, p111, p110, p101, p100, p011, p010, p001, p000, min, max);
+            if(drawingSurface && styleIncludes(style, 'checker1')) cellStyle = null;
+            addCube(cellStyle, p111, p110, p101, p100, p011, p010, p001, p000, min, max);
         }
     }
 

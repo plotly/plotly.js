@@ -151,7 +151,7 @@ module.exports = extendFlat({
         },
         pattern: {
             valType: 'enumerated',
-            values: ['all', 'A', 'B', 'C', 'AB', 'AC', 'BC', 'ABC'],
+            values: ['all', 'checker1', 'checker2', 'A', 'B', 'C', 'AB', 'AC', 'BC', 'ABC'],
             dflt: 'all',
             role: 'style',
             editType: 'calc',
