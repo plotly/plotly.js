@@ -678,7 +678,7 @@
     }],
     "layout": {
         "title": {
-            "text": "isosurface trace with displaying multiple iso-surfaces"
+            "text": "isosurface trace displaying multiple sections between iso-min and iso-max"
         },
         "width": 1200,
         "height": 900,

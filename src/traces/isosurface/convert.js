@@ -769,7 +769,6 @@ function generateIsosurfaceMesh(data) {
             drawSpaceframe(activeStyle, vMin, vMax);
         }
 
-
         // draw iso-surfaces
         if(showSurface && surfaceFill) {
             setFill(surfaceFill);
@@ -777,7 +776,7 @@ function generateIsosurfaceMesh(data) {
             var surfacePattern = data.surface.pattern;
             var surfaceCount = data.surface.count;
             for(var q = 0; q < surfaceCount; q++) {
-                var ratio = q / (surfaceCount - 1);
+                var ratio = (surfaceCount === 1) ? 0.5 : q / (surfaceCount - 1);
                 var level = (1 - ratio) * vMin + ratio * vMax;
 
                 var d1 = Math.abs(level - minValues);
