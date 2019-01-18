@@ -67,8 +67,6 @@
     "d3": "^3.5.12",
     "d3-sankey": "git://github.com/antoinerg/d3-sankey.git#4f37ed8d3578b545a8569ecd74583f373768e900",
     "d3-sankey-circular": "git://github.com/tomshanley/d3-sankey-circular.git#e0be74d9bdec9ac0e4c8b4e9108922842715a7b1",
-    "d3-array": "1",
-    "d3-collection": "1",
     "d3-force": "^1.0.6",
     "d3-interpolate": "1",
     "delaunay-triangulate": "^1.1.6",
