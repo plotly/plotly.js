@@ -31,6 +31,7 @@ exports.layoutArrayRegexes = [];
 exports.traceLayoutAttributes = {};
 exports.localeRegistry = {};
 exports.apiMethodRegistry = {};
+exports.collectableSubplotTypes = null;
 
 /**
  * Top-level register routine, exported as Plotly.register
@@ -72,6 +73,8 @@ exports.apiMethodRegistry = {};
  *
  */
 exports.register = function register(_modules) {
+    exports.collectableSubplotTypes = null;
+
     if(!_modules) {
         throw new Error('No argument passed to Plotly.register.');
     } else if(_modules && !Array.isArray(_modules)) {

@@ -579,8 +579,8 @@ function getTraceUids(oldFullData, newData) {
  * Single-trace subplots (which have no `id`) such as pie, table, etc
  * do not need to be collected because we just draw all visible traces.
  */
-var collectableSubplotTypes;
 function emptySubplotLists() {
+    var collectableSubplotTypes = Registry.collectableSubplotTypes;
     var out = {};
     var i, j;
 
