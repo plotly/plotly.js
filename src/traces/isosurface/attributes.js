@@ -46,7 +46,12 @@ function makeSliceAttr(axLetter) {
             max: 1,
             dflt: 1,
             editType: 'calc',
-            description: 'Sets the fill ratio of the interior slices.'
+            description: [
+                'Sets the fill ratio of the `slices`. The default fill value of the',
+                '`slices` is 1 meaning that they are entirely shaded. On the other hand',
+                'Applying a `fill` ratio less than one would allow the creation of',
+                'openings parallel to the edges.'
+            ].join(' ')
         }
     };
 }
@@ -60,9 +65,10 @@ function makeCapAttr(axLetter) {
             dflt: true,
             editType: 'calc',
             description: [
-                'Determines whether or not cap planes on both sides of the', axLetter,
-                'dimension are drawn. Note: it is possible to use `slices` in order to',
-                'display a cap only on one side.'
+                'Sets the fill ratio of the `slices`. The default fill value of the',
+                '`slices` is 1 meaning that they are entirely shaded. On the other hand',
+                'Applying a `fill` ratio less than one would allow the creation of',
+                'openings parallel to the edges.'
             ].join(' ')
         },
         fill: {
@@ -72,7 +78,12 @@ function makeCapAttr(axLetter) {
             max: 1,
             dflt: 1,
             editType: 'calc',
-            description: 'Sets the fill ratio of the caps.'
+            description: [
+                'Sets the fill ratio of the `caps`. The default fill value of the',
+                '`caps` is 1 meaning that they are entirely shaded. On the other hand',
+                'Applying a `fill` ratio less than one would allow the creation of',
+                'openings parallel to the edges.'
+            ].join(' ')
         }
     };
 }
@@ -159,7 +170,12 @@ module.exports = extendFlat({
             max: 1,
             dflt: 1,
             editType: 'calc',
-            description: 'Sets the fill ratio of the iso-surface.'
+            description: [
+                'Sets the fill ratio of the iso-surface. The default fill value of the',
+                'surface is 1 meaning that they are entirely shaded. On the other hand',
+                'Applying a `fill` ratio less than one would allow the creation of',
+                'openings parallel to the edges.'
+            ].join(' ')
         },
         pattern: {
             valType: 'enumerated',
@@ -191,7 +207,12 @@ module.exports = extendFlat({
             max: 1,
             dflt: 0.15,
             editType: 'calc',
-            description: 'Sets the fill ratio of the interior spaceframes (tetrahedron fills).'
+            description: [
+                'Sets the fill ratio of the `spaceframe` elements. The default fill value',
+                'is 0.15 meaning that only 15% of the area of every faces of tetras would be',
+                'shaded. Applying a greater `fill` ratio would allow the creation of stronger',
+                'elements or could be sued to have entirely closed areas (in case of using 1).'
+            ].join(' ')
         }
     },
 
