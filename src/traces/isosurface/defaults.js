@@ -24,9 +24,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(isomax !== undefined && isomax !== null &&
         isomin !== undefined && isomin !== null &&
-         isomin > isomax) { // Note isomin === isomax case would be accepted.
-        traceOut.visible = false;
-        return;
+         isomin > isomax) {
+        // applying default values in this case:
+        traceOut.isomin = null;
+        traceOut.isomax = null;
     }
 
     var x = coerce('x');
