@@ -2,8 +2,11 @@ var Plotly = require('@lib/index');
 var attributes = require('@src/traces/sankey/attributes');
 var Lib = require('@src/lib');
 var d3 = require('d3');
+var d3sankey = require('d3-sankey');
+var d3SankeyCircular = require('d3-sankey-circular');
 var mock = require('@mocks/sankey_energy.json');
 var mockDark = require('@mocks/sankey_energy_dark.json');
+var mockCircular = require('@mocks/sankey_circular.json');
 var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -904,3 +907,209 @@ function assertNoLabel() {
     var g = d3.selectAll('.hovertext');
     expect(g.size()).toBe(0);
 }
+
+describe('d3-sankey', function() {
+    var data = {
+        'nodes': [{
+            'node': 0,
+            'name': 'node0'
+        }, {
+            'node': 1,
+            'name': 'node1'
+        }, {
+            'node': 2,
+            'name': 'node2'
+        }, {
+            'node': 3,
+            'name': 'node3'
+        }, {
+            'node': 4,
+            'name': 'node4'
+        }],
+        'links': [{
+            'source': 0,
+            'target': 2,
+            'value': 2
+        }, {
+            'source': 1,
+            'target': 2,
+            'value': 2
+        }, {
+            'source': 1,
+            'target': 3,
+            'value': 2
+        }, {
+            'source': 0,
+            'target': 4,
+            'value': 2
+        }, {
+            'source': 2,
+            'target': 3,
+            'value': 2
+        }, {
+            'source': 2,
+            'target': 4,
+            'value': 2
+        }, {
+            'source': 3,
+            'target': 4,
+            'value': 4
+        }]
+    };
+    var sankey;
+    var graph;
+    var margin = {
+        top: 10,
+        right: 10,
+        bottom: 10,
+        left: 10
+    };
+    var width = 1200 - margin.left - margin.right;
+    var height = 740 - margin.top - margin.bottom;
+
+    beforeEach(function() {
+        sankey = d3sankey
+        .sankey()
+        .nodeWidth(36)
+        .nodePadding(10)
+        .nodes(data.nodes)
+        .links(data.links)
+        .size([width, height])
+        .iterations(32);
+
+        graph = sankey();
+    });
+
+    function checkArray(key, result) {
+        var value = graph.nodes.map(function(obj) {
+            return obj[key];
+        });
+        expect(value).toEqual(result, 'invalid property named ' + key);
+    }
+
+    function checkRoundedArray(key, result) {
+        var value = graph.nodes.map(function(obj) {
+            return Math.round(obj[key]);
+        });
+        expect(value).toEqual(result, 'invalid property named ' + key);
+    }
+
+    it('controls the width of nodes', function() {
+        expect(sankey.nodeWidth()).toEqual(36, 'incorrect nodeWidth');
+    });
+
+    it('controls the padding between nodes', function() {
+        expect(sankey.nodePadding()).toEqual(10, 'incorrect nodePadding');
+    });
+
+    it('controls the padding between nodes', function() {
+        expect(sankey.nodePadding()).toEqual(10, 'incorrect nodePadding');
+    });
+
+    it('keep a list of nodes', function() {
+        checkArray('name', ['node0', 'node1', 'node2', 'node3', 'node4']);
+    });
+
+    it('keep a list of nodes with x and y values', function() {
+        checkRoundedArray('x0', [0, 0, 381, 763, 1144]);
+        checkRoundedArray('y0', [0, 365, 184, 253, 0]);
+    });
+
+    it('keep a list of nodes with positions in integer (depth, height)', function() {
+        checkArray('depth', [0, 0, 1, 2, 3]);
+        checkArray('height', [3, 3, 2, 1, 0]);
+    });
+
+    it('keep a list of links', function() {
+        var linkWidths = sankey().links.map(function(obj) {
+            return (obj.width);
+        });
+        expect(linkWidths).toEqual([177.5, 177.5, 177.5, 177.5, 177.5, 177.5, 355]);
+    });
+
+    it('controls the size of the figure', function() {
+        expect(sankey.size()).toEqual([1180, 720], 'incorrect size');
+    });
+});
+
+describe('d3-sankey-ciruclar', function() {
+    var data, sankey, graph;
+
+    function _calc(trace) {
+        var gd = { data: [trace] };
+
+        supplyAllDefaults(gd);
+        var fullTrace = gd._fullData[0];
+        return Sankey.calc(gd, fullTrace);
+    }
+
+    beforeEach(function() {
+        data = _calc(mockCircular.data[0]);
+        data = {
+            nodes: data[0]._nodes,
+            links: data[0]._links
+        };
+        sankey = d3SankeyCircular
+          .sankeyCircular()
+          .iterations(32)
+          .circularLinkGap(2)
+          .nodePadding(10)
+          .size([500, 500])
+          .nodeId(function(d) {
+              return d.pointNumber;
+          })
+          .nodes(data.nodes)
+          .links(data.links);
+
+        graph = sankey();
+    });
+
+    function checkArray(key, result) {
+        var value = graph.nodes.map(function(obj) {
+            return obj[key];
+        });
+        expect(value).toEqual(result, 'invalid property named ' + key);
+    }
+
+    function checkRoundedArray(key, result, msg) {
+        var value = graph.nodes.map(function(obj) {
+            return Math.round(obj[key]);
+        });
+        expect(value).toEqual(result, msg);
+    }
+
+    it('creates a graph with circular links', function() {
+        expect(graph.nodes.length).toEqual(6, 'there are 6 nodes');
+        var circularLinks = graph.links.filter(function(link) {
+            return link.circular;
+        });
+        expect(circularLinks.length).toEqual(2, 'there are two circular links');
+    });
+
+    it('keep a list of nodes with positions in integer (depth, height)', function() {
+        checkArray('depth', [0, 0, 2, 3, 1, 1]);
+        checkArray('height', [1, 3, 1, 0, 2, 0]);
+    });
+
+    it('keep a list of nodes with positions in x and y', function() {
+        checkRoundedArray('x0', [72, 72, 267, 365, 169, 169]);
+        checkRoundedArray('y0', [303, 86, 72, 109, 86, 359]);
+    });
+
+    it('supports column reordering', function() {
+        var reorder = [ 2, 2, 1, 1, 0, 0 ];
+
+        checkArray('column', [0, 0, 2, 3, 1, 1]);
+
+        var a = graph.nodes[0].x0;
+        sankey.nodeAlign(function(node) {
+            return reorder[node.pointNumber];
+        });
+        graph = sankey();
+        checkArray('column', [2, 2, 1, 1, 0, 0]);
+        checkArray('height', [1, 3, 1, 0, 2, 0]);
+        var b = graph.nodes[0].x0;
+        expect(a).not.toEqual(b);
+    });
+
+});
