@@ -380,7 +380,6 @@ function generateIsosurfaceMesh(data) {
         );
     }
 
-
     function almostInFinalRange(value) {
         var vErr = 0.01 * (vMax - vMin);
         return (
@@ -492,6 +491,11 @@ function generateIsosurfaceMesh(data) {
 
     function tryCreateTetra(style, abcd, min, max) {
 
+        function styleIncludes(char) {
+            if(style === 'all' || style === null) return true;
+            return (style.indexOf(char) > -1);
+        }
+
         var xyzv = getXYZV(abcd);
 
         var ok = [
@@ -533,7 +537,7 @@ function generateIsosurfaceMesh(data) {
                     var p2 = calcIntersection(D, B, min, max);
                     var p3 = calcIntersection(D, C, min, max);
 
-                    if(style.indexOf('A') > -1) {
+                    if(styleIncludes('A')) {
                         drawTri(null, [p1, p2, p3], [-1, -1, -1]);
                     }
                 }
@@ -566,7 +570,7 @@ function generateIsosurfaceMesh(data) {
                     drawTri(style, [A, p4, p1], [abcd[e[0]], -1, -1]);
                     drawTri(style, [B, p2, p3], [abcd[e[1]], -1, -1]);
                 } else {
-                    if(style.indexOf('B') > -1) {
+                    if(styleIncludes('B')) {
                         drawQuad(null, [p1, p2, p3, p4], [-1, -1, -1, -1]);
                     }
                 }
@@ -597,7 +601,7 @@ function generateIsosurfaceMesh(data) {
                     drawTri(style, [A, p2, p3], [abcd[e[0]], -1, -1]);
                     drawTri(style, [A, p3, p1], [abcd[e[0]], -1, -1]);
                 } else {
-                    if(style.indexOf('C') > -1) {
+                    if(styleIncludes('C')) {
                         drawTri(null, [p1, p2, p3], [-1, -1, -1]);
                     }
                 }
