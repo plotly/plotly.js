@@ -111,7 +111,7 @@ function render(scene) {
             }
             tx = vectorTx.join('<br>');
         } else if(trace.type === 'isosurface') {
-            vectorTx.push('value: ' + selection.traceCoordinate[3].toPrecision(6));
+            vectorTx.push(Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3].toPrecision(6)), 'hover').text);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
             }
