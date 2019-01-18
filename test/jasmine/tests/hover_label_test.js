@@ -1476,6 +1476,14 @@ describe('hover info', function() {
               msgPrefixFmt + 'Top edges of primary and secondary boxes aligned');
         }
 
+        function calcLineOverlap(minA, maxA, minB, maxB) {
+            expect(minA).toBeLessThan(maxA);
+            expect(minB).toBeLessThan(maxB);
+
+            var overlap = Math.min(maxA, maxB) - Math.max(minA, minB);
+            return Math.max(0, overlap);
+        }
+
         it('centered-aligned, should render labels inside boxes', function(done) {
             var trace1 = {
                 x: ['giraffes'],
@@ -1506,14 +1514,6 @@ describe('hover info', function() {
         });
 
         it('centered-aligned, should stack nicely upon each other', function(done) {
-            function calcLineOverlap(minA, maxA, minB, maxB) {
-                expect(minA).toBeLessThan(maxA);
-                expect(minB).toBeLessThan(maxB);
-
-                var overlap = Math.min(maxA, maxB) - Math.max(minA, minB);
-                return Math.max(0, overlap);
-            }
-
             var trace1 = {
                 x: ['giraffes'],
                 y: [5],
@@ -1557,6 +1557,50 @@ describe('hover info', function() {
                 // Be robust against floating point arithmetic and subtle future layout changes
                 expect(calcLineOverlap(boxLABB.top, boxLABB.bottom, boxSFBB.top, boxSFBB.bottom))
                   .toBeWithin(0, 1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should stack multi-line trace-name labels nicely', function(done) {
+            var name = 'Multi<br>line<br>trace<br>name';
+            var name2 = 'Multi<br>line<br>trace<br>name2';
+
+            Plotly.plot(gd, [{
+                y: [1, 2, 1],
+                name: name,
+                hoverlabel: {namelength: -1},
+                hoverinfo: 'x+y+name'
+            }, {
+                y: [1, 2, 1],
+                name: name2,
+                hoverinfo: 'x+y+name',
+                hoverlabel: {namelength: -1}
+            }], {
+                width: 600,
+                height: 300
+            })
+            .then(function() { _hoverNatural(gd, 209, 12); })
+            .then(function() {
+                var nodes = hoverInfoNodes(name);
+                var nodes2 = hoverInfoNodes(name2);
+
+                assertLabelsInsideBoxes(nodes, 'trace 0');
+                assertLabelsInsideBoxes(nodes2, 'trace 2');
+                assertSecondaryRightToPrimaryBox(nodes, 'trace 0');
+                assertSecondaryRightToPrimaryBox(nodes2, 'trace 2');
+
+                var primaryBB = nodes.primaryBox.getBoundingClientRect();
+                var primaryBB2 = nodes2.primaryBox.getBoundingClientRect();
+                expect(calcLineOverlap(primaryBB.top, primaryBB.bottom, primaryBB2.top, primaryBB2.bottom))
+                  .toBeWithin(0, 1);
+
+                // there's a bit of a gap in the secondary as they do have
+                // a border (for now)
+                var secondaryBB = nodes.secondaryBox.getBoundingClientRect();
+                var secondaryBB2 = nodes2.secondaryBox.getBoundingClientRect();
+                expect(calcLineOverlap(secondaryBB.top, secondaryBB.bottom, secondaryBB2.top, secondaryBB2.bottom))
+                  .toBeWithin(2, 1);
             })
             .catch(failTest)
             .then(done);
