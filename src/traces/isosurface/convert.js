@@ -819,28 +819,40 @@ function generateIsosurfaceMesh(data) {
                             );
                         }
                     } else {
-                        if(e === 'x') indices = createRange(1, width - 1);
-                        if(e === 'y') indices = createRange(1, height - 1);
-                        if(e === 'z') indices = createRange(1, depth - 1);
+                        if(e === 'x') {
+                            indices = createRange(1, width - 1);
+                        } else if(e === 'y') {
+                            indices = createRange(1, height - 1);
+                        } else {
+                            indices = createRange(1, depth - 1);
+                        }
                     }
 
-                    if(e === 'x') drawSlicesX(activeStyle, indices, activeMin, activeMax);
-                    if(e === 'y') drawSlicesY(activeStyle, indices, activeMin, activeMax);
-                    if(e === 'z') drawSlicesZ(activeStyle, indices, activeMin, activeMax);
+                    if(e === 'x') {
+                        drawSlicesX(activeStyle, indices, activeMin, activeMax);
+                    } else if(e === 'y') {
+                        drawSlicesY(activeStyle, indices, activeMin, activeMax);
+                    } else {
+                        drawSlicesZ(activeStyle, indices, activeMin, activeMax);
+                    }
                 }
 
                 // draw caps
                 var cap = data.caps[e];
                 if(cap.show && cap.fill) {
                     setFill(cap.fill);
-                    if(e === 'x') drawSlicesX(activeStyle, [0, width - 1], activeMin, activeMax);
-                    if(e === 'y') drawSlicesY(activeStyle, [0, height - 1], activeMin, activeMax);
-                    if(e === 'z') drawSlicesZ(activeStyle, [0, depth - 1], activeMin, activeMax);
+                    if(e === 'x') {
+                        drawSlicesX(activeStyle, [0, width - 1], activeMin, activeMax);
+                    } else if(e === 'y') {
+                        drawSlicesY(activeStyle, [0, height - 1], activeMin, activeMax);
+                    } else {
+                        drawSlicesZ(activeStyle, [0, depth - 1], activeMin, activeMax);
+                    }
                 }
             }
         });
 
-        // remove vertices arrays (i.e. grid points) in case no faces was created created.
+        // remove vertices arrays (i.e. grid points) in case no face was created.
         if(numFaces === 0) {
             emptyVertices();
         }
@@ -853,7 +865,6 @@ function generateIsosurfaceMesh(data) {
         data.y = allYs;
         data.z = allZs;
         data.intensity = allVs;
-
     }
 
     voidMain();
