@@ -633,7 +633,7 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    function drawSlicesX(style, items, min, max) {
+    function draw2dX(style, items, min, max) {
         items.forEach(function(i) {
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
@@ -651,7 +651,7 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawSlicesY(style, items, min, max) {
+    function draw2dY(style, items, min, max) {
         items.forEach(function(j) {
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
@@ -669,7 +669,7 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawSlicesZ(style, items, min, max) {
+    function draw2dZ(style, items, min, max) {
         items.forEach(function(k) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
@@ -687,8 +687,7 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawSpaceframe(style, min, max) {
-        drawingSpaceframe = true;
+    function draw3d(style, min, max) {
         for(var k = 1; k < depth; k++) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
@@ -708,30 +707,17 @@ function generateIsosurfaceMesh(data) {
                 }
             }
         }
+    }
+
+    function drawSpaceframe(style, min, max) {
+        drawingSpaceframe = true;
+        draw3d(style, min, max);
         drawingSpaceframe = false;
     }
 
     function drawSurface(style, min, max) {
         drawingSurface = true;
-        for(var k = 1; k < depth; k++) {
-            for(var j = 1; j < height; j++) {
-                for(var i = 1; i < width; i++) {
-                    begin3dCell(style,
-                        getIndex(i - 1, j - 1, k - 1),
-                        getIndex(i - 1, j - 1, k),
-                        getIndex(i - 1, j, k - 1),
-                        getIndex(i - 1, j, k),
-                        getIndex(i, j - 1, k - 1),
-                        getIndex(i, j - 1, k),
-                        getIndex(i, j, k - 1),
-                        getIndex(i, j, k),
-                        min,
-                        max,
-                        (i + j + k) % 2
-                    );
-                }
-            }
-        }
+        draw3d(style, min, max);
         drawingSurface = false;
     }
 
@@ -829,11 +815,11 @@ function generateIsosurfaceMesh(data) {
                     }
 
                     if(e === 'x') {
-                        drawSlicesX(activeStyle, indices, activeMin, activeMax);
+                        draw2dX(activeStyle, indices, activeMin, activeMax);
                     } else if(e === 'y') {
-                        drawSlicesY(activeStyle, indices, activeMin, activeMax);
+                        draw2dY(activeStyle, indices, activeMin, activeMax);
                     } else {
-                        drawSlicesZ(activeStyle, indices, activeMin, activeMax);
+                        draw2dZ(activeStyle, indices, activeMin, activeMax);
                     }
                 }
 
@@ -842,11 +828,11 @@ function generateIsosurfaceMesh(data) {
                 if(cap.show && cap.fill) {
                     setFill(cap.fill);
                     if(e === 'x') {
-                        drawSlicesX(activeStyle, [0, width - 1], activeMin, activeMax);
+                        draw2dX(activeStyle, [0, width - 1], activeMin, activeMax);
                     } else if(e === 'y') {
-                        drawSlicesY(activeStyle, [0, height - 1], activeMin, activeMax);
+                        draw2dY(activeStyle, [0, height - 1], activeMin, activeMax);
                     } else {
-                        drawSlicesZ(activeStyle, [0, depth - 1], activeMin, activeMax);
+                        draw2dZ(activeStyle, [0, depth - 1], activeMin, activeMax);
                     }
                 }
             }
