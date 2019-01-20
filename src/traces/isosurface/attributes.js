@@ -33,12 +33,9 @@ function makeSliceAttr(axLetter) {
             dflt: [],
             role: 'info',
             description: [
-                'Specifies the location(s) of slices on the axis [0, n].',
+                'Specifies the location(s) of slices on the axis.',
                 'When not locations specified slices would be created for',
-                'all (0, n) i.e. except start and end caps. Please note that',
-                'if a location do not match the point on the', axLetter, 'axis,',
-                'the slicing plane would simply be located on the closest',
-                'point on the axis (does not interpolate on the axis).'
+                'all points of the axis', axLetter, 'except start and end.'
             ].join(' ')
         },
         fill: {

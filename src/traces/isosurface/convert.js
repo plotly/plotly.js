@@ -30,9 +30,17 @@ function findNearestOnAxis(w, arr) {
     for(var q = arr.length - 1; q > 0; q--) {
         var min = Math.min(arr[q], arr[q - 1]);
         var max = Math.max(arr[q], arr[q - 1]);
-        if(w <= max && w > min) return q;
+        if(max > min && min < w && w <= max) {
+            return {
+                id: q,
+                distRatio: (max - w) / (max - min)
+            };
+        }
     }
-    return 0;
+    return {
+        id: 0,
+        distRatio: 0
+    };
 }
 
 proto.handlePick = function(selection) {
@@ -44,9 +52,9 @@ proto.handlePick = function(selection) {
         var y = this.data.y[rawId];
         var z = this.data.z[rawId];
 
-        var i = findNearestOnAxis(x, this.data._Xs);
-        var j = findNearestOnAxis(y, this.data._Ys);
-        var k = findNearestOnAxis(z, this.data._Zs);
+        var i = findNearestOnAxis(x, this.data._Xs).id;
+        var j = findNearestOnAxis(y, this.data._Ys).id;
+        var k = findNearestOnAxis(z, this.data._Zs).id;
 
         var width = this.data._Xs.length;
         var height = this.data._Ys.length;
@@ -615,6 +623,7 @@ function generateIsosurfaceMesh(data) {
     }
 
     function begin2dCell(style, p00, p01, p10, p11, min, max, isEven) {
+        // used to create caps and/or slices on exact axis points
         if(isEven) {
             addRect(style, p00, p01, p11, p10, min, max);
         } else {
@@ -622,7 +631,47 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
+    function beginSection(style, i, j, k, min, max, distRatios) {
+        // used to create slices between axis points
+
+        var A, B, C, D;
+
+        var makeSection = function() {
+            tryCreateTri(style, [A, B, C], [-1, -1, -1], min, max);
+            tryCreateTri(style, [C, D, A], [-1, -1, -1], min, max);
+        };
+
+        var rX = distRatios[0];
+        var rY = distRatios[1];
+        var rZ = distRatios[2];
+
+        if(rX) {
+            A = getBetween(getXYZV([getIndex(i, j - 0, k - 0)])[0], getXYZV([getIndex(i + 1, j - 0, k - 0)])[0], rX);
+            B = getBetween(getXYZV([getIndex(i, j - 0, k - 1)])[0], getXYZV([getIndex(i + 1, j - 0, k - 1)])[0], rX);
+            C = getBetween(getXYZV([getIndex(i, j - 1, k - 1)])[0], getXYZV([getIndex(i + 1, j - 1, k - 1)])[0], rX);
+            D = getBetween(getXYZV([getIndex(i, j - 1, k - 0)])[0], getXYZV([getIndex(i + 1, j - 1, k - 0)])[0], rX);
+            makeSection();
+        }
+
+        if(rY) {
+            A = getBetween(getXYZV([getIndex(i - 0, j, k - 0)])[0], getXYZV([getIndex(i - 0, j + 1, k - 0)])[0], rY);
+            B = getBetween(getXYZV([getIndex(i - 0, j, k - 1)])[0], getXYZV([getIndex(i - 0, j + 1, k - 1)])[0], rY);
+            C = getBetween(getXYZV([getIndex(i - 1, j, k - 1)])[0], getXYZV([getIndex(i - 1, j + 1, k - 1)])[0], rY);
+            D = getBetween(getXYZV([getIndex(i - 1, j, k - 0)])[0], getXYZV([getIndex(i - 1, j + 1, k - 0)])[0], rY);
+            makeSection();
+        }
+
+        if(rZ) {
+            A = getBetween(getXYZV([getIndex(i - 0, j - 0, k)])[0], getXYZV([getIndex(i - 0, j - 0, k + 1)])[0], rZ);
+            B = getBetween(getXYZV([getIndex(i - 0, j - 1, k)])[0], getXYZV([getIndex(i - 0, j - 1, k + 1)])[0], rZ);
+            C = getBetween(getXYZV([getIndex(i - 1, j - 1, k)])[0], getXYZV([getIndex(i - 1, j - 1, k + 1)])[0], rZ);
+            D = getBetween(getXYZV([getIndex(i - 1, j - 0, k)])[0], getXYZV([getIndex(i - 1, j - 0, k + 1)])[0], rZ);
+            makeSection();
+        }
+    }
+
     function begin3dCell(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max, isEven) {
+        // used to create spaceframe and/or iso-surfaces
         var cellStyle = style;
         if(isEven) {
             if(drawingSurface && styleIncludes(style, 'check2')) cellStyle = null;
@@ -634,7 +683,8 @@ function generateIsosurfaceMesh(data) {
     }
 
     function draw2dX(style, items, min, max) {
-        items.forEach(function(i) {
+        for(var q = 0; q < items.length; q++) {
+            var i = items[q];
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
                     begin2dCell(style,
@@ -648,11 +698,12 @@ function generateIsosurfaceMesh(data) {
                     );
                 }
             }
-        });
+        }
     }
 
     function draw2dY(style, items, min, max) {
-        items.forEach(function(j) {
+        for(var q = 0; q < items.length; q++) {
+            var j = items[q];
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
                     begin2dCell(style,
@@ -666,11 +717,12 @@ function generateIsosurfaceMesh(data) {
                     );
                 }
             }
-        });
+        }
     }
 
     function draw2dZ(style, items, min, max) {
-        items.forEach(function(k) {
+        for(var q = 0; q < items.length; q++) {
+            var k = items[q];
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
                     begin2dCell(style,
@@ -684,7 +736,7 @@ function generateIsosurfaceMesh(data) {
                     );
                 }
             }
-        });
+        }
     }
 
     function draw3d(style, min, max) {
@@ -721,6 +773,39 @@ function generateIsosurfaceMesh(data) {
         drawingSurface = false;
     }
 
+    function drawSectionX(style, items, min, max, distRatios) {
+        for(var q = 0; q < items.length; q++) {
+            var i = items[q];
+            for(var k = 1; k < depth; k++) {
+                for(var j = 1; j < height; j++) {
+                    beginSection(style, i, j, k, min, max, distRatios[q]);
+                }
+            }
+        }
+    }
+
+    function drawSectionY(style, items, min, max, distRatios) {
+        for(var q = 0; q < items.length; q++) {
+            var j = items[q];
+            for(var i = 1; i < width; i++) {
+                for(var k = 1; k < depth; k++) {
+                    beginSection(style, i, j, k, min, max, distRatios[q]);
+                }
+            }
+        }
+    }
+
+    function drawSectionZ(style, items, min, max, distRatios) {
+        for(var q = 0; q < items.length; q++) {
+            var k = items[q];
+            for(var j = 1; j < height; j++) {
+                for(var i = 1; i < width; i++) {
+                    beginSection(style, i, j, k, min, max, distRatios[q]);
+                }
+            }
+        }
+    }
+
     function createRange(a, b) {
         var range = [];
         for(var q = a; q < b; q++) {
@@ -739,7 +824,7 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    function voidMain() {
+    function drawAll() {
 
         emptyVertices();
 
@@ -793,33 +878,59 @@ function generateIsosurfaceMesh(data) {
                 if(slice.show && slice.fill) {
                     setFill(slice.fill);
 
-                    var indices = [];
+                    var exactIndices = [];
+                    var ceilIndices = [];
+                    var distRatios = [];
                     if(slice.locations.length) {
                         for(var q = 0; q < slice.locations.length; q++) {
-                            indices.push(
-                                findNearestOnAxis(
-                                    slice.locations[q],
-                                    (e === 'x') ? Xs :
-                                    (e === 'y') ? Ys : Zs
-                                )
+
+                            var near = findNearestOnAxis(
+                                slice.locations[q],
+                                (e === 'x') ? Xs :
+                                (e === 'y') ? Ys : Zs
                             );
+
+                            if(near.distRatio === 0) {
+                                exactIndices.push(near.id);
+                            } else {
+                                ceilIndices.push(near.id);
+                                if(e === 'x') {
+                                    distRatios.push([near.distRatio, 0, 0]);
+                                } else if(e === 'y') {
+                                    distRatios.push([0, near.distRatio, 0]);
+                                } else {
+                                    distRatios.push([0, 0, near.distRatio]);
+                                }
+                            }
                         }
                     } else {
                         if(e === 'x') {
-                            indices = createRange(1, width - 1);
+                            exactIndices = createRange(1, width - 1);
                         } else if(e === 'y') {
-                            indices = createRange(1, height - 1);
+                            exactIndices = createRange(1, height - 1);
                         } else {
-                            indices = createRange(1, depth - 1);
+                            exactIndices = createRange(1, depth - 1);
                         }
                     }
 
-                    if(e === 'x') {
-                        draw2dX(activeStyle, indices, activeMin, activeMax);
-                    } else if(e === 'y') {
-                        draw2dY(activeStyle, indices, activeMin, activeMax);
-                    } else {
-                        draw2dZ(activeStyle, indices, activeMin, activeMax);
+                    if(ceilIndices.length > 0) {
+                        if(e === 'x') {
+                            drawSectionX(activeStyle, ceilIndices, activeMin, activeMax, distRatios);
+                        } else if(e === 'y') {
+                            drawSectionY(activeStyle, ceilIndices, activeMin, activeMax, distRatios);
+                        } else {
+                            drawSectionZ(activeStyle, ceilIndices, activeMin, activeMax, distRatios);
+                        }
+                    }
+
+                    if(exactIndices.length > 0) {
+                        if(e === 'x') {
+                            draw2dX(activeStyle, exactIndices, activeMin, activeMax);
+                        } else if(e === 'y') {
+                            draw2dY(activeStyle, exactIndices, activeMin, activeMax);
+                        } else {
+                            draw2dZ(activeStyle, exactIndices, activeMin, activeMax);
+                        }
                     }
                 }
 
@@ -853,7 +964,7 @@ function generateIsosurfaceMesh(data) {
         data.intensity = allVs;
     }
 
-    voidMain();
+    drawAll();
 
     return data;
 }

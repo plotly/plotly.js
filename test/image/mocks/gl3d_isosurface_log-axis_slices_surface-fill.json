@@ -7,7 +7,7 @@
         "spaceframe": { "show": false },
         "slices": {
             "x": { "show": true, "fill": 1, "locations": [-0.9, -0.6, 0] },
-            "y": { "show": false },
+            "y": { "show": true, "fill": 1, "locations": [-0.9, -0.6, 0] },
             "z": { "show": true, "fill": 1 }
         },
         "caps": {
