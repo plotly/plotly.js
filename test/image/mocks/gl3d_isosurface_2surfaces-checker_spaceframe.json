@@ -3,7 +3,7 @@
         "type": "isosurface",
         "colorscale": "Blackbody",
         "reversescale": true,
-        "surface": { "show": true, "fill": 1.0, "pattern": "checker1" },
+        "surface": { "show": true, "fill": 1.0, "pattern": "check1" },
         "spaceframe": { "show": true, "fill": 0.25 },
         "slices": {
             "x": { "show": false },
@@ -678,7 +678,7 @@
     }],
     "layout": {
         "title": {
-            "text": "isosurface trace with checker pattern and the interior filled with tetras"
+            "text": "isosurface trace with check pattern and the interior filled with tetras"
         },
         "width": 1200,
         "height": 900,

@@ -166,13 +166,13 @@ var attrs = module.exports = overrideAll(extendFlat({
         },
         pattern: {
             valType: 'enumerated',
-            values: ['all', 'checker1', 'checker2', 'A', 'B', 'C', 'AB', 'AC', 'BC', 'ABC'],
+            values: ['all', 'check1', 'check2', 'A', 'B', 'C', 'AB', 'AC', 'BC', 'ABC'],
             dflt: 'all',
             role: 'style',
             description: [
                 'Sets the surface pattern of the iso-surface 3-D sections. The default pattern of',
                 'the surface is `all` meaning that the rest of surface elements would be shaded.',
-                'The checker options (either 1 or 2) could be used to draw half of the squares',
+                'The check options (either 1 or 2) could be used to draw half of the squares',
                 'on the surface. Using various combinations of capital `A`, `B`, and `C` may also',
                 'be used to reduce the number of triangles on the iso-surfaces and creating other',
                 'patterns of interest.'
