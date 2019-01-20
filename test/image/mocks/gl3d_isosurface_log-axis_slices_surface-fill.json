@@ -8,12 +8,12 @@
         "slices": {
             "x": { "show": true, "fill": 1, "locations": [-0.9, -0.6, 0] },
             "y": { "show": true, "fill": 1, "locations": [-0.9, -0.6, 0] },
-            "z": { "show": true, "fill": 1 }
+            "z": { "show": true, "fill": 1, "locations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
         },
         "caps": {
             "x": { "show": false },
             "y": { "show": false },
-            "z": { "show": true, "fill": 1 }
+            "z": { "show": false }
         },
         "contour": {
             "show": true,
@@ -502,7 +502,7 @@
     }],
     "layout": {
         "title": {
-            "text": "Spherical isosurface trace on logarithmic axes with horizontal caps & slices as well as 3 vertical slices on desired locations"
+            "text": "Spherical isosurface trace on logarithmic z-axes with horizontal and vertical slices on desired locations"
         },
         "width": 1200,
         "height": 900,
@@ -513,8 +513,13 @@
             "camera": {
                 "eye": {
                     "x": 0.75,
-                    "y": -1.75,
-                    "z": 0.2
+                    "y": -1.5,
+                    "z": 0.6
+                },
+                "center": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -0.2
                 }
             }
         }

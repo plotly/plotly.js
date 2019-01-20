@@ -646,26 +646,26 @@ function generateIsosurfaceMesh(data) {
         var rZ = distRatios[2];
 
         if(rX) {
-            A = getBetween(getXYZV([getIndex(i, j - 0, k - 0)])[0], getXYZV([getIndex(i + 1, j - 0, k - 0)])[0], rX);
-            B = getBetween(getXYZV([getIndex(i, j - 0, k - 1)])[0], getXYZV([getIndex(i + 1, j - 0, k - 1)])[0], rX);
-            C = getBetween(getXYZV([getIndex(i, j - 1, k - 1)])[0], getXYZV([getIndex(i + 1, j - 1, k - 1)])[0], rX);
-            D = getBetween(getXYZV([getIndex(i, j - 1, k - 0)])[0], getXYZV([getIndex(i + 1, j - 1, k - 0)])[0], rX);
+            A = getBetween(getXYZV([getIndex(i, j - 0, k - 0)])[0], getXYZV([getIndex(i - 1, j - 0, k - 0)])[0], rX);
+            B = getBetween(getXYZV([getIndex(i, j - 0, k - 1)])[0], getXYZV([getIndex(i - 1, j - 0, k - 1)])[0], rX);
+            C = getBetween(getXYZV([getIndex(i, j - 1, k - 1)])[0], getXYZV([getIndex(i - 1, j - 1, k - 1)])[0], rX);
+            D = getBetween(getXYZV([getIndex(i, j - 1, k - 0)])[0], getXYZV([getIndex(i - 1, j - 1, k - 0)])[0], rX);
             makeSection();
         }
 
         if(rY) {
-            A = getBetween(getXYZV([getIndex(i - 0, j, k - 0)])[0], getXYZV([getIndex(i - 0, j + 1, k - 0)])[0], rY);
-            B = getBetween(getXYZV([getIndex(i - 0, j, k - 1)])[0], getXYZV([getIndex(i - 0, j + 1, k - 1)])[0], rY);
-            C = getBetween(getXYZV([getIndex(i - 1, j, k - 1)])[0], getXYZV([getIndex(i - 1, j + 1, k - 1)])[0], rY);
-            D = getBetween(getXYZV([getIndex(i - 1, j, k - 0)])[0], getXYZV([getIndex(i - 1, j + 1, k - 0)])[0], rY);
+            A = getBetween(getXYZV([getIndex(i - 0, j, k - 0)])[0], getXYZV([getIndex(i - 0, j - 1, k - 0)])[0], rY);
+            B = getBetween(getXYZV([getIndex(i - 0, j, k - 1)])[0], getXYZV([getIndex(i - 0, j - 1, k - 1)])[0], rY);
+            C = getBetween(getXYZV([getIndex(i - 1, j, k - 1)])[0], getXYZV([getIndex(i - 1, j - 1, k - 1)])[0], rY);
+            D = getBetween(getXYZV([getIndex(i - 1, j, k - 0)])[0], getXYZV([getIndex(i - 1, j - 1, k - 0)])[0], rY);
             makeSection();
         }
 
         if(rZ) {
-            A = getBetween(getXYZV([getIndex(i - 0, j - 0, k)])[0], getXYZV([getIndex(i - 0, j - 0, k + 1)])[0], rZ);
-            B = getBetween(getXYZV([getIndex(i - 0, j - 1, k)])[0], getXYZV([getIndex(i - 0, j - 1, k + 1)])[0], rZ);
-            C = getBetween(getXYZV([getIndex(i - 1, j - 1, k)])[0], getXYZV([getIndex(i - 1, j - 1, k + 1)])[0], rZ);
-            D = getBetween(getXYZV([getIndex(i - 1, j - 0, k)])[0], getXYZV([getIndex(i - 1, j - 0, k + 1)])[0], rZ);
+            A = getBetween(getXYZV([getIndex(i - 0, j - 0, k)])[0], getXYZV([getIndex(i - 0, j - 0, k - 1)])[0], rZ);
+            B = getBetween(getXYZV([getIndex(i - 0, j - 1, k)])[0], getXYZV([getIndex(i - 0, j - 1, k - 1)])[0], rZ);
+            C = getBetween(getXYZV([getIndex(i - 1, j - 1, k)])[0], getXYZV([getIndex(i - 1, j - 1, k - 1)])[0], rZ);
+            D = getBetween(getXYZV([getIndex(i - 1, j - 0, k)])[0], getXYZV([getIndex(i - 1, j - 0, k - 1)])[0], rZ);
             makeSection();
         }
     }
