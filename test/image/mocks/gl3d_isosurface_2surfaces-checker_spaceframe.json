@@ -678,7 +678,7 @@
     }],
     "layout": {
         "title": {
-            "text": "isosurface trace with check pattern and the interior filled with tetras"
+            "text": "isosurface trace with checker pattern and the interior filled with tetras"
         },
         "width": 1200,
         "height": 900,
