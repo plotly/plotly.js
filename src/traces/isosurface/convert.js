@@ -614,7 +614,7 @@ function generateIsosurfaceMesh(data) {
         tryCreateTri(style, getXYZV([c, d, a]), [c, d, a], min, max);
     }
 
-    function beginSlice(style, p00, p01, p10, p11, min, max, isEven) {
+    function begin2dCell(style, p00, p01, p10, p11, min, max, isEven) {
         if(isEven) {
             addRect(style, p00, p01, p11, p10, min, max);
         } else {
@@ -622,7 +622,7 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    function beginCell(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max, isEven) {
+    function begin3dCell(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max, isEven) {
         var cellStyle = style;
         if(isEven) {
             if(drawingSurface && styleIncludes(style, 'check2')) cellStyle = null;
@@ -633,11 +633,11 @@ function generateIsosurfaceMesh(data) {
         }
     }
 
-    function drawSectionsX(style, items, min, max) {
+    function drawSlicesX(style, items, min, max) {
         items.forEach(function(i) {
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
-                    beginSlice(style,
+                    begin2dCell(style,
                         getIndex(i, j - 1, k - 1),
                         getIndex(i, j - 1, k),
                         getIndex(i, j, k - 1),
@@ -651,11 +651,11 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawSectionsY(style, items, min, max) {
+    function drawSlicesY(style, items, min, max) {
         items.forEach(function(j) {
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
-                    beginSlice(style,
+                    begin2dCell(style,
                         getIndex(i - 1, j, k - 1),
                         getIndex(i, j, k - 1),
                         getIndex(i - 1, j, k),
@@ -669,11 +669,11 @@ function generateIsosurfaceMesh(data) {
         });
     }
 
-    function drawSectionsZ(style, items, min, max) {
+    function drawSlicesZ(style, items, min, max) {
         items.forEach(function(k) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
-                    beginSlice(style,
+                    begin2dCell(style,
                         getIndex(i - 1, j - 1, k),
                         getIndex(i - 1, j, k),
                         getIndex(i, j - 1, k),
@@ -692,7 +692,7 @@ function generateIsosurfaceMesh(data) {
         for(var k = 1; k < depth; k++) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
-                    beginCell(style,
+                    begin3dCell(style,
                         getIndex(i - 1, j - 1, k - 1),
                         getIndex(i - 1, j - 1, k),
                         getIndex(i - 1, j, k - 1),
@@ -716,7 +716,7 @@ function generateIsosurfaceMesh(data) {
         for(var k = 1; k < depth; k++) {
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
-                    beginCell(style,
+                    begin3dCell(style,
                         getIndex(i - 1, j - 1, k - 1),
                         getIndex(i - 1, j - 1, k),
                         getIndex(i - 1, j, k - 1),
@@ -824,18 +824,18 @@ function generateIsosurfaceMesh(data) {
                         if(e === 'z') indices = createRange(1, depth - 1);
                     }
 
-                    if(e === 'x') drawSectionsX(activeStyle, indices, activeMin, activeMax);
-                    if(e === 'y') drawSectionsY(activeStyle, indices, activeMin, activeMax);
-                    if(e === 'z') drawSectionsZ(activeStyle, indices, activeMin, activeMax);
+                    if(e === 'x') drawSlicesX(activeStyle, indices, activeMin, activeMax);
+                    if(e === 'y') drawSlicesY(activeStyle, indices, activeMin, activeMax);
+                    if(e === 'z') drawSlicesZ(activeStyle, indices, activeMin, activeMax);
                 }
 
                 // draw caps
                 var cap = data.caps[e];
                 if(cap.show && cap.fill) {
                     setFill(cap.fill);
-                    if(e === 'x') drawSectionsX(activeStyle, [0, width - 1], activeMin, activeMax);
-                    if(e === 'y') drawSectionsY(activeStyle, [0, height - 1], activeMin, activeMax);
-                    if(e === 'z') drawSectionsZ(activeStyle, [0, depth - 1], activeMin, activeMax);
+                    if(e === 'x') drawSlicesX(activeStyle, [0, width - 1], activeMin, activeMax);
+                    if(e === 'y') drawSlicesY(activeStyle, [0, height - 1], activeMin, activeMax);
+                    if(e === 'z') drawSlicesZ(activeStyle, [0, depth - 1], activeMin, activeMax);
                 }
             }
         });
