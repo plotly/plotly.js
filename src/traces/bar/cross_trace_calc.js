@@ -460,24 +460,17 @@ function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
     }
 }
 
-function expandRange(range, newValue) {
-    if(isNumeric(range[0])) range[0] = Math.min(range[0], newValue);
-    else range[0] = newValue;
-
-    if(isNumeric(range[1])) range[1] = Math.max(range[1], newValue);
-    else range[1] = newValue;
-}
-
 // store these bar bases and tops in calcdata
 // and make sure the size axis includes zero,
 // along with the bases and tops of each bar.
 function setBaseAndTop(gd, sa, sieve) {
     var calcTraces = sieve.traces;
     var sLetter = getAxisLetter(sa);
-    var sRange = [null, null];
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
@@ -485,14 +478,15 @@ function setBaseAndTop(gd, sa, sieve) {
             var barTop = barBase + bar.s;
 
             bar[sLetter] = barTop;
-
-            if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
-            if(bar.hasB && isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
+            pts.push(barTop);
+            if(bar.hasB) pts.push(barBase);
         }
-    }
 
-    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
-    putExtremes(calcTraces, sa, extremes);
+        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+            tozero: true,
+            padded: true
+        });
+    }
 }
 
 function stackBars(gd, sa, sieve) {
@@ -500,35 +494,38 @@ function stackBars(gd, sa, sieve) {
     var barnorm = fullLayout.barnorm;
     var sLetter = getAxisLetter(sa);
     var calcTraces = sieve.traces;
-    var sRange = [null, null];
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
-            if(bar.s === BADNUM) continue;
+            if(bar.s !== BADNUM) {
+                // stack current bar and get previous sum
+                var barBase = sieve.put(bar.p, bar.b + bar.s);
+                var barTop = barBase + bar.b + bar.s;
 
-            // stack current bar and get previous sum
-            var barBase = sieve.put(bar.p, bar.b + bar.s);
-            var barTop = barBase + bar.b + bar.s;
+                // store the bar base and top in each calcdata item
+                bar.b = barBase;
+                bar[sLetter] = barTop;
 
-            // store the bar base and top in each calcdata item
-            bar.b = barBase;
-            bar[sLetter] = barTop;
-
-            if(!barnorm) {
-                if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
-                if(bar.hasB && isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
+                if(!barnorm) {
+                    pts.push(barTop);
+                    if(bar.hasB) pts.push(barBase);
+                }
             }
         }
-    }
 
-    // if barnorm is set, let normalizeBars update the axis range
-    if(!barnorm) {
-        var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
-        putExtremes(calcTraces, sa, extremes);
+        // if barnorm is set, let normalizeBars update the axis range
+        if(!barnorm) {
+            fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+                tozero: true,
+                padded: true
+            });
+        }
     }
 }
 
@@ -551,53 +548,53 @@ function sieveBars(gd, sa, sieve) {
 // normalizeBars requires that either sieveBars or stackBars has been
 // previously invoked.
 function normalizeBars(gd, sa, sieve) {
+    var fullLayout = gd._fullLayout;
     var calcTraces = sieve.traces;
     var sLetter = getAxisLetter(sa);
-    var sTop = (gd._fullLayout.barnorm === 'fraction') ? 1 : 100;
+    var sTop = fullLayout.barnorm === 'fraction' ? 1 : 100;
     var sTiny = sTop / 1e9; // in case of rounding error in sum
     var sMin = sa.l2c(sa.c2l(0));
-    var sMax = (gd._fullLayout.barmode === 'stack') ? sTop : sMin;
-    var sRange = [sMin, sMax];
-    var padded = false;
+    var sMax = fullLayout.barmode === 'stack' ? sTop : sMin;
 
-    function maybeExpand(newValue) {
-        if(isNumeric(sa.c2l(newValue)) &&
-            ((newValue < sMin - sTiny) || (newValue > sMax + sTiny) || !isNumeric(sMin))
-        ) {
-            padded = true;
-            expandRange(sRange, newValue);
-        }
+    function needsPadding(v) {
+        return (
+            isNumeric(sa.c2l(v)) &&
+            ((v < sMin - sTiny) || (v > sMax + sTiny) || !isNumeric(sMin))
+        );
     }
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
+        var padded = false;
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
-            if(bar.s === BADNUM) continue;
+            if(bar.s !== BADNUM) {
+                var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
+                bar.b *= scale;
+                bar.s *= scale;
 
-            var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
-            bar.b *= scale;
-            bar.s *= scale;
+                var barBase = bar.b;
+                var barTop = barBase + bar.s;
 
-            var barBase = bar.b;
-            var barTop = barBase + bar.s;
-            bar[sLetter] = barTop;
+                bar[sLetter] = barTop;
+                pts.push(barTop);
+                padded = padded || needsPadding(barTop);
 
-            maybeExpand(barTop);
-            if(bar.hasB) maybeExpand(barBase);
+                if(bar.hasB) {
+                    pts.push(barBase);
+                    padded = padded || needsPadding(barBase);
+                }
+            }
         }
-    }
 
-    // update range of size axis
-    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: padded});
-    putExtremes(calcTraces, sa, extremes);
-}
-
-function putExtremes(cd, ax, extremes) {
-    for(var i = 0; i < cd.length; i++) {
-        cd[i][0].trace._extremes[ax._id] = extremes;
+        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+            tozero: true,
+            padded: padded
+        });
     }
 }
 
