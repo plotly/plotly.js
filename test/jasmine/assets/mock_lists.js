@@ -58,7 +58,7 @@ var glMockList = [
     ['gl3d_cone-autorange', require('@mocks/gl3d_cone-autorange.json')],
     ['gl3d_streamtube-simple', require('@mocks/gl3d_streamtube-simple.json')],
     ['glpolar_style', require('@mocks/glpolar_style.json')],
-    ['gl3d_isosurface_multiple-traces', require('@mocks/gl3d_isosurface_multiple-traces.json')]
+    ['gl3d_isosurface_multiple-traces', require('@mocks/gl3d_isosurface_out_of_iso_range_case.json')]
 ];
 
 var mapboxMockList = [

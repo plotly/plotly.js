@@ -99,4 +99,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+
+    // disable 1D transforms (for now)
+    traceOut._length = null;
 };

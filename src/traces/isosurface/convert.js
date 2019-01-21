@@ -53,9 +53,9 @@ proto.handlePick = function(selection) {
 
         var rawId = selection.data.index;
 
-        var x = this.data.x[rawId];
-        var y = this.data.y[rawId];
-        var z = this.data.z[rawId];
+        var x = this.data._x[rawId];
+        var y = this.data._y[rawId];
+        var z = this.data._z[rawId];
 
         var height = this.data._Ys.length;
         var depth = this.data._Zs.length;
@@ -67,9 +67,9 @@ proto.handlePick = function(selection) {
         var selectIndex = selection.index = k + depth * j + depth * height * i;
 
         selection.traceCoordinate = [
-            this.data.x[selectIndex],
-            this.data.y[selectIndex],
-            this.data.z[selectIndex],
+            this.data._x[selectIndex],
+            this.data._y[selectIndex],
+            this.data._z[selectIndex],
             this.data.value[selectIndex]
         ];
 
@@ -98,11 +98,11 @@ proto.update = function(data) {
     }
 
     var positions = zip3(
-        toDataCoords(layout.xaxis, data.x, scene.dataScale[0], data.xcalendar),
-        toDataCoords(layout.yaxis, data.y, scene.dataScale[1], data.ycalendar),
-        toDataCoords(layout.zaxis, data.z, scene.dataScale[2], data.zcalendar));
+        toDataCoords(layout.xaxis, data._x, scene.dataScale[0], data.xcalendar),
+        toDataCoords(layout.yaxis, data._y, scene.dataScale[1], data.ycalendar),
+        toDataCoords(layout.zaxis, data._z, scene.dataScale[2], data.zcalendar));
 
-    var cells = zip3(data.i, data.j, data.k);
+    var cells = zip3(data._i, data._j, data._k);
 
     var config = {
         positions: positions,
@@ -122,7 +122,7 @@ proto.update = function(data) {
         useFacetNormals: data.flatshading
     };
 
-    config.vertexIntensity = data.intensity;
+    config.vertexIntensity = data._intensity;
     config.vertexIntensityBounds = [data.cmin, data.cmax];
     config.colormap = parseColorScale(data);
 
@@ -137,9 +137,9 @@ proto.dispose = function() {
 
 function generateIsosurfaceMesh(data) {
 
-    data.i = [];
-    data.j = [];
-    data.k = [];
+    data._i = [];
+    data._j = [];
+    data._k = [];
 
     var showSurface = data.surface.show;
     var showSpaceframe = data.spaceframe.show;
@@ -219,9 +219,9 @@ function generateIsosurfaceMesh(data) {
     }
 
     function addFace(a, b, c) {
-        data.i.push(a);
-        data.j.push(b);
-        data.k.push(c);
+        data._i.push(a);
+        data._j.push(b);
+        data._k.push(c);
         numFaces++;
 
         return numFaces - 1;
@@ -954,10 +954,10 @@ function generateIsosurfaceMesh(data) {
             emptyVertices();
         }
 
-        data.x = allXs;
-        data.y = allYs;
-        data.z = allZs;
-        data.intensity = allVs;
+        data._x = allXs;
+        data._y = allYs;
+        data._z = allZs;
+        data._intensity = allVs;
 
         data._Xs = Xs;
         data._Ys = Ys;
