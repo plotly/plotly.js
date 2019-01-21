@@ -1,0 +1,58 @@
+{
+  "data": [
+    {
+      "x": [ 1, 2, 3, 4 ],
+      "y": [ 3, 5, 1, 7 ],
+      "name": "Break this and last<br>trace will display properly"
+    },
+    {
+      "x": [ 1, 2, 3, 4 ],
+      "y": [ 3, 5, 1, 7 ],
+      "name": "You need to break this trace twice if first one has no break"
+    },
+    {
+      "x": [ 1, 2, 3, 4 ],
+      "y": [ 3, 5, 1, 7 ],
+      "name": "You need to break this trace twice if first one has no break"
+    },
+    {
+      "x": [ 1, 2, 3, 4 ],
+      "y": [ 3, 5, 1, 7 ],
+      "name": "You need to break this trace twice if first one has no break"
+    },
+    {
+      "x": [ 1, 2, 3, 4 ],
+      "y": [ 3, 5, 1, 7 ],
+      "name": "You need to break this trace twice if first one has no break"
+    },
+    {
+      "x": [ 1, 2, 3, 4 ],
+      "y": [ 3, 5, 1, 7 ],
+      "name": "You need to break this trace twice if first one has no break"
+    },
+    {
+      "x": [ 1, 2, 3, 4 ],
+      "y": [ 3, 5, 1, 7 ],
+      "name": "This<br> contains<br>a break"
+    }
+  ],
+  "layout": {
+    "legend": {
+      "orientation": "h",
+      "xanchor": "center",
+      "yanchor": "top",
+      "x": 0.5,
+      "y": -0.1,
+      "traceorder": "normal"
+    },
+    "paper_bgcolor": "rgba(255,0,0,0.5)",
+    "margin": {
+      "l": 20,
+      "r": 20,
+      "t": 20,
+      "b": 20
+    },
+    "width": 360,
+    "height": 600
+  }
+}

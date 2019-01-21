@@ -630,7 +630,6 @@ function computeLegendDimensions(gd, groups, traces) {
         var offsetX = 0;
         var fullTracesWidth = 0;
         var traceGap = opts.tracegroupgap || 5;
-        var oneRowLegend;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
@@ -639,15 +638,16 @@ function computeLegendDimensions(gd, groups, traces) {
         });
 
         // check if legend fits in one row
-        oneRowLegend = fullLayout._size.w > borderwidth + fullTracesWidth - traceGap;
+        var oneRowLegend = fullLayout._size.w > borderwidth + fullTracesWidth - traceGap;
+
         traces.each(function(d) {
             var legendItem = d[0];
             var traceWidth = oneRowLegend ? 40 + d[0].width : maxTraceWidth;
 
             if((borderwidth + offsetX + traceGap + traceWidth) > fullLayout._size.w) {
                 offsetX = 0;
-                rowHeight = rowHeight + maxTraceHeight;
-                opts._height = opts._height + maxTraceHeight;
+                rowHeight += maxTraceHeight;
+                opts._height += maxTraceHeight;
                 // reset for next row
                 maxTraceHeight = 0;
             }
@@ -657,16 +657,20 @@ function computeLegendDimensions(gd, groups, traces) {
                 (5 + borderwidth + legendItem.height / 2) + rowHeight);
 
             opts._width += traceGap + traceWidth;
-            opts._height = Math.max(opts._height, legendItem.height);
 
             // keep track of tallest trace in group
             offsetX += traceGap + traceWidth;
             maxTraceHeight = Math.max(legendItem.height, maxTraceHeight);
         });
 
+        if(oneRowLegend) {
+            opts._height = maxTraceHeight;
+        } else {
+            opts._height += maxTraceHeight;
+        }
+
         opts._width += borderwidth * 2;
         opts._height += 10 + borderwidth * 2;
-
     }
 
     // make sure we're only getting full pixels
