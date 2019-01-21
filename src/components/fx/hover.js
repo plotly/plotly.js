@@ -925,15 +925,10 @@ function createHoverText(hoverData, opts, gd) {
         if(d.nameOverride !== undefined) d.name = d.nameOverride;
 
         if(d.name) {
-            // strip out our pseudo-html elements from d.name (if it exists at all)
-            name = svgTextUtils.plainText(d.name || '');
-
-            var nameLength = Math.round(d.nameLength);
-
-            if(nameLength > -1 && name.length > nameLength) {
-                if(nameLength > 3) name = name.substr(0, nameLength - 3) + '...';
-                else name = name.substr(0, nameLength);
-            }
+            name = svgTextUtils.plainText(d.name || '', {
+                len: d.nameLength,
+                allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
+            });
         }
 
         if(d.zLabel !== undefined) {
@@ -995,6 +990,7 @@ function createHoverText(hoverData, opts, gd) {
 
         var tx2 = g.select('text.name');
         var tx2width = 0;
+        var tx2height = 0;
 
         // secondary label for non-empty 'name'
         if(name && name !== text) {
@@ -1006,18 +1002,20 @@ function createHoverText(hoverData, opts, gd) {
                 .attr('data-notex', 1)
                 .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
-            tx2width = tx2.node().getBoundingClientRect().width + 2 * HOVERTEXTPAD;
-        }
-        else {
+
+            var t2bb = tx2.node().getBoundingClientRect();
+            tx2width = t2bb.width + 2 * HOVERTEXTPAD;
+            tx2height = t2bb.height + 2 * HOVERTEXTPAD;
+        } else {
             tx2.remove();
             g.select('rect').remove();
         }
 
-        g.select('path')
-            .style({
-                fill: numsColor,
-                stroke: contrastColor
-            });
+        g.select('path').style({
+            fill: numsColor,
+            stroke: contrastColor
+        });
+
         var tbb = tx.node().getBoundingClientRect();
         var htx = d.xa._offset + (d.x0 + d.x1) / 2;
         var hty = d.ya._offset + (d.y0 + d.y1) / 2;
@@ -1028,7 +1026,7 @@ function createHoverText(hoverData, opts, gd) {
 
         d.ty0 = outerTop - tbb.top;
         d.bx = tbb.width + 2 * HOVERTEXTPAD;
-        d.by = tbb.height + 2 * HOVERTEXTPAD;
+        d.by = Math.max(tbb.height + 2 * HOVERTEXTPAD, tx2height);
         d.anchor = 'start';
         d.txwidth = tbb.width;
         d.tx2width = tx2width;
