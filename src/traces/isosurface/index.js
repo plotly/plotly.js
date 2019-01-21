@@ -26,11 +26,10 @@ Isosurface.basePlotModule = require('../../plots/gl3d');
 Isosurface.categories = ['gl3d'];
 Isosurface.meta = {
     description: [
-        'Draws isosurfaces, with or without caps, slices and braces with coordinates given by',
-        'three 1-dimensional arrays in `x`, `y`, `z` defining axes',
-        'and another 1-dimensional array titled `value`.',
-        'The `value` array (data cube) should have a size equal to',
-        'the multiplication of lengths of `x`, `y`, and `z`.'
+        'Draws isosurfaces between iso-min and iso-max values with coordinates given by',
+        'four 1-dimensional arrays containing the `value`, `x`, `y` and `z` of every vertex',
+        'of a uniform or non-uniform 3-D grid. Horizontal or vertical slices, caps as well as',
+        'spaceframe between iso-min and iso-max values could also be drawn using this trace.'
     ].join(' ')
 };
 

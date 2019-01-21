@@ -31,15 +31,13 @@ function IsosurfaceTrace(scene, mesh, uid) {
 
 var proto = IsosurfaceTrace.prototype;
 
-function findNearestOnAxis(w, arr, nPoints, nDim, step) {
-    var id = nDim;
-    for(var q = nPoints - 1; q > 0 && id > 0; q -= step) {
-        id--;
-        var min = Math.min(arr[q], arr[q - step]);
-        var max = Math.max(arr[q], arr[q - step]);
+function findNearestOnAxis(w, arr) {
+    for(var q = arr.length - 1; q > 0; q--) {
+        var min = Math.min(arr[q], arr[q - 1]);
+        var max = Math.max(arr[q], arr[q - 1]);
         if(max > min && min < w && w <= max) {
             return {
-                id: id,
+                id: q,
                 distRatio: (max - w) / (max - min)
             };
         }
@@ -59,14 +57,12 @@ proto.handlePick = function(selection) {
         var y = this.data.y[rawId];
         var z = this.data.z[rawId];
 
-        var width = this.data.width;
-        var height = this.data.height;
-        var depth = this.data.depth;
-        var nPoints = width * height * depth;
+        var height = this.data._Ys.length;
+        var depth = this.data._Zs.length;
 
-        var i = findNearestOnAxis(x, this.data.x, nPoints, width, 1 + depth * height).id;
-        var j = findNearestOnAxis(y, this.data.y, nPoints, height, 1 + depth).id;
-        var k = findNearestOnAxis(z, this.data.z, nPoints, depth, 1).id;
+        var i = findNearestOnAxis(x, this.data._Xs).id;
+        var j = findNearestOnAxis(y, this.data._Ys).id;
+        var k = findNearestOnAxis(z, this.data._Zs).id;
 
         var selectIndex = selection.index = k + depth * j + depth * height * i;
 
@@ -888,16 +884,11 @@ function generateIsosurfaceMesh(data) {
 
                         for(var q = 0; q < slice.locations.length; q++) {
 
-                            var location = slice.locations[q];
-
-                            var near;
-                            if(e === 'x') {
-                                near = findNearestOnAxis(location, data.x, width * height * depth, width, 1 + depth * height);
-                            } else if(e === 'y') {
-                                near = findNearestOnAxis(location, data.y, width * height * depth, height, 1 + depth);
-                            } else {
-                                near = findNearestOnAxis(location, data.z, width * height * depth, depth, 1);
-                            }
+                            var near = findNearestOnAxis(
+                                slice.locations[q],
+                                (e === 'x') ? Xs :
+                                (e === 'y') ? Ys : Zs
+                            );
 
                             if(near.distRatio === 0) {
                                 exactIndices.push(near.id);
@@ -967,6 +958,10 @@ function generateIsosurfaceMesh(data) {
         data.y = allYs;
         data.z = allZs;
         data.intensity = allVs;
+
+        data._Xs = Xs;
+        data._Ys = Ys;
+        data._Zs = Zs;
     }
 
     drawAll();

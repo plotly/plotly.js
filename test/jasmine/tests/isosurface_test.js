@@ -335,17 +335,17 @@ describe('Test isosurface', function() {
             }
 
             function _hover2() {
-                mouseEvent('mouseover', 150, 150);
+                mouseEvent('mouseover', 100, 100);
                 return delay(20)();
             }
 
             function _hover3() {
-                mouseEvent('mouseover', 300, 200);
+                mouseEvent('mouseover', 300, 150);
                 return delay(20)();
             }
 
             function _hover4() {
-                mouseEvent('mouseover', 200, 300);
+                mouseEvent('mouseover', 150, 300);
                 return delay(20)();
             }
 
@@ -356,9 +356,9 @@ describe('Test isosurface', function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.01',
+                        'y: 100μ',
                         'z: −8',
-                        'value: −0.31'
+                        'value: −1.31'
                     ].join('\n')
                 });
             })
@@ -367,10 +367,10 @@ describe('Test isosurface', function() {
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
-                        'x: 0.4',
-                        'y: 0.01',
-                        'z: −8',
-                        'value: −0.31'
+                        'x: 0.3',
+                        'y: 0.001',
+                        'z: −16',
+                        'value: −0.27'
                     ].join('\n')
                 });
             })
@@ -380,9 +380,9 @@ describe('Test isosurface', function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.2',
-                        'y: 0.01',
-                        'z: −8',
-                        'value: −0.17'
+                        'y: 100μ',
+                        'z: −16',
+                        'value: −1.12'
                     ].join('\n')
                 });
             })
@@ -391,10 +391,10 @@ describe('Test isosurface', function() {
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
-                        'x: 0.3',
-                        'y: 0.01',
-                        'z: −2',
-                        'value: −1.14'
+                        'x: 0.4',
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3'
                     ].join('\n')
                 });
             })
