@@ -84,6 +84,28 @@ function makeCapAttr(axLetter) {
 }
 
 var attrs = module.exports = overrideAll(extendFlat({
+
+    width: {
+        valType: 'integer',
+        role: 'info',
+        description: [
+            'Sets the number of points on X axis.'
+        ].join(' ')
+    },
+    height: {
+        valType: 'integer',
+        role: 'info',
+        description: [
+            'Sets the number of points on Y axis.'
+        ].join(' ')
+    },
+    depth: {
+        valType: 'integer',
+        role: 'info',
+        description: [
+            'Sets the number of points on Z axis.'
+        ].join(' ')
+    },
     x: {
         valType: 'data_array',
         role: 'info',
@@ -109,8 +131,7 @@ var attrs = module.exports = overrideAll(extendFlat({
         valType: 'data_array',
         role: 'info',
         description: [
-            'Sets the 4th dimension of the vertices. It should be',
-            'one dimensional array containing n=X.length*Y.length*Z.length numbers.'
+            'Sets the 4th dimension (value) of the vertices.'
         ].join(' ')
     },
     isomin: {

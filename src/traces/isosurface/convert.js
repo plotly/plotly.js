@@ -26,13 +26,15 @@ function IsosurfaceTrace(scene, mesh, uid) {
 
 var proto = IsosurfaceTrace.prototype;
 
-function findNearestOnAxis(w, arr) {
-    for(var q = arr.length - 1; q > 0; q--) {
-        var min = Math.min(arr[q], arr[q - 1]);
-        var max = Math.max(arr[q], arr[q - 1]);
+function findNearestOnAxis(w, arr, nPoints, nDim, step) {
+    var id = nDim;
+    for(var q = nPoints - 1; q > 0 && id > 0; q -= step) {
+        id--;
+        var min = Math.min(arr[q], arr[q - step]);
+        var max = Math.max(arr[q], arr[q - step]);
         if(max > min && min < w && w <= max) {
             return {
-                id: q,
+                id: id,
                 distRatio: (max - w) / (max - min)
             };
         }
@@ -52,14 +54,16 @@ proto.handlePick = function(selection) {
         var y = this.data.y[rawId];
         var z = this.data.z[rawId];
 
-        var i = findNearestOnAxis(x, this.data._Xs).id;
-        var j = findNearestOnAxis(y, this.data._Ys).id;
-        var k = findNearestOnAxis(z, this.data._Zs).id;
+        var width = this.data.width;
+        var height = this.data.height;
+        var depth = this.data.depth;
+        var nPoints = width * height * depth;
 
-        var width = this.data._Xs.length;
-        var height = this.data._Ys.length;
+        var i = findNearestOnAxis(x, this.data.x, nPoints, width, 1 + depth * height).id;
+        var j = findNearestOnAxis(y, this.data.y, nPoints, height, 1 + depth).id;
+        var k = findNearestOnAxis(z, this.data.z, nPoints, depth, 1).id;
 
-        var selectIndex = selection.index = i + width * j + width * height * k;
+        var selectIndex = selection.index = k + depth * j + depth * height * i;
 
         selection.traceCoordinate = [
             this.data.x[selectIndex],
@@ -150,25 +154,13 @@ function generateIsosurfaceMesh(data) {
     var numVertices;
     var beginVertextLength;
 
-    var width = data.x.length;
-    var height = data.y.length;
-    var depth = data.z.length;
+    var width = data.width;
+    var height = data.height;
+    var depth = data.depth;
 
     function getIndex(i, j, k) {
-        return i + width * j + width * height * k;
+        return k + depth * j + depth * height * i;
     }
-
-    function copyElements(src) {
-        var dst = [];
-        for(var i = 0; i < src.length; i++) {
-            dst[i] = src[i];
-        }
-        return dst;
-    }
-
-    var Xs = copyElements(data.x);
-    var Ys = copyElements(data.y);
-    var Zs = copyElements(data.z);
 
     var minValues = data._minValues;
     var maxValues = data._maxValues;
@@ -384,16 +376,11 @@ function generateIsosurfaceMesh(data) {
         var xyzv = [];
         for(var q = 0; q < 4; q++) {
             var index = indecies[q];
-
-            var k = Math.floor(index / (width * height));
-            var j = Math.floor((index - k * width * height) / width);
-            var i = Math.floor(index - k * width * height - j * width);
-
             xyzv.push(
                 [
-                    Xs[i],
-                    Ys[j],
-                    Zs[k],
+                    data.x[index],
+                    data.y[index],
+                    data.z[index],
                     data.value[index]
                 ]
             );
@@ -816,10 +803,16 @@ function generateIsosurfaceMesh(data) {
     }
 
     function insertGridPoints() {
-        for(var k = 0; k < depth; k++) {
+        for(var i = 0; i < width; i++) {
             for(var j = 0; j < height; j++) {
-                for(var i = 0; i < width; i++) {
-                    addVertex(Xs[i], Ys[j], Zs[k], data.value[getIndex(i, j, k)]);
+                for(var k = 0; k < depth; k++) {
+                    var index = getIndex(i, j, k);
+                    addVertex(
+                        data.x[index],
+                        data.y[index],
+                        data.z[index],
+                        data.value[index]
+                    );
                 }
             }
         }
@@ -883,13 +876,19 @@ function generateIsosurfaceMesh(data) {
                     var ceilIndices = [];
                     var distRatios = [];
                     if(slice.locations.length) {
+
                         for(var q = 0; q < slice.locations.length; q++) {
 
-                            var near = findNearestOnAxis(
-                                slice.locations[q],
-                                (e === 'x') ? Xs :
-                                (e === 'y') ? Ys : Zs
-                            );
+                            var location = slice.locations[q];
+
+                            var near;
+                            if(e === 'x') {
+                                near = findNearestOnAxis(location, data.x, width * height * depth, width, 1 + depth * height);
+                            } else if(e === 'y') {
+                                near = findNearestOnAxis(location, data.y, width * height * depth, height, 1 + depth);
+                            } else {
+                                near = findNearestOnAxis(location, data.z, width * height * depth, depth, 1);
+                            }
 
                             if(near.distRatio === 0) {
                                 exactIndices.push(near.id);
@@ -954,10 +953,6 @@ function generateIsosurfaceMesh(data) {
         if(numFaces === 0) {
             emptyVertices();
         }
-
-        data._Xs = Xs;
-        data._Ys = Ys;
-        data._Zs = Zs;
 
         data.x = allXs;
         data.y = allYs;
