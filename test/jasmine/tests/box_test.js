@@ -463,4 +463,36 @@ describe('Test box restyle:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to change axis range when the number of distinct positions changes', function(done) {
+        function _assert(msg, xrng, yrng) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'box',
+            width: 0.4,
+            y: [0, 5, 7, 8],
+            y0: 0
+        }, {
+            type: 'box',
+            y: [0, 5, 7, 8],
+            y0: 0.1
+        }])
+        .then(function() {
+            _assert('base', [-0.2, 1.5], [-0.444, 8.444]);
+            return Plotly.restyle(gd, 'visible', [true, 'legendonly']);
+        })
+        .then(function() {
+            _assert('only trace0 visible', [-0.2, 0.2], [-0.444, 8.444]);
+            return Plotly.restyle(gd, 'visible', ['legendonly', true]);
+        })
+        .then(function() {
+            _assert('only trace1 visible', [-0.5, 0.5], [-0.444, 8.444]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
