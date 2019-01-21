@@ -1,48 +1,57 @@
 var Plotly = require('@lib');
-// var Lib = require('@src/lib');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
-// var delay = require('../assets/delay');
-// var mouseEvent = require('../assets/mouse_event');
+var delay = require('../assets/delay');
+var mouseEvent = require('../assets/mouse_event');
 
-// var customAssertions = require('../assets/custom_assertions');
-// var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 function createIsosurfaceFig() {
     return {
         data: [{
             type: 'isosurface',
-            x: [1, 2, 3, 4],
-            y: [1, 2, 3, 4],
-            z: [1, 2, 3, 4],
+            x: [0.1, 0.2, 0.3, 0.4],
+            y: [1e-1, 1e-2, 1e-3, 1e-4],
+            z: [-2, -4, -8, -16],
             value: [
-                0, 0, 0, 0,
-                0, 0, 0, 1,
-                0, 0, 1, 0,
-                0, 0, 1, 1,
+                -0.01, -0.02, -0.03, -0.04,
+                -0.05, -0.06, -0.07, -1.01,
+                -0.08, -0.09, -1.02, -0.10,
+                -0.11, -0.12, -1.03, -1.04,
 
-                0, 1, 0, 0,
-                0, 1, 0, 1,
-                0, 1, 1, 0,
-                0, 1, 1, 1,
+                -0.13, -1.05, -0.14, -0.15,
+                -0.16, -1.06, -0.17, -1.07,
+                -0.18, -1.08, -1.09, -0.19,
+                -0.21, -1.10, -1.11, -1.12,
 
-                1, 0, 0, 0,
-                1, 0, 0, 1,
-                1, 0, 1, 0,
-                1, 0, 1, 1,
+                -1.13, -0.21, -0.22, -0.23,
+                -1.14, -0.24, -0.25, -1.15,
+                -1.16, -0.26, -1.17, -0.27,
+                -1.18, -0.28, -1.19, -1.20,
 
-                1, 1, 0, 0,
-                1, 1, 0, 1,
-                1, 1, 1, 0,
-                1, 1, 1, 1
+                -1.21, -1.22, -0.29, -0.30,
+                -1.23, -1.24, -0.31, -1.25,
+                -1.26, -1.27, -1.28, -0.32,
+                -1.29, -1.30, -1.31, -1.32
             ],
-            isomin: 0.25,
-            isomax: 0.5
+            isomin: -0.75,
+            isomax: -0.5,
+            showscale: false
         }],
-        layout: {}
+        layout: {
+            width: 400,
+            height: 400,
+            margin: {
+                l: 0,
+                t: 0,
+                r: 0,
+                b: 0
+            }
+        }
     };
 }
 
@@ -254,6 +263,98 @@ describe('Test isosurface', function() {
             .catch(failTest)
             .then(done);
         });
+    });
+
+    describe('hover', function() {
+
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
+
+        it('@gl should display hover labels', function(done) {
+            var fig = createIsosurfaceFig();
+
+            function _hover1() {
+                mouseEvent('mouseover', 200, 200);
+                return delay(20)();
+            }
+
+            function _hover2() {
+                mouseEvent('mouseover', 150, 150);
+                return delay(20)();
+            }
+
+            function _hover3() {
+                mouseEvent('mouseover', 300, 300);
+                return delay(20)();
+            }
+
+            function _hover4() {
+                mouseEvent('mouseover', 200, 300);
+                return delay(20)();
+            }
+
+            Plotly.plot(gd, fig)
+            .then(delay(20))
+            .then(_hover1)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.2',
+                        'y: 0.001',
+                        'z: −16',
+                        'value: −1.27'
+                    ].join('\n')
+                });
+            })
+            .then(delay(20))
+            .then(_hover2)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.3',
+                        'y: 100μ',
+                        'z: −16',
+                        'value: −1.31'
+                    ].join('\n')
+                });
+            })
+            .then(delay(20))
+            .then(_hover3)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.2',
+                        'y: 0.01',
+                        'z: −16',
+                        'value: −1.24'
+                    ].join('\n')
+                });
+            })
+            .then(delay(20))
+            .then(_hover4)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.3',
+                        'y: 0.01',
+                        'z: −2',
+                        'value: −0.07'
+                    ].join('\n')
+                });
+            })
+            .catch(failTest)
+            .then(done);
+
+        });
+
     });
 
 });
