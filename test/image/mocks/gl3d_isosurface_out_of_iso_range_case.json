@@ -19,9 +19,6 @@
             "show": true,
             "width": 4
         },
-        "width": 8,
-        "height": 6,
-        "depth": 4,
         "isomin": -1010,
         "isomax": 1010,
         "value": [

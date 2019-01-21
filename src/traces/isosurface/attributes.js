@@ -84,28 +84,6 @@ function makeCapAttr(axLetter) {
 }
 
 var attrs = module.exports = overrideAll(extendFlat({
-
-    width: {
-        valType: 'integer',
-        role: 'info',
-        description: [
-            'Sets the number of points on X axis.'
-        ].join(' ')
-    },
-    height: {
-        valType: 'integer',
-        role: 'info',
-        description: [
-            'Sets the number of points on Y axis.'
-        ].join(' ')
-    },
-    depth: {
-        valType: 'integer',
-        role: 'info',
-        description: [
-            'Sets the number of points on Z axis.'
-        ].join(' ')
-    },
     x: {
         valType: 'data_array',
         role: 'info',

@@ -14,9 +14,6 @@ function createIsosurfaceFig() {
     return {
         data: [{
             type: 'isosurface',
-            width: 4,
-            height: 4,
-            depth: 4,
             x: [
                 0.1, 0.1, 0.1, 0.1,
                 0.1, 0.1, 0.1, 0.1,

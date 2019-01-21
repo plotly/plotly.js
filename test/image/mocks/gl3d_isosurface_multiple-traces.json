@@ -20,9 +20,6 @@
                 "show": false,
                 "width": 4
             },
-            "width": 9,
-            "height": 9,
-            "depth": 9,
             "isomin": 150,
             "isomax": 250,
             "value": [
@@ -413,9 +410,6 @@
                 "show": false,
                 "width": 4
             },
-            "width": 9,
-            "height": 9,
-            "depth": 9,
             "isomin": 150,
             "isomax": 250,
             "value": [

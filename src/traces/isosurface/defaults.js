@@ -30,21 +30,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.isomax = null;
     }
 
-    var width = coerce('width');
-    var height = coerce('height');
-    var depth = coerce('depth');
-    var numVertices = width * height * depth;
-
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
     var value = coerce('value');
 
     if(
-        !x || !x.length || x.length !== numVertices ||
-        !y || !y.length || y.length !== numVertices ||
-        !z || !z.length || z.length !== numVertices ||
-        !value || !value.length || value.length !== numVertices
+        !x || !x.length ||
+        !y || !y.length ||
+        !z || !z.length ||
+        !value || !value.length
     ) {
         traceOut.visible = false;
         return;

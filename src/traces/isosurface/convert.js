@@ -14,6 +14,11 @@ var createMesh = require('gl-mesh3d');
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var zip3 = require('../../plots/gl3d/zip3');
+var Lib = require('../../lib');
+
+function distinctVals(col) {
+    return Lib.distinctVals(col).vals;
+}
 
 function IsosurfaceTrace(scene, mesh, uid) {
     this.scene = scene;
@@ -154,9 +159,13 @@ function generateIsosurfaceMesh(data) {
     var numVertices;
     var beginVertextLength;
 
-    var width = data.width;
-    var height = data.height;
-    var depth = data.depth;
+    var Xs = distinctVals(data.x.slice(0, data._len));
+    var Ys = distinctVals(data.y.slice(0, data._len));
+    var Zs = distinctVals(data.z.slice(0, data._len));
+
+    var width = Xs.length;
+    var height = Ys.length;
+    var depth = Zs.length;
 
     function getIndex(i, j, k) {
         return k + depth * j + depth * height * i;

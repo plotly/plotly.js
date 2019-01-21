@@ -12,6 +12,8 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 
 module.exports = function calc(gd, trace) {
 
+    trace._len = Math.min(trace.x.length, trace.y.length, trace.z.length, trace.value.length);
+
     var min = Infinity;
     var max = -Infinity;
     var len = trace.value.length;
