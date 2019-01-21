@@ -892,7 +892,7 @@ function generateIsosurfaceMesh(data) {
 
                             if(near.distRatio === 0) {
                                 exactIndices.push(near.id);
-                            } else {
+                            } else if(near.id > 0) {
                                 ceilIndices.push(near.id);
                                 if(e === 'x') {
                                     distRatios.push([near.distRatio, 0, 0]);
