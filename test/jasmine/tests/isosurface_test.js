@@ -265,7 +265,7 @@ describe('Test isosurface', function() {
         });
     });
 
-    describe('hover', function() {
+    describe('@noCI hover', function() {
 
         var gd;
 
@@ -352,9 +352,6 @@ describe('Test isosurface', function() {
             })
             .catch(failTest)
             .then(done);
-
         });
-
     });
-
 });
