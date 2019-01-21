@@ -128,12 +128,12 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
         var edgeminus;
 
         if(side === 'positive') {
-            pushplus = dPos / 2;
+            pushplus = dPos * (width ? 1 : 0.5);
             edgeplus = edge;
             pushminus = edgeplus = bPos;
         } else if(side === 'negative') {
             pushplus = edgeplus = bPos;
-            pushminus = dPos / 2;
+            pushminus = dPos * (width ? 1 : 0.5);
             edgeminus = edge;
         } else {
             pushplus = pushminus = dPos;
@@ -193,7 +193,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
                 // (<-) fallback to push value
                 vpadminus = pushminus;
             }
-
         } else {
             vpadplus = pushplus;
             vpadminus = pushminus;

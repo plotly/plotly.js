@@ -34,10 +34,25 @@
             "fillcolor": "#c78dd3",
             "opacity": 0.6,
             "y0": 0.2
+        }, {
+            "type": "violin",
+            "width": 0.4,
+            "name": "width: 0.4 (solo)",
+            "x": [0, 5, 7, 8],
+            "side": "positive",
+            "line": {
+                "color": "black"
+            },
+            "fillcolor": "#8dd3c7",
+            "opacity": 0.6,
+            "y0": 0.0,
+            "xaxis": "x2",
+            "yaxis": "y2"
     }],
     "layout": {
-        "title": "Violins/boxes - with multiple widths",
-        "legend": {"x": 0},
+        "grid": {"rows": 1, "columns": 2, "pattern": "independent"},
+        "title": {"text" :"Violins/boxes - with multiple widths", "x": 0, "xref": "paper"},
+        "legend": {"x": 1, "y": 1, "xanchor": "right", "yanchor": "bottom"},
         "xaxis": {"zeroline": false},
         "yaxis": {"dtick": 0.1, "gridcolor": "black"}
     }
