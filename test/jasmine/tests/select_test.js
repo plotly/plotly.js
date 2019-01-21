@@ -2294,6 +2294,7 @@ describe('Test select box and lasso per trace:', function() {
         fig.layout.dragmode = 'lasso';
         fig.layout.width = 600;
         fig.layout.height = 500;
+        fig.layout.xaxis = {range: [-0.565, 1.5]};
         addInvisible(fig);
 
         Plotly.plot(gd, fig)

@@ -142,6 +142,23 @@ describe('Test violin defaults', function() {
         expect(traceOut.meanline.color).toBe('blue');
         expect(traceOut.meanline.width).toBe(10);
     });
+
+    it('should not coerce *scalegroup* and *scalemode* when *width* is set', function() {
+        _supply({
+            y: [1, 2, 1],
+            width: 1
+        });
+        expect(traceOut.scalemode).toBeUndefined();
+        expect(traceOut.scalegroup).toBeUndefined();
+
+        _supply({
+            y: [1, 2, 1],
+            // width=0 is ignored during calc
+            width: 0
+        });
+        expect(traceOut.scalemode).toBe('width');
+        expect(traceOut.scalegroup).toBe('');
+    });
 });
 
 describe('Test violin calc:', function() {
@@ -236,7 +253,7 @@ describe('Test violin calc:', function() {
             name: 'one',
             y: [0, 0, 0, 0, 10, 10, 10, 10]
         });
-        expect(fullLayout._violinScaleGroupStats.one.maxWidth).toBeCloseTo(0.055);
+        expect(fullLayout._violinScaleGroupStats.one.maxKDE).toBeCloseTo(0.055);
         expect(fullLayout._violinScaleGroupStats.one.maxCount).toBe(8);
     });
 
@@ -482,7 +499,10 @@ describe('Test violin hover:', function() {
         patch: function(fig) {
             fig.data[0].x = fig.data[0].y;
             delete fig.data[0].y;
-            fig.layout = {hovermode: 'closest'};
+            fig.layout = {
+                hovermode: 'closest',
+                yaxis: {range: [-0.696, 0.5]}
+            };
             return fig;
         },
         pos: [539, 293],
@@ -567,7 +587,7 @@ describe('Test violin hover:', function() {
 
             Plotly.plot(gd, fig).then(function() {
                 mouseEvent('mousemove', 300, 250);
-                assertViolinHoverLine([299.35, 250, 250, 250]);
+                assertViolinHoverLine([277.3609, 250, 80, 250]);
             })
             .catch(failTest)
             .then(done);
@@ -578,7 +598,7 @@ describe('Test violin hover:', function() {
 
             Plotly.plot(gd, fig).then(function() {
                 mouseEvent('mousemove', 200, 250);
-                assertViolinHoverLine([200.65, 250, 250, 250]);
+                assertViolinHoverLine([222.6391, 250, 420, 250]);
             })
             .catch(failTest)
             .then(done);

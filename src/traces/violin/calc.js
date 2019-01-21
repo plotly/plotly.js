@@ -25,18 +25,10 @@ module.exports = function calc(gd, trace) {
         trace[trace.orientation === 'h' ? 'xaxis' : 'yaxis']
     );
 
-    var violinScaleGroupStats = fullLayout._violinScaleGroupStats;
-    var scaleGroup = trace.scalegroup;
-    var groupStats = violinScaleGroupStats[scaleGroup];
-    if(!groupStats) {
-        groupStats = violinScaleGroupStats[scaleGroup] = {
-            maxWidth: 0,
-            maxCount: 0
-        };
-    }
-
     var spanMin = Infinity;
     var spanMax = -Infinity;
+    var maxKDE = 0;
+    var maxCount = 0;
 
     for(var i = 0; i < cd.length; i++) {
         var cdi = cd[i];
@@ -61,18 +53,35 @@ module.exports = function calc(gd, trace) {
 
         for(var k = 0, t = span[0]; t < (span[1] + step / 2); k++, t += step) {
             var v = kde(t);
-            groupStats.maxWidth = Math.max(groupStats.maxWidth, v);
             cdi.density[k] = {v: v, t: t};
+            maxKDE = Math.max(maxKDE, v);
         }
 
-        groupStats.maxCount = Math.max(groupStats.maxCount, vals.length);
-
+        maxCount = Math.max(maxCount, vals.length);
         spanMin = Math.min(spanMin, span[0]);
         spanMax = Math.max(spanMax, span[1]);
     }
 
     var extremes = Axes.findExtremes(valAxis, [spanMin, spanMax], {padded: true});
     trace._extremes[valAxis._id] = extremes;
+
+    if(trace.width) {
+        cd[0].t.maxKDE = maxKDE;
+    } else {
+        var violinScaleGroupStats = fullLayout._violinScaleGroupStats;
+        var scaleGroup = trace.scalegroup;
+        var groupStats = violinScaleGroupStats[scaleGroup];
+
+        if(groupStats) {
+            groupStats.maxKDE = Math.max(groupStats.maxKDE, maxKDE);
+            groupStats.maxCount = Math.max(groupStats.maxCount, maxCount);
+        } else {
+            violinScaleGroupStats[scaleGroup] = {
+                maxKDE: maxKDE,
+                maxCount: maxCount
+            };
+        }
+    }
 
     cd[0].t.labels.kde = Lib._(gd, 'kde:');
 
