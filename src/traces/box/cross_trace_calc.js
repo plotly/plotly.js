@@ -73,12 +73,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
     var boxdv = Lib.distinctVals(pointList);
     var dPos0 = boxdv.minDiff / 2;
 
-    // if there's no duplication of x points,
-    // disable 'group' mode by setting counter to 1
-    if(pointList.length === boxdv.vals.length) {
-        fullLayout[numKey] = 1;
-    }
-
     // check for forced minimum dtick
     Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
