@@ -524,9 +524,7 @@ function generateIsosurfaceMesh(data) {
                     var p2 = calcIntersection(D, B, min, max);
                     var p3 = calcIntersection(D, C, min, max);
 
-                    if(styleIncludes(style, 'A')) {
-                        drawTri(null, [p1, p2, p3], [-1, -1, -1]);
-                    }
+                    drawTri(null, [p1, p2, p3], [-1, -1, -1]);
                 }
 
                 interpolated = true;
@@ -557,9 +555,7 @@ function generateIsosurfaceMesh(data) {
                     drawTri(style, [A, p4, p1], [abcd[e[0]], -1, -1]);
                     drawTri(style, [B, p2, p3], [abcd[e[1]], -1, -1]);
                 } else {
-                    if(styleIncludes(style, 'B')) {
-                        drawQuad(null, [p1, p2, p3, p4], [-1, -1, -1, -1]);
-                    }
+                    drawQuad(null, [p1, p2, p3, p4], [-1, -1, -1, -1]);
                 }
 
                 interpolated = true;
@@ -588,9 +584,7 @@ function generateIsosurfaceMesh(data) {
                     drawTri(style, [A, p2, p3], [abcd[e[0]], -1, -1]);
                     drawTri(style, [A, p3, p1], [abcd[e[0]], -1, -1]);
                 } else {
-                    if(styleIncludes(style, 'C')) {
-                        drawTri(null, [p1, p2, p3], [-1, -1, -1]);
-                    }
+                    drawTri(null, [p1, p2, p3], [-1, -1, -1]);
                 }
 
                 interpolated = true;
@@ -602,13 +596,20 @@ function generateIsosurfaceMesh(data) {
     function addCube(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max) {
 
         if(drawingSurface) {
-            var a = tryCreateTetra(style, [p000, p001, p010, p100], min, max);
-            var b = tryCreateTetra(style, [p001, p010, p011, p111], min, max);
-            var c = tryCreateTetra(style, [p001, p100, p101, p111], min, max);
-            var d = tryCreateTetra(style, [p010, p100, p110, p111], min, max);
-
-            if(a || b || c || d) {
-                tryCreateTetra(style, [p001, p010, p100, p111], min, max);
+            if(styleIncludes(style, 'A')) {
+                tryCreateTetra(null, [p000, p001, p010, p100], min, max);
+            }
+            if(styleIncludes(style, 'B')) {
+                tryCreateTetra(null, [p001, p010, p011, p111], min, max);
+            }
+            if(styleIncludes(style, 'C')) {
+                tryCreateTetra(null, [p001, p100, p101, p111], min, max);
+            }
+            if(styleIncludes(style, 'D')) {
+                tryCreateTetra(null, [p010, p100, p110, p111], min, max);
+            }
+            if(styleIncludes(style, 'E')) {
+                tryCreateTetra(null, [p001, p010, p100, p111], min, max);
             }
         }
 
