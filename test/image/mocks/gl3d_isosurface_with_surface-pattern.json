@@ -3,7 +3,7 @@
         "type": "isosurface",
         "colorscale": "Blues",
         "reversescale": true,
-        "surface": { "show": true, "fill": 1.0, "pattern": "AC" },
+        "surface": { "show": true, "fill": 1.0, "pattern": "A+C" },
         "spaceframe": { "show": false },
         "slices": {
             "x": { "show": false },

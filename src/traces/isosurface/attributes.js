@@ -162,17 +162,9 @@ var attrs = module.exports = overrideAll(extendFlat({
             ].join(' ')
         },
         pattern: {
-            valType: 'enumerated',
-            values: [
-                'all', 'check1', 'check2',
-                'A', 'B', 'C', 'D', 'E',
-                'AB', 'AC', 'AD', 'AE',
-                'BC', 'BD', 'BE',
-                'CD', 'CE', 'DE',
-                'ABC', 'ABD', 'ABE', 'ACD', 'ACE', 'ADE',
-                'BCD', 'BCE', 'BDE', 'CDE',
-                'ABCD', 'ABCE', 'ABDE', 'ACDE', 'BCDE'
-            ],
+            valType: 'flaglist',
+            flags: ['A', 'B', 'C', 'D', 'E'],
+            extras: ['all', 'odd', 'even'],
             dflt: 'all',
             role: 'style',
             description: [

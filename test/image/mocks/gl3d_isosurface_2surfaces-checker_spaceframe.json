@@ -3,7 +3,7 @@
         "type": "isosurface",
         "colorscale": "Blackbody",
         "reversescale": true,
-        "surface": { "show": true, "fill": 1.0, "pattern": "check1" },
+        "surface": { "show": true, "fill": 1.0, "pattern": "odd" },
         "spaceframe": { "show": true, "fill": 0.25 },
         "slices": {
             "x": { "show": false },

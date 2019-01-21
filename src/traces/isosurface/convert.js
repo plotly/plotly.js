@@ -675,10 +675,10 @@ function generateIsosurfaceMesh(data) {
         // used to create spaceframe and/or iso-surfaces
         var cellStyle = style;
         if(isEven) {
-            if(drawingSurface && styleIncludes(style, 'check2')) cellStyle = null;
+            if(drawingSurface && style === 'even') cellStyle = null;
             addCube(cellStyle, p000, p001, p010, p011, p100, p101, p110, p111, min, max);
         } else {
-            if(drawingSurface && styleIncludes(style, 'check1')) cellStyle = null;
+            if(drawingSurface && style === 'odd') cellStyle = null;
             addCube(cellStyle, p111, p110, p101, p100, p011, p010, p001, p000, min, max);
         }
     }
