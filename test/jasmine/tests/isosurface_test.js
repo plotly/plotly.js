@@ -66,14 +66,14 @@ describe('Test isosurface', function() {
             expect(gd._fullData[0].visible).toBe(exp, msg);
         }
 
-        it('@gl isosurface should not set `visible: false` for traces with x,y,z,value arrays', function() {
+        it('isosurface should not set `visible: false` for traces with x,y,z,value arrays', function() {
             gd = createIsosurfaceFig();
 
             supplyAllDefaults(gd);
             assertVisibility(true, 'to be visible');
         });
 
-        it('@gl isosurface should set `visible: false` for traces missing x,y,z,value arrays', function() {
+        it('isosurface should set `visible: false` for traces missing x,y,z,value arrays', function() {
             var keysToChange = ['x', 'y', 'z', 'value'];
 
             keysToChange.forEach(function(k) {
@@ -85,7 +85,7 @@ describe('Test isosurface', function() {
             });
         });
 
-        it('@gl isosurface should set `visible: false` for traces with empty x,y,z,value arrays', function() {
+        it('isosurface should set `visible: false` for traces with empty x,y,z,value arrays', function() {
             var keysToChange = ['x', 'y', 'z', 'value'];
 
             keysToChange.forEach(function(k) {
@@ -97,7 +97,7 @@ describe('Test isosurface', function() {
             });
         });
 
-        it('@gl isosurface should be invisible when the vertex arrays are not arrays', function() {
+        it('isosurface should be invisible when the vertex arrays are not arrays', function() {
             var keysToChange = ['x', 'y', 'z', 'value'];
             var casesToCheck = [0, 1, true, false, NaN, Infinity, -Infinity, null, undefined, [], {}, '', 'text'];
 
@@ -112,7 +112,7 @@ describe('Test isosurface', function() {
             });
         });
 
-        it('@gl isosurface should not set `visible: false` when isomin > isomax', function() {
+        it('isosurface should not set `visible: false` when isomin > isomax', function() {
             gd = createIsosurfaceFig();
             gd.data[0].isomin = 0.9;
             gd.data[0].isomax = 0.1;
@@ -121,7 +121,7 @@ describe('Test isosurface', function() {
             assertVisibility(true, 'to be visible');
         });
 
-        it('@gl isosurface should set `isomin: null` and `isomax: null` when isomin > isomax', function() {
+        it('isosurface should set `isomin: null` and `isomax: null` when isomin > isomax', function() {
             gd = createIsosurfaceFig();
             gd.data[0].isomin = 0.9;
             gd.data[0].isomax = 0.1;
@@ -131,7 +131,7 @@ describe('Test isosurface', function() {
             expect(gd._fullData[0].isomax).toBe(null, 'isomax not set to default');
         });
 
-        it('@gl isosurface should accept cases where isomin === isomax', function() {
+        it('isosurface should accept cases where isomin === isomax', function() {
             gd = createIsosurfaceFig();
             gd.data[0].isomin = 1e-2;
             gd.data[0].isomax = 0.01;
