@@ -504,5 +504,13 @@ describe('svg+text utils', function() {
             expect(fn(sIn, {allowedTags: ['sup']})).toBe('ThisIsDATA<sup>300</sup>');
             expect(fn(sIn, {allowedTags: ['br', 'sup']})).toBe('ThisIs<br>DATA<sup>300</sup>');
         });
+
+        it('should work in various cases w/ <b>, <i> and <em>', function() {
+            var sIn = '<i>ThisIs</i><b>DATA</b><em>300</em>';
+
+            expect(fn(sIn)).toBe('ThisIsDATA300');
+            expect(fn(sIn, {allowedTags: ['i', 'b', 'em']})).toBe('<i>ThisIs</i><b>DATA</b><em>300</em>');
+            expect(fn(sIn, {len: 10, allowedTags: ['i', 'b', 'em']})).toBe('<i>ThisIs</i>D...');
+        });
     });
 });

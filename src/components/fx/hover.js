@@ -927,7 +927,7 @@ function createHoverText(hoverData, opts, gd) {
         if(d.name) {
             name = svgTextUtils.plainText(d.name || '', {
                 len: d.nameLength,
-                allowedTags: ['br', 'sub', 'sup']
+                allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
             });
         }
 
