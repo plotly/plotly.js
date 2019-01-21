@@ -420,52 +420,44 @@ function setBarCenterAndWidth(gd, pa, sieve) {
 
 function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
     var calcTraces = sieve.traces;
-    var distinctPositions = sieve.distinctPositions;
-    var distinctPositions0 = distinctPositions[0];
     var minDiff = sieve.minDiff;
     var vpad = minDiff / 2;
 
-    Axes.minDtick(pa, minDiff, distinctPositions0, allowMinDtick);
-
-    // If the user set the bar width or the offset,
-    // then bars can be shifted away from their positions
-    // and widths can be larger than minDiff.
-    //
-    // Here, we compute pMin and pMax to expand the position axis,
-    // so that all bars are fully within the axis range.
-    var pMin = Math.min.apply(Math, distinctPositions) - vpad;
-    var pMax = Math.max.apply(Math, distinctPositions) + vpad;
+    Axes.minDtick(pa, sieve.minDiff, sieve.distinctPositions[0], allowMinDtick);
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
         var calcTrace0 = calcTrace[0];
         var fullTrace = calcTrace0.trace;
+        var pts = [];
+        var bar, l, r, j;
 
-        if(fullTrace.width === undefined && fullTrace.offset === undefined) {
-            continue;
+        for(j = 0; j < calcTrace.length; j++) {
+            bar = calcTrace[j];
+            l = bar.p - vpad;
+            r = bar.p + vpad;
+            pts.push(l, r);
         }
 
-        var t = calcTrace0.t;
-        var poffset = t.poffset;
-        var barwidth = t.barwidth;
-        var poffsetIsArray = Array.isArray(poffset);
-        var barwidthIsArray = Array.isArray(barwidth);
+        if(fullTrace.width || fullTrace.offset) {
+            var t = calcTrace0.t;
+            var poffset = t.poffset;
+            var barwidth = t.barwidth;
+            var poffsetIsArray = Array.isArray(poffset);
+            var barwidthIsArray = Array.isArray(barwidth);
 
-        for(var j = 0; j < calcTrace.length; j++) {
-            var calcBar = calcTrace[j];
-            var calcBarOffset = (poffsetIsArray) ? poffset[j] : poffset;
-            var calcBarWidth = (barwidthIsArray) ? barwidth[j] : barwidth;
-            var p = calcBar.p;
-            var l = p + calcBarOffset;
-            var r = l + calcBarWidth;
-
-            pMin = Math.min(pMin, l);
-            pMax = Math.max(pMax, r);
+            for(j = 0; j < calcTrace.length; j++) {
+                bar = calcTrace[j];
+                var calcBarOffset = poffsetIsArray ? poffset[j] : poffset;
+                var calcBarWidth = barwidthIsArray ? barwidth[j] : barwidth;
+                l = bar.p + calcBarOffset;
+                r = l + calcBarWidth;
+                pts.push(l, r);
+            }
         }
+
+        fullTrace._extremes[pa._id] = Axes.findExtremes(pa, pts, {padded: false});
     }
-
-    var extremes = Axes.findExtremes(pa, [pMin, pMax], {padded: false});
-    putExtremes(calcTraces, pa, extremes);
 }
 
 function expandRange(range, newValue) {
