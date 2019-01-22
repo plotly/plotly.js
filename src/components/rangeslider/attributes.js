@@ -31,7 +31,7 @@ module.exports = {
         min: 0,
         role: 'style',
         editType: 'plot',
-        description: 'Sets the border color of the range slider.'
+        description: 'Sets the border width of the range slider.'
     },
     autorange: {
         valType: 'boolean',
