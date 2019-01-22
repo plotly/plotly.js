@@ -255,18 +255,7 @@ function initializeGLPlot(scene, camera, canvas, gl) {
         }, false);
     }
 
-    if(!scene.camera) {
-        var cameraData = scene.fullSceneLayout.camera;
-        scene.camera = createCamera(scene.container, {
-            center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
-            eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
-            up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-            ortho: cameraData.ortho,
-            zoomMin: 0.1,
-            zoomMax: 100,
-            mode: 'orbit'
-        });
-    }
+    if(!scene.camera) scene.initializeGLCamera();
 
     scene.glplot.camera = scene.camera;
 
@@ -341,6 +330,21 @@ function Scene(options, fullLayout) {
 }
 
 var proto = Scene.prototype;
+
+proto.initializeGLCamera = function() {
+
+    var cameraData = this.fullSceneLayout.camera;
+
+    this.camera = createCamera(this.container, {
+        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+        eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+        up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+        ortho: cameraData.ortho,
+        zoomMin: 0.1,
+        zoomMax: 100,
+        mode: 'orbit'
+    });
+};
 
 proto.recoverContext = function() {
     var scene = this;
@@ -715,9 +719,31 @@ proto.getCamera = function getCamera() {
     return getLayoutCamera(this.glplot.camera);
 };
 
+
+var prevOrtho = '';
+
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera(cameraData) {
-    this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
+
+    console.log("cameraData.ortho=", cameraData.ortho);
+
+    if(prevOrtho !== '' && prevOrtho !== cameraData.ortho) {
+        console.log("New ortho!");
+
+        //this.initializeGLCamera(this, cameraData);
+
+        var scene = this;
+        var gl = this.glplot.gl;
+        var canvas = this.glplot.canvas;
+        //this.glplot.dispose();
+        initializeGLPlot(scene, cameraData, canvas, gl);
+
+
+    } else {
+       this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
+    }
+
+    prevOrtho = cameraData.ortho;
 };
 
 // save camera to user layout (i.e. gd.layout)

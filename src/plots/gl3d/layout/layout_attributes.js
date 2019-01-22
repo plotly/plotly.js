@@ -75,7 +75,7 @@ module.exports = {
         ortho: extendFlat({
             valType: 'boolean',
             role: 'info',
-            dflt: false,
+            dflt: true,
             editType: 'camera',
             description: [
                 'Enable/disable orthographic camera.',
