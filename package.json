@@ -58,7 +58,6 @@
   },
   "dependencies": {
     "@plotly/d3-sankey": "^0.5.1",
-    "3d-view-controls": "git://github.com/archmoj/3d-view-controls.git#dd8f55edc9d240a7ca6fcc4dc75099c5dc824947",
     "alpha-shape": "^1.0.0",
     "array-range": "^1.0.1",
     "canvas-fit": "^1.5.0",
@@ -79,7 +78,6 @@
     "gl-mat4": "^1.2.0",
     "gl-mesh3d": "^2.0.5",
     "gl-plot2d": "^1.4.1",
-    "gl-plot3d": "git://github.com/gl-vis/gl-plot3d.git#be4631d689c5fe06b31dbaee9b1f5abc3dc2376e",
     "gl-pointcloud2d": "^1.0.2",
     "gl-scatter3d": "^1.1.3",
     "gl-select-box": "^1.0.3",
