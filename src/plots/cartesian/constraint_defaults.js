@@ -18,11 +18,9 @@ module.exports = function handleConstraintDefaults(containerIn, containerOut, co
     var thisID = containerOut._id;
     var letter = thisID.charAt(0);
 
-    if(containerOut.fixedrange) return;
-
     // coerce the constraint mechanics even if this axis has no scaleanchor
     // because it may be the anchor of another axis.
-    coerce('constrain');
+    var constrain = coerce('constrain');
     Lib.coerce(containerIn, containerOut, {
         constraintoward: {
             valType: 'enumerated',
@@ -31,9 +29,9 @@ module.exports = function handleConstraintDefaults(containerIn, containerOut, co
         }
     }, 'constraintoward');
 
-    if(!containerIn.scaleanchor) return;
+    if(!containerIn.scaleanchor || (constrain === 'range' && containerOut.fixedrange)) return;
 
-    var constraintOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut);
+    var constraintOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain);
 
     var scaleanchor = Lib.coerce(containerIn, containerOut, {
         scaleanchor: {
@@ -62,12 +60,13 @@ module.exports = function handleConstraintDefaults(containerIn, containerOut, co
     }
 };
 
-function getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut) {
+function getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain) {
     // If this axis is already part of a constraint group, we can't
     // scaleanchor any other axis in that group, or we'd make a loop.
     // Filter allAxisIds to enforce this, also matching axis types.
 
     var thisType = layoutOut[id2name(thisID)].type;
+    var doesConstrainRange = constrain === 'range';
 
     var i, j, idj, axj;
 
@@ -77,7 +76,9 @@ function getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut) {
         if(idj === thisID) continue;
 
         axj = layoutOut[id2name(idj)];
-        if(axj.type === thisType && !axj.fixedrange) linkableAxes.push(idj);
+        if(axj.type === thisType && !(doesConstrainRange && axj.fixedrange)) {
+            linkableAxes.push(idj);
+        }
     }
 
     for(i = 0; i < constraintGroups.length; i++) {
