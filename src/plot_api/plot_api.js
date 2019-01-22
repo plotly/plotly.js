@@ -2885,7 +2885,7 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
     }
 
     if(transition && flags.nChanges && flags.nChangesAnim) {
-        flags.anim = flags.nChanges === flags.nChangesAnim && sameTraceLength ? 'all' : 'some';
+        flags.anim = (flags.nChanges === flags.nChangesAnim) && sameTraceLength ? 'all' : 'some';
     }
 
     return flags;

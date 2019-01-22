@@ -2510,28 +2510,27 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         var fullData = gd._fullData;
         var fullLayout = gd._fullLayout;
         var basePlotModules = fullLayout._basePlotModules;
-        var i;
 
         var axisTransitionOpts;
         var traceTransitionOpts;
         var transitionedTraces;
 
         var allTraceIndices = [];
-        for(i = 0; i < fullData.length; i++) {
+        for(var i = 0; i < fullData.length; i++) {
             allTraceIndices.push(i);
         }
 
         function transitionAxes() {
-            for(var i = 0; i < basePlotModules.length; i++) {
-                if(basePlotModules[i].transitionAxes) {
-                    basePlotModules[i].transitionAxes(gd, axEdits, axisTransitionOpts, makeCallback);
+            for(var j = 0; j < basePlotModules.length; j++) {
+                if(basePlotModules[j].transitionAxes) {
+                    basePlotModules[j].transitionAxes(gd, axEdits, axisTransitionOpts, makeCallback);
                 }
             }
         }
 
         function transitionTraces() {
-            for(var i = 0; i < basePlotModules.length; i++) {
-                basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+            for(var j = 0; j < basePlotModules.length; j++) {
+                basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
             }
         }
 
