@@ -350,7 +350,10 @@ describe('Test box hover:', function() {
                 x: [2, 2, 2, 2, 2],
                 y: [13.1, 14.2, 14, 13, 13.3]
             }],
-            layout: {hovermode: 'closest'}
+            layout: {
+                hovermode: 'closest',
+                xaxis: {range: [1.3775, 2.5]}
+            }
         },
         pos: [202, 335],
         nums: '(2, 13.1)',
