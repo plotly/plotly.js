@@ -1,0 +1,65 @@
+{
+    "data": [{
+            "domain": {
+                "x": [0, 0.45]
+            },
+            "type": "sankey",
+            "orientation": "h",
+            "node": {
+                "line": {
+                    "color": "black",
+                    "width": 1
+                },
+                "label": ["el1", "el2", "el3"]
+            },
+            "link": {
+                "source": [0, 2, 1],
+                "target": [1, 1, 2],
+                "value": [120, 50, 30],
+                "color": "purple",
+                "label": ["stram1", "stream2", "stream3"],
+                "line": {
+                    "color": "black",
+                    "width": 1
+                }
+            }
+        },
+        {
+            "domain": {
+                "x": [0.55, 1]
+            },
+            "type": "sankey",
+            "orientation": "v",
+            "node": {
+                "line": {
+                    "color": "black",
+                    "width": 1
+                },
+                "label": ["el4", "el5", "el6", "el7", "el8"]
+            },
+            "link": {
+                "source": [0, 2, 1, 3, 4, 1],
+                "target": [1, 1, 2, 2, 2, 4],
+                "value": [120, 50, 30, 70, 25, 10],
+                "color": "rgba(0, 0, 0, 0.1)",
+                "label": ["stram4", "stream5", "stream6", "stream7", "stream8", "stream9"],
+                "line": {
+                    "color": "black",
+                    "width": 1
+                }
+            }
+        }
+    ],
+    "layout": {
+        "title": "Multiple Sankey plots with circular links",
+        "width": 800,
+        "height": 300,
+        "margin": {
+          "t": 50,
+          "l": 10,
+          "r": 10,
+          "b": 10
+        },
+        "showlegend": false
+    }
+}
