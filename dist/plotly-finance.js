@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.43.2
+* plotly.js (finance) v1.44.0
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -15839,9 +15839,13 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var font = options.font;
 
+    var text = fullLayout.meta ?
+        Lib.templateString(options.text, {meta: fullLayout.meta}) :
+        options.text;
+
     var annText = annTextGroupInner.append('text')
         .classed('annotation-text', true)
-        .text(options.text);
+        .text(text);
 
     function textLayout(s) {
         s.call(Drawing.font, font)
@@ -16308,6 +16312,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
+
                 this.call(textLayout);
 
                 modifyItem('text', _text);
@@ -17273,21 +17278,28 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
 
     var trace = cd[0].trace;
     var cbId = 'cb' + trace.uid;
-    var containerName = moduleOpts.container;
-    var container = containerName ? trace[containerName] : trace;
+    moduleOpts = Array.isArray(moduleOpts) ? moduleOpts : [moduleOpts];
 
-    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
-    if(!container || !container.showscale) return;
+    for(var i = 0; i < moduleOpts.length; i++) {
+        var containerName = moduleOpts[i].container;
 
-    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+        var container = containerName ? trace[containerName] : trace;
 
-    var scl = container.reversescale ?
-        flipScale(container.colorscale) :
-        container.colorscale;
+        gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+        if(!container || !container.showscale) continue;
 
-    cb.fillgradient(scl)
-        .zrange([container[moduleOpts.min], container[moduleOpts.max]])
-        .options(container.colorbar)();
+        var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+
+        var scl = container.reversescale ?
+            flipScale(container.colorscale) :
+            container.colorscale;
+
+        cb.fillgradient(scl)
+            .zrange([container[moduleOpts[i].min], container[moduleOpts[i].max]])
+            .options(container.colorbar)();
+
+        return;
+    }
 };
 
 },{"../colorscale/helpers":57,"./draw":51}],49:[function(_dereq_,module,exports){
@@ -18158,6 +18170,8 @@ function code(s) {
  *     most of these attributes already require a recalc, but the ones that do not
  *     have editType *style* or *plot* unless you override (presumably with *calc*)
  *
+ *   - anim {boolean) (dflt: undefined): is 'color' animatable?
+ *
  * @return {object}
  */
 module.exports = function colorScaleAttrs(context, opts) {
@@ -18207,6 +18221,10 @@ module.exports = function colorScaleAttrs(context, opts) {
             editType: editTypeOverride || 'style',
             
         };
+
+        if(opts.anim) {
+            attrs.color.anim = true;
+        }
     }
 
     attrs[auto] = {
@@ -21189,16 +21207,15 @@ module.exports = {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
 
 var Registry = _dereq_('../../registry');
 var Axes = _dereq_('../../plots/cartesian/axes');
+var Lib = _dereq_('../../lib');
 
 var makeComputeError = _dereq_('./compute_error');
-
 
 module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
@@ -21256,13 +21273,18 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
         }
     }
 
-    var extremes = Axes.findExtremes(axis, vals, {padded: true});
     var axId = axis._id;
-    trace._extremes[axId].min = trace._extremes[axId].min.concat(extremes.min);
-    trace._extremes[axId].max = trace._extremes[axId].max.concat(extremes.max);
+    var baseExtremes = trace._extremes[axId];
+    var extremes = Axes.findExtremes(
+        axis,
+        vals,
+        Lib.extendFlat({tozero: baseExtremes.opts.tozero}, {padded: true})
+    );
+    baseExtremes.min = baseExtremes.min.concat(extremes.min);
+    baseExtremes.max = baseExtremes.max.concat(extremes.max);
 }
 
-},{"../../plots/cartesian/axes":206,"../../registry":246,"./compute_error":71,"fast-isnumeric":13}],71:[function(_dereq_,module,exports){
+},{"../../lib":162,"../../plots/cartesian/axes":206,"../../registry":246,"./compute_error":71,"fast-isnumeric":13}],71:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -23090,15 +23112,10 @@ function createHoverText(hoverData, opts, gd) {
         if(d.nameOverride !== undefined) d.name = d.nameOverride;
 
         if(d.name) {
-            // strip out our pseudo-html elements from d.name (if it exists at all)
-            name = svgTextUtils.plainText(d.name || '');
-
-            var nameLength = Math.round(d.nameLength);
-
-            if(nameLength > -1 && name.length > nameLength) {
-                if(nameLength > 3) name = name.substr(0, nameLength - 3) + '...';
-                else name = name.substr(0, nameLength);
-            }
+            name = svgTextUtils.plainText(d.name || '', {
+                len: d.nameLength,
+                allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
+            });
         }
 
         if(d.zLabel !== undefined) {
@@ -23160,6 +23177,7 @@ function createHoverText(hoverData, opts, gd) {
 
         var tx2 = g.select('text.name');
         var tx2width = 0;
+        var tx2height = 0;
 
         // secondary label for non-empty 'name'
         if(name && name !== text) {
@@ -23171,18 +23189,20 @@ function createHoverText(hoverData, opts, gd) {
                 .attr('data-notex', 1)
                 .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
-            tx2width = tx2.node().getBoundingClientRect().width + 2 * HOVERTEXTPAD;
-        }
-        else {
+
+            var t2bb = tx2.node().getBoundingClientRect();
+            tx2width = t2bb.width + 2 * HOVERTEXTPAD;
+            tx2height = t2bb.height + 2 * HOVERTEXTPAD;
+        } else {
             tx2.remove();
             g.select('rect').remove();
         }
 
-        g.select('path')
-            .style({
-                fill: numsColor,
-                stroke: contrastColor
-            });
+        g.select('path').style({
+            fill: numsColor,
+            stroke: contrastColor
+        });
+
         var tbb = tx.node().getBoundingClientRect();
         var htx = d.xa._offset + (d.x0 + d.x1) / 2;
         var hty = d.ya._offset + (d.y0 + d.y1) / 2;
@@ -23193,7 +23213,7 @@ function createHoverText(hoverData, opts, gd) {
 
         d.ty0 = outerTop - tbb.top;
         d.bx = tbb.width + 2 * HOVERTEXTPAD;
-        d.by = tbb.height + 2 * HOVERTEXTPAD;
+        d.by = Math.max(tbb.height + 2 * HOVERTEXTPAD, tx2height);
         d.anchor = 'start';
         d.txwidth = tbb.width;
         d.tx2width = tx2width;
@@ -24743,6 +24763,11 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
         var axLetter = axLetters[i];
         var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
 
+        if(axRef !== 'paper') {
+            var ax = Axes.getFromId(gdMock, axRef);
+            ax._imgIndices.push(imageOut._index);
+        }
+
         Axes.coercePosition(imageOut, gdMock, coerce, axRef, axLetter, 0);
     }
 
@@ -25354,20 +25379,20 @@ module.exports = function draw(gd) {
     traces.enter().append('g').attr('class', 'traces');
     traces.exit().remove();
 
-    traces.call(style, gd)
-        .style('opacity', function(d) {
-            var trace = d[0].trace;
-            if(Registry.traceIs(trace, 'pie')) {
-                return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
-            } else {
-                return trace.visible === 'legendonly' ? 0.5 : 1;
-            }
-        })
-        .each(function() {
-            d3.select(this)
-                .call(drawTexts, gd, maxLength)
-                .call(setupTraceToggle, gd);
-        });
+    traces.style('opacity', function(d) {
+        var trace = d[0].trace;
+        if(Registry.traceIs(trace, 'pie')) {
+            return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
+        } else {
+            return trace.visible === 'legendonly' ? 0.5 : 1;
+        }
+    })
+    .each(function() {
+        d3.select(this)
+            .call(drawTexts, gd, maxLength)
+            .call(setupTraceToggle, gd);
+    })
+    .call(style, gd);
 
     Lib.syncOrAsync([Plots.previousPromises,
         function() {
@@ -25768,8 +25793,7 @@ function computeTextDimensions(g, gd) {
         width = mathjaxBB.width;
 
         Drawing.setTranslate(mathjaxGroup, 0, (height / 4));
-    }
-    else {
+    } else {
         var text = g.select('.legendtext');
         var textLines = svgTextUtils.lineCount(text);
         var textNode = text.node();
@@ -25781,12 +25805,10 @@ function computeTextDimensions(g, gd) {
         // to avoid getBoundingClientRect
         var textY = lineHeight * (0.3 + (1 - textLines) / 2);
         svgTextUtils.positionText(text, constants.textOffsetX, textY);
-        legendItem.lineHeight = lineHeight;
     }
 
-    height = Math.max(height, 16) + 3;
-
-    legendItem.height = height;
+    legendItem.lineHeight = lineHeight;
+    legendItem.height = Math.max(height, 16) + 3;
     legendItem.width = width;
 }
 
@@ -25879,7 +25901,6 @@ function computeLegendDimensions(gd, groups, traces) {
         var offsetX = 0;
         var fullTracesWidth = 0;
         var traceGap = opts.tracegroupgap || 5;
-        var oneRowLegend;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
@@ -25888,15 +25909,16 @@ function computeLegendDimensions(gd, groups, traces) {
         });
 
         // check if legend fits in one row
-        oneRowLegend = fullLayout._size.w > borderwidth + fullTracesWidth - traceGap;
+        var oneRowLegend = fullLayout._size.w > borderwidth + fullTracesWidth - traceGap;
+
         traces.each(function(d) {
             var legendItem = d[0];
             var traceWidth = oneRowLegend ? 40 + d[0].width : maxTraceWidth;
 
             if((borderwidth + offsetX + traceGap + traceWidth) > fullLayout._size.w) {
                 offsetX = 0;
-                rowHeight = rowHeight + maxTraceHeight;
-                opts._height = opts._height + maxTraceHeight;
+                rowHeight += maxTraceHeight;
+                opts._height += maxTraceHeight;
                 // reset for next row
                 maxTraceHeight = 0;
             }
@@ -25906,16 +25928,20 @@ function computeLegendDimensions(gd, groups, traces) {
                 (5 + borderwidth + legendItem.height / 2) + rowHeight);
 
             opts._width += traceGap + traceWidth;
-            opts._height = Math.max(opts._height, legendItem.height);
 
             // keep track of tallest trace in group
             offsetX += traceGap + traceWidth;
             maxTraceHeight = Math.max(legendItem.height, maxTraceHeight);
         });
 
+        if(oneRowLegend) {
+            opts._height = maxTraceHeight;
+        } else {
+            opts._height += maxTraceHeight;
+        }
+
         opts._width += borderwidth * 2;
         opts._height += 10 + borderwidth * 2;
-
     }
 
     // make sure we're only getting full pixels
@@ -26405,7 +26431,7 @@ module.exports = function style(s, gd) {
         var height = d[0].height;
 
         if(valign === 'middle' || !lineHeight || !height) {
-            layers.attr('transform', null); // this here is a fun d3 trick to unset DOM attributes
+            layers.attr('transform', null);
         } else {
             var factor = {top: 1, bottom: -1}[valign];
             var markerOffsetY = factor * (0.5 * (lineHeight - height + 3));
@@ -31985,6 +32011,10 @@ function draw(gd, titleClass, options) {
         if(!editable) txt = '';
     }
 
+    if(fullLayout.meta) {
+        txt = Lib.templateString(txt, {meta: fullLayout.meta});
+    }
+
     var elShouldExist = txt || editable;
 
     if(!group) {
@@ -33783,7 +33813,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.43.2';
+exports.version = '1.44.0';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -37609,7 +37639,7 @@ module.exports = function localize(gd, s) {
 
 /* eslint-disable no-console */
 
-var config = _dereq_('../plot_api/plot_config');
+var dfltConfig = _dereq_('../plot_api/plot_config').dfltConfig;
 
 var loggers = module.exports = {};
 
@@ -37620,7 +37650,7 @@ var loggers = module.exports = {};
  */
 
 loggers.log = function() {
-    if(config.logging > 1) {
+    if(dfltConfig.logging > 1) {
         var messages = ['LOG:'];
 
         for(var i = 0; i < arguments.length; i++) {
@@ -37632,7 +37662,7 @@ loggers.log = function() {
 };
 
 loggers.warn = function() {
-    if(config.logging > 0) {
+    if(dfltConfig.logging > 0) {
         var messages = ['WARN:'];
 
         for(var i = 0; i < arguments.length; i++) {
@@ -37644,7 +37674,7 @@ loggers.warn = function() {
 };
 
 loggers.error = function() {
-    if(config.logging > 0) {
+    if(dfltConfig.logging > 0) {
         var messages = ['ERROR:'];
 
         for(var i = 0; i < arguments.length; i++) {
@@ -38558,12 +38588,10 @@ module.exports = function pushUnique(array, item) {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = _dereq_('../lib');
-var config = _dereq_('../plot_api/plot_config');
-
+var dfltConfig = _dereq_('../plot_api/plot_config').dfltConfig;
 
 /**
  * Copy arg array *without* removing `undefined` values from objects.
@@ -38643,7 +38671,7 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
         queueObj.redo.args.push(redoArgs);
     }
 
-    if(gd.undoQueue.queue.length > config.queueLength) {
+    if(gd.undoQueue.queue.length > dfltConfig.queueLength) {
         gd.undoQueue.queue.shift();
         gd.undoQueue.index--;
     }
@@ -39485,8 +39513,6 @@ var ZERO_WIDTH_SPACE = '\u200b';
  */
 var PROTOCOLS = ['http:', 'https:', 'mailto:', '', undefined, ':'];
 
-var STRIP_TAGS = new RegExp('</?(' + Object.keys(TAG_STYLES).join('|') + ')( [^>]*)?/?>', 'g');
-
 var NEWLINES = /(\r\n?|\n)/g;
 
 var SPLIT_TAGS = /(<[^<>]*>)/;
@@ -39536,10 +39562,66 @@ function getQuotedMatch(_str, re) {
 
 var COLORMATCH = /(^|;)\s*color:/;
 
-exports.plainText = function(_str) {
-    // strip out our pseudo-html so we have a readable
-    // version to put into text fields
-    return (_str || '').replace(STRIP_TAGS, ' ');
+/**
+ * Strip string of tags
+ *
+ * @param {string} _str : input string
+ * @param {object} opts :
+ * - maxLen {number} max length of output string
+ * - allowedTags {array} list of pseudo-html tags to NOT strip
+ * @return {string}
+ */
+exports.plainText = function(_str, opts) {
+    opts = opts || {};
+
+    var len = (opts.len !== undefined && opts.len !== -1) ? opts.len : Infinity;
+    var allowedTags = opts.allowedTags !== undefined ? opts.allowedTags : ['br'];
+
+    var ellipsis = '...';
+    var eLen = ellipsis.length;
+
+    var oldParts = _str.split(SPLIT_TAGS);
+    var newParts = [];
+    var prevTag = '';
+    var l = 0;
+
+    for(var i = 0; i < oldParts.length; i++) {
+        var p = oldParts[i];
+        var match = p.match(ONE_TAG);
+        var tagType = match && match[2].toLowerCase();
+
+        if(tagType) {
+            // N.B. tags do not count towards string length
+            if(allowedTags.indexOf(tagType) !== -1) {
+                newParts.push(p);
+                prevTag = tagType;
+            }
+        } else {
+            var pLen = p.length;
+
+            if((l + pLen) < len) {
+                newParts.push(p);
+                l += pLen;
+            } else if(l < len) {
+                var pLen2 = len - l;
+
+                if(prevTag && (prevTag !== 'br' || pLen2 <= eLen || pLen <= eLen)) {
+                    newParts.pop();
+                }
+
+                if(len > eLen) {
+                    newParts.push(p.substr(0, pLen2 - eLen) + ellipsis);
+                } else {
+                    newParts.push(p.substr(0, pLen2));
+                }
+                break;
+            }
+
+            prevTag = '';
+        }
+    }
+
+    return newParts.join('');
 };
 
 /*
@@ -40695,11 +40777,11 @@ exports.cleanData = function(data) {
         }
 
         // scl->scale, reversescl->reversescale
-        if('scl' in trace) {
+        if('scl' in trace && !('colorscale' in trace)) {
             trace.colorscale = trace.scl;
             delete trace.scl;
         }
-        if('reversescl' in trace) {
+        if('reversescl' in trace && !('reversescale' in trace)) {
             trace.reversescale = trace.reversescl;
             delete trace.reversescl;
         }
@@ -41378,7 +41460,7 @@ var initInteractions = _dereq_('../plots/cartesian/graph_interact').initInteract
 var xmlnsNamespaces = _dereq_('../constants/xmlns_namespaces');
 var svgTextUtils = _dereq_('../lib/svg_text_utils');
 
-var defaultConfig = _dereq_('./plot_config');
+var dfltConfig = _dereq_('./plot_config').dfltConfig;
 var manageArrays = _dereq_('./manage_arrays');
 var helpers = _dereq_('./helpers');
 var subroutines = _dereq_('./subroutines');
@@ -41750,7 +41832,7 @@ function emitAfterPlot(gd) {
 }
 
 exports.setPlotConfig = function setPlotConfig(obj) {
-    return Lib.extendFlat(defaultConfig, obj);
+    return Lib.extendFlat(dfltConfig, obj);
 };
 
 function setBackground(gd, bgColor) {
@@ -41768,7 +41850,7 @@ function opaqueSetBackground(gd, bgColor) {
 
 function setPlotContext(gd, config) {
     if(!gd._context) {
-        gd._context = Lib.extendDeep({}, defaultConfig);
+        gd._context = Lib.extendDeep({}, dfltConfig);
 
         // stash <base> href, used to make robust clipPath URLs
         var base = d3.select('base');
@@ -41852,6 +41934,25 @@ function setPlotContext(gd, config) {
     // Check if gd has a specified widht/height to begin with
     context._hasZeroHeight = context._hasZeroHeight || gd.clientHeight === 0;
     context._hasZeroWidth = context._hasZeroWidth || gd.clientWidth === 0;
+
+    // fill context._scrollZoom helper to help manage scrollZoom flaglist
+    var szIn = context.scrollZoom;
+    var szOut = context._scrollZoom = {};
+    if(szIn === true) {
+        szOut.cartesian = 1;
+        szOut.gl3d = 1;
+        szOut.geo = 1;
+        szOut.mapbox = 1;
+    } else if(typeof szIn === 'string') {
+        var parts = szIn.split('+');
+        for(i = 0; i < parts.length; i++) {
+            szOut[parts[i]] = 1;
+        }
+    } else if(szIn !== false) {
+        szOut.gl3d = 1;
+        szOut.geo = 1;
+        szOut.mapbox = 1;
+    }
 }
 
 function plotLegacyPolar(gd, data, layout) {
@@ -44064,9 +44165,11 @@ exports.react = function(gd, data, layout, config) {
         var newFullData = gd._fullData;
         var newFullLayout = gd._fullLayout;
         var immutable = newFullLayout.datarevision === undefined;
+        var transition = newFullLayout.transition;
 
-        var restyleFlags = diffData(gd, oldFullData, newFullData, immutable);
-        var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable);
+        var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition);
+        var newDataRevision = relayoutFlags.newDataRevision;
+        var restyleFlags = diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision);
 
         // TODO: how to translate this part of relayout to Plotly.react?
         // // Setting width or height to null must reset the graph's width / height
@@ -44096,7 +44199,19 @@ exports.react = function(gd, data, layout, config) {
             seq.push(addFrames);
         }
 
-        if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
+        // Transition pathway,
+        // only used when 'transition' is set by user and
+        // when at least one animatable attribute has changed,
+        // N.B. config changed aren't animatable
+        if(newFullLayout.transition && !configChanged && (restyleFlags.anim || relayoutFlags.anim)) {
+            Plots.doCalcdata(gd);
+            subroutines.doAutoRangeAndConstraints(gd);
+
+            seq.push(function() {
+                return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
+            });
+        }
+        else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
             gd._fullLayout._skipDefaults = true;
             seq.push(exports.plot);
         }
@@ -44149,8 +44264,10 @@ exports.react = function(gd, data, layout, config) {
 
 };
 
-function diffData(gd, oldFullData, newFullData, immutable) {
-    if(oldFullData.length !== newFullData.length) {
+function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
+    var sameTraceLength = oldFullData.length === newFullData.length;
+
+    if(!transition && !sameTraceLength) {
         return {
             fullReplot: true,
             calc: true
@@ -44159,6 +44276,9 @@ function diffData(gd, oldFullData, newFullData, immutable) {
 
     var flags = editTypes.traceFlags();
     flags.arrays = {};
+    flags.nChanges = 0;
+    flags.nChangesAnim = 0;
+
     var i, trace;
 
     function getTraceValObject(parts) {
@@ -44169,31 +44289,41 @@ function diffData(gd, oldFullData, newFullData, immutable) {
         getValObject: getTraceValObject,
         flags: flags,
         immutable: immutable,
+        transition: transition,
+        newDataRevision: newDataRevision,
         gd: gd
     };
-
 
     var seenUIDs = {};
 
     for(i = 0; i < oldFullData.length; i++) {
-        trace = newFullData[i]._fullInput;
-        if(Plots.hasMakesDataTransform(trace)) trace = newFullData[i];
-        if(seenUIDs[trace.uid]) continue;
-        seenUIDs[trace.uid] = 1;
+        if(newFullData[i]) {
+            trace = newFullData[i]._fullInput;
+            if(Plots.hasMakesDataTransform(trace)) trace = newFullData[i];
+            if(seenUIDs[trace.uid]) continue;
+            seenUIDs[trace.uid] = 1;
 
-        getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
+            getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
+        }
     }
 
     if(flags.calc || flags.plot) {
         flags.fullReplot = true;
     }
 
+    if(transition && flags.nChanges && flags.nChangesAnim) {
+        flags.anim = (flags.nChanges === flags.nChangesAnim) && sameTraceLength ? 'all' : 'some';
+    }
+
     return flags;
 }
 
-function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
+function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
     var flags = editTypes.layoutFlags();
     flags.arrays = {};
+    flags.rangesAltered = {};
+    flags.nChanges = 0;
+    flags.nChangesAnim = 0;
 
     function getLayoutValObject(parts) {
         return PlotSchema.getLayoutValObject(newFullLayout, parts);
@@ -44203,6 +44333,7 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
         getValObject: getLayoutValObject,
         flags: flags,
         immutable: immutable,
+        transition: transition,
         gd: gd
     };
 
@@ -44212,11 +44343,15 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
         flags.layoutReplot = true;
     }
 
+    if(transition && flags.nChanges && flags.nChangesAnim) {
+        flags.anim = flags.nChanges === flags.nChangesAnim ? 'all' : 'some';
+    }
+
     return flags;
 }
 
 function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
-    var valObject, key;
+    var valObject, key, astr;
 
     var getValObject = opts.getValObject;
     var flags = opts.flags;
@@ -44231,6 +44366,25 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             return;
         }
         editTypes.update(flags, valObject);
+
+        if(editType !== 'none') {
+            flags.nChanges++;
+        }
+
+        // track animatable changes
+        if(opts.transition && valObject.anim) {
+            flags.nChangesAnim++;
+        }
+
+        // track cartesian axes with altered ranges
+        if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
+            flags.rangesAltered[outerparts[0]] = 1;
+        }
+
+        // track datarevision changes
+        if(key === 'datarevision') {
+            flags.newDataRevision = 1;
+        }
     }
 
     function valObjectCanBeDataArray(valObject) {
@@ -44239,10 +44393,12 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
 
     for(key in oldContainer) {
         // short-circuit based on previous calls or previous keys that already maximized the pathway
-        if(flags.calc) return;
+        if(flags.calc && !opts.transition) return;
 
         var oldVal = oldContainer[key];
         var newVal = newContainer[key];
+        var parts = outerparts.concat(key);
+        astr = parts.join('.');
 
         if(key.charAt(0) === '_' || typeof oldVal === 'function' || oldVal === newVal) continue;
 
@@ -44258,7 +44414,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         if(key === 'range' && newContainer.autorange) continue;
         if((key === 'zmin' || key === 'zmax') && newContainer.type === 'contourcarpet') continue;
 
-        var parts = outerparts.concat(key);
         valObject = getValObject(parts);
 
         // in case type changed, we may not even *have* a valObject.
@@ -44328,6 +44483,11 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
                 if(immutable) {
                     flags.calc = true;
+                }
+
+                // look for animatable attributes when the data changed
+                if(immutable || opts.newDataRevision) {
+                    changed();
                 }
             }
             else if(wasArray !== nowArray) {
@@ -45127,214 +45287,281 @@ function makePlotFramework(gd) {
  *
  * The defaults are the appropriate settings for plotly.js,
  * so we get the right experience without any config argument.
+ *
+ * N.B. the config options are not coerced using Lib.coerce so keys
+ * like `valType` and `values` are only set for documentation purposes
+ * at the moment.
  */
 
-module.exports = {
-
-    // no interactivity, for export or image generation
-    staticPlot: false,
-
-    // base URL for the 'Edit in Chart Studio' (aka sendDataToCloud) mode bar button
-    // and the showLink/sendData on-graph link
-    plotlyServerURL: 'https://plot.ly',
-
-    /*
-     * we can edit titles, move annotations, etc - sets all pieces of `edits`
-     * unless a separate `edits` config item overrides individual parts
-     */
-    editable: false,
-    edits: {
-        /*
-         * annotationPosition: the main anchor of the annotation, which is the
-         * text (if no arrow) or the arrow (which drags the whole thing leaving
-         * the arrow length & direction unchanged)
-         */
-        annotationPosition: false,
-        // just for annotations with arrows, change the length  and direction of the arrow
-        annotationTail: false,
-        annotationText: false,
-        axisTitleText: false,
-        colorbarPosition: false,
-        colorbarTitleText: false,
-        legendPosition: false,
-        // edit the trace name fields from the legend
-        legendText: false,
-        shapePosition: false,
-        // the global `layout.title`
-        titleText: false
+var configAttributes = {
+    staticPlot: {
+        valType: 'boolean',
+        dflt: false,
+        
     },
 
-    /*
-     * DO autosize once regardless of layout.autosize
-     * (use default width or height values otherwise)
-     */
-    autosizable: false,
+    plotlyServerURL: {
+        valType: 'string',
+        dflt: 'https://plot.ly',
+        
+    },
 
-    /*
-     * responsive: determines whether to change the layout size when window is resized.
-     * In v2, this option will be removed and will always be true.
-     */
-    responsive: false,
+    editable: {
+        valType: 'boolean',
+        dflt: false,
+        
+    },
+    edits: {
+        annotationPosition: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        annotationTail: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        annotationText: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        axisTitleText: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        colorbarPosition: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        colorbarTitleText: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        legendPosition: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        legendText: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        shapePosition: {
+            valType: 'boolean',
+            dflt: false,
+            
+        },
+        titleText: {
+            valType: 'boolean',
+            dflt: false,
+            
+        }
+    },
 
-    // set the length of the undo/redo queue
-    queueLength: 0,
+    autosizable: {
+        valType: 'boolean',
+        dflt: false,
+        
+    },
+    responsive: {
+        valType: 'boolean',
+        dflt: false,
+        
+    },
+    fillFrame: {
+        valType: 'boolean',
+        dflt: false,
+        
+    },
+    frameMargins: {
+        valType: 'number',
+        dflt: 0,
+        min: 0,
+        max: 0.5,
+        
+    },
 
-    // if we DO autosize, do we fill the container or the screen?
-    fillFrame: false,
+    scrollZoom: {
+        valType: 'flaglist',
+        flags: ['cartesian', 'gl3d', 'geo', 'mapbox'],
+        extras: [true, false],
+        dflt: 'gl3d+geo+mapbox',
+        
+    },
+    doubleClick: {
+        valType: 'enumerated',
+        values: [false, 'reset', 'autosize', 'reset+autosize'],
+        dflt: 'reset+autosize',
+        
+    },
 
-    // if we DO autosize, set the frame margins in percents of plot size
-    frameMargins: 0,
+    showAxisDragHandles: {
+        valType: 'boolean',
+        dflt: true,
+        
+    },
+    showAxisRangeEntryBoxes: {
+        valType: 'boolean',
+        dflt: true,
+        
+    },
 
-    // mousewheel or two-finger scroll zooms the plot
-    scrollZoom: false,
+    showTips: {
+        valType: 'boolean',
+        dflt: true,
+        
+    },
 
-    // double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
-    doubleClick: 'reset+autosize',
+    showLink: {
+        valType: 'boolean',
+        dflt: false,
+        
+    },
+    linkText: {
+        valType: 'string',
+        dflt: 'Edit chart',
+        noBlank: true,
+        
+    },
+    sendData: {
+        valType: 'boolean',
+        dflt: true,
+        
+    },
+    showSources: {
+        valType: 'any',
+        dflt: false,
+        
+    },
 
-    // new users see some hints about interactivity
-    showTips: true,
+    displayModeBar: {
+        valType: 'enumerated',
+        values: ['hover', true, false],
+        dflt: 'hover',
+        
+    },
+    showSendToCloud: {
+        valType: 'boolean',
+        dflt: false,
+        
+    },
+    modeBarButtonsToRemove: {
+        valType: 'any',
+        dflt: [],
+        
+    },
+    modeBarButtonsToAdd: {
+        valType: 'any',
+        dflt: [],
+        
+    },
+    modeBarButtons: {
+        valType: 'any',
+        dflt: false,
+        
+    },
+    toImageButtonOptions: {
+        valType: 'any',
+        dflt: {},
+        
+    },
+    displaylogo: {
+        valType: 'boolean',
+        dflt: true,
+        
+    },
+    watermark: {
+        valType: 'boolean',
+        dflt: false,
+        
+    },
 
-    // enable axis pan/zoom drag handles
-    showAxisDragHandles: true,
+    plotGlPixelRatio: {
+        valType: 'number',
+        dflt: 2,
+        min: 1,
+        max: 4,
+        
+    },
 
-    /*
-     * enable direct range entry at the pan/zoom drag points
-     * (drag handles must be enabled above)
-     */
-    showAxisRangeEntryBoxes: true,
+    setBackground: {
+        valType: 'any',
+        dflt: 'transparent',
+        
+    },
 
-    /*
-     * Add a text link to open this plot in plotly?
-     * This link shows up in the bottom right corner of the plot, and works
-     * identically to the newer ModeBar button controlled by `showSendToCloud`
-     * unless `sendData: false` is used.
-     */
-    showLink: false,
+    topojsonURL: {
+        valType: 'string',
+        noBlank: true,
+        dflt: 'https://cdn.plot.ly/',
+        
+    },
 
-    /*
-     * If we show a text link (`showLink: true`), does it contain data or just
-     * a reference to a plotly cloud file? This option should only be used on
-     * plot.ly or another plotly server, and is not supported by the newer
-     * ModeBar button `showSendToCloud`.
-     */
-    sendData: true,
+    mapboxAccessToken: {
+        valType: 'string',
+        dflt: null,
+        
+    },
 
-    /*
-     * Should we include a ModeBar button, labeled "Edit in Chart Studio",
-     * that sends this chart to plot.ly or another plotly server as specified
-     * by `plotlyServerURL` for editing, export, etc? Prior to version 1.43.0
-     * this button was included by default, now it is opt-in using this flag.
-     *
-     * Note that this button can (depending on `plotlyServerURL`) send your data
-     * to an external server. However that server doesn't persist your data
-     * until you arrive at the Chart Studio and explicitly click "Save".
-     */
-    showSendToCloud: false,
+    logging: {
+        valType: 'boolean',
+        dflt: 1,
+        
+    },
 
-    // text appearing in the sendData link
-    linkText: 'Edit chart',
+    queueLength: {
+        valType: 'integer',
+        min: 0,
+        dflt: 0,
+        
+    },
 
-    // false or function adding source(s) to linkText <text>
-    showSources: false,
+    globalTransforms: {
+        valType: 'any',
+        dflt: [],
+        
+    },
 
-    // display the mode bar (true, false, or 'hover')
-    displayModeBar: 'hover',
+    locale: {
+        valType: 'string',
+        dflt: 'en-US',
+        
+    },
 
-    /*
-     * remove mode bar button by name
-     * (see ../components/modebar/buttons.js for the list of names)
-     */
-    modeBarButtonsToRemove: [],
+    locales: {
+        valType: 'any',
+        dflt: {},
+        
+    }
+};
 
-    /*
-     * add mode bar button using config objects
-     * (see ./components/modebar/buttons.js for list of arguments)
-     */
-    modeBarButtonsToAdd: [],
+var dfltConfig = {};
 
-    /*
-     * fully custom mode bar buttons as nested array,
-     * where the outer arrays represents button groups, and
-     * the inner arrays have buttons config objects or names of default buttons
-     * (see ../components/modebar/buttons.js for more info)
-     */
-    modeBarButtons: false,
+function crawl(src, target) {
+    for(var k in src) {
+        var obj = src[k];
+        if(obj.valType) {
+            target[k] = obj.dflt;
+        } else {
+            if(!target[k]) {
+                target[k] = {};
+            }
+            crawl(obj, target[k]);
+        }
+    }
+}
 
-    // statically override options for toImage modebar button
-    // allowed keys are format, filename, width, height, scale
-    // see ../components/modebar/buttons.js
-    toImageButtonOptions: {},
+crawl(configAttributes, dfltConfig);
 
-    // add the plotly logo on the end of the mode bar
-    displaylogo: true,
-
-    // watermark the images with the company's logo
-    watermark: false,
-
-    // increase the pixel ratio for Gl plot images
-    plotGlPixelRatio: 2,
-
-    /*
-     * background setting function
-     * 'transparent' sets the background `layout.paper_color`
-     * 'opaque' blends bg color with white ensuring an opaque background
-     * or any other custom function of gd
-     */
-    setBackground: 'transparent',
-
-    // URL to topojson files used in geo charts
-    topojsonURL: 'https://cdn.plot.ly/',
-
-    /*
-     * Mapbox access token (required to plot mapbox trace types)
-     * If using an Mapbox Atlas server, set this option to '',
-     * so that plotly.js won't attempt to authenticate to the public Mapbox server.
-     */
-    mapboxAccessToken: null,
-
-    /*
-     * Turn all console logging on or off (errors will be thrown)
-     * This should ONLY be set via Plotly.setPlotConfig
-     * 0: no logs
-     * 1: warnings and errors, but not informational messages
-     * 2: verbose logs
-     */
-    logging: 1,
-
-    /*
-     * Set global transform to be applied to all traces with no
-     * specification needed
-     */
-    globalTransforms: [],
-
-    /*
-     * Which localization should we use?
-     * Should be a string like 'en' or 'en-US'.
-     */
-    locale: 'en-US',
-
-    /*
-     * Localization definitions
-     * Locales can be provided either here (specific to one chart) or globally
-     * by registering them as modules.
-     * Should be an object of objects {locale: {dictionary: {...}, format: {...}}}
-     * {
-     *     da: {
-     *         dictionary: {'Reset axes': 'Nulstil aksler', ...},
-     *         format: {months: [...], shortMonths: [...]}
-     *     },
-     *     ...
-     * }
-     * All parts are optional. When looking for translation or format fields, we
-     * look first for an exact match in a config locale, then in a registered
-     * module. If those fail, we strip off any regionalization ('en-US' -> 'en')
-     * and try each (config, registry) again. The final fallback for translation
-     * is untranslated (which is US English) and for formats is the base English
-     * (the only consequence being the last fallback date format %x is DD/MM/YYYY
-     * instead of MM/DD/YYYY). Currently `grouping` and `currency` are ignored
-     * for our automatic number formatting, but can be used in custom formats.
-     */
-    locales: {}
+module.exports = {
+    configAttributes: configAttributes,
+    dfltConfig: dfltConfig
 };
 
 },{}],195:[function(_dereq_,module,exports){
@@ -45356,6 +45583,7 @@ var baseAttributes = _dereq_('../plots/attributes');
 var baseLayoutAttributes = _dereq_('../plots/layout_attributes');
 var frameAttributes = _dereq_('../plots/frame_attributes');
 var animationAttributes = _dereq_('../plots/animation_attributes');
+var configAttributes = _dereq_('./plot_config').configAttributes;
 
 // polar attributes are not part of the Registry yet
 var polarAreaAttrs = _dereq_('../plots/polar/legacy/area_attributes');
@@ -45387,7 +45615,7 @@ exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
  *  - transforms
  *  - frames
  *  - animations
- *  - config (coming soon ...)
+ *  - config
  */
 exports.get = function() {
     var traces = {};
@@ -45421,7 +45649,9 @@ exports.get = function() {
         transforms: transforms,
 
         frames: getFramesAttributes(),
-        animation: formatAttributes(animationAttributes)
+        animation: formatAttributes(animationAttributes),
+
+        config: formatAttributes(configAttributes)
     };
 };
 
@@ -46023,7 +46253,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
 
-},{"../lib":162,"../plots/animation_attributes":201,"../plots/attributes":203,"../plots/frame_attributes":234,"../plots/layout_attributes":237,"../plots/polar/legacy/area_attributes":240,"../plots/polar/legacy/axis_attributes":241,"../registry":246,"./edit_types":189}],196:[function(_dereq_,module,exports){
+},{"../lib":162,"../plots/animation_attributes":201,"../plots/attributes":203,"../plots/frame_attributes":234,"../plots/layout_attributes":237,"../plots/polar/legacy/area_attributes":240,"../plots/polar/legacy/axis_attributes":241,"../registry":246,"./edit_types":189,"./plot_config":194}],196:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -47093,7 +47323,7 @@ var PlotSchema = _dereq_('./plot_schema');
 var Plots = _dereq_('../plots/plots');
 var plotAttributes = _dereq_('../plots/attributes');
 var Template = _dereq_('./plot_template');
-var dfltConfig = _dereq_('./plot_config');
+var dfltConfig = _dereq_('./plot_config').dfltConfig;
 
 /**
  * Plotly.makeTemplate: create a template off an existing figure to reuse
@@ -47102,13 +47332,14 @@ var dfltConfig = _dereq_('./plot_config');
  * Note: separated from the rest of templates because otherwise we get circular
  * references due to PlotSchema.
  *
- * @param {object|DOM element} figure: The figure to base the template on
+ * @param {object|DOM element|string} figure: The figure to base the template on
  *     should contain a trace array `figure.data`
  *     and a layout object `figure.layout`
  * @returns {object} template: the extracted template - can then be used as
  *     `layout.template` in another figure.
  */
 exports.makeTemplate = function(figure) {
+    figure = Lib.isPlainObject(figure) ? figure : Lib.getGraphDiv(figure);
     figure = Lib.extendDeep({_context: dfltConfig}, {data: figure.data, layout: figure.layout});
     Plots.supplyDefaults(figure);
     var data = figure.data || [];
@@ -47754,7 +47985,7 @@ module.exports = toImage;
 var Lib = _dereq_('../lib');
 var Plots = _dereq_('../plots/plots');
 var PlotSchema = _dereq_('./plot_schema');
-var dfltConfig = _dereq_('./plot_config');
+var dfltConfig = _dereq_('./plot_config').dfltConfig;
 
 var isPlainObject = Lib.isPlainObject;
 var isArray = Array.isArray;
@@ -48239,6 +48470,7 @@ module.exports = {
             
             min: 0,
             dflt: 500,
+            editType: 'none',
             
         },
         easing: {
@@ -48283,8 +48515,17 @@ module.exports = {
                 'bounce-in-out'
             ],
             
+            editType: 'none',
             
         },
+        ordering: {
+            valType: 'enumerated',
+            values: ['layout first', 'traces first'],
+            dflt: 'layout first',
+            
+            editType: 'none',
+            
+        }
     }
 };
 
@@ -48446,11 +48687,14 @@ module.exports = {
     uid: {
         valType: 'string',
         
-        editType: 'plot'
+        editType: 'plot',
+        anim: true,
+        
     },
     ids: {
         valType: 'data_array',
         editType: 'calc',
+        anim: true,
         
     },
     customdata: {
@@ -48837,7 +49081,7 @@ function doAutoRange(gd, ax) {
  *   - ax.d2l
  * @param {array} data:
  *  array of numbers (i.e. already run though ax.d2c)
- * @param {object} options:
+ * @param {object} opts:
  *  available keys are:
  *      vpad: (number or number array) pad values (data value +-vpad)
  *      ppad: (number or number array) pad pixels (pixel location +-ppad)
@@ -48855,17 +49099,18 @@ function doAutoRange(gd, ax) {
  *    - val {number}
  *    - pad {number}
  *    - extrappad {number}
+ *  - opts {object}: a ref to the passed "options" object
  */
-function findExtremes(ax, data, options) {
-    if(!options) options = {};
+function findExtremes(ax, data, opts) {
+    if(!opts) opts = {};
     if(!ax._m) ax.setScale();
 
     var minArray = [];
     var maxArray = [];
 
     var len = data.length;
-    var extrapad = options.padded || false;
-    var tozero = options.tozero && (ax.type === 'linear' || ax.type === '-');
+    var extrapad = opts.padded || false;
+    var tozero = opts.tozero && (ax.type === 'linear' || ax.type === '-');
     var isLog = ax.type === 'log';
     var hasArrayOption = false;
     var i, v, di, dmin, dmax, ppadiplus, ppadiminus, vmin, vmax;
@@ -48882,11 +49127,11 @@ function findExtremes(ax, data, options) {
     }
 
     var ppadplus = makePadAccessor((ax._m > 0 ?
-        options.ppadplus : options.ppadminus) || options.ppad || 0);
+        opts.ppadplus : opts.ppadminus) || opts.ppad || 0);
     var ppadminus = makePadAccessor((ax._m > 0 ?
-        options.ppadminus : options.ppadplus) || options.ppad || 0);
-    var vpadplus = makePadAccessor(options.vpadplus || options.vpad);
-    var vpadminus = makePadAccessor(options.vpadminus || options.vpad);
+        opts.ppadminus : opts.ppadplus) || opts.ppad || 0);
+    var vpadplus = makePadAccessor(opts.vpadplus || opts.vpad);
+    var vpadminus = makePadAccessor(opts.vpadminus || opts.vpad);
 
     if(!hasArrayOption) {
         // with no arrays other than `data` we don't need to consider
@@ -48950,7 +49195,11 @@ function findExtremes(ax, data, options) {
     for(i = 0; i < iMax; i++) addItem(i);
     for(i = len - 1; i >= iMax; i--) addItem(i);
 
-    return {min: minArray, max: maxArray};
+    return {
+        min: minArray,
+        max: maxArray,
+        opts: opts
+    };
 }
 
 function collapseMinArray(array, newVal, newPad, opts) {
@@ -49165,6 +49414,39 @@ axes.cleanPosition = function(pos, gd, axRef) {
         axes.getFromId(gd, axRef).cleanPos;
 
     return cleanPos(pos);
+};
+
+axes.redrawComponents = function(gd, axIds) {
+    axIds = axIds ? axIds : axes.listIds(gd);
+
+    var fullLayout = gd._fullLayout;
+
+    function _redrawOneComp(moduleName, methodName, stashName, shortCircuit) {
+        var method = Registry.getComponentMethod(moduleName, methodName);
+        var stash = {};
+
+        for(var i = 0; i < axIds.length; i++) {
+            var ax = fullLayout[axes.id2name(axIds[i])];
+            var indices = ax[stashName];
+
+            for(var j = 0; j < indices.length; j++) {
+                var ind = indices[j];
+
+                if(!stash[ind]) {
+                    method(gd, ind);
+                    stash[ind] = 1;
+                    // once is enough for images (which doesn't use the `i` arg anyway)
+                    if(shortCircuit) return;
+                }
+            }
+        }
+    }
+
+    // annotations and shapes 'draw' method is slow,
+    // use the finer-grained 'drawOne' method instead
+    _redrawOneComp('annotations', 'drawOne', '_annIndices');
+    _redrawOneComp('shapes', 'drawOne', '_shapeIndices');
+    _redrawOneComp('images', 'draw', '_imgIndices', true);
 };
 
 var getDataConversions = axes.getDataConversions = function(gd, trace, target, targetArray) {
@@ -53365,7 +53647,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // deactivate mousewheel scrolling on embedded graphs
         // devs can override this with layout._enablescrollzoom,
         // but _ ensures this setting won't leave their page
-        if(!gd._context.scrollZoom && !gd._fullLayout._enablescrollzoom) {
+        if(!gd._context._scrollZoom.cartesian && !gd._fullLayout._enablescrollzoom) {
             return;
         }
 
@@ -53378,16 +53660,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        var pc = gd.querySelector('.plotly');
-
         recomputeAxisLists();
-
-        // if the plot has scrollbars (more than a tiny excess)
-        // disable scrollzoom too.
-        if(pc.scrollHeight - pc.clientHeight > 10 ||
-                pc.scrollWidth - pc.clientWidth > 10) {
-            return;
-        }
 
         clearTimeout(redrawTimer);
 
@@ -53438,7 +53711,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // viewbox redraw at first
         updateSubplots(scrollViewBox);
-        ticksAndAnnotations(ns, ew);
+        ticksAndAnnotations();
 
         // then replot after a delay to make sure
         // no more scrolling is coming
@@ -53470,7 +53743,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(xActive) dragAxList(xaxes, dx);
             if(yActive) dragAxList(yaxes, dy);
             updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
-            ticksAndAnnotations(yActive, xActive);
+            ticksAndAnnotations();
             return;
         }
 
@@ -53542,12 +53815,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
-        ticksAndAnnotations(yActive, xActive);
+        ticksAndAnnotations();
     }
 
     // Draw ticks and annotations (and other components) when ranges change.
     // Also records the ranges that have changed for use by update at the end.
-    function ticksAndAnnotations(ns, ew) {
+    function ticksAndAnnotations() {
         var activeAxIds = [];
         var i;
 
@@ -53575,25 +53848,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             updates[ax._name + '.range[1]'] = ax.range[1];
         }
 
-        function redrawObjs(objArray, method, shortCircuit) {
-            for(i = 0; i < objArray.length; i++) {
-                var obji = objArray[i];
-
-                if((ew && activeAxIds.indexOf(obji.xref) !== -1) ||
-                    (ns && activeAxIds.indexOf(obji.yref) !== -1)) {
-                    method(gd, i);
-                    // once is enough for images (which doesn't use the `i` arg anyway)
-                    if(shortCircuit) return;
-                }
-            }
-        }
-
-        // annotations and shapes 'draw' method is slow,
-        // use the finer-grained 'drawOne' method instead
-
-        redrawObjs(gd._fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(gd._fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(gd._fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+        Axes.redrawComponents(gd, activeAxIds);
     }
 
     function doubleClick() {
@@ -55088,11 +55343,12 @@ module.exports = {
         valType: 'info_array',
         
         items: [
-            {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}},
-            {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}}
+            {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true},
+            {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true}
         ],
         editType: 'axrange',
         impliedEdits: {'autorange': false},
+        anim: true,
         
     },
     fixedrange: {
@@ -55739,6 +55995,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
         axLayoutOut._annIndices = [];
         axLayoutOut._shapeIndices = [];
+        axLayoutOut._imgIndices = [];
         axLayoutOut._subplotsWith = [];
         axLayoutOut._counterAxes = [];
 
@@ -55989,7 +56246,11 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         // in the axes popover to hide domain for the overlaying axis.
         // perhaps I should make a private version _domain that all axes get???
         var domain = coerce('domain', dfltDomain);
-        if(domain[0] > domain[1] - 0.01) containerOut.domain = dfltDomain;
+
+        // according to https://www.npmjs.com/package/canvas-size
+        // the minimum value of max canvas width across browsers and devices is 4096
+        // which applied in the calculation below:
+        if(domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
         Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
     }
 
@@ -57601,147 +57862,43 @@ var d3 = _dereq_('d3');
 var Registry = _dereq_('../../registry');
 var Drawing = _dereq_('../../components/drawing');
 var Axes = _dereq_('./axes');
-var axisRegex = _dereq_('./constants').attrRegex;
 
-module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
+/**
+ * transitionAxes
+ *
+ * transition axes from one set of ranges to another, using a svg
+ * transformations, similar to during panning.
+ *
+ * @param {DOM element | object} gd
+ * @param {array} edits : array of 'edits', each item with
+ * - plotinfo {object} subplot object
+ * - xr0 {array} initial x-range
+ * - xr1 {array} end x-range
+ * - yr0 {array} initial y-range
+ * - yr1 {array} end y-range
+ * @param {object} transitionOpts
+ * @param {function} makeOnCompleteCallback
+ */
+module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
-    var axes = [];
 
-    function computeUpdates(layout) {
-        var ai, attrList, match, axis, update;
-        var updates = {};
-
-        for(ai in layout) {
-            attrList = ai.split('.');
-            match = attrList[0].match(axisRegex);
-            if(match) {
-                var axisLetter = ai.charAt(0);
-                var axisName = attrList[0];
-                axis = fullLayout[axisName];
-                update = {};
-
-                if(Array.isArray(layout[ai])) {
-                    update.to = layout[ai].slice(0);
-                } else {
-                    if(Array.isArray(layout[ai].range)) {
-                        update.to = layout[ai].range.slice(0);
-                    }
-                }
-                if(!update.to) continue;
-
-                update.axisName = axisName;
-                update.length = axis._length;
-
-                axes.push(axisLetter);
-
-                updates[axisLetter] = update;
-            }
-        }
-
-        return updates;
-    }
-
-    function computeAffectedSubplots(fullLayout, updatedAxisIds, updates) {
-        var plotName;
-        var plotinfos = fullLayout._plots;
-        var affectedSubplots = [];
-        var toX, toY;
-
-        for(plotName in plotinfos) {
-            var plotinfo = plotinfos[plotName];
-
-            if(affectedSubplots.indexOf(plotinfo) !== -1) continue;
-
-            var x = plotinfo.xaxis._id;
-            var y = plotinfo.yaxis._id;
-            var fromX = plotinfo.xaxis.range;
-            var fromY = plotinfo.yaxis.range;
-
-            // Store the initial range at the beginning of this transition:
-            plotinfo.xaxis._r = plotinfo.xaxis.range.slice();
-            plotinfo.yaxis._r = plotinfo.yaxis.range.slice();
-
-            if(updates[x]) {
-                toX = updates[x].to;
-            } else {
-                toX = fromX;
-            }
-            if(updates[y]) {
-                toY = updates[y].to;
-            } else {
-                toY = fromY;
-            }
-
-            if(fromX[0] === toX[0] && fromX[1] === toX[1] && fromY[0] === toY[0] && fromY[1] === toY[1]) continue;
-
-            if(updatedAxisIds.indexOf(x) !== -1 || updatedAxisIds.indexOf(y) !== -1) {
-                affectedSubplots.push(plotinfo);
-            }
-        }
-
-        return affectedSubplots;
-    }
-
-    var updates = computeUpdates(newLayout);
-    var updatedAxisIds = Object.keys(updates);
-    var affectedSubplots = computeAffectedSubplots(fullLayout, updatedAxisIds, updates);
-
-    function updateLayoutObjs() {
-        function redrawObjs(objArray, method, shortCircuit) {
-            for(var i = 0; i < objArray.length; i++) {
-                method(gd, i);
-
-                // once is enough for images (which doesn't use the `i` arg anyway)
-                if(shortCircuit) return;
-            }
-        }
-
-        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
-    }
-
-    if(!affectedSubplots.length) {
-        updateLayoutObjs();
-        return false;
-    }
-
-    function ticksAndAnnotations(xa, ya) {
-        var activeAxIds = [xa._id, ya._id];
-        var i;
-
-        Axes.drawOne(gd, xa, {skipTitle: true});
-        Axes.drawOne(gd, ya, {skipTitle: true});
-
-        function redrawObjs(objArray, method, shortCircuit) {
-            for(i = 0; i < objArray.length; i++) {
-                var obji = objArray[i];
-
-                if((activeAxIds.indexOf(obji.xref) !== -1) ||
-                    (activeAxIds.indexOf(obji.yref) !== -1)) {
-                    method(gd, i);
-                }
-
-                // once is enough for images (which doesn't use the `i` arg anyway)
-                if(shortCircuit) return;
-            }
-        }
-
-        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+    // special case for redraw:false Plotly.animate that relies on this
+    // to update axis-referenced layout components
+    if(edits.length === 0) {
+        Axes.redrawComponents(gd);
+        return;
     }
 
     function unsetSubplotTransform(subplot) {
-        var xa2 = subplot.xaxis;
-        var ya2 = subplot.yaxis;
+        var xa = subplot.xaxis;
+        var ya = subplot.yaxis;
 
         fullLayout._defs.select('#' + subplot.clipId + '> rect')
             .call(Drawing.setTranslate, 0, 0)
             .call(Drawing.setScale, 1, 1);
 
         subplot.plot
-            .call(Drawing.setTranslate, xa2._offset, ya2._offset)
+            .call(Drawing.setTranslate, xa._offset, ya._offset)
             .call(Drawing.setScale, 1, 1);
 
         var traceGroups = subplot.plot.selectAll('.scatterlayer .trace');
@@ -57757,79 +57914,71 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             .call(Drawing.hideOutsideRangePoints, subplot);
     }
 
-    function updateSubplot(subplot, progress) {
-        var axis, r0, r1;
-        var xUpdate = updates[subplot.xaxis._id];
-        var yUpdate = updates[subplot.yaxis._id];
+    function updateSubplot(edit, progress) {
+        var plotinfo = edit.plotinfo;
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
 
+        var xr0 = edit.xr0;
+        var xr1 = edit.xr1;
+        var xlen = xa._length;
+        var yr0 = edit.yr0;
+        var yr1 = edit.yr1;
+        var ylen = ya._length;
+
+        var editX = !!xr1;
+        var editY = !!yr1;
         var viewBox = [];
 
-        if(xUpdate) {
-            axis = gd._fullLayout[xUpdate.axisName];
-            r0 = axis._r;
-            r1 = xUpdate.to;
-            viewBox[0] = (r0[0] * (1 - progress) + progress * r1[0] - r0[0]) / (r0[1] - r0[0]) * subplot.xaxis._length;
-            var dx1 = r0[1] - r0[0];
-            var dx2 = r1[1] - r1[0];
-
-            axis.range[0] = r0[0] * (1 - progress) + progress * r1[0];
-            axis.range[1] = r0[1] * (1 - progress) + progress * r1[1];
-
-            viewBox[2] = subplot.xaxis._length * ((1 - progress) + progress * dx2 / dx1);
+        if(editX) {
+            var dx0 = xr0[1] - xr0[0];
+            var dx1 = xr1[1] - xr1[0];
+            viewBox[0] = (xr0[0] * (1 - progress) + progress * xr1[0] - xr0[0]) / (xr0[1] - xr0[0]) * xlen;
+            viewBox[2] = xlen * ((1 - progress) + progress * dx1 / dx0);
+            xa.range[0] = xr0[0] * (1 - progress) + progress * xr1[0];
+            xa.range[1] = xr0[1] * (1 - progress) + progress * xr1[1];
         } else {
             viewBox[0] = 0;
-            viewBox[2] = subplot.xaxis._length;
+            viewBox[2] = xlen;
         }
 
-        if(yUpdate) {
-            axis = gd._fullLayout[yUpdate.axisName];
-            r0 = axis._r;
-            r1 = yUpdate.to;
-            viewBox[1] = (r0[1] * (1 - progress) + progress * r1[1] - r0[1]) / (r0[0] - r0[1]) * subplot.yaxis._length;
-            var dy1 = r0[1] - r0[0];
-            var dy2 = r1[1] - r1[0];
-
-            axis.range[0] = r0[0] * (1 - progress) + progress * r1[0];
-            axis.range[1] = r0[1] * (1 - progress) + progress * r1[1];
-
-            viewBox[3] = subplot.yaxis._length * ((1 - progress) + progress * dy2 / dy1);
+        if(editY) {
+            var dy0 = yr0[1] - yr0[0];
+            var dy1 = yr1[1] - yr1[0];
+            viewBox[1] = (yr0[1] * (1 - progress) + progress * yr1[1] - yr0[1]) / (yr0[0] - yr0[1]) * ylen;
+            viewBox[3] = ylen * ((1 - progress) + progress * dy1 / dy0);
+            ya.range[0] = yr0[0] * (1 - progress) + progress * yr1[0];
+            ya.range[1] = yr0[1] * (1 - progress) + progress * yr1[1];
         } else {
             viewBox[1] = 0;
-            viewBox[3] = subplot.yaxis._length;
+            viewBox[3] = ylen;
         }
 
-        ticksAndAnnotations(subplot.xaxis, subplot.yaxis);
+        Axes.drawOne(gd, xa, {skipTitle: true});
+        Axes.drawOne(gd, ya, {skipTitle: true});
+        Axes.redrawComponents(gd, [xa._id, ya._id]);
 
-        var xa2 = subplot.xaxis;
-        var ya2 = subplot.yaxis;
-
-        var editX = !!xUpdate;
-        var editY = !!yUpdate;
-
-        var xScaleFactor = editX ? xa2._length / viewBox[2] : 1;
-        var yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
-
+        var xScaleFactor = editX ? xlen / viewBox[2] : 1;
+        var yScaleFactor = editY ? ylen / viewBox[3] : 1;
         var clipDx = editX ? viewBox[0] : 0;
         var clipDy = editY ? viewBox[1] : 0;
+        var fracDx = editX ? (viewBox[0] / viewBox[2] * xlen) : 0;
+        var fracDy = editY ? (viewBox[1] / viewBox[3] * ylen) : 0;
+        var plotDx = xa._offset - fracDx;
+        var plotDy = ya._offset - fracDy;
 
-        var fracDx = editX ? (viewBox[0] / viewBox[2] * xa2._length) : 0;
-        var fracDy = editY ? (viewBox[1] / viewBox[3] * ya2._length) : 0;
-
-        var plotDx = xa2._offset - fracDx;
-        var plotDy = ya2._offset - fracDy;
-
-        subplot.clipRect
+        plotinfo.clipRect
             .call(Drawing.setTranslate, clipDx, clipDy)
             .call(Drawing.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
-        subplot.plot
+        plotinfo.plot
             .call(Drawing.setTranslate, plotDx, plotDy)
             .call(Drawing.setScale, xScaleFactor, yScaleFactor);
 
         // apply an inverse scale to individual points to counteract
         // the scale of the trace group.
-        Drawing.setPointGroupScale(subplot.zoomScalePts, 1 / xScaleFactor, 1 / yScaleFactor);
-        Drawing.setTextPointsScale(subplot.zoomScaleTxt, 1 / xScaleFactor, 1 / yScaleFactor);
+        Drawing.setPointGroupScale(plotinfo.zoomScalePts, 1 / xScaleFactor, 1 / yScaleFactor);
+        Drawing.setTextPointsScale(plotinfo.zoomScaleTxt, 1 / xScaleFactor, 1 / yScaleFactor);
     }
 
     var onComplete;
@@ -57841,38 +57990,35 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 
     function transitionComplete() {
         var aobj = {};
-        for(var i = 0; i < updatedAxisIds.length; i++) {
-            var axi = gd._fullLayout[updates[updatedAxisIds[i]].axisName];
-            var to = updates[updatedAxisIds[i]].to;
-            aobj[axi._name + '.range[0]'] = to[0];
-            aobj[axi._name + '.range[1]'] = to[1];
 
-            axi.range = to.slice();
+        for(var i = 0; i < edits.length; i++) {
+            var edit = edits[i];
+            if(edit.xr1) aobj[edit.plotinfo.xaxis._name + '.range'] = edit.xr1.slice();
+            if(edit.yr1) aobj[edit.plotinfo.yaxis._name + '.range'] = edit.yr1.slice();
         }
 
         // Signal that this transition has completed:
         onComplete && onComplete();
 
         return Registry.call('relayout', gd, aobj).then(function() {
-            for(var i = 0; i < affectedSubplots.length; i++) {
-                unsetSubplotTransform(affectedSubplots[i]);
+            for(var i = 0; i < edits.length; i++) {
+                unsetSubplotTransform(edits[i].plotinfo);
             }
         });
     }
 
     function transitionInterrupt() {
         var aobj = {};
-        for(var i = 0; i < updatedAxisIds.length; i++) {
-            var axi = gd._fullLayout[updatedAxisIds[i] + 'axis'];
-            aobj[axi._name + '.range[0]'] = axi.range[0];
-            aobj[axi._name + '.range[1]'] = axi.range[1];
 
-            axi.range = axi._r.slice();
+        for(var i = 0; i < edits.length; i++) {
+            var edit = edits[i];
+            if(edit.xr0) aobj[edit.plotinfo.xaxis._name + '.range'] = edit.xr0.slice();
+            if(edit.yr0) aobj[edit.plotinfo.yaxis._name + '.range'] = edit.yr0.slice();
         }
 
         return Registry.call('relayout', gd, aobj).then(function() {
-            for(var i = 0; i < affectedSubplots.length; i++) {
-                unsetSubplotTransform(affectedSubplots[i]);
+            for(var i = 0; i < edits.length; i++) {
+                unsetSubplotTransform(edits[i].plotinfo);
             }
         });
     }
@@ -57892,8 +58038,8 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         var tInterp = Math.min(1, (t2 - t1) / transitionOpts.duration);
         var progress = easeFn(tInterp);
 
-        for(var i = 0; i < affectedSubplots.length; i++) {
-            updateSubplot(affectedSubplots[i], progress);
+        for(var i = 0; i < edits.length; i++) {
+            updateSubplot(edits[i], progress);
         }
 
         if(t2 - t1 > transitionOpts.duration) {
@@ -57910,7 +58056,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     return Promise.resolve();
 };
 
-},{"../../components/drawing":67,"../../registry":246,"./axes":206,"./constants":212,"d3":11}],230:[function(_dereq_,module,exports){
+},{"../../components/drawing":67,"../../registry":246,"./axes":206,"d3":11}],230:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -58865,6 +59011,7 @@ module.exports = project;
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
+var animationAttrs = _dereq_('./animation_attributes');
 var colorAttrs = _dereq_('../components/color/attributes');
 var colorscaleAttrs = _dereq_('../components/colorscale/layout_attributes');
 var padAttrs = _dereq_('./pad_attributes');
@@ -59130,6 +59277,18 @@ module.exports = {
         },
         editType: 'modebar'
     },
+
+    meta: {
+        valType: 'data_array',
+        editType: 'plot',
+        
+    },
+
+    transition: extendFlat({}, animationAttrs.transition, {
+        
+        editType: 'none'
+    }),
+
     _deprecated: {
         title: {
             valType: 'string',
@@ -59144,7 +59303,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":45,"../components/colorscale/layout_attributes":59,"../lib/extend":156,"./font_attributes":233,"./pad_attributes":238}],238:[function(_dereq_,module,exports){
+},{"../components/color/attributes":45,"../components/colorscale/layout_attributes":59,"../lib/extend":156,"./animation_attributes":201,"./font_attributes":233,"./pad_attributes":238}],238:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -59715,7 +59874,7 @@ plots.supplyDefaults = function(gd, opts) {
 plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
     for(var i = 0; i < newFullData.length; i++) {
         var newTrace = newFullData[i];
-        var cd0 = oldCalcdata[i][0];
+        var cd0 = (oldCalcdata[i] || [])[0];
         if(cd0 && cd0.trace) {
             var oldTrace = cd0.trace;
             if(oldTrace._hasCalcTransform) {
@@ -59765,7 +59924,10 @@ function getTraceUids(oldFullData, newData) {
     }
 
     for(i = 0; i < len; i++) {
-        if(tryUid(newData[i].uid, i)) continue;
+        var newUid = newData[i].uid;
+        if(typeof newUid === 'number') newUid = String(newUid);
+
+        if(tryUid(newUid, i)) continue;
         if(i < oldLen && tryUid(oldFullInput[i].uid, i)) continue;
         setUid(Lib.randstr(seenUids), i);
     }
@@ -59781,8 +59943,8 @@ function getTraceUids(oldFullData, newData) {
  * Single-trace subplots (which have no `id`) such as pie, table, etc
  * do not need to be collected because we just draw all visible traces.
  */
-var collectableSubplotTypes;
 function emptySubplotLists() {
+    var collectableSubplotTypes = Registry.collectableSubplotTypes;
     var out = {};
     var i, j;
 
@@ -60657,6 +60819,15 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
     coerce('modebar.uirevision', uirevision);
 
+    coerce('meta');
+
+    // do not include defaults in fullLayout when users do not set transition
+    if(Lib.isPlainObject(layoutIn.transition)) {
+        coerce('transition.duration');
+        coerce('transition.easing');
+        coerce('transition.ordering');
+    }
+
     Registry.getComponentMethod(
         'calendars',
         'handleDefaults'
@@ -61488,10 +61659,9 @@ plots.extendLayout = function(destLayout, srcLayout) {
 };
 
 /**
- * Transition to a set of new data and layout properties
+ * Transition to a set of new data and layout properties from Plotly.animate
  *
  * @param {DOM element} gd
- *      the DOM element of the graph container div
  * @param {Object[]} data
  *      an array of data objects following the normal Plotly data definition format
  * @param {Object} layout
@@ -61504,17 +61674,15 @@ plots.extendLayout = function(destLayout, srcLayout) {
  *      options for the transition
  */
 plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts) {
-    var i, traceIdx;
-
-    var dataLength = Array.isArray(data) ? data.length : 0;
-    var traceIndices = traces.slice(0, dataLength);
-
+    var opts = {redraw: frameOpts.redraw};
     var transitionedTraces = [];
+    var axEdits = [];
 
-    function prepareTransitions() {
-        var i;
+    opts.prepareFn = function() {
+        var dataLength = Array.isArray(data) ? data.length : 0;
+        var traceIndices = traces.slice(0, dataLength);
 
-        for(i = 0; i < traceIndices.length; i++) {
+        for(var i = 0; i < traceIndices.length; i++) {
             var traceIdx = traceIndices[i];
             var trace = gd._fullData[traceIdx];
             var module = trace._module;
@@ -61560,8 +61728,213 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         plots.supplyDefaults(gd);
         plots.doCalcdata(gd);
 
+        var newLayout = Lib.expandObjectPaths(layout);
+
+        if(newLayout) {
+            var subplots = gd._fullLayout._plots;
+
+            for(var k in subplots) {
+                var plotinfo = subplots[k];
+                var xa = plotinfo.xaxis;
+                var ya = plotinfo.yaxis;
+                var xr0 = xa.range.slice();
+                var yr0 = ya.range.slice();
+
+                var xr1;
+                if(Array.isArray(newLayout[xa._name + '.range'])) {
+                    xr1 = newLayout[xa._name + '.range'].slice();
+                } else if(Array.isArray((newLayout[xa._name] || {}).range)) {
+                    xr1 = newLayout[xa._name].range.slice();
+                }
+
+                var yr1;
+                if(Array.isArray(newLayout[ya._name + '.range'])) {
+                    yr1 = newLayout[ya._name + '.range'].slice();
+                } else if(Array.isArray((newLayout[ya._name] || {}).range)) {
+                    yr1 = newLayout[ya._name].range.slice();
+                }
+
+                var editX;
+                if(xr0 && xr1 && (xr0[0] !== xr1[0] || xr0[1] !== xr1[1])) {
+                    editX = {xr0: xr0, xr1: xr1};
+                }
+
+                var editY;
+                if(yr0 && yr1 && (yr0[0] !== yr1[0] || yr0[1] !== yr1[1])) {
+                    editY = {yr0: yr0, yr1: yr1};
+                }
+
+                if(editX || editY) {
+                    axEdits.push(Lib.extendFlat({plotinfo: plotinfo}, editX, editY));
+                }
+            }
+        }
+
         return Promise.resolve();
-    }
+    };
+
+    opts.runFn = function(makeCallback) {
+        var traceTransitionOpts;
+        var basePlotModules = gd._fullLayout._basePlotModules;
+        var hasAxisTransition = axEdits.length;
+        var i;
+
+        if(layout) {
+            for(i = 0; i < basePlotModules.length; i++) {
+                if(basePlotModules[i].transitionAxes) {
+                    basePlotModules[i].transitionAxes(gd, axEdits, transitionOpts, makeCallback);
+                }
+            }
+        }
+
+        // Here handle the exception that we refuse to animate scales and axes at the same
+        // time. In other words, if there's an axis transition, then set the data transition
+        // to instantaneous.
+        if(hasAxisTransition) {
+            traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
+            traceTransitionOpts.duration = 0;
+            // This means do not transition traces,
+            // this happens on layout-only (e.g. axis range) animations
+            transitionedTraces = null;
+        } else {
+            traceTransitionOpts = transitionOpts;
+        }
+
+        for(i = 0; i < basePlotModules.length; i++) {
+            // Note that we pass a callback to *create* the callback that must be invoked on completion.
+            // This is since not all traces know about transitions, so it greatly simplifies matters if
+            // the trace is responsible for creating a callback, if needed, and then executing it when
+            // the time is right.
+            basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+        }
+    };
+
+    return _transition(gd, transitionOpts, opts);
+};
+
+/**
+ * Transition to a set of new data and layout properties from Plotly.react
+ *
+ * @param {DOM element} gd
+ * @param {object} restyleFlags
+ * - anim {'all'|'some'}
+ * @param {object} relayoutFlags
+ * - anim {'all'|'some'}
+ * @param {object} oldFullLayout : old (pre Plotly.react) fullLayout
+ */
+plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLayout) {
+    var fullLayout = gd._fullLayout;
+    var transitionOpts = fullLayout.transition;
+    var opts = {};
+    var axEdits = [];
+
+    opts.prepareFn = function() {
+        var subplots = fullLayout._plots;
+
+        // no need to redraw at end of transition,
+        // if all changes are animatable
+        opts.redraw = false;
+        if(restyleFlags.anim === 'some') opts.redraw = true;
+        if(relayoutFlags.anim === 'some') opts.redraw = true;
+
+        for(var k in subplots) {
+            var plotinfo = subplots[k];
+            var xa = plotinfo.xaxis;
+            var ya = plotinfo.yaxis;
+            var xr0 = oldFullLayout[xa._name].range.slice();
+            var yr0 = oldFullLayout[ya._name].range.slice();
+            var xr1 = xa.range.slice();
+            var yr1 = ya.range.slice();
+
+            xa.setScale();
+            ya.setScale();
+
+            var editX;
+            if(xr0[0] !== xr1[0] || xr0[1] !== xr1[1]) {
+                editX = {xr0: xr0, xr1: xr1};
+            }
+
+            var editY;
+            if(yr0[0] !== yr1[0] || yr0[1] !== yr1[1]) {
+                editY = {yr0: yr0, yr1: yr1};
+            }
+
+            if(editX || editY) {
+                axEdits.push(Lib.extendFlat({plotinfo: plotinfo}, editX, editY));
+            }
+        }
+
+        return Promise.resolve();
+    };
+
+    opts.runFn = function(makeCallback) {
+        var fullData = gd._fullData;
+        var fullLayout = gd._fullLayout;
+        var basePlotModules = fullLayout._basePlotModules;
+
+        var axisTransitionOpts;
+        var traceTransitionOpts;
+        var transitionedTraces;
+
+        var allTraceIndices = [];
+        for(var i = 0; i < fullData.length; i++) {
+            allTraceIndices.push(i);
+        }
+
+        function transitionAxes() {
+            for(var j = 0; j < basePlotModules.length; j++) {
+                if(basePlotModules[j].transitionAxes) {
+                    basePlotModules[j].transitionAxes(gd, axEdits, axisTransitionOpts, makeCallback);
+                }
+            }
+        }
+
+        function transitionTraces() {
+            for(var j = 0; j < basePlotModules.length; j++) {
+                basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+            }
+        }
+
+        if(axEdits.length && restyleFlags.anim) {
+            if(transitionOpts.ordering === 'traces first') {
+                axisTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
+                transitionedTraces = allTraceIndices;
+                traceTransitionOpts = transitionOpts;
+                transitionTraces();
+                setTimeout(transitionAxes, transitionOpts.duration);
+            } else {
+                axisTransitionOpts = transitionOpts;
+                transitionedTraces = null;
+                traceTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
+                transitionAxes();
+                transitionTraces();
+            }
+        } else if(axEdits.length) {
+            axisTransitionOpts = transitionOpts;
+            transitionAxes();
+        } else if(restyleFlags.anim) {
+            transitionedTraces = allTraceIndices;
+            traceTransitionOpts = transitionOpts;
+            transitionTraces();
+        }
+    };
+
+    return _transition(gd, transitionOpts, opts);
+};
+
+/**
+ * trace/layout transition wrapper that works
+ * for transitions initiated by Plotly.animate and Plotly.react.
+ *
+ * @param {DOM element} gd
+ * @param {object} transitionOpts
+ * @param {object} opts
+ * - redraw {boolean}
+ * - prepareFn {function} *should return a Promise*
+ * - runFn {function} ran inside executeTransitions
+ */
+function _transition(gd, transitionOpts, opts) {
+    var aborted = false;
 
     function executeCallbacks(list) {
         var p = Promise.resolve();
@@ -61579,8 +61952,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         }
     }
 
-    var aborted = false;
-
     function executeTransitions() {
         gd.emit('plotly_transitioning', []);
 
@@ -61595,7 +61966,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
                 gd._transitioningWithDuration = true;
             }
 
-
             // If another transition is triggered, this callback will be executed simply because it's
             // in the interruptCallbacks queue. If this transition completes, it will instead flush
             // that queue and forget about this callback.
@@ -61603,7 +61973,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
                 aborted = true;
             });
 
-            if(frameOpts.redraw) {
+            if(opts.redraw) {
                 gd._transitionData._interruptCallbacks.push(function() {
                     return Registry.call('redraw', gd);
                 });
@@ -61629,44 +61999,10 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
                 };
             }
 
-            var traceTransitionOpts;
-            var j;
-            var basePlotModules = gd._fullLayout._basePlotModules;
-            var hasAxisTransition = false;
-
-            if(layout) {
-                for(j = 0; j < basePlotModules.length; j++) {
-                    if(basePlotModules[j].transitionAxes) {
-                        var newLayout = Lib.expandObjectPaths(layout);
-                        hasAxisTransition = basePlotModules[j].transitionAxes(gd, newLayout, transitionOpts, makeCallback) || hasAxisTransition;
-                    }
-                }
-            }
-
-            // Here handle the exception that we refuse to animate scales and axes at the same
-            // time. In other words, if there's an axis transition, then set the data transition
-            // to instantaneous.
-            if(hasAxisTransition) {
-                traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
-                traceTransitionOpts.duration = 0;
-                // This means do not transition traces,
-                // this happens on layout-only (e.g. axis range) animations
-                transitionedTraces = null;
-            } else {
-                traceTransitionOpts = transitionOpts;
-            }
-
-            for(j = 0; j < basePlotModules.length; j++) {
-                // Note that we pass a callback to *create* the callback that must be invoked on completion.
-                // This is since not all traces know about transitions, so it greatly simplifies matters if
-                // the trace is responsible for creating a callback, if needed, and then executing it when
-                // the time is right.
-                basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
-            }
+            opts.runFn(makeCallback);
 
             // If nothing else creates a callback, then this will trigger the completion in the next tick:
             setTimeout(makeCallback());
-
         });
     }
 
@@ -61679,7 +62015,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         flushCallbacks(gd._transitionData._interruptCallbacks);
 
         return Promise.resolve().then(function() {
-            if(frameOpts.redraw) {
+            if(opts.redraw) {
                 return Registry.call('redraw', gd);
             }
         }).then(function() {
@@ -61705,15 +62041,13 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         return executeCallbacks(gd._transitionData._interruptCallbacks);
     }
 
-    for(i = 0; i < traceIndices.length; i++) {
-        traceIdx = traceIndices[i];
-        var contFull = gd._fullData[traceIdx];
-        var module = contFull._module;
-
-        if(!module) continue;
-    }
-
-    var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, plots.rehover, executeTransitions];
+    var seq = [
+        plots.previousPromises,
+        interruptPreviousTransitions,
+        opts.prepareFn,
+        plots.rehover,
+        executeTransitions
+    ];
 
     var transitionStarting = Lib.syncOrAsync(seq, gd);
 
@@ -61721,10 +62055,8 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         transitionStarting = Promise.resolve();
     }
 
-    return transitionStarting.then(function() {
-        return gd;
-    });
-};
+    return transitionStarting.then(function() { return gd; });
+}
 
 plots.doCalcdata = function(gd, traces) {
     var axList = axisIDs.list(gd);
@@ -63771,6 +64103,7 @@ exports.layoutArrayRegexes = [];
 exports.traceLayoutAttributes = {};
 exports.localeRegistry = {};
 exports.apiMethodRegistry = {};
+exports.collectableSubplotTypes = null;
 
 /**
  * Top-level register routine, exported as Plotly.register
@@ -63812,6 +64145,8 @@ exports.apiMethodRegistry = {};
  *
  */
 exports.register = function register(_modules) {
+    exports.collectableSubplotTypes = null;
+
     if(!_modules) {
         throw new Error('No argument passed to Plotly.register.');
     } else if(_modules && !Array.isArray(_modules)) {
@@ -65233,7 +65568,6 @@ module.exports = {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -65270,8 +65604,7 @@ function crossTraceCalc(gd, plotinfo) {
         ) {
             if(fullTrace.orientation === 'h') {
                 calcTracesHorizontal.push(calcTraces[i]);
-            }
-            else {
+            } else {
                 calcTracesVertical.push(calcTraces[i]);
             }
         }
@@ -65295,8 +65628,7 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
 
     if(overlay) {
         setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
-    }
-    else if(group) {
+    } else if(group) {
         // exclude from the group those traces for which the user set an offset
         excluded = [];
         included = [];
@@ -65314,8 +65646,7 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
         if(excluded.length) {
             setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
         }
-    }
-    else {
+    } else {
         // exclude from the stack those traces for which the user set a base
         excluded = [];
         included = [];
@@ -65382,7 +65713,6 @@ function initBase(gd, pa, sa, calcTraces) {
     }
 }
 
-
 function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
     var barnorm = gd._fullLayout.barnorm;
     var separateNegativeValues = false;
@@ -65391,10 +65721,7 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
     // update position axis and set bar offsets and widths
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-
-        var sieve = new Sieve(
-            [calcTrace], separateNegativeValues, dontMergeOverlappingData
-        );
+        var sieve = new Sieve([calcTrace], separateNegativeValues, dontMergeOverlappingData);
 
         // set bar offsets and widths, and update position axis
         setOffsetAndWidth(gd, pa, sieve);
@@ -65407,13 +65734,11 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
         if(barnorm) {
             sieveBars(gd, sa, sieve);
             normalizeBars(gd, sa, sieve);
-        }
-        else {
+        } else {
             setBaseAndTop(gd, sa, sieve);
         }
     }
 }
-
 
 function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
     var fullLayout = gd._fullLayout;
@@ -65429,19 +65754,17 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
     if(barnorm) {
         sieveBars(gd, sa, sieve);
         normalizeBars(gd, sa, sieve);
-    }
-    else {
+    } else {
         setBaseAndTop(gd, sa, sieve);
     }
 }
 
-
 function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
     var fullLayout = gd._fullLayout;
     var barmode = fullLayout.barmode;
-    var stack = (barmode === 'stack');
-    var relative = (barmode === 'relative');
-    var barnorm = gd._fullLayout.barnorm;
+    var stack = barmode === 'stack';
+    var relative = barmode === 'relative';
+    var barnorm = fullLayout.barnorm;
     var separateNegativeValues = relative;
     var dontMergeOverlappingData = !(barnorm || stack || relative);
     var sieve = new Sieve(calcTraces, separateNegativeValues, dontMergeOverlappingData);
@@ -65459,10 +65782,10 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
-            if(bar.s === BADNUM) continue;
-
-            var isOutmostBar = ((bar.b + bar.s) === sieve.get(bar.p, bar.s));
-            if(isOutmostBar) bar._outmost = true;
+            if(bar.s !== BADNUM) {
+                var isOutmostBar = ((bar.b + bar.s) === sieve.get(bar.p, bar.s));
+                if(isOutmostBar) bar._outmost = true;
+            }
         }
     }
 
@@ -65471,15 +65794,12 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
     if(barnorm) normalizeBars(gd, sa, sieve);
 }
 
-
 function setOffsetAndWidth(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
     var bargap = fullLayout.bargap;
     var bargroupgap = fullLayout.bargroupgap || 0;
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
-    var i, calcTrace, calcTrace0;
-    var t;
 
     // set bar offsets and widths
     var barGroupWidth = minDiff * (1 - bargap);
@@ -65489,12 +65809,11 @@ function setOffsetAndWidth(gd, pa, sieve) {
     // computer bar group center and bar offset
     var offsetFromCenter = -barWidth / 2;
 
-    for(i = 0; i < calcTraces.length; i++) {
-        calcTrace = calcTraces[i];
-        calcTrace0 = calcTrace[0];
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var t = calcTrace[0].t;
 
         // store bar width and offset for this trace
-        t = calcTrace0.t;
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
@@ -65514,7 +65833,6 @@ function setOffsetAndWidth(gd, pa, sieve) {
     updatePositionAxis(gd, pa, sieve);
 }
 
-
 function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
     var bargap = fullLayout.bargap;
@@ -65523,8 +65841,6 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var distinctPositions = sieve.distinctPositions;
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
-    var i, calcTrace, calcTrace0;
-    var t;
 
     // if there aren't any overlapping positions,
     // let them have full width even if mode is group
@@ -65535,17 +65851,16 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var barWidthPlusGap = (overlap) ? barGroupWidth / nTraces : barGroupWidth;
     var barWidth = barWidthPlusGap * (1 - bargroupgap);
 
-    for(i = 0; i < nTraces; i++) {
-        calcTrace = calcTraces[i];
-        calcTrace0 = calcTrace[0];
+    for(var i = 0; i < nTraces; i++) {
+        var calcTrace = calcTraces[i];
+        var t = calcTrace[0].t;
 
         // computer bar group center and bar offset
-        var offsetFromCenter = (overlap) ?
+        var offsetFromCenter = overlap ?
             ((2 * i + 1 - nTraces) * barWidthPlusGap - barWidth) / 2 :
             -barWidth / 2;
 
         // store bar width and offset for this trace
-        t = calcTrace0.t;
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
@@ -65565,18 +65880,15 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     updatePositionAxis(gd, pa, sieve, overlap);
 }
 
-
 function applyAttributes(sieve) {
     var calcTraces = sieve.traces;
-    var i, j, calcTrace, calcTrace0, fullTrace;
-    var t;
+    var i, j;
 
     for(i = 0; i < calcTraces.length; i++) {
-        calcTrace = calcTraces[i];
-        calcTrace0 = calcTrace[0];
-        fullTrace = calcTrace0.trace;
-        t = calcTrace0.t;
-
+        var calcTrace = calcTraces[i];
+        var calcTrace0 = calcTrace[0];
+        var fullTrace = calcTrace0.trace;
+        var t = calcTrace0.t;
         var offset = fullTrace._offset || fullTrace.offset;
         var initialPoffset = t.poffset;
         var newPoffset;
@@ -65599,8 +65911,7 @@ function applyAttributes(sieve) {
             }
 
             t.poffset = newPoffset;
-        }
-        else if(offset !== undefined) {
+        } else if(offset !== undefined) {
             t.poffset = offset;
         }
 
@@ -65635,8 +65946,7 @@ function applyAttributes(sieve) {
                 }
                 t.poffset = newPoffset;
             }
-        }
-        else if(width !== undefined) {
+        } else if(width !== undefined) {
             t.barwidth = width;
 
             // if user didn't set offset,
@@ -65647,7 +65957,6 @@ function applyAttributes(sieve) {
         }
     }
 }
-
 
 function setBarCenterAndWidth(gd, pa, sieve) {
     var calcTraces = sieve.traces;
@@ -65665,217 +65974,201 @@ function setBarCenterAndWidth(gd, pa, sieve) {
             var calcBar = calcTrace[j];
 
             // store the actual bar width and position, for use by hover
-            var width = calcBar.w = (barwidthIsArray) ? barwidth[j] : barwidth;
-            calcBar[pLetter] = calcBar.p +
-                ((poffsetIsArray) ? poffset[j] : poffset) +
-                width / 2;
-
-
+            var width = calcBar.w = barwidthIsArray ? barwidth[j] : barwidth;
+            calcBar[pLetter] = calcBar.p + (poffsetIsArray ? poffset[j] : poffset) + width / 2;
         }
     }
 }
 
-
 function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
     var calcTraces = sieve.traces;
-    var distinctPositions = sieve.distinctPositions;
-    var distinctPositions0 = distinctPositions[0];
     var minDiff = sieve.minDiff;
     var vpad = minDiff / 2;
 
-    Axes.minDtick(pa, minDiff, distinctPositions0, allowMinDtick);
-
-    // If the user set the bar width or the offset,
-    // then bars can be shifted away from their positions
-    // and widths can be larger than minDiff.
-    //
-    // Here, we compute pMin and pMax to expand the position axis,
-    // so that all bars are fully within the axis range.
-    var pMin = Math.min.apply(Math, distinctPositions) - vpad;
-    var pMax = Math.max.apply(Math, distinctPositions) + vpad;
+    Axes.minDtick(pa, sieve.minDiff, sieve.distinctPositions[0], allowMinDtick);
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
         var calcTrace0 = calcTrace[0];
         var fullTrace = calcTrace0.trace;
+        var pts = [];
+        var bar, l, r, j;
 
-        if(fullTrace.width === undefined && fullTrace.offset === undefined) {
-            continue;
+        for(j = 0; j < calcTrace.length; j++) {
+            bar = calcTrace[j];
+            l = bar.p - vpad;
+            r = bar.p + vpad;
+            pts.push(l, r);
         }
 
-        var t = calcTrace0.t;
-        var poffset = t.poffset;
-        var barwidth = t.barwidth;
-        var poffsetIsArray = Array.isArray(poffset);
-        var barwidthIsArray = Array.isArray(barwidth);
+        if(fullTrace.width || fullTrace.offset) {
+            var t = calcTrace0.t;
+            var poffset = t.poffset;
+            var barwidth = t.barwidth;
+            var poffsetIsArray = Array.isArray(poffset);
+            var barwidthIsArray = Array.isArray(barwidth);
+
+            for(j = 0; j < calcTrace.length; j++) {
+                bar = calcTrace[j];
+                var calcBarOffset = poffsetIsArray ? poffset[j] : poffset;
+                var calcBarWidth = barwidthIsArray ? barwidth[j] : barwidth;
+                l = bar.p + calcBarOffset;
+                r = l + calcBarWidth;
+                pts.push(l, r);
+            }
+        }
+
+        fullTrace._extremes[pa._id] = Axes.findExtremes(pa, pts, {padded: false});
+    }
+}
+
+// store these bar bases and tops in calcdata
+// and make sure the size axis includes zero,
+// along with the bases and tops of each bar.
+function setBaseAndTop(gd, sa, sieve) {
+    var calcTraces = sieve.traces;
+    var sLetter = getAxisLetter(sa);
+
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
+        var allBarBaseAboveZero = true;
 
         for(var j = 0; j < calcTrace.length; j++) {
-            var calcBar = calcTrace[j];
-            var calcBarOffset = (poffsetIsArray) ? poffset[j] : poffset;
-            var calcBarWidth = (barwidthIsArray) ? barwidth[j] : barwidth;
-            var p = calcBar.p;
-            var l = p + calcBarOffset;
-            var r = l + calcBarWidth;
-
-            pMin = Math.min(pMin, l);
-            pMax = Math.max(pMax, r);
-        }
-    }
-
-    var extremes = Axes.findExtremes(pa, [pMin, pMax], {padded: false});
-    putExtremes(calcTraces, pa, extremes);
-}
-
-function expandRange(range, newValue) {
-    if(isNumeric(range[0])) range[0] = Math.min(range[0], newValue);
-    else range[0] = newValue;
-
-    if(isNumeric(range[1])) range[1] = Math.max(range[1], newValue);
-    else range[1] = newValue;
-}
-
-function setBaseAndTop(gd, sa, sieve) {
-    // store these bar bases and tops in calcdata
-    // and make sure the size axis includes zero,
-    // along with the bases and tops of each bar.
-    var traces = sieve.traces;
-    var sLetter = getAxisLetter(sa);
-    var sRange = [null, null];
-
-    for(var i = 0; i < traces.length; i++) {
-        var trace = traces[i];
-
-        for(var j = 0; j < trace.length; j++) {
-            var bar = trace[j];
+            var bar = calcTrace[j];
             var barBase = bar.b;
             var barTop = barBase + bar.s;
 
             bar[sLetter] = barTop;
+            pts.push(barTop);
+            if(bar.hasB) pts.push(barBase);
 
-            if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
-            if(bar.hasB && isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
+            if(!bar.hasB || !(bar.b > 0 && bar.s > 0)) {
+                allBarBaseAboveZero = false;
+            }
         }
+
+        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+            tozero: !allBarBaseAboveZero,
+            padded: true
+        });
     }
-
-    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
-    putExtremes(traces, sa, extremes);
 }
-
 
 function stackBars(gd, sa, sieve) {
     var fullLayout = gd._fullLayout;
     var barnorm = fullLayout.barnorm;
     var sLetter = getAxisLetter(sa);
-    var traces = sieve.traces;
-    var i, trace;
-    var j, bar;
+    var calcTraces = sieve.traces;
 
-    var sRange = [null, null];
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
 
-    for(i = 0; i < traces.length; i++) {
-        trace = traces[i];
+        for(var j = 0; j < calcTrace.length; j++) {
+            var bar = calcTrace[j];
 
-        for(j = 0; j < trace.length; j++) {
-            bar = trace[j];
+            if(bar.s !== BADNUM) {
+                // stack current bar and get previous sum
+                var barBase = sieve.put(bar.p, bar.b + bar.s);
+                var barTop = barBase + bar.b + bar.s;
 
-            if(bar.s === BADNUM) continue;
+                // store the bar base and top in each calcdata item
+                bar.b = barBase;
+                bar[sLetter] = barTop;
 
-            // stack current bar and get previous sum
-            var barBase = sieve.put(bar.p, bar.b + bar.s);
-            var barTop = barBase + bar.b + bar.s;
-
-            // store the bar base and top in each calcdata item
-            bar.b = barBase;
-            bar[sLetter] = barTop;
-
-            if(!barnorm) {
-                if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
-                if(bar.hasB && isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
+                if(!barnorm) {
+                    pts.push(barTop);
+                    if(bar.hasB) pts.push(barBase);
+                }
             }
         }
-    }
 
-    // if barnorm is set, let normalizeBars update the axis range
-    if(!barnorm) {
-        var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
-        putExtremes(traces, sa, extremes);
+        // if barnorm is set, let normalizeBars update the axis range
+        if(!barnorm) {
+            fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+                // N.B. we don't stack base with 'base',
+                // so set tozero:true always!
+                tozero: true,
+                padded: true
+            });
+        }
     }
 }
 
-
 function sieveBars(gd, sa, sieve) {
-    var traces = sieve.traces;
+    var calcTraces = sieve.traces;
 
-    for(var i = 0; i < traces.length; i++) {
-        var trace = traces[i];
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
 
-        for(var j = 0; j < trace.length; j++) {
-            var bar = trace[j];
+        for(var j = 0; j < calcTrace.length; j++) {
+            var bar = calcTrace[j];
 
             if(bar.s !== BADNUM) sieve.put(bar.p, bar.b + bar.s);
         }
     }
 }
 
-
+// Note:
+//
+// normalizeBars requires that either sieveBars or stackBars has been
+// previously invoked.
 function normalizeBars(gd, sa, sieve) {
-    // Note:
-    //
-    // normalizeBars requires that either sieveBars or stackBars has been
-    // previously invoked.
-
-    var traces = sieve.traces;
+    var fullLayout = gd._fullLayout;
+    var calcTraces = sieve.traces;
     var sLetter = getAxisLetter(sa);
-    var sTop = (gd._fullLayout.barnorm === 'fraction') ? 1 : 100;
+    var sTop = fullLayout.barnorm === 'fraction' ? 1 : 100;
     var sTiny = sTop / 1e9; // in case of rounding error in sum
     var sMin = sa.l2c(sa.c2l(0));
-    var sMax = (gd._fullLayout.barmode === 'stack') ? sTop : sMin;
-    var sRange = [sMin, sMax];
-    var padded = false;
+    var sMax = fullLayout.barmode === 'stack' ? sTop : sMin;
 
-    function maybeExpand(newValue) {
-        if(isNumeric(sa.c2l(newValue)) &&
-            ((newValue < sMin - sTiny) || (newValue > sMax + sTiny) || !isNumeric(sMin))
-        ) {
-            padded = true;
-            expandRange(sRange, newValue);
-        }
+    function needsPadding(v) {
+        return (
+            isNumeric(sa.c2l(v)) &&
+            ((v < sMin - sTiny) || (v > sMax + sTiny) || !isNumeric(sMin))
+        );
     }
 
-    for(var i = 0; i < traces.length; i++) {
-        var trace = traces[i];
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
+        var allBarBaseAboveZero = true;
+        var padded = false;
 
-        for(var j = 0; j < trace.length; j++) {
-            var bar = trace[j];
+        for(var j = 0; j < calcTrace.length; j++) {
+            var bar = calcTrace[j];
 
-            if(bar.s === BADNUM) continue;
+            if(bar.s !== BADNUM) {
+                var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
+                bar.b *= scale;
+                bar.s *= scale;
 
-            var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
-            bar.b *= scale;
-            bar.s *= scale;
+                var barBase = bar.b;
+                var barTop = barBase + bar.s;
 
-            var barBase = bar.b;
-            var barTop = barBase + bar.s;
-            bar[sLetter] = barTop;
+                bar[sLetter] = barTop;
+                pts.push(barTop);
+                padded = padded || needsPadding(barTop);
 
-            maybeExpand(barTop);
-            if(bar.hasB) maybeExpand(barBase);
+                if(bar.hasB) {
+                    pts.push(barBase);
+                    padded = padded || needsPadding(barBase);
+                }
+
+                if(!bar.hasB || !(bar.b > 0 && bar.s > 0)) {
+                    allBarBaseAboveZero = false;
+                }
+            }
         }
-    }
 
-    // update range of size axis
-    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: padded});
-    putExtremes(traces, sa, extremes);
-}
-
-
-function getAxisLetter(ax) {
-    return ax._id.charAt(0);
-}
-
-function putExtremes(cd, ax, extremes) {
-    for(var i = 0; i < cd.length; i++) {
-        cd[i][0].trace._extremes[ax._id] = extremes;
+        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+            tozero: !allBarBaseAboveZero,
+            padded: padded
+        });
     }
 }
 
@@ -65885,12 +66178,13 @@ function putExtremes(cd, ax, extremes) {
 // run once per trace group (subplot & direction) and
 // the same mapping is attached to all calcdata traces
 function collectExtents(calcTraces, pa) {
-    var posLetter = pa._id.charAt(0);
+    var pLetter = getAxisLetter(pa);
     var extents = {};
+    var i, j, cd;
+
     var pMin = Infinity;
     var pMax = -Infinity;
 
-    var i, j, cd;
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         for(j = 0; j < cd.length; j++) {
@@ -65910,20 +66204,19 @@ function collectExtents(calcTraces, pa) {
         return String(Math.round(roundFactor * (p - pMin)));
     };
 
-    var poffset, poffsetIsArray;
-
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         cd[0].t.extents = extents;
-        poffset = cd[0].t.poffset;
-        poffsetIsArray = Array.isArray(poffset);
+
+        var poffset = cd[0].t.poffset;
+        var poffsetIsArray = Array.isArray(poffset);
 
         for(j = 0; j < cd.length; j++) {
             var di = cd[j];
-            var p0 = di[posLetter] - di.w / 2;
+            var p0 = di[pLetter] - di.w / 2;
 
             if(isNumeric(p0)) {
-                var p1 = di[posLetter] + di.w / 2;
+                var p1 = di[pLetter] + di.w / 2;
                 var pVal = round(di.p);
                 if(extents[pVal]) {
                     extents[pVal] = [Math.min(p0, extents[pVal][0]), Math.max(p1, extents[pVal][1])];
@@ -65932,12 +66225,16 @@ function collectExtents(calcTraces, pa) {
                 }
             }
 
-            di.p0 = di.p + ((poffsetIsArray) ? poffset[j] : poffset);
+            di.p0 = di.p + (poffsetIsArray ? poffset[j] : poffset);
             di.p1 = di.p0 + di.w;
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
         }
     }
+}
+
+function getAxisLetter(ax) {
+    return ax._id.charAt(0);
 }
 
 module.exports = {
@@ -66018,10 +66315,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
+    var lineColor = (traceOut.marker.line || {}).color;
+
     // override defaultColor for error bars with defaultLine
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
@@ -67311,6 +67610,16 @@ module.exports = {
         editType: 'calc+clearAxisTypes',
         
     },
+
+    width: {
+        valType: 'number',
+        min: 0,
+        
+        dflt: 0,
+        editType: 'calc',
+        
+    },
+
     marker: {
         outliercolor: {
             valType: 'color',
@@ -67379,7 +67688,6 @@ module.exports = {
         marker: scatterAttrs.unselected.marker,
         editType: 'style'
     },
-
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],
@@ -67415,8 +67723,6 @@ function crossTraceCalc(gd, plotinfo) {
         var orientation = orientations[i];
         var posAxis = orientation === 'h' ? ya : xa;
         var boxList = [];
-        var minPad = 0;
-        var maxPad = 0;
 
         // make list of boxes / candlesticks
         // For backward compatibility, candlesticks are treated as if they *are* box traces here
@@ -67433,72 +67739,173 @@ function crossTraceCalc(gd, plotinfo) {
                     trace.yaxis === ya._id
               ) {
                 boxList.push(j);
-
-                if(trace.boxpoints) {
-                    minPad = Math.max(minPad, trace.jitter - trace.pointpos - 1);
-                    maxPad = Math.max(maxPad, trace.jitter + trace.pointpos - 1);
-                }
             }
         }
 
-        setPositionOffset('box', gd, boxList, posAxis, [minPad, maxPad]);
+        setPositionOffset('box', gd, boxList, posAxis);
     }
 }
 
-function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
+function setPositionOffset(traceType, gd, boxList, posAxis) {
     var calcdata = gd.calcdata;
     var fullLayout = gd._fullLayout;
-    var pointList = [];
+    var axId = posAxis._id;
+    var axLetter = axId.charAt(0);
 
     // N.B. reused in violin
     var numKey = traceType === 'violin' ? '_numViolins' : '_numBoxes';
 
     var i, j, calcTrace;
+    var pointList = [];
+    var shownPts = 0;
 
     // make list of box points
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
         for(j = 0; j < calcTrace.length; j++) {
             pointList.push(calcTrace[j].pos);
+            shownPts += (calcTrace[j].pts2 || []).length;
         }
     }
 
     if(!pointList.length) return;
 
     // box plots - update dPos based on multiple traces
-    // and then use for posAxis autorange
     var boxdv = Lib.distinctVals(pointList);
-    var dPos = boxdv.minDiff / 2;
-
-    // if there's no duplication of x points,
-    // disable 'group' mode by setting counter to 1
-    if(pointList.length === boxdv.vals.length) {
-        fullLayout[numKey] = 1;
-    }
+    var dPos0 = boxdv.minDiff / 2;
 
     // check for forced minimum dtick
     Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
-    var gap = fullLayout[traceType + 'gap'];
-    var groupgap = fullLayout[traceType + 'groupgap'];
-    var padfactor = (1 - gap) * (1 - groupgap) * dPos / fullLayout[numKey];
-
-    // autoscale the x axis - including space for points if they're off the side
-    // TODO: this will overdo it if the outermost boxes don't have
-    // their points as far out as the other boxes
-    var extremes = Axes.findExtremes(posAxis, boxdv.vals, {
-        vpadminus: dPos + pad[0] * padfactor,
-        vpadplus: dPos + pad[1] * padfactor
-    });
+    var num = fullLayout[numKey];
+    var group = (fullLayout[traceType + 'mode'] === 'group' && num > 1);
+    var groupFraction = 1 - fullLayout[traceType + 'gap'];
+    var groupGapFraction = 1 - fullLayout[traceType + 'groupgap'];
 
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
-        // set the width of all boxes
-        calcTrace[0].t.dPos = dPos;
-        // link extremes to all boxes
-        calcTrace[0].trace._extremes[posAxis._id] = extremes;
-    }
 
+        var trace = calcTrace[0].trace;
+        var t = calcTrace[0].t;
+        var width = trace.width;
+        var side = trace.side;
+
+        // position coordinate delta
+        var dPos;
+        // box half width;
+        var bdPos;
+        // box center offset
+        var bPos;
+        // half-width within which to accept hover for this box/violin
+        // always split the distance to the closest box/violin
+        var wHover;
+
+        if(width) {
+            dPos = bdPos = wHover = width / 2;
+            bPos = 0;
+        } else {
+            dPos = dPos0;
+            bdPos = dPos * groupFraction * groupGapFraction / (group ? num : 1);
+            bPos = group ? 2 * dPos * (-0.5 + (t.num + 0.5) / num) * groupFraction : 0;
+            wHover = dPos * (group ? groupFraction / num : 1);
+        }
+        t.dPos = dPos;
+        t.bPos = bPos;
+        t.bdPos = bdPos;
+        t.wHover = wHover;
+
+        // box/violin-only value-space push value
+        var pushplus;
+        var pushminus;
+        // edge of box/violin
+        var edge = bPos + bdPos;
+        var edgeplus;
+        var edgeminus;
+
+        if(side === 'positive') {
+            pushplus = dPos * (width ? 1 : 0.5);
+            edgeplus = edge;
+            pushminus = edgeplus = bPos;
+        } else if(side === 'negative') {
+            pushplus = edgeplus = bPos;
+            pushminus = dPos * (width ? 1 : 0.5);
+            edgeminus = edge;
+        } else {
+            pushplus = pushminus = dPos;
+            edgeplus = edgeminus = edge;
+        }
+
+        // value-space padding
+        var vpadplus;
+        var vpadminus;
+        // pixel-space padding
+        var ppadplus;
+        var ppadminus;
+        // do we add 5% of both sides (for points beyond box/violin)
+        var padded = false;
+        // does this trace show points?
+        var hasPts = (trace.boxpoints || trace.points) && (shownPts > 0);
+
+        if(hasPts) {
+            var pointpos = trace.pointpos;
+            var jitter = trace.jitter;
+            var ms = trace.marker.size / 2;
+
+            var pp = 0;
+            if((pointpos + jitter) >= 0) {
+                pp = edge * (pointpos + jitter);
+                if(pp > pushplus) {
+                    // (++) beyond plus-value, use pp
+                    padded = true;
+                    ppadplus = ms;
+                    vpadplus = pp;
+                } else if(pp > edgeplus) {
+                    // (+), use push-value (it's bigger), but add px-pad
+                    ppadplus = ms;
+                    vpadplus = pushplus;
+                }
+            }
+            if(pp <= pushplus) {
+                // (->) fallback to push value
+                vpadplus = pushplus;
+            }
+
+            var pm = 0;
+            if((pointpos - jitter) <= 0) {
+                pm = -edge * (pointpos - jitter);
+                if(pm > pushminus) {
+                    // (--) beyond plus-value, use pp
+                    padded = true;
+                    ppadminus = ms;
+                    vpadminus = pm;
+                } else if(pm > edgeminus) {
+                    // (-), use push-value (it's bigger), but add px-pad
+                    ppadminus = ms;
+                    vpadminus = pushminus;
+                }
+            }
+            if(pm <= pushminus) {
+                // (<-) fallback to push value
+                vpadminus = pushminus;
+            }
+        } else {
+            vpadplus = pushplus;
+            vpadminus = pushminus;
+        }
+
+        // calcdata[i][j] are in ascending order
+        var firstPos = calcTrace[0].pos;
+        var lastPos = calcTrace[calcTrace.length - 1].pos;
+
+        trace._extremes[axId] = Axes.findExtremes(posAxis, [firstPos, lastPos], {
+            padded: padded,
+            vpadminus: vpadminus,
+            vpadplus: vpadplus,
+            // N.B. SVG px-space positive/negative
+            ppadminus: {x: ppadminus, y: ppadplus}[axLetter],
+            ppadplus: {x: ppadplus, y: ppadminus}[axLetter],
+        });
+    }
 }
 
 module.exports = {
@@ -67611,12 +68018,8 @@ var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
 function plot(gd, plotinfo, cdbox, boxLayer) {
-    var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var numBoxes = fullLayout._numBoxes;
-    var groupFraction = (1 - fullLayout.boxgap);
-    var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
 
     Lib.makeTraceGroups(boxLayer, cdbox, 'trace boxes').each(function(cd) {
         var plotGroup = d3.select(this);
@@ -67624,12 +68027,9 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         var t = cd0.t;
         var trace = cd0.trace;
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
-        // box half width
-        var bdPos = t.dPos * groupFraction * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
-        // box center offset
-        var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * groupFraction : 0;
+
         // whisker width
-        var wdPos = bdPos * trace.whiskerwidth;
+        t.wdPos = t.bdPos * trace.whiskerwidth;
 
         if(trace.visible !== true || t.empty) {
             plotGroup.remove();
@@ -67645,14 +68045,6 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
             posAxis = xa;
             valAxis = ya;
         }
-
-        // save the box size and box position for use by hover
-        t.bPos = bPos;
-        t.bdPos = bdPos;
-        t.wdPos = wdPos;
-        // half-width within which to accept hover for this box
-        // always split the distance to the closest box
-        t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
         plotBoxAndWhiskers(plotGroup, {pos: posAxis, val: valAxis}, trace, t);
         plotPoints(plotGroup, {x: xa, y: ya}, trace, t);
@@ -67785,10 +68177,7 @@ function plotPoints(sel, axes, trace, t) {
     var paths = gPoints.selectAll('path')
         .data(function(d) {
             var i;
-
-            var pts = mode === 'all' ?
-                d.pts :
-                d.pts.filter(function(pt) { return (pt.v < d.lf || pt.v > d.uf); });
+            var pts = d.pts2;
 
             // normally use IQR, but if this is 0 or too small, use max-min
             var typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1);
@@ -69355,12 +69744,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
+
+    var lineColor = (traceOut.marker.line || {}).color;
+
     // override defaultColor for error bars with defaultLine
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
-
-    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
 },{"../../components/color":46,"../../lib":162,"../../registry":246,"../bar/style_defaults":270,"./attributes":281}],290:[function(_dereq_,module,exports){
@@ -71354,7 +71745,11 @@ module.exports = function plot(gd, cdpie) {
                     s.attr('data-notex', 1);
                 });
 
-                titleText.text(trace.title.text)
+                var txt = fullLayout.meta ?
+                    Lib.templateString(trace.title.text, {meta: fullLayout.meta}) :
+                    trace.title.text;
+
+                titleText.text(txt)
                     .attr({
                         'class': 'titletext',
                         transform: '',
@@ -71487,6 +71882,8 @@ function determineInsideTextFont(trace, pt, layoutFont) {
 }
 
 function prerenderTitles(cdpie, gd) {
+    var fullLayout = gd._fullLayout;
+
     var cd0, trace;
     // Determine the width and height of the title for each pie.
     for(var i = 0; i < cdpie.length; i++) {
@@ -71494,9 +71891,13 @@ function prerenderTitles(cdpie, gd) {
         trace = cd0.trace;
 
         if(trace.title.text) {
+            var txt = fullLayout.meta ?
+                Lib.templateString(trace.title.text, {meta: fullLayout.meta}) :
+                trace.title.text;
+
             var dummyTitle = Drawing.tester.append('text')
               .attr('data-notex', 1)
-              .text(trace.title.text)
+              .text(txt)
               .call(Drawing.font, trace.title.font)
               .call(svgTextUtils.convertToTspans, gd);
             var bBox = Drawing.bBox(dummyTitle.node(), true);
@@ -72017,6 +72418,7 @@ module.exports = {
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         
     },
     x0: {
@@ -72024,6 +72426,7 @@ module.exports = {
         dflt: 0,
         
         editType: 'calc+clearAxisTypes',
+        anim: true,
         
     },
     dx: {
@@ -72031,11 +72434,13 @@ module.exports = {
         dflt: 1,
         
         editType: 'calc',
+        anim: true,
         
     },
     y: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         
     },
     y0: {
@@ -72043,6 +72448,7 @@ module.exports = {
         dflt: 0,
         
         editType: 'calc+clearAxisTypes',
+        anim: true,
         
     },
     dy: {
@@ -72050,6 +72456,7 @@ module.exports = {
         dflt: 1,
         
         editType: 'calc',
+        anim: true,
         
     },
 
@@ -72123,6 +72530,7 @@ module.exports = {
             valType: 'color',
             
             editType: 'style',
+            anim: true,
             
         },
         width: {
@@ -72131,6 +72539,7 @@ module.exports = {
             dflt: 2,
             
             editType: 'style',
+            anim: true,
             
         },
         shape: {
@@ -72187,6 +72596,7 @@ module.exports = {
         valType: 'color',
         
         editType: 'style',
+        anim: true,
         
     },
     marker: extendFlat({
@@ -72206,6 +72616,7 @@ module.exports = {
             arrayOk: true,
             
             editType: 'style',
+            anim: true,
             
         },
         size: {
@@ -72215,6 +72626,7 @@ module.exports = {
             arrayOk: true,
             
             editType: 'calc',
+            anim: true,
             
         },
         maxdisplayed: {
@@ -72258,11 +72670,12 @@ module.exports = {
                 arrayOk: true,
                 
                 editType: 'style',
+                anim: true,
                 
             },
             editType: 'calc'
         },
-            colorAttributes('marker.line')
+            colorAttributes('marker.line', {anim: true})
         ),
         gradient: {
             type: {
@@ -72285,7 +72698,7 @@ module.exports = {
         },
         editType: 'calc'
     },
-        colorAttributes('marker')
+        colorAttributes('marker', {anim: true})
     ),
     selected: {
         marker: {
@@ -73069,14 +73482,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     }
 
+    var lineColor = (traceOut.line || {}).color;
+    var markerColor = (traceOut.marker || {}).color;
+
     if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
         dfltHoverOn.push('fills');
     }
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
     if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'x', inherit: 'y'});
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
@@ -73480,7 +73896,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     coerce('line.color', defaultColor);
 
     if(hasColorscale(traceIn, 'line')) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c', noScale: true});
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
     } else {
         var lineColorDflt = (isArrayOrTypedArray(markerColor) ? false : markerColor) || defaultColor;
         coerce('line.color', lineColorDflt);
