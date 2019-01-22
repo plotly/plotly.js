@@ -54,6 +54,8 @@ function code(s) {
  *     most of these attributes already require a recalc, but the ones that do not
  *     have editType *style* or *plot* unless you override (presumably with *calc*)
  *
+ *   - anim {boolean) (dflt: undefined): is 'color' animatable?
+ *
  * @return {object}
  */
 module.exports = function colorScaleAttrs(context, opts) {
@@ -109,6 +111,10 @@ module.exports = function colorScaleAttrs(context, opts) {
                 ' ' + minmaxFull + ' if set.'
             ].join('')
         };
+
+        if(opts.anim) {
+            attrs.color.anim = true;
+        }
     }
 
     attrs[auto] = {

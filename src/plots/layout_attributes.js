@@ -9,6 +9,7 @@
 'use strict';
 
 var fontAttrs = require('./font_attributes');
+var animationAttrs = require('./animation_attributes');
 var colorAttrs = require('../components/color/attributes');
 var colorscaleAttrs = require('../components/colorscale/layout_attributes');
 var padAttrs = require('./pad_attributes');
@@ -409,6 +410,7 @@ module.exports = {
         },
         editType: 'modebar'
     },
+
     meta: {
         valType: 'data_array',
         editType: 'plot',
@@ -420,6 +422,14 @@ module.exports = {
             'item in question.'
         ].join(' ')
     },
+
+    transition: extendFlat({}, animationAttrs.transition, {
+        description: [
+            'Sets transition options used during Plotly.react updates.'
+        ].join(' '),
+        editType: 'none'
+    }),
+
     _deprecated: {
         title: {
             valType: 'string',

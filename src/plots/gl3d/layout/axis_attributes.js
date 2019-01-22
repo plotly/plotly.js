@@ -77,7 +77,13 @@ module.exports = overrideAll({
     }),
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
-    range: axesAttrs.range,
+    range: extendFlat({}, axesAttrs.range, {
+        items: [
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+        ],
+        anim: false
+    }),
     // ticks
     tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,

@@ -117,7 +117,7 @@ describe('plot schema', function() {
                         .concat(valObject.otherOpts)
                         .concat([
                             'valType', 'description', 'role',
-                            'editType', 'impliedEdits',
+                            'editType', 'impliedEdits', 'anim',
                             '_compareAsJSON', '_noTemplating'
                         ]);
 
