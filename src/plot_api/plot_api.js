@@ -2954,6 +2954,11 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             flags.rangesAltered[outerparts[0]] = 1;
         }
 
+        // clear _inputDomain on cartesian axes with altered domains
+        if(AX_DOMAIN_RE.test(astr)) {
+            nestedProperty(newContainer, '_inputDomain').set(null);
+        }
+
         // track datarevision changes
         if(key === 'datarevision') {
             flags.newDataRevision = 1;
