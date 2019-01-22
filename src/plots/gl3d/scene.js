@@ -88,9 +88,9 @@ function render(scene) {
         }
 
         var tx;
+        var vectorTx = [];
 
         if(trace.type === 'cone' || trace.type === 'streamtube') {
-            var vectorTx = [];
             if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
                 vectorTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
             }
@@ -106,6 +106,12 @@ function render(scene) {
             if(trace.type === 'streamtube' && (isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1)) {
                 vectorTx.push('divergence: ' + selection.traceCoordinate[7].toPrecision(3));
             }
+            if(selection.textLabel) {
+                vectorTx.push(selection.textLabel);
+            }
+            tx = vectorTx.join('<br>');
+        } else if(trace.type === 'isosurface') {
+            vectorTx.push('value: ' + Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
             }
@@ -270,6 +276,8 @@ function initializeGLPlot(scene, canvas, gl) {
 
     // List of scene objects
     scene.traces = {};
+
+    scene.make4thDimension();
 
     return true;
 }
@@ -853,6 +861,21 @@ proto.setConvert = function() {
         Axes.setConvert(ax, this.fullLayout);
         ax.setScale = Lib.noop;
     }
+};
+
+proto.make4thDimension = function() {
+
+    var _this = this;
+    var gd = _this.graphDiv;
+    var fullLayout = gd._fullLayout;
+
+    // mock axis for hover formatting
+    _this.mockAxis = {
+        type: 'linear',
+        showexponent: 'all',
+        exponentformat: 'B'
+    };
+    Axes.setConvert(_this.mockAxis, fullLayout);
 };
 
 module.exports = Scene;
