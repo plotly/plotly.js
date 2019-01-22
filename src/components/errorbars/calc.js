@@ -6,16 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
+var Lib = require('../../lib');
 
 var makeComputeError = require('./compute_error');
-
 
 module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
@@ -73,8 +72,13 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
         }
     }
 
-    var extremes = Axes.findExtremes(axis, vals, {padded: true});
     var axId = axis._id;
-    trace._extremes[axId].min = trace._extremes[axId].min.concat(extremes.min);
-    trace._extremes[axId].max = trace._extremes[axId].max.concat(extremes.max);
+    var baseExtremes = trace._extremes[axId];
+    var extremes = Axes.findExtremes(
+        axis,
+        vals,
+        Lib.extendFlat({tozero: baseExtremes.opts.tozero}, {padded: true})
+    );
+    baseExtremes.min = baseExtremes.min.concat(extremes.min);
+    baseExtremes.max = baseExtremes.max.concat(extremes.max);
 }
