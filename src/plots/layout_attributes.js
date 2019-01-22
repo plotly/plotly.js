@@ -9,6 +9,7 @@
 'use strict';
 
 var fontAttrs = require('./font_attributes');
+var animationAttrs = require('./animation_attributes');
 var colorAttrs = require('../components/color/attributes');
 var colorscaleAttrs = require('../components/colorscale/layout_attributes');
 var padAttrs = require('./pad_attributes');
@@ -409,6 +410,26 @@ module.exports = {
         },
         editType: 'modebar'
     },
+
+    meta: {
+        valType: 'data_array',
+        editType: 'plot',
+        description: [
+            'Assigns extra meta information that can be used in various `text` attributes.',
+            'Attributes such as the graph, axis and colorbar `title.text` and annotation `text`',
+            'support `meta`. One can access `meta` fields using template strings:',
+            '`%{meta[i]}` where `i` is the index of the `meta`',
+            'item in question.'
+        ].join(' ')
+    },
+
+    transition: extendFlat({}, animationAttrs.transition, {
+        description: [
+            'Sets transition options used during Plotly.react updates.'
+        ].join(' '),
+        editType: 'none'
+    }),
+
     _deprecated: {
         title: {
             valType: 'string',

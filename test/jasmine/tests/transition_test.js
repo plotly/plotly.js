@@ -2,6 +2,8 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = Plotly.Plots;
 var plotApiHelpers = require('@src/plot_api/helpers');
+var Registry = require('@src/registry');
+var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -266,3 +268,725 @@ for(var i = 0; i < 2; i++) {
     // And of course, remember to put the async loop in a closure:
     runTests(duration);
 }
+
+describe('Plotly.react transitions:', function() {
+    var gd;
+    var methods;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+        methods = [
+            [Plots, 'transitionFromReact'],
+            [Registry, 'call']
+        ];
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function addSpies() {
+        methods.forEach(function(m) {
+            spyOn(m[0], m[1]).and.callThrough();
+        });
+    }
+
+    function resetSpyCounters() {
+        methods.forEach(function(m) {
+            m[0][m[1]].calls.reset();
+        });
+    }
+
+    function assertSpies(msg, exps) {
+        exps.forEach(function(exp) {
+            var calls = exp[0][exp[1]].calls;
+            var cnt = calls.count();
+
+            if(Array.isArray(exp[2])) {
+                expect(cnt).toBe(exp[2].length, msg);
+
+                var allArgs = calls.allArgs();
+                allArgs.forEach(function(args, i) {
+                    args.forEach(function(a, j) {
+                        var e = exp[2][i][j];
+                        if(Lib.isPlainObject(a) || Array.isArray(a)) {
+                            expect(a).toEqual(e, msg);
+                        } else if(typeof a === 'function') {
+                            expect('function').toBe(e, msg);
+                        } else {
+                            expect(a).toBe(e, msg);
+                        }
+                    });
+                });
+            } else if(typeof exp[2] === 'number') {
+                expect(cnt).toBe(exp[2], msg);
+            } else {
+                fail('wrong arguments for assertSpies');
+            }
+        });
+        resetSpyCounters();
+    }
+
+    it('should go through transition pathway when *transition* is set in layout', function(done) {
+        addSpies();
+
+        var data = [{y: [1, 2, 1]}];
+        var layout = {};
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            assertSpies('first draw', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].marker = {color: 'red'};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('no *transition* set', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            layout.transition = {duration: 10};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('with *transition* set, no changes', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].marker = {color: 'blue'};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('with *transition* set and changes', [
+                [Plots, 'transitionFromReact', 1],
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should go through transition pathway only when there are animatable changes', function(done) {
+        addSpies();
+
+        var data = [{y: [1, 2, 1]}];
+        var layout = {transition: {duration: 10}};
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            assertSpies('first draw', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].marker = {color: 'red'};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('animatable trace change', [
+                [Plots, 'transitionFromReact', 1]
+            ]);
+        })
+        .then(function() {
+            data[0].name = 'TRACE';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('non-animatable trace change', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            layout.xaxis = {range: [-1, 10]};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('animatable layout change', [
+                [Plots, 'transitionFromReact', 1]
+            ]);
+        })
+        .then(function() {
+            layout.title = 'FIGURE';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('non-animatable layout change', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].marker = {color: 'black'};
+            layout.xaxis = {range: [-10, 20]};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('animatable trace & layout change', [
+                [Plots, 'transitionFromReact', 1]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not try to transition when the *config* has changed', function(done) {
+        addSpies();
+
+        var data = [{y: [1, 2, 1]}];
+        var layout = {transition: {duration: 10}};
+        var config = {scrollZoom: true};
+
+        Plotly.react(gd, data, layout, config)
+        .then(function() {
+            assertSpies('first draw', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].marker = {color: 'red'};
+            config.scrollZoom = false;
+            return Plotly.react(gd, data, layout, config);
+        })
+        .then(function() {
+            assertSpies('on config change', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].marker = {color: 'blue'};
+            return Plotly.react(gd, data, layout, config);
+        })
+        .then(function() {
+            assertSpies('no config change', [
+                [Plots, 'transitionFromReact', 1]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should only *redraw* at end of transition when necessary', function(done) {
+        addSpies();
+
+        var data = [{
+            y: [1, 2, 1],
+            marker: {color: 'blue'}
+        }];
+        var layout = {
+            transition: {duration: 10},
+            xaxis: {range: [0, 3]},
+            yaxis: {range: [0, 3]}
+        };
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            assertSpies('first draw', [
+                [Plots, 'transitionFromReact', 0],
+                [Registry, 'call', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].marker.color = 'red';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('redraw NOT required', [
+                [Plots, 'transitionFromReact', 1],
+                [Registry, 'call', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].marker = {color: 'black'};
+            // 'name' is NOT anim:true
+            data[0].name = 'TRACE';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('redraw required', [
+                [Plots, 'transitionFromReact', 1],
+                [Registry, 'call', [['redraw', gd]]]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should only transition the layout when both traces and layout have animatable changes by default', function(done) {
+        var data = [{y: [1, 2, 1]}];
+        var layout = {
+            transition: {duration: 10},
+            xaxis: {range: [0, 3]},
+            yaxis: {range: [0, 3]}
+        };
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
+            methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes']);
+            addSpies();
+        })
+        .then(function() {
+            data[0].marker = {color: 'red'};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('just trace transition', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0]
+            ]);
+        })
+        .then(function() {
+            layout.xaxis.range = [-2, 2];
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('just layout transition', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                // one _module.plot call from the relayout at end of axis transition
+                [Registry, 'call', [['relayout', gd, {'xaxis.range': [-2, 2]}]]],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
+            ]);
+        })
+        .then(function() {
+            data[0].marker.color = 'black';
+            layout.xaxis.range = [-1, 1];
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('both trace and layout transitions', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                [Registry, 'call', [['relayout', gd, {'xaxis.range': [-1, 1]}]]],
+                [gd._fullLayout._basePlotModules[0], 'plot', [
+                    // one instantaneous transition options to halt
+                    // other trace transitions (if any)
+                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
+                    // one _module.plot call from the relayout at end of axis transition
+                    [gd]
+                ]],
+            ]);
+        })
+        .then(function() {
+            data[0].marker.color = 'red';
+            layout.xaxis.range = [-2, 2];
+            layout.transition.ordering = 'traces first';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(delay(20))
+        .then(function() {
+            assertSpies('both trace and layout transitions under *ordering:traces first*', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', [
+                    // one smooth transition
+                    [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'traces first'}, 'function'],
+                    // one by relayout call  at the end of instantaneous axis transition
+                    [gd]
+                ]],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                [Registry, 'call', [['relayout', gd, {'xaxis.range': [-2, 2]}]]]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should transition data coordinates with and without *datarevision*', function(done) {
+        addSpies();
+
+        var y0 = [1, 2, 1];
+        var y1 = [2, 1, 1];
+        var i = 0;
+
+        var data = [{ y: y0 }];
+        var layout = {
+            transition: {duration: 10},
+            xaxis: {range: [0, 3]},
+            yaxis: {range: [0, 3]}
+        };
+
+        function dataArrayToggle() {
+            i++;
+            return i % 2 ? y1 : y0;
+        }
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            assertSpies('first draw', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].y = dataArrayToggle();
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('picks data_array changes with datarevision unset', [
+                [Plots, 'transitionFromReact', 1]
+            ]);
+        })
+        .then(function() {
+            data[0].y = dataArrayToggle();
+            layout.datarevision = '1';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('picks up datarevision changes', [
+                [Plots, 'transitionFromReact', 1]
+            ]);
+        })
+        .then(function() {
+            data[0].y = dataArrayToggle();
+            layout.datarevision = '1';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('ignores data_array changes when datarevision is same', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            data[0].y = dataArrayToggle();
+            layout.datarevision = '2';
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('picks up datarevision changes (take 2)', [
+                [Plots, 'transitionFromReact', 1]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should transition layout when one or more axis auto-ranged value changed', function(done) {
+        var data = [{y: [1, 2, 1]}];
+        var layout = {transition: {duration: 10}};
+
+        function assertAxAutorange(msg, exp) {
+            expect(gd.layout.xaxis.autorange).toBe(exp, msg);
+            expect(gd.layout.yaxis.autorange).toBe(exp, msg);
+            expect(gd._fullLayout.xaxis.autorange).toBe(exp, msg);
+            expect(gd._fullLayout.yaxis.autorange).toBe(exp, msg);
+        }
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
+            methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes']);
+            addSpies();
+            assertAxAutorange('axes are autorange:true by default', true);
+        })
+        .then(function() {
+            // N.B. marker.size can expand axis range
+            data[0].marker = {size: 30};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('must transition autoranged axes, not the traces', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', [
+                    // one instantaneous transition options to halt
+                    // other trace transitions (if any)
+                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
+                    // one _module.plot call from the relayout at end of axis transition
+                    [gd]
+                ]],
+            ]);
+            assertAxAutorange('axes are now autorange:false', false);
+        })
+        .then(function() {
+            data[0].marker = {size: 10};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('transition just traces, as now axis ranges are set', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0],
+                [gd._fullLayout._basePlotModules[0], 'plot', [
+                    // called from Plots.transitionFromReact
+                    [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
+                ]],
+            ]);
+            assertAxAutorange('axes are still autorange:false', false);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not transition layout when axis auto-ranged value do not changed', function(done) {
+        var data = [{y: [1, 2, 1]}];
+        var layout = {transition: {duration: 10}};
+
+        function assertAxAutorange(msg, exp) {
+            expect(gd.layout.yaxis.autorange).toBe(exp, msg);
+            expect(gd._fullLayout.yaxis.autorange).toBe(exp, msg);
+        }
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
+            methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes']);
+            addSpies();
+            assertAxAutorange('y-axis is autorange:true by default', true);
+        })
+        .then(function() {
+            // N.B. different coordinate, but same auto-range value
+            data[0].y = [2, 1, 2];
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('do not transition autoranged axes, just the traces', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1]
+            ]);
+            assertAxAutorange('y-axis is still autorange:true', true);
+        })
+        .then(function() {
+            // N.B. different coordinates with different auto-range value
+            data[0].y = [20, 10, 20];
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('both trace and layout transitions', [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                [Registry, 'call', [
+                    // xaxis call to _storeDirectGUIEdit from doAutoRange
+                    ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
+                        'xaxis.range': [-0.12852664576802508, 2.128526645768025],
+                        'xaxis.autorange': true
+                    }],
+                    // yaxis call to _storeDirectGUIEdit from doAutoRange
+                    ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
+                        'yaxis.range': [9.26751592356688, 20.73248407643312],
+                        'yaxis.autorange': true
+                    }],
+                    ['relayout', gd, {
+                        'yaxis.range': [9.26751592356688, 20.73248407643312]
+                    }],
+                    // xaxis call #2 to _storeDirectGUIEdit from doAutoRange,
+                    // as this axis is still autorange:true
+                    ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
+                        'xaxis.range': [-0.12852664576802508, 2.128526645768025],
+                        'xaxis.autorange': true
+                    }],
+                ]],
+                [gd._fullLayout._basePlotModules[0], 'plot', [
+                    // one instantaneous transition options to halt
+                    // other trace transitions (if any)
+                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
+                    // one _module.plot call from the relayout at end of axis transition
+                    [gd]
+                ]]
+            ]);
+            assertAxAutorange('y-axis is now autorange:false', false);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should emit transition events', function(done) {
+        var events = ['transitioning', 'transitioned', 'react'];
+        var store = {};
+
+        var data = [{y: [1, 2, 1]}];
+        var layout = {transition: {duration: 10}};
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            events.forEach(function(k) {
+                store[k] = jasmine.createSpy(k);
+                gd.on('plotly_' + k, store[k]);
+            });
+        })
+        .then(function() {
+            data[0].marker = {color: 'red'};
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            for(var k in store) {
+                expect(store[k]).toHaveBeenCalledTimes(1);
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should preserve trace object-constancy (out-of-order case)', function(done) {
+        var data1 = [{
+            uid: 1,
+            x: [5, 6, 7],
+            y: [5, 6, 7],
+            marker: {color: 'blue', size: 10}
+        }, {
+            uid: 2,
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            marker: {color: 'red', size: 10}
+        }];
+
+        var data2 = [{
+            uid: 2,
+            x: [5, 6, 7],
+            y: [5, 6, 7],
+            marker: {color: 'yellow', size: 10}
+        }, {
+            uid: 1,
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            marker: {color: 'green', size: 10}
+        }];
+
+        var layout = {
+            xaxis: {range: [-1, 8]},
+            yaxis: {range: [-1, 8]},
+            showlegend: false,
+            transition: {duration: 10}
+        };
+
+        var traceNodes;
+
+        function _assertTraceNodes(msg, traceNodesOrdered, ptsXY) {
+            var traceNodesNew = gd.querySelectorAll('.scatterlayer > .trace');
+            expect(traceNodesNew[0]).toBe(traceNodesOrdered[0], 'same trace node 0 - ' + msg);
+            expect(traceNodesNew[1]).toBe(traceNodesOrdered[1], 'same trace node 1 - ' + msg);
+
+            var pt0 = traceNodes[0].querySelector('.points > path');
+            var pt0XY = Drawing.getTranslate(pt0);
+            expect(pt0XY.x).toBeCloseTo(ptsXY[0][0], 1, 'pt0 x - ' + msg);
+            expect(pt0XY.y).toBeCloseTo(ptsXY[0][1], 1, 'pt0 y - ' + msg);
+
+            var pt1 = traceNodes[1].querySelector('.points > path');
+            var pt1XY = Drawing.getTranslate(pt1);
+            expect(pt1XY.x).toBeCloseTo(ptsXY[1][0], 1, 'pt1 x - ' + msg);
+            expect(pt1XY.y).toBeCloseTo(ptsXY[1][1], 1, 'pt1 y - ' + msg);
+        }
+
+        Plotly.react(gd, data1, layout)
+        .then(function() {
+            methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
+            methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes']);
+            addSpies();
+
+            traceNodes = gd.querySelectorAll('.scatterlayer > .trace');
+            _assertTraceNodes('base', traceNodes, [[360, 90], [120, 210]]);
+        })
+        .then(function() { return Plotly.react(gd, data2, layout); })
+        .then(function() {
+            var msg = 'transition into data2';
+            assertSpies(msg, [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0]
+            ]);
+            // N.B. order is reversed, but the nodes are the *same*
+            _assertTraceNodes(msg, [traceNodes[1], traceNodes[0]], [[120, 210], [360, 90]]);
+        })
+        .then(function() { return Plotly.react(gd, data1, layout); })
+        .then(function() {
+            var msg = 'transition back to data1';
+            assertSpies(msg, [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0]
+            ]);
+            _assertTraceNodes(msg, traceNodes, [[360, 90], [120, 210]]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should preserve trace object-constancy (# of traces mismatch case)', function(done) {
+        var data1 = [{
+            uid: 1,
+            x: [5, 6, 7],
+            y: [5, 6, 7],
+            marker: {color: 'blue', size: 10}
+        }, {
+            uid: 2,
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            marker: {color: 'red', size: 10}
+        }];
+
+        var data2 = [{
+            uid: 1,
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            marker: {color: 'blue', size: 10}
+        }];
+
+        var layout = {
+            xaxis: {range: [-1, 8]},
+            yaxis: {range: [-1, 8]},
+            showlegend: false,
+            transition: {duration: 10}
+        };
+
+        var traceNodes;
+
+        function _assertTraceNodes(msg, traceNodesOrdered, ptsXY) {
+            var traceNodesNew = gd.querySelectorAll('.scatterlayer > .trace');
+            expect(traceNodesNew.length).toBe(traceNodesOrdered.length, 'same # of traces - ' + msg);
+
+            for(var i = 0; i < traceNodesNew.length; i++) {
+                var node = traceNodesOrdered[i];
+
+                expect(traceNodesNew[i]).toBe(node, 'same trace node ' + i + ' - ' + msg);
+
+                var pt0 = node.querySelector('.points > path');
+                var pt0XY = Drawing.getTranslate(pt0);
+                expect(pt0XY.x).toBeCloseTo(ptsXY[i][0], 1, 'pt' + i + ' x - ' + msg);
+                expect(pt0XY.y).toBeCloseTo(ptsXY[i][1], 1, 'pt' + i + ' y - ' + msg);
+            }
+        }
+
+        Plotly.react(gd, data1, layout)
+        .then(function() {
+            methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
+            methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes']);
+            addSpies();
+
+            traceNodes = gd.querySelectorAll('.scatterlayer > .trace');
+            _assertTraceNodes('base', traceNodes, [[360, 90], [120, 210]]);
+        })
+        .then(function() { return Plotly.react(gd, data2, layout); })
+        .then(function() {
+            var msg = 'transition into data2';
+            assertSpies(msg, [
+                [Plots, 'transitionFromReact', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 2],
+                [Registry, 'call', 1],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0]
+            ]);
+
+            // N.B. traceNodes[1] is gone, but traceNodes[0] is the same
+            _assertTraceNodes(msg, [traceNodes[0]], [[120, 210]]);
+        })
+        .then(function() { return Plotly.react(gd, data1, layout); })
+        .then(function() {
+            var msg = 'transition back to data1';
+            assertSpies(msg, [
+                [Plots, 'transitionFromReact', 1],
+                [Registry, 'call', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 2],
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0]
+            ]);
+
+            // N.B. we have a "new" traceNodes[1] here,
+            // the old one get removed from the DOM when transitioning into data2
+            var traceNodesNew = gd.querySelectorAll('.scatterlayer > .trace');
+            _assertTraceNodes(msg, [traceNodes[0], traceNodesNew[1]], [[360, 90], [120, 210]]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});

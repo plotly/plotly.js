@@ -402,6 +402,22 @@ describe('scatterternary hover', function() {
         .then(done);
     });
 
+    it('should pass along hovertemplate on hover', function(done) {
+        var xval = 0.42;
+        var yval = 0.37;
+        var hovermode = 'closest';
+        var scatterPointData;
+        Plotly.restyle(gd, {
+            hovertemplate: 'tpl'
+        })
+        .then(function() {
+            scatterPointData = _hover(gd, xval, yval, hovermode);
+            expect(scatterPointData[0].hovertemplate).toEqual('tpl');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
 });
 
 describe('Test scatterternary *cliponaxis*', function() {

@@ -142,6 +142,23 @@ describe('Test violin defaults', function() {
         expect(traceOut.meanline.color).toBe('blue');
         expect(traceOut.meanline.width).toBe(10);
     });
+
+    it('should not coerce *scalegroup* and *scalemode* when *width* is set', function() {
+        _supply({
+            y: [1, 2, 1],
+            width: 1
+        });
+        expect(traceOut.scalemode).toBeUndefined();
+        expect(traceOut.scalegroup).toBeUndefined();
+
+        _supply({
+            y: [1, 2, 1],
+            // width=0 is ignored during calc
+            width: 0
+        });
+        expect(traceOut.scalemode).toBe('width');
+        expect(traceOut.scalegroup).toBe('');
+    });
 });
 
 describe('Test violin calc:', function() {
@@ -236,7 +253,7 @@ describe('Test violin calc:', function() {
             name: 'one',
             y: [0, 0, 0, 0, 10, 10, 10, 10]
         });
-        expect(fullLayout._violinScaleGroupStats.one.maxWidth).toBeCloseTo(0.055);
+        expect(fullLayout._violinScaleGroupStats.one.maxKDE).toBeCloseTo(0.055);
         expect(fullLayout._violinScaleGroupStats.one.maxCount).toBe(8);
     });
 
@@ -482,13 +499,66 @@ describe('Test violin hover:', function() {
         patch: function(fig) {
             fig.data[0].x = fig.data[0].y;
             delete fig.data[0].y;
-            fig.layout = {hovermode: 'closest'};
+            fig.layout = {
+                hovermode: 'closest',
+                yaxis: {range: [-0.696, 0.5]}
+            };
             return fig;
         },
         pos: [539, 293],
         nums: '(96, Old Faithful)',
         name: '',
         isRotated: false
+    }, {
+        desc: 'orientation:h | hovermode:y',
+        mock: require('@mocks/violin_grouped_horz-multicategory.json'),
+        patch: function(fig) {
+            // don't hover on kde, to avoid local vs CI discrepancies
+            fig.data.forEach(function(t) {
+                t.hoveron = 'violins';
+            });
+            return fig;
+        },
+        pos: [430, 130],
+        nums: ['max: 0.9', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'median: 0.4'],
+        name: ['', '', '', '', 'kale'],
+        axis: '2018 - day 2',
+        hOrder: [0, 3, 4, 2, 1]
+    }, {
+        desc: 'orientation:h | hovermode:closest',
+        mock: require('@mocks/violin_grouped_horz-multicategory.json'),
+        patch: function(fig) {
+            // don't hover on kde, to avoid local vs CI discrepancies
+            fig.data.forEach(function(t) {
+                t.hoveron = 'violins';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        pos: [430, 130],
+        nums: [
+            '(max: 0.9, 2018 - day 2)', '(min: 0.1, 2018 - day 2)',
+            '(q1: 0.2, 2018 - day 2)', '(q3: 0.7, 2018 - day 2)',
+            '(median: 0.4, 2018 - day 2)'
+        ],
+        name: ['', '', '', '', 'kale'],
+        hOrder: [0, 3, 4, 2, 1]
+    }, {
+        desc: 'on points with numeric positions | orientation:h | hovermode:closest',
+        mock: {
+            data: [{
+                type: 'violin',
+                points: 'all',
+                jitter: 0,
+                orientation: 'h',
+                y: [2, 2, 2, 2, 2],
+                x: [13.1, 14.2, 14, 13, 13.3]
+            }],
+            layout: {hovermode: 'closest'}
+        },
+        pos: [417, 309],
+        nums: '(14, 2)',
+        name: ''
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
@@ -533,7 +603,7 @@ describe('Test violin hover:', function() {
 
             Plotly.plot(gd, fig).then(function() {
                 mouseEvent('mousemove', 300, 250);
-                assertViolinHoverLine([299.35, 250, 250, 250]);
+                assertViolinHoverLine([277.3609, 250, 80, 250]);
             })
             .catch(failTest)
             .then(done);
@@ -544,7 +614,7 @@ describe('Test violin hover:', function() {
 
             Plotly.plot(gd, fig).then(function() {
                 mouseEvent('mousemove', 200, 250);
-                assertViolinHoverLine([200.65, 250, 250, 250]);
+                assertViolinHoverLine([222.6391, 250, 420, 250]);
             })
             .catch(failTest)
             .then(done);

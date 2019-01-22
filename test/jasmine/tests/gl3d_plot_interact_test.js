@@ -1097,6 +1097,11 @@ describe('Test gl3d drag and wheel interactions', function() {
             }
         };
 
+        function _assertAndReset(cnt) {
+            expect(relayoutCallback).toHaveBeenCalledTimes(cnt);
+            relayoutCallback.calls.reset();
+        }
+
         Plotly.plot(gd, mock)
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
@@ -1115,48 +1120,32 @@ describe('Test gl3d drag and wheel interactions', function() {
             return scroll(sceneTarget);
         })
         .then(function() {
-            expect(relayoutCallback).toHaveBeenCalledTimes(1);
-            relayoutCallback.calls.reset();
-
+            _assertAndReset(1);
             return scroll(sceneTarget2);
         })
         .then(function() {
-            expect(relayoutCallback).toHaveBeenCalledTimes(1);
-            relayoutCallback.calls.reset();
-
+            _assertAndReset(1);
             return drag(sceneTarget2, [0, 0], [100, 100]);
         })
         .then(function() {
-            expect(relayoutCallback).toHaveBeenCalledTimes(1);
-            relayoutCallback.calls.reset();
-
+            _assertAndReset(1);
             return drag(sceneTarget, [0, 0], [100, 100]);
         })
         .then(function() {
-            expect(relayoutCallback).toHaveBeenCalledTimes(1);
-            relayoutCallback.calls.reset();
-
-            return Plotly.relayout(gd, {
-                'scene.dragmode': false,
-                'scene2.dragmode': false
-            });
+            _assertAndReset(1);
+            return Plotly.relayout(gd, {'scene.dragmode': false, 'scene2.dragmode': false});
         })
         .then(function() {
-            expect(relayoutCallback).toHaveBeenCalledTimes(1);
-            relayoutCallback.calls.reset();
-
+            _assertAndReset(1);
             return drag(sceneTarget, [0, 0], [100, 100]);
         })
         .then(function() {
             return drag(sceneTarget2, [0, 0], [100, 100]);
         })
         .then(function() {
-            expect(relayoutCallback).toHaveBeenCalledTimes(0);
+            _assertAndReset(0);
 
-            return Plotly.relayout(gd, {
-                'scene.dragmode': 'orbit',
-                'scene2.dragmode': 'turntable'
-            });
+            return Plotly.relayout(gd, {'scene.dragmode': 'orbit', 'scene2.dragmode': 'turntable'});
         })
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
@@ -1168,7 +1157,27 @@ describe('Test gl3d drag and wheel interactions', function() {
             return drag(sceneTarget2, [0, 0], [100, 100]);
         })
         .then(function() {
-            expect(relayoutCallback).toHaveBeenCalledTimes(2);
+            _assertAndReset(2);
+            return Plotly.plot(gd, [], {}, {scrollZoom: false});
+        })
+        .then(function() {
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            return scroll(sceneTarget2);
+        })
+        .then(function() {
+            _assertAndReset(0);
+            return Plotly.plot(gd, [], {}, {scrollZoom: 'gl3d'});
+        })
+        .then(function() {
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            return scroll(sceneTarget2);
+        })
+        .then(function() {
+            _assertAndReset(2);
         })
         .catch(failTest)
         .then(done);

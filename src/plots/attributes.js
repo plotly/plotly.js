@@ -74,11 +74,18 @@ module.exports = {
     uid: {
         valType: 'string',
         role: 'info',
-        editType: 'plot'
+        editType: 'plot',
+        anim: true,
+        description: [
+            'Assign an id to this trace,',
+            'Use this to provide object constancy between traces during animations',
+            'and transitions.'
+        ].join(' ')
     },
     ids: {
         valType: 'data_array',
         editType: 'calc',
+        anim: true,
         description: [
             'Assigns id labels to each datum.',
             'These ids for object constancy of data points during animation.',

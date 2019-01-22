@@ -170,6 +170,40 @@ describe('makeTemplate', function() {
       .then(destroyGraphDiv)
       .then(done);
     });
+
+    it('works with div id', function(done) {
+        var mock = Lib.extendDeep({}, scatterFillMock);
+
+        var gd = document.createElement('div');
+        gd.id = 'myDiv';
+        document.body.appendChild(gd);
+
+        Plotly.newPlot('myDiv', mock)
+        .then(function() {
+            var template = Plotly.makeTemplate('myDiv');
+            delete(template.layout.xaxis);
+            delete(template.layout.yaxis);
+            expect(template).toEqual({
+                data: {scatter: [
+                  {fill: 'tonext', line: {shape: 'spline'}},
+                  {fill: 'tonext'},
+                  {fill: 'toself'}
+                ] },
+                layout: {
+                    title: {
+                        text: 'Fill toself and tonext'
+                    },
+                    width: 400,
+                    height: 400
+                }
+            });
+        })
+        .catch(failTest)
+        .then(function() {
+            document.body.removeChild(gd);
+        })
+        .then(done);
+    });
 });
 
 // statics of template application are all covered by the template mock

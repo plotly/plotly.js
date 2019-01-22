@@ -290,7 +290,7 @@ function doAutoRange(gd, ax) {
  *   - ax.d2l
  * @param {array} data:
  *  array of numbers (i.e. already run though ax.d2c)
- * @param {object} options:
+ * @param {object} opts:
  *  available keys are:
  *      vpad: (number or number array) pad values (data value +-vpad)
  *      ppad: (number or number array) pad pixels (pixel location +-ppad)
@@ -308,17 +308,18 @@ function doAutoRange(gd, ax) {
  *    - val {number}
  *    - pad {number}
  *    - extrappad {number}
+ *  - opts {object}: a ref to the passed "options" object
  */
-function findExtremes(ax, data, options) {
-    if(!options) options = {};
+function findExtremes(ax, data, opts) {
+    if(!opts) opts = {};
     if(!ax._m) ax.setScale();
 
     var minArray = [];
     var maxArray = [];
 
     var len = data.length;
-    var extrapad = options.padded || false;
-    var tozero = options.tozero && (ax.type === 'linear' || ax.type === '-');
+    var extrapad = opts.padded || false;
+    var tozero = opts.tozero && (ax.type === 'linear' || ax.type === '-');
     var isLog = ax.type === 'log';
     var hasArrayOption = false;
     var i, v, di, dmin, dmax, ppadiplus, ppadiminus, vmin, vmax;
@@ -335,11 +336,11 @@ function findExtremes(ax, data, options) {
     }
 
     var ppadplus = makePadAccessor((ax._m > 0 ?
-        options.ppadplus : options.ppadminus) || options.ppad || 0);
+        opts.ppadplus : opts.ppadminus) || opts.ppad || 0);
     var ppadminus = makePadAccessor((ax._m > 0 ?
-        options.ppadminus : options.ppadplus) || options.ppad || 0);
-    var vpadplus = makePadAccessor(options.vpadplus || options.vpad);
-    var vpadminus = makePadAccessor(options.vpadminus || options.vpad);
+        opts.ppadminus : opts.ppadplus) || opts.ppad || 0);
+    var vpadplus = makePadAccessor(opts.vpadplus || opts.vpad);
+    var vpadminus = makePadAccessor(opts.vpadminus || opts.vpad);
 
     if(!hasArrayOption) {
         // with no arrays other than `data` we don't need to consider
@@ -403,7 +404,11 @@ function findExtremes(ax, data, options) {
     for(i = 0; i < iMax; i++) addItem(i);
     for(i = len - 1; i >= iMax; i--) addItem(i);
 
-    return {min: minArray, max: maxArray};
+    return {
+        min: minArray,
+        max: maxArray,
+        opts: opts
+    };
 }
 
 function collapseMinArray(array, newVal, newPad, opts) {

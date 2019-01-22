@@ -66,11 +66,16 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     pointData.color = getTraceColor(trace, di);
     pointData.extraText = getExtraText(trace, di, cd[0].t.labels);
+    pointData.hovertemplate = trace.hovertemplate;
 
     return [pointData];
 };
 
 function getExtraText(trace, di, labels) {
+    if(trace.hovertemplate) {
+        return;
+    }
+
     var hoverinfo = di.hi || trace.hoverinfo;
     var parts = hoverinfo.split('+');
     var isAll = parts.indexOf('all') !== -1;

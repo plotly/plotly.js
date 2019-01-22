@@ -88,9 +88,9 @@ function render(scene) {
         }
 
         var tx;
+        var vectorTx = [];
 
         if(trace.type === 'cone' || trace.type === 'streamtube') {
-            var vectorTx = [];
             if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
                 vectorTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
             }
@@ -106,6 +106,12 @@ function render(scene) {
             if(trace.type === 'streamtube' && (isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1)) {
                 vectorTx.push('divergence: ' + selection.traceCoordinate[7].toPrecision(3));
             }
+            if(selection.textLabel) {
+                vectorTx.push(selection.textLabel);
+            }
+            tx = vectorTx.join('<br>');
+        } else if(trace.type === 'isosurface') {
+            vectorTx.push('value: ' + Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
             }
@@ -228,8 +234,15 @@ function initializeGLPlot(scene, camera, canvas, gl) {
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
-    scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
-    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
+    scene.glplot.canvas.addEventListener('mouseup', function() {
+        relayoutCallback(scene);
+    });
+
+    scene.glplot.canvas.addEventListener('wheel', function() {
+        if(gd._context._scrollZoom.gl3d) {
+            relayoutCallback(scene);
+        }
+    }, passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
@@ -265,6 +278,8 @@ function initializeGLPlot(scene, camera, canvas, gl) {
 
     // List of scene objects
     scene.traces = {};
+
+    scene.make4thDimension();
 
     return true;
 }
@@ -307,7 +322,7 @@ function Scene(options, fullLayout) {
     /*
      * Move this to calc step? Why does it work here?
      */
-    this.axesOptions = createAxesOptions(fullLayout[this.id]);
+    this.axesOptions = createAxesOptions(fullLayout, fullLayout[this.id]);
     this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
     this.container = sceneContainer;
     this.staticMode = !!options.staticPlot;
@@ -389,7 +404,6 @@ function computeTraceBounds(scene, trace, bounds) {
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
-
     // Save parameters
     this.plotArgs = [sceneData, fullLayout, layout];
 
@@ -410,12 +424,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.fullSceneLayout = fullSceneLayout;
 
     this.glplotLayout = fullSceneLayout;
-    this.axesOptions.merge(fullSceneLayout);
+    this.axesOptions.merge(fullLayout, fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
 
     // Update camera and camera mode
     this.setCamera(fullSceneLayout.camera);
     this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
+    this.camera.enableWheel = this.graphDiv._context._scrollZoom.gl3d;
 
     // Update scene
     this.glplot.update({});
@@ -707,6 +722,7 @@ proto.setCamera = function setCamera(cameraData) {
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
+    var fullLayout = this.fullLayout;
     var cameraData = this.getCamera();
     var cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
     var cameraDataLastSave = cameraNestedProp.get();
@@ -718,8 +734,9 @@ proto.saveCamera = function saveCamera(layout) {
         return y[vectors[i]] && (x[vectors[i]][components[j]] === y[vectors[i]][components[j]]);
     }
 
-    if(cameraDataLastSave === undefined) hasChanged = true;
-    else {
+    if(cameraDataLastSave === undefined) {
+        hasChanged = true;
+    } else {
         for(var i = 0; i < 3; i++) {
             for(var j = 0; j < 3; j++) {
                 if(!same(cameraData, cameraDataLastSave, i, j)) {
@@ -732,12 +749,14 @@ proto.saveCamera = function saveCamera(layout) {
     }
 
     if(hasChanged) {
+        var preGUI = {};
+        preGUI[this.id + '.camera'] = cameraDataLastSave;
+        Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, preGUI);
+
         cameraNestedProp.set(cameraData);
 
-        var fullLayout = this.fullLayout;
         var cameraFullNP = Lib.nestedProperty(fullLayout, this.id + '.camera');
         cameraFullNP.set(cameraData);
-        Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, cameraData);
     }
 
     return hasChanged;
@@ -778,7 +797,6 @@ proto.updateFx = function(dragmode, hovermode) {
             fullCamera.up = zUp;
             Lib.nestedProperty(layout, attr).set(zUp);
         } else {
-
             // none rotation modes [pan or zoom]
             camera.keyBindingMode = dragmode;
         }
@@ -849,6 +867,21 @@ proto.setConvert = function() {
         Axes.setConvert(ax, this.fullLayout);
         ax.setScale = Lib.noop;
     }
+};
+
+proto.make4thDimension = function() {
+
+    var _this = this;
+    var gd = _this.graphDiv;
+    var fullLayout = gd._fullLayout;
+
+    // mock axis for hover formatting
+    _this.mockAxis = {
+        type: 'linear',
+        showexponent: 'all',
+        exponentformat: 'B'
+    };
+    Axes.setConvert(_this.mockAxis, fullLayout);
 };
 
 module.exports = Scene;

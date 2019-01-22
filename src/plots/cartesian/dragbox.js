@@ -417,7 +417,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // deactivate mousewheel scrolling on embedded graphs
         // devs can override this with layout._enablescrollzoom,
         // but _ ensures this setting won't leave their page
-        if(!gd._context.scrollZoom && !gd._fullLayout._enablescrollzoom) {
+        if(!gd._context._scrollZoom.cartesian && !gd._fullLayout._enablescrollzoom) {
             return;
         }
 
@@ -430,16 +430,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        var pc = gd.querySelector('.plotly');
-
         recomputeAxisLists();
-
-        // if the plot has scrollbars (more than a tiny excess)
-        // disable scrollzoom too.
-        if(pc.scrollHeight - pc.clientHeight > 10 ||
-                pc.scrollWidth - pc.clientWidth > 10) {
-            return;
-        }
 
         clearTimeout(redrawTimer);
 
@@ -490,7 +481,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // viewbox redraw at first
         updateSubplots(scrollViewBox);
-        ticksAndAnnotations(ns, ew);
+        ticksAndAnnotations();
 
         // then replot after a delay to make sure
         // no more scrolling is coming
@@ -522,7 +513,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(xActive) dragAxList(xaxes, dx);
             if(yActive) dragAxList(yaxes, dy);
             updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
-            ticksAndAnnotations(yActive, xActive);
+            ticksAndAnnotations();
             return;
         }
 
@@ -594,12 +585,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
-        ticksAndAnnotations(yActive, xActive);
+        ticksAndAnnotations();
     }
 
     // Draw ticks and annotations (and other components) when ranges change.
     // Also records the ranges that have changed for use by update at the end.
-    function ticksAndAnnotations(ns, ew) {
+    function ticksAndAnnotations() {
         var activeAxIds = [];
         var i;
 
@@ -627,25 +618,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             updates[ax._name + '.range[1]'] = ax.range[1];
         }
 
-        function redrawObjs(objArray, method, shortCircuit) {
-            for(i = 0; i < objArray.length; i++) {
-                var obji = objArray[i];
-
-                if((ew && activeAxIds.indexOf(obji.xref) !== -1) ||
-                    (ns && activeAxIds.indexOf(obji.yref) !== -1)) {
-                    method(gd, i);
-                    // once is enough for images (which doesn't use the `i` arg anyway)
-                    if(shortCircuit) return;
-                }
-            }
-        }
-
-        // annotations and shapes 'draw' method is slow,
-        // use the finer-grained 'drawOne' method instead
-
-        redrawObjs(gd._fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(gd._fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(gd._fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+        Axes.redrawComponents(gd, activeAxIds);
     }
 
     function doubleClick() {

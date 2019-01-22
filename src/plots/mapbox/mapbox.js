@@ -32,9 +32,6 @@ function Mapbox(opts) {
     // unique id for this Mapbox instance
     this.uid = fullLayout._uid + '-' + this.id;
 
-    // full mapbox options (N.B. needs to be updated on every updates)
-    this.opts = fullLayout[this.id];
-
     // create framework on instantiation for a smoother first plot call
     this.div = null;
     this.xaxis = null;
@@ -57,9 +54,7 @@ module.exports = function createMapbox(opts) {
 
 proto.plot = function(calcData, fullLayout, promises) {
     var self = this;
-
-    // feed in new mapbox options
-    var opts = self.opts = fullLayout[this.id];
+    var opts = fullLayout[self.id];
 
     // remove map and create a new map if access token has change
     if(self.map && (opts.accesstoken !== self.accessToken)) {
@@ -88,7 +83,7 @@ proto.plot = function(calcData, fullLayout, promises) {
 proto.createMap = function(calcData, fullLayout, resolve, reject) {
     var self = this;
     var gd = self.gd;
-    var opts = self.opts;
+    var opts = fullLayout[self.id];
 
     // store style id and URL or object
     var styleObj = self.styleObj = getStyleObj(opts.style);
@@ -147,14 +142,16 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         // duplicate 'plotly_relayout' events.
 
         if(eventData.originalEvent || wheeling) {
-            var view = self.getView();
+            var optsNow = gd._fullLayout[self.id];
+            Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, self.getViewEdits(optsNow));
 
-            opts._input.center = opts.center = view.center;
-            opts._input.zoom = opts.zoom = view.zoom;
-            opts._input.bearing = opts.bearing = view.bearing;
-            opts._input.pitch = opts.pitch = view.pitch;
+            var viewNow = self.getView();
+            optsNow._input.center = optsNow.center = viewNow.center;
+            optsNow._input.zoom = optsNow.zoom = viewNow.zoom;
+            optsNow._input.bearing = optsNow.bearing = viewNow.bearing;
+            optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
 
-            emitRelayoutFromView(view);
+            gd.emit('plotly_relayout', self.getViewEdits(viewNow));
         }
         wheeling = false;
     });
@@ -186,34 +183,24 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     map.on('zoomstart', unhover);
 
     map.on('dblclick', function() {
-        gd.emit('plotly_doubleclick', null);
+        var optsNow = gd._fullLayout[self.id];
+        Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, self.getViewEdits(optsNow));
 
         var viewInitial = self.viewInitial;
-
         map.setCenter(convertCenter(viewInitial.center));
         map.setZoom(viewInitial.zoom);
         map.setBearing(viewInitial.bearing);
         map.setPitch(viewInitial.pitch);
 
         var viewNow = self.getView();
+        optsNow._input.center = optsNow.center = viewNow.center;
+        optsNow._input.zoom = optsNow.zoom = viewNow.zoom;
+        optsNow._input.bearing = optsNow.bearing = viewNow.bearing;
+        optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
 
-        opts._input.center = opts.center = viewNow.center;
-        opts._input.zoom = opts.zoom = viewNow.zoom;
-        opts._input.bearing = opts.bearing = viewNow.bearing;
-        opts._input.pitch = opts.pitch = viewNow.pitch;
-
-        emitRelayoutFromView(viewNow);
+        gd.emit('plotly_doubleclick', null);
+        gd.emit('plotly_relayout', self.getViewEdits(viewNow));
     });
-
-    function emitRelayoutFromView(view) {
-        var id = self.id;
-        var evtData = {};
-        for(var k in view) {
-            evtData[id + '.' + k] = view[k];
-        }
-        Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, evtData);
-        gd.emit('plotly_relayout', evtData);
-    }
 
     // define event handlers on map creation, to keep one ref per map,
     // so that map.on / map.off in updateFx works as expected
@@ -248,10 +235,11 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     var self = this;
     var map = self.map;
+    var opts = fullLayout[this.id];
 
     self.rejectOnError(reject);
 
-    var styleObj = getStyleObj(self.opts.style);
+    var styleObj = getStyleObj(opts.style);
 
     if(self.styleObj.id !== styleObj.id) {
         self.styleObj = styleObj;
@@ -269,6 +257,12 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
         self.updateData(calcData);
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
+    }
+
+    if(this.gd._context._scrollZoom.mapbox) {
+        map.scrollZoom.enable();
+    } else {
+        map.scrollZoom.disable();
     }
 };
 
@@ -309,14 +303,14 @@ proto.updateData = function(calcData) {
 
 proto.updateLayout = function(fullLayout) {
     var map = this.map;
-    var opts = this.opts;
+    var opts = fullLayout[this.id];
 
     map.setCenter(convertCenter(opts.center));
     map.setZoom(opts.zoom);
     map.setBearing(opts.bearing);
     map.setPitch(opts.pitch);
 
-    this.updateLayers();
+    this.updateLayers(fullLayout);
     this.updateFramework(fullLayout);
     this.updateFx(fullLayout);
     this.map.resize();
@@ -463,8 +457,8 @@ proto.updateFramework = function(fullLayout) {
     this.yaxis._length = size.h * (domain.y[1] - domain.y[0]);
 };
 
-proto.updateLayers = function() {
-    var opts = this.opts;
+proto.updateLayers = function(fullLayout) {
+    var opts = fullLayout[this.id];
     var layers = opts.layers;
     var layerList = this.layerList;
     var i;
@@ -519,7 +513,6 @@ proto.project = function(v) {
 // get map's current view values in plotly.js notation
 proto.getView = function() {
     var map = this.map;
-
     var mapCenter = map.getCenter();
     var center = { lon: mapCenter.lng, lat: mapCenter.lat };
 
@@ -529,6 +522,19 @@ proto.getView = function() {
         bearing: map.getBearing(),
         pitch: map.getPitch()
     };
+};
+
+proto.getViewEdits = function(cont) {
+    var id = this.id;
+    var keys = ['center', 'zoom', 'bearing', 'pitch'];
+    var obj = {};
+
+    for(var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        obj[id + '.' + k] = cont[k];
+    }
+
+    return obj;
 };
 
 function getStyleObj(val) {

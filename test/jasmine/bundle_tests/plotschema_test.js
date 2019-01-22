@@ -117,7 +117,7 @@ describe('plot schema', function() {
                         .concat(valObject.otherOpts)
                         .concat([
                             'valType', 'description', 'role',
-                            'editType', 'impliedEdits',
+                            'editType', 'impliedEdits', 'anim',
                             '_compareAsJSON', '_noTemplating'
                         ]);
 
@@ -326,6 +326,11 @@ describe('plot schema', function() {
         expect(plotSchema.frames.role).toEqual('object');
         expect(plotSchema.frames.items.frames_entry).toBeDefined();
         expect(plotSchema.frames.items.frames_entry.role).toEqual('object');
+    });
+
+    it('should list config attributes', function() {
+        expect(plotSchema.config).toBeDefined();
+        expect(plotSchema.config.scrollZoom).toBeDefined();
     });
 
     it('should list trace-dependent & direction-dependent error bar attributes', function() {

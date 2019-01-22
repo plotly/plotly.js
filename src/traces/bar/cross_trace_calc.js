@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -43,8 +42,7 @@ function crossTraceCalc(gd, plotinfo) {
         ) {
             if(fullTrace.orientation === 'h') {
                 calcTracesHorizontal.push(calcTraces[i]);
-            }
-            else {
+            } else {
                 calcTracesVertical.push(calcTraces[i]);
             }
         }
@@ -68,8 +66,7 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
 
     if(overlay) {
         setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
-    }
-    else if(group) {
+    } else if(group) {
         // exclude from the group those traces for which the user set an offset
         excluded = [];
         included = [];
@@ -87,8 +84,7 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
         if(excluded.length) {
             setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
         }
-    }
-    else {
+    } else {
         // exclude from the stack those traces for which the user set a base
         excluded = [];
         included = [];
@@ -155,7 +151,6 @@ function initBase(gd, pa, sa, calcTraces) {
     }
 }
 
-
 function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
     var barnorm = gd._fullLayout.barnorm;
     var separateNegativeValues = false;
@@ -164,10 +159,7 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
     // update position axis and set bar offsets and widths
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-
-        var sieve = new Sieve(
-            [calcTrace], separateNegativeValues, dontMergeOverlappingData
-        );
+        var sieve = new Sieve([calcTrace], separateNegativeValues, dontMergeOverlappingData);
 
         // set bar offsets and widths, and update position axis
         setOffsetAndWidth(gd, pa, sieve);
@@ -180,13 +172,11 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
         if(barnorm) {
             sieveBars(gd, sa, sieve);
             normalizeBars(gd, sa, sieve);
-        }
-        else {
+        } else {
             setBaseAndTop(gd, sa, sieve);
         }
     }
 }
-
 
 function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
     var fullLayout = gd._fullLayout;
@@ -202,19 +192,17 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
     if(barnorm) {
         sieveBars(gd, sa, sieve);
         normalizeBars(gd, sa, sieve);
-    }
-    else {
+    } else {
         setBaseAndTop(gd, sa, sieve);
     }
 }
 
-
 function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
     var fullLayout = gd._fullLayout;
     var barmode = fullLayout.barmode;
-    var stack = (barmode === 'stack');
-    var relative = (barmode === 'relative');
-    var barnorm = gd._fullLayout.barnorm;
+    var stack = barmode === 'stack';
+    var relative = barmode === 'relative';
+    var barnorm = fullLayout.barnorm;
     var separateNegativeValues = relative;
     var dontMergeOverlappingData = !(barnorm || stack || relative);
     var sieve = new Sieve(calcTraces, separateNegativeValues, dontMergeOverlappingData);
@@ -232,10 +220,10 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
-            if(bar.s === BADNUM) continue;
-
-            var isOutmostBar = ((bar.b + bar.s) === sieve.get(bar.p, bar.s));
-            if(isOutmostBar) bar._outmost = true;
+            if(bar.s !== BADNUM) {
+                var isOutmostBar = ((bar.b + bar.s) === sieve.get(bar.p, bar.s));
+                if(isOutmostBar) bar._outmost = true;
+            }
         }
     }
 
@@ -244,15 +232,12 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
     if(barnorm) normalizeBars(gd, sa, sieve);
 }
 
-
 function setOffsetAndWidth(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
     var bargap = fullLayout.bargap;
     var bargroupgap = fullLayout.bargroupgap || 0;
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
-    var i, calcTrace, calcTrace0;
-    var t;
 
     // set bar offsets and widths
     var barGroupWidth = minDiff * (1 - bargap);
@@ -262,12 +247,11 @@ function setOffsetAndWidth(gd, pa, sieve) {
     // computer bar group center and bar offset
     var offsetFromCenter = -barWidth / 2;
 
-    for(i = 0; i < calcTraces.length; i++) {
-        calcTrace = calcTraces[i];
-        calcTrace0 = calcTrace[0];
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var t = calcTrace[0].t;
 
         // store bar width and offset for this trace
-        t = calcTrace0.t;
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
@@ -287,7 +271,6 @@ function setOffsetAndWidth(gd, pa, sieve) {
     updatePositionAxis(gd, pa, sieve);
 }
 
-
 function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
     var bargap = fullLayout.bargap;
@@ -296,8 +279,6 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var distinctPositions = sieve.distinctPositions;
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
-    var i, calcTrace, calcTrace0;
-    var t;
 
     // if there aren't any overlapping positions,
     // let them have full width even if mode is group
@@ -308,17 +289,16 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var barWidthPlusGap = (overlap) ? barGroupWidth / nTraces : barGroupWidth;
     var barWidth = barWidthPlusGap * (1 - bargroupgap);
 
-    for(i = 0; i < nTraces; i++) {
-        calcTrace = calcTraces[i];
-        calcTrace0 = calcTrace[0];
+    for(var i = 0; i < nTraces; i++) {
+        var calcTrace = calcTraces[i];
+        var t = calcTrace[0].t;
 
         // computer bar group center and bar offset
-        var offsetFromCenter = (overlap) ?
+        var offsetFromCenter = overlap ?
             ((2 * i + 1 - nTraces) * barWidthPlusGap - barWidth) / 2 :
             -barWidth / 2;
 
         // store bar width and offset for this trace
-        t = calcTrace0.t;
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
@@ -338,18 +318,15 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     updatePositionAxis(gd, pa, sieve, overlap);
 }
 
-
 function applyAttributes(sieve) {
     var calcTraces = sieve.traces;
-    var i, j, calcTrace, calcTrace0, fullTrace;
-    var t;
+    var i, j;
 
     for(i = 0; i < calcTraces.length; i++) {
-        calcTrace = calcTraces[i];
-        calcTrace0 = calcTrace[0];
-        fullTrace = calcTrace0.trace;
-        t = calcTrace0.t;
-
+        var calcTrace = calcTraces[i];
+        var calcTrace0 = calcTrace[0];
+        var fullTrace = calcTrace0.trace;
+        var t = calcTrace0.t;
         var offset = fullTrace._offset || fullTrace.offset;
         var initialPoffset = t.poffset;
         var newPoffset;
@@ -372,8 +349,7 @@ function applyAttributes(sieve) {
             }
 
             t.poffset = newPoffset;
-        }
-        else if(offset !== undefined) {
+        } else if(offset !== undefined) {
             t.poffset = offset;
         }
 
@@ -408,8 +384,7 @@ function applyAttributes(sieve) {
                 }
                 t.poffset = newPoffset;
             }
-        }
-        else if(width !== undefined) {
+        } else if(width !== undefined) {
             t.barwidth = width;
 
             // if user didn't set offset,
@@ -420,7 +395,6 @@ function applyAttributes(sieve) {
         }
     }
 }
-
 
 function setBarCenterAndWidth(gd, pa, sieve) {
     var calcTraces = sieve.traces;
@@ -438,217 +412,201 @@ function setBarCenterAndWidth(gd, pa, sieve) {
             var calcBar = calcTrace[j];
 
             // store the actual bar width and position, for use by hover
-            var width = calcBar.w = (barwidthIsArray) ? barwidth[j] : barwidth;
-            calcBar[pLetter] = calcBar.p +
-                ((poffsetIsArray) ? poffset[j] : poffset) +
-                width / 2;
-
-
+            var width = calcBar.w = barwidthIsArray ? barwidth[j] : barwidth;
+            calcBar[pLetter] = calcBar.p + (poffsetIsArray ? poffset[j] : poffset) + width / 2;
         }
     }
 }
 
-
 function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
     var calcTraces = sieve.traces;
-    var distinctPositions = sieve.distinctPositions;
-    var distinctPositions0 = distinctPositions[0];
     var minDiff = sieve.minDiff;
     var vpad = minDiff / 2;
 
-    Axes.minDtick(pa, minDiff, distinctPositions0, allowMinDtick);
-
-    // If the user set the bar width or the offset,
-    // then bars can be shifted away from their positions
-    // and widths can be larger than minDiff.
-    //
-    // Here, we compute pMin and pMax to expand the position axis,
-    // so that all bars are fully within the axis range.
-    var pMin = Math.min.apply(Math, distinctPositions) - vpad;
-    var pMax = Math.max.apply(Math, distinctPositions) + vpad;
+    Axes.minDtick(pa, sieve.minDiff, sieve.distinctPositions[0], allowMinDtick);
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
         var calcTrace0 = calcTrace[0];
         var fullTrace = calcTrace0.trace;
+        var pts = [];
+        var bar, l, r, j;
 
-        if(fullTrace.width === undefined && fullTrace.offset === undefined) {
-            continue;
+        for(j = 0; j < calcTrace.length; j++) {
+            bar = calcTrace[j];
+            l = bar.p - vpad;
+            r = bar.p + vpad;
+            pts.push(l, r);
         }
 
-        var t = calcTrace0.t;
-        var poffset = t.poffset;
-        var barwidth = t.barwidth;
-        var poffsetIsArray = Array.isArray(poffset);
-        var barwidthIsArray = Array.isArray(barwidth);
+        if(fullTrace.width || fullTrace.offset) {
+            var t = calcTrace0.t;
+            var poffset = t.poffset;
+            var barwidth = t.barwidth;
+            var poffsetIsArray = Array.isArray(poffset);
+            var barwidthIsArray = Array.isArray(barwidth);
+
+            for(j = 0; j < calcTrace.length; j++) {
+                bar = calcTrace[j];
+                var calcBarOffset = poffsetIsArray ? poffset[j] : poffset;
+                var calcBarWidth = barwidthIsArray ? barwidth[j] : barwidth;
+                l = bar.p + calcBarOffset;
+                r = l + calcBarWidth;
+                pts.push(l, r);
+            }
+        }
+
+        fullTrace._extremes[pa._id] = Axes.findExtremes(pa, pts, {padded: false});
+    }
+}
+
+// store these bar bases and tops in calcdata
+// and make sure the size axis includes zero,
+// along with the bases and tops of each bar.
+function setBaseAndTop(gd, sa, sieve) {
+    var calcTraces = sieve.traces;
+    var sLetter = getAxisLetter(sa);
+
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
+        var allBarBaseAboveZero = true;
 
         for(var j = 0; j < calcTrace.length; j++) {
-            var calcBar = calcTrace[j];
-            var calcBarOffset = (poffsetIsArray) ? poffset[j] : poffset;
-            var calcBarWidth = (barwidthIsArray) ? barwidth[j] : barwidth;
-            var p = calcBar.p;
-            var l = p + calcBarOffset;
-            var r = l + calcBarWidth;
-
-            pMin = Math.min(pMin, l);
-            pMax = Math.max(pMax, r);
-        }
-    }
-
-    var extremes = Axes.findExtremes(pa, [pMin, pMax], {padded: false});
-    putExtremes(calcTraces, pa, extremes);
-}
-
-function expandRange(range, newValue) {
-    if(isNumeric(range[0])) range[0] = Math.min(range[0], newValue);
-    else range[0] = newValue;
-
-    if(isNumeric(range[1])) range[1] = Math.max(range[1], newValue);
-    else range[1] = newValue;
-}
-
-function setBaseAndTop(gd, sa, sieve) {
-    // store these bar bases and tops in calcdata
-    // and make sure the size axis includes zero,
-    // along with the bases and tops of each bar.
-    var traces = sieve.traces;
-    var sLetter = getAxisLetter(sa);
-    var sRange = [null, null];
-
-    for(var i = 0; i < traces.length; i++) {
-        var trace = traces[i];
-
-        for(var j = 0; j < trace.length; j++) {
-            var bar = trace[j];
+            var bar = calcTrace[j];
             var barBase = bar.b;
             var barTop = barBase + bar.s;
 
             bar[sLetter] = barTop;
+            pts.push(barTop);
+            if(bar.hasB) pts.push(barBase);
 
-            if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
-            if(bar.hasB && isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
+            if(!bar.hasB || !(bar.b > 0 && bar.s > 0)) {
+                allBarBaseAboveZero = false;
+            }
         }
+
+        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+            tozero: !allBarBaseAboveZero,
+            padded: true
+        });
     }
-
-    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
-    putExtremes(traces, sa, extremes);
 }
-
 
 function stackBars(gd, sa, sieve) {
     var fullLayout = gd._fullLayout;
     var barnorm = fullLayout.barnorm;
     var sLetter = getAxisLetter(sa);
-    var traces = sieve.traces;
-    var i, trace;
-    var j, bar;
+    var calcTraces = sieve.traces;
 
-    var sRange = [null, null];
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
 
-    for(i = 0; i < traces.length; i++) {
-        trace = traces[i];
+        for(var j = 0; j < calcTrace.length; j++) {
+            var bar = calcTrace[j];
 
-        for(j = 0; j < trace.length; j++) {
-            bar = trace[j];
+            if(bar.s !== BADNUM) {
+                // stack current bar and get previous sum
+                var barBase = sieve.put(bar.p, bar.b + bar.s);
+                var barTop = barBase + bar.b + bar.s;
 
-            if(bar.s === BADNUM) continue;
+                // store the bar base and top in each calcdata item
+                bar.b = barBase;
+                bar[sLetter] = barTop;
 
-            // stack current bar and get previous sum
-            var barBase = sieve.put(bar.p, bar.b + bar.s);
-            var barTop = barBase + bar.b + bar.s;
-
-            // store the bar base and top in each calcdata item
-            bar.b = barBase;
-            bar[sLetter] = barTop;
-
-            if(!barnorm) {
-                if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
-                if(bar.hasB && isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
+                if(!barnorm) {
+                    pts.push(barTop);
+                    if(bar.hasB) pts.push(barBase);
+                }
             }
         }
-    }
 
-    // if barnorm is set, let normalizeBars update the axis range
-    if(!barnorm) {
-        var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
-        putExtremes(traces, sa, extremes);
+        // if barnorm is set, let normalizeBars update the axis range
+        if(!barnorm) {
+            fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+                // N.B. we don't stack base with 'base',
+                // so set tozero:true always!
+                tozero: true,
+                padded: true
+            });
+        }
     }
 }
 
-
 function sieveBars(gd, sa, sieve) {
-    var traces = sieve.traces;
+    var calcTraces = sieve.traces;
 
-    for(var i = 0; i < traces.length; i++) {
-        var trace = traces[i];
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
 
-        for(var j = 0; j < trace.length; j++) {
-            var bar = trace[j];
+        for(var j = 0; j < calcTrace.length; j++) {
+            var bar = calcTrace[j];
 
             if(bar.s !== BADNUM) sieve.put(bar.p, bar.b + bar.s);
         }
     }
 }
 
-
+// Note:
+//
+// normalizeBars requires that either sieveBars or stackBars has been
+// previously invoked.
 function normalizeBars(gd, sa, sieve) {
-    // Note:
-    //
-    // normalizeBars requires that either sieveBars or stackBars has been
-    // previously invoked.
-
-    var traces = sieve.traces;
+    var fullLayout = gd._fullLayout;
+    var calcTraces = sieve.traces;
     var sLetter = getAxisLetter(sa);
-    var sTop = (gd._fullLayout.barnorm === 'fraction') ? 1 : 100;
+    var sTop = fullLayout.barnorm === 'fraction' ? 1 : 100;
     var sTiny = sTop / 1e9; // in case of rounding error in sum
     var sMin = sa.l2c(sa.c2l(0));
-    var sMax = (gd._fullLayout.barmode === 'stack') ? sTop : sMin;
-    var sRange = [sMin, sMax];
-    var padded = false;
+    var sMax = fullLayout.barmode === 'stack' ? sTop : sMin;
 
-    function maybeExpand(newValue) {
-        if(isNumeric(sa.c2l(newValue)) &&
-            ((newValue < sMin - sTiny) || (newValue > sMax + sTiny) || !isNumeric(sMin))
-        ) {
-            padded = true;
-            expandRange(sRange, newValue);
-        }
+    function needsPadding(v) {
+        return (
+            isNumeric(sa.c2l(v)) &&
+            ((v < sMin - sTiny) || (v > sMax + sTiny) || !isNumeric(sMin))
+        );
     }
 
-    for(var i = 0; i < traces.length; i++) {
-        var trace = traces[i];
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+        var pts = [];
+        var allBarBaseAboveZero = true;
+        var padded = false;
 
-        for(var j = 0; j < trace.length; j++) {
-            var bar = trace[j];
+        for(var j = 0; j < calcTrace.length; j++) {
+            var bar = calcTrace[j];
 
-            if(bar.s === BADNUM) continue;
+            if(bar.s !== BADNUM) {
+                var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
+                bar.b *= scale;
+                bar.s *= scale;
 
-            var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
-            bar.b *= scale;
-            bar.s *= scale;
+                var barBase = bar.b;
+                var barTop = barBase + bar.s;
 
-            var barBase = bar.b;
-            var barTop = barBase + bar.s;
-            bar[sLetter] = barTop;
+                bar[sLetter] = barTop;
+                pts.push(barTop);
+                padded = padded || needsPadding(barTop);
 
-            maybeExpand(barTop);
-            if(bar.hasB) maybeExpand(barBase);
+                if(bar.hasB) {
+                    pts.push(barBase);
+                    padded = padded || needsPadding(barBase);
+                }
+
+                if(!bar.hasB || !(bar.b > 0 && bar.s > 0)) {
+                    allBarBaseAboveZero = false;
+                }
+            }
         }
-    }
 
-    // update range of size axis
-    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: padded});
-    putExtremes(traces, sa, extremes);
-}
-
-
-function getAxisLetter(ax) {
-    return ax._id.charAt(0);
-}
-
-function putExtremes(cd, ax, extremes) {
-    for(var i = 0; i < cd.length; i++) {
-        cd[i][0].trace._extremes[ax._id] = extremes;
+        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+            tozero: !allBarBaseAboveZero,
+            padded: padded
+        });
     }
 }
 
@@ -658,12 +616,13 @@ function putExtremes(cd, ax, extremes) {
 // run once per trace group (subplot & direction) and
 // the same mapping is attached to all calcdata traces
 function collectExtents(calcTraces, pa) {
-    var posLetter = pa._id.charAt(0);
+    var pLetter = getAxisLetter(pa);
     var extents = {};
+    var i, j, cd;
+
     var pMin = Infinity;
     var pMax = -Infinity;
 
-    var i, j, cd;
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         for(j = 0; j < cd.length; j++) {
@@ -683,20 +642,19 @@ function collectExtents(calcTraces, pa) {
         return String(Math.round(roundFactor * (p - pMin)));
     };
 
-    var poffset, poffsetIsArray;
-
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         cd[0].t.extents = extents;
-        poffset = cd[0].t.poffset;
-        poffsetIsArray = Array.isArray(poffset);
+
+        var poffset = cd[0].t.poffset;
+        var poffsetIsArray = Array.isArray(poffset);
 
         for(j = 0; j < cd.length; j++) {
             var di = cd[j];
-            var p0 = di[posLetter] - di.w / 2;
+            var p0 = di[pLetter] - di.w / 2;
 
             if(isNumeric(p0)) {
-                var p1 = di[posLetter] + di.w / 2;
+                var p1 = di[pLetter] + di.w / 2;
                 var pVal = round(di.p);
                 if(extents[pVal]) {
                     extents[pVal] = [Math.min(p0, extents[pVal][0]), Math.max(p1, extents[pVal][1])];
@@ -705,12 +663,16 @@ function collectExtents(calcTraces, pa) {
                 }
             }
 
-            di.p0 = di.p + ((poffsetIsArray) ? poffset[j] : poffset);
+            di.p0 = di.p + (poffsetIsArray ? poffset[j] : poffset);
             di.p1 = di.p0 + di.w;
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
         }
     }
+}
+
+function getAxisLetter(ax) {
+    return ax._id.charAt(0);
 }
 
 module.exports = {
