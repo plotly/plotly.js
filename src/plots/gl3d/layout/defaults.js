@@ -128,10 +128,12 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
                 var y = sceneLayoutIn.camera.up.y;
                 var z = sceneLayoutIn.camera.up.z;
 
-                if((!x && x !== 0) || (!y && y !== 0) || (!z && z !== 0)) {
-                    dragmode = 'turntable';
-                } else if(z !== 0 && z / Math.sqrt(x * x + y * y + z * z) > 0.999) {
-                    dragmode = 'turntable';
+                if(z !== 0) {
+                    if(!x || !y || !z) {
+                        dragmode = 'turntable';
+                    } else if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) {
+                        dragmode = 'turntable';
+                    }
                 }
             } else {
                 dragmode = 'turntable';
