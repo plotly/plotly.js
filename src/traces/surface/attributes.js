@@ -43,6 +43,18 @@ function makeContourAttr(axLetter) {
                 'dimension are drawn.'
             ].join(' ')
         },
+        onpoints: {
+            valType: 'number',
+            role: 'info',
+            max: 1,
+            min: 0,
+            dflt: 0,
+            description: [
+                'Determines whether or contour lines about the', axLetter,
+                'dimension are drawn on all data points. Ratios between 0 and 1',
+                'e.g. 0.5 could also be applied to locate contours between data points'
+            ].join(' ')
+        },
         project: {
             x: makeContourProjAttr('x'),
             y: makeContourProjAttr('y'),
@@ -257,3 +269,4 @@ colorscaleAttrs('', {
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
+delete attrs.contours.z.onpoints;

@@ -62,6 +62,7 @@ describe('Test surface', function() {
             expect(traceOut.contours.x).toEqual(fullOpts);
             expect(traceOut.contours.y).toEqual(Lib.extendDeep({}, fullOpts, {
                 show: true,
+                onpoints: 0,
                 color: '#444',
                 width: 2,
                 usecolormap: false

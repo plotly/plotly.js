@@ -36,8 +36,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._xlength = (Array.isArray(x) && Lib.isArrayOrTypedArray(x[0])) ? z.length : z[0].length;
     traceOut._ylength = z.length;
 
-    traceOut._objectOffset = [0, 0, 0];
-
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
@@ -76,6 +74,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             coerce(contourDim + '.color');
             coerce(contourDim + '.width');
             coerce(contourDim + '.usecolormap');
+            if(i < 2) coerce(contourDim + '.onpoints');
         }
 
         if(highlight) {

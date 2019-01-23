@@ -1,0 +1,57 @@
+{
+    "data": [
+        {
+        "type": "surface",
+        "contours": {
+            "x": { "show": true, "onpoints": 1 },
+            "y": { "show": true, "onpoints": 1 },
+            "z": { "show": false}
+        },
+        "x": [0, 0.25, 0.5, 0.75, 1],
+        "y": [0, 0.25, 0.5, 0.75, 1],
+        "z": [
+            [0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0]
+        ]
+        },
+        {
+            "type": "surface",
+            "contours": {
+                "x": { "show": true, "onpoints": 0.5 },
+                "y": { "show": true, "onpoints": 0.5 },
+                "z": { "show": false}
+            },
+            "x": [1.5, 1.75, 2, 2.25, 2.5],
+            "y": [0, 0.25, 0.5, 0.75, 1],
+            "z": [
+                [0, 1, 0, 1, 0],
+                [1, 0, 1, 0, 1],
+                [0, 1, 0, 1, 0],
+                [1, 0, 1, 0, 1],
+                [0, 1, 0, 1, 0]
+            ]
+        }
+    ],
+    "layout": {
+        "title": "Surface contours on or between all x & y data points",
+        "width": 900,
+        "height": 600,
+        "scene": {
+            "xaxis": { "nticks": 1 },
+            "yaxis": { "nticks": 1 },
+            "zaxis": { "nticks": 1 },
+            "camera": {
+                "eye": { "x": 0, "y": -0.9, "z": 1.8 },
+                "center": { "x": 0, "y": 0, "z": 0 }
+            },
+            "aspectratio": {
+                "x": 2,
+                "y": 1,
+                "z": 1
+            }
+        }
+    }
+}
