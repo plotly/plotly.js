@@ -511,7 +511,8 @@ describe('Test gl3d plots', function() {
                     camera: {
                         up: {
                             x: null,
-                            z: 0
+                            y: 0.5,
+                            z: 0.5
                         }
                     }
                 }
@@ -524,7 +525,7 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@gl should set the camera dragmode to turntable if all camera.up.[x|y|z] are zero or missing', function(done) {
+    it('@gl should not set the camera dragmode to turntable if camera.up.z is zero.', function(done) {
         Plotly.plot(gd, {
             data: [{
                 type: 'scatter3d',
@@ -536,7 +537,7 @@ describe('Test gl3d plots', function() {
                 scene: {
                     camera: {
                         up: {
-                            x: 0,
+                            x: 1,
                             y: 0,
                             z: 0
                         }
@@ -546,7 +547,7 @@ describe('Test gl3d plots', function() {
         })
         .then(delay(20))
         .then(function() {
-            expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
+            expect(gd._fullLayout.scene.dragmode === 'turntable').not.toBe(true);
         })
         .then(done);
     });
