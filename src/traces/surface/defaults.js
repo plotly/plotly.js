@@ -74,6 +74,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             coerce(contourDim + '.color');
             coerce(contourDim + '.width');
             coerce(contourDim + '.usecolormap');
+            coerce(contourDim + '.locations');
             if(i < 2) coerce(contourDim + '.onpoints');
         }
 

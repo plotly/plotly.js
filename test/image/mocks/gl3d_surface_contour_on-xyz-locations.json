@@ -3,9 +3,9 @@
         {
         "type": "surface",
         "contours": {
-            "x": { "show": true, "onpoints": 1 },
-            "y": { "show": true, "onpoints": 1 },
-            "z": { "show": false }
+            "x": { "show": true, "locations": [0.2, 0.25, 0.3, 0.35, 0.4] },
+            "y": { "show": true, "locations": [0.2, 0.3, 0.4, 0.5] },
+            "z": { "show": true, "locations": [0.7, 0.75, 0.8] }
         },
         "x": [0, 0.25, 0.5, 0.75, 1],
         "y": [0, 0.25, 0.5, 0.75, 1],
@@ -20,9 +20,9 @@
         {
             "type": "surface",
             "contours": {
-                "x": { "show": true, "onpoints": 0.5 },
-                "y": { "show": true, "onpoints": 0.5 },
-                "z": { "show": false }
+                "x": { "show": true, "locations": [1.7, 1.75, 1.8] },
+                "y": { "show": true, "locations": [0.5, 0.6, 0.8, 0.8] },
+                "z": { "show": true, "locations": [0.2, 0.25, 0.3] }
             },
             "x": [1.5, 1.75, 2, 2.25, 2.5],
             "y": [0, 0.25, 0.5, 0.75, 1],
@@ -36,7 +36,7 @@
         }
     ],
     "layout": {
-        "title": "Surface contours on or between all x & y data points",
+        "title": "Surface contours on desired locations",
         "width": 900,
         "height": 600,
         "scene": {

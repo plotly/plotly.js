@@ -43,6 +43,14 @@ function makeContourAttr(axLetter) {
                 'dimension are drawn.'
             ].join(' ')
         },
+        locations: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'info',
+            description: [
+                'Specifies the location(s) of contours on the', axLetter, 'axis.'
+            ].join(' ')
+        },
         onpoints: {
             valType: 'number',
             role: 'info',
