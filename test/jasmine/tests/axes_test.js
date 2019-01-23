@@ -670,6 +670,25 @@ describe('Test axes', function() {
             });
         });
 
+        it('will not match axes of different types', function() {
+            layoutIn = {
+                xaxis: {type: 'linear'},
+                yaxis: {type: 'log', matches: 'x'},
+                xaxis2: {type: 'date', matches: 'y'},
+                yaxis2: {type: 'category', matches: 'x2'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2');
+            layoutOut._subplots.yaxis.push('x2', 'y2');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups).toEqual([]);
+
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].matches).toBeUndefined();
+            });
+        });
+
         it('drops scaleanchor settings if either the axis or target has fixedrange', function() {
             // some of these will create warnings... not too important, so not going to test,
             // just want to keep the output clean
@@ -697,6 +716,26 @@ describe('Test axes', function() {
             });
         });
 
+        it('drops *matches* settings if either the axis or target has fixedrange', function() {
+            layoutIn = {
+                xaxis: {fixedrange: true, matches: 'y'},
+                yaxis: {matches: 'x2'}, // only this one should survive
+                xaxis2: {},
+                yaxis2: {matches: 'x'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2');
+            layoutOut._subplots.yaxis.push('x2', 'y2');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups).toEqual([{x2: 1, y: 1}]);
+            expect(layoutOut.yaxis.matches).toBe('x2');
+
+            ['xaxis', 'yaxis2', 'xaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].matches).toBeUndefined();
+            });
+        });
+
         it('should coerce hoverformat even on visible: false axes', function() {
             layoutIn = {
                 xaxis: {
@@ -707,6 +746,69 @@ describe('Test axes', function() {
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.hoverformat).toEqual('g');
+        });
+
+        it('should find matching groups', function() {
+            layoutIn = {
+                // both linked to 'base' ax
+                xaxis: {},
+                xaxis2: {matches: 'x'},
+                xaxis3: {matches: 'x'},
+                // cascading links
+                yaxis: {},
+                yaxis2: {anchor: 'x2', matches: 'y'},
+                yaxis3: {anchor: 'x3', matches: 'y2'},
+            };
+            layoutOut._subplots.cartesian.push('x2y2', 'x3y3');
+            layoutOut._subplots.xaxis.push('x2', 'x3');
+            layoutOut._subplots.yaxis.push('y2', 'y3');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(2);
+            expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x3: 1});
+            expect(layoutOut._axisMatchGroups).toContain({y: 1, y2: 1, y3: 1});
+        });
+
+        it('should match set axis range value for matching axes', function() {
+            layoutIn = {
+                // autorange case
+                xaxis: {},
+                xaxis2: {matches: 'x'},
+                // matchee ax has range
+                yaxis: {range: [0, 1]},
+                yaxis2: {matches: 'y'},
+                // matcher ax has range (gets ignored)
+                xaxis3: {},
+                yaxis3: {range: [-1, 1], matches: 'x3'},
+                // both ax have range
+                xaxis4: {range: [0, 2], matches: 'y4'},
+                yaxis4: {range: [-1, 3], matches: 'x4'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            layoutOut._subplots.yaxis.push('y2', 'y3', 'y4');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(4);
+            expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1});
+            expect(layoutOut._axisMatchGroups).toContain({y: 1, y2: 1});
+            expect(layoutOut._axisMatchGroups).toContain({x3: 1, y3: 1});
+            expect(layoutOut._axisMatchGroups).toContain({x4: 1, y4: 1});
+
+            function _assertMatchingAxes(names, autorange, rng) {
+                names.forEach(function(n) {
+                    var ax = layoutOut[n];
+                    expect(ax.autorange).toBe(autorange, n);
+                    expect(ax.range).toEqual(rng);
+                });
+            }
+
+            _assertMatchingAxes(['xaxis', 'xaxis2'], true, [-1, 6]);
+            _assertMatchingAxes(['yaxis', 'yaxis2'], false, [0, 1]);
+            _assertMatchingAxes(['xaxis3', 'yaxis3'], true, [-1, 6]);
+            _assertMatchingAxes(['xaxis4', 'yaxis4'], false, [0, 2]);
         });
     });
 

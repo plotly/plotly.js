@@ -19,6 +19,7 @@ var FROM_BL = require('../../constants/alignment').FROM_BL;
 
 exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, allAxisIds, layoutOut) {
     var constraintGroups = layoutOut._axisConstraintGroups;
+    var matchGroups = layoutOut._axisMatchGroups;
     var thisID = containerOut._id;
     var letter = thisID.charAt(0);
 
@@ -35,19 +36,29 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
         }
     }, 'constraintoward');
 
-    if(!containerIn.scaleanchor) return;
+    if(!containerIn.scaleanchor && !containerIn.matches) return;
 
-    var constraintOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut);
+    var opts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut);
 
     var scaleanchor = Lib.coerce(containerIn, containerOut, {
         scaleanchor: {
             valType: 'enumerated',
-            values: constraintOpts.linkableAxes
+            values: opts.linkableAxes
         }
     }, 'scaleanchor');
 
+    var matches = Lib.coerce(containerIn, containerOut, {
+        matches: {
+            valType: 'enumerated',
+            values: opts.linkableAxes
+        }
+    }, 'matches');
+
+    var found = false;
+
     if(scaleanchor) {
         var scaleratio = coerce('scaleratio');
+
         // TODO: I suppose I could do attribute.min: Number.MIN_VALUE to avoid zero,
         // but that seems hacky. Better way to say "must be a positive number"?
         // Of course if you use several super-tiny values you could eventually
@@ -55,10 +66,18 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
         // Likewise with super-huge values.
         if(!scaleratio) scaleratio = containerOut.scaleratio = 1;
 
-        updateConstraintGroups(constraintGroups, constraintOpts.thisGroup,
-            thisID, scaleanchor, scaleratio);
+        updateConstraintGroups(constraintGroups, opts.thisGroup, thisID, scaleanchor, scaleratio);
+        found = true;
     }
-    else if(allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
+
+    // TODO what happens when both scaleanchor and matches are present???
+
+    if(matches) {
+        updateConstraintGroups(matchGroups, opts.thisGroup, thisID, matches, 1);
+        found = true;
+    }
+
+    if(!found && allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
         Lib.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
             containerIn.scaleanchor + '" to avoid either an infinite loop ' +
             'and possibly inconsistent scaleratios, or because the target' +

@@ -697,16 +697,48 @@ exports.redrawReglTraces = function(gd) {
 };
 
 exports.doAutoRangeAndConstraints = function(gd) {
+    var fullLayout = gd._fullLayout;
     var axList = Axes.list(gd, '', true);
+    var matchGroups = fullLayout._axisMatchGroups || [];
+    var ax;
 
     for(var i = 0; i < axList.length; i++) {
-        var ax = axList[i];
+        ax = axList[i];
         cleanAxisConstraints(gd, ax);
-        // in case margins changed, update scale
-        ax.setScale();
         doAutoRange(gd, ax);
     }
 
+    // TODO bypass this when matching axes aren't autoranged?
+    for(var j = 0; j < matchGroups.length; j++) {
+        var group = matchGroups[j];
+        var rng = null;
+        var id;
+
+        for(id in group) {
+            ax = Axes.getFromId(gd, id);
+
+            if(rng) {
+                if(rng[0] < rng[1]) {
+                    rng[0] = Math.min(rng[0], ax.range[0]);
+                    rng[1] = Math.max(rng[1], ax.range[1]);
+                } else {
+                    rng[0] = Math.max(rng[0], ax.range[0]);
+                    rng[1] = Math.min(rng[1], ax.range[1]);
+                }
+            } else {
+                rng = ax.range;
+            }
+        }
+
+        for(id in group) {
+            ax = Axes.getFromId(gd, id);
+            ax.range = rng.slice();
+            ax._input.range = rng.slice();
+            ax.setScale(0);
+        }
+    }
+
+    // TODO before or after matching axes?
     enforceAxisConstraints(gd);
 };
 

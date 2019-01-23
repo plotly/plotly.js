@@ -211,6 +211,23 @@ module.exports = {
             'and *right* for x axes, and *top*, *middle* (default), and *bottom* for y axes.'
         ].join(' ')
     },
+    matches: {
+        valType: 'enumerated',
+        values: [
+            constants.idRegex.x.toString(),
+            constants.idRegex.y.toString()
+        ],
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'If set to another axis id (e.g. `x2`, `y`), the range of this axis',
+            'will match the range of the corresponding axis in data-coordinates space.',
+            'Moreover, matching axes share auto-range values, category lists and',
+            'histogram auto-bins.',
+            'Note that setting `matches` and `scaleratio` under a *range* `constrain`',
+            'to the same axis id is forbidden.'
+        ].join(' ')
+    },
     // ticks
     tickmode: {
         valType: 'enumerated',

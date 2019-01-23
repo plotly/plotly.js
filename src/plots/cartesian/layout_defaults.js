@@ -124,6 +124,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     var counterAxes = {x: getCounterAxes('x'), y: getCounterAxes('y')};
+    var allAxisIds = counterAxes.x.concat(counterAxes.y);
 
     function getOverlayableAxes(axLetter, axName) {
         var list = (axLetter === 'x') ? xNames : yNames;
@@ -199,14 +200,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             delete axLayoutOut.spikesnap;
         }
 
-        var positioningOptions = {
+        handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],
             overlayableAxes: overlayableAxes,
             grid: layoutOut.grid
-        };
-
-        handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
+        });
 
         axLayoutOut._input = axLayoutIn;
     }
@@ -247,22 +246,56 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         coerce('fixedrange', fixedRangeDflt);
     }
 
-    // Finally, handle scale constraints. We need to do this after all axes have
-    // coerced both `type` (so we link only axes of the same type) and
+    // Finally, handle scale constraints and matching axes.
+    //
+    // We need to do this after all axes have coerced both `type`
+    // (so we link only axes of the same type) and
     // `fixedrange` (so we can avoid linking from OR TO a fixed axis).
 
     // sets of axes linked by `scaleanchor` along with the scaleratios compounded
     // together, populated in handleConstraintDefaults
     layoutOut._axisConstraintGroups = [];
-    var allAxisIds = counterAxes.x.concat(counterAxes.y);
+    // similar to _axisConstraintGroups, but for matching axes
+    layoutOut._axisMatchGroups = [];
 
     for(i = 0; i < axNames.length; i++) {
         axName = axNames[i];
         axLetter = axName.charAt(0);
-
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
         handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, allAxisIds, layoutOut);
+    }
+
+    for(i = 0; i < layoutOut._axisMatchGroups.length; i++) {
+        var group = layoutOut._axisMatchGroups[i];
+        var rng = null;
+        var autorange = null;
+        var axId;
+
+        for(axId in group) {
+            axLayoutOut = layoutOut[id2name(axId)];
+            if(!axLayoutOut.matches) {
+                rng = axLayoutOut.range;
+                autorange = axLayoutOut.autorange;
+            }
+        }
+
+        if(rng === null || autorange === null) {
+            for(axId in group) {
+                axLayoutOut = layoutOut[id2name(axId)];
+                rng = axLayoutOut.range;
+                autorange = axLayoutOut.autorange;
+                break;
+            }
+        }
+
+        for(axId in group) {
+            axLayoutOut = layoutOut[id2name(axId)];
+            if(axLayoutOut.matches) {
+                axLayoutOut.range = rng.slice();
+                axLayoutOut.autorange = autorange;
+            }
+        }
     }
 };
