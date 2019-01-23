@@ -34,7 +34,7 @@ function makeSliceAttr(axLetter) {
             role: 'info',
             description: [
                 'Specifies the location(s) of slices on the axis.',
-                'When not locations specified slices would be created for',
+                'When not specified slices would be created for',
                 'all points of the axis', axLetter, 'except start and end.'
             ].join(' ')
         },
