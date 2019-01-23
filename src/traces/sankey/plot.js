@@ -288,6 +288,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     render(
+        gd,
         svg,
         calcData,
         {

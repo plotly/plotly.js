@@ -120,6 +120,9 @@ describe('sankey tests', function() {
 
                 expect(fullTrace.link.label)
                     .toEqual([], 'presence of link target array is guaranteed');
+
+                expect(fullTrace.link.colorscales)
+                    .toEqual([], 'presence of link colorscales array is guaranteed');
             });
 
         it('\'Sankey\' specification should have proper types',
@@ -784,6 +787,7 @@ describe('sankey tests', function() {
                 var pt = d.points[0];
                 expect(pt.hasOwnProperty('source')).toBeTruthy();
                 expect(pt.hasOwnProperty('target')).toBeTruthy();
+                expect(pt.hasOwnProperty('flow')).toBeTruthy();
             })
             .then(function() { return _unhover('node'); })
             .then(function(d) {

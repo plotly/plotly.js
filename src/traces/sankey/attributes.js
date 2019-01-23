@@ -14,6 +14,8 @@ var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -224,6 +226,32 @@ var attrs = module.exports = overrideAll({
         hovertemplate: hovertemplateAttrs({}, {
             description: 'Variables `source` and `target` are node objects.',
             keys: ['value', 'label']
+        }),
+        colorscales: templatedArray('concentrationscales', {
+            editType: 'calc',
+            label: {
+                valType: 'string',
+                role: 'calc',
+                description: 'The label of the links to color based on their concentration within a flow.',
+                dflt: ''
+            },
+            cmax: {
+                valType: 'number',
+                role: 'calc',
+                dflt: 1,
+                description: [
+                    'Sets the upper bound of the color domain.'
+                ].join('')
+            },
+            cmin: {
+                valType: 'number',
+                role: 'calc',
+                dflt: 0,
+                description: [
+                    'Sets the lower bound of the color domain.'
+                ].join('')
+            },
+            colorscale: extendFlat(colorAttributes().colorscale, {dflt: [[0, 'white'], [1, 'black']]})
         }),
         description: 'The links of the Sankey plot.'
     }

@@ -10,6 +10,7 @@
 
 var c = require('./constants');
 var d3 = require('d3');
+var sum = require('d3-array').sum;
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
@@ -67,6 +68,57 @@ function sankeyModel(layout, d, traceIndex) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
+    function computeLinkConcentrations() {
+        graph.nodes.forEach(function(node) {
+            // Links connecting the same two nodes are part of a flow
+            var flows = {};
+            node.targetLinks.forEach(function(link) {
+                var flowKey = link.source.pointNumber + ':' + link.target.pointNumber;
+                if(!flows.hasOwnProperty(flowKey)) flows[flowKey] = [];
+                flows[flowKey].push(link);
+            });
+
+            // Compute statistics for each flow
+            Object.keys(flows).forEach(function(flowKey) {
+                var flowLinks = flows[flowKey];
+
+                // Find the total size of the flow and total size per label
+                var total = 0;
+                var totalPerLabel = {};
+                flowLinks.forEach(function(link) {
+                    if(!totalPerLabel[link.label]) totalPerLabel[link.label] = 0;
+                    totalPerLabel[link.label] += link.value;
+                    total += link.value;
+                });
+
+                // Find the ratio of the link's value and the size of the flow
+                flowLinks.forEach(function(link) {
+                    link.flow = {
+                        value: total,
+                        labelConcentration: totalPerLabel[link.label] / total,
+                        concentration: link.value / total,
+                        links: flowLinks
+                    };
+                });
+            });
+
+            // Gather statistics of all links at current node
+            var totalOutflow = sum(node.sourceLinks, function(n) {
+                return n.value;
+            });
+            node.sourceLinks.forEach(function(link) {
+                link.concentrationOut = link.value / totalOutflow;
+            });
+            var totalInflow = sum(node.targetLinks, function(n) {
+                return n.value;
+            });
+            node.targetLinks.forEach(function(link) {
+                link.concenrationIn = link.value / totalInflow;
+            });
+        });
+    }
+    computeLinkConcentrations();
+
     return {
         circular: circular,
         key: traceIndex,
@@ -100,6 +152,9 @@ function sankeyModel(layout, d, traceIndex) {
 
 function linkModel(d, l, i) {
     var tc = tinycolor(l.color);
+    if(l.concentrationscale) {
+        tc = tinycolor(l.concentrationscale(l.flow.labelConcentration));
+    }
     var basicKey = l.source.label + '|' + l.target.label;
     var key = basicKey + '__' + i;
 
@@ -121,7 +176,8 @@ function linkModel(d, l, i) {
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
         parent: d,
-        interactionState: d.interactionState
+        interactionState: d.interactionState,
+        flow: l.flow
     };
 }
 
@@ -568,7 +624,7 @@ function switchToSankeyFormat(nodes) {
 }
 
 // scene graph
-module.exports = function(svg, calcData, layout, callbacks) {
+module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     var styledData = calcData
             .filter(function(d) {return unwrap(d).trace.visible;})
@@ -615,6 +671,7 @@ module.exports = function(svg, calcData, layout, callbacks) {
           .classed(c.cn.sankeyLink, true)
           .attr('d', linkPath())
           .call(attachPointerEvents, sankey, callbacks.linkEvents);
+
 
     sankeyLink
         .style('stroke', function(d) {

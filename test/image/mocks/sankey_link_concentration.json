@@ -1,0 +1,74 @@
+{
+    "data": [
+        {
+            "type": "sankey",
+            "node": {
+                "pad": 25,
+                "line": {
+                  "color": "white",
+                  "width": 2
+                },
+                "label": ["process0", "process1", "process2", "process3", "process4"]
+            },
+            "link": {
+                "source": [
+                    0, 0, 0, 0,
+                    1, 1, 1, 1,
+                    1, 1, 1, 1,
+                    1, 1,
+                    2
+                ],
+                "target": [
+                    1, 1, 1, 1,
+                    2, 2, 2, 2,
+                    3, 3, 3, 3,
+                    4, 4,
+                    0
+                ],
+                "value": [
+                    10, 20, 40, 30,
+                    10, 5, 10, 20,
+                    0, 10, 10, 10,
+                    15, 5,
+                    5
+
+                ],
+                "label": [
+                    "elementA", "elementB", "elementC", "elementD",
+                    "elementA", "elementB", "elementC", "elementD",
+                    "elementA", "elementB", "elementC", "elementD",
+                    "elementC", "elementC",
+                    "elementA"
+                ],
+                "line": {
+                    "color": "white",
+                    "width": 2
+                },
+                "colorscales": [
+                  {
+                    "label": "elementA",
+                    "colorscale": [[0, "white"], [1, "blue"]]
+                  },
+                  {
+                    "label": "elementB",
+                    "colorscale": [[0, "white"], [1, "red"]]
+                  },
+                  {
+                    "label": "elementC",
+                    "colorscale": [[0, "white"], [1, "green"]]
+                  },
+                  {
+                    "label": "elementD"
+                  }
+                ],
+
+                "hovertemplate": "%{label}<br><b>flow.labelConcentration</b>: %{flow.labelConcentration:%0.2f}<br><b>flow.concentration</b>: %{flow.concentration:%0.2f}<br><b>flow.value</b>: %{flow.value}"
+            }
+
+        }],
+    "layout": {
+        "title": "Sankey with links colored based on its concentration within a flow",
+        "width": 800,
+        "height": 800
+    }
+}
