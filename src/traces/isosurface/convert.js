@@ -115,7 +115,7 @@ proto.update = function(data) {
         fresnel: data.lighting.fresnel,
         vertexNormalsEpsilon: data.lighting.vertexnormalsepsilon,
         faceNormalsEpsilon: data.lighting.facenormalsepsilon,
-        opacity: 1, // Note: no need to create transparent surfaces
+        opacity: data.opacity,
         contourEnable: data.contour.show,
         contourColor: str2RgbaArray(data.contour.color).slice(0, 3),
         contourWidth: data.contour.width,

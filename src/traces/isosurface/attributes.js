@@ -236,6 +236,8 @@ colorscaleAttrs('', {
 
     colorbar: colorbarAttrs,
 
+    opacity: surfaceAtts.opacity,
+
     // Flat shaded mode
     flatshading: {
         valType: 'boolean',
