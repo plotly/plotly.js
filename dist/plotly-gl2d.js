@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.44.0
+* plotly.js (gl2d) v1.44.1
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -47391,8 +47391,6 @@ function createText(str, options) {
 }
 
 },{"./lib/vtext":294}],294:[function(_dereq_,module,exports){
-"use strict"
-
 module.exports = vectorizeText
 module.exports.processPixels = processPixels
 
@@ -47592,92 +47590,91 @@ function getPixels(canvas, context, rawString, fontSize, lineSpacing, styletags)
   var i, j, xPos, yPos, zPos
   var nDone = 0
 
-  for(i = 0; i < numberOfLines; ++i) {
+  var buffer = ""
+  function writeBuffer() {
+    if(buffer !== "") {
+      var delta = context.measureText(buffer).width
 
+      context.fillText(buffer, offsetX + xPos, offsetY + yPos)
+      xPos += delta
+    }
+  }
+
+  function getTextFontSize() {
+    return "" + Math.round(zPos) + "px ";
+  }
+
+  function changeStyle(oldStyle, newStyle) {
+    var ctxFont = "" + context.font;
+
+    if(styletags.subscripts === true) {
+      var oldIndex_Sub = oldStyle.indexOf(CHR_sub0);
+      var newIndex_Sub = newStyle.indexOf(CHR_sub0);
+
+      var oldSub = (oldIndex_Sub > -1) ? parseInt(oldStyle[1 + oldIndex_Sub]) : 0;
+      var newSub = (newIndex_Sub > -1) ? parseInt(newStyle[1 + newIndex_Sub]) : 0;
+
+      if(oldSub !== newSub) {
+        ctxFont = ctxFont.replace(getTextFontSize(), "?px ")
+        zPos *= Math.pow(0.75, (newSub - oldSub))
+        ctxFont = ctxFont.replace("?px ", getTextFontSize())
+      }
+      yPos += 0.25 * lineHeight * (newSub - oldSub);
+    }
+
+    if(styletags.superscripts === true) {
+      var oldIndex_Super = oldStyle.indexOf(CHR_super0);
+      var newIndex_Super = newStyle.indexOf(CHR_super0);
+
+      var oldSuper = (oldIndex_Super > -1) ? parseInt(oldStyle[1 + oldIndex_Super]) : 0;
+      var newSuper = (newIndex_Super > -1) ? parseInt(newStyle[1 + newIndex_Super]) : 0;
+
+      if(oldSuper !== newSuper) {
+        ctxFont = ctxFont.replace(getTextFontSize(), "?px ")
+        zPos *= Math.pow(0.75, (newSuper - oldSuper))
+        ctxFont = ctxFont.replace("?px ", getTextFontSize())
+      }
+      yPos -= 0.25 * lineHeight * (newSuper - oldSuper);
+    }
+
+    if(styletags.bolds === true) {
+      var wasBold = (oldStyle.indexOf(CHR_bold) > -1)
+      var is_Bold = (newStyle.indexOf(CHR_bold) > -1)
+
+      if(!wasBold && is_Bold) {
+        if(wasItalic) {
+          ctxFont = ctxFont.replace("italic ", "italic bold ")
+        } else {
+          ctxFont = "bold " + ctxFont
+        }
+      }
+      if(wasBold && !is_Bold) {
+        ctxFont = ctxFont.replace("bold ", '')
+      }
+    }
+
+    if(styletags.italics === true) {
+      var wasItalic = (oldStyle.indexOf(CHR_italic) > -1)
+      var is_Italic = (newStyle.indexOf(CHR_italic) > -1)
+
+      if(!wasItalic && is_Italic) {
+        ctxFont = "italic " + ctxFont
+      }
+      if(wasItalic && !is_Italic) {
+        ctxFont = ctxFont.replace("italic ", '')
+      }
+    }
+    context.font = ctxFont
+  }
+
+  for(i = 0; i < numberOfLines; ++i) {
     var txt = allTexts[i] + '\n'
     xPos = 0
     yPos = i * lineHeight
     zPos = fontSize
 
-    var buffer = ""
-    function writeBuffer() {
-      if(buffer !== "") {
-        var delta = context.measureText(buffer).width
-
-        context.fillText(buffer, offsetX + xPos, offsetY + yPos)
-        xPos += delta
-      }
-    }
-
-    function changeStyle(oldStyle, newStyle) {
-
-      function getTextFontSize() {
-        return "" + Math.round(zPos) + "px ";
-      }
-
-      var ctxFont = "" + context.font;
-
-      if(styletags.subscripts === true) {
-        var oldIndex_Sub = oldStyle.indexOf(CHR_sub0);
-        var newIndex_Sub = newStyle.indexOf(CHR_sub0);
-
-        var oldSub = (oldIndex_Sub > -1) ? parseInt(oldStyle[1 + oldIndex_Sub]) : 0;
-        var newSub = (newIndex_Sub > -1) ? parseInt(newStyle[1 + newIndex_Sub]) : 0;
-
-        if(oldSub !== newSub) {
-          ctxFont = ctxFont.replace(getTextFontSize(), "?px ")
-          zPos *= Math.pow(0.75, (newSub - oldSub))
-          ctxFont = ctxFont.replace("?px ", getTextFontSize())
-        }
-        yPos += 0.25 * lineHeight * (newSub - oldSub);
-      }
-
-      if(styletags.superscripts === true) {
-        var oldIndex_Super = oldStyle.indexOf(CHR_super0);
-        var newIndex_Super = newStyle.indexOf(CHR_super0);
-
-        var oldSuper = (oldIndex_Super > -1) ? parseInt(oldStyle[1 + oldIndex_Super]) : 0;
-        var newSuper = (newIndex_Super > -1) ? parseInt(newStyle[1 + newIndex_Super]) : 0;
-
-        if(oldSuper !== newSuper) {
-          ctxFont = ctxFont.replace(getTextFontSize(), "?px ")
-          zPos *= Math.pow(0.75, (newSuper - oldSuper))
-          ctxFont = ctxFont.replace("?px ", getTextFontSize())
-        }
-        yPos -= 0.25 * lineHeight * (newSuper - oldSuper);
-      }
-
-      if(styletags.bolds === true) {
-        var wasBold = (oldStyle.indexOf(CHR_bold) > -1)
-        var is_Bold = (newStyle.indexOf(CHR_bold) > -1)
-
-        if(!wasBold && is_Bold) {
-          if(wasItalic) {
-            ctxFont = ctxFont.replace("italic ", "italic bold ")
-          } else {
-            ctxFont = "bold " + ctxFont
-          }
-        }
-        if(wasBold && !is_Bold) {
-          ctxFont = ctxFont.replace("bold ", '')
-        }
-      }
-
-      if(styletags.italics === true) {
-        var wasItalic = (oldStyle.indexOf(CHR_italic) > -1)
-        var is_Italic = (newStyle.indexOf(CHR_italic) > -1)
-
-        if(!wasItalic && is_Italic) {
-          ctxFont = "italic " + ctxFont
-        }
-        if(wasItalic && !is_Italic) {
-          ctxFont = ctxFont.replace("italic ", '')
-        }
-      }
-
-      context.font = ctxFont
-    }
-
+    buffer = ""
+    
     for(j = 0; j < txt.length; ++j) {
       var style = (j + nDone < allStyles.length) ? allStyles[j + nDone] : allStyles[allStyles.length - 1]
       if(activeStyle === style) {
@@ -47791,7 +47788,6 @@ function processPixels(pixels, options, size) {
 }
 
 function vectorizeText(str, canvas, context, options) {
-
   var size = 64
   var lineSpacing = 1.25
   var styletags = {
@@ -67119,7 +67115,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.44.0';
+exports.version = '1.44.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -77986,6 +77982,11 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         // track cartesian axes with altered ranges
         if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
             flags.rangesAltered[outerparts[0]] = 1;
+        }
+
+        // clear _inputDomain on cartesian axes with altered domains
+        if(AX_DOMAIN_RE.test(astr)) {
+            nestedProperty(newContainer, '_inputDomain').set(null);
         }
 
         // track datarevision changes
