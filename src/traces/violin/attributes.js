@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -135,6 +135,15 @@ module.exports = {
             'right (left) for vertical violins and above (below) for horizontal violins.'
         ].join(' ')
     }),
+
+    width: extendFlat({}, boxAttrs.width, {
+        description: [
+            'Sets the width of the violin in data coordinates.',
+            'If *0* (default value) the width is automatically selected based on the positions',
+            'of other violin traces in the same subplot.',
+        ].join(' ')
+    }),
+
     marker: boxAttrs.marker,
     text: boxAttrs.text,
 
@@ -220,7 +229,7 @@ module.exports = {
         values: ['both', 'positive', 'negative'],
         dflt: 'both',
         role: 'info',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Determines on which side of the position value the density function making up',
             'one half of a violin is plotted.',

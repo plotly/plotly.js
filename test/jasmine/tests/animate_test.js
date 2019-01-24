@@ -313,7 +313,8 @@ describe('Test animate API', function() {
 
             it('emits plotly_animated as each animation in a sequence completes', function(done) {
                 var completed = 0;
-                var test1 = 0, test2 = 0;
+                var test1 = 0;
+                var test2 = 0;
                 gd.on('plotly_animated', function() {
                     completed++;
                     if(completed === 1) {

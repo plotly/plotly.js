@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -367,7 +367,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
             updateObj[_this.id + '.' + k] = viewInitial[k];
         }
 
-        Registry.call('relayout', gd, updateObj);
+        Registry.call('_guiRelayout', gd, updateObj);
         gd.emit('plotly_doubleclick', null);
     }
 
@@ -420,6 +420,9 @@ proto.updateFx = function(fullLayout, geoLayout) {
         bgRect.node().onmousedown = null;
         bgRect.call(createGeoZoom(_this, geoLayout));
         bgRect.on('dblclick.zoom', zoomReset);
+        if(!gd._context._scrollZoom.geo) {
+            bgRect.on('wheel.zoom', null);
+        }
     }
     else if(dragMode === 'select' || dragMode === 'lasso') {
         bgRect.on('.zoom', null);
@@ -470,7 +473,8 @@ proto.updateFx = function(fullLayout, geoLayout) {
 
 proto.makeFramework = function() {
     var _this = this;
-    var fullLayout = _this.graphDiv._fullLayout;
+    var gd = _this.graphDiv;
+    var fullLayout = gd._fullLayout;
     var clipId = 'clip' + fullLayout._uid + _this.id;
 
     _this.clipDef = fullLayout._clips.append('clipPath')
@@ -480,7 +484,7 @@ proto.makeFramework = function() {
 
     _this.framework = d3.select(_this.container).append('g')
         .attr('class', 'geo ' + _this.id)
-        .call(Drawing.setClipUrl, clipId);
+        .call(Drawing.setClipUrl, clipId, gd);
 
     // sane lonlat to px
     _this.project = function(v) {

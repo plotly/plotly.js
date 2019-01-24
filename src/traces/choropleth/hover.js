@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47,6 +47,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.index = pt.index;
     pointData.location = pt.loc;
     pointData.z = pt.z;
+    pointData.hovertemplate = pt.hovertemplate;
 
     makeHoverInfo(pointData, trace, pt, geo.mockAxis);
 
@@ -54,6 +55,10 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 };
 
 function makeHoverInfo(pointData, trace, pt, axis) {
+    if(trace.hovertemplate) {
+        return;
+    }
+
     var hoverinfo = pt.hi || trace.hoverinfo;
 
     var parts = (hoverinfo === 'all') ?

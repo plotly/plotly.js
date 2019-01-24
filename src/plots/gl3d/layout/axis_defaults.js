@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50,13 +50,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 letter: axName[0],
                 data: options.data,
                 showGrid: true,
+                noTickson: true,
                 bgColor: options.bgColor,
                 calendar: options.calendar
             },
             options.fullLayout);
 
         coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
-        coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
+        coerce('title.text', axName[0]);  // shouldn't this be on-par with 2D?
 
         containerOut.setScale = Lib.noop;
 

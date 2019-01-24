@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -164,7 +164,7 @@ exports.supplyDefaults = function(transformIn, traceOut) {
     if(!Array.isArray(groups)) {
         if(!arrayAttrs[groups]) {
             transformOut.enabled = false;
-            return;
+            return transformOut;
         }
         arrayAttrs[groups] = 0;
     }

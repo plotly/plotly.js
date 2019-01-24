@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-var palettes = require('./scales.js');
+var palettes = require('./scales.js').scales;
 var paletteStr = Object.keys(palettes);
 
 function code(s) {
@@ -53,6 +53,8 @@ function code(s) {
  *   - editTypeOverride {boolean} (dflt: ''):
  *     most of these attributes already require a recalc, but the ones that do not
  *     have editType *style* or *plot* unless you override (presumably with *calc*)
+ *
+ *   - anim {boolean) (dflt: undefined): is 'color' animatable?
  *
  * @return {object}
  */
@@ -109,6 +111,10 @@ module.exports = function colorScaleAttrs(context, opts) {
                 ' ' + minmaxFull + ' if set.'
             ].join('')
         };
+
+        if(opts.anim) {
+            attrs.color.anim = true;
+        }
     }
 
     attrs[auto] = {
@@ -197,7 +203,7 @@ module.exports = function colorScaleAttrs(context, opts) {
         valType: 'boolean',
         role: 'style',
         dflt: false,
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Reverses the color mapping if true.',
             effectDesc,

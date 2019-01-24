@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -179,5 +179,7 @@ attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {
     flags: ['x', 'y', 'z', 'u', 'v', 'w', 'norm', 'text', 'name'],
     dflt: 'x+y+z+norm+text+name'
 });
+
+attrs.transforms = undefined;
 
 module.exports = attrs;

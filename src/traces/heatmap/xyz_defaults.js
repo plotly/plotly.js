@@ -1,11 +1,10 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -26,10 +25,13 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
         x = coerce(xName);
         y = coerce(yName);
 
-        // column z must be accompanied by xName and yName arrays
-        if(!(x && x.length && y && y.length)) return 0;
+        var xlen = Lib.minRowLength(x);
+        var ylen = Lib.minRowLength(y);
 
-        traceOut._length = Math.min(x.length, y.length, z.length);
+        // column z must be accompanied by xName and yName arrays
+        if(xlen === 0 || ylen === 0) return 0;
+
+        traceOut._length = Math.min(xlen, ylen, z.length);
     }
     else {
         x = coordDefaults(xName, coerce);
@@ -50,10 +52,8 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
 };
 
 function coordDefaults(coordStr, coerce) {
-    var coord = coerce(coordStr),
-        coordType = coord ?
-            coerce(coordStr + 'type', 'array') :
-            'scaled';
+    var coord = coerce(coordStr);
+    var coordType = coord ? coerce(coordStr + 'type', 'array') : 'scaled';
 
     if(coordType === 'scaled') {
         coerce(coordStr + '0');
@@ -64,10 +64,10 @@ function coordDefaults(coordStr, coerce) {
 }
 
 function isValidZ(z) {
-    var allRowsAreArrays = true,
-        oneRowIsFilled = false,
-        hasOneNumber = false,
-        zi;
+    var allRowsAreArrays = true;
+    var oneRowIsFilled = false;
+    var hasOneNumber = false;
+    var zi;
 
     /*
      * Without this step:

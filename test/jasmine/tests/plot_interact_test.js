@@ -2,7 +2,6 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -53,8 +52,8 @@ describe('Test plot structure', function() {
             beforeEach(function(done) {
                 gd = createGraphDiv();
 
-                var mockData = Lib.extendDeep([], mock.data),
-                    mockLayout = Lib.extendDeep({}, mock.layout);
+                var mockData = Lib.extendDeep([], mock.data);
+                var mockLayout = Lib.extendDeep({}, mock.layout);
 
                 Plotly.plot(gd, mockData, mockLayout).then(done);
             });
@@ -170,8 +169,8 @@ describe('Test plot structure', function() {
             var gd;
 
             function extendMock() {
-                var mockData = Lib.extendDeep([], mock.data),
-                    mockLayout = Lib.extendDeep({}, mock.layout);
+                var mockData = Lib.extendDeep([], mock.data);
+                var mockLayout = Lib.extendDeep({}, mock.layout);
 
                 // add a colorbar for testing
                 mockData[0].showscale = true;
@@ -405,8 +404,8 @@ describe('Test plot structure', function() {
             beforeEach(function(done) {
                 gd = createGraphDiv();
 
-                var mockData = Lib.extendDeep([], mock.data),
-                    mockLayout = Lib.extendDeep({}, mock.layout);
+                var mockData = Lib.extendDeep([], mock.data);
+                var mockLayout = Lib.extendDeep({}, mock.layout);
 
                 Plotly.plot(gd, mockData, mockLayout).then(done);
             });
@@ -552,7 +551,6 @@ describe('plot svg clip paths', function() {
             d3.selectAll('[clip-path]').each(function() {
                 var cp = d3.select(this).attr('clip-path');
 
-                expect(Drawing.baseUrl).toBe('');
                 expect(cp.substring(0, 5)).toEqual('url(#');
                 expect(cp.substring(cp.length - 1)).toEqual(')');
             });
@@ -578,7 +576,6 @@ describe('plot svg clip paths', function() {
             d3.selectAll('[clip-path]').each(function() {
                 var cp = d3.select(this).attr('clip-path');
 
-                expect(Drawing.baseUrl).toBe(href);
                 expect(cp.substring(0, 5 + href.length)).toEqual('url(' + href + '#');
                 expect(cp.substring(cp.length - 1)).toEqual(')');
             });

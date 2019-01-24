@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -133,9 +133,9 @@ drawing.crispRound = function(gd, lineWidth, dflt) {
 
 drawing.singleLineStyle = function(d, s, lw, lc, ld) {
     s.style('fill', 'none');
-    var line = (((d || [])[0] || {}).trace || {}).line || {},
-        lw1 = lw || line.width||0,
-        dash = ld || line.dash || '';
+    var line = (((d || [])[0] || {}).trace || {}).line || {};
+    var lw1 = lw || line.width||0;
+    var dash = ld || line.dash || '';
 
     Color.stroke(s, lc || line.color);
     drawing.dashLine(s, dash, lw1);
@@ -144,9 +144,9 @@ drawing.singleLineStyle = function(d, s, lw, lc, ld) {
 drawing.lineGroupStyle = function(s, lw, lc, ld) {
     s.style('fill', 'none')
     .each(function(d) {
-        var line = (((d || [])[0] || {}).trace || {}).line || {},
-            lw1 = lw || line.width||0,
-            dash = ld || line.dash || '';
+        var line = (((d || [])[0] || {}).trace || {}).line || {};
+        var lw1 = lw || line.width||0;
+        var dash = ld || line.dash || '';
 
         d3.select(this)
             .call(Color.stroke, lc || line.color)
@@ -198,12 +198,10 @@ drawing.fillGroupStyle = function(s) {
     s.style('stroke-width', 0)
     .each(function(d) {
         var shape = d3.select(this);
-        try {
+        // N.B. 'd' won't be a calcdata item when
+        // fill !== 'none' on a segment-less and marker-less trace
+        if(d[0].trace) {
             shape.call(Color.fill, d[0].trace.fillcolor);
-        }
-        catch(e) {
-            Lib.error(e, s);
-            shape.remove();
         }
     });
 };
@@ -237,9 +235,10 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
         drawing.symbolNoFill[symDef.n] = true;
     }
 });
-var MAXSYMBOL = drawing.symbolNames.length,
-    // add a dot in the middle of the symbol
-    DOTPATH = 'M0,0.5L0.5,0L0,-0.5L-0.5,0Z';
+
+var MAXSYMBOL = drawing.symbolNames.length;
+// add a dot in the middle of the symbol
+var DOTPATH = 'M0,0.5L0.5,0L0,-0.5L-0.5,0Z';
 
 drawing.symbolNumber = function(v) {
     if(typeof v === 'string') {
@@ -645,7 +644,7 @@ drawing.tryColorscale = function(marker, prefix) {
 
         if(scl && Lib.isArrayOrTypedArray(colorArray)) {
             return Colorscale.makeColorScaleFunc(
-                Colorscale.extractScale(scl, cont.cmin, cont.cmax)
+                Colorscale.extractScale(cont, {cLetter: 'c'})
             );
         }
     }
@@ -743,8 +742,9 @@ drawing.selectedTextStyle = function(s, trace) {
 var CatmullRomExp = 0.5;
 drawing.smoothopen = function(pts, smoothness) {
     if(pts.length < 3) { return 'M' + pts.join('L');}
-    var path = 'M' + pts[0],
-        tangents = [], i;
+    var path = 'M' + pts[0];
+    var tangents = [];
+    var i;
     for(i = 1; i < pts.length - 1; i++) {
         tangents.push(makeTangent(pts[i - 1], pts[i], pts[i + 1], smoothness));
     }
@@ -758,11 +758,10 @@ drawing.smoothopen = function(pts, smoothness) {
 
 drawing.smoothclosed = function(pts, smoothness) {
     if(pts.length < 3) { return 'M' + pts.join('L') + 'Z'; }
-    var path = 'M' + pts[0],
-        pLast = pts.length - 1,
-        tangents = [makeTangent(pts[pLast],
-                        pts[0], pts[1], smoothness)],
-        i;
+    var path = 'M' + pts[0];
+    var pLast = pts.length - 1;
+    var tangents = [makeTangent(pts[pLast], pts[0], pts[1], smoothness)];
+    var i;
     for(i = 1; i < pLast; i++) {
         tangents.push(makeTangent(pts[i - 1], pts[i], pts[i + 1], smoothness));
     }
@@ -778,16 +777,16 @@ drawing.smoothclosed = function(pts, smoothness) {
 };
 
 function makeTangent(prevpt, thispt, nextpt, smoothness) {
-    var d1x = prevpt[0] - thispt[0],
-        d1y = prevpt[1] - thispt[1],
-        d2x = nextpt[0] - thispt[0],
-        d2y = nextpt[1] - thispt[1],
-        d1a = Math.pow(d1x * d1x + d1y * d1y, CatmullRomExp / 2),
-        d2a = Math.pow(d2x * d2x + d2y * d2y, CatmullRomExp / 2),
-        numx = (d2a * d2a * d1x - d1a * d1a * d2x) * smoothness,
-        numy = (d2a * d2a * d1y - d1a * d1a * d2y) * smoothness,
-        denom1 = 3 * d2a * (d1a + d2a),
-        denom2 = 3 * d1a * (d1a + d2a);
+    var d1x = prevpt[0] - thispt[0];
+    var d1y = prevpt[1] - thispt[1];
+    var d2x = nextpt[0] - thispt[0];
+    var d2y = nextpt[1] - thispt[1];
+    var d1a = Math.pow(d1x * d1x + d1y * d1y, CatmullRomExp / 2);
+    var d2a = Math.pow(d2x * d2x + d2y * d2y, CatmullRomExp / 2);
+    var numx = (d2a * d2a * d1x - d1a * d1a * d2x) * smoothness;
+    var numy = (d2a * d2a * d1y - d1a * d1a * d2y) * smoothness;
+    var denom1 = 3 * d2a * (d1a + d2a);
+    var denom2 = 3 * d1a * (d1a + d2a);
     return [
         [
             d3.round(thispt[0] + (denom1 && numx / denom1), 2),
@@ -1006,40 +1005,36 @@ function nodeHash(node) {
         node.getAttribute('style');
 }
 
-/*
- * make a robust clipPath url from a local id
- * note! We'd better not be exporting from a page
- * with a <base> or the svg will not be portable!
+/**
+ * Set clipPath URL in a way that work for all situations.
+ *
+ * In details, graphs on pages with <base> HTML tags need to prepend
+ * the clip path ids with the page's base url EXCEPT during toImage exports.
+ *
+ * @param {d3 selection} s : node to add clip-path attribute
+ * @param {string} localId : local clip-path (w/o base url) id
+ * @param {DOM element || object} gd
+ * - context._baseUrl {string}
+ * - context._exportedPlot {boolean}
  */
-drawing.setClipUrl = function(s, localId) {
+drawing.setClipUrl = function(s, localId, gd) {
     if(!localId) {
         s.attr('clip-path', null);
         return;
     }
 
-    if(drawing.baseUrl === undefined) {
-        var base = d3.select('base');
+    var context = gd._context;
+    var baseUrl = context._exportedPlot ? '' : (context._baseUrl || '');
 
-        // Stash base url once and for all!
-        // We may have to stash this elsewhere when
-        // we'll try to support for child windows
-        // more info -> https://github.com/plotly/plotly.js/issues/702
-        if(base.size() && base.attr('href')) {
-            drawing.baseUrl = window.location.href.split('#')[0];
-        } else {
-            drawing.baseUrl = '';
-        }
-    }
-
-    s.attr('clip-path', 'url(' + drawing.baseUrl + '#' + localId + ')');
+    s.attr('clip-path', 'url(' + baseUrl + '#' + localId + ')');
 };
 
 drawing.getTranslate = function(element) {
     // Note the separator [^\d] between x and y in this regex
     // We generally use ',' but IE will convert it to ' '
-    var re = /.*\btranslate\((-?\d*\.?\d*)[^-\d]*(-?\d*\.?\d*)[^\d].*/,
-        getter = element.attr ? 'attr' : 'getAttribute',
-        transform = element[getter]('transform') || '';
+    var re = /.*\btranslate\((-?\d*\.?\d*)[^-\d]*(-?\d*\.?\d*)[^\d].*/;
+    var getter = element.attr ? 'attr' : 'getAttribute';
+    var transform = element[getter]('transform') || '';
 
     var translate = transform.replace(re, function(match, p1, p2) {
         return [p1, p2].join(' ');
@@ -1053,11 +1048,10 @@ drawing.getTranslate = function(element) {
 };
 
 drawing.setTranslate = function(element, x, y) {
-
-    var re = /(\btranslate\(.*?\);?)/,
-        getter = element.attr ? 'attr' : 'getAttribute',
-        setter = element.attr ? 'attr' : 'setAttribute',
-        transform = element[getter]('transform') || '';
+    var re = /(\btranslate\(.*?\);?)/;
+    var getter = element.attr ? 'attr' : 'getAttribute';
+    var setter = element.attr ? 'attr' : 'setAttribute';
+    var transform = element[getter]('transform') || '';
 
     x = x || 0;
     y = y || 0;
@@ -1072,10 +1066,9 @@ drawing.setTranslate = function(element, x, y) {
 };
 
 drawing.getScale = function(element) {
-
-    var re = /.*\bscale\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
-        getter = element.attr ? 'attr' : 'getAttribute',
-        transform = element[getter]('transform') || '';
+    var re = /.*\bscale\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/;
+    var getter = element.attr ? 'attr' : 'getAttribute';
+    var transform = element[getter]('transform') || '';
 
     var translate = transform.replace(re, function(match, p1, p2) {
         return [p1, p2].join(' ');
@@ -1089,11 +1082,10 @@ drawing.getScale = function(element) {
 };
 
 drawing.setScale = function(element, x, y) {
-
-    var re = /(\bscale\(.*?\);?)/,
-        getter = element.attr ? 'attr' : 'getAttribute',
-        setter = element.attr ? 'attr' : 'setAttribute',
-        transform = element[getter]('transform') || '';
+    var re = /(\bscale\(.*?\);?)/;
+    var getter = element.attr ? 'attr' : 'getAttribute';
+    var setter = element.attr ? 'attr' : 'setAttribute';
+    var transform = element[getter]('transform') || '';
 
     x = x || 1;
     y = y || 1;

@@ -19,8 +19,8 @@ describe('scatterternary defaults', function() {
 
     var traceIn, traceOut;
 
-    var defaultColor = '#444',
-        layout = {};
+    var defaultColor = '#444';
+    var layout = {};
 
     beforeEach(function() {
         traceOut = {};
@@ -397,6 +397,22 @@ describe('scatterternary hover', function() {
             expect(scatterPointData[0].xLabelVal).toBeUndefined();
             expect(scatterPointData[0].yLabelVal).toBeUndefined();
             expect(scatterPointData[0].text).toEqual('orange');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should pass along hovertemplate on hover', function(done) {
+        var xval = 0.42;
+        var yval = 0.37;
+        var hovermode = 'closest';
+        var scatterPointData;
+        Plotly.restyle(gd, {
+            hovertemplate: 'tpl'
+        })
+        .then(function() {
+            scatterPointData = _hover(gd, xval, yval, hovermode);
+            expect(scatterPointData[0].hovertemplate).toEqual('tpl');
         })
         .catch(failTest)
         .then(done);

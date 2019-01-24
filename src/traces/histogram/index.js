@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -28,6 +28,7 @@ var Histogram = {};
 Histogram.attributes = require('./attributes');
 Histogram.layoutAttributes = require('../bar/layout_attributes');
 Histogram.supplyDefaults = require('./defaults');
+Histogram.crossTraceDefaults = require('./cross_trace_defaults');
 Histogram.supplyLayoutDefaults = require('../bar/layout_defaults');
 Histogram.calc = require('./calc');
 Histogram.crossTraceCalc = require('../bar/cross_trace_calc').crossTraceCalc;

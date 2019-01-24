@@ -1,0 +1,13 @@
+{
+  "data":
+  [
+    {"mode":"lines", "line":{"width": 4}, "x":[1, 2, 3, 4], "y":[4, 4, 4.0001, 3.9999], "type":"scatter", "name":"scatter almost horizontal"},
+    {"mode":"lines", "line":{"width": 4}, "x":[1, 2, 3, 4], "y":[3, 3, 3.0001, 2.9999], "type":"scattergl", "name":"scattergl almost horizontal"},
+    {"mode":"lines", "line":{"width": 4}, "x":[1, 2, 3, 4], "y":[2, 2, 2, 2],           "type":"scattergl", "name":"scattergl horizontal"},
+    {"mode":"lines", "line":{"width": 4}, "x":[1, 2, 3, 4], "y":[1, 1, 1, 1],           "type":"scatter", "name":"scatter horizontal"},
+    {"mode":"lines", "line":{"width": 4}, "y":[1, 2, 3, 4], "x":[4, 4, 4.0001, 3.9999], "type":"scatter", "name":"scatter almost vertical"},
+    {"mode":"lines", "line":{"width": 4}, "y":[1, 2, 3, 4], "x":[3, 3, 3.0001, 2.9999], "type":"scattergl", "name":"scattergl almost vertical"},
+    {"mode":"lines", "line":{"width": 4}, "y":[1, 2, 3, 4], "x":[2, 2, 2, 2],           "type":"scattergl", "name":"scattergl vertical"},
+    {"mode":"lines", "line":{"width": 4}, "y":[1, 2, 3, 4], "x":[1, 1, 1, 1],           "type":"scatter", "name":"scatter vertical"}
+  ], "layout": {"width":800, "height":600, "xaxis":{"range":[4.5, 0.5]}, "yaxis":{"range":[4.5, 0.5]}, "title": "exact and approximate horizontal and vertical lines using scatter and scattergl with reversed ranges" }
+}

@@ -1,0 +1,79 @@
+{
+  "data": [
+    {
+      "values": [38, 27, 18, 10, 7],
+      "labels": ["1st", "2nd", "3rd", "4th", "5th"],
+      "type": "pie",
+      "name": "Starry Night",
+      "marker": {
+        "colors": ["rgb(56, 75, 126)", "rgb(18, 36, 37)", "rgb(34, 53, 101)", "rgb(36, 55, 57)", "rgb(6, 4, 4)"]
+      },
+      "domain": {
+        "x": [0, 0.48],
+        "y": [0, 0.49]
+      },
+      "textinfo": "none",
+      "title": "Starry Night (following a well-known painting by Vincent Van Gogh)",
+      "titleposition": "bottom left"
+    },
+    {
+      "values": [28, 26, 21, 15, 10],
+      "labels": ["1st", "2nd", "3rd", "4th", "5th"],
+      "type": "pie",
+      "name": "Sunflowers",
+      "marker": {
+        "colors": ["rgb(177, 127, 38)", "rgb(205, 152, 36)", "rgb(99, 79, 37)", "rgb(129, 180, 179)", "rgb(124, 103, 37)"]
+      },
+      "domain": {
+        "x": [0.52, 1],
+        "y": [0, 0.49]
+      },
+      "textinfo": "none",
+      "title": "Sunflowers",
+      "titleposition": "top right",
+      "titlefont": {
+        "size": 14
+      }
+    },
+    {
+      "values": [38, 19, 16, 14, 13],
+      "labels": ["1st", "2nd", "3rd", "4th", "5th"],
+      "type": "pie",
+      "name": "Irises",
+      "marker": {
+        "colors": ["rgb(33, 75, 99)", "rgb(79, 129, 102)", "rgb(151, 179, 100)", "rgb(175, 49, 35)", "rgb(36, 73, 147)"]
+      },
+      "domain": {
+        "x": [0, 0.48],
+        "y": [0.51, 1]
+      },
+      "textinfo": "none",
+      "title": "Irises",
+      "titlefont": {
+          "size": 14
+      }
+    },
+    {
+      "values": [31, 24, 19, 18, 8],
+      "labels": ["1st", "2nd", "3rd", "4th", "5th"],
+      "type": "pie",
+      "name": "The Night Cafe",
+      "titlefont": {
+        "size": 50
+      },
+      "marker": {
+        "colors": ["rgb(146, 123, 21)", "rgb(177, 180, 34)", "rgb(206, 206, 40)", "rgb(175, 51, 21)", "rgb(35, 36, 21)"]
+      },
+      "domain": {
+        "x": [0.52, 1],
+        "y": [0.52, 1]
+      },
+      "textinfo": "none",
+      "title": "The<br>Night<br>Cafe"
+    }
+  ],
+  "layout": {
+    "height": 400,
+    "width": 500
+  }
+}

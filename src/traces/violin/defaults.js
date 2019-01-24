@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -26,9 +26,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.visible === false) return;
 
     coerce('bandwidth');
-    coerce('scalegroup', traceOut.name);
-    coerce('scalemode');
     coerce('side');
+
+    var width = coerce('width');
+    if(!width) {
+        coerce('scalegroup', traceOut.name);
+        coerce('scalemode');
+    }
 
     var span = coerce('span');
     var spanmodeDflt;

@@ -14,6 +14,8 @@ var transitions = require('../assets/transitions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
+var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/scatter/constants');
 
 var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
@@ -28,11 +30,11 @@ describe('Test scatter', function() {
     'use strict';
 
     describe('supplyDefaults', function() {
-        var traceIn,
-            traceOut;
+        var traceIn;
+        var traceOut;
 
-        var defaultColor = '#444',
-            layout = {};
+        var defaultColor = '#444';
+        var layout = {};
 
         var supplyDefaults = Scatter.supplyDefaults;
 
@@ -201,49 +203,115 @@ describe('Test scatter', function() {
             });
         });
 
+        describe('should find correct coordinate length', function() {
+            function _supply() {
+                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            }
+
+            it('- x 2d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- y 2d', function() {
+                traceIn = {
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 2d / y 1d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                    y: [1, 2, 3, 4, 5, 6]
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 1d / y 2d', function() {
+                traceIn = {
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                    x: [1, 2, 3, 4, 5, 6]
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 2d / y 2d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b', 'c', 'c']
+                    ],
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b', 'c', 'c', 'd', 'd']
+                    ]
+                };
+                _supply();
+                expect(traceOut._length).toBe(6);
+            });
+        });
     });
 
     describe('isBubble', function() {
         it('should return true when marker.size is an Array', function() {
             var trace = {
-                    marker: {
-                        size: [1, 4, 2, 10]
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    size: [1, 4, 2, 10]
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(true);
         });
 
         it('should return false when marker.size is an number', function() {
             var trace = {
-                    marker: {
-                        size: 10
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    size: 10
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
 
         it('should return false when marker.size is not defined', function() {
             var trace = {
-                    marker: {
-                        color: 'red'
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    color: 'red'
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
 
         it('should return false when marker is not defined', function() {
             var trace = {
-                    line: {
-                        color: 'red'
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                line: {
+                    color: 'red'
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
@@ -252,10 +320,10 @@ describe('Test scatter', function() {
 
     describe('makeBubbleSizeFn', function() {
         var markerSizes = [
-                0, '1', 2.21321321, 'not-a-number',
-                100, 1000.213213, 1e7, undefined, null, -100
-            ],
-            trace = { marker: {} };
+            0, '1', 2.21321321, 'not-a-number',
+            100, 1000.213213, 1e7, undefined, null, -100
+        ];
+        var trace = { marker: {} };
 
         var sizeFn, expected;
 
@@ -306,15 +374,15 @@ describe('Test scatter', function() {
 
     describe('linePoints', function() {
         // test axes are unit-scaled and 100 units long
-        var ax = {_length: 100, c2p: Lib.identity},
-            baseOpts = {
-                xaxis: ax,
-                yaxis: ax,
-                connectGaps: false,
-                baseTolerance: 1,
-                shape: 'linear',
-                simplify: true
-            };
+        var ax = {_length: 100, c2p: Lib.identity};
+        var baseOpts = {
+            xaxis: ax,
+            yaxis: ax,
+            connectGaps: false,
+            baseTolerance: 1,
+            shape: 'linear',
+            simplify: true
+        };
 
         function makeCalcData(ptsIn) {
             return ptsIn.map(function(pt) {
@@ -987,6 +1055,19 @@ describe('end-to-end scatter tests', function() {
                 ['rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 0)'],
                 [40, 30, 20]
             );
+
+            return Plotly.relayout(gd, 'showlegend', true);
+        })
+        .then(function() {
+            _assert(
+                ['rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 0)'],
+                [40, 30, 20]
+            );
+
+            var legendPts = d3.select('.legend').selectAll('.scatterpts');
+            expect(legendPts.size()).toBe(1, '# legend items');
+            expect(getColor(legendPts.node())).toBe('rgb(0, 0, 0)', 'legend pt color');
+            expect(getMarkerSize(legendPts.node())).toBe(16, 'legend pt size');
         })
         .catch(failTest)
         .then(done);
@@ -1085,6 +1166,20 @@ describe('end-to-end scatter tests', function() {
         })
         .then(function() {
             _assert('back to visible:false', 0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not error out when segment-less marker-less fill traces', function(done) {
+        Plotly.plot(gd, [{
+            x: [1, 2, 3, 4],
+            y: [null, null, null, null],
+            fill: 'tonexty'
+        }])
+        .then(function() {
+            expect(d3.selectAll('.js-fill').size()).toBe(1, 'js-fill is there');
+            expect(d3.select('.js-fill').attr('d')).toBe('M0,0Z', 'js-fill has an empty path');
         })
         .catch(failTest)
         .then(done);
@@ -1807,4 +1902,18 @@ describe('Test scatter *clipnaxis*:', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/scatter-colorscale-colorbar');
+    var mockCopy = Lib.extendDeep({}, mock);
+
+    var marker = mockCopy.data[0].marker;
+    marker.opacity = [];
+    marker.symbol = [];
+    for(var i = 0; i < mockCopy.data[0].y.length; ++i) {
+        marker.opacity.push(0.5);
+        marker.symbol.push('square');
+    }
+    checkEventData(mockCopy, 540, 260, constants.eventDataKeys);
 });

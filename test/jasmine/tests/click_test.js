@@ -6,6 +6,7 @@ var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var getRectCenter = require('../assets/get_rect_center');
 
@@ -646,11 +647,11 @@ describe('Test click interactions:', function() {
     });
 
     describe('double click interactions', function() {
-        var setRangeX = [-3, 1],
-            setRangeY = [-0.5, 1];
+        var setRangeX = [-3, 1];
+        var setRangeY = [-0.5, 1];
 
-        var zoomRangeX = [-2, 0],
-            zoomRangeY = [0, 0.5];
+        var zoomRangeX = [-2, 0];
+        var zoomRangeY = [0, 0.5];
 
         var update = {
             'xaxis.range[0]': zoomRangeX[0],
@@ -757,8 +758,8 @@ describe('Test click interactions:', function() {
                 y: [[30, 0, 30]]
             };
 
-            var newAutoRangeX = [-4.482371794871794, 3.4823717948717943],
-                newAutoRangeY = [-0.8892256657741471, 1.6689872212461876];
+            var newAutoRangeX = [-4.482371794871794, 3.4823717948717943];
+            var newAutoRangeY = [-0.8892256657741471, 1.6689872212461876];
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -900,6 +901,96 @@ describe('Test click interactions:', function() {
             });
         });
 
+        it('should not try to autorange fixedrange:true axes when rangeInitial is not set', function(done) {
+            var fig = {
+                data: [{
+                    x: [1, 2, 3, 4],
+                    y: [1, 2, 3, 4]
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [0.2, 999, 0.3, 0.4],
+                    yaxis: 'y2'
+                }],
+                layout: {
+                    xaxis: {
+                        title: 'xaxis',
+                        range: [0, 4]
+                    },
+                    yaxis: {
+                        titel: 'yaxis',
+                        range: [-1, 5]
+                    },
+                    yaxis2: {
+                        title: 'yaxis2',
+                        overlaying: 'y',
+                        side: 'right',
+                        showgrid: false,
+                        zeroline: false,
+                        range: [-1, 1],
+                        fixedrange: true
+                    },
+                    width: 500,
+                    height: 500
+                }
+            };
+
+            function _assert(msg, exp) {
+                var fullLayout = gd._fullLayout;
+                var xa = fullLayout.xaxis;
+                var ya = fullLayout.yaxis;
+                var ya2 = fullLayout.yaxis2;
+
+                expect(xa._rangeInitial).toBe(undefined);
+                expect(ya._rangeInitial).toBe(undefined);
+                expect(ya2._rangeInitial).toBe(undefined);
+
+                expect(xa.range).toBeCloseToArray(exp.xRng, 1, msg);
+                expect(ya.range).toBeCloseToArray(exp.yRng, 1, msg);
+                expect(ya2.range).toBeCloseToArray(exp.y2Rng, 1, msg);
+            }
+
+            Plotly.newPlot(gd, [], {})
+            .then(function() {
+                expect(gd._fullLayout.xaxis._rangeInitial).toBe(undefined);
+                expect(gd._fullLayout.yaxis._rangeInitial).toBe(undefined);
+                expect(gd._fullLayout.yaxis2).toBe(undefined);
+            })
+            .then(function() { return Plotly.react(gd, fig); })
+            .then(function() {
+                _assert('after react into fig', {
+                    xRng: [0, 4],
+                    yRng: [-1, 5],
+                    y2Rng: [-1, 1]
+                });
+            })
+            .then(function() { return drag(200, 200, 250, 250); })
+            .then(function() {
+                _assert('after zoom', {
+                    xRng: [1.509, 2.138],
+                    yRng: [2.187, 3.125],
+                    y2Rng: [-1, 1]
+                });
+            })
+            .then(function() { return doubleClick(250, 250); })
+            .then(function() {
+                _assert('after double click autorange', {
+                    xRng: [0.788, 4.211],
+                    yRng: [0.788, 4.211],
+                    y2Rng: [-1, 1]
+                });
+            })
+            .then(function() { return doubleClick(250, 250); })
+            .then(function() {
+                // more info in: https://github.com/plotly/plotly.js/issues/2718
+                _assert('after 2nd double click autorange (does not reset as rangeInitial is not set)', {
+                    xRng: [0.788, 4.211],
+                    yRng: [0.788, 4.211],
+                    y2Rng: [-1, 1]
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('zoom interactions', function() {
@@ -946,8 +1037,8 @@ describe('Test click interactions:', function() {
                 }
             };
 
-            var translate = Drawing.getTranslate(mockEl),
-                scale = Drawing.getScale(mockEl);
+            var translate = Drawing.getTranslate(mockEl);
+            var scale = Drawing.getScale(mockEl);
 
             expect([translate.x, translate.y]).toBeCloseToArray([13.93, 62.86]);
             expect([scale.x, scale.y]).toBeCloseToArray([1.105, 1.105]);
@@ -980,9 +1071,9 @@ describe('Test click interactions:', function() {
 
 
         it('should move the plot when panning', function() {
-            var start = 100,
-                end = 300,
-                plot = gd._fullLayout._plots.xy.plot;
+            var start = 100;
+            var end = 300;
+            var plot = gd._fullLayout._plots.xy.plot;
 
             mouseEvent('mousemove', start, start);
             mouseEvent('mousedown', start, start);

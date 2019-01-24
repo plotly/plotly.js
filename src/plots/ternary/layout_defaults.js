@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -46,15 +46,15 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
         containerOut = Template.newContainer(ternaryLayoutOut, axName);
         containerOut._name = axName;
 
-        handleAxisDefaults(containerIn, containerOut, options);
+        handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut);
     }
 
     // if the min values contradict each other, set them all to default (0)
     // and delete *all* the inputs so the user doesn't get confused later by
     // changing one and having them all change.
-    var aaxis = ternaryLayoutOut.aaxis,
-        baxis = ternaryLayoutOut.baxis,
-        caxis = ternaryLayoutOut.caxis;
+    var aaxis = ternaryLayoutOut.aaxis;
+    var baxis = ternaryLayoutOut.baxis;
+    var caxis = ternaryLayoutOut.caxis;
     if(aaxis.min + baxis.min + caxis.min >= sum) {
         aaxis.min = 0;
         baxis.min = 0;
@@ -65,12 +65,14 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
     }
 }
 
-function handleAxisDefaults(containerIn, containerOut, options) {
+function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut) {
     var axAttrs = layoutAttributes[containerOut._name];
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, axAttrs, attr, dflt);
     }
+
+    coerce('uirevision', ternaryLayoutOut.uirevision);
 
     containerOut.type = 'linear'; // no other types allowed for ternary
 
@@ -79,14 +81,14 @@ function handleAxisDefaults(containerIn, containerOut, options) {
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor !== axAttrs.color.dflt) ? dfltColor : options.font.color;
 
-    var axName = containerOut._name,
-        letterUpper = axName.charAt(0).toUpperCase(),
-        dfltTitle = 'Component ' + letterUpper;
+    var axName = containerOut._name;
+    var letterUpper = axName.charAt(0).toUpperCase();
+    var dfltTitle = 'Component ' + letterUpper;
 
-    var title = coerce('title', dfltTitle);
+    var title = coerce('title.text', dfltTitle);
     containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
 
-    Lib.coerceFont(coerce, 'titlefont', {
+    Lib.coerceFont(coerce, 'title.font', {
         family: options.font.family,
         size: Math.round(options.font.size * 1.2),
         color: dfltFontColor

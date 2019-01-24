@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -162,7 +162,7 @@ module.exports = overrideAll(templatedArray('updatemenu', {
         ].join(' ')
     },
 
-    pad: extendFlat({}, padAttrs, {
+    pad: extendFlat(padAttrs({editType: 'arraydraw'}), {
         description: 'Sets the padding around the buttons or dropdown menu.'
     }),
 

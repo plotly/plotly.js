@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -30,10 +30,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     // so easy and anyway we lost the information we would have needed to do
     // this inside scatterHover.
     if(newPointData.index === undefined) {
-        var yFracUp = 1 - (newPointData.y0 / pointData.ya._length),
-            xLen = pointData.xa._length,
-            xMin = xLen * yFracUp / 2,
-            xMax = xLen - xMin;
+        var yFracUp = 1 - (newPointData.y0 / pointData.ya._length);
+        var xLen = pointData.xa._length;
+        var xMin = xLen * yFracUp / 2;
+        var xMax = xLen - xMin;
         newPointData.x0 = Math.max(Math.min(newPointData.x0, xMax), xMin);
         newPointData.x1 = Math.max(Math.min(newPointData.x1, xMax), xMin);
         return scatterPointData;
@@ -52,19 +52,18 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = newPointData.trace;
     var ternary = newPointData.subplot;
     var hoverinfo = cdi.hi || trace.hoverinfo;
-    var parts = hoverinfo.split('+');
     var text = [];
-
     function textPart(ax, val) {
         text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
     }
-
-    if(parts.indexOf('all') !== -1) parts = ['a', 'b', 'c'];
-    if(parts.indexOf('a') !== -1) textPart(ternary.aaxis, cdi.a);
-    if(parts.indexOf('b') !== -1) textPart(ternary.baxis, cdi.b);
-    if(parts.indexOf('c') !== -1) textPart(ternary.caxis, cdi.c);
-
+    if(!trace.hovertemplate) {
+        var parts = hoverinfo.split('+');
+        if(parts.indexOf('all') !== -1) parts = ['a', 'b', 'c'];
+        if(parts.indexOf('a') !== -1) textPart(ternary.aaxis, cdi.a);
+        if(parts.indexOf('b') !== -1) textPart(ternary.baxis, cdi.b);
+        if(parts.indexOf('c') !== -1) textPart(ternary.caxis, cdi.c);
+    }
     newPointData.extraText = text.join('<br>');
-
+    newPointData.hovertemplate = trace.hovertemplate;
     return scatterPointData;
 };

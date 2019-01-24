@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,7 +12,6 @@ var Color = require('../../../components/color');
 var axesAttrs = require('../../cartesian/layout_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 var overrideAll = require('../../../plot_api/edit_types').overrideAll;
-
 
 module.exports = overrideAll({
     visible: axesAttrs.visible,
@@ -73,11 +72,18 @@ module.exports = overrideAll({
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
     title: axesAttrs.title,
-    titlefont: axesAttrs.titlefont,
-    type: axesAttrs.type,
+    type: extendFlat({}, axesAttrs.type, {
+        values: ['-', 'linear', 'log', 'date', 'category']
+    }),
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
-    range: axesAttrs.range,
+    range: extendFlat({}, axesAttrs.range, {
+        items: [
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+        ],
+        anim: false
+    }),
     // ticks
     tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
@@ -113,5 +119,9 @@ module.exports = overrideAll({
     gridwidth: axesAttrs.gridwidth,
     zeroline: axesAttrs.zeroline,
     zerolinecolor: axesAttrs.zerolinecolor,
-    zerolinewidth: axesAttrs.zerolinewidth
+    zerolinewidth: axesAttrs.zerolinewidth,
+    _deprecated: {
+        title: axesAttrs._deprecated.title,
+        titlefont: axesAttrs._deprecated.titlefont
+    }
 }, 'plot', 'from-root');

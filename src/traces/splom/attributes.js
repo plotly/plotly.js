@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,9 +8,34 @@
 
 'use strict';
 
+var scatterAttrs = require('../scatter/attributes');
+var colorAttrs = require('../../components/colorscale/attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var extendFlat = require('../../lib/extend').extendFlat;
+
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+
+var markerLineAttrs = extendFlat(colorAttrs('marker.line', {editTypeOverride: 'calc'}), {
+    width: extendFlat({}, scatterMarkerLineAttrs.width, {editType: 'calc'}),
+    editType: 'calc'
+});
+
+var markerAttrs = extendFlat(colorAttrs('marker'), {
+    symbol: scatterMarkerAttrs.symbol,
+    size: extendFlat({}, scatterMarkerAttrs.size, {editType: 'markerSize'}),
+    sizeref: scatterMarkerAttrs.sizeref,
+    sizemin: scatterMarkerAttrs.sizemin,
+    sizemode: scatterMarkerAttrs.sizemode,
+    opacity: scatterMarkerAttrs.opacity,
+    colorbar: scatterMarkerAttrs.colorbar,
+    line: markerLineAttrs,
+    editType: 'calc'
+});
+
+markerAttrs.color.editType = markerAttrs.cmin.editType = markerAttrs.cmax.editType = 'style';
 
 function makeAxesValObject(axLetter) {
     return {
@@ -25,9 +50,12 @@ function makeAxesValObject(axLetter) {
         },
         description: [
             'Sets the list of ' + axLetter + ' axes',
-            'corresponding to this splom trace.',
+            'corresponding to dimensions of this splom trace.',
             'By default, a splom will match the first N ' + axLetter + 'axes',
-            'where N is the number of input dimensions.'
+            'where N is the number of input dimensions.',
+            'Note that, in case where `diagonal.visible` is false and `showupperhalf`',
+            'or `showlowerhalf` is false, this splom trace will generate',
+            'one less x-axis and one less y-axis.',
         ].join(' ')
     };
 }
@@ -86,8 +114,17 @@ module.exports = {
 
     // mode: {}, (only 'markers' for now)
 
-    text: scatterGlAttrs.text,
-    marker: scatterGlAttrs.marker,
+    text: extendFlat({}, scatterGlAttrs.text, {
+        description: [
+            'Sets text elements associated with each (x,y) pair to appear on hover.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y) coordinates.'
+        ].join(' ')
+    }),
+
+    marker: markerAttrs,
 
     xaxes: makeAxesValObject('x'),
     yaxes: makeAxesValObject('y'),

@@ -77,10 +77,10 @@ describe('main plot pan', function() {
         var mock = require('@mocks/10.json');
         var precision = 5;
 
-        var originalX = [-0.6225, 5.5];
+        var originalX = [-0.5251046025104602, 5.5];
         var originalY = [-1.6340975059013805, 7.166241526218911];
 
-        var newX = [-2.0255729166666665, 4.096927083333333];
+        var newX = [-1.905857740585774, 4.119246861924687];
         var newY = [-0.3769062155984817, 8.42343281652181];
 
         function _drag(x0, y0, x1, y1) {
@@ -650,6 +650,96 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(function() { return _dragStart([170, 170], [5, 30]); })
         .then(function() {
             return _assertAndDragEnd('full-y w/ fixed yaxis', {cornerCnt: 0});
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('handles xy, x-only and y-only zoombox updates', function(done) {
+        function _assert(msg, xrng, yrng) {
+            expect(gd.layout.xaxis.range).toBeCloseToArray(xrng, 2, 'xrng - ' + msg);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(yrng, 2, 'yrng - ' + msg);
+        }
+
+        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        .then(doDrag('xy', 'nsew', 50, 50))
+        .then(function() { _assert('after xy drag', [1, 1.208], [1.287, 1.5]); })
+        .then(doDblClick('xy', 'nsew'))
+        .then(doDrag('xy', 'nsew', 50, 0))
+        .then(function() { _assert('after x-only drag', [1, 1.208], [0.926, 2.073]); })
+        .then(doDblClick('xy', 'nsew'))
+        .then(doDrag('xy', 'nsew', 0, 50))
+        .then(function() { _assert('after y-only drag', [-0.128, 2.128], [1.287, 1.5]); })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should compute correct multicategory tick label span during drag', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/multicategory.json'));
+
+        var dragCoverNode;
+        var p1;
+
+        function _dragStart(draggerClassName, p0, dp) {
+            var node = getDragger('xy', draggerClassName);
+            mouseEvent('mousemove', p0[0], p0[1], {element: node});
+            mouseEvent('mousedown', p0[0], p0[1], {element: node});
+
+            var promise = drag.waitForDragCover().then(function(dcn) {
+                dragCoverNode = dcn;
+                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
+                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
+            });
+            return promise;
+        }
+
+        function _assertAndDragEnd(msg, exp) {
+            _assertLabels(msg, exp);
+            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
+            return drag.waitForDragCoverRemoval();
+        }
+
+        function _assertLabels(msg, exp) {
+            var tickLabels = d3.select(gd).selectAll('.xtick > text');
+            expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
+
+            tickLabels.each(function(_, i) {
+                var t = d3.select(this).attr('transform');
+                var rotate = (t.split('rotate(')[1] || '').split(')')[0];
+                var angle = rotate.split(',')[0];
+                expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
+
+            });
+
+            var tickLabels2 = d3.select(gd).selectAll('.xtick2 > text');
+            expect(tickLabels2.size()).toBe(exp.y.length, msg + ' - # of secondary labels');
+
+            tickLabels2.each(function(_, i) {
+                var y = d3.select(this).attr('y');
+                expect(Number(y)).toBeWithin(exp.y[i], 5, msg + ' - node ' + i);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            _assertLabels('base', {
+                angle: [0, 0, 0, 0, 0, 0, 0],
+                y: [406, 406]
+            });
+        })
+        .then(function() { return _dragStart('edrag', [585, 390], [-340, 0]); })
+        .then(function() {
+            return _assertAndDragEnd('drag to wide-range -> rotates labels', {
+                angle: [90, 90, 90, 90, 90, 90, 90],
+                y: [430, 430]
+            });
+        })
+        .then(function() { return _dragStart('edrag', [585, 390], [100, 0]); })
+        .then(function() {
+            return _assertAndDragEnd('drag to narrow-range -> un-rotates labels', {
+                angle: [0, 0, 0, 0, 0, 0, 0],
+                y: [406, 406]
+            });
         })
         .catch(failTest)
         .then(done);

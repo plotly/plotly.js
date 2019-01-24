@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,7 @@
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var dash = require('../../components/drawing/attributes').dash;
+var fxAttrs = require('../../components/fx/attributes');
 
 var INCREASING_COLOR = '#3D9970';
 var DECREASING_COLOR = '#FF4136';
@@ -115,5 +116,18 @@ module.exports = {
             'Sets the width of the open/close tick marks',
             'relative to the *x* minimal interval.'
         ].join(' ')
-    }
+    },
+
+    hoverlabel: extendFlat({}, fxAttrs.hoverlabel, {
+        split: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            editType: 'style',
+            description: [
+                'Show hover information (open, close, high, low) in',
+                'separate labels.'
+            ].join(' ')
+        }
+    }),
 };

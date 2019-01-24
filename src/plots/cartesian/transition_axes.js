@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,150 +13,43 @@ var d3 = require('d3');
 var Registry = require('../../registry');
 var Drawing = require('../../components/drawing');
 var Axes = require('./axes');
-var axisRegex = require('./constants').attrRegex;
 
-module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
+/**
+ * transitionAxes
+ *
+ * transition axes from one set of ranges to another, using a svg
+ * transformations, similar to during panning.
+ *
+ * @param {DOM element | object} gd
+ * @param {array} edits : array of 'edits', each item with
+ * - plotinfo {object} subplot object
+ * - xr0 {array} initial x-range
+ * - xr1 {array} end x-range
+ * - yr0 {array} initial y-range
+ * - yr1 {array} end y-range
+ * @param {object} transitionOpts
+ * @param {function} makeOnCompleteCallback
+ */
+module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
-    var axes = [];
 
-    function computeUpdates(layout) {
-        var ai, attrList, match, axis, update;
-        var updates = {};
-
-        for(ai in layout) {
-            attrList = ai.split('.');
-            match = attrList[0].match(axisRegex);
-            if(match) {
-                var axisLetter = ai.charAt(0);
-                var axisName = attrList[0];
-                axis = fullLayout[axisName];
-                update = {};
-
-                if(Array.isArray(layout[ai])) {
-                    update.to = layout[ai].slice(0);
-                } else {
-                    if(Array.isArray(layout[ai].range)) {
-                        update.to = layout[ai].range.slice(0);
-                    }
-                }
-                if(!update.to) continue;
-
-                update.axisName = axisName;
-                update.length = axis._length;
-
-                axes.push(axisLetter);
-
-                updates[axisLetter] = update;
-            }
-        }
-
-        return updates;
-    }
-
-    function computeAffectedSubplots(fullLayout, updatedAxisIds, updates) {
-        var plotName;
-        var plotinfos = fullLayout._plots;
-        var affectedSubplots = [];
-        var toX, toY;
-
-        for(plotName in plotinfos) {
-            var plotinfo = plotinfos[plotName];
-
-            if(affectedSubplots.indexOf(plotinfo) !== -1) continue;
-
-            var x = plotinfo.xaxis._id;
-            var y = plotinfo.yaxis._id;
-            var fromX = plotinfo.xaxis.range;
-            var fromY = plotinfo.yaxis.range;
-
-            // Store the initial range at the beginning of this transition:
-            plotinfo.xaxis._r = plotinfo.xaxis.range.slice();
-            plotinfo.yaxis._r = plotinfo.yaxis.range.slice();
-
-            if(updates[x]) {
-                toX = updates[x].to;
-            } else {
-                toX = fromX;
-            }
-            if(updates[y]) {
-                toY = updates[y].to;
-            } else {
-                toY = fromY;
-            }
-
-            if(fromX[0] === toX[0] && fromX[1] === toX[1] && fromY[0] === toY[0] && fromY[1] === toY[1]) continue;
-
-            if(updatedAxisIds.indexOf(x) !== -1 || updatedAxisIds.indexOf(y) !== -1) {
-                affectedSubplots.push(plotinfo);
-            }
-        }
-
-        return affectedSubplots;
-    }
-
-    var updates = computeUpdates(newLayout);
-    var updatedAxisIds = Object.keys(updates);
-    var affectedSubplots = computeAffectedSubplots(fullLayout, updatedAxisIds, updates);
-
-    function updateLayoutObjs() {
-        function redrawObjs(objArray, method, shortCircuit) {
-            for(var i = 0; i < objArray.length; i++) {
-                method(gd, i);
-
-                // once is enough for images (which doesn't use the `i` arg anyway)
-                if(shortCircuit) return;
-            }
-        }
-
-        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
-    }
-
-    if(!affectedSubplots.length) {
-        updateLayoutObjs();
-        return false;
-    }
-
-    function ticksAndAnnotations(xa, ya) {
-        var activeAxIds = [],
-            i;
-
-        activeAxIds = [xa._id, ya._id];
-
-        for(i = 0; i < activeAxIds.length; i++) {
-            Axes.doTicksSingle(gd, activeAxIds[i], true);
-        }
-
-        function redrawObjs(objArray, method, shortCircuit) {
-            for(i = 0; i < objArray.length; i++) {
-                var obji = objArray[i];
-
-                if((activeAxIds.indexOf(obji.xref) !== -1) ||
-                    (activeAxIds.indexOf(obji.yref) !== -1)) {
-                    method(gd, i);
-                }
-
-                // once is enough for images (which doesn't use the `i` arg anyway)
-                if(shortCircuit) return;
-            }
-        }
-
-        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+    // special case for redraw:false Plotly.animate that relies on this
+    // to update axis-referenced layout components
+    if(edits.length === 0) {
+        Axes.redrawComponents(gd);
+        return;
     }
 
     function unsetSubplotTransform(subplot) {
-        var xa2 = subplot.xaxis;
-        var ya2 = subplot.yaxis;
+        var xa = subplot.xaxis;
+        var ya = subplot.yaxis;
 
         fullLayout._defs.select('#' + subplot.clipId + '> rect')
             .call(Drawing.setTranslate, 0, 0)
             .call(Drawing.setScale, 1, 1);
 
         subplot.plot
-            .call(Drawing.setTranslate, xa2._offset, ya2._offset)
+            .call(Drawing.setTranslate, xa._offset, ya._offset)
             .call(Drawing.setScale, 1, 1);
 
         var traceGroups = subplot.plot.selectAll('.scatterlayer .trace');
@@ -172,79 +65,71 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             .call(Drawing.hideOutsideRangePoints, subplot);
     }
 
-    function updateSubplot(subplot, progress) {
-        var axis, r0, r1;
-        var xUpdate = updates[subplot.xaxis._id];
-        var yUpdate = updates[subplot.yaxis._id];
+    function updateSubplot(edit, progress) {
+        var plotinfo = edit.plotinfo;
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
 
+        var xr0 = edit.xr0;
+        var xr1 = edit.xr1;
+        var xlen = xa._length;
+        var yr0 = edit.yr0;
+        var yr1 = edit.yr1;
+        var ylen = ya._length;
+
+        var editX = !!xr1;
+        var editY = !!yr1;
         var viewBox = [];
 
-        if(xUpdate) {
-            axis = gd._fullLayout[xUpdate.axisName];
-            r0 = axis._r;
-            r1 = xUpdate.to;
-            viewBox[0] = (r0[0] * (1 - progress) + progress * r1[0] - r0[0]) / (r0[1] - r0[0]) * subplot.xaxis._length;
-            var dx1 = r0[1] - r0[0];
-            var dx2 = r1[1] - r1[0];
-
-            axis.range[0] = r0[0] * (1 - progress) + progress * r1[0];
-            axis.range[1] = r0[1] * (1 - progress) + progress * r1[1];
-
-            viewBox[2] = subplot.xaxis._length * ((1 - progress) + progress * dx2 / dx1);
+        if(editX) {
+            var dx0 = xr0[1] - xr0[0];
+            var dx1 = xr1[1] - xr1[0];
+            viewBox[0] = (xr0[0] * (1 - progress) + progress * xr1[0] - xr0[0]) / (xr0[1] - xr0[0]) * xlen;
+            viewBox[2] = xlen * ((1 - progress) + progress * dx1 / dx0);
+            xa.range[0] = xr0[0] * (1 - progress) + progress * xr1[0];
+            xa.range[1] = xr0[1] * (1 - progress) + progress * xr1[1];
         } else {
             viewBox[0] = 0;
-            viewBox[2] = subplot.xaxis._length;
+            viewBox[2] = xlen;
         }
 
-        if(yUpdate) {
-            axis = gd._fullLayout[yUpdate.axisName];
-            r0 = axis._r;
-            r1 = yUpdate.to;
-            viewBox[1] = (r0[1] * (1 - progress) + progress * r1[1] - r0[1]) / (r0[0] - r0[1]) * subplot.yaxis._length;
-            var dy1 = r0[1] - r0[0];
-            var dy2 = r1[1] - r1[0];
-
-            axis.range[0] = r0[0] * (1 - progress) + progress * r1[0];
-            axis.range[1] = r0[1] * (1 - progress) + progress * r1[1];
-
-            viewBox[3] = subplot.yaxis._length * ((1 - progress) + progress * dy2 / dy1);
+        if(editY) {
+            var dy0 = yr0[1] - yr0[0];
+            var dy1 = yr1[1] - yr1[0];
+            viewBox[1] = (yr0[1] * (1 - progress) + progress * yr1[1] - yr0[1]) / (yr0[0] - yr0[1]) * ylen;
+            viewBox[3] = ylen * ((1 - progress) + progress * dy1 / dy0);
+            ya.range[0] = yr0[0] * (1 - progress) + progress * yr1[0];
+            ya.range[1] = yr0[1] * (1 - progress) + progress * yr1[1];
         } else {
             viewBox[1] = 0;
-            viewBox[3] = subplot.yaxis._length;
+            viewBox[3] = ylen;
         }
 
-        ticksAndAnnotations(subplot.xaxis, subplot.yaxis);
+        Axes.drawOne(gd, xa, {skipTitle: true});
+        Axes.drawOne(gd, ya, {skipTitle: true});
+        Axes.redrawComponents(gd, [xa._id, ya._id]);
 
-        var xa2 = subplot.xaxis;
-        var ya2 = subplot.yaxis;
+        var xScaleFactor = editX ? xlen / viewBox[2] : 1;
+        var yScaleFactor = editY ? ylen / viewBox[3] : 1;
+        var clipDx = editX ? viewBox[0] : 0;
+        var clipDy = editY ? viewBox[1] : 0;
+        var fracDx = editX ? (viewBox[0] / viewBox[2] * xlen) : 0;
+        var fracDy = editY ? (viewBox[1] / viewBox[3] * ylen) : 0;
+        var plotDx = xa._offset - fracDx;
+        var plotDy = ya._offset - fracDy;
 
-        var editX = !!xUpdate;
-        var editY = !!yUpdate;
-
-        var xScaleFactor = editX ? xa2._length / viewBox[2] : 1,
-            yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
-
-        var clipDx = editX ? viewBox[0] : 0,
-            clipDy = editY ? viewBox[1] : 0;
-
-        var fracDx = editX ? (viewBox[0] / viewBox[2] * xa2._length) : 0,
-            fracDy = editY ? (viewBox[1] / viewBox[3] * ya2._length) : 0;
-
-        var plotDx = xa2._offset - fracDx,
-            plotDy = ya2._offset - fracDy;
-
-        subplot.clipRect
+        plotinfo.clipRect
             .call(Drawing.setTranslate, clipDx, clipDy)
             .call(Drawing.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
-        subplot.plot
+        plotinfo.plot
             .call(Drawing.setTranslate, plotDx, plotDy)
             .call(Drawing.setScale, xScaleFactor, yScaleFactor);
 
         // apply an inverse scale to individual points to counteract
         // the scale of the trace group.
-        Drawing.setPointGroupScale(subplot.zoomScalePts, 1 / xScaleFactor, 1 / yScaleFactor);
-        Drawing.setTextPointsScale(subplot.zoomScaleTxt, 1 / xScaleFactor, 1 / yScaleFactor);
+        Drawing.setPointGroupScale(plotinfo.zoomScalePts, 1 / xScaleFactor, 1 / yScaleFactor);
+        Drawing.setTextPointsScale(plotinfo.zoomScaleTxt, 1 / xScaleFactor, 1 / yScaleFactor);
     }
 
     var onComplete;
@@ -256,38 +141,35 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 
     function transitionComplete() {
         var aobj = {};
-        for(var i = 0; i < updatedAxisIds.length; i++) {
-            var axi = gd._fullLayout[updates[updatedAxisIds[i]].axisName];
-            var to = updates[updatedAxisIds[i]].to;
-            aobj[axi._name + '.range[0]'] = to[0];
-            aobj[axi._name + '.range[1]'] = to[1];
 
-            axi.range = to.slice();
+        for(var i = 0; i < edits.length; i++) {
+            var edit = edits[i];
+            if(edit.xr1) aobj[edit.plotinfo.xaxis._name + '.range'] = edit.xr1.slice();
+            if(edit.yr1) aobj[edit.plotinfo.yaxis._name + '.range'] = edit.yr1.slice();
         }
 
         // Signal that this transition has completed:
         onComplete && onComplete();
 
         return Registry.call('relayout', gd, aobj).then(function() {
-            for(var i = 0; i < affectedSubplots.length; i++) {
-                unsetSubplotTransform(affectedSubplots[i]);
+            for(var i = 0; i < edits.length; i++) {
+                unsetSubplotTransform(edits[i].plotinfo);
             }
         });
     }
 
     function transitionInterrupt() {
         var aobj = {};
-        for(var i = 0; i < updatedAxisIds.length; i++) {
-            var axi = gd._fullLayout[updatedAxisIds[i] + 'axis'];
-            aobj[axi._name + '.range[0]'] = axi.range[0];
-            aobj[axi._name + '.range[1]'] = axi.range[1];
 
-            axi.range = axi._r.slice();
+        for(var i = 0; i < edits.length; i++) {
+            var edit = edits[i];
+            if(edit.xr0) aobj[edit.plotinfo.xaxis._name + '.range'] = edit.xr0.slice();
+            if(edit.yr0) aobj[edit.plotinfo.yaxis._name + '.range'] = edit.yr0.slice();
         }
 
         return Registry.call('relayout', gd, aobj).then(function() {
-            for(var i = 0; i < affectedSubplots.length; i++) {
-                unsetSubplotTransform(affectedSubplots[i]);
+            for(var i = 0; i < edits.length; i++) {
+                unsetSubplotTransform(edits[i].plotinfo);
             }
         });
     }
@@ -307,8 +189,8 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         var tInterp = Math.min(1, (t2 - t1) / transitionOpts.duration);
         var progress = easeFn(tInterp);
 
-        for(var i = 0; i < affectedSubplots.length; i++) {
-            updateSubplot(affectedSubplots[i], progress);
+        for(var i = 0; i < edits.length; i++) {
+            updateSubplot(edits[i], progress);
         }
 
         if(t2 - t1 > transitionOpts.duration) {

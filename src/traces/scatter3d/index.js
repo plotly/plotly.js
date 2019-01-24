@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,7 +14,17 @@ Scatter3D.plot = require('./convert');
 Scatter3D.attributes = require('./attributes');
 Scatter3D.markerSymbols = require('../../constants/gl3d_markers');
 Scatter3D.supplyDefaults = require('./defaults');
-Scatter3D.colorbar = require('../scatter/marker_colorbar');
+Scatter3D.colorbar = [
+    {
+        container: 'marker',
+        min: 'cmin',
+        max: 'cmax'
+    }, {
+        container: 'line',
+        min: 'cmin',
+        max: 'cmax'
+    }
+];
 Scatter3D.calc = require('./calc');
 
 Scatter3D.moduleType = 'trace';

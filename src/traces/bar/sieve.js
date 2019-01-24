@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -65,8 +65,8 @@ function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
  * @returns {number} Previous bin value
  */
 Sieve.prototype.put = function put(position, value) {
-    var label = this.getLabel(position, value),
-        oldValue = this.bins[label] || 0;
+    var label = this.getLabel(position, value);
+    var oldValue = this.bins[label] || 0;
 
     this.bins[label] = oldValue + value;
 
@@ -99,9 +99,9 @@ Sieve.prototype.get = function put(position, value) {
  * true; otherwise prefixed with '^')
  */
 Sieve.prototype.getLabel = function getLabel(position, value) {
-    var prefix = (value < 0 && this.separateNegativeValues) ? 'v' : '^',
-        label = (this.dontMergeOverlappingData) ?
-            position :
-            Math.round(position / this.binWidth);
+    var prefix = (value < 0 && this.separateNegativeValues) ? 'v' : '^';
+    var label = (this.dontMergeOverlappingData) ?
+        position :
+        Math.round(position / this.binWidth);
     return prefix + label;
 };

@@ -1,32 +1,38 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-exports.scales = require('./scales');
+var scales = require('./scales');
+var helpers = require('./helpers');
 
-exports.defaultScale = require('./default_scale');
+module.exports = {
+    moduleType: 'component',
+    name: 'colorscale',
 
-exports.attributes = require('./attributes');
+    attributes: require('./attributes'),
+    layoutAttributes: require('./layout_attributes'),
 
-exports.handleDefaults = require('./defaults');
+    supplyLayoutDefaults: require('./layout_defaults'),
+    handleDefaults: require('./defaults'),
+    crossTraceDefaults: require('./cross_trace_defaults'),
 
-exports.calc = require('./calc');
+    calc: require('./calc'),
 
-exports.hasColorscale = require('./has_colorscale');
+    // ./scales.js is required in lib/coerce.js ;
+    // it needs to be a seperate module to avoid circular a dependency
+    scales: scales.scales,
+    defaultScale: scales.defaultScale,
+    getScale: scales.get,
+    isValidScale: scales.isValid,
 
-exports.isValidScale = require('./is_valid_scale');
-
-exports.getScale = require('./get_scale');
-
-exports.flipScale = require('./flip_scale');
-
-exports.extractScale = require('./extract_scale');
-
-exports.makeColorScaleFunc = require('./make_color_scale_func');
+    hasColorscale: helpers.hasColorscale,
+    flipScale: helpers.flipScale,
+    extractScale: helpers.extractScale,
+    makeColorScaleFunc: helpers.makeColorScaleFunc
+};

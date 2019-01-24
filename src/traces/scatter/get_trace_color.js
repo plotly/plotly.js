@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -27,8 +27,8 @@ module.exports = function getTraceColor(trace, di) {
         return trace.fill ? trace.fillcolor : '';
     }
     else {
-        var mc = di.mcc || (trace.marker || {}).color,
-            mlc = di.mlcc || ((trace.marker || {}).line || {}).color;
+        var mc = di.mcc || (trace.marker || {}).color;
+        var mlc = di.mlcc || ((trace.marker || {}).line || {}).color;
 
         tc = (mc && Color.opacity(mc)) ? mc :
             (mlc && Color.opacity(mlc) &&

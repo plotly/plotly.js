@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -69,7 +69,11 @@ module.exports = function plot(gd, subplot, cdbar) {
         });
 
         // clip plotGroup, when trace layer isn't clipped
-        Drawing.setClipUrl(plotGroup, subplot._hasClipOnAxisFalse ? subplot.clipIds.forTraces : null);
+        Drawing.setClipUrl(
+            plotGroup,
+            subplot._hasClipOnAxisFalse ? subplot.clipIds.forTraces : null,
+            gd
+        );
     });
 };
 

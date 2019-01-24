@@ -42,22 +42,6 @@
   ],
   "layout": {
     "autosize": true,
-    "undefined": {
-      "cameraposition": [
-        [
-          0.13855639464070454,
-          0.5365430934822464,
-          0.7678929376547012,
-          -0.32134727420767745
-        ],
-        [
-          0,
-          0,
-          0
-        ],
-        1.8771354322421991
-      ]
-    },
     "title": "Scatter3d with text weirdness",
     "showlegend": false,
     "height": 758,

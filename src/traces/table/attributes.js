@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,7 +14,7 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'table', trace: true}),
 
     columnwidth: {
@@ -198,3 +198,4 @@ module.exports = overrideAll({
         font: extendFlat({}, fontAttrs({arrayOk: true}))
     }
 }, 'calc', 'from-root');
+attrs.transforms = undefined;

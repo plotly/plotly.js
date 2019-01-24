@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -21,7 +21,7 @@ Carpet.isContainer = true; // so carpet traces get `calc` before other traces
 Carpet.moduleType = 'trace';
 Carpet.name = 'carpet';
 Carpet.basePlotModule = require('../../plots/cartesian');
-Carpet.categories = ['cartesian', 'svg', 'carpet', 'carpetAxis', 'notLegendIsolatable'];
+Carpet.categories = ['cartesian', 'svg', 'carpet', 'carpetAxis', 'notLegendIsolatable', 'noMultiCategory'];
 Carpet.meta = {
     description: [
         'The data describing carpet axis layout is set in `y` and (optionally)',

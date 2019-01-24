@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,6 +13,7 @@ var Histogram2dContour = {};
 
 Histogram2dContour.attributes = require('./attributes');
 Histogram2dContour.supplyDefaults = require('./defaults');
+Histogram2dContour.crossTraceDefaults = require('../histogram2d/cross_trace_defaults');
 Histogram2dContour.calc = require('../contour/calc');
 Histogram2dContour.plot = require('../contour/plot').plot;
 Histogram2dContour.layerName = 'contourlayer';

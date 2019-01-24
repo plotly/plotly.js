@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,11 @@
 'use strict';
 
 var fontAttrs = require('./font_attributes');
+var animationAttrs = require('./animation_attributes');
 var colorAttrs = require('../components/color/attributes');
+var colorscaleAttrs = require('../components/colorscale/layout_attributes');
+var padAttrs = require('./pad_attributes');
+var extendFlat = require('../lib/extend').extendFlat;
 
 var globalFont = fontAttrs({
     editType: 'calc',
@@ -26,17 +30,117 @@ globalFont.color.dflt = colorAttrs.defaultLine;
 module.exports = {
     font: globalFont,
     title: {
-        valType: 'string',
-        role: 'info',
-        editType: 'layoutstyle',
-        description: [
-            'Sets the plot\'s title.'
-        ].join(' ')
+        text: {
+            valType: 'string',
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Sets the plot\'s title.',
+                'Note that before the existence of `title.text`, the title\'s',
+                'contents used to be defined as the `title` attribute itself.',
+                'This behavior has been deprecated.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'layoutstyle',
+            description: [
+                'Sets the title font.',
+                'Note that the title\'s font used to be customized',
+                'by the now deprecated `titlefont` attribute.'
+            ].join(' ')
+        }),
+        xref: {
+            valType: 'enumerated',
+            dflt: 'container',
+            values: ['container', 'paper'],
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Sets the container `x` refers to.',
+                '*container* spans the entire `width` of the plot.',
+                '*paper* refers to the width of the plotting area only.'
+            ].join(' ')
+        },
+        yref: {
+            valType: 'enumerated',
+            dflt: 'container',
+            values: ['container', 'paper'],
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Sets the container `y` refers to.',
+                '*container* spans the entire `height` of the plot.',
+                '*paper* refers to the height of the plotting area only.'
+            ].join(' ')
+        },
+        x: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0.5,
+            role: 'style',
+            editType: 'layoutstyle',
+            description: [
+                'Sets the x position with respect to `xref` in normalized',
+                'coordinates from *0* (left) to *1* (right).'
+            ].join(' ')
+        },
+        y: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 'auto',
+            role: 'style',
+            editType: 'layoutstyle',
+            description: [
+                'Sets the y position with respect to `yref` in normalized',
+                'coordinates from *0* (bottom) to *1* (top).',
+                '*auto* places the baseline of the title onto the',
+                'vertical center of the top margin.'
+            ].join(' ')
+        },
+        xanchor: {
+            valType: 'enumerated',
+            dflt: 'auto',
+            values: ['auto', 'left', 'center', 'right'],
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Sets the title\'s horizontal alignment with respect to its x position.',
+                '*left* means that the title starts at x,',
+                '*right* means that the title ends at x',
+                'and *center* means that the title\'s center is at x.',
+                '*auto* divides `xref` by three and calculates the `xanchor`',
+                'value automatically based on the value of `x`.'
+            ].join(' ')
+        },
+        yanchor: {
+            valType: 'enumerated',
+            dflt: 'auto',
+            values: ['auto', 'top', 'middle', 'bottom'],
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Sets the title\'s vertical alignment with respect to its y position.',
+                '*top* means that the title\'s cap line is at y,',
+                '*bottom* means that the title\'s baseline is at y',
+                'and *middle* means that the title\'s midline is at y.',
+                '*auto* divides `yref` by three and calculates the `yanchor`',
+                'value automatically based on the value of `y`.'
+            ].join(' ')
+        },
+        pad: extendFlat(padAttrs({editType: 'layoutstyle'}), {
+            description: [
+                'Sets the padding of the title.',
+                'Each padding value only applies when the corresponding',
+                '`xanchor`/`yanchor` value is set accordingly. E.g. for left',
+                'padding to take effect, `xanchor` must be set to *left*.',
+                'The same rule applies if `xanchor`/`yanchor` is determined automatically.',
+                'Padding is muted if the respective anchor value is *middle*/*center*.'
+            ].join(' ')
+        }),
+        editType: 'layoutstyle'
     },
-    titlefont: fontAttrs({
-        editType: 'layoutstyle',
-        description: 'Sets the title font.'
-    }),
     autosize: {
         valType: 'boolean',
         role: 'info',
@@ -188,6 +292,7 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the default trace colors.'
     },
+    colorscale: colorscaleAttrs,
     datarevision: {
         valType: 'any',
         role: 'info',
@@ -200,6 +305,47 @@ module.exports = {
             'If NOT provided, `Plotly.react` assumes that data arrays are',
             'being treated as immutable, thus any data array with a',
             'different identity from its predecessor contains new data.'
+        ].join(' ')
+    },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Used to allow user interactions with the plot to persist after',
+            '`Plotly.react` calls that are unaware of these interactions.',
+            'If `uirevision` is omitted, or if it is given and it changed from',
+            'the previous `Plotly.react` call, the exact new figure is used.',
+            'If `uirevision` is truthy and did NOT change, any attribute',
+            'that has been affected by user interactions and did not receive a',
+            'different value in the new figure will keep the interaction value.',
+            '`layout.uirevision` attribute serves as the default for',
+            '`uirevision` attributes in various sub-containers. For finer',
+            'control you can set these sub-attributes directly. For example,',
+            'if your app separately controls the data on the x and y axes you',
+            'might set `xaxis.uirevision=*time*` and `yaxis.uirevision=*cost*`.',
+            'Then if only the y data is changed, you can update',
+            '`yaxis.uirevision=*quantity*` and the y axis range will reset but',
+            'the x axis range will retain any user-driven zoom.'
+        ].join(' ')
+    },
+    editrevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in `editable: true`',
+            'configuration, other than trace names and axis titles.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
+    selectionrevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in selected points',
+            'from all traces.'
         ].join(' ')
     },
     template: {
@@ -224,5 +370,82 @@ module.exports = {
             'or a logo image, for example. To omit one of these items on the plot,',
             'make an item with matching `templateitemname` and `visible: false`.'
         ].join(' ')
+    },
+    modebar: {
+        orientation: {
+            valType: 'enumerated',
+            values: ['v', 'h'],
+            dflt: 'h',
+            role: 'info',
+            editType: 'modebar',
+            description: 'Sets the orientation of the modebar.'
+        },
+        bgcolor: {
+            valType: 'color',
+            role: 'style',
+            editType: 'modebar',
+            description: 'Sets the background color of the modebar.'
+        },
+        color: {
+            valType: 'color',
+            role: 'style',
+            editType: 'modebar',
+            description: 'Sets the color of the icons in the modebar.'
+        },
+        activecolor: {
+            valType: 'color',
+            role: 'style',
+            editType: 'modebar',
+            description: 'Sets the color of the active or hovered on icons in the modebar.'
+        },
+        uirevision: {
+            valType: 'any',
+            role: 'info',
+            editType: 'none',
+            description: [
+                'Controls persistence of user-driven changes related to the modebar,',
+                'including `hovermode`, `dragmode`, and `showspikes` at both the',
+                'root level and inside subplots. Defaults to `layout.uirevision`.'
+            ].join(' ')
+        },
+        editType: 'modebar'
+    },
+
+    meta: {
+        valType: 'data_array',
+        editType: 'plot',
+        description: [
+            'Assigns extra meta information that can be used in various `text` attributes.',
+            'Attributes such as the graph, axis and colorbar `title.text` and annotation `text`',
+            'support `meta`. One can access `meta` fields using template strings:',
+            '`%{meta[i]}` where `i` is the index of the `meta`',
+            'item in question.'
+        ].join(' ')
+    },
+
+    transition: extendFlat({}, animationAttrs.transition, {
+        description: [
+            'Sets transition options used during Plotly.react updates.'
+        ].join(' '),
+        editType: 'none'
+    }),
+
+    _deprecated: {
+        title: {
+            valType: 'string',
+            role: 'info',
+            editType: 'layoutstyle',
+            description: [
+                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
+                'To set the contents of the title, please use `title.text` now.'
+            ].join(' ')
+        },
+        titlefont: fontAttrs({
+            editType: 'layoutstyle',
+            description: [
+                'Former `titlefont` is now the sub-attribute `font` of `title`.',
+                'To customize title font properties, please use `title.font` now.'
+            ].join(' ')
+        })
     }
 };

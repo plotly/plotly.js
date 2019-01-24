@@ -1,11 +1,10 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -13,9 +12,9 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
+var Lib = require('../../lib');
 
 var makeComputeError = require('./compute_error');
-
 
 module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
@@ -34,9 +33,9 @@ module.exports = function calc(gd) {
 };
 
 function calcOneAxis(calcTrace, trace, axis, coord) {
-    var opts = trace['error_' + coord] || {},
-        isVisible = (opts.visible && ['linear', 'log'].indexOf(axis.type) !== -1),
-        vals = [];
+    var opts = trace['error_' + coord] || {};
+    var isVisible = (opts.visible && ['linear', 'log'].indexOf(axis.type) !== -1);
+    var vals = [];
 
     if(!isVisible) return;
 
@@ -67,14 +66,19 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
 
         var errors = computeError(calcCoord, iIn);
         if(isNumeric(errors[0]) && isNumeric(errors[1])) {
-            var shoe = calcPt[coord + 's'] = calcCoord - errors[0],
-                hat = calcPt[coord + 'h'] = calcCoord + errors[1];
+            var shoe = calcPt[coord + 's'] = calcCoord - errors[0];
+            var hat = calcPt[coord + 'h'] = calcCoord + errors[1];
             vals.push(shoe, hat);
         }
     }
 
-    var extremes = Axes.findExtremes(axis, vals, {padded: true});
     var axId = axis._id;
-    trace._extremes[axId].min = trace._extremes[axId].min.concat(extremes.min);
-    trace._extremes[axId].max = trace._extremes[axId].max.concat(extremes.max);
+    var baseExtremes = trace._extremes[axId];
+    var extremes = Axes.findExtremes(
+        axis,
+        vals,
+        Lib.extendFlat({tozero: baseExtremes.opts.tozero}, {padded: true})
+    );
+    baseExtremes.min = baseExtremes.min.concat(extremes.min);
+    baseExtremes.max = baseExtremes.max.concat(extremes.max);
 }

@@ -1,5 +1,6 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var rgb = require('@src/components/color').rgb;
 
 var supplyLayoutDefaults = require('@src/plots/ternary/layout_defaults');
 
@@ -173,8 +174,8 @@ describe('ternary plots', function() {
         });
 
         it('should respond to hover interactions by', function() {
-            var hoverCnt = 0,
-                unhoverCnt = 0;
+            var hoverCnt = 0;
+            var unhoverCnt = 0;
 
             var hoverData, unhoverData;
 
@@ -382,6 +383,55 @@ describe('ternary plots', function() {
         .then(done);
     });
 
+    it('should be able to relayout axis title attributes', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+
+        function _assert(axisPrefix, title, family, color, size) {
+            var titleSel = d3.select('.' + axisPrefix + 'title');
+            var titleNode = titleSel.node();
+
+            var msg = 'for ' + axisPrefix + 'axis title';
+            expect(titleSel.text()).toBe(title, 'title ' + msg);
+            expect(titleNode.style['font-family']).toBe(family, 'font family ' + msg);
+            expect(parseFloat(titleNode.style['font-size'])).toBe(size, 'font size ' + msg);
+            expect(titleNode.style.fill).toBe(color, 'font color ' + msg);
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('a', 'Component A', '"Open Sans", verdana, arial, sans-serif', rgb('#ccc'), 14);
+            _assert('b', 'chocolate', '"Open Sans", verdana, arial, sans-serif', rgb('#0f0'), 14);
+            _assert('c', 'Component C', '"Open Sans", verdana, arial, sans-serif', rgb('#444'), 14);
+
+            // Note: Different update notations to also test legacy title structures
+            return Plotly.relayout(gd, {
+                'ternary.aaxis.title.text': 'chips',
+                'ternary.aaxis.title.font.color': 'yellow',
+                'ternary.aaxis.titlefont.family': 'monospace',
+                'ternary.aaxis.titlefont.size': 16,
+                'ternary.baxis.title': 'white chocolate',
+                'ternary.baxis.title.font.color': 'blue',
+                'ternary.baxis.titlefont.family': 'sans-serif',
+                'ternary.baxis.titlefont.size': 10,
+                'ternary.caxis.title': {
+                    text: 'candy',
+                    font: {
+                        color: 'pink',
+                        family: 'serif',
+                        size: 30
+                    }
+                }
+            });
+        })
+          .then(function() {
+              _assert('a', 'chips', 'monospace', rgb('yellow'), 16);
+              _assert('b', 'white chocolate', 'sans-serif', rgb('blue'), 10);
+              _assert('c', 'candy', 'serif', rgb('pink'), 30);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
     it('should be able to hide/show ticks and tick labels', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
@@ -546,9 +596,9 @@ describe('ternary defaults', function() {
         layoutIn = {};
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.ternary.aaxis.title).toEqual('Component A');
-        expect(layoutOut.ternary.baxis.title).toEqual('Component B');
-        expect(layoutOut.ternary.caxis.title).toEqual('Component C');
+        expect(layoutOut.ternary.aaxis.title.text).toEqual('Component A');
+        expect(layoutOut.ternary.baxis.title.text).toEqual('Component B');
+        expect(layoutOut.ternary.caxis.title.text).toEqual('Component C');
     });
 
     it('should default \'gricolor\' to 60% dark', function() {
@@ -575,8 +625,8 @@ describe('Test event property of interactions on a ternary plot:', function() {
 
     var mockCopy, gd;
 
-    var blankPos = [10, 10],
-        pointPos;
+    var blankPos = [10, 10];
+    var pointPos;
 
     beforeAll(function(done) {
         gd = createGraphDiv();
@@ -616,8 +666,8 @@ describe('Test event property of interactions on a ternary plot:', function() {
         it('should contain the correct fields', function() {
             click(pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -727,12 +777,12 @@ describe('Test event property of interactions on a ternary plot:', function() {
             mouseEvent('mousemove', blankPos[0], blankPos[1]);
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event,
-                xaxes0 = futureData.xaxes[0],
-                xvals0 = futureData.xvals[0],
-                yaxes0 = futureData.yaxes[0],
-                yvals0 = futureData.yvals[0];
+            var pt = futureData.points[0];
+            var evt = futureData.event;
+            var xaxes0 = futureData.xaxes[0];
+            var xvals0 = futureData.xvals[0];
+            var yaxes0 = futureData.yaxes[0];
+            var yvals0 = futureData.yvals[0];
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -775,8 +825,8 @@ describe('Test event property of interactions on a ternary plot:', function() {
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
             mouseEvent('mouseout', pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',

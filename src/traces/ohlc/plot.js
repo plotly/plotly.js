@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -37,6 +37,8 @@ module.exports = function plot(gd, plotinfo, cdOHLC, ohlcLayer) {
         paths.exit().remove();
 
         paths.attr('d', function(d) {
+            if(d.empty) return 'M0,0Z';
+
             var x = xa.c2p(d.pos, true);
             var xo = xa.c2p(d.pos - tickLen, true);
             var xc = xa.c2p(d.pos + tickLen, true);

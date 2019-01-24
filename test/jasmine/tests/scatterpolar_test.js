@@ -110,6 +110,14 @@ describe('Test scatterpolar hover:', function() {
         nums: 'r: 4.022892\nθ: 128.342°',
         name: 'Trial 3'
     }, {
+        desc: 'with hovertemplate',
+        patch: function(fig) {
+            fig.data[2].hovertemplate = 'template %{r} %{theta}';
+            return fig;
+        },
+        nums: 'template 4.02289202968 128.342009045',
+        name: 'Trial 3'
+    }, {
         desc: '(no labels - out of sector)',
         patch: function(fig) {
             fig.layout.polar.sector = [15, 75];
@@ -157,6 +165,22 @@ describe('Test scatterpolar hover:', function() {
             return fig;
         },
         nums: 'r: 1.108937\nθ: 115.4969°',
+        name: 'Trial 3'
+    }, {
+        desc: 'with custom text scalar',
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.text = 'a'; });
+            return fig;
+        },
+        nums: 'r: 4.022892\nθ: 128.342°\na',
+        name: 'Trial 3'
+    }, {
+        desc: 'with custom text array',
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.text = t.r.map(String); });
+            return fig;
+        },
+        nums: 'r: 4.022892\nθ: 128.342°\n4.02289202968',
         name: 'Trial 3'
     }]
     .forEach(function(specs) {

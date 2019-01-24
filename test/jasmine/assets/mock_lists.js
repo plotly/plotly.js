@@ -9,7 +9,7 @@ var svgMockList = [
     ['17', require('@mocks/17.json')],
     ['21', require('@mocks/21.json')],
     ['22', require('@mocks/22.json')],
-    ['airfoil', require('@mocks/airfoil.json')],
+    ['airfoil', require('@mocks/airfoil.json')], // important to keep because it's the only mock with config options
     ['annotations-autorange', require('@mocks/annotations-autorange.json')],
     ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
     ['axes_visible-false', require('@mocks/axes_visible-false.json')],
@@ -21,12 +21,14 @@ var svgMockList = [
     ['geo_first', require('@mocks/geo_first.json')],
     ['layout_image', require('@mocks/layout_image.json')],
     ['layout-colorway', require('@mocks/layout-colorway.json')],
+    ['multicategory', require('@mocks/multicategory.json')],
     ['polar_categories', require('@mocks/polar_categories.json')],
     ['polar_direction', require('@mocks/polar_direction.json')],
     ['polar_wind-rose', require('@mocks/polar_wind-rose.json')],
     ['range_selector_style', require('@mocks/range_selector_style.json')],
     ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
     ['sankey_energy', require('@mocks/sankey_energy.json')],
+    ['parcats_bad-displayindex', require('@mocks/parcats_bad-displayindex.json')],
     ['scattercarpet', require('@mocks/scattercarpet.json')],
     ['shapes', require('@mocks/shapes.json')],
     ['splom_iris', require('@mocks/splom_iris.json')],
@@ -56,6 +58,7 @@ var glMockList = [
     ['gl3d_cone-autorange', require('@mocks/gl3d_cone-autorange.json')],
     ['gl3d_streamtube-simple', require('@mocks/gl3d_streamtube-simple.json')],
     ['glpolar_style', require('@mocks/glpolar_style.json')],
+    ['gl3d_isosurface_multiple-traces', require('@mocks/gl3d_isosurface_out_of_iso_range_case.json')]
 ];
 
 var mapboxMockList = [

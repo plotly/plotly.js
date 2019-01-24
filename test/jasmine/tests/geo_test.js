@@ -846,11 +846,11 @@ describe('Test geo interactions', function() {
 
             var N_LOCATIONS_AT_START = mock.data[1].locations.length;
 
-            var lonQueue = [45, -45, 12, 20],
-                latQueue = [-75, 80, 5, 10],
-                textQueue = ['c', 'd', 'e', 'f'],
-                locationsQueue = ['AUS', 'FRA', 'DEU', 'MEX'],
-                zQueue = [100, 20, 30, 12];
+            var lonQueue = [45, -45, 12, 20];
+            var latQueue = [-75, 80, 5, 10];
+            var textQueue = ['c', 'd', 'e', 'f'];
+            var locationsQueue = ['AUS', 'FRA', 'DEU', 'MEX'];
+            var zQueue = [100, 20, 30, 12];
 
             beforeEach(function(done) {
                 var update = {
@@ -1259,9 +1259,9 @@ describe('Test event property of interactions on a geo plot:', function() {
 
     var mockCopy, gd;
 
-    var blankPos = [10, 10],
-        pointPos,
-        nearPos;
+    var blankPos = [10, 10];
+    var pointPos;
+    var nearPos;
 
     beforeAll(function(done) {
         gd = createGraphDiv();
@@ -1301,8 +1301,8 @@ describe('Test event property of interactions on a geo plot:', function() {
         it('should contain the correct fields', function() {
             click(pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -1327,12 +1327,12 @@ describe('Test event property of interactions on a geo plot:', function() {
 
     describe('modified click events', function() {
         var clickOpts = {
-                altKey: true,
-                ctrlKey: true,
-                metaKey: true,
-                shiftKey: true
-            },
-            futureData;
+            altKey: true,
+            ctrlKey: true,
+            metaKey: true,
+            shiftKey: true
+        };
+        var futureData;
 
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
@@ -1398,8 +1398,8 @@ describe('Test event property of interactions on a geo plot:', function() {
             mouseEvent('mousemove', blankPos[0], blankPos[1]);
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -1435,8 +1435,8 @@ describe('Test event property of interactions on a geo plot:', function() {
 
         it('should contain the correct fields', function(done) {
             move(pointPos[0], pointPos[1], nearPos[0], nearPos[1], HOVERMINTIME + 10).then(function() {
-                var pt = futureData.points[0],
-                    evt = futureData.event;
+                var pt = futureData.points[0];
+                var evt = futureData.event;
 
                 expect(Object.keys(pt)).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
@@ -1957,6 +1957,54 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             // scrolling outside subplot frame should log errors,
             // nor emit events
             expect(eventData).toBeUndefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should respect scrollZoom config option', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_winkel-tripel'));
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'pan';
+
+        function _assert(step, attr, proj, eventKeys) {
+            var msg = '[' + step + '] ';
+
+            var geoLayout = gd._fullLayout.geo;
+            var scale = geoLayout.projection.scale;
+            expect(scale).toBeCloseTo(attr[0], 1, msg + 'zoom');
+
+            var geo = geoLayout._subplot;
+            var _scale = geo.projection.scale();
+            expect(_scale).toBeCloseTo(proj[0], 0, msg + 'scale');
+
+            assertEventData(msg, eventKeys);
+        }
+
+        plot(fig)
+        .then(function() {
+            _assert('base', [1], [101.9], undefined);
+        })
+        .then(function() { return scroll([200, 250], [-200, -200]); })
+        .then(function() {
+            _assert('with scroll enable (by default)',
+                [1.3], [134.4],
+                ['geo.projection.rotation.lon', 'geo.center.lon', 'geo.center.lat', 'geo.projection.scale']
+            );
+        })
+        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: false}); })
+        .then(function() { return scroll([200, 250], [-200, -200]); })
+        .then(function() {
+            _assert('with scrollZoom:false', [1.3], [134.4], undefined);
+        })
+        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: 'geo'}); })
+        .then(function() { return scroll([200, 250], [-200, -200]); })
+        .then(function() {
+            _assert('with scrollZoom:geo',
+                [1.74], [177.34],
+                ['geo.projection.rotation.lon', 'geo.center.lon', 'geo.center.lat', 'geo.projection.scale']
+            );
         })
         .catch(failTest)
         .then(done);

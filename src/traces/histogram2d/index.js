@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,6 +13,7 @@ var Histogram2D = {};
 
 Histogram2D.attributes = require('./attributes');
 Histogram2D.supplyDefaults = require('./defaults');
+Histogram2D.crossTraceDefaults = require('./cross_trace_defaults');
 Histogram2D.calc = require('../heatmap/calc');
 Histogram2D.plot = require('../heatmap/plot');
 Histogram2D.layerName = 'heatmaplayer';

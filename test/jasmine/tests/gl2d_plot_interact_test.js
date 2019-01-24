@@ -261,6 +261,57 @@ describe('Test gl plot side effects', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should not clear context when dimensions are not integers', function(done) {
+        spyOn(Plots, 'cleanPlot').and.callThrough();
+        spyOn(Lib, 'log').and.callThrough();
+
+        var w = 500.5;
+        var h = 400.5;
+        var w0 = Math.floor(w);
+        var h0 = Math.floor(h);
+
+        function assertDims(msg) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.width).toBe(w, msg);
+            expect(fullLayout.height).toBe(h, msg);
+
+            var canvas = fullLayout._glcanvas;
+            expect(canvas.node().width).toBe(w0, msg);
+            expect(canvas.node().height).toBe(h0, msg);
+
+            var gl = canvas.data()[0].regl._gl;
+            expect(gl.drawingBufferWidth).toBe(w0, msg);
+            expect(gl.drawingBufferHeight).toBe(h0, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            y: [1, 2, 1]
+        }], {
+            width: w,
+            height: h
+        })
+        .then(function() {
+            assertDims('base state');
+
+            // once from supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(1);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+
+            return Plotly.restyle(gd, 'mode', 'markers');
+        })
+        .then(function() {
+            assertDims('after restyle');
+
+            // one more supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(2);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl2d plots', function() {
@@ -502,7 +553,10 @@ describe('Test gl2d plots', function() {
 
     it('@noCI @gl should display selection of big number of regular points', function(done) {
         // generate large number of points
-        var x = [], y = [], n = 2e2, N = n * n;
+        var x = [];
+        var y = [];
+        var n = 2e2;
+        var N = n * n;
         for(var i = 0; i < N; i++) {
             x.push((i % n) / n);
             y.push(i / N);
@@ -537,7 +591,13 @@ describe('Test gl2d plots', function() {
         ];
 
         // generate large number of points
-        var x = [], y = [], n = 2e2, N = n * n, color = [], symbol = [], size = [];
+        var x = [];
+        var y = [];
+        var n = 2e2;
+        var N = n * n;
+        var color = [];
+        var symbol = [];
+        var size = [];
         for(var i = 0; i < N; i++) {
             x.push((i % n) / n);
             y.push(i / N);
@@ -778,7 +838,8 @@ describe('Test gl2d plots', function() {
             }
         };
 
-        var sceneTarget, relayoutCallback = jasmine.createSpy('relayoutCallback');
+        var sceneTarget;
+        var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         function scroll(target, amt) {
             return new Promise(function(resolve) {
@@ -1135,6 +1196,79 @@ describe('Test gl2d plots', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should not cause infinite loops when coordinate arrays start/end with NaN', function(done) {
+        function _assertPositions(msg, cont, exp) {
+            var pos = gd._fullLayout._plots.xy._scene[cont]
+                .map(function(opt) { return opt.positions; });
+            expect(pos).toBeCloseTo2DArray(exp, 2, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            x: [1, 2, 3],
+            y: [null, null, null]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            x: [1, 2, 3],
+            y: [1, 2, null]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            x: [null, 2, 3],
+            y: [1, 2, 3]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            x: [null, null, null],
+            y: [1, 2, 3]
+        }, {
+        }])
+        .then(function() {
+            _assertPositions('base', 'lineOptions', [
+                [],
+                [1, 1, 2, 2],
+                [2, 2, 3, 3],
+                []
+            ]);
+
+            return Plotly.restyle(gd, 'fill', 'tozerox');
+        })
+        .then(function() {
+            _assertPositions('tozerox', 'lineOptions', [
+                [],
+                [1, 1, 2, 2],
+                [2, 2, 3, 3],
+                []
+            ]);
+            _assertPositions('tozerox', 'fillOptions', [
+                [0, undefined, 0, undefined],
+                [0, 1, 1, 1, 2, 2, 0, 2],
+                [0, 2, 2, 2, 3, 3, 0, 3],
+                [0, undefined, 0, undefined]
+            ]);
+
+            return Plotly.restyle(gd, 'fill', 'tozeroy');
+        })
+        .then(function() {
+            _assertPositions('tozeroy', 'lineOptions', [
+                [],
+                [1, 1, 2, 2],
+                [2, 2, 3, 3],
+                []
+            ]);
+            _assertPositions('tozeroy', 'fillOptions', [
+                [undefined, 0, undefined, 0],
+                [1, 0, 1, 1, 2, 2, 2, 0],
+                [2, 0, 2, 2, 3, 3, 3, 0],
+                [undefined, 0, undefined, 0]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test scattergl autorange:', function() {
@@ -1181,8 +1315,15 @@ describe('Test scattergl autorange:', function() {
     });
 
     describe('should return the approximative values for ~big~ data', function() {
+        var gd;
+
         beforeEach(function() {
-            spyOn(ScatterGl, 'plot');
+            gd = createGraphDiv();
+            // to avoid expansive draw calls (which could be problematic on CI)
+            spyOn(ScatterGl, 'plot').and.callFake(function(gd) {
+                gd._fullLayout._plots.xy._scene.scatter2d = {draw: function() {}};
+                gd._fullLayout._plots.xy._scene.line2d = {draw: function() {}};
+            });
         });
 
         // threshold for 'fast' axis expansion routine
@@ -1200,8 +1341,6 @@ describe('Test scattergl autorange:', function() {
         }
 
         it('@gl - case scalar marker.size', function(done) {
-            var gd = createGraphDiv();
-
             Plotly.newPlot(gd, [{
                 type: 'scattergl',
                 mode: 'markers',
@@ -1218,8 +1357,6 @@ describe('Test scattergl autorange:', function() {
         });
 
         it('@gl - case array marker.size', function(done) {
-            var gd = createGraphDiv();
-
             Plotly.newPlot(gd, [{
                 type: 'scattergl',
                 mode: 'markers',
@@ -1230,6 +1367,20 @@ describe('Test scattergl autorange:', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.119, 1.119], 2, 'x range');
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.199, 1.199], 2, 'y range');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl - case mode:lines', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scattergl',
+                mode: 'lines',
+                y: y,
+            }])
+            .then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0, N - 1], 2, 'x range');
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.0555, 1.0555], 2, 'y range');
             })
             .catch(failTest)
             .then(done);

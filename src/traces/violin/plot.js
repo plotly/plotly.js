@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -39,28 +39,19 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var t = cd0.t;
         var trace = cd0.trace;
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
-        var numViolins = fullLayout._numViolins;
-        var group = (fullLayout.violinmode === 'group' && numViolins > 1);
-        var groupFraction = 1 - fullLayout.violingap;
-        // violin max half width
-        var bdPos = t.bdPos = t.dPos * groupFraction * (1 - fullLayout.violingroupgap) / (group ? numViolins : 1);
-        // violin center offset
-        var bPos = t.bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numViolins) * groupFraction : 0;
-        // half-width within which to accept hover for this violin
-        // always split the distance to the closest violin
-        t.wHover = t.dPos * (group ? groupFraction / numViolins : 1);
 
         if(trace.visible !== true || t.empty) {
             plotGroup.remove();
             return;
         }
 
+        var bPos = t.bPos;
+        var bdPos = t.bdPos;
         var valAxis = plotinfo[t.valLetter + 'axis'];
         var posAxis = plotinfo[t.posLetter + 'axis'];
         var hasBothSides = trace.side === 'both';
         var hasPositiveSide = hasBothSides || trace.side === 'positive';
         var hasNegativeSide = hasBothSides || trace.side === 'negative';
-        var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
 
         var violins = plotGroup.selectAll('path.violin').data(Lib.identity);
 
@@ -76,15 +67,15 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             var len = density.length;
             var posCenter = d.pos + bPos;
             var posCenterPx = posAxis.c2p(posCenter);
-            var scale;
 
-            switch(trace.scalemode) {
-                case 'width':
-                    scale = groupStats.maxWidth / bdPos;
-                    break;
-                case 'count':
-                    scale = (groupStats.maxWidth / bdPos) * (groupStats.maxCount / d.pts.length);
-                    break;
+            var scale;
+            if(trace.width) {
+                scale = t.maxKDE / bdPos;
+            } else {
+                var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
+                scale = trace.scalemode === 'count' ?
+                    (groupStats.maxKDE / bdPos) * (groupStats.maxCount / d.pts.length) :
+                    groupStats.maxKDE / bdPos;
             }
 
             var pathPos, pathNeg, path;

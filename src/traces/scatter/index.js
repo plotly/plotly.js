@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,7 +19,7 @@ Scatter.isBubble = subtypes.isBubble;
 
 Scatter.attributes = require('./attributes');
 Scatter.supplyDefaults = require('./defaults');
-Scatter.cleanData = require('./clean_data');
+Scatter.crossTraceDefaults = require('./cross_trace_defaults');
 Scatter.calc = require('./calc').calc;
 Scatter.crossTraceCalc = require('./cross_trace_calc');
 Scatter.arraysToCalcdata = require('./arrays_to_calcdata');

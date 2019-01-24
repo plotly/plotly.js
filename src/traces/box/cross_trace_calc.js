@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,8 +22,6 @@ function crossTraceCalc(gd, plotinfo) {
         var orientation = orientations[i];
         var posAxis = orientation === 'h' ? ya : xa;
         var boxList = [];
-        var minPad = 0;
-        var maxPad = 0;
 
         // make list of boxes / candlesticks
         // For backward compatibility, candlesticks are treated as if they *are* box traces here
@@ -40,72 +38,173 @@ function crossTraceCalc(gd, plotinfo) {
                     trace.yaxis === ya._id
               ) {
                 boxList.push(j);
-
-                if(trace.boxpoints) {
-                    minPad = Math.max(minPad, trace.jitter - trace.pointpos - 1);
-                    maxPad = Math.max(maxPad, trace.jitter + trace.pointpos - 1);
-                }
             }
         }
 
-        setPositionOffset('box', gd, boxList, posAxis, [minPad, maxPad]);
+        setPositionOffset('box', gd, boxList, posAxis);
     }
 }
 
-function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
+function setPositionOffset(traceType, gd, boxList, posAxis) {
     var calcdata = gd.calcdata;
     var fullLayout = gd._fullLayout;
-    var pointList = [];
+    var axId = posAxis._id;
+    var axLetter = axId.charAt(0);
 
     // N.B. reused in violin
     var numKey = traceType === 'violin' ? '_numViolins' : '_numBoxes';
 
     var i, j, calcTrace;
+    var pointList = [];
+    var shownPts = 0;
 
     // make list of box points
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
         for(j = 0; j < calcTrace.length; j++) {
             pointList.push(calcTrace[j].pos);
+            shownPts += (calcTrace[j].pts2 || []).length;
         }
     }
 
     if(!pointList.length) return;
 
     // box plots - update dPos based on multiple traces
-    // and then use for posAxis autorange
     var boxdv = Lib.distinctVals(pointList);
-    var dPos = boxdv.minDiff / 2;
-
-    // if there's no duplication of x points,
-    // disable 'group' mode by setting counter to 1
-    if(pointList.length === boxdv.vals.length) {
-        fullLayout[numKey] = 1;
-    }
+    var dPos0 = boxdv.minDiff / 2;
 
     // check for forced minimum dtick
     Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
-    var gap = fullLayout[traceType + 'gap'];
-    var groupgap = fullLayout[traceType + 'groupgap'];
-    var padfactor = (1 - gap) * (1 - groupgap) * dPos / fullLayout[numKey];
-
-    // autoscale the x axis - including space for points if they're off the side
-    // TODO: this will overdo it if the outermost boxes don't have
-    // their points as far out as the other boxes
-    var extremes = Axes.findExtremes(posAxis, boxdv.vals, {
-        vpadminus: dPos + pad[0] * padfactor,
-        vpadplus: dPos + pad[1] * padfactor
-    });
+    var num = fullLayout[numKey];
+    var group = (fullLayout[traceType + 'mode'] === 'group' && num > 1);
+    var groupFraction = 1 - fullLayout[traceType + 'gap'];
+    var groupGapFraction = 1 - fullLayout[traceType + 'groupgap'];
 
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
-        // set the width of all boxes
-        calcTrace[0].t.dPos = dPos;
-        // link extremes to all boxes
-        calcTrace[0].trace._extremes[posAxis._id] = extremes;
-    }
 
+        var trace = calcTrace[0].trace;
+        var t = calcTrace[0].t;
+        var width = trace.width;
+        var side = trace.side;
+
+        // position coordinate delta
+        var dPos;
+        // box half width;
+        var bdPos;
+        // box center offset
+        var bPos;
+        // half-width within which to accept hover for this box/violin
+        // always split the distance to the closest box/violin
+        var wHover;
+
+        if(width) {
+            dPos = bdPos = wHover = width / 2;
+            bPos = 0;
+        } else {
+            dPos = dPos0;
+            bdPos = dPos * groupFraction * groupGapFraction / (group ? num : 1);
+            bPos = group ? 2 * dPos * (-0.5 + (t.num + 0.5) / num) * groupFraction : 0;
+            wHover = dPos * (group ? groupFraction / num : 1);
+        }
+        t.dPos = dPos;
+        t.bPos = bPos;
+        t.bdPos = bdPos;
+        t.wHover = wHover;
+
+        // box/violin-only value-space push value
+        var pushplus;
+        var pushminus;
+        // edge of box/violin
+        var edge = bPos + bdPos;
+        var edgeplus;
+        var edgeminus;
+
+        if(side === 'positive') {
+            pushplus = dPos * (width ? 1 : 0.5);
+            edgeplus = edge;
+            pushminus = edgeplus = bPos;
+        } else if(side === 'negative') {
+            pushplus = edgeplus = bPos;
+            pushminus = dPos * (width ? 1 : 0.5);
+            edgeminus = edge;
+        } else {
+            pushplus = pushminus = dPos;
+            edgeplus = edgeminus = edge;
+        }
+
+        // value-space padding
+        var vpadplus;
+        var vpadminus;
+        // pixel-space padding
+        var ppadplus;
+        var ppadminus;
+        // do we add 5% of both sides (for points beyond box/violin)
+        var padded = false;
+        // does this trace show points?
+        var hasPts = (trace.boxpoints || trace.points) && (shownPts > 0);
+
+        if(hasPts) {
+            var pointpos = trace.pointpos;
+            var jitter = trace.jitter;
+            var ms = trace.marker.size / 2;
+
+            var pp = 0;
+            if((pointpos + jitter) >= 0) {
+                pp = edge * (pointpos + jitter);
+                if(pp > pushplus) {
+                    // (++) beyond plus-value, use pp
+                    padded = true;
+                    ppadplus = ms;
+                    vpadplus = pp;
+                } else if(pp > edgeplus) {
+                    // (+), use push-value (it's bigger), but add px-pad
+                    ppadplus = ms;
+                    vpadplus = pushplus;
+                }
+            }
+            if(pp <= pushplus) {
+                // (->) fallback to push value
+                vpadplus = pushplus;
+            }
+
+            var pm = 0;
+            if((pointpos - jitter) <= 0) {
+                pm = -edge * (pointpos - jitter);
+                if(pm > pushminus) {
+                    // (--) beyond plus-value, use pp
+                    padded = true;
+                    ppadminus = ms;
+                    vpadminus = pm;
+                } else if(pm > edgeminus) {
+                    // (-), use push-value (it's bigger), but add px-pad
+                    ppadminus = ms;
+                    vpadminus = pushminus;
+                }
+            }
+            if(pm <= pushminus) {
+                // (<-) fallback to push value
+                vpadminus = pushminus;
+            }
+        } else {
+            vpadplus = pushplus;
+            vpadminus = pushminus;
+        }
+
+        // calcdata[i][j] are in ascending order
+        var firstPos = calcTrace[0].pos;
+        var lastPos = calcTrace[calcTrace.length - 1].pos;
+
+        trace._extremes[axId] = Axes.findExtremes(posAxis, [firstPos, lastPos], {
+            padded: padded,
+            vpadminus: vpadminus,
+            vpadplus: vpadplus,
+            // N.B. SVG px-space positive/negative
+            ppadminus: {x: ppadminus, y: ppadplus}[axLetter],
+            ppadplus: {x: ppadplus, y: ppadminus}[axLetter],
+        });
+    }
 }
 
 module.exports = {

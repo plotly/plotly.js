@@ -7,17 +7,28 @@ var Drawing = require('@src/components/drawing');
 
 var Axes = require('@src/plots/cartesian/axes');
 
+var click = require('../assets/click');
+var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
+var color = require('../../../src/components/color');
+var rgb = color.rgb;
+
+var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/bar/constants');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
+
+var BAR_TEXT_SELECTOR = '.bars .bartext';
 
 describe('Bar.supplyDefaults', function() {
     'use strict';
@@ -122,26 +133,56 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.constraintext).toBeUndefined();
     });
 
-    it('should default textfont to layout.font', function() {
+    it('should default textfont to layout.font except for insidetextfont.color', function() {
         traceIn = {
             textposition: 'inside',
             y: [1, 2, 3]
         };
-
         var layout = {
             font: {family: 'arial', color: '#AAA', size: 13}
         };
+        var layoutFontMinusColor = {family: 'arial', size: 13};
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.textposition).toBe('inside');
         expect(traceOut.textfont).toEqual(layout.font);
         expect(traceOut.textfont).not.toBe(layout.font);
-        expect(traceOut.insidetextfont).toEqual(layout.font);
+        expect(traceOut.insidetextfont).toEqual(layoutFontMinusColor);
         expect(traceOut.insidetextfont).not.toBe(layout.font);
         expect(traceOut.insidetextfont).not.toBe(traceOut.textfont);
         expect(traceOut.outsidetexfont).toBeUndefined();
         expect(traceOut.constraintext).toBe('both');
+    });
+
+    it('should not default insidetextfont.color to layout.font.color', function() {
+        traceIn = {
+            textposition: 'inside',
+            y: [1, 2, 3]
+        };
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.insidetextfont.family).toBe('arial');
+        expect(traceOut.insidetextfont.color).toBeUndefined();
+        expect(traceOut.insidetextfont.size).toBe(13);
+    });
+
+    it('should default insidetextfont.color to textfont.color', function() {
+        traceIn = {
+            textposition: 'inside',
+            y: [1, 2, 3],
+            textfont: {family: 'arial', color: '#09F', size: 20}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+
+        expect(traceOut.insidetextfont.family).toBe('arial');
+        expect(traceOut.insidetextfont.color).toBe('#09F');
+        expect(traceOut.insidetextfont.size).toBe(20);
     });
 
     it('should inherit layout.calendar', function() {
@@ -359,6 +400,46 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         assertArrayField(cd[0][0], 't.poffset', [-0.4, 0, 1]);
         assertArrayField(cd[1][0], 't.poffset', [-0.4, 1, -0.4]);
         assertArrayField(cd[2][0], 't.poffset', [-0.4]);
+    });
+
+    it('should work with *width* typed arrays', function() {
+        var w = [0.1, 0.4, 0.7];
+
+        var gd = mockBarPlot([{
+            width: w,
+            y: [1, 2, 3]
+        }, {
+            width: new Float32Array(w),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', w);
+        assertArrayField(cd[1][0], 't.barwidth', w);
+        assertPointField(cd, 'x', [
+            [-0.2, 0.8, 1.8],
+            [0.2, 1.2, 2.2]
+        ]);
+    });
+
+    it('should work with *offset* typed arrays', function() {
+        var o = [0.1, 0.4, 0.7];
+
+        var gd = mockBarPlot([{
+            offset: o,
+            y: [1, 2, 3]
+        }, {
+            offset: new Float32Array(o),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.poffset', o);
+        assertArrayField(cd[1][0], 't.poffset', o);
+        assertPointField(cd, 'x', [
+            [0.5, 1.8, 3.1],
+            [0.5, 1.8, 3.099]
+        ]);
     });
 
     it('should guard against invalid width items', function() {
@@ -650,8 +731,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.barnorm).toBeUndefined();
 
-        var xa = gd._fullLayout.xaxis,
-            ya = gd._fullLayout.yaxis;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-5, 14], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-3.33, 3.33], undefined, '(ya.range)');
     });
@@ -677,8 +758,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.barnorm).toBeUndefined();
 
-        var xa = gd._fullLayout.xaxis,
-            ya = gd._fullLayout.yaxis;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
     });
@@ -700,8 +781,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.barnorm).toBe('');
 
-        var xa = gd._fullLayout.xaxis,
-            ya = gd._fullLayout.yaxis;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-4.44, 4.44], undefined, '(ya.range)');
     });
@@ -723,8 +804,8 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.barnorm).toBe('fraction');
 
-        var xa = gd._fullLayout.xaxis,
-            ya = gd._fullLayout.yaxis;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
@@ -797,10 +878,31 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
     });
+
+    it('should ignore *base* on category axes', function() {
+        var gd = mockBarPlot([
+            {x: ['a', 'b', 'c'], base: [0.2, -0.2, 1]},
+        ]);
+
+        expect(gd._fullLayout.xaxis.type).toBe('category');
+        assertPointField(gd.calcdata, 'b', [[0, 0, 0]]);
+    });
+
+    it('should ignore *base* on multicategory axes', function() {
+        var gd = mockBarPlot([
+            {x: [['a', 'a', 'b', 'b'], ['1', '2', '1', '2']], base: 10}
+        ]);
+
+        expect(gd._fullLayout.xaxis.type).toBe('multicategory');
+        assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0]]);
+    });
 });
 
 describe('A bar plot', function() {
     'use strict';
+
+    var DARK = '#444';
+    var LIGHT = '#fff';
 
     var gd;
 
@@ -819,8 +921,8 @@ describe('A bar plot', function() {
     }
 
     function assertTextIsInsidePath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(pathBB.left).not.toBeGreaterThan(textBB.left);
         expect(textBB.right).not.toBeGreaterThan(pathBB.right);
@@ -829,46 +931,77 @@ describe('A bar plot', function() {
     }
 
     function assertTextIsAbovePath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(textBB.bottom).not.toBeGreaterThan(pathBB.top);
     }
 
     function assertTextIsBelowPath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(pathBB.bottom).not.toBeGreaterThan(textBB.top);
     }
 
     function assertTextIsAfterPath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(pathBB.right).not.toBeGreaterThan(textBB.left);
     }
 
-    var colorMap = {
-        'rgb(0, 0, 0)': 'black',
-        'rgb(255, 0, 0)': 'red',
-        'rgb(0, 128, 0)': 'green',
-        'rgb(0, 0, 255)': 'blue'
-    };
-    function assertTextFont(textNode, textFont, index) {
-        expect(textNode.style.fontFamily).toBe(textFont.family[index]);
-        expect(textNode.style.fontSize).toBe(textFont.size[index] + 'px');
+    function assertTextFont(textNode, expectedFontProps, index) {
+        expect(textNode.style.fontFamily).toBe(expectedFontProps.family[index]);
+        expect(textNode.style.fontSize).toBe(expectedFontProps.size[index] + 'px');
 
-        var color = textNode.style.fill;
-        if(!colorMap[color]) colorMap[color] = color;
-        expect(colorMap[color]).toBe(textFont.color[index]);
+        var actualColorRGB = textNode.style.fill;
+        var expectedColorRGB = rgb(expectedFontProps.color[index]);
+        expect(actualColorRGB).toBe(expectedColorRGB);
     }
 
     function assertTextIsBeforePath(textNode, pathNode) {
-        var textBB = textNode.getBoundingClientRect(),
-            pathBB = pathNode.getBoundingClientRect();
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
 
         expect(textBB.right).not.toBeGreaterThan(pathBB.left);
+    }
+
+    function assertTextFontColors(expFontColors, label) {
+        return function() {
+            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            expect(selection.size()).toBe(expFontColors.length);
+
+            selection.each(function(d, i) {
+                var expFontColor = expFontColors[i];
+                var isArray = Array.isArray(expFontColor);
+
+                expect(this.style.fill).toBe(isArray ? rgb(expFontColor[0]) : rgb(expFontColor),
+                  (label || '') + ', fill for element ' + i);
+                expect(this.style.fillOpacity).toBe(isArray ? expFontColor[1] : '1',
+                  (label || '') + ', fillOpacity for element ' + i);
+            });
+        };
+    }
+
+    function assertTextFontFamilies(expFontFamilies) {
+        return function() {
+            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            expect(selection.size()).toBe(expFontFamilies.length);
+            selection.each(function(d, i) {
+                expect(this.style.fontFamily).toBe(expFontFamilies[i]);
+            });
+        };
+    }
+
+    function assertTextFontSizes(expFontSizes) {
+        return function() {
+            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            expect(selection.size()).toBe(expFontSizes.length);
+            selection.each(function(d, i) {
+                expect(this.style.fontSize).toBe(expFontSizes[i] + 'px');
+            });
+        };
     }
 
     it('should show bar texts (inside case)', function(done) {
@@ -881,17 +1014,90 @@ describe('A bar plot', function() {
         var layout = {};
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     assertTextIsInsidePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('Pushes outside text relative bars inside when not outmost', function(done) {
+        var data = [{
+            x: [1, 2],
+            y: [20, 10],
+            type: 'bar',
+            text: ['a', 'b'],
+            textposition: 'outside',
+        }, {
+            x: [1, 2],
+            y: [20, 10],
+            type: 'bar',
+            text: ['c', 'd']
+        }];
+        var layout = {barmode: 'relative'};
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsInsidePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not push text inside when base is set', function(done) {
+        var data = [{
+            x: [1, 2],
+            y: [20, 10],
+            base: [1, 2],
+            type: 'bar',
+            text: ['a', 'b'],
+            textposition: 'outside',
+        }, {
+            x: [3, 4],
+            y: [30, 40],
+            type: 'bar',
+            text: ['c', 'd']
+        }];
+        var layout = {barmode: 'relative'};
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsAbovePath(textNode, pathNode);
                 }
             }
 
@@ -913,14 +1119,14 @@ describe('A bar plot', function() {
         };
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     if(data[0].y[i] > 0) assertTextIsAbovePath(textNode, pathNode);
@@ -944,14 +1150,14 @@ describe('A bar plot', function() {
         var layout = {};
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     if(data[0].x[i] > 0) assertTextIsAfterPath(textNode, pathNode);
@@ -978,14 +1184,14 @@ describe('A bar plot', function() {
         };
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                foundTextNodes;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
 
             for(var i = 0; i < barNodes.length; i++) {
-                var barNode = barNodes[i],
-                    pathNode = barNode.querySelector('path'),
-                    textNode = barNode.querySelector('text');
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
                 if(textNode) {
                     foundTextNodes = true;
                     if(data[0].x[i] > 0) assertTextIsAfterPath(textNode, pathNode);
@@ -997,6 +1203,226 @@ describe('A bar plot', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    var insideTextTestsTrace = {
+        x: ['giraffes', 'orangutans', 'monkeys', 'elefants', 'spiders', 'snakes'],
+        y: [20, 14, 23, 10, 59, 15],
+        text: [20, 14, 23, 10, 59, 15],
+        type: 'bar',
+        textposition: 'auto',
+        marker: {
+            color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
+        }
+    };
+
+    it('should use inside text colors contrasting to bar colors by default', function(done) {
+        var noMarkerTrace = Lib.extendFlat({}, insideTextTestsTrace);
+        delete noMarkerTrace.marker;
+
+        Plotly.plot(gd, [insideTextTestsTrace, noMarkerTrace])
+          .then(function() {
+              var trace1Colors = [DARK, DARK, LIGHT, LIGHT, DARK, LIGHT];
+              var trace2Colors = Lib.repeat(DARK, 6);
+              var allExpectedColors = trace1Colors.concat(trace2Colors);
+              assertTextFontColors(allExpectedColors)();
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should take bar fill opacities into account when calculating contrasting inside text colors', function(done) {
+        var trace = {
+            x: [5, 10],
+            y: [5, 15],
+            text: ['Giraffes', 'Zebras'],
+            type: 'bar',
+            textposition: 'inside',
+            marker: {
+                color: ['rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.8)']
+            }
+        };
+
+        Plotly.plot(gd, [trace])
+          .then(assertTextFontColors([DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: '#09f' } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(Lib.repeat('#09f', 6)))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use matching color from textfont.color array for inside text, contrasting otherwise', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: ['#09f', 'green'] } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(['#09f', 'green', LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use defined insidetextfont.color for inside text instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { insidetextfont: { color: '#09f' } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(Lib.repeat('#09f', 6)))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use matching color from insidetextfont.color array instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { insidetextfont: { color: ['yellow', 'green'] } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(['yellow', 'green', LIGHT, LIGHT, DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use a contrasting text color by default for outside labels being pushed inside ' +
+      'because of another bar stacked above', function(done) {
+        var trace1 = {
+            x: [5],
+            y: [5],
+            text: ['Giraffes'],
+            type: 'bar',
+            textposition: 'outside'
+        };
+        var trace2 = Lib.extendFlat({}, trace1);
+        var layout = {barmode: 'stack'};
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(assertTextFontColors([LIGHT, DARK]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should style outside labels pushed inside by bars stacked above as inside labels', function(done) {
+        var trace1 = {
+            x: [5],
+            y: [5],
+            text: ['Giraffes'],
+            type: 'bar',
+            textposition: 'outside',
+            insidetextfont: {color: 'blue', family: 'serif', size: 24}
+        };
+        var trace2 = Lib.extendFlat({}, trace1);
+        var layout = {barmode: 'stack', font: {family: 'Arial'}};
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(assertTextFontColors(['blue', DARK]))
+          .then(assertTextFontFamilies(['serif', 'Arial']))
+          .then(assertTextFontSizes([24, 12]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should fall back to textfont array values if insidetextfont array values don\'t ' +
+      'cover all bars', function(done) {
+        var trace = Lib.extendFlat({}, insideTextTestsTrace, {
+            textfont: {
+                color: ['blue', 'blue', 'blue'],
+                family: ['Arial', 'serif'],
+                size: [8, 24]
+            },
+            insidetextfont: {
+                color: ['yellow', 'green'],
+                family: ['Arial'],
+                size: [16]
+            }
+        });
+        var layout = {font: {family: 'Roboto', size: 12}};
+
+        Plotly.plot(gd, [trace], layout)
+          .then(assertTextFontColors(['yellow', 'green', 'blue', LIGHT, DARK, LIGHT]))
+          .then(assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Roboto', 'Roboto', 'Roboto']))
+          .then(assertTextFontSizes([16, 24, 12, 12, 12, 12]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should retain text styles throughout selecting and deselecting data points', function(done) {
+        var trace1 = {
+            x: ['giraffes', 'orangutans', 'monkeys'],
+            y: [12, 18, 29],
+            text: [12, 18, 29],
+            type: 'bar',
+            textposition: 'inside',
+            textfont: {
+                color: ['red', 'orange'],
+                family: ['Arial', 'serif'],
+                size: [8, 24]
+            },
+            insidetextfont: {
+                color: ['blue'],
+                family: ['Arial'],
+                size: [16]
+            }
+        };
+        var trace2 = Lib.extendDeep({}, trace1, {textposition: 'outside'});
+        var layout = {
+            barmode: 'group',
+            font: {
+                family: 'Roboto',
+                size: 12
+            },
+            clickmode: 'event+select'
+        };
+
+        Plotly.plot(gd, [trace1, trace2], layout)
+          .then(function() {
+              assertNonSelectionModeStyle('before selection');
+          })
+          .then(function() {
+              return select1stBar2ndTrace();
+          })
+          .then(function() {
+              assertSelectionModeStyle('in selection mode');
+          })
+          .then(function() {
+              return deselect1stBar2ndTrace();
+          })
+          .then(function() {
+              assertNonSelectionModeStyle('after selection');
+          })
+          .catch(failTest)
+          .then(done);
+
+        function assertSelectionModeStyle(label) {
+            var unselColor = ['black', '0.2'];
+            assertTextFontColors([unselColor, unselColor, unselColor, 'red', unselColor, unselColor], label)();
+            assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
+            assertTextFontSizes([16, 24, 12, 8, 24, 12])();
+        }
+
+        function assertNonSelectionModeStyle(label) {
+            assertTextFontColors(['blue', 'orange', LIGHT, 'red', 'orange', DARK], label)();
+            assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
+            assertTextFontSizes([16, 24, 12, 8, 24, 12])();
+        }
+
+        function select1stBar2ndTrace() {
+            return new Promise(function(resolve) {
+                click(176, 354);
+                resolve();
+            });
+        }
+
+        function deselect1stBar2ndTrace() {
+            return new Promise(function(resolve) {
+                var delayAvoidingDblClick = DBLCLICKDELAY * 1.01;
+                setTimeout(function() {
+                    click(176, 354);
+                    resolve();
+                }, delayAvoidingDblClick);
+            });
+        }
     });
 
     it('should be able to restyle', function(done) {
@@ -1057,19 +1483,19 @@ describe('A bar plot', function() {
             expect(cd[3][0].t.poffset).toBe(0);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
-            var traceNodes = getAllTraceNodes(gd),
-                trace0Bar3 = getAllBarNodes(traceNodes[0])[3],
-                path03 = trace0Bar3.querySelector('path'),
-                text03 = trace0Bar3.querySelector('text'),
-                trace1Bar2 = getAllBarNodes(traceNodes[1])[2],
-                path12 = trace1Bar2.querySelector('path'),
-                text12 = trace1Bar2.querySelector('text'),
-                trace2Bar0 = getAllBarNodes(traceNodes[2])[0],
-                path20 = trace2Bar0.querySelector('path'),
-                text20 = trace2Bar0.querySelector('text'),
-                trace3Bar0 = getAllBarNodes(traceNodes[3])[0],
-                path30 = trace3Bar0.querySelector('path'),
-                text30 = trace3Bar0.querySelector('text');
+            var traceNodes = getAllTraceNodes(gd);
+            var trace0Bar3 = getAllBarNodes(traceNodes[0])[3];
+            var path03 = trace0Bar3.querySelector('path');
+            var text03 = trace0Bar3.querySelector('text');
+            var trace1Bar2 = getAllBarNodes(traceNodes[1])[2];
+            var path12 = trace1Bar2.querySelector('path');
+            var text12 = trace1Bar2.querySelector('text');
+            var trace2Bar0 = getAllBarNodes(traceNodes[2])[0];
+            var path20 = trace2Bar0.querySelector('path');
+            var text20 = trace2Bar0.querySelector('text');
+            var trace3Bar0 = getAllBarNodes(traceNodes[3])[0];
+            var path30 = trace3Bar0.querySelector('path');
+            var text30 = trace3Bar0.querySelector('text');
 
             expect(text03.textContent).toBe('4');
             expect(text12.textContent).toBe('inside text');
@@ -1120,19 +1546,19 @@ describe('A bar plot', function() {
             expect(cd[3][0].t.poffset).toBe(0);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
-            var traceNodes = getAllTraceNodes(gd),
-                trace0Bar3 = getAllBarNodes(traceNodes[0])[3],
-                path03 = trace0Bar3.querySelector('path'),
-                text03 = trace0Bar3.querySelector('text'),
-                trace1Bar2 = getAllBarNodes(traceNodes[1])[2],
-                path12 = trace1Bar2.querySelector('path'),
-                text12 = trace1Bar2.querySelector('text'),
-                trace2Bar0 = getAllBarNodes(traceNodes[2])[0],
-                path20 = trace2Bar0.querySelector('path'),
-                text20 = trace2Bar0.querySelector('text'),
-                trace3Bar0 = getAllBarNodes(traceNodes[3])[0],
-                path30 = trace3Bar0.querySelector('path'),
-                text30 = trace3Bar0.querySelector('text');
+            var traceNodes = getAllTraceNodes(gd);
+            var trace0Bar3 = getAllBarNodes(traceNodes[0])[3];
+            var path03 = trace0Bar3.querySelector('path');
+            var text03 = trace0Bar3.querySelector('text');
+            var trace1Bar2 = getAllBarNodes(traceNodes[1])[2];
+            var path12 = trace1Bar2.querySelector('path');
+            var text12 = trace1Bar2.querySelector('text');
+            var trace2Bar0 = getAllBarNodes(traceNodes[2])[0];
+            var path20 = trace2Bar0.querySelector('path');
+            var text20 = trace2Bar0.querySelector('text');
+            var trace3Bar0 = getAllBarNodes(traceNodes[3])[0];
+            var path30 = trace3Bar0.querySelector('path');
+            var text30 = trace3Bar0.querySelector('text');
 
             expect(text03.textContent).toBe('4');
             expect(text12.textContent).toBe('inside text');
@@ -1170,6 +1596,9 @@ describe('A bar plot', function() {
             font: {family: 'arial', color: 'blue', size: 13}
         };
 
+        // Note: insidetextfont.color does NOT inherit from textfont.color
+        // since insidetextfont.color should be contrasting to bar's fill by default.
+        var contrastingLightColorVal = color.contrast('black');
         var expected = {
             y: [10, 20, 30, 40],
             type: 'bar',
@@ -1182,7 +1611,7 @@ describe('A bar plot', function() {
             },
             insidetextfont: {
                 family: ['"comic sans"', 'arial', 'arial'],
-                color: ['black', 'green', 'blue'],
+                color: ['black', 'green', contrastingLightColorVal],
                 size: [8, 12, 16]
             },
             outsidetextfont: {
@@ -1193,21 +1622,21 @@ describe('A bar plot', function() {
         };
 
         Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd),
-                barNodes = getAllBarNodes(traceNodes[0]),
-                pathNodes = [
-                    barNodes[0].querySelector('path'),
-                    barNodes[1].querySelector('path'),
-                    barNodes[2].querySelector('path'),
-                    barNodes[3].querySelector('path')
-                ],
-                textNodes = [
-                    barNodes[0].querySelector('text'),
-                    barNodes[1].querySelector('text'),
-                    barNodes[2].querySelector('text'),
-                    barNodes[3].querySelector('text')
-                ],
-                i;
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var pathNodes = [
+                barNodes[0].querySelector('path'),
+                barNodes[1].querySelector('path'),
+                barNodes[2].querySelector('path'),
+                barNodes[3].querySelector('path')
+            ];
+            var textNodes = [
+                barNodes[0].querySelector('text'),
+                barNodes[1].querySelector('text'),
+                barNodes[2].querySelector('text'),
+                barNodes[3].querySelector('text')
+            ];
+            var i;
 
             // assert bar texts
             for(i = 0; i < 3; i++) {
@@ -1331,6 +1760,39 @@ describe('A bar plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to react with new text colors', function(done) {
+        Plotly.react(gd, [{
+            type: 'bar',
+            y: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside'
+        }])
+        .then(assertTextFontColors(['rgb(255, 255, 255)', 'rgb(255, 255, 255)', 'rgb(255, 255, 255)']))
+        .then(function() {
+            gd.data[0].insidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .then(function() {
+            delete gd.data[0].insidetextfont.color;
+            gd.data[0].textfont = {color: 'blue'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].textposition = 'outside';
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].outsidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('bar visibility toggling:', function() {
@@ -1361,6 +1823,7 @@ describe('bar visibility toggling:', function() {
             spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
 
             _assert('base', [0.5, 3.5], [-2.222, 2.222], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('normal');
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(function() {
@@ -1369,6 +1832,11 @@ describe('bar visibility toggling:', function() {
         })
         .then(function() {
             _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            _assert('both legendonly', [0.5, 3.5], [0, 2.105], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('normal');
             return Plotly.restyle(gd, 'visible', true, [1]);
         })
         .then(function() {
@@ -1391,6 +1859,7 @@ describe('bar visibility toggling:', function() {
             spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
 
             _assert('base', [0.5, 3.5], [0, 5.263], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('reversed');
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(function() {
@@ -1399,6 +1868,11 @@ describe('bar visibility toggling:', function() {
         })
         .then(function() {
             _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            _assert('both legendonly', [0.5, 3.5], [0, 2.105], 0);
+            expect(gd._fullLayout.legend.traceorder).toBe('reversed');
             return Plotly.restyle(gd, 'visible', true, [1]);
         })
         .then(function() {
@@ -1407,6 +1881,37 @@ describe('bar visibility toggling:', function() {
         })
         .then(function() {
             _assert('back to both visible', [0.5, 3.5], [0, 5.263], 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('gets the right legend traceorder if all bars are visible: false', function(done) {
+        function _assert(traceorder, yRange, legendCount) {
+            expect(gd._fullLayout.legend.traceorder).toBe(traceorder);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yRange, 2);
+            expect(d3.select(gd).selectAll('.legend .traces').size()).toBe(legendCount);
+        }
+        Plotly.newPlot(gd, [
+            {type: 'bar', y: [1, 2, 3]},
+            {type: 'bar', y: [3, 2, 1]},
+            {y: [2, 3, 2]},
+            {y: [3, 2, 3]}
+        ], {
+            barmode: 'stack', width: 400, height: 400
+        })
+        .then(function() {
+            _assert('reversed', [0, 4.211], 4);
+
+            return Plotly.restyle(gd, {visible: false}, [0, 1]);
+        })
+        .then(function() {
+            _assert('normal', [1.922, 3.077], 2);
+
+            return Plotly.restyle(gd, {visible: 'legendonly'}, [0, 1]);
+        })
+        .then(function() {
+            _assert('reversed', [1.922, 3.077], 4);
         })
         .catch(failTest)
         .then(done);
@@ -1421,8 +1926,8 @@ describe('bar hover', function() {
     afterEach(destroyGraphDiv);
 
     function getPointData(gd) {
-        var cd = gd.calcdata,
-            subplot = gd._fullLayout._plots.xy;
+        var cd = gd.calcdata;
+        var subplot = gd._fullLayout._plots.xy;
 
         return {
             index: false,
@@ -1495,31 +2000,31 @@ describe('bar hover', function() {
         });
 
         it('should return the correct hover point data (case y)', function() {
-            var out = _hover(gd, 0.75, 0.15, 'y'),
-                subplot = gd._fullLayout._plots.xy,
-                xa = subplot.xaxis,
-                ya = subplot.yaxis,
-                barDelta = 1 * 0.8 / 2,
-                x0 = xa.c2p(0.5, true),
-                x1 = x0,
-                y0 = ya.c2p(0 - barDelta, true),
-                y1 = ya.c2p(0 + barDelta, true);
+            var out = _hover(gd, 0.75, 0.15, 'y');
+            var subplot = gd._fullLayout._plots.xy;
+            var xa = subplot.xaxis;
+            var ya = subplot.yaxis;
+            var barDelta = 1 * 0.8 / 2;
+            var x0 = xa.c2p(0.5, true);
+            var x1 = x0;
+            var y0 = ya.c2p(0 - barDelta, true);
+            var y1 = ya.c2p(0 + barDelta, true);
 
             expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
             assertPos(out.pos, [x0, x1, y0, y1]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
-            var out = _hover(gd, 0.75, -0.15, 'closest'),
-                subplot = gd._fullLayout._plots.xy,
-                xa = subplot.xaxis,
-                ya = subplot.yaxis,
-                barDelta = 1 * 0.8 / 2 / 2,
-                barPos = 0 - 1 * 0.8 / 2 + barDelta,
-                x0 = xa.c2p(0.5, true),
-                x1 = x0,
-                y0 = ya.c2p(barPos - barDelta, true),
-                y1 = ya.c2p(barPos + barDelta, true);
+            var out = _hover(gd, 0.75, -0.15, 'closest');
+            var subplot = gd._fullLayout._plots.xy;
+            var xa = subplot.xaxis;
+            var ya = subplot.yaxis;
+            var barDelta = 1 * 0.8 / 2 / 2;
+            var barPos = 0 - 1 * 0.8 / 2 + barDelta;
+            var x0 = xa.c2p(0.5, true);
+            var x1 = x0;
+            var y0 = ya.c2p(barPos - barDelta, true);
+            var y1 = ya.c2p(barPos + barDelta, true);
 
             expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
             assertPos(out.pos, [x0, x1, y0, y1]);
@@ -1555,6 +2060,34 @@ describe('bar hover', function() {
             .then(function() {
                 var out = _hover(gd, -0.25, 0.5, 'closest');
                 expect(out.text).toEqual('apple', 'hover text');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should use hovertemplate if specified', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) {
+                t.type = 'bar';
+                t.hovertemplate = '%{y}<extra></extra>';
+            });
+
+            function _hover() {
+                var evt = { xpx: 125, ypx: 150 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.plot(gd, mock)
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: ['1', '2', '1.5'],
+                    name: ['', '', ''],
+                    axis: '0'
+                });
+                // return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
             })
             .catch(failTest)
             .then(done);
@@ -1782,6 +2315,11 @@ describe('bar hover', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/stacked_bar');
+    checkEventData(mock, 216, 309, constants.eventDataKeys);
 });
 
 function mockBarPlot(dataWithoutTraceType, layout) {

@@ -16,15 +16,15 @@ var failTest = require('../assets/fail_test');
 describe('heatmap supplyDefaults', function() {
     'use strict';
 
-    var traceIn,
-        traceOut;
+    var traceIn;
+    var traceOut;
 
-    var defaultColor = '#444',
-        layout = {
-            font: Plots.layoutAttributes.font,
-            _dfltTitle: {colorbar: 'cb'},
-            _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
-        };
+    var defaultColor = '#444';
+    var layout = {
+        font: Plots.layoutAttributes.font,
+        _dfltTitle: {colorbar: 'cb'},
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
+    };
 
     var supplyDefaults = Heatmap.supplyDefaults;
 
@@ -164,15 +164,10 @@ describe('heatmap convertColumnXYZ', function() {
     'use strict';
 
     var trace;
-
-    function makeMockAxis() {
-        return {
-            d2c: function(v) { return v; }
-        };
-    }
-
-    var xa = makeMockAxis();
-    var ya = makeMockAxis();
+    var xa = {type: 'linear'};
+    var ya = {type: 'linear'};
+    setConvert(xa);
+    setConvert(ya);
 
     function checkConverted(trace, x, y, z) {
         trace._length = Math.min(trace.x.length, trace.y.length, trace.z.length);
@@ -293,15 +288,22 @@ describe('heatmap calc', function() {
     'use strict';
 
     function _calc(opts) {
-        var base = { type: 'heatmap' },
-            trace = Lib.extendFlat({}, base, opts),
-            gd = { data: [trace] };
+        var base = { type: 'heatmap' };
+        var trace = Lib.extendFlat({}, base, opts);
+        var gd = { data: [trace] };
 
         supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
         var fullLayout = gd._fullLayout;
 
         fullTrace._extremes = {};
+
+        // we used to call ax.setScale during supplyDefaults, and this had a
+        // fallback to provide _categories and _categoriesMap. Now neither of
+        // those is true... anyway the right way to do this though is
+        // ax.clearCalc.
+        fullLayout.xaxis.clearCalc();
+        fullLayout.yaxis.clearCalc();
 
         var out = Heatmap.calc(gd, fullTrace)[0];
         out._xcategories = fullLayout.xaxis._categories;
@@ -596,8 +598,8 @@ describe('heatmap plot', function() {
             return element;
         });
 
-        var argumentsWithoutPadding = [],
-            argumentsWithPadding = [];
+        var argumentsWithoutPadding = [];
+        var argumentsWithPadding = [];
         Plotly.plot(gd, mockWithoutPadding.data, mockWithoutPadding.layout).then(function() {
             argumentsWithoutPadding = getContextStub.fillRect.calls.allArgs().slice(0);
             return Plotly.plot(gd, mockWithPadding.data, mockWithPadding.layout);
@@ -658,9 +660,9 @@ describe('heatmap hover', function() {
     var gd;
 
     function _hover(gd, xval, yval) {
-        var fullLayout = gd._fullLayout,
-            calcData = gd.calcdata,
-            hoverData = [];
+        var fullLayout = gd._fullLayout;
+        var calcData = gd.calcdata;
+        var hoverData = [];
 
         for(var i = 0; i < calcData.length; i++) {
             var pointData = {
@@ -691,8 +693,8 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/heatmap_multi-trace.json'),
-                mockCopy = Lib.extendDeep({}, mock);
+            var mock = require('@mocks/heatmap_multi-trace.json');
+            var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
         });

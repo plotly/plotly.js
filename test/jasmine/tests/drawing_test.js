@@ -19,15 +19,12 @@ describe('Drawing', function() {
         afterEach(function() {
             this.svg.remove();
             this.g.remove();
-
-            // unstash base url from Drawing module object
-            delete Drawing.baseUrl;
         });
 
         it('should set the clip-path attribute', function() {
             expect(this.g.attr('clip-path')).toBe(null);
 
-            Drawing.setClipUrl(this.g, 'id1');
+            Drawing.setClipUrl(this.g, 'id1', {_context: {}});
 
             expect(this.g.attr('clip-path')).toEqual('url(#id1)');
         });
@@ -49,7 +46,7 @@ describe('Drawing', function() {
             // grab window URL
             var href = window.location.href;
 
-            Drawing.setClipUrl(this.g, 'id3');
+            Drawing.setClipUrl(this.g, 'id3', {_context: {_baseUrl: href}});
 
             expect(this.g.attr('clip-path'))
                 .toEqual('url(' + href + '#id3)');
@@ -63,10 +60,12 @@ describe('Drawing', function() {
                 .attr('href', 'https://plot.ly/#hash');
 
             window.location.hash = 'hash';
+            var href = window.location.href;
+            var href2 = href.split('#')[0];
 
-            Drawing.setClipUrl(this.g, 'id4');
+            Drawing.setClipUrl(this.g, 'id4', {_context: {_baseUrl: href2}});
 
-            var expected = 'url(' + window.location.href.split('#')[0] + '#id4)';
+            var expected = 'url(' + href2 + '#id4)';
 
             expect(this.g.attr('clip-path')).toEqual(expected);
 
@@ -121,8 +120,8 @@ describe('Drawing', function() {
         });
 
         it('should work with negative values', function() {
-            var el = document.createElement('div'),
-                el3 = d3.select(document.createElement('div'));
+            var el = document.createElement('div');
+            var el3 = d3.select(document.createElement('div'));
 
             expect(Drawing.getTranslate(el)).toEqual({ x: 0, y: 0 });
 
@@ -143,10 +142,10 @@ describe('Drawing', function() {
             ];
 
             for(var i = 0; i < testCases.length; i++) {
-                var testCase = testCases[i],
-                    transform = testCase.transform,
-                    x = testCase.x,
-                    y = testCase.y;
+                var testCase = testCases[i];
+                var transform = testCase.transform;
+                var x = testCase.x;
+                var y = testCase.y;
 
                 el.setAttribute('transform', transform);
                 expect(Drawing.getTranslate(el)).toEqual({ x: x, y: y });
@@ -363,7 +362,7 @@ describe('Drawing', function() {
                 'width', 'left', 'right'
             ].forEach(function(dim) {
                 // give larger dimensions some extra tolerance
-                var tol = Math.max(expected[dim] / 10, 3);
+                var tol = Math.max(expected[dim] / 10, 3.5);
                 expect(actual[dim]).toBeWithin(expected[dim], tol, dim);
             });
         }

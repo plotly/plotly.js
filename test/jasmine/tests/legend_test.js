@@ -6,7 +6,6 @@ var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
 var helpers = require('@src/components/legend/helpers');
-var anchorUtils = require('@src/components/legend/anchor_utils');
 
 var d3 = require('d3');
 var failTest = require('../assets/fail_test');
@@ -15,6 +14,8 @@ var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
+
+var Drawing = require('@src/components/drawing');
 
 describe('legend defaults', function() {
     'use strict';
@@ -501,7 +502,7 @@ describe('legend anchor utils:', function() {
     'use strict';
 
     describe('isRightAnchor', function() {
-        var isRightAnchor = anchorUtils.isRightAnchor;
+        var isRightAnchor = Lib.isRightAnchor;
         var threshold = 2 / 3;
 
         it('should return true when \'xanchor\' is set to \'right\'', function() {
@@ -522,7 +523,7 @@ describe('legend anchor utils:', function() {
     });
 
     describe('isCenterAnchor', function() {
-        var isCenterAnchor = anchorUtils.isCenterAnchor;
+        var isCenterAnchor = Lib.isCenterAnchor;
         var threshold0 = 1 / 3;
         var threshold1 = 2 / 3;
 
@@ -544,7 +545,7 @@ describe('legend anchor utils:', function() {
     });
 
     describe('isBottomAnchor', function() {
-        var isBottomAnchor = anchorUtils.isBottomAnchor;
+        var isBottomAnchor = Lib.isBottomAnchor;
         var threshold = 1 / 3;
 
         it('should return true when \'yanchor\' is set to \'right\'', function() {
@@ -565,7 +566,7 @@ describe('legend anchor utils:', function() {
     });
 
     describe('isMiddleAnchor', function() {
-        var isMiddleAnchor = anchorUtils.isMiddleAnchor;
+        var isMiddleAnchor = Lib.isMiddleAnchor;
         var threshold0 = 1 / 3;
         var threshold1 = 2 / 3;
 
@@ -665,6 +666,43 @@ describe('legend relayout update', function() {
         .catch(failTest)
         .then(done);
     });
+
+    describe('should update legend valign', function() {
+        var mock = require('@mocks/legend_valign_top.json');
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        function markerOffsetY() {
+            var translate = Drawing.getTranslate(d3.select('.legend .traces .layers'));
+            return translate.y;
+        }
+
+        it('it should translate markers', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            var top, middle, bottom;
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                top = markerOffsetY();
+                return Plotly.relayout(gd, 'legend.valign', 'middle');
+            })
+            .then(function() {
+                middle = markerOffsetY();
+                expect(middle).toBeGreaterThan(top);
+                return Plotly.relayout(gd, 'legend.valign', 'bottom');
+            })
+            .then(function() {
+                bottom = markerOffsetY();
+                expect(bottom).toBeGreaterThan(middle);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('legend orientation change:', function() {
@@ -673,9 +711,9 @@ describe('legend orientation change:', function() {
     afterEach(destroyGraphDiv);
 
     it('should update plot background', function(done) {
-        var mock = require('@mocks/legend_horizontal_autowrap.json'),
-            gd = createGraphDiv(),
-            initialLegendBGColor;
+        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var gd = createGraphDiv();
+        var initialLegendBGColor;
 
         Plotly.plot(gd, mock.data, mock.layout).then(function() {
             initialLegendBGColor = gd._fullLayout.legend.bgcolor;
@@ -696,9 +734,9 @@ describe('legend restyle update', function() {
     afterEach(destroyGraphDiv);
 
     it('should update trace toggle background rectangle', function(done) {
-        var mock = require('@mocks/0.json'),
-            mockCopy = Lib.extendDeep({}, mock),
-            gd = createGraphDiv();
+        var mock = require('@mocks/0.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        var gd = createGraphDiv();
 
         mockCopy.data[0].visible = false;
         mockCopy.data[0].showlegend = false;

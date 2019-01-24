@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -133,7 +133,7 @@ module.exports = overrideAll(templatedArray('slider', {
         role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the slider.'
     },
-    pad: extendDeepAll({}, padAttrs, {
+    pad: extendDeepAll(padAttrs({editType: 'arraydraw'}), {
         description: 'Set the padding of the slider component along each side.'
     }, {t: {dflt: 20}}),
     xanchor: {

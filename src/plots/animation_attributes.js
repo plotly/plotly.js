@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -69,6 +69,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 500,
+            editType: 'none',
             description: [
                 'The duration of the transition, in milliseconds. If equal to zero,',
                 'updates are synchronous.'
@@ -116,7 +117,19 @@ module.exports = {
                 'bounce-in-out'
             ],
             role: 'info',
+            editType: 'none',
             description: 'The easing function used for the transition'
         },
+        ordering: {
+            valType: 'enumerated',
+            values: ['layout first', 'traces first'],
+            dflt: 'layout first',
+            role: 'info',
+            editType: 'none',
+            description: [
+                'Determines whether the figure\'s layout or traces smoothly transitions',
+                'during updates that make both traces and layout change.'
+            ].join(' ')
+        }
     }
 };

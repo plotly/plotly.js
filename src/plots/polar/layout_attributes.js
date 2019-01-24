@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57,9 +57,11 @@ var axisTickAttrs = overrideAll({
 
 var radialAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
-    type: axesAttrs.type,
+    type: extendFlat({}, axesAttrs.type, {
+        values: ['-', 'linear', 'log', 'date', 'category']
+    }),
 
-    autorange: axesAttrs.autorange,
+    autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {
         valType: 'enumerated',
         values: ['tozero', 'nonnegative', 'normal'],
@@ -75,7 +77,13 @@ var radialAxisAttrs = {
             'of the input data (same behavior as for cartesian axes).'
         ].join(' ')
     },
-    range: axesAttrs.range,
+    range: extendFlat({}, axesAttrs.range, {
+        items: [
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+        ],
+        editType: 'plot'
+    }),
 
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
@@ -106,14 +114,32 @@ var radialAxisAttrs = {
     },
 
 
-    title: extendFlat({}, axesAttrs.title, {editType: 'plot', dflt: ''}),
-    titlefont: overrideAll(axesAttrs.titlefont, 'plot', 'from-root'),
+    title: overrideAll(axesAttrs.title, 'plot', 'from-root'),
     // might need a 'titleside' and even 'titledirection' down the road
 
     hoverformat: axesAttrs.hoverformat,
 
-    editType: 'calc'
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis `range`,',
+            '`autorange`, `angle`, and `title` if in `editable: true` configuration.',
+            'Defaults to `polar<N>.uirevision`.'
+        ].join(' ')
+    },
+
+    editType: 'calc',
+
+    _deprecated: {
+        title: axesAttrs._deprecated.title,
+        titlefont: axesAttrs._deprecated.titlefont
+    }
 };
+
+// radial title is not gui-editable, so it needs dflt: '', similar to carpet axes.
+radialAxisAttrs.title.text.dflt = '';
 
 extendFlat(
     radialAxisAttrs,
@@ -209,6 +235,16 @@ var angularAxisAttrs = {
 
     hoverformat: axesAttrs.hoverformat,
 
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis `rotation`.',
+            'Defaults to `polar<N>.uirevision`.'
+        ].join(' ')
+    },
+
     editType: 'calc'
 };
 
@@ -287,6 +323,17 @@ module.exports = {
 
     // TODO maybe?
     // annotations:
+
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis attributes,',
+            'if not overridden in the individual axes.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
 
     editType: 'calc'
 };

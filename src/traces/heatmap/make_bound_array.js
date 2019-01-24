@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,13 +12,13 @@ var Registry = require('../../registry');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
-    var arrayOut = [],
-        isContour = Registry.traceIs(trace, 'contour'),
-        isHist = Registry.traceIs(trace, 'histogram'),
-        isGL2D = Registry.traceIs(trace, 'gl2d'),
-        v0,
-        dv,
-        i;
+    var arrayOut = [];
+    var isContour = Registry.traceIs(trace, 'contour');
+    var isHist = Registry.traceIs(trace, 'histogram');
+    var isGL2D = Registry.traceIs(trace, 'gl2d');
+    var v0;
+    var dv;
+    var i;
 
     var isArrayOfTwoItemsOrMore = isArrayOrTypedArray(arrayIn) && arrayIn.length > 1;
 
@@ -45,8 +45,8 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
             }
 
             if(len < numbricks) {
-                var lastPt = arrayOut[arrayOut.length - 1],
-                    delta = lastPt - arrayOut[arrayOut.length - 2];
+                var lastPt = arrayOut[arrayOut.length - 1];
+                var delta = lastPt - arrayOut[arrayOut.length - 2];
 
                 for(i = len; i < numbricks; i++) {
                     lastPt += delta;
@@ -67,10 +67,15 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
 
         var calendar = trace[ax._id.charAt(0) + 'calendar'];
 
-        if(isHist || ax.type === 'category') v0 = ax.r2c(v0In, 0, calendar) || 0;
-        else if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
-        else if(v0In === undefined) v0 = 0;
-        else v0 = ax.d2c(v0In, 0, calendar);
+        if(isHist || ax.type === 'category' || ax.type === 'multicategory') {
+            v0 = ax.r2c(v0In, 0, calendar) || 0;
+        } else if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) {
+            v0 = arrayIn[0];
+        } else if(v0In === undefined) {
+            v0 = 0;
+        } else {
+            v0 = ax.d2c(v0In, 0, calendar);
+        }
 
         for(i = (isContour || isGL2D) ? 0 : -0.5; i < numbricks; i++) {
             arrayOut.push(v0 + dv * i);

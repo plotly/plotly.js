@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -64,6 +64,11 @@ module.exports = function calc(gd, trace) {
         }
     }
 
+    var cdi;
+    var ptFilterFn = (trace.boxpoints || trace.points) === 'all' ?
+        Lib.identity :
+        function(pt) { return (pt.v < cdi.lf || pt.v > cdi.uf); };
+
     // build calcdata trace items, one item per distinct position
     for(i = 0; i < pLen; i++) {
         if(ptsPerBin[i].length > 0) {
@@ -71,10 +76,9 @@ module.exports = function calc(gd, trace) {
             var boxVals = pts.map(extractVal);
             var bvLen = boxVals.length;
 
-            var cdi = {
-                pos: posDistinct[i],
-                pts: pts
-            };
+            cdi = {};
+            cdi.pos = posDistinct[i];
+            cdi.pts = pts;
 
             cdi.min = boxVals[0];
             cdi.max = boxVals[bvLen - 1];
@@ -110,12 +114,13 @@ module.exports = function calc(gd, trace) {
             cdi.lo = 4 * cdi.q1 - 3 * cdi.q3;
             cdi.uo = 4 * cdi.q3 - 3 * cdi.q1;
 
-
             // lower and upper notches ~95% Confidence Intervals for median
             var iqr = cdi.q3 - cdi.q1;
             var mci = 1.57 * iqr / Math.sqrt(bvLen);
             cdi.ln = cdi.med - mci;
             cdi.un = cdi.med + mci;
+
+            cdi.pts2 = pts.filter(ptFilterFn);
 
             cd.push(cdi);
         }
@@ -178,7 +183,10 @@ function getPos(trace, posLetter, posAxis, val, num) {
         pos0 = num;
     }
 
-    var pos0c = posAxis.d2c(pos0, 0, trace[posLetter + 'calendar']);
+    var pos0c = posAxis.type === 'multicategory' ?
+        posAxis.r2c_just_indices(pos0) :
+        posAxis.d2c(pos0, 0, trace[posLetter + 'calendar']);
+
     return val.map(function() { return pos0c; });
 }
 

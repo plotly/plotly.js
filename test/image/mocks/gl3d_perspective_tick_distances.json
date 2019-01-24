@@ -1,0 +1,29 @@
+{
+	"data":[
+		{
+			"type": "surface",
+            "contours": {
+                "x": {"show": true},
+                "y": {"show": true},
+                "z": {"show": false}
+            },
+            "x": [0, 4],
+            "y": [0, 1, 2, 3, 4],
+			"z": [[0, 0], [0, 0], [0, 1], [1, 1], [1, 1]]
+		}
+	],
+    "layout": {
+        "title": "Tick distances and contour lines in perspective view.",
+        "width": 1000,
+        "height": 500,
+        "scene": {
+            "xaxis": {"nticks": 32},
+            "yaxis": {"nticks": 32},
+            "camera": {
+                "center": {"x": 0, "y": 0.25, "z": 0.0},
+                "eye": {"x": 0.75, "y": 0.25, "z": 0.25},
+                "up": {"x": 0, "y": 0, "z": 1}
+            }
+        }
+    }
+}

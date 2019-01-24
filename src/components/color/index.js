@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47,17 +47,17 @@ color.combine = function(front, back) {
     var fc = tinycolor(front).toRgb();
     if(fc.a === 1) return tinycolor(front).toRgbString();
 
-    var bc = tinycolor(back || background).toRgb(),
-        bcflat = bc.a === 1 ? bc : {
-            r: 255 * (1 - bc.a) + bc.r * bc.a,
-            g: 255 * (1 - bc.a) + bc.g * bc.a,
-            b: 255 * (1 - bc.a) + bc.b * bc.a
-        },
-        fcflat = {
-            r: bcflat.r * (1 - fc.a) + fc.r * fc.a,
-            g: bcflat.g * (1 - fc.a) + fc.g * fc.a,
-            b: bcflat.b * (1 - fc.a) + fc.b * fc.a
-        };
+    var bc = tinycolor(back || background).toRgb();
+    var bcflat = bc.a === 1 ? bc : {
+        r: 255 * (1 - bc.a) + bc.r * bc.a,
+        g: 255 * (1 - bc.a) + bc.g * bc.a,
+        b: 255 * (1 - bc.a) + bc.b * bc.a
+    };
+    var fcflat = {
+        r: bcflat.r * (1 - fc.a) + fc.r * fc.a,
+        g: bcflat.g * (1 - fc.a) + fc.g * fc.a,
+        b: bcflat.b * (1 - fc.a) + fc.b * fc.a
+    };
     return tinycolor(fcflat).toRgbString();
 };
 
@@ -99,11 +99,8 @@ color.fill = function(s, c) {
 color.clean = function(container) {
     if(!container || typeof container !== 'object') return;
 
-    var keys = Object.keys(container),
-        i,
-        j,
-        key,
-        val;
+    var keys = Object.keys(container);
+    var i, j, key, val;
 
     for(i = 0; i < keys.length; i++) {
         key = keys[i];
@@ -142,8 +139,8 @@ function cleanOne(val) {
     var match = valTrim.match(/^rgba?\s*\(([^()]*)\)$/);
     if(!match) return val;
 
-    var parts = match[1].trim().split(/\s*[\s,]\s*/),
-        rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
+    var parts = match[1].trim().split(/\s*[\s,]\s*/);
+    var rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
     if(!rgba && parts.length !== 3) return val;
 
     for(var i = 0; i < parts.length; i++) {

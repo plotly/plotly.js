@@ -18,14 +18,14 @@ describe('Test choropleth', function() {
     'use strict';
 
     describe('supplyDefaults', function() {
-        var traceIn,
-            traceOut;
+        var traceIn;
+        var traceOut;
 
-        var defaultColor = '#444',
-            layout = {
-                font: Plots.layoutAttributes.font,
-                _dfltTitle: {colorbar: 'cb'}
-            };
+        var defaultColor = '#444';
+        var layout = {
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
+        };
 
         beforeEach(function() {
             traceOut = {};
@@ -110,6 +110,18 @@ describe('Test choropleth hover:', function() {
             [400, 160],
             fig,
             ['RUS\n10', 'trace 1']
+        )
+        .then(done);
+    });
+
+    it('should use the hovertemplate', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+        fig.data[1].hovertemplate = 'tpl %{z}<extra>x</extra>';
+
+        run(
+            [400, 160],
+            fig,
+            ['tpl 10', 'x']
         )
         .then(done);
     });

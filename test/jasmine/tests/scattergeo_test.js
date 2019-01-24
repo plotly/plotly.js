@@ -19,8 +19,8 @@ describe('Test scattergeo defaults', function() {
     var traceIn,
         traceOut;
 
-    var defaultColor = '#444',
-        layout = {};
+    var defaultColor = '#444';
+    var layout = {};
 
     beforeEach(function() {
         traceOut = {};
@@ -286,6 +286,14 @@ describe('Test scattergeo hover', function() {
     it('should generate hover label info (with trace name)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'lon+lat+text+name').then(function() {
             check([381, 221], ['(10°, 10°)\nA', 'trace 0']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should use the hovertemplate', function(done) {
+        Plotly.restyle(gd, 'hovertemplate', 'tpl %{lat}<extra>x</extra>').then(function() {
+            check([381, 221], ['tpl 10', 'x']);
         })
         .catch(failTest)
         .then(done);

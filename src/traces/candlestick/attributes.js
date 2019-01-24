@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50,5 +50,7 @@ module.exports = {
     decreasing: directionAttrs(OHLCattrs.decreasing.line.color.dflt),
 
     text: OHLCattrs.text,
-    whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 })
+    whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
+
+    hoverlabel: OHLCattrs.hoverlabel,
 };
