@@ -217,7 +217,7 @@ describe('@noCIdep Plotly.react', function() {
             // Really need to simplify that pipeline...
             countCalls({plot: 1, layoutStyles: 1});
 
-            layout.scene.camera = {up: {x: 1, y: -1, z: 0}};
+            layout.scene.camera = {up: {x: 1, y: 0, z: -1}};
 
             return Plotly.react(gd, data, layout);
         })
