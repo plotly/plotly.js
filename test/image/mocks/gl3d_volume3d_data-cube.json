@@ -2633,7 +2633,7 @@
     }],
     "layout": {
         "title": {
-            "text": "isosurface trace displaying middle iso-surface between top & bottom caps"
+            "text": "volume 3d displaying full data cube"
         },
         "width": 1200,
         "height": 900,
