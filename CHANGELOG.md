@@ -10,7 +10,19 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
-## [1.44.4] -- 2019-01-22
+## [1.44.1] -- 2019-01-24
+
+### Fixed
+- Fix `mesh3d` rendering on (some) mobile devices (bug introduced in 1.44.0) [#3463]
+- Fix scene camera update when changing to `turntable` mode when `up.z` is zero
+  (bug introduced in 1.43.0) [#3465, #3475]
+- Fix `react` when cartesian axis `scaleanchor` patterns change [#3461]
+- Fix "days" entries in polish (`pl`) locales [#3464]
+- Remove inner function declarations in our `vectorize-text` that caused
+  bundling errors for some (bug introduced in 1.43.0) [#3474]
+
+
+## [1.44.0] -- 2019-01-22
 
 ### Added
 - Add `isosurface` gl3d trace type [#3438]
