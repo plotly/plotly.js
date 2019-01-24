@@ -17,7 +17,7 @@ var basePlotLayoutAttributes = require('../layout_attributes');
 var layoutAttributes = require('./layout_attributes');
 var handleTypeDefaults = require('./type_defaults');
 var handleAxisDefaults = require('./axis_defaults');
-var handleConstraintDefaults = require('./constraint_defaults');
+var handleConstraintDefaults = require('./constraints').handleConstraintDefaults;
 var handlePositionDefaults = require('./position_defaults');
 
 var axisIds = require('./axis_ids');
