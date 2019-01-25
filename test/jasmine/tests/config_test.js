@@ -553,7 +553,7 @@ describe('config argument', function() {
 
     describe('responsive figure', function() {
         var gd;
-        var data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
+        var data = [{type: 'scatter', x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
         var width = 960;
         var height = 800;
 
@@ -580,10 +580,17 @@ describe('config argument', function() {
         function checkLayoutSize(width, height) {
             expect(gd._fullLayout.width).toBe(width);
             expect(gd._fullLayout.height).toBe(height);
+        }
 
-            var svg = document.getElementsByClassName('main-svg')[0];
-            expect(+svg.getAttribute('width')).toBe(width);
-            expect(+svg.getAttribute('height')).toBe(height);
+        function checkElementsSize(nodeList, width, height) {
+            var i;
+            for(i = 0; i < nodeList.length; i++) {
+                var domRect = nodeList[i].getBoundingClientRect();
+                expect(domRect.width).toBe(width);
+                expect(domRect.height).toBe(height);
+                expect(+nodeList[i].getAttribute('width')).toBe(width);
+                expect(+nodeList[i].getAttribute('height')).toBe(height);
+            }
         }
 
         function testResponsive() {
@@ -594,6 +601,13 @@ describe('config argument', function() {
             .then(delay(RESIZE_DELAY))
             .then(function() {
                 checkLayoutSize(elWidth / 2, elHeight / 2);
+
+                var mainSvgs = document.getElementsByClassName('main-svg');
+                checkElementsSize(mainSvgs, elWidth / 2, elHeight / 2);
+
+                var canvases = document.getElementsByTagName('canvas');
+                checkElementsSize(canvases, elWidth / 2, elHeight / 2);
+
             })
             .catch(failTest);
         }
