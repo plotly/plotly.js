@@ -12,6 +12,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
+var opacityscaleDefaults = require('../../components/opacityscale/defaults');
 var attributes = require('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -96,11 +97,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lightposition.y',
         'lightposition.z',
         'flatshading',
-        'opacity',
-        'opacityscale'
+        'opacity'
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+
+    opacityscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: ''});
 
     // disable 1D transforms (for now)
     traceOut._length = null;

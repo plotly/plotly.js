@@ -12,7 +12,8 @@ var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var baseTraceAttrs = require('../plots/attributes');
-var scales = require('../components/colorscale/scales');
+var colorscales = require('../components/colorscale/scales');
+var opacityscales = require('../components/opacityscale/scales');
 var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 
 var nestedProperty = require('./nested_property');
@@ -164,7 +165,7 @@ exports.valObjectMeta = {
     colorscale: {
         description: [
             'A Plotly colorscale either picked by a name:',
-            '(any of', Object.keys(scales.scales).join(', '), ')',
+            '(any of', Object.keys(colorscales.scales).join(', '), ')',
             'customized as an {array} of 2-element {arrays} where',
             'the first element is the normalized color level value',
             '(starting at *0* and ending at *1*),',
@@ -173,7 +174,22 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            propOut.set(scales.get(v, dflt));
+            propOut.set(colorscales.get(v, dflt));
+        }
+    },
+    opacityscale: {
+        description: [
+            'A Plotly opacityscale either picked by a name:',
+            '(any of', Object.keys(opacityscales.scales).join(', '), ')',
+            'customized as an {array} of 2-element {arrays} where',
+            'the first element is the normalized opacity level value',
+            '(starting at *0* and ending at *1*),',
+            'and the second item is a valid opacity value between 0 and 1.'
+        ].join(' '),
+        requiredOpts: [],
+        otherOpts: ['dflt'],
+        coerceFunction: function(v, propOut, dflt) {
+            propOut.set(opacityscales.get(v, dflt));
         }
     },
     angle: {

@@ -9,6 +9,7 @@
 'use strict';
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var opacityscaleAttrs = require('../../components/opacityscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var meshAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -227,6 +228,10 @@ var attrs = module.exports = overrideAll(extendFlat({
     }
 },
 
+opacityscaleAttrs('', {
+    editTypeOverride: 'calc'
+}),
+
 colorscaleAttrs('', {
     colorAttr: '`value`',
     showScaleDflt: true,
@@ -235,15 +240,6 @@ colorscaleAttrs('', {
 
     colorbar: colorbarAttrs,
 
-    opacityscale: {
-        valType: 'enumerated',
-        values: ['min', 'max', 'extremes', 'center'],
-        dflt: false,
-        role: 'style',
-        description: [
-            'Enables non-uniform opacity scales between minimum and maximum ranges of `value`.'
-        ].join(' ')
-    },
     opacity: meshAttrs.opacity,
     lightposition: meshAttrs.lightposition,
     lighting: meshAttrs.lighting,

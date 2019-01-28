@@ -3,7 +3,7 @@
         "type": "volume4d",
         "colorscale": "Blackbody",
         "reversescale": true,
-        "opacityscale": "extremes",
+        "opacityscale": "max",
         "opacity": 0.5,
         "surface": { "show": true, "fill": 1.0, "pattern": "all", "count": 33 },
         "spaceframe": { "show": true, "fill": 1.0 },

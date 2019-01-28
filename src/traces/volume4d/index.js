@@ -13,7 +13,7 @@ var Volume4d = {};
 
 Volume4d.attributes = require('./attributes');
 Volume4d.supplyDefaults = require('../isosurface/defaults');
-Volume4d.calc = require('./calc');
+Volume4d.calc = require('../isosurface/calc');
 Volume4d.colorbar = {
     min: 'cmin',
     max: 'cmax'

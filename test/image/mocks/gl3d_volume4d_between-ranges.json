@@ -1,8 +1,8 @@
 {
     "data": [{
         "type": "volume4d",
-        "colorscale": [[ 0.0, "rgb(0,0,255)" ], [ 0.5, "rgb(0,0,0)" ], [ 0.75, "rgb(255,0,0)" ], [ 1.0, "rgb(255,255,0)" ]],
-        "reversescale": false,
+        "colorscale": "Blackbody",
+        "reversescale": true,
         "opacityscale": "max",
         "opacity": 0.5,
         "surface": { "show": true, "fill": 1.0, "pattern": "all", "count": 33 },
