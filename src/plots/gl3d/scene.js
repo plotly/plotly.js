@@ -110,7 +110,7 @@ function render(scene) {
                 vectorTx.push(selection.textLabel);
             }
             tx = vectorTx.join('<br>');
-        } else if(trace.type === 'isosurface') {
+        } else if(trace.type === 'isosurface' || trace.type === 'volume4d') {
             vectorTx.push('value: ' + Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);

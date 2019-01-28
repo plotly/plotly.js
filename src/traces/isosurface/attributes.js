@@ -10,7 +10,6 @@
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
-var surfaceAtts = require('../surface/attributes');
 var meshAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -225,7 +224,7 @@ var attrs = module.exports = overrideAll(extendFlat({
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
-    },
+    }
 },
 
 colorscaleAttrs('', {
@@ -236,34 +235,20 @@ colorscaleAttrs('', {
 
     colorbar: colorbarAttrs,
 
-    // Flat shaded mode
-    flatshading: {
-        valType: 'boolean',
-        role: 'style',
+    opacityscale: {
+        valType: 'enumerated',
+        values: ['min', 'max', 'extremes', 'center'],
         dflt: false,
+        role: 'style',
         description: [
-            'Determines whether or not normal smoothing is applied to the isosurfaces,',
-            'creating isosurfaces with an angular, low-poly look via flat reflections.'
+            'Enables non-uniform opacity scales between minimum and maximum ranges of `value`.'
         ].join(' ')
     },
-
-    contour: {
-        show: extendFlat({}, surfaceAtts.contours.x.show, {
-            description: [
-                'Sets whether or not dynamic contours are shown on hover.',
-                'Contours are more useful when hovering on caps and slices.'
-            ].join(' ')
-        }),
-        color: surfaceAtts.contours.x.color,
-        width: surfaceAtts.contours.x.width
-    },
-
-    lightposition: {
-        x: extendFlat({}, surfaceAtts.lightposition.x, {dflt: 1e5}),
-        y: extendFlat({}, surfaceAtts.lightposition.y, {dflt: 1e5}),
-        z: extendFlat({}, surfaceAtts.lightposition.z, {dflt: 0})
-    },
+    opacity: meshAttrs.opacity,
+    lightposition: meshAttrs.lightposition,
     lighting: meshAttrs.lighting,
+    flatshading: meshAttrs.flatshading,
+    contour: meshAttrs.contour,
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }), 'calc', 'nested');

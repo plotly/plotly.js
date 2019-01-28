@@ -15,10 +15,10 @@ var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var zip3 = require('../../plots/gl3d/zip3');
 
-var findNearestOnAxis = require('./fn_find-nearest-on-axis');
-var generateIsoMeshes = require('./fn_generate-iso-meshes');
+var findNearestOnAxis = require('../isosurface/fn_find-nearest-on-axis');
+var generateIsoMeshes = require('../isosurface/fn_generate-iso-meshes');
 
-function IsosurfaceTrace(scene, mesh, uid) {
+function Volume4dTrace(scene, mesh, uid) {
     this.scene = scene;
     this.uid = uid;
     this.mesh = mesh;
@@ -27,7 +27,7 @@ function IsosurfaceTrace(scene, mesh, uid) {
     this.showContour = false;
 }
 
-var proto = IsosurfaceTrace.prototype;
+var proto = Volume4dTrace.prototype;
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
@@ -117,11 +117,11 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-function createIsosurfaceTrace(scene, data) {
+function createVolume4dTrace(scene, data) {
 
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
-    var result = new IsosurfaceTrace(scene, mesh, data.uid);
+    var result = new Volume4dTrace(scene, mesh, data.uid);
 
     mesh._trace = result;
     result.update(data);
@@ -129,4 +129,4 @@ function createIsosurfaceTrace(scene, data) {
     return result;
 }
 
-module.exports = createIsosurfaceTrace;
+module.exports = createVolume4dTrace;

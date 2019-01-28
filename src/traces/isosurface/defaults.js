@@ -96,6 +96,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lightposition.y',
         'lightposition.z',
         'flatshading',
+        'opacity',
+        'opacityscale'
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
