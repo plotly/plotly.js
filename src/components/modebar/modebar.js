@@ -88,7 +88,9 @@ proto.update = function(graphInfo, buttons) {
             }
 
             if(fullLayout.modebar.orientation === 'v') {
-                this.element.prepend(logoGroup);
+                d3.select(this.element).insert(function() {
+                    return logoGroup;
+                }, ':first-child');
             } else {
                 this.element.appendChild(logoGroup);
             }
