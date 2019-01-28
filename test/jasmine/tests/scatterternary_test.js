@@ -9,6 +9,9 @@ var failTest = require('../assets/fail_test');
 var customAssertions = require('../assets/custom_assertions');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
+var mouseEvent = require('../assets/mouse_event');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 
@@ -334,9 +337,17 @@ describe('scatterternary hover', function() {
 
     var gd;
 
+    function check(pos, content) {
+        mouseEvent('mousemove', pos[0], pos[1]);
+
+        assertHoverLabelContent({
+            nums: content[0],
+            name: content[1]
+        });
+    }
+
     beforeAll(function(done) {
         gd = createGraphDiv();
-
         var data = [{
             type: 'scatterternary',
             a: [0.1, 0.2, 0.3],
@@ -344,7 +355,6 @@ describe('scatterternary hover', function() {
             c: [0.1, 0.4, 0.5],
             text: ['A', 'B', 'C']
         }];
-
         Plotly.plot(gd, data).then(done);
     });
 
@@ -413,6 +423,25 @@ describe('scatterternary hover', function() {
         .then(function() {
             scatterPointData = _hover(gd, xval, yval, hovermode);
             expect(scatterPointData[0].hovertemplate).toEqual('tpl');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should always display hoverlabel when hovertemplate is defined', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            return Plotly.restyle(gd, {
+                hovertemplate: '%{a}, %{b}, %{c}',
+                name: '',
+                text: null,
+                hovertext: null
+            });
+        })
+        .then(function() {
+            check([380, 210], ['0.5, 0.25, 0.25']);
         })
         .catch(failTest)
         .then(done);

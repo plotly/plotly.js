@@ -10,6 +10,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
+var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
@@ -601,6 +602,15 @@ describe('@noCI scattermapbox hover', function() {
         };
     }
 
+    function checkHoverLabel(pos, content) {
+        mouseEvent('mousemove', pos[0], pos[1]);
+
+        assertHoverLabelContent({
+            nums: content[0],
+            name: content[1]
+        });
+    }
+
     it('should generate hover label info (base case)', function() {
         var xval = 11;
         var yval = 11;
@@ -785,6 +795,17 @@ describe('@noCI scattermapbox hover', function() {
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
             expect(out.hovertemplate).toEqual('tpl');
+            done();
+        });
+    });
+
+    it('should always display hoverlabel when hovertemplate is defined', function(done) {
+        Plotly.restyle(gd, {
+            name: '',
+            hovertemplate: 'tpl2<extra></extra>'
+        })
+        .then(function() {
+            checkHoverLabel([190, 215], ['tpl2', '']);
             done();
         });
     });
