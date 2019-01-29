@@ -105,7 +105,8 @@ exports.plot = function(gd, data, layout, config) {
 
     // hook class for plots main container (in case of plotly.js
     // this won't be #embedded-graph or .js-tab-contents)
-    d3.select(gd).classed('js-plotly-plot', true);
+    d3.select(gd).classed('js-plotly-plot', true)
+      .style('position', 'relative');
 
     // off-screen getBoundingClientRect testing space,
     // in #js-plotly-tester (and stored as Drawing.tester)
@@ -536,8 +537,7 @@ function plotLegacyPolar(gd, data, layout) {
     var paperDiv = plotContainer.selectAll('.svg-container')
         .data([0]);
     paperDiv.enter().append('div')
-        .classed('svg-container', true)
-        .style('position', 'relative');
+        .classed('svg-container', true);
 
     // empty it everytime for now
     paperDiv.html('');
@@ -3742,8 +3742,7 @@ function makePlotFramework(gd) {
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
     fullLayout._paperdiv.enter().append('div')
-        .classed('svg-container', true)
-        .style('position', 'relative');
+        .classed('svg-container', true);
 
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
