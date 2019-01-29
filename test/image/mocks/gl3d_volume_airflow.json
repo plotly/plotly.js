@@ -1,6 +1,6 @@
 {
     "data": [{
-        "type": "volume4d",
+        "type": "volume",
         "colorscale": [[ 0.0, "rgb(0,0,255)" ], [ 0.5, "rgb(255,255,255)" ], [ 0.75, "rgb(255,255,0)" ], [ 0.875, "rgb(255,0,0)" ], [ 1.0, "rgb(127,127,127)" ]],
         "reversescale": true,
         "opacityscale": [
@@ -2849,7 +2849,7 @@
     }],
     "layout": {
         "title": {
-            "text": "volume4d airflow model"
+            "text": "volume airflow model"
         },
         "width": 1200,
         "height": 900,

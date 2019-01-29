@@ -18,7 +18,7 @@ var zip3 = require('../../plots/gl3d/zip3');
 var findNearestOnAxis = require('../isosurface/fn_find-nearest-on-axis');
 var generateIsoMeshes = require('../isosurface/fn_generate-iso-meshes');
 
-function Volume4dTrace(scene, mesh, uid) {
+function VolumeTrace(scene, mesh, uid) {
     this.scene = scene;
     this.uid = uid;
     this.mesh = mesh;
@@ -27,7 +27,7 @@ function Volume4dTrace(scene, mesh, uid) {
     this.showContour = false;
 }
 
-var proto = Volume4dTrace.prototype;
+var proto = VolumeTrace.prototype;
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
@@ -117,11 +117,11 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-function createVolume4dTrace(scene, data) {
+function createVolumeTrace(scene, data) {
 
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
-    var result = new Volume4dTrace(scene, mesh, data.uid);
+    var result = new VolumeTrace(scene, mesh, data.uid);
 
     mesh._trace = result;
     result.update(data);
@@ -129,4 +129,4 @@ function createVolume4dTrace(scene, data) {
     return result;
 }
 
-module.exports = createVolume4dTrace;
+module.exports = createVolumeTrace;

@@ -10,10 +10,10 @@ var mouseEvent = require('../assets/mouse_event');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
-function createvolume4dFig() {
+function createvolumeFig() {
     return {
         data: [{
-            type: 'volume4d',
+            type: 'volume',
             x: [
                 0.1, 0.1, 0.1, 0.1,
                 0.1, 0.1, 0.1, 0.1,
@@ -104,7 +104,7 @@ function createvolume4dFig() {
     };
 }
 
-describe('Test volume4d', function() {
+describe('Test volume', function() {
 
     var gd;
 
@@ -115,18 +115,18 @@ describe('Test volume4d', function() {
             expect(gd._fullData[0].visible).toBe(exp, msg);
         }
 
-        it('volume4d should not set `visible: false` for traces with x,y,z,value arrays', function() {
-            gd = createvolume4dFig();
+        it('volume should not set `visible: false` for traces with x,y,z,value arrays', function() {
+            gd = createvolumeFig();
 
             supplyAllDefaults(gd);
             assertVisibility(true, 'to be visible');
         });
 
-        it('volume4d should set `visible: false` for traces missing x,y,z,value arrays', function() {
+        it('volume should set `visible: false` for traces missing x,y,z,value arrays', function() {
             var keysToChange = ['x', 'y', 'z', 'value'];
 
             keysToChange.forEach(function(k) {
-                gd = createvolume4dFig();
+                gd = createvolumeFig();
                 delete gd.data[0][k];
 
                 supplyAllDefaults(gd);
@@ -134,11 +134,11 @@ describe('Test volume4d', function() {
             });
         });
 
-        it('volume4d should set `visible: false` for traces with empty x,y,z,value arrays', function() {
+        it('volume should set `visible: false` for traces with empty x,y,z,value arrays', function() {
             var keysToChange = ['x', 'y', 'z', 'value'];
 
             keysToChange.forEach(function(k) {
-                gd = createvolume4dFig();
+                gd = createvolumeFig();
                 gd.data[0][k] = [];
 
                 supplyAllDefaults(gd);
@@ -146,13 +146,13 @@ describe('Test volume4d', function() {
             });
         });
 
-        it('volume4d should be invisible when the vertex arrays are not arrays', function() {
+        it('volume should be invisible when the vertex arrays are not arrays', function() {
             var keysToChange = ['x', 'y', 'z', 'value'];
             var casesToCheck = [0, 1, true, false, NaN, Infinity, -Infinity, null, undefined, [], {}, '', 'text'];
 
             keysToChange.forEach(function(k) {
                 for(var q = 0; q < casesToCheck.length; q++) {
-                    gd = createvolume4dFig();
+                    gd = createvolumeFig();
                     gd.data[0][k] = casesToCheck[q];
 
                     supplyAllDefaults(gd);
@@ -161,8 +161,8 @@ describe('Test volume4d', function() {
             });
         });
 
-        it('volume4d should not set `visible: false` when isomin > isomax', function() {
-            gd = createvolume4dFig();
+        it('volume should not set `visible: false` when isomin > isomax', function() {
+            gd = createvolumeFig();
             gd.data[0].isomin = 0.9;
             gd.data[0].isomax = 0.1;
 
@@ -170,8 +170,8 @@ describe('Test volume4d', function() {
             assertVisibility(true, 'to be visible');
         });
 
-        it('volume4d should set `isomin: null` and `isomax: null` when isomin > isomax', function() {
-            gd = createvolume4dFig();
+        it('volume should set `isomin: null` and `isomax: null` when isomin > isomax', function() {
+            gd = createvolumeFig();
             gd.data[0].isomin = 0.9;
             gd.data[0].isomax = 0.1;
 
@@ -180,8 +180,8 @@ describe('Test volume4d', function() {
             expect(gd._fullData[0].isomax).toBe(null, 'isomax not set to default');
         });
 
-        it('volume4d should accept cases where isomin === isomax', function() {
-            gd = createvolume4dFig();
+        it('volume should accept cases where isomin === isomax', function() {
+            gd = createvolumeFig();
             gd.data[0].isomin = 1e-2;
             gd.data[0].isomax = 0.01;
 
@@ -213,8 +213,8 @@ describe('Test volume4d', function() {
             expect(gd._fullLayout.scene._scene.glplot.objects[0].cells.length).toBe(exp, msg);
         }
 
-        it('@gl volume4d should create no iso-surface and set `gl-positions: []` for traces when all the data is between isomin and isomax', function(done) {
-            var fig = createvolume4dFig();
+        it('@gl volume should create no iso-surface and set `gl-positions: []` for traces when all the data is between isomin and isomax', function(done) {
+            var fig = createvolumeFig();
             var data = fig.data[0];
             data.surface = { show: true };
             data.spaceframe = { show: false };
@@ -234,8 +234,8 @@ describe('Test volume4d', function() {
             .then(done);
         });
 
-        it('@gl volume4d should create no iso-surface and set `gl-positions: []` for traces when all the data is outside isomin and isomax', function(done) {
-            var fig = createvolume4dFig();
+        it('@gl volume should create no iso-surface and set `gl-positions: []` for traces when all the data is outside isomin and isomax', function(done) {
+            var fig = createvolumeFig();
             var data = fig.data[0];
             data.surface = { show: true };
             data.spaceframe = { show: false };
@@ -284,7 +284,7 @@ describe('Test volume4d', function() {
                 expect(fullTrace.cmax).toBe(full[2], 'full cmax');
             }
 
-            var fig = createvolume4dFig();
+            var fig = createvolumeFig();
             fig.data[0].isomin = 0;
             fig.data[0].isomax = 3;
 
@@ -328,7 +328,7 @@ describe('Test volume4d', function() {
         });
 
         it('@gl should display hover labels', function(done) {
-            var fig = createvolume4dFig();
+            var fig = createvolumeFig();
 
             function _hover1() {
                 mouseEvent('mouseover', 200, 200);

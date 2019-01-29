@@ -1,6 +1,6 @@
 {
     "data": [{
-        "type": "volume4d",
+        "type": "volume",
         "colorscale": "Blackbody",
         "reversescale": true,
         "opacityscale": "max",
@@ -2634,7 +2634,7 @@
     }],
     "layout": {
         "title": {
-            "text": "volume4d displaying full data cube"
+            "text": "volume displaying full data cube"
         },
         "width": 1200,
         "height": 900,
