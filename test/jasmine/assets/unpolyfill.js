@@ -18,5 +18,17 @@
                 ].join(' '));
             }
         });
+
+        Object.defineProperty(item, 'prepend', {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value: function remove() {
+                throw Error([
+                    'test/jasmine/assets/unpolyfill.js error: calling ChildNode.prepend()',
+                    'which is not available in IE.'
+                ].join(' '));
+            }
+        });
     });
 })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
