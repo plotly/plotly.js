@@ -1,0 +1,46 @@
+{
+    "data": [
+        {
+            "x": [0, 1, 2, 3, 4],
+            "y": [0, 1, 2, 3, 4],
+            "z": [0,-1,-2,-3,-4],
+            "mode": "markers+lines",
+            "marker": {
+                "size": 50,
+                "color": ["rgb(0, 255, 0, 0.5)", "rgb(255, 0, 0, 0.0)", "rgb(255, 0, 0, 0.0)", "rgb(255, 0, 0, 0.0)", "rgb(0, 0, 255, 1.0)"],
+                "opacity": 0.999
+            },
+            "line": {
+                "width": 50,
+                "color": ["rgb(0, 255, 0, 0.5)", "rgb(255, 0, 0, 0.0)", "rgb(255, 0, 0, 0.0)", "rgb(255, 0, 0, 0.0)", "rgb(0, 0, 255, 1.0)"],
+                "opacity": 0.999
+            },
+            "error_z": {
+                "type": "sqrt",
+                "line": { "thickness": 10 },
+                "color": "rgb(0, 255, 0, 0.0)",
+                "opacity": 0.999
+            },
+            "error_x": {
+                "type": "sqrt"
+            },
+            "error_y": {
+                "type": "sqrt"
+            },
+            "type": "scatter3d"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "Should not draw transparent scatter3d markers and lines<br>when color.alpha is zero"
+        },
+        "width": 600,
+        "height": 600,
+        "scene": {
+            "xaxis": { "nticks": 12 },
+            "yaxis": { "nticks": 12 },
+            "zaxis": { "nticks": 12 }
+        }
+    }
+
+}
