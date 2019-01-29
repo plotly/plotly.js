@@ -26,7 +26,7 @@ function SurfaceTrace(scene, surface, uid) {
     this.data = null;
     this.showContour = [false, false, false];
     this.contourLocations = [[], [], []];
-    this.onPointsContour = [false, false]; // note: only available on x & y not z.
+    this.contourRelative = [0, 0]; // note: only available on x & y not z.
     this.minValues = [Infinity, Infinity, Infinity];
     this.maxValues = [-Infinity, -Infinity, -Infinity];
     this.dataScaleX = 1.0;
@@ -359,8 +359,8 @@ function insertIfNewLevel(arr, newValue) {
 
 proto.setContourLevels = function() {
     var newLevels = [[], [], []];
-    var needsUpdate = false;
     var useNewLevels = [false, false, false];
+    var needsUpdate = false;
 
     var i, j, value;
 
@@ -368,34 +368,38 @@ proto.setContourLevels = function() {
         if(this.showContour[i]) {
             needsUpdate = true;
 
-            newLevels[i] = [];
+            if(i < 2) {
+                var ratios = Array.isArray(this.contourRelative[i]) ?
+                    this.contourRelative[i] : [this.contourRelative[i]];
 
-            if(i < 2 && this.onPointsContour[i] !== 0) {
-                useNewLevels[i] = true;
+                for(var k = 0; k < ratios.length; k++) {
+                    var ratio = ratios[k];
+                    if(ratio !== 0) {
 
-                var ratio = this.onPointsContour[i];
+                        var len = (i === 0) ?
+                            this.data.z[0].length :
+                            this.data._ylength;
 
-                var len = (i === 0) ?
-                    this.data.z[0].length :
-                    this.data._ylength;
+                        for(var q = (ratio < 1) ? 1 : 0; q < len; q++) {
 
-                for(var q = (ratio < 1) ? 1 : 0; q < len; q++) {
+                            var here = (i === 0) ?
+                                this.getXat(q, 0) * this.scene.dataScale[i] :
+                                this.getYat(0, q) * this.scene.dataScale[i];
 
-                    var here = (i === 0) ?
-                        this.getXat(q, 0) * this.scene.dataScale[i] :
-                        this.getYat(0, q) * this.scene.dataScale[i];
+                            if(ratio < 1) {
+                                var prev = (i === 0) ?
+                                    this.getXat(q - 1, 0) * this.scene.dataScale[i] :
+                                    this.getYat(0, q - 1) * this.scene.dataScale[i];
 
-                    if(ratio < 1) {
-                        var prev = (i === 0) ?
-                            this.getXat(q - 1, 0) * this.scene.dataScale[i] :
-                            this.getYat(0, q - 1) * this.scene.dataScale[i];
+                                value = here * ratio + prev * (1 - ratio);
+                            } else {
+                                value = here;
+                            }
 
-                        value = here * ratio + prev * (1 - ratio);
-                    } else {
-                        value = here;
+                            insertIfNewLevel(newLevels[i], value);
+                            useNewLevels[i] = true;
+                        }
                     }
-
-                    insertIfNewLevel(newLevels[i], value);
                 }
             }
 
@@ -412,11 +416,13 @@ proto.setContourLevels = function() {
     }
 
     if(needsUpdate) {
-        var levels = [];
+        var allLevels = [[], [], []];
         for(i = 0; i < 3; ++i) {
-            levels[i] = (useNewLevels[i]) ? newLevels[i] : this.scene.contourLevels[i];
+            if(this.showContour[i]) {
+                allLevels[i] = useNewLevels[i] ? newLevels[i] : this.scene.contourLevels[i];
+            }
         }
-        this.surface.update({ levels: levels });
+        this.surface.update({ levels: allLevels });
     }
 };
 
@@ -608,11 +614,11 @@ proto.update = function(data) {
             params.contourWidth[i] = contourParams.width;
 
             this.contourLocations[i] = contourParams.locations;
-            if(i < 2) this.onPointsContour[i] = contourParams.onpoints;
+            if(i < 2) this.contourRelative[i] = contourParams.relative;
         } else {
             this.showContour[i] = false;
             this.contourLocations[i] = [];
-            if(i < 2) this.onPointsContour[i] = 0;
+            if(i < 2) this.contourRelative[i] = 0;
         }
 
         if(contourParams.highlight) {

@@ -3,8 +3,8 @@
         {
             "type": "surface",
             "contours": {
-                "x": { "show": true, "onpoints": 1 },
-                "y": { "show": true, "onpoints": 1 },
+                "x": { "show": true, "relative": 1 },
+                "y": { "show": true, "relative": 1 },
                 "z": { "show": false }
             },
             "x": [0, 0.25, 0.5, 0.75, 1],
@@ -20,8 +20,8 @@
         {
             "type": "surface",
             "contours": {
-                "x": { "show": true, "onpoints": 0.5 },
-                "y": { "show": true, "onpoints": 0.5 },
+                "x": { "show": true, "relative": 0.5 },
+                "y": { "show": true, "relative": 0.5 },
                 "z": { "show": false }
             },
             "x": [1.5, 1.75, 2, 2.25, 2.5],
@@ -39,7 +39,7 @@
             "contours": {
                 "x": { "show": true },
                 "y": { "show": true },
-                "z": { "show": true }
+                "z": { "show": false }
             },
             "x": [0, 0.25, 0.5, 0.75, 1],
             "y": [1.5, 1.75, 2, 2.25, 2.5],
@@ -54,9 +54,9 @@
         {
             "type": "surface",
             "contours": {
-                "x": { "show": true, "locations": [] },
-                "y": { "show": true, "locations": [] },
-                "z": { "show": true, "locations": [] }
+                "x": { "show": true, "relative": [0.25, 0.75] },
+                "y": { "show": true, "relative": [0.333, 0.666] },
+                "z": { "show": false }
             },
             "x": [1.5, 1.75, 2, 2.25, 2.5],
             "y": [1.5, 1.75, 2, 2.25, 2.5],
@@ -78,7 +78,7 @@
             "yaxis": { "nticks": 12 },
             "zaxis": { "nticks": 12 },
             "camera": {
-                "eye": { "x": 0, "y": -1, "z": 0.75 },
+                "eye": { "x": 1, "y": 0, "z": 0.75 },
                 "center": { "x": 0, "y": 0, "z": 0 }
             },
             "aspectratio": {

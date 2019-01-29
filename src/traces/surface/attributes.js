@@ -48,19 +48,21 @@ function makeContourAttr(axLetter) {
             dflt: false,
             role: 'info',
             description: [
-                'Specifies the location(s) of contours on the', axLetter, 'axis.'
+                'Specifies the world location(s) of contours on the', axLetter, 'axis.'
             ].join(' ')
         },
-        onpoints: {
+        relative: {
             valType: 'number',
+            arrayOk: true,
             role: 'info',
-            max: 1,
-            min: 0,
             dflt: 0,
+            min: 0,
+            max: 1,
             description: [
-                'Determines whether or contour lines about the', axLetter,
-                'dimension are drawn on all data points. Ratios between 0 and 1',
-                'e.g. 0.5 could also be applied to locate contours between data points'
+                'Specifies the local location(s) of contours on the', axLetter, 'axis.',
+                'For exampe 1.0 could also be applied to locate contours on data points.',
+                'Or 0.5 could also be applied to locate contours between data points.',
+                'Values less than or equal to zero and greater than one would be ignored.'
             ].join(' ')
         },
         project: {
@@ -277,4 +279,4 @@ colorscaleAttrs('', {
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
-delete attrs.contours.z.onpoints;
+delete attrs.contours.z.relative;
