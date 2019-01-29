@@ -2,6 +2,8 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Axes = require('@src/plots/cartesian/axes');
+var Drawing = require('@src/components/drawing');
 var constants = require('@src/plots/cartesian/constants');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -698,6 +700,631 @@ describe('axis zoom/pan and main plot zoom', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    describe('updates matching axes', function() {
+        var TOL = 1.5;
+        var eventData;
+
+        function assertRanges(msg, exp) {
+            exp.forEach(function(expi) {
+                var axNames = expi[0];
+                var rng = expi[1];
+
+                axNames.forEach(function(n) {
+                    var msgi = n + ' - ' + msg;
+                    expect(gd.layout[n].range).toBeCloseToArray(rng, TOL, msgi + ' |input');
+                    expect(gd._fullLayout[n].range).toBeCloseToArray(rng, TOL, msgi + ' |full');
+                });
+            });
+        }
+
+        function assertEventData(msg, exp) {
+            if(eventData === null) {
+                return fail('plotly_relayout did not get triggered - ' + msg);
+            }
+
+            exp.forEach(function(expi) {
+                var axNames = expi[0];
+                var rng = expi[1];
+                var opts = expi[2] || {};
+
+                axNames.forEach(function(n) {
+                    var msgi = n + ' - ' + msg;
+                    if(opts.autorange) {
+                        expect(eventData[n + '.autorange']).toBe(true, 2, msgi + '|event data');
+                    } else if(!opts.noChange) {
+                        expect(eventData[n + '.range[0]']).toBeCloseTo(rng[0], TOL, msgi + '|event data [0]');
+                        expect(eventData[n + '.range[1]']).toBeCloseTo(rng[1], TOL, msgi + '|event data [1]');
+                    }
+                });
+            });
+
+            eventData = null;
+        }
+
+        function assertAxesDrawCalls(msg, exp) {
+            var cnt = 0;
+            exp.forEach(function(expi) {
+                var axNames = expi[0];
+                var opts = expi[2] || {};
+                axNames.forEach(function() {
+                    if(!opts.noChange) {
+                        cnt++;
+                        // called twice as many times on drag:
+                        // - once per axis during mousemouve
+                        // - once per raxis on mouseup
+                        if(opts.dragged) cnt++;
+                    }
+                });
+            });
+
+            expect(Axes.drawOne).toHaveBeenCalledTimes(cnt);
+            Axes.drawOne.calls.reset();
+        }
+
+        function assertSubplotTranslateAndScale(msg, spIds, trans, scale) {
+            var gClips = d3.select(gd).select('g.clips');
+            var uid = gd._fullLayout._uid;
+            var transActual = [];
+            var scaleActual = [];
+            var trans0 = [];
+            var scale1 = [];
+
+            spIds.forEach(function(id) {
+                var rect = gClips.select('#clip' + uid + id + 'plot > rect');
+                var t = Drawing.getTranslate(rect);
+                var s = Drawing.getScale(rect);
+                transActual.push(t.x, t.y);
+                scaleActual.push(s.x, s.y);
+                trans0.push(0, 0);
+                scale1.push(1, 1);
+            });
+
+            var transExp = trans ? trans : trans0;
+            var scaleExp = scale ? scale : scale1;
+            var msg1 = msg + ' [' + spIds.map(function(id) { return '..' + id; }).join(', ') + ']';
+            expect(transActual).toBeWithinArray(transExp, 3, msg1 + ' clip translate');
+            expect(scaleActual).toBeWithinArray(scaleExp, 3, msg1 + ' clip scale');
+        }
+
+        function _assert(msg, exp) {
+            return function() {
+                assertRanges(msg, exp);
+                assertEventData(msg, exp);
+                assertAxesDrawCalls(msg, exp);
+            };
+        }
+
+        function makePlot(data, layout, s) {
+            s = s || {};
+
+            var fig = {};
+            fig.data = Lib.extendDeep([], data);
+            fig.layout = Lib.extendDeep({}, layout, {dragmode: s.dragmode});
+            fig.config = {scrollZoom: true};
+
+            spyOn(Axes, 'drawOne').and.callThrough();
+            eventData = null;
+
+            return Plotly.plot(gd, fig).then(function() {
+                Axes.drawOne.calls.reset();
+                gd.on('plotly_relayout', function(d) { eventData = d; });
+            });
+        }
+
+        describe('no-constrained x-axes matching x-axes subplot case', function() {
+            var data = [
+                { y: [1, 2, 1] },
+                { y: [2, 1, 2, 3], xaxis: 'x2' },
+                { y: [0, 1], xaxis: 'x3' }
+            ];
+
+            // N.B. ax._length are not equal here
+            var layout = {
+                xaxis: {domain: [0, 0.2]},
+                xaxis2: {matches: 'x', domain: [0.3, 0.6]},
+                xaxis3: {matches: 'x', domain: [0.65, 1]},
+                yaxis: {},
+                width: 800,
+                height: 500,
+                dragmode: 'zoom'
+            };
+
+            var xr0 = [-0.245, 3.245];
+            var yr0 = [-0.211, 3.211];
+
+            var specs = [{
+                desc: 'zoombox on xy',
+                drag: ['xy', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.494, 2.350]],
+                    [['yaxis'], [1.179, 1.50]]
+                ],
+                dblclickSubplot: 'xy'
+            }, {
+                desc: 'x-only zoombox on xy',
+                drag: ['xy', 'nsew', 30, 0],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.494, 2.350]],
+                    [['yaxis'], yr0, {noChange: true}]
+                ],
+                dblclickSubplot: 'x2y'
+            }, {
+                desc: 'y-only zoombox on xy',
+                drag: ['xy', 'nsew', 0, 30],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], xr0, {noChange: true}],
+                    [['yaxis'], [1.179, 1.50]]
+                ],
+                dblclickSubplot: 'x3y'
+            }, {
+                desc: 'zoombox on x2y',
+                drag: ['x2y', 'nsew', 30, 30],
+                exp: [
+                    // N.B. slightly different range result
+                    // due difference in ax._length
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.492, 2.062]],
+                    [['yaxis'], [1.179, 1.50]]
+                ],
+                dblclickSubplot: 'x3y'
+            }, {
+                desc: 'zoombox on x3y',
+                drag: ['x3y', 'nsew', 30, 30],
+                exp: [
+                    // Similarly here slightly different range result
+                    // due difference in ax._length
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.485, 1.974]],
+                    [['yaxis'], [1.179, 1.50]]
+                ],
+                dblclickSubplot: 'xy'
+            }, {
+                desc: 'drag ew on x2y',
+                drag: ['x2y', 'ew', 30, 0],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.816, 2.675], {dragged: true}],
+                    [['yaxis'], yr0, {noChange: true}]
+                ],
+                dblclickSubplot: 'x3y'
+            }, {
+                desc: 'drag ew on x3y',
+                drag: ['x3y', 'ew', 30, 0],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.734, 2.756], {dragged: true}],
+                    [['yaxis'], yr0, {noChange: true}]
+                ],
+                dblclickSubplot: 'xy'
+            }, {
+                desc: 'drag e on xy',
+                drag: ['xy', 'e', 30, 30],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [xr0[0], 1.366], {dragged: true}],
+                    [['yaxis'], yr0, {noChange: true}]
+                ],
+                dblclickSubplot: 'x3y'
+            }, {
+                desc: 'drag nw on x3y',
+                drag: ['xy', 'nw', 30, 30],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.379, 3.245], {dragged: true}],
+                    [['yaxis'], [-0.211, 3.565], {dragged: true}]
+                ],
+                dblclickSubplot: 'x3y'
+            }, {
+                desc: 'panning on xy subplot',
+                dragmode: 'pan',
+                drag: ['xy', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.101, 2.390], {dragged: true}],
+                    [['yaxis'], [0.109, 3.532], {dragged: true}]
+                ],
+                dblclickSubplot: 'x3y'
+            }, {
+                desc: 'panning on x2y subplot',
+                dragmode: 'pan',
+                drag: ['x2y', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.816, 2.675], {dragged: true}],
+                    [['yaxis'], [0.109, 3.532], {dragged: true}]
+                ],
+                dblclickSubplot: 'x2y'
+            }, {
+                desc: 'panning on x3y subplot',
+                dragmode: 'pan',
+                drag: ['x3y', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.734, 2.756], {dragged: true}],
+                    [['yaxis'], [0.109, 3.532], {dragged: true}]
+                ],
+                dblclickSubplot: 'xy'
+            }, {
+                desc: 'scrolling on x3y subplot',
+                scroll: ['x3y', 20],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['yaxis'], [-0.211, 3.571], {dragged: true}]
+                ],
+                dblclickSubplot: 'xy'
+            }, {
+                desc: 'scrolling on x2y subplot',
+                scroll: ['x2y', 20],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['yaxis'], [-0.211, 3.571], {dragged: true}]
+                ],
+                dblclickSubplot: 'xy'
+            }, {
+                desc: 'scrolling on xy subplot',
+                scroll: ['xy', 20],
+                exp: [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['yaxis'], [-0.211, 3.571], {dragged: true}]
+                ],
+                dblclickSubplot: 'x2y'
+            }];
+
+            specs.forEach(function(s) {
+                var msg = 'after ' + s.desc;
+                var msg2 = ['after dblclick on subplot', s.dblclickSubplot, msg].join(' ');
+
+                it(s.desc, function(done) {
+                    makePlot(data, layout, s).then(function() {
+                        assertRanges('base', [
+                            [['xaxis', 'xaxis2', 'xaxis3'], xr0],
+                            [['yaxis'], yr0]
+                        ]);
+                    })
+                    .then(function() {
+                        if(s.scroll) {
+                            return doScroll(s.scroll[0], 'nsew', s.scroll[1], {edge: 'se'})();
+                        } else {
+                            return doDrag(s.drag[0], s.drag[1], s.drag[2], s.drag[3])();
+                        }
+                    })
+                    .then(_assert(msg, s.exp))
+                    .then(doDblClick(s.dblclickSubplot, 'nsew'))
+                    .then(_assert(msg2, [
+                        [['xaxis', 'xaxis2', 'xaxis3'], xr0, {autorange: true}],
+                        [['yaxis'], yr0, {autorange: true}]
+                    ]))
+                    .catch(failTest)
+                    .then(done);
+                });
+            });
+        });
+
+        describe('y-axes matching y-axes case', function() {
+            var data = [
+                { y: [1, 2, 1] },
+                { y: [2, 1, 2, 3], yaxis: 'y2' },
+                { y: [0, 1], yaxis: 'y3' }
+            ];
+
+            // N.B. ax._length are not equal here
+            var layout = {
+                yaxis: {domain: [0, 0.2]},
+                yaxis2: {matches: 'y', domain: [0.3, 0.6]},
+                yaxis3: {matches: 'y2', domain: [0.65, 1]},
+                width: 500,
+                height: 800,
+                dragmode: 'pan'
+            };
+
+            var xr0 = [-0.211, 3.211];
+            var yr0 = [-0.077, 3.163];
+
+            var specs = [{
+                desc: 'pan on xy',
+                drag: ['xy', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis'], [-0.534, 2.888], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.706, 3.947], {dragged: true}],
+                ],
+                trans: [-30, -30, -30, -45, -30, -52.5]
+            }, {
+                desc: 'pan on xy2',
+                drag: ['xy2', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis'], [-0.534, 2.888], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.444, 3.685], {dragged: true}],
+                ],
+                trans: [-30, -20, -30, -30, -30, -35]
+            }, {
+                desc: 'pan on xy3',
+                drag: ['xy3', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis'], [-0.534, 2.888], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.370, 3.611], {dragged: true}],
+                ],
+                trans: [-30, -17.142, -30, -25.71, -30, -30]
+            }, {
+                desc: 'drag ns dragger on xy2',
+                drag: ['xy2', 'ns', 0, 30],
+                exp: [
+                    [['xaxis'], xr0, {noChange: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.444, 3.685], {dragged: true}],
+                ],
+                trans: [0, -20, 0, -30, 0, -35]
+            }, {
+                desc: 'drag n dragger on xy3',
+                drag: ['xy3', 'n', 0, 30],
+                exp: [
+                    [['xaxis'], xr0, {noChange: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [yr0[0], 3.683], {dragged: true}],
+                ],
+                trans: [0, -19.893, 0, -29.839, 0, -34.812],
+                scale: [1, 1.160, 1, 1.160, 1, 1.160]
+            }, {
+                desc: 'drag s dragger on xy',
+                drag: ['xy', 's', 0, 30],
+                exp: [
+                    [['xaxis'], xr0, {noChange: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [1.617, yr0[1]], {dragged: true}],
+                ],
+                trans: [0, 0, 0, 0, 0, 0],
+                scale: [1, 0.476, 1, 0.476, 1, 0.476]
+            }];
+
+            specs.forEach(function(s) {
+                var msg = 'after ' + s.desc;
+
+                it(s.desc, function(done) {
+                    makePlot(data, layout, s).then(function() {
+                        assertRanges('base', [
+                            [['xaxis'], xr0],
+                            [['yaxis', 'yaxis2', 'yaxis3'], yr0]
+                        ]);
+                    })
+                    .then(function() {
+                        var drag = makeDragFns(s.drag[0], s.drag[1], s.drag[2], s.drag[3]);
+                        return drag.start().then(function() {
+                            assertSubplotTranslateAndScale(msg, ['xy', 'xy2', 'xy3'], s.trans, s.scale);
+                        })
+                       .then(drag.end);
+                    })
+                    .then(_assert(msg, s.exp))
+                    .catch(failTest)
+                    .then(done);
+                });
+            });
+        });
+
+        describe('x <--> y axes matching case', function() {
+            /*
+             * y  |                         y2 |
+             *    |                            |
+             * m  |                            |
+             * a  |                            |
+             * t  |                            |
+             * c  |                            |
+             * h  |                            |
+             * e  |                            |
+             * s  |                            |
+             *    |                            |
+             * x2    ________________________   _________________________
+             *
+             *                 x                    x2 matches y
+             */
+
+            var data = [
+                { y: [1, 2, 1] },
+                { y: [2, 3, -1, 5], xaxis: 'x2', yaxis: 'y2' },
+            ];
+
+            var layout = {
+                xaxis: {domain: [0, 0.4]},
+                xaxis2: {anchor: 'y2', domain: [0.6, 1], matches: 'y'},
+                yaxis: {matches: 'x2'},
+                yaxis2: {anchor: 'x2'},
+                width: 700,
+                height: 500,
+                dragmode: 'pan'
+            };
+
+            var rm0 = [-0.237, 3.237];
+            var rx0 = [-0.158, 2.158];
+            var ry20 = [-1.422, 5.422];
+
+            var specs = [{
+                desc: 'pan on xy subplot',
+                drag: ['xy', 'nsew', 30, 30],
+                exp: [
+                    [['yaxis', 'xaxis2'], [0.0886, 3.562], {dragged: true}],
+                    [['xaxis'], [-0.496, 1.820], {dragged: true}],
+                    [['yaxis2'], ry20, {noChange: true}],
+                ],
+                trans: [-30, -30, 19.275, 0]
+            }, {
+                desc: 'pan on x2y2 subplot',
+                drag: ['x2y2', 'nsew', 30, 30],
+                exp: [
+                    [['yaxis', 'xaxis2'], [-0.744, 2.730], {dragged: true}],
+                    [['xaxis'], rx0, {noChange: true}],
+                    [['yaxis2'], [-0.787, 6.064], {dragged: true}],
+                ],
+                trans: [0, 46.69, -30, -30]
+            }, {
+                desc: 'drag xy ns dragger',
+                drag: ['xy', 'ns', 0, 30],
+                exp: [
+                    [['yaxis', 'xaxis2'], [0.0886, 3.562], {dragged: true}],
+                    [['xaxis'], rx0, {noChange: true}],
+                    [['yaxis2'], ry20, {noChange: true}],
+                ],
+                trans: [0, -30, 19.275, 0]
+            }, {
+                desc: 'drag x2y2 ew dragger',
+                drag: ['x2y2', 'ew', 30, 0],
+                exp: [
+                    [['yaxis', 'xaxis2'], [-0.744, 2.730], {dragged: true}],
+                    [['xaxis'], rx0, {noChange: true}],
+                    [['yaxis2'], ry20, {noChange: true}],
+                ],
+                trans: [0, 46.692, -30, 0]
+            }, {
+                desc: 'drag xy n corner',
+                drag: ['xy', 'n', 0, 30],
+                exp: [
+                    [['yaxis', 'xaxis2'], [rm0[0], 3.596], {dragged: true}],
+                    [['xaxis'], rx0, {noChange: true}],
+                    [['yaxis2'], ry20, {noChange: true}],
+                ],
+                trans: [0, -33.103, 0, 0],
+                scale: [1, 1.103, 1.103, 1]
+            }, {
+                desc: 'drag xy s corner',
+                drag: ['xy', 's', 0, 30],
+                exp: [
+                    [['yaxis', 'xaxis2'], [0.174, rm0[1]], {dragged: true}],
+                    [['xaxis'], rx0, {noChange: true}],
+                    [['yaxis2'], ry20, {noChange: true}],
+                ],
+                trans: [0, 0, 24.367, 0],
+                scale: [1, 0.881, 0.881, 1]
+            }, {
+                desc: 'drag x2y2 e corner',
+                drag: ['x2y2', 'e', 30, 0],
+                exp: [
+                    [['yaxis', 'xaxis2'], [rm0[0], 2.486], {dragged: true}],
+                    [['xaxis'], rx0, {noChange: true}],
+                    [['yaxis2'], ry20, {noChange: true}],
+                ],
+                trans: [0, 69.094, 0, 0],
+                scale: [1, 0.784, 0.784, 1]
+            }, {
+                desc: 'drag x2y2 w corner',
+                drag: ['x2y2', 'w', 30, 0],
+                exp: [
+                    [['yaxis', 'xaxis2'], [-0.830, rm0[1]], {dragged: true}],
+                    [['xaxis'], rx0, {noChange: true}],
+                    [['yaxis2'], ry20, {noChange: true}],
+                ],
+                trans: [0, 0, -35.125, 0],
+                scale: [1, 1.170, 1.170, 1]
+            }];
+
+            specs.forEach(function(s) {
+                var msg = 'after ' + s.desc;
+
+                it(s.desc, function(done) {
+                    makePlot(data, layout, s).then(function() {
+                        assertRanges('base', [
+                            [['yaxis', 'xaxis2'], rm0],
+                            [['xaxis'], rx0],
+                            [['yaxis2'], ry20],
+                        ]);
+                    })
+                    .then(function() {
+                        var drag = makeDragFns(s.drag[0], s.drag[1], s.drag[2], s.drag[3]);
+                        return drag.start().then(function() {
+                            assertSubplotTranslateAndScale(msg, ['xy', 'x2y2'], s.trans, s.scale);
+                        })
+                       .then(drag.end);
+                    })
+                    .then(_assert(msg, s.exp))
+                    .catch(failTest)
+                    .then(done);
+                });
+            });
+        });
+
+        describe('constrained subplot case', function() {
+            var data = [{
+                type: 'splom',
+                // N.B. subplots xy and x2y2 are "constrained",
+                dimensions: [{
+                    values: [1, 2, 5, 3, 4],
+                    label: 'A',
+                    axis: {matches: true}
+                }, {
+                    values: [2, 1, 0, 3, 4],
+                    label: 'B',
+                    axis: {matches: true}
+                }]
+            }];
+
+            var layout = {width: 500, height: 500};
+
+            var rng0 = {xy: [0.648, 5.351], x2y2: [-0.351, 4.351]};
+
+            var specs = [{
+                desc: 'zoombox on constrained xy subplot',
+                drag: ['xy', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis', 'yaxis'], [2.093, 3.860]],
+                    [['xaxis2', 'yaxis2'], rng0.x2y2, {noChange: true}]
+                ],
+                zoombox: [60.509, 56.950],
+                dblclickSubplot: 'xy'
+            }, {
+                desc: 'zoombox on constrained x2y2 subplot',
+                drag: ['x2y2', 'nsew', 30, 30],
+                exp: [
+                    [['xaxis', 'yaxis'], rng0.xy, {noChange: true}],
+                    [['xaxis2', 'yaxis2'], [1.075, 2.862]]
+                ],
+                zoombox: [61.177, 57.578],
+                dblclickSubplot: 'xy'
+            }, {
+                desc: 'drag ew on x2y2',
+                drag: ['x2y2', 'ew', 30, 0],
+                exp: [
+                    [['xaxis', 'yaxis'], rng0.xy, {noChange: true}],
+                    [['xaxis2', 'yaxis2'], [-1.227, 3.475], {dragged: true}]
+                ],
+                dblclickSubplot: 'x2y2'
+            }, {
+                desc: 'scrolling on xy subplot',
+                scroll: ['xy', 20],
+                exp: [
+                    [['xaxis', 'yaxis'], [0.151, 5.896], {dragged: true}],
+                    [['xaxis2', 'yaxis2'], rng0.x2y2, {noChange: true}]
+                ],
+                dblclickSubplot: 'x2y2'
+            }];
+
+            specs.forEach(function(s) {
+                var msg = 'after ' + s.desc;
+                var msg2 = ['after dblclick on subplot', s.dblclickSubplot, msg].join(' ');
+                var spmatch = s.dblclickSubplot.match(constants.SUBPLOT_PATTERN);
+
+                it(s.desc, function(done) {
+                    makePlot(data, layout, s).then(function() {
+                        assertRanges('base', [
+                            [['xaxis', 'yaxis'], rng0.xy],
+                            [['xaxis2', 'yaxis2'], rng0.x2y2]
+                        ]);
+                    })
+                    .then(function() {
+                        if(s.scroll) {
+                            return doScroll(s.scroll[0], 'nsew', s.scroll[1], {edge: 'se'})();
+                        } else {
+                            var drag = makeDragFns(s.drag[0], s.drag[1], s.drag[2], s.drag[3]);
+                            return drag.start().then(function() {
+                                if(s.drag[1] === 'nsew') {
+                                    var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
+                                    var d = zb.attr('d');
+                                    var v = Number(d.split('v')[1].split('h')[0]);
+                                    var h = Number(d.split('h')[1].split('v')[0]);
+                                    expect(h).toBeCloseTo(s.zoombox[0], 1, 'zoombox horizontal span -' + msg);
+                                    expect(v).toBeCloseTo(s.zoombox[1], 1, 'zoombox vertical span -' + msg);
+                                }
+                            })
+                           .then(drag.end);
+                        }
+                    })
+                    .then(_assert(msg, s.exp))
+                    .then(doDblClick(s.dblclickSubplot, 'nsew'))
+                    .then(_assert(msg2, [[
+                        ['xaxis' + spmatch[1], 'yaxis' + spmatch[2]],
+                        rng0[s.dblclickSubplot],
+                        {autorange: true}
+                    ]]))
+                    .catch(failTest)
+                    .then(done);
+                });
+            });
+        });
     });
 });
 
