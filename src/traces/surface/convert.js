@@ -346,20 +346,21 @@ proto.refineCoords = function(coords) {
     }
 };
 
-proto.setContourLevels = function() {
-    var nlevels = [[], [], []];
-    var needsUpdate = false;
-
-    function insertIfNewLevel(arr, newValue) {
-        var found = false;
-        for(var k = 0; k < arr.length; k++) {
-            if(newValue === arr[k]) {
-                found = true;
-                break;
-            }
+function insertIfNewLevel(arr, newValue) {
+    var found = false;
+    for(var k = 0; k < arr.length; k++) {
+        if(newValue === arr[k]) {
+            found = true;
+            break;
         }
-        if(found === false) arr.push(newValue);
     }
+    if(found === false) arr.push(newValue);
+}
+
+proto.setContourLevels = function() {
+    var newLevels = [[], [], []];
+    var needsUpdate = false;
+    var useNewLevels = [false, false, false];
 
     var i, j, value;
 
@@ -367,12 +368,10 @@ proto.setContourLevels = function() {
         if(this.showContour[i]) {
             needsUpdate = true;
 
-            nlevels[i] = [];
-            for(j = 0; j < this.scene.contourLevels[i].length; j++) {
-                nlevels[i][j] = this.scene.contourLevels[i][j];
-            }
+            newLevels[i] = [];
 
             if(i < 2 && this.onPointsContour[i] !== 0) {
+                useNewLevels[i] = true;
 
                 var ratio = this.onPointsContour[i];
 
@@ -396,22 +395,28 @@ proto.setContourLevels = function() {
                         value = here;
                     }
 
-                    insertIfNewLevel(nlevels[i], value);
+                    insertIfNewLevel(newLevels[i], value);
                 }
             }
 
             var locations = this.contourLocations[i];
+            if(locations !== false) useNewLevels[i] = true;
             if(locations.length) {
                 for(j = 0; j < locations.length; j++) {
                     value = locations[j] * this.scene.dataScale[i];
-                    insertIfNewLevel(nlevels[i], value);
+
+                    insertIfNewLevel(newLevels[i], value);
                 }
             }
         }
     }
 
     if(needsUpdate) {
-        this.surface.update({ levels: nlevels });
+        var levels = [];
+        for(i = 0; i < 3; ++i) {
+            levels[i] = (useNewLevels[i]) ? newLevels[i] : this.scene.contourLevels[i];
+        }
+        this.surface.update({ levels: levels });
     }
 };
 

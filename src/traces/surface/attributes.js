@@ -45,7 +45,7 @@ function makeContourAttr(axLetter) {
         },
         locations: {
             valType: 'data_array',
-            dflt: [],
+            dflt: false,
             role: 'info',
             description: [
                 'Specifies the location(s) of contours on the', axLetter, 'axis.'
