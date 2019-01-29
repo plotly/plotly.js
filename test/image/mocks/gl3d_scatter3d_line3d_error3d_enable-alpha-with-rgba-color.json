@@ -1,0 +1,43 @@
+{
+    "data": [
+        {
+            "x": [0, 1, 2, 3, 4],
+            "y": [0, 1, 2, 3, 4],
+            "z": [0,-1,-2,-3,-4],
+            "mode": "markers+lines",
+            "marker": {
+                "size": 50,
+                "color": ["rgb(0, 255, 0, 1.0)", "rgb(255, 0, 0, 1.0)", "rgb(255, 0, 0, 0.2)", "rgb(255, 0, 0, 1.0)", "rgb(0, 0, 255, 1.0)"]
+            },
+            "line": {
+                "width": 50,
+                "color": ["rgb(0, 255, 0, 1.0)", "rgb(255, 0, 0, 1.0)", "rgb(255, 0, 0, 0.2)", "rgb(255, 0, 0, 1.0)", "rgb(0, 0, 255, 1.0)"]
+            },
+            "error_z": {
+                "type": "sqrt",
+                "line": { "thickness": 10 },
+                "color": "rgb(255, 127, 0, 0.75)"
+            },
+            "error_x": {
+                "type": "sqrt"
+            },
+            "error_y": {
+                "type": "sqrt"
+            },
+            "type": "scatter3d"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "Should draw transparent scatter3d markers and lines<br>when having transparent rgba color"
+        },
+        "width": 600,
+        "height": 600,
+        "scene": {
+            "xaxis": { "nticks": 12 },
+            "yaxis": { "nticks": 12 },
+            "zaxis": { "nticks": 12 }
+        }
+    }
+
+}
