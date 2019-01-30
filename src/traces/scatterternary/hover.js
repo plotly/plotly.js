@@ -54,7 +54,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var hoverinfo = cdi.hi || trace.hoverinfo;
     var text = [];
     function textPart(ax, val) {
-        text.push(ax.title.text + ': ' + Axes.tickText(ax, val, 'hover').text);
+        text.push(ax.hovertitle || ax.title.text + ': ' + Axes.tickText(ax, val, 'hover').text);
     }
     if(!trace.hovertemplate) {
         var parts = hoverinfo.split('+');
