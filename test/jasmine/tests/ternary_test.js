@@ -131,7 +131,7 @@ describe('ternary plots', function() {
 
             check([
                 'Component A: 0.5',
-                'B: 0.25',
+                'chocolate: 0.25',
                 'Component C: 0.25'
             ].join('\n'), {
                 bgcolor: 'rgb(31, 119, 180)',
@@ -148,7 +148,7 @@ describe('ternary plots', function() {
             .then(function() {
                 check([
                     'Component A: 0.5',
-                    'B: 0.25',
+                    'chocolate: 0.25',
                     'Component C: 0.25'
                 ].join('\n'), {
                     bgcolor: 'rgb(31, 119, 180)',
