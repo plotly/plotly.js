@@ -277,6 +277,16 @@ exports.plot = function(gd, data, layout, config) {
             }
         }
 
+        if(fullLayout.modebar.orientation === 'h') {
+            fullLayout._modebardiv
+              .style('height', null)
+              .style('width', '100%');
+        } else {
+            fullLayout._modebardiv
+              .style('width', null)
+              .style('height', fullLayout.height + 'px');
+        }
+
         return Plots.previousPromises(gd);
     }
 
@@ -3842,6 +3852,14 @@ function makePlotFramework(gd) {
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+
+    // Make the modebar container
+    fullLayout._modebardiv = fullLayout._paperdiv.selectAll('.modebar-container').data([0]);
+    fullLayout._modebardiv.enter().append('div')
+        .classed('modebar-container', true)
+        .style('position', 'absolute')
+        .style('top', '0px')
+        .style('right', '0px');
 
     gd.emit('plotly_framework');
 }
