@@ -31,7 +31,7 @@
     "polar": {
       "barmode": "overlay",
       "bargap": 0,
-      "radialaxis": {"hovertitle": "likelihood", "ticksuffix": "%", "angle": 45, "dtick": 20},
+      "radialaxis": {"hovertitle": "distribution", "ticksuffix": "%", "angle": 45, "dtick": 20},
       "angularaxis": {"hovertitle": "direction", "direction": "clockwise"}
     }
   }
