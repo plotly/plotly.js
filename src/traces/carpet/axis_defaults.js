@@ -95,8 +95,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     coerce('labelpadding');
 
-    containerOut._hovertitle = letter;
-
+    coerce('hovertitle', letter);
 
     if(axType === 'date') {
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');

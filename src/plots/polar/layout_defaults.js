@@ -179,6 +179,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         if(axType !== 'category') coerceAxis('hoverformat');
 
+        coerceAxis('hovertitle');
+
         axOut._input = axIn;
     }
 

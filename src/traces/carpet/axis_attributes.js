@@ -68,6 +68,14 @@ module.exports = {
         },
         editType: 'calc',
     },
+    hovertitle: {
+        valType: 'string',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Sets axis title to be displayed in the hovering popup'
+        ].join(' ')
+    },
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data

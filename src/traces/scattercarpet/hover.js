@@ -58,7 +58,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         if(ax.labelprefix && ax.labelprefix.length > 0) {
             prefix = ax.labelprefix.replace(/ = $/, '');
         } else {
-            prefix = ax._hovertitle;
+            prefix = ax.hovertitle;
         }
 
         text.push(prefix + ': ' + val.toFixed(3) + ax.labelsuffix);

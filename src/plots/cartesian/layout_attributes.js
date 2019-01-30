@@ -599,7 +599,7 @@ module.exports = {
         role: 'info',
         editType: 'none',
         description: [
-            'Sets axis title(s) to be displayed in the hovering popup'
+            'Sets axis title to be displayed in the hovering popup'
         ].join(' ')
     },
     // lines and grids

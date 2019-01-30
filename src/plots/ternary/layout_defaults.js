@@ -86,7 +86,7 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     var dfltTitle = 'Component ' + letterUpper;
 
     var title = coerce('title.text', dfltTitle);
-    containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
+    coerce('hovertitle', title === dfltTitle ? title : letterUpper);
 
     Lib.coerceFont(coerce, 'title.font', {
         family: options.font.family,

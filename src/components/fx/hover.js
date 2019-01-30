@@ -940,9 +940,9 @@ function createHoverText(hoverData, opts, gd) {
             yLetter = gd._fullLayout.scene.yaxis.hovertitle || yLetter;
             zLetter = gd._fullLayout.scene.zaxis.hovertitle || zLetter;
         }
-        else if(!gd._fullLayout.ternary && !gd._fullLayout.title) {
-            xLetter = gd._fullLayout.xaxis.hovertitle || xLetter;
-            yLetter = gd._fullLayout.yaxis.hovertitle || yLetter;
+        else if(!gd._fullLayout.ternary) {
+            if(gd._fullLayout.xaxis) xLetter = gd._fullLayout.xaxis.hovertitle || xLetter;
+            if(gd._fullLayout.yaxis) yLetter = gd._fullLayout.yaxis.hovertitle || yLetter;
         }
 
         if(d.zLabel !== undefined) {

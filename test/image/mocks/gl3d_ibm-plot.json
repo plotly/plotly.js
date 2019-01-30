@@ -304,6 +304,7 @@
         "scene": {
             "xaxis": {
                 "title": "Term",
+                "hovertitle": "Term",
                 "titlefont": {
                     "color": "#D9D9D9"
                 },
@@ -318,6 +319,7 @@
             },
             "yaxis": {
                 "title": "Moneyness",
+                "hovertitle": "Moneyness",
                 "titlefont": {
                     "color": "#D9D9D9"
                 },
@@ -332,6 +334,7 @@
             },
             "zaxis": {
                 "title": "Volatilty",
+                "hovertitle": "Volatilty",
                 "titlefont": {
                     "color": "#D9D9D9"
                 },

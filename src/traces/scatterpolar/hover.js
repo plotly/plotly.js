@@ -40,13 +40,11 @@ function makeHoverPointText(cdi, trace, subplot, pointData) {
 
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
-    radialAxis._hovertitle = 'r';
-    angularAxis._hovertitle = 'θ';
 
     var hoverinfo = cdi.hi || trace.hoverinfo;
     var text = [];
-    function textPart(ax, val) {
-        text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
+    function textPart(dfltText, ax, val) {
+        text.push((ax.hovertitle || dfltText) + ': ' + Axes.tickText(ax, val, 'hover').text);
     }
 
     if(!trace.hovertemplate) {
@@ -54,11 +52,12 @@ function makeHoverPointText(cdi, trace, subplot, pointData) {
 
         if(parts.indexOf('all') !== -1) parts = ['r', 'theta', 'text'];
         if(parts.indexOf('r') !== -1) {
-            textPart(radialAxis, radialAxis.c2l(cdi.r));
+            textPart('r', radialAxis, radialAxis.c2l(cdi.r));
         }
         if(parts.indexOf('theta') !== -1) {
             var theta = cdi.theta;
             textPart(
+                'θ',
                 angularAxis,
                 angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(theta) : theta
             );
