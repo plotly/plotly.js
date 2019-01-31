@@ -371,6 +371,19 @@ describe('axis zoom/pan and main plot zoom', function() {
         };
     }
 
+    function doScroll(subplot, directions, deltaY, opts) {
+        return function() {
+            opts = opts || {};
+            var edge = opts.edge || '';
+            var dx = opts.dx || 0;
+            var dy = opts.dy || 0;
+            var dragger = getDragger(subplot, directions);
+            var coords = getNodeCoords(dragger, edge);
+            mouseEvent('scroll', coords.x + dx, coords.y + dy, {deltaY: deltaY, element: dragger});
+            return delay(constants.REDRAWDELAY + 10)();
+        };
+    }
+
     function checkRanges(newRanges, msg) {
         msg = msg || '';
         if(msg) msg = ' - ' + msg;
@@ -459,26 +472,11 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(doDblClick('x3y3', 'nsew'))
         .then(checkRanges({}, 'reset x3y3'))
         // scroll wheel
-        .then(function() {
-            var mainDrag = getDragger('xy', 'nsew');
-            var mainDragCoords = getNodeCoords(mainDrag, 'se');
-            mouseEvent('scroll', mainDragCoords.x, mainDragCoords.y, {deltaY: 20, element: mainDrag});
-        })
-        .then(delay(constants.REDRAWDELAY + 10))
+        .then(doScroll('xy', 'nsew', 20, {edge: 'se'}))
         .then(checkRanges({xaxis: [-0.2103, 2], yaxis: [0, 2.2103]}, 'xy main scroll'))
-        .then(function() {
-            var ewDrag = getDragger('xy', 'ew');
-            var ewDragCoords = getNodeCoords(ewDrag);
-            mouseEvent('scroll', ewDragCoords.x - 50, ewDragCoords.y, {deltaY: -20, element: ewDrag});
-        })
-        .then(delay(constants.REDRAWDELAY + 10))
+        .then(doScroll('xy', 'ew', -20, {dx: -50}))
         .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0, 2.2103]}, 'x scroll'))
-        .then(function() {
-            var nsDrag = getDragger('xy', 'ns');
-            var nsDragCoords = getNodeCoords(nsDrag);
-            mouseEvent('scroll', nsDragCoords.x, nsDragCoords.y - 50, {deltaY: -20, element: nsDrag});
-        })
-        .then(delay(constants.REDRAWDELAY + 10))
+        .then(doScroll('xy', 'ns', -20, {dy: -50}))
         .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0.1578, 2.1578]}, 'y scroll'))
         .catch(failTest)
         .then(done);
@@ -512,20 +510,9 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(doDblClick('xy', 'nsew'))
         .then(checkRanges({}, 'dblclick xy #3'))
         // scroll wheel
-        .then(function() {
-            var mainDrag = getDragger('xy', 'nsew');
-            var mainDragCoords = getNodeCoords(mainDrag, 'se');
-            mouseEvent('scroll', mainDragCoords.x, mainDragCoords.y, {deltaY: 20, element: mainDrag});
-        })
-        .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.2103, 2], yaxis: [0, 2.2103], xaxis2: [-0.1052, 2.1052], yaxis2: [-0.1052, 2.1052]},
-            'scroll xy'))
-        .then(function() {
-            var ewDrag = getDragger('xy', 'ew');
-            var ewDragCoords = getNodeCoords(ewDrag);
-            mouseEvent('scroll', ewDragCoords.x - 50, ewDragCoords.y, {deltaY: -20, element: ewDrag});
-        })
-        .then(delay(constants.REDRAWDELAY + 10))
+        .then(doScroll('xy', 'nsew', 20, {edge: 'se'}))
+        .then(checkRanges({xaxis: [-0.2103, 2], yaxis: [0, 2.2103], xaxis2: [-0.1052, 2.1052], yaxis2: [-0.1052, 2.1052]}, 'scroll xy'))
+        .then(doScroll('xy', 'ew', -20, {dx: -50}))
         .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0.1052, 2.1052]}, 'scroll x'))
         .catch(failTest)
         .then(done);
