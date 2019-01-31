@@ -231,13 +231,15 @@ var attrs = module.exports = overrideAll({
             editType: 'calc',
             label: {
                 valType: 'string',
-                role: 'calc',
+                role: 'info',
+                editType: 'calc',
                 description: 'The label of the links to color based on their concentration within a flow.',
                 dflt: ''
             },
             cmax: {
                 valType: 'number',
-                role: 'calc',
+                role: 'info',
+                editType: 'calc',
                 dflt: 1,
                 description: [
                     'Sets the upper bound of the color domain.'
@@ -245,7 +247,8 @@ var attrs = module.exports = overrideAll({
             },
             cmin: {
                 valType: 'number',
-                role: 'calc',
+                role: 'info',
+                editType: 'calc',
                 dflt: 0,
                 description: [
                     'Sets the lower bound of the color domain.'
@@ -253,7 +256,8 @@ var attrs = module.exports = overrideAll({
             },
             colorscale: extendFlat(colorAttributes().colorscale, {dflt: [[0, 'white'], [1, 'black']]})
         }),
-        description: 'The links of the Sankey plot.'
+        description: 'The links of the Sankey plot.',
+        role: 'info'
     }
 }, 'calc', 'nested');
 attrs.transforms = undefined;
