@@ -314,6 +314,11 @@ describe('axis zoom/pan and main plot zoom', function() {
         };
     }
 
+    function makeDragFns(subplot, directions, dx, dy, x0, y0) {
+        var dragger = getDragger(subplot, directions);
+        return drag.makeFns(dragger, dx, dy, {x0: x0, y0: y0});
+    }
+
     describe('subplots with shared axes', function() {
         var initialRange = [0, 2];
         var autoRange = [-0.1594, 2.1594];
@@ -577,67 +582,46 @@ describe('axis zoom/pan and main plot zoom', function() {
     });
 
     it('should draw correct zoomboxes corners', function(done) {
-        var dragCoverNode;
-        var p1;
+        function _run(msg, dp, exp) {
+            var drag = makeDragFns('xy', 'nsew', dp[0], dp[1], 170, 170);
 
-        function _dragStart(p0, dp) {
-            var node = getDragger('xy', 'nsew');
-            mouseEvent('mousemove', p0[0], p0[1], {element: node});
-            mouseEvent('mousedown', p0[0], p0[1], {element: node});
+            return drag.start().then(function() {
+                var zl = d3.select(gd).select('g.zoomlayer');
+                var d = zl.select('.zoombox-corners').attr('d');
 
-            var promise = drag.waitForDragCover().then(function(dcn) {
-                dragCoverNode = dcn;
-                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
-                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
-            });
-            return promise;
-        }
-
-        function _assertAndDragEnd(msg, exp) {
-            var zl = d3.select(gd).select('g.zoomlayer');
-            var d = zl.select('.zoombox-corners').attr('d');
-
-            if(exp.cornerCnt) {
-                var actual = (d.match(/Z/g) || []).length;
-                expect(actual).toBe(exp.cornerCnt, 'zoombox corner cnt: ' + msg);
-            } else {
-                expect(d).toBe('M0,0Z', 'no zoombox corners: ' + msg);
-            }
-
-            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
-            return drag.waitForDragCoverRemoval();
+                if(exp.cornerCnt) {
+                    var actual = (d.match(/Z/g) || []).length;
+                    expect(actual).toBe(exp.cornerCnt, 'zoombox corner cnt: ' + msg);
+                } else {
+                    expect(d).toBe('M0,0Z', 'no zoombox corners: ' + msg);
+                }
+            })
+            .then(drag.end);
         }
 
         Plotly.plot(gd, [{ y: [1, 2, 1] }])
-        .then(function() { return _dragStart([170, 170], [30, 30]); })
         .then(function() {
-            return _assertAndDragEnd('full-x full-y', {cornerCnt: 4});
+            return _run('full-x full-y', [30, 30], {cornerCnt: 4});
         })
-        .then(function() { return _dragStart([170, 170], [5, 30]); })
         .then(function() {
-            return _assertAndDragEnd('full-y', {cornerCnt: 2});
+            return _run('full-y', [5, 30], {cornerCnt: 2});
         })
-        .then(function() { return _dragStart([170, 170], [30, 2]); })
         .then(function() {
-            return _assertAndDragEnd('full-x', {cornerCnt: 2});
+            return _run('full-x', [30, 2], {cornerCnt: 2});
         })
         .then(function() { return Plotly.relayout(gd, 'xaxis.fixedrange', true); })
-        .then(function() { return _dragStart([170, 170], [30, 30]); })
         .then(function() {
-            return _assertAndDragEnd('full-x full-y w/ fixed xaxis', {cornerCnt: 2});
+            return _run('full-x full-y w/ fixed xaxis', [30, 30], {cornerCnt: 2});
         })
-        .then(function() { return _dragStart([170, 170], [30, 5]); })
         .then(function() {
-            return _assertAndDragEnd('full-x w/ fixed xaxis', {cornerCnt: 0});
+            return _run('full-x w/ fixed xaxis', [30, 5], {cornerCnt: 0});
         })
         .then(function() { return Plotly.relayout(gd, {'xaxis.fixedrange': false, 'yaxis.fixedrange': true}); })
-        .then(function() { return _dragStart([170, 170], [30, 30]); })
         .then(function() {
-            return _assertAndDragEnd('full-x full-y w/ fixed yaxis', {cornerCnt: 2});
+            return _run('full-x full-y w/ fixed yaxis', [30, 30], {cornerCnt: 2});
         })
-        .then(function() { return _dragStart([170, 170], [5, 30]); })
         .then(function() {
-            return _assertAndDragEnd('full-y w/ fixed yaxis', {cornerCnt: 0});
+            return _run('full-y w/ fixed yaxis', [5, 30], {cornerCnt: 0});
         })
         .catch(failTest)
         .then(done);
@@ -665,28 +649,6 @@ describe('axis zoom/pan and main plot zoom', function() {
     it('should compute correct multicategory tick label span during drag', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/multicategory.json'));
 
-        var dragCoverNode;
-        var p1;
-
-        function _dragStart(draggerClassName, p0, dp) {
-            var node = getDragger('xy', draggerClassName);
-            mouseEvent('mousemove', p0[0], p0[1], {element: node});
-            mouseEvent('mousedown', p0[0], p0[1], {element: node});
-
-            var promise = drag.waitForDragCover().then(function(dcn) {
-                dragCoverNode = dcn;
-                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
-                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
-            });
-            return promise;
-        }
-
-        function _assertAndDragEnd(msg, exp) {
-            _assertLabels(msg, exp);
-            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
-            return drag.waitForDragCoverRemoval();
-        }
-
         function _assertLabels(msg, exp) {
             var tickLabels = d3.select(gd).selectAll('.xtick > text');
             expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
@@ -708,6 +670,13 @@ describe('axis zoom/pan and main plot zoom', function() {
             });
         }
 
+        function _run(msg, dp, exp) {
+            var drag = makeDragFns('xy', 'e', dp[0], dp[1], 585, 390);
+            return drag.start()
+                .then(function() { _assertLabels(msg, exp); })
+                .then(drag.end);
+        }
+
         Plotly.plot(gd, fig)
         .then(function() {
             _assertLabels('base', {
@@ -715,16 +684,14 @@ describe('axis zoom/pan and main plot zoom', function() {
                 y: [406, 406]
             });
         })
-        .then(function() { return _dragStart('edrag', [585, 390], [-340, 0]); })
         .then(function() {
-            return _assertAndDragEnd('drag to wide-range -> rotates labels', {
+            return _run('drag to wide-range -> rotates labels', [-340, 0], {
                 angle: [90, 90, 90, 90, 90, 90, 90],
                 y: [430, 430]
             });
         })
-        .then(function() { return _dragStart('edrag', [585, 390], [100, 0]); })
         .then(function() {
-            return _assertAndDragEnd('drag to narrow-range -> un-rotates labels', {
+            return _run('drag to narrow-range -> un-rotates labels', [100, 0], {
                 angle: [0, 0, 0, 0, 0, 0, 0],
                 y: [406, 406]
             });
