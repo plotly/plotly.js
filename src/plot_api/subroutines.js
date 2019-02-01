@@ -710,7 +710,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
 
     enforceAxisConstraints(gd);
 
-    // TODO bypass this when matching axes aren't autoranged?
+    groupLoop:
     for(var j = 0; j < matchGroups.length; j++) {
         var group = matchGroups[j];
         var rng = null;
@@ -718,6 +718,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
 
         for(id in group) {
             ax = Axes.getFromId(gd, id);
+            if(ax.autorange === false) continue groupLoop;
 
             if(rng) {
                 if(rng[0] < rng[1]) {

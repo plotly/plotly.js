@@ -1192,6 +1192,66 @@ describe('Test axes', function() {
         });
     });
 
+    describe('matching axes relayout calls', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function assertRanges(msg, exp) {
+            exp.forEach(function(expi) {
+                var axNames = expi[0];
+                var rng = expi[1];
+                var autorng = expi[2];
+
+                axNames.forEach(function(n) {
+                    var msgi = n + ' - ' + msg;
+                    expect(gd._fullLayout[n].range).toBeCloseToArray(rng, 1.5, msgi + ' |range');
+                    expect(gd._fullLayout[n].autorange).toBe(autorng, msgi + ' |autorange');
+                });
+            });
+        }
+
+        it('should auto-range according to all matching trace data', function(done) {
+            Plotly.plot(gd, [
+                { y: [1, 2, 1] },
+                { y: [2, 1, 2, 3], xaxis: 'x2' },
+                { y: [0, 1], xaxis: 'x3' }
+            ], {
+                xaxis: {domain: [0, 0.2]},
+                xaxis2: {matches: 'x', domain: [0.3, 0.6]},
+                xaxis3: {matches: 'x', domain: [0.65, 1]},
+                width: 800,
+                height: 500,
+            })
+            .then(function() {
+                assertRanges('base (autoranged)', [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.245, 3.245], true],
+                    [['yaxis'], [-0.211, 3.211], true]
+                ]);
+            })
+            .then(function() { return Plotly.relayout(gd, 'xaxis.range', [-1, 4]); })
+            .then(function() {
+                assertRanges('set range', [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-1, 4], false],
+                    [['yaxis'], [-0.211, 3.211], true]
+                ]);
+            })
+            .then(function() { return Plotly.relayout(gd, 'xaxis2.autorange', true); })
+            .then(function() {
+                assertRanges('back to autorange', [
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.245, 3.245], true],
+                    [['yaxis'], [-0.211, 3.211], true]
+                ]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
     describe('categoryorder', function() {
 
         var gd;

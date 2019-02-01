@@ -1932,25 +1932,35 @@ exports.relayout = relayout;
 // Optimization mostly for large splom traces where
 // Plots.supplyDefaults can take > 100ms
 function axRangeSupplyDefaultsByPass(gd, flags, specs) {
-    var k;
+    var fullLayout = gd._fullLayout;
+    var axisMatchGroups = fullLayout._axisMatchGroups || [];
 
     if(!flags.axrange) return false;
 
-    for(k in flags) {
+    for(var k in flags) {
         if(k !== 'axrange' && flags[k]) return false;
     }
 
-    for(k in specs.rangesAltered) {
-        var axName = Axes.id2name(k);
+    for(var axId in specs.rangesAltered) {
+        var axName = Axes.id2name(axId);
         var axIn = gd.layout[axName];
-        var axOut = gd._fullLayout[axName];
+        var axOut = fullLayout[axName];
         axOut.autorange = axIn.autorange;
         axOut.range = axIn.range.slice();
         axOut.cleanRange();
-    }
 
-    // no need to consider matching axes here,
-    // if we keep block in doAutoRangeAndConstraints
+        for(var i = 0; i < axisMatchGroups.length; i++) {
+            var group = axisMatchGroups[i];
+            if(group[axId]) {
+                for(var axId2 in group) {
+                    var ax2 = fullLayout[Axes.id2name(axId2)];
+                    ax2.autorange = axOut.autorange;
+                    ax2.range = axOut.range.slice();
+                    ax2._input.range = axOut.range.slice();
+                }
+            }
+        }
+    }
 
     return true;
 }
