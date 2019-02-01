@@ -708,6 +708,8 @@ exports.doAutoRangeAndConstraints = function(gd) {
         doAutoRange(gd, ax);
     }
 
+    enforceAxisConstraints(gd);
+
     // TODO bypass this when matching axes aren't autoranged?
     for(var j = 0; j < matchGroups.length; j++) {
         var group = matchGroups[j];
@@ -737,9 +739,6 @@ exports.doAutoRangeAndConstraints = function(gd) {
             ax.setScale(0);
         }
     }
-
-    // TODO before or after matching axes?
-    enforceAxisConstraints(gd);
 };
 
 // An initial paint must be completed before these components can be

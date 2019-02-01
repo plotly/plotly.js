@@ -81,8 +81,6 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
         found = true;
     }
 
-    // TODO what happens when both scaleanchor and matches are present???
-
     if(matches) {
         updateConstraintGroups(matchGroups, opts.thisGroup, thisID, matches, 1);
         found = true;
