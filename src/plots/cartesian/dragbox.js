@@ -413,10 +413,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // TODO: edit linked axes in zoomAxRanges and in dragTail
         if(zoomMode === 'xy' || zoomMode === 'x') {
-            zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes, matches.xaxes);
+            zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes);
+            updateMatchedAxRange('x', updates);
         }
         if(zoomMode === 'xy' || zoomMode === 'y') {
-            zoomAxRanges(yaxes, (ph - box.b) / ph, (ph - box.t) / ph, updates, links.yaxes, matches.yaxes);
+            zoomAxRanges(yaxes, (ph - box.b) / ph, (ph - box.t) / ph, updates, links.yaxes);
+            updateMatchedAxRange('y', updates);
         }
 
         removeZoombox(gd);
@@ -482,7 +484,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             for(i = 0; i < xaxes.length; i++) {
                 zoomWheelOneAxis(xaxes[i], xfrac, zoom);
             }
-            updateMatchedAxes(matches.isSubplotConstrained ? yaxes : matches.xaxes, xaxes[0].range);
+            updateMatchedAxRange('x');
 
             scrollViewBox[2] *= zoom;
             scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1);
@@ -493,7 +495,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             for(i = 0; i < yaxes.length; i++) {
                 zoomWheelOneAxis(yaxes[i], yfrac, zoom);
             }
-            updateMatchedAxes(matches.isSubplotConstrained ? xaxes : matches.yaxes, yaxes[0].range);
+            updateMatchedAxRange('y');
 
             scrollViewBox[3] *= zoom;
             scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
@@ -529,19 +531,15 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // prevent axis drawing from monkeying with margins until we're done
         gd._fullLayout._replotting = true;
 
-        var matchedByXaxes;
-        var matchesByYaxes;
-        if(matches.isSubplotConstrained) {
-            matchedByXaxes = yaxes;
-            matchesByYaxes = xaxes;
-        } else {
-            matchedByXaxes = matches.xaxes;
-            matchesByYaxes = matches.yaxes;
-        }
-
         if(xActive === 'ew' || yActive === 'ns') {
-            if(xActive) dragAxList(xaxes, matchedByXaxes, dx);
-            if(yActive) dragAxList(yaxes, matchesByYaxes, dy);
+            if(xActive) {
+                dragAxList(xaxes, dx);
+                updateMatchedAxRange('x');
+            }
+            if(yActive) {
+                dragAxList(yaxes, dy);
+                updateMatchedAxRange('y');
+            }
             updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
             ticksAndAnnotations();
             return;
@@ -614,10 +612,37 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
 
-        updateMatchedAxes(matchedByXaxes, xaxes[0].range);
-        updateMatchedAxes(matchesByYaxes, yaxes[0].range);
+        updateMatchedAxRange('x');
+        updateMatchedAxRange('y');
         updateSubplots([x0, y0, pw - dx, ph - dy]);
         ticksAndAnnotations();
+    }
+
+    function updateMatchedAxRange(axLetter, out) {
+        var matchedAxes = matches.isSubplotConstrained ?
+            {x: yaxes, y: xaxes}[axLetter] :
+            matches[axLetter + 'axes'];
+
+        var constrainedAxes = matches.isSubplotConstrained ?
+            {x: xaxes, y: yaxes}[axLetter] :
+            [];
+
+        for(var i = 0; i < matchedAxes.length; i++) {
+            var ax = matchedAxes[i];
+            var axId = ax._id;
+            var axId2 = matches.xLinks[axId] || matches.yLinks[axId];
+            var ax2 = constrainedAxes[0] || xaHash[axId2] || yaHash[axId2];
+
+            if(ax2) {
+                var rng = ax2.range;
+                if(out) {
+                    out[ax._name + '.range[0]'] = rng[0];
+                    out[ax._name + '.range[1]'] = rng[1];
+                } else {
+                    ax.range = rng;
+                }
+            }
+        }
     }
 
     // Draw ticks and annotations (and other components) when ranges change.
@@ -947,18 +972,13 @@ function getEndText(ax, end) {
     }
 }
 
-function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes, matchedAxes) {
-    var i,
-        axi,
-        axRangeLinear0,
-        axRangeLinearSpan;
-
-    for(i = 0; i < axList.length; i++) {
-        axi = axList[i];
+function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
+    for(var i = 0; i < axList.length; i++) {
+        var axi = axList[i];
         if(axi.fixedrange) continue;
 
-        axRangeLinear0 = axi._rl[0];
-        axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
+        var axRangeLinear0 = axi._rl[0];
+        var axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
         axi.range = [
             axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction),
             axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction)
@@ -973,18 +993,9 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes, match
         var linkedR0Fraction = (r0Fraction + (1 - r1Fraction)) / 2;
         zoomAxRanges(linkedAxes, linkedR0Fraction, 1 - linkedR0Fraction, updates, [], []);
     }
-
-    // TODO is picking the first ax always ok in general?
-    // What if we're matching an overlaying axis?
-    var rng = axList[0].range;
-    for(i = 0; i < matchedAxes.length; i++) {
-        axi = matchedAxes[i];
-        updates[axi._name + '.range[0]'] = rng[0];
-        updates[axi._name + '.range[1]'] = rng[1];
-    }
 }
 
-function dragAxList(axList, matchedAxes, pix) {
+function dragAxList(axList, pix) {
     for(var i = 0; i < axList.length; i++) {
         var axi = axList[i];
         if(!axi.fixedrange) {
@@ -993,16 +1004,6 @@ function dragAxList(axList, matchedAxes, pix) {
                 axi.l2r(axi._rl[1] - pix / axi._m)
             ];
         }
-    }
-
-    updateMatchedAxes(matchedAxes, axList[0].range);
-}
-
-function updateMatchedAxes(matchedAxes, rng) {
-    // TODO is picking the first ax always ok in general?
-    // What if we're matching an overlaying axis?
-    for(var i = 0; i < matchedAxes.length; i++) {
-        matchedAxes[i].range = rng.slice();
     }
 }
 
@@ -1133,7 +1134,7 @@ function calcLinks(gd, groups, xaHash, yaHash) {
                 // to match the changes in the dragged x axes
                 for(xLinkID in group) {
                     if(!(xLinkID.charAt(0) === 'x' ? xaHash : yaHash)[xLinkID]) {
-                        xLinks[xLinkID] = 1;
+                        xLinks[xLinkID] = xID;
                     }
                 }
 
@@ -1150,7 +1151,7 @@ function calcLinks(gd, groups, xaHash, yaHash) {
             if(group[yID]) {
                 for(yLinkID in group) {
                     if(!(yLinkID.charAt(0) === 'x' ? xaHash : yaHash)[yLinkID]) {
-                        yLinks[yLinkID] = 1;
+                        yLinks[yLinkID] = yID;
                     }
                 }
             }
@@ -1186,6 +1187,8 @@ function calcLinks(gd, groups, xaHash, yaHash) {
         yaHash: yaHashLinked,
         xaxes: xaxesLinked,
         yaxes: yaxesLinked,
+        xLinks: xLinks,
+        yLinks: yLinks,
         isSubplotConstrained: isSubplotConstrained
     };
 }

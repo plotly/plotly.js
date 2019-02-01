@@ -710,10 +710,11 @@ describe('axis zoom/pan and main plot zoom', function() {
             exp.forEach(function(expi) {
                 var axNames = expi[0];
                 var rng = expi[1];
+                var opts = expi[2] || {};
 
                 axNames.forEach(function(n) {
                     var msgi = n + ' - ' + msg;
-                    expect(gd.layout[n].range).toBeCloseToArray(rng, TOL, msgi + ' |input');
+                    if(!opts.skipInput) expect(gd.layout[n].range).toBeCloseToArray(rng, TOL, msgi + ' |input');
                     expect(gd._fullLayout[n].range).toBeCloseToArray(rng, TOL, msgi + ' |full');
                 });
             });
@@ -1324,6 +1325,77 @@ describe('axis zoom/pan and main plot zoom', function() {
                     .then(done);
                 });
             });
+        });
+
+        it('panning a matching overlaying axis', function(done) {
+            /*
+             * y |                     | y2  y3 |
+             *   |                     |        |
+             *   |                     | o   m  |
+             *   |                     | v   a  |
+             *   |                     | e   t  |
+             *   |                     | r   c  |
+             *   |                     | l   h  |
+             *   |                     | a   e  |
+             *   |                     | y   s  |
+             *   |                     |        |
+             *    ______________________ y   y2  ____________________
+             *
+             *                 x                          x2
+             */
+            var data = [
+                { y: [1, 2, 1] },
+                { y: [2, 1, 3, 4], yaxis: 'y2' },
+                { y: [2, 3, -1, 5], xaxis: 'x2', yaxis: 'y3' }
+            ];
+
+            var layout = {
+                xaxis: {domain: [0, 0.4]},
+                xaxis2: {anchor: 'y2', domain: [0.5, 1]},
+                yaxis2: {anchor: 'x', overlaying: 'y', side: 'right'},
+                yaxis3: {anchor: 'x2', matches: 'y2'},
+                width: 700,
+                height: 500,
+                dragmode: 'pan'
+            };
+
+            makePlot(data, layout).then(function() {
+                assertRanges('base', [
+                    [['yaxis2', 'yaxis3'], [-1.422, 5.422]],
+                    [['xaxis'], [-0.237, 3.237]],
+                    [['yaxis'], [0.929, 2.070]],
+                    [['xaxis2'], [-0.225, 3.222]]
+                ]);
+            })
+            .then(function() {
+                var drag = makeDragFns('xy', 'nsew', 30, 30);
+                return drag.start().then(function() {
+                    // N.B. it is with these values that Axes.drawOne gets called!
+                    assertRanges('during drag', [
+                        [['yaxis2', 'yaxis3'], [-0.788, 6.0641], {skipInput: true}],
+                        [['xaxis'], [-0.744, 2.730], {skipInput: true}],
+                        [['yaxis'], [1.036, 2.177], {skipInput: true}],
+                        [['xaxis2'], [-0.225, 3.222]]
+                    ]);
+                })
+                .then(drag.end);
+            })
+            .then(_assert('after drag on xy subplot', [
+                [['yaxis2', 'yaxis3'], [-0.788, 6.0641], {dragged: true}],
+                [['xaxis'], [-0.744, 2.730], {dragged: true}],
+                [['yaxis'], [1.036, 2.177], {dragged: true}],
+                [['xaxis2'], [-0.225, 3.222], {noChange: true}]
+            ]))
+            .then(function() { return Plotly.relayout(gd, 'dragmode', 'zoom'); })
+            .then(doDrag('xy', 'nsew', 30, 30))
+            .then(_assert('after zoombox on xy subplot', [
+                [['yaxis2', 'yaxis3'], [2, 2.6417]],
+                [['xaxis'], [0.979, 1.486]],
+                [['yaxis'], [1.5, 1.609]],
+                [['xaxis2'], [-0.225, 3.222], {noChange: true}]
+            ]))
+            .catch(failTest)
+            .then(done);
         });
     });
 });
