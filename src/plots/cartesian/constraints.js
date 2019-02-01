@@ -20,6 +20,9 @@ var FROM_BL = require('../../constants/alignment').FROM_BL;
 exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, allAxisIds, layoutOut) {
     var constraintGroups = layoutOut._axisConstraintGroups;
     var matchGroups = layoutOut._axisMatchGroups;
+    var axId = containerOut._id;
+    var axLetter = axId.charAt(0);
+    var splomStash = ((layoutOut._splomAxes || {})[axLetter] || {})[axId] || {};
     var thisID = containerOut._id;
     var letter = thisID.charAt(0);
 
@@ -36,7 +39,7 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
         }
     }, 'constraintoward');
 
-    if(!containerIn.scaleanchor && !containerIn.matches) return;
+    if(!containerIn.scaleanchor && !containerIn.matches && !splomStash.matches) return;
 
     var opts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut);
 
@@ -50,7 +53,8 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
     var matches = Lib.coerce(containerIn, containerOut, {
         matches: {
             valType: 'enumerated',
-            values: opts.linkableAxes
+            values: opts.linkableAxes,
+            dflt: splomStash.matches
         }
     }, 'matches');
 
