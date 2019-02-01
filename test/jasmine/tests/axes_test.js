@@ -689,6 +689,24 @@ describe('Test axes', function() {
             });
         });
 
+        it('disallow constraining AND matching range', function() {
+            layoutIn = {
+                xaxis: {},
+                xaxis2: {matches: 'x', scaleanchor: 'x'}
+            };
+            layoutOut._subplots.cartesian.push('x2y');
+            layoutOut._subplots.xaxis.push('x2');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis2.matches).toBe('x');
+            expect(layoutOut.xaxis2.scaleanchor).toBe(undefined);
+            expect(layoutOut.xaxis2.constrain).toBe(undefined);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([]);
+            expect(layoutOut._axisMatchGroups).toEqual([{x: 1, x2: 1}]);
+        });
+
         it('drops scaleanchor settings if either the axis or target has fixedrange', function() {
             // some of these will create warnings... not too important, so not going to test,
             // just want to keep the output clean

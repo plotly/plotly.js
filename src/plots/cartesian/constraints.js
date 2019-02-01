@@ -30,7 +30,7 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
 
     // coerce the constraint mechanics even if this axis has no scaleanchor
     // because it may be the anchor of another axis.
-    coerce('constrain');
+    var constrain = coerce('constrain');
     Lib.coerce(containerIn, containerOut, {
         constraintoward: {
             valType: 'enumerated',
@@ -57,6 +57,13 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
             dflt: splomStash.matches
         }
     }, 'matches');
+
+    // disallow constraining AND matching range
+    if(constrain === 'range' && scaleanchor === matches) {
+        delete containerOut.scaleanchor;
+        delete containerOut.constrain;
+        scaleanchor = null;
+    }
 
     var found = false;
 
