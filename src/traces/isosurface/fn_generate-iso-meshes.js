@@ -712,33 +712,6 @@ var generateIsoMeshes = function(data) {
 
         var activeStyle = null;
 
-        // draw spaceframes
-        if(showSpaceframe && spaceframeFill) {
-            setFill(spaceframeFill);
-
-            drawSpaceframe(activeStyle, vMin, vMax);
-        }
-
-        // draw iso-surfaces
-        if(showSurface && surfaceFill) {
-            setFill(surfaceFill);
-
-            var surfacePattern = data.surface.pattern;
-            var surfaceCount = data.surface.count;
-            for(var q = 0; q < surfaceCount; q++) {
-                var ratio = (surfaceCount === 1) ? 0.5 : q / (surfaceCount - 1);
-                var level = (1 - ratio) * vMin + ratio * vMax;
-
-                var d1 = Math.abs(level - minValues);
-                var d2 = Math.abs(level - maxValues);
-                var ranges = (d1 > d2) ?
-                    [minValues, level] :
-                    [level, maxValues];
-
-                drawSurface(surfacePattern, ranges[0], ranges[1]);
-            }
-        }
-
         var setupMinMax = [
             [ Math.min(vMin, maxValues), Math.max(vMin, maxValues) ],
             [ Math.min(minValues, vMax), Math.max(minValues, vMax) ]
@@ -828,6 +801,33 @@ var generateIsoMeshes = function(data) {
                 }
             }
         });
+
+        // draw spaceframes
+        if(showSpaceframe && spaceframeFill) {
+            setFill(spaceframeFill);
+
+            drawSpaceframe(activeStyle, vMin, vMax);
+        }
+
+        // draw iso-surfaces
+        if(showSurface && surfaceFill) {
+            setFill(surfaceFill);
+
+            var surfacePattern = data.surface.pattern;
+            var surfaceCount = data.surface.count;
+            for(var q = 0; q < surfaceCount; q++) {
+                var ratio = (surfaceCount === 1) ? 0.5 : q / (surfaceCount - 1);
+                var level = (1 - ratio) * vMin + ratio * vMax;
+
+                var d1 = Math.abs(level - minValues);
+                var d2 = Math.abs(level - maxValues);
+                var ranges = (d1 > d2) ?
+                    [minValues, level] :
+                    [level, maxValues];
+
+                drawSurface(surfacePattern, ranges[0], ranges[1]);
+            }
+        }
 
         // remove vertices arrays (i.e. grid points) in case no face was created.
         if(numFaces === 0) {
