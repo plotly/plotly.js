@@ -1,0 +1,180 @@
+{
+    "data": [
+        {
+            "name": "2018",
+            "type": "waterfall",
+            "orientation": "h",
+            "y": [
+                "2018<br>2019",
+                "Sales",
+                "Consulting",
+                "Maintenance",
+                "Other revenue",
+                "Net revenue",
+                "Purchases",
+                "Material expenses",
+                "Personnel expenses",
+                "Other expenses",
+                "Operating profit",
+                "Investment income",
+                "Financial income",
+                "Profit before tax",
+                "Income tax",
+                "Profit after tax"
+            ],
+            "x": [
+                0,
+                375,
+                128,
+                78,
+                27,
+                "|",
+                -327,
+                -12,
+                -78,
+                -12,
+                "|",
+                32,
+                89,
+                "|",
+                -45,
+                "|"
+            ],
+            "marker": {
+                "shape": "rectangle",
+                "color": [
+                    0,
+                    375,
+                    128,
+                    78,
+                    27,
+                    0,
+                    -327,
+                    -12,
+                    -78,
+                    -12,
+                    0,
+                    32,
+                    89,
+                    0,
+                    -45,
+                    0
+                ],
+                "cmin": -500,
+                "cmax": 500,
+                "colorscale": [
+                    [0, "rgb(255, 0, 0)"],
+                    [0.499, "rgb(222, 222, 222)"],
+                    [0.5, "rgb(0, 255, 0)"],
+                    [0.501, "rgb(222, 222, 222)"],
+                    [1, "rgb(0, 0, 255)"]
+                ],
+                "reversescale": false,
+                "showscale": true,
+                "colorbar": {
+                    "title": "",
+                    "len": 0.4,
+                    "y": 0.3,
+                    "yanchor": "bottom"
+                }
+            }
+        },
+        {
+            "name": "2019",
+            "type": "waterfall",
+            "orientation": "h",
+            "y": [
+                "2018<br>2019",
+                "Sales",
+                "Consulting",
+                "Maintenance",
+                "Other revenue",
+                "Net revenue",
+                "Purchases",
+                "Material expenses",
+                "Personnel expenses",
+                "Other expenses",
+                "Operating profit",
+                "Investment income",
+                "Financial income",
+                "Profit before tax",
+                "Income tax",
+                "Profit after tax"
+            ],
+            "x": [
+                0,
+                307,
+                102,
+                187,
+                172,
+                "|",
+                -302,
+                -121,
+                -187,
+                -121,
+                "|",
+                123,
+                198,
+                "|",
+                -54,
+                "|"
+            ],
+            "marker": {
+                "shape": "rectangle",
+                "color": [
+                    0,
+                    307,
+                    102,
+                    187,
+                    172,
+                    0,
+                    -302,
+                    -121,
+                    -187,
+                    -121,
+                    0,
+                    123,
+                    198,
+                    0,
+                    -54,
+                    0
+                ],
+                "cmin": -500,
+                "cmax": 500,
+                "colorscale": [
+                    [0, "rgb(255, 0, 0)"],
+                    [0.499, "rgb(222, 222, 222)"],
+                    [0.5, "rgb(0, 191, 0)"],
+                    [0.501, "rgb(222, 222, 222)"],
+                    [1, "rgb(0, 0, 255)"]
+                ],
+                "reversescale": false,
+                "showscale": false,
+                "colorbar": {
+                    "title": "",
+                    "len": 0.4,
+                    "y": 0.3,
+                    "yanchor": "bottom"
+                }
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "Profit and loss statement 2018 vs 2019<br>waterfall chart with colorscale"
+        },
+        "yaxis": {
+            "type": "category",
+            "autorange": "reversed"
+        },
+        "xaxis": {
+            "type": "linear",
+            "autorange": true
+        },
+        "margin": { "l": 150 },
+        "height": 800,
+        "width": 800,
+        "autosize": true,
+        "showlegend": false
+    }
+}

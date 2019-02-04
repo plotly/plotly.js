@@ -2822,7 +2822,9 @@ function hasBarsOrFill(gd, ax) {
         if(trace.visible === true &&
             (trace.xaxis + trace.yaxis) === subplot &&
             (
-                Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter] ||
+                (Registry.traceIs(trace, 'bar') ||
+                Registry.traceIs(trace, 'waterfall')) &&
+                trace.orientation === {x: 'h', y: 'v'}[axLetter] ||
                 trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter
             )
         ) {

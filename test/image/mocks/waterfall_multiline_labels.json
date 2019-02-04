@@ -1,0 +1,161 @@
+{
+    "data":[
+        {
+            "type": "waterfall",
+            "x":["x 1","multiple<br>lines","one<br >two<BR>three"],
+            "y":["y 1","multiple<br>lines","one<br >two<BR>three"]
+        },
+        {
+            "type": "waterfall",
+            "x":["x 2","multiple<br>lines","one<br>two<br>three"],
+            "y":["y 2","multiple<br>lines","one<br>two<br>three"],
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "waterfall",
+            "x":["x 3","multiple<br>lines","one<br>two<br>three"],
+            "y":["y 3","multiple<br>lines","one<br>two<br>three"],
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "waterfall",
+            "x":["x 4","multiple<br>lines","one<br>two<br>three"],
+            "y":["y 4","multiple<br>lines","one<br>two<br>three"],
+            "xaxis": "x4",
+            "yaxis": "y4"
+        },
+        {
+            "type": "waterfall",
+            "orientation": "h",
+            "x":["x 5","multiple<br>lines","one<br>two<br>three"],
+            "y":["y 5","multiple<br>lines","one<br>two<br>three"],
+            "xaxis": "x5",
+            "yaxis": "y5"
+        },
+        {
+            "type": "waterfall",
+            "orientation": "h",
+            "x":["x 6","multiple<br>lines","one<br>two<br>three"],
+            "y":["y 6","multiple<br>lines","one<br>two<br>three"],
+            "xaxis": "x6",
+            "yaxis": "y6"
+        },
+        {
+            "type": "scatter",
+            "x":["x 7","multiple<br>lines","one<br>two<br>three"],
+            "y":["y 7","multiple<br>lines","one<br>two<br>three"],
+            "xaxis": "x7",
+            "yaxis": "y7"
+        },
+        {
+            "type": "scatter",
+            "x":["x 8","multiple<br>lines","one<br>two<br>three"],
+            "y":["y 8","multiple<br>lines","one<br>two<br>three"],
+            "xaxis": "x8",
+            "yaxis": "y8"
+        }
+    ],
+    "layout":{
+        "showlegend": false,
+        "xaxis": {
+            "ticks": "outside",
+            "domain": [0, 0.4]
+        },
+        "yaxis": {
+            "ticks": "outside",
+            "domain": [0, 0.4]
+        },
+        "xaxis2": {
+            "ticks": "outside",
+            "domain": [0, 0.4],
+            "side": "top",
+            "anchor": "y2",
+            "tickangle": 90
+        },
+        "yaxis2": {
+            "ticks": "outside",
+            "domain": [0, 0.4],
+            "side": "right",
+            "tickangle": 90
+        },
+        "xaxis3": {
+            "ticks": "outside",
+            "domain": [0.6, 1],
+            "tickangle": 90
+        },
+        "yaxis3": {
+            "ticks": "outside",
+            "domain": [0, 0.4],
+            "anchor": "x3",
+            "tickangle": 90
+        },
+        "xaxis4": {
+            "ticks": "outside",
+            "domain": [0.6, 1],
+            "side": "top"
+        },
+        "yaxis4": {
+            "ticks": "outside",
+            "domain": [0, 0.4],
+            "side": "right",
+            "anchor": "x4"
+        },
+        "xaxis5": {
+            "ticks": "outside",
+            "domain": [0, 0.4],
+            "anchor": "y5",
+            "tickangle": 45
+        },
+        "yaxis5": {
+            "ticks": "outside",
+            "domain": [0.6, 1],
+            "anchor": "x5",
+            "tickangle": 45
+        },
+        "xaxis6": {
+            "ticks": "outside",
+            "domain": [0, 0.4],
+            "side": "top",
+            "anchor": "y6",
+            "tickangle": -90
+        },
+        "yaxis6": {
+            "ticks": "outside",
+            "domain": [0.6, 1],
+            "anchor": "x6",
+            "side": "right",
+            "tickangle": -90
+        },
+        "xaxis7": {
+            "ticks": "outside",
+            "domain": [0.6, 1],
+            "anchor": "y7",
+            "tickangle": -90
+        },
+        "yaxis7": {
+            "ticks": "outside",
+            "domain": [0.6, 1],
+            "anchor": "x7",
+            "tickangle": -90
+        },
+        "xaxis8": {
+            "ticks": "outside",
+            "domain": [0.6, 1],
+            "side": "top",
+            "anchor": "y8",
+            "tickangle": -45
+        },
+        "yaxis8": {
+            "ticks": "outside",
+            "domain": [0.6, 1],
+            "side": "right",
+            "anchor": "x8",
+            "tickangle": 45
+        },
+        "legend": "none",
+        "height":800,
+        "width":800
+    }
+}

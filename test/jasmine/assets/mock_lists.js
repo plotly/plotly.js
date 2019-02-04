@@ -14,6 +14,7 @@ var svgMockList = [
     ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
     ['axes_visible-false', require('@mocks/axes_visible-false.json')],
     ['bar_and_histogram', require('@mocks/bar_and_histogram.json')],
+    ['waterfall', require('@mocks/waterfall_profit-loss_2018_colorscale.png.json')],
     ['basic_error_bar', require('@mocks/basic_error_bar.json')],
     ['binding', require('@mocks/binding.json')],
     ['cheater_smooth', require('@mocks/cheater_smooth.json')],

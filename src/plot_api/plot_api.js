@@ -1670,7 +1670,11 @@ function _restyle(gd, aobj, traces) {
             else if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
                 var labelsTo = 'x';
                 var valuesTo = 'y';
-                if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
+                if(cont.orientation === 'h' && (
+                    newVal === 'bar' ||
+                    oldVal === 'bar' ||
+                    newVal === 'waterfall' ||
+                    oldVal === 'waterfall')) {
                     labelsTo = 'y';
                     valuesTo = 'x';
                 }

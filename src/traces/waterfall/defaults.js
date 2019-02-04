@@ -78,4 +78,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
+
 };

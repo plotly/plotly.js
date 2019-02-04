@@ -248,7 +248,10 @@ module.exports = function style(s, gd) {
 
         var barpath = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbar')
-            .data(Registry.traceIs(trace, 'bar') ? [d] : []);
+            .data((
+                Registry.traceIs(trace, 'bar') ||
+                Registry.traceIs(trace, 'waterfall')
+            ) ? [d] : []);
         barpath.enter().append('path').classed('legendbar', true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');

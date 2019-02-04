@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "y": [1, 2, 3],
+      "base": [3, 4, 5],
+      "type": "waterfall"
+    },
+    {
+      "y": [1, 2, 3],
+      "base": [3, 4, 5],
+      "type": "waterfall"
+    }
+  ],
+  "layout": {
+    "barnorm": "percent",
+    "width": 400,
+    "height": 400
+  }
+}

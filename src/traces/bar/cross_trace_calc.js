@@ -36,7 +36,8 @@ function crossTraceCalc(gd, plotinfo) {
         var fullTrace = fullTraces[i];
         if(
             fullTrace.visible === true &&
-            Registry.traceIs(fullTrace, 'bar') &&
+            (Registry.traceIs(fullTrace, 'bar') ||
+            Registry.traceIs(fullTrace, 'waterfall')) &&
             fullTrace.xaxis === xa._id &&
             fullTrace.yaxis === ya._id
         ) {
@@ -646,6 +647,8 @@ function collectExtents(calcTraces, pa) {
         cd = calcTraces[i];
         cd[0].t.extents = extents;
 
+        var isWaterfall = (cd[0].trace.type === 'waterfall');
+
         var poffset = cd[0].t.poffset;
         var poffsetIsArray = Array.isArray(poffset);
 
@@ -667,6 +670,12 @@ function collectExtents(calcTraces, pa) {
             di.p1 = di.p0 + di.w;
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
+
+            if(isWaterfall) {
+                if(di.isFall === false) {
+                    di.s0 += (j === 0) ? 0 : cd[j - 1].s;
+                }
+            }
         }
     }
 }

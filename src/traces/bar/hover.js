@@ -120,6 +120,9 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     var size = (trace.base) ? di.b + di.s : di.s;
     pointData[sizeLetter + '0'] = pointData[sizeLetter + '1'] = sa.c2p(di[sizeLetter], true);
+    if(trace.type === 'waterfall' && di.isFall === false) {
+        size -= (index === 0) ? 0 : cd[index - 1].s;
+    }
     pointData[sizeLetter + 'LabelVal'] = size;
 
     var extent = t.extents[t.extents.round(di.p)];
