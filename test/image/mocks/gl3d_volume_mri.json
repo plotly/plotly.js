@@ -1,25 +1,16 @@
 {
     "data": [{
         "type": "volume",
-        "colorscale": [[ 0.0, "rgb(255,255,255)" ], [ 0.15, "rgb(255,255,0)" ], [ 0.3, "rgb(255,0,0)" ], [ 1.0, "rgb(0,0,0)" ]],
+        "colorscale": [[ 0.0, "rgb(255,255,255)" ], [ 0.125, "rgb(255,255,0)" ], [ 0.200, "rgb(255,0,0)" ], [ 0.275, "rgb(0,0,0)" ], [ 1.0, "rgb(255,255,255)" ]],
         "reversescale": false,
-        "opacityscale": false,
-        "opacity": 0.03,
-        "surface": { "show": true, "fill": 1.0, "count": 11 },
-        "spaceframe": { "show": true, "fill": 1.0 },
+        "opacityscale": [[ 0.0, 0.0 ], [ 0.125, 0.1 ], [ 0.200, 1.0 ], [ 0.275, 1.0 ], [ 1.0, 0.0 ]],
+        "opacity": 0.04,
+        "surface": { "show": true, "fill": 1.0, "count": 9 },
+        "spaceframe": { "show": false, "fill": 1.0 },
         "slices": {
-            "x": { "show": false, "fill": 1.0 },
-            "y": { "show": false, "fill": 1.0 },
-            "z": { "show": false, "fill": 1.0 }
-        },
-        "caps": {
-            "x": { "show": false, "fill": 1.0 },
-            "y": { "show": false, "fill": 1.0 },
-            "z": { "show": false, "fill": 1.0 }
-        },
-        "contour": {
-            "show": false,
-            "width": 4
+            "x": { "show": true, "fill": 1.0 },
+            "y": { "show": true, "fill": 1.0 },
+            "z": { "show": true, "fill": 1.0 }
         },
         "isomin": null,
         "isomax": null,
@@ -11049,9 +11040,9 @@
             "zaxis": { "nticks": 12, "autorange": "reversed" },
             "camera": {
                 "eye": {
-                    "x": 1.5,
-                    "y": -0.25,
-                    "z": -0.5
+                    "x": -1.5,
+                    "y": -0.75,
+                    "z": 0.25
                 },
                 "center": {
                     "x": 0,
