@@ -1,16 +1,16 @@
 {
     "data": [{
         "type": "volume",
-        "colorscale": [[ 0.0, "rgb(255,255,255)" ], [ 0.1, "rgb(255,255,0)" ], [ 0.15, "rgb(255,0,0)" ], [ 0.2, "rgb(0,0,0)" ], [ 1.0, "rgb(255,255,255)" ]],
+        "colorscale": [[ 0.0, "rgb(255,255,255)" ], [ 0.15, "rgb(255,255,0)" ], [ 0.3, "rgb(255,0,0)" ], [ 1.0, "rgb(0,0,0)" ]],
         "reversescale": false,
-        "opacityscale": [[ 0.0, 0.0 ], [ 0.1, 0.1 ], [ 0.15, 1.0 ], [ 0.2, 1.0 ], [ 1.0, 0.0 ]],
+        "opacityscale": false,
         "opacity": 0.03,
-        "surface": { "show": true, "fill": 1.0, "count": 7 },
-        "spaceframe": { "show": false, "fill": 1.0 },
+        "surface": { "show": true, "fill": 1.0, "count": 11 },
+        "spaceframe": { "show": true, "fill": 1.0 },
         "slices": {
-            "x": { "show": true, "fill": 1.0 },
-            "y": { "show": true, "fill": 1.0 },
-            "z": { "show": true, "fill": 1.0 }
+            "x": { "show": false, "fill": 1.0 },
+            "y": { "show": false, "fill": 1.0 },
+            "z": { "show": false, "fill": 1.0 }
         },
         "caps": {
             "x": { "show": false, "fill": 1.0 },
