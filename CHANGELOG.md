@@ -10,6 +10,18 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.44.2] -- 2019-02-04
+
+### Fixed
+- Fix vertical modebars in IE11 [@3491]
+- Fix `hovertemplate` for traces with blank `name` [#3480]
+- Fix 3D grid lines and tick labels colored by rgba color
+  with full transparency [#3494]
+- Fix white highlights rendering problems for `mesh3d` trace on
+  some devices (bug introduced in 1.44.0) [#3483]
+- Fix `fill.color` description for `table` traces [#3481]
+
+
 ## [1.44.1] -- 2019-01-24
 
 ### Fixed
