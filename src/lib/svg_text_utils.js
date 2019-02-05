@@ -134,7 +134,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 else if(svgClass[0] === 'l') {
                     newSvg.attr({x: _context.attr('x'), y: dy - (newSvgH / 2)});
                 }
-                else if(svgClass[0] === 'a') {
+                else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
                     newSvg.attr({x: 0, y: dy});
                 }
                 else {
