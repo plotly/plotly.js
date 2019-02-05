@@ -1933,7 +1933,6 @@ exports.relayout = relayout;
 // Plots.supplyDefaults can take > 100ms
 function axRangeSupplyDefaultsByPass(gd, flags, specs) {
     var fullLayout = gd._fullLayout;
-    var axisMatchGroups = fullLayout._axisMatchGroups || [];
 
     if(!flags.axrange) return false;
 
@@ -1949,10 +1948,9 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
         axOut.range = axIn.range.slice();
         axOut.cleanRange();
 
-        for(var i = 0; i < axisMatchGroups.length; i++) {
-            var group = axisMatchGroups[i];
-            if(group[axId]) {
-                for(var axId2 in group) {
+        if(axOut._matchGroup) {
+            for(var axId2 in axOut._matchGroup) {
+                if(axId2 !== axId) {
                     var ax2 = fullLayout[Axes.id2name(axId2)];
                     ax2.autorange = axOut.autorange;
                     ax2.range = axOut.range.slice();
@@ -1973,19 +1971,15 @@ function addAxRangeSequence(seq, rangesAltered) {
         function(gd) {
             var axIds = [];
             var skipTitle = true;
-            var matchGroups = gd._fullLayout._axisMatchGroups || [];
 
             for(var id in rangesAltered) {
                 var ax = Axes.getFromId(gd, id);
                 axIds.push(id);
 
-                for(var i = 0; i < matchGroups.length; i++) {
-                    var group = matchGroups[i];
-                    if(group[id]) {
-                        for(var id2 in group) {
-                            if(!rangesAltered[id2]) {
-                                axIds.push(id2);
-                            }
+                if(ax._matchGroup) {
+                    for(var id2 in ax._matchGroup) {
+                        if(!rangesAltered[id2]) {
+                            axIds.push(id2);
                         }
                     }
                 }

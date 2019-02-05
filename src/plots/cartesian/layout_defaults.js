@@ -296,6 +296,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 axLayoutOut.range = rng.slice();
                 axLayoutOut.autorange = autorange;
             }
+            axLayoutOut._matchGroup = group;
         }
     }
 };
