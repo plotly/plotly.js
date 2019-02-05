@@ -1158,5 +1158,44 @@ describe('sankey layout generators', function() {
                 expect(updatedLink.y1).toBeCloseTo(linkY1 + delta[1] + offsetTopToBottom, 0);
             });
         });
+
+        describe('handles large number of links', function() {
+            function _calc(trace) {
+                var gd = { data: [trace] };
+
+                supplyAllDefaults(gd);
+                var fullTrace = gd._fullData[0];
+                return Sankey.calc(gd, fullTrace);
+            }
+
+            beforeEach(function() {
+                data = _calc(mockCircularLarge.data[0]);
+                data = {
+                    nodes: data[0]._nodes,
+                    links: data[0]._links
+                };
+                sankey = d3SankeyCircular
+                  .sankeyCircular()
+                  .iterations(32)
+                  .circularLinkGap(2)
+                  .nodePadding(10)
+                  .size([500, 500])
+                  .nodeId(function(d) {
+                      return d.pointNumber;
+                  })
+                  .nodes(data.nodes)
+                  .links(data.links);
+
+                graph = sankey();
+            });
+
+            it('creates a graph with circular links', function() {
+                expect(graph.nodes.length).toEqual(26, 'right number of nodes');
+                var circularLinks = graph.links.filter(function(link) {
+                    return link.circular;
+                });
+                expect(circularLinks.length).toEqual(194, 'right number of circular links');
+            });
+        });
     });
 });
