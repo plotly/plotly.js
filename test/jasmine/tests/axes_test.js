@@ -3150,7 +3150,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 var size = gd._fullLayout._size;
-                expect(size.l).toBe(previousSize.l);
+                expect(size.l).toBeWithin(previousSize.l, 1.1);
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
@@ -3187,7 +3187,7 @@ describe('Test axes', function() {
                 expect(size.l).toBe(initialSize.r);
                 expect(size.r).toBe(previousSize.l);
                 expect(size.b).toBe(initialSize.b);
-                expect(size.t).toBe(previousSize.b);
+                expect(size.t).toBeWithin(previousSize.b, 1.1);
 
                 return Plotly.relayout(gd, {
                     'xaxis.automargin': false,
