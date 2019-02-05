@@ -737,7 +737,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
             ax = Axes.getFromId(gd, id);
             ax.range = rng.slice();
             ax._input.range = rng.slice();
-            ax.setScale(0);
+            ax.setScale();
         }
     }
 };
