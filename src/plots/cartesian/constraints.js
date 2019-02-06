@@ -26,11 +26,10 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
     var thisID = containerOut._id;
     var letter = thisID.charAt(0);
 
-    if(containerOut.fixedrange) return;
-
     // coerce the constraint mechanics even if this axis has no scaleanchor
     // because it may be the anchor of another axis.
     var constrain = coerce('constrain');
+
     Lib.coerce(containerIn, containerOut, {
         constraintoward: {
             valType: 'enumerated',
@@ -39,27 +38,31 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
         }
     }, 'constraintoward');
 
-    if(!containerIn.scaleanchor && !containerIn.matches && !splomStash.matches) return;
+    var scaleOpts = containerIn.scaleanchor && !(containerOut.fixedrange && constrain !== 'domain') ?
+        getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain) :
+        {};
 
-    var opts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut);
+    var matchOpts = (containerIn.matches || splomStash.matches) && !containerOut.fixedrange ?
+        getConstraintOpts(matchGroups, thisID, allAxisIds, layoutOut) :
+        {};
 
     var scaleanchor = Lib.coerce(containerIn, containerOut, {
         scaleanchor: {
             valType: 'enumerated',
-            values: opts.linkableAxes
+            values: scaleOpts.linkableAxes || []
         }
     }, 'scaleanchor');
 
     var matches = Lib.coerce(containerIn, containerOut, {
         matches: {
             valType: 'enumerated',
-            values: opts.linkableAxes,
+            values: matchOpts.linkableAxes || [],
             dflt: splomStash.matches
         }
     }, 'matches');
 
     // disallow constraining AND matching range
-    if(constrain === 'range' && scaleanchor === matches) {
+    if(constrain === 'range' && scaleanchor && matches && scaleanchor === matches) {
         delete containerOut.scaleanchor;
         delete containerOut.constrain;
         scaleanchor = null;
@@ -77,12 +80,12 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
         // Likewise with super-huge values.
         if(!scaleratio) scaleratio = containerOut.scaleratio = 1;
 
-        updateConstraintGroups(constraintGroups, opts.thisGroup, thisID, scaleanchor, scaleratio);
+        updateConstraintGroups(constraintGroups, scaleOpts.thisGroup, thisID, scaleanchor, scaleratio);
         found = true;
     }
 
     if(matches) {
-        updateConstraintGroups(matchGroups, opts.thisGroup, thisID, matches, 1);
+        updateConstraintGroups(matchGroups, matchOpts.thisGroup, thisID, matches, 1);
         found = true;
     }
 
@@ -94,13 +97,12 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
     }
 };
 
-function getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut) {
-    // If this axis is already part of a constraint group, we can't
-    // scaleanchor any other axis in that group, or we'd make a loop.
-    // Filter allAxisIds to enforce this, also matching axis types.
-
+// If this axis is already part of a constraint group, we can't
+// scaleanchor any other axis in that group, or we'd make a loop.
+// Filter allAxisIds to enforce this, also matching axis types.
+function getConstraintOpts(groups, thisID, allAxisIds, layoutOut, constrain) {
+    var doesNotConstrainRange = constrain !== 'range';
     var thisType = layoutOut[id2name(thisID)].type;
-
     var i, j, idj, axj;
 
     var linkableAxes = [];
@@ -109,12 +111,23 @@ function getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut) {
         if(idj === thisID) continue;
 
         axj = layoutOut[id2name(idj)];
-        if(axj.type === thisType && !axj.fixedrange) linkableAxes.push(idj);
+        if(axj.type === thisType) {
+            if(!axj.fixedrange) {
+                linkableAxes.push(idj);
+            } else if(doesNotConstrainRange && axj.anchor) {
+                // allow domain constraints on subplots where
+                // BOTH axes have fixedrange:true and constrain:domain
+                var counterAxj = layoutOut[id2name(axj.anchor)];
+                if(counterAxj.fixedrange) {
+                    linkableAxes.push(idj);
+                }
+            }
+        }
     }
 
-    for(i = 0; i < constraintGroups.length; i++) {
-        if(constraintGroups[i][thisID]) {
-            var thisGroup = constraintGroups[i];
+    for(i = 0; i < groups.length; i++) {
+        if(groups[i][thisID]) {
+            var thisGroup = groups[i];
 
             var linkableAxesNoLoops = [];
             for(j = 0; j < linkableAxes.length; j++) {

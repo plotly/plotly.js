@@ -826,7 +826,7 @@ describe('Test axes', function() {
             _assertMatchingAxes(['xaxis', 'xaxis2'], true, [-1, 6]);
             _assertMatchingAxes(['yaxis', 'yaxis2'], false, [0, 1]);
             _assertMatchingAxes(['xaxis3', 'yaxis3'], true, [-1, 6]);
-            _assertMatchingAxes(['xaxis4', 'yaxis4'], false, [0, 2]);
+            _assertMatchingAxes(['xaxis4', 'yaxis4'], false, [-1, 3]);
         });
     });
 
