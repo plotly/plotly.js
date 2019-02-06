@@ -10,6 +10,18 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.44.3] -- 2019-02-06
+
+### Fixed
+- Fix axis `automargin` push offset which resulted in clipped
+  tick labels in some scenarios [#3510]
+- Fix handling of alpha channel in marker, line and error bar `rgba`
+  coloring in `scatter3d` traces [#3496]
+- Fix subplots with multiple `carpet` traces each with a `scattercarpet`
+  trace on top of them [#3512]
+- Fix MathJax placement in ternary `aaxis` titles [#3513]
+
+
 ## [1.44.2] -- 2019-02-04
 
 ### Fixed
