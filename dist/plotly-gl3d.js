@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.44.2
+* plotly.js (gl3d) v1.44.3
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -28016,16 +28016,17 @@ function ErrorBars(gl, buffer, vao, shader) {
   this.lineCount    = [0,0,0]
   this.lineOffset   = [0,0,0]
   this.opacity      = 1
+  this.hasAlpha     = false
 }
 
 var proto = ErrorBars.prototype
 
 proto.isOpaque = function() {
-  return this.opacity >= 1
+  return !this.hasAlpha
 }
 
 proto.isTransparent = function() {
-  return this.opacity < 1
+  return this.hasAlpha
 }
 
 proto.drawTransparent = proto.draw = function(cameraParams) {
@@ -28108,8 +28109,13 @@ proto.update = function(options) {
       this.capSize = [this.capSize, this.capSize, this.capSize]
     }
   }
+
+  this.hasAlpha = false // default to no transparent draw
   if('opacity' in options) {
-    this.opacity = options.opacity
+    this.opacity = +options.opacity
+    if(this.opacity < 1) {
+      this.hasAlpha = true;
+    }
   }
 
   var color    = options.color || [[0,0,0],[0,0,0],[0,0,0]]
@@ -28151,6 +28157,7 @@ i_loop:
           c = [c[0], c[1], c[2], 1]
         } else if(c.length === 4) {
           c = [c[0], c[1], c[2], c[3]]
+          if(!this.hasAlpha && c[3] < 1) this.hasAlpha = true
         }
 
         if(isNaN(e[0][j]) || isNaN(e[1][j])) {
@@ -28857,6 +28864,7 @@ function LinePlot (gl, shader, pickShader, buffer, vao, texture) {
   this.texture = texture
   this.dashScale = 1
   this.opacity = 1
+  this.hasAlpha = false
   this.dirty = true
   this.pixelRatio = 1
 }
@@ -28864,11 +28872,11 @@ function LinePlot (gl, shader, pickShader, buffer, vao, texture) {
 var proto = LinePlot.prototype
 
 proto.isTransparent = function () {
-  return this.opacity < 1
+  return this.hasAlpha
 }
 
 proto.isOpaque = function () {
-  return this.opacity >= 1
+  return !this.hasAlpha
 }
 
 proto.pickSlots = 1
@@ -28929,8 +28937,13 @@ proto.update = function (options) {
   if ('dashScale' in options) {
     this.dashScale = options.dashScale
   }
+
+  this.hasAlpha = false // default to no transparent draw
   if ('opacity' in options) {
     this.opacity = +options.opacity
+    if(this.opacity < 1) {
+      this.hasAlpha = true;
+    }
   }
 
   // Recalculate buffer data
@@ -28998,6 +29011,8 @@ proto.update = function (options) {
       if (bcolor.length === 3) {
         bcolor = [bcolor[0], bcolor[1], bcolor[2], 1]
       }
+
+      if(!this.hasAlpha && acolor[3] < 1) this.hasAlpha = true
 
       var w0
       if (Array.isArray(lineWidth)) {
@@ -32149,24 +32164,14 @@ function project(p, v, m, x) {
   return transformMat4(x, x, p)
 }
 
-function clampVec(v) {
-  var result = new Array(3)
-  for(var i=0; i<3; ++i) {
-    result[i] = Math.min(Math.max(v[i], -1e8), 1e8)
-  }
-  return result
-}
-
 function ScatterPlotPickResult(index, position) {
   this.index = index
   this.dataCoordinate = this.position = position
 }
 
-var MAX_OPACITY = 1
-
 function fixOpacity(a) {
-  if(a === true) return MAX_OPACITY
-  if(a > MAX_OPACITY) return MAX_OPACITY
+  if(a === true) return 1
+  if(a > 1) return 1
   return a
 }
 
@@ -32200,11 +32205,13 @@ function PointCloud(
   this.vertexCount     = 0
   this.lineVertexCount = 0
 
-  this.opacity         = MAX_OPACITY
+  this.opacity         = 1
+  this.hasAlpha        = false
 
   this.lineWidth       = 0
   this.projectScale    = [2.0/3.0, 2.0/3.0, 2.0/3.0]
-  this.projectOpacity  = [MAX_OPACITY, MAX_OPACITY, MAX_OPACITY]
+  this.projectOpacity  = [1, 1, 1]
+  this.projectHasAlpha  = false
 
   this.pickId                = 0
   this.pickPerspectiveShader = pickPerspectiveShader
@@ -32241,11 +32248,11 @@ proto.setPickBase = function(pickBase) {
 }
 
 proto.isTransparent = function() {
-  if(this.opacity < MAX_OPACITY)  {
+  if(this.hasAlpha)  {
     return true
   }
   for(var i=0; i<3; ++i) {
-    if(this.axesProject[i] && this.projectOpacity[i] < MAX_OPACITY) {
+    if(this.axesProject[i] && this.projectHasAlpha) {
       return true
     }
   }
@@ -32253,11 +32260,11 @@ proto.isTransparent = function() {
 }
 
 proto.isOpaque = function() {
-  if(this.opacity >= MAX_OPACITY)  {
+  if(!this.hasAlpha)  {
     return true
   }
   for(var i=0; i<3; ++i) {
-    if(this.axesProject[i] && this.projectOpacity[i] >= MAX_OPACITY) {
+    if(this.axesProject[i] && !this.projectHasAlpha) {
       return true
     }
   }
@@ -32426,13 +32433,11 @@ var CLIP_GROUP    = [NEG_INFINITY3, POS_INFINITY3]
 function drawFull(shader, pshader, points, camera, transparent, forceDraw) {
   var gl = points.gl
 
-
-
-  if(transparent === (points.projectOpacity < MAX_OPACITY) || forceDraw) {
+  if(transparent === points.projectHasAlpha || forceDraw) {
     drawProject(pshader, points, camera)
   }
 
-  if(transparent === (points.opacity < MAX_OPACITY) || forceDraw) {
+  if(transparent === points.hasAlpha || forceDraw) {
 
     shader.bind()
     var uniforms = shader.uniforms
@@ -32583,6 +32588,8 @@ proto.update = function(options) {
       this.projectScale = [s,s,s]
     }
   }
+
+  this.projectHasAlpha = false // default to no transparent draw
   if('projectOpacity' in options) {
     if(Array.isArray(options.projectOpacity)) {
       this.projectOpacity = options.projectOpacity.slice()
@@ -32592,10 +32599,18 @@ proto.update = function(options) {
     }
     for(var i=0; i<3; ++i) {
       this.projectOpacity[i] = fixOpacity(this.projectOpacity[i]);
+      if(this.projectOpacity[i] < 1) {
+        this.projectHasAlpha = true;
+      }
     }
   }
+
+  this.hasAlpha = false // default to no transparent draw
   if('opacity' in options) {
     this.opacity = fixOpacity(options.opacity)
+    if(this.opacity < 1) {
+      this.hasAlpha = true;
+    }
   }
 
   //Set dirty flag
@@ -32729,6 +32744,7 @@ proto.update = function(options) {
           for(var j=0; j<4; ++j) {
             color[j] = c[j]
           }
+          if(!this.hasAlpha && c[3] < 1) this.hasAlpha = true
         }
       } else {
         color[0] = color[1] = color[2] = 0
@@ -32759,6 +32775,7 @@ proto.update = function(options) {
           for(var j=0; j<4; ++j) {
             lineColor[j] = c[j]
           }
+          if(!this.hasAlpha && c[3] < 1) this.hasAlpha = true
         }
       } else {
         lineColor[0] = lineColor[1] = lineColor[2] = 0
@@ -73900,7 +73917,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.44.2';
+exports.version = '1.44.3';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -79663,7 +79680,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 else if(svgClass[0] === 'l') {
                     newSvg.attr({x: _context.attr('x'), y: dy - (newSvgH / 2)});
                 }
-                else if(svgClass[0] === 'a') {
+                else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
                     newSvg.attr({x: 0, y: dy});
                 }
                 else {
@@ -91509,27 +91526,53 @@ axes.drawOne = function(gd, ax, opts) {
     var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
 
     function doAutoMargins() {
-        var push, rangeSliderPush;
+        var s = ax.side.charAt(0);
+        var push;
+        var rangeSliderPush;
 
         if(hasRangeSlider) {
             rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
         }
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
 
-        var s = ax.side.charAt(0);
         if(ax.automargin && (!hasRangeSlider || s !== 'b')) {
             push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
-            if(axLetter === 'x') {
-                push.y = (ax.anchor === 'free' ? ax.position :
-                    ax._anchorAxis.domain[s === 't' ? 1 : 0]);
-                push[s] += ax._boundingBox.height;
-            } else {
-                push.x = (ax.anchor === 'free' ? ax.position :
-                    ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
-                push[s] += ax._boundingBox.width;
+            var bbox = ax._boundingBox;
+            var counterAx = mainPlotinfo[counterLetter + 'axis'];
+            var anchorAxDomainIndex;
+            var offset;
+
+            switch(axLetter + s) {
+                case 'xb':
+                    anchorAxDomainIndex = 0;
+                    offset = bbox.top - counterAx._length - counterAx._offset;
+                    push[s] = bbox.height;
+                    break;
+                case 'xt':
+                    anchorAxDomainIndex = 1;
+                    offset = counterAx._offset - bbox.bottom;
+                    push[s] = bbox.height;
+                    break;
+                case 'yl':
+                    anchorAxDomainIndex = 0;
+                    offset = counterAx._offset - bbox.right;
+                    push[s] = bbox.width;
+                    break;
+                case 'yr':
+                    anchorAxDomainIndex = 1;
+                    offset = bbox.left - counterAx._length - counterAx._offset;
+                    push[s] = bbox.width;
+                    break;
             }
 
+            push[counterLetter] = ax.anchor === 'free' ?
+                ax.position :
+                ax._anchorAxis.domain[anchorAxDomainIndex];
+
+            if(push[s] > 0) {
+                push[s] += offset;
+            }
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
                 push[s] += ax.title.font.size;
             }

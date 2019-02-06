@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v1.44.2
+* plotly.js (basic) v1.44.3
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -33772,7 +33772,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.44.2';
+exports.version = '1.44.3';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -39342,7 +39342,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 else if(svgClass[0] === 'l') {
                     newSvg.attr({x: _context.attr('x'), y: dy - (newSvgH / 2)});
                 }
-                else if(svgClass[0] === 'a') {
+                else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
                     newSvg.attr({x: 0, y: dy});
                 }
                 else {
@@ -51188,27 +51188,53 @@ axes.drawOne = function(gd, ax, opts) {
     var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
 
     function doAutoMargins() {
-        var push, rangeSliderPush;
+        var s = ax.side.charAt(0);
+        var push;
+        var rangeSliderPush;
 
         if(hasRangeSlider) {
             rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
         }
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
 
-        var s = ax.side.charAt(0);
         if(ax.automargin && (!hasRangeSlider || s !== 'b')) {
             push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
-            if(axLetter === 'x') {
-                push.y = (ax.anchor === 'free' ? ax.position :
-                    ax._anchorAxis.domain[s === 't' ? 1 : 0]);
-                push[s] += ax._boundingBox.height;
-            } else {
-                push.x = (ax.anchor === 'free' ? ax.position :
-                    ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
-                push[s] += ax._boundingBox.width;
+            var bbox = ax._boundingBox;
+            var counterAx = mainPlotinfo[counterLetter + 'axis'];
+            var anchorAxDomainIndex;
+            var offset;
+
+            switch(axLetter + s) {
+                case 'xb':
+                    anchorAxDomainIndex = 0;
+                    offset = bbox.top - counterAx._length - counterAx._offset;
+                    push[s] = bbox.height;
+                    break;
+                case 'xt':
+                    anchorAxDomainIndex = 1;
+                    offset = counterAx._offset - bbox.bottom;
+                    push[s] = bbox.height;
+                    break;
+                case 'yl':
+                    anchorAxDomainIndex = 0;
+                    offset = counterAx._offset - bbox.right;
+                    push[s] = bbox.width;
+                    break;
+                case 'yr':
+                    anchorAxDomainIndex = 1;
+                    offset = bbox.left - counterAx._length - counterAx._offset;
+                    push[s] = bbox.width;
+                    break;
             }
 
+            push[counterLetter] = ax.anchor === 'free' ?
+                ax.position :
+                ax._anchorAxis.domain[anchorAxDomainIndex];
+
+            if(push[s] > 0) {
+                push[s] += offset;
+            }
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
                 push[s] += ax.title.font.size;
             }
