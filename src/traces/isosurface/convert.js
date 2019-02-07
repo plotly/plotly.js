@@ -396,10 +396,6 @@ function generateIsosurfaceMesh(data) {
 
     function tryCreateTri(style, xyzv, abc, min, max, isSecondPass) {
 
-        abc = [-1, -1, -1]; // Note: for the moment we had to override indices
-        // for planar surfaces (i.e. caps and slices) due to group shading
-        // bug of gl-mesh3d. But don't worry this would run faster!
-
         var tryDrawTri = function(style, xyzv, abc) {
             if( // we check here if the points are in `real` iso-min/max range
                 almostInFinalRange(xyzv[0][3]) &&
