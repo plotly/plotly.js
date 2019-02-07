@@ -396,6 +396,10 @@ function generateIsosurfaceMesh(data) {
 
     function tryCreateTri(style, xyzv, abc, min, max, isSecondPass) {
 
+        abc = [-1, -1, -1]; // Note: for the moment we override indices
+        // to run faster! But it is possible to comment this line
+        // to reduce the number of vertices.
+
         var tryDrawTri = function(style, xyzv, abc) {
             if( // we check here if the points are in `real` iso-min/max range
                 almostInFinalRange(xyzv[0][3]) &&
