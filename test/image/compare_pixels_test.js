@@ -98,6 +98,7 @@ function untestableFilter(mockName) {
         mockName.indexOf('gl2d_') !== -1 ||
         mockName.indexOf('mapbox_') !== -1 ||
         mockName.indexOf('gl3d_cone-') !== -1 ||
+        mockName.indexOf('gl3d_volume_between-ranges') !== -1 ||
         mockName.indexOf('gl3d_volume_mri') !== -1
     );
 
