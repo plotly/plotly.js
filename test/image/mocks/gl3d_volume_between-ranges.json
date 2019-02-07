@@ -1,6 +1,10 @@
 {
     "data": [{
         "type": "volume",
+        "flatshading": true,
+        "lighting": {
+            "facenormalsepsilon": 0
+        },
         "colorscale": "Blackbody",
         "reversescale": true,
         "opacityscale": "max",

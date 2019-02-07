@@ -2,6 +2,10 @@
     "data": [
         {
             "type": "volume",
+            "flatshading": true,
+            "lighting": {
+                "facenormalsepsilon": 0
+            },
             "opacity": 0.3,
             "opacityscale": "extremes",
             "colorscale": "Blackbody",
@@ -763,6 +767,10 @@
 
         }, {
             "type": "volume",
+            "flatshading": true,
+            "lighting": {
+                "facenormalsepsilon": 0
+            },
             "opacity": 0.3,
             "opacityscale": "extremes",
             "colorscale": "Blackbody",
