@@ -210,6 +210,22 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
+
+    it('should not include alignementgroup/offsetgroup when barmode is not *group*', function() {
+        var gd = {
+            data: [{type: 'bar', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
+            layout: {barmode: 'group'}
+        };
+
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
+
+        gd.layout.barmode = 'stack';
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+    });
 });
 
 describe('bar calc / crossTraceCalc (formerly known as setPositions)', function() {

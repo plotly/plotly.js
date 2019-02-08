@@ -8,6 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
@@ -149,6 +150,22 @@ describe('Test boxes supplyDefaults', function() {
         expect(traceOut.boxpoints).toBe('suspectedoutliers');
         expect(traceOut.marker).toBeDefined();
         expect(traceOut.text).toBeDefined();
+    });
+
+    it('should not include alignementgroup/offsetgroup when boxmode is not *group*', function() {
+        var gd = {
+            data: [{type: 'box', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
+            layout: {boxmode: 'group'}
+        };
+
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
+
+        gd.layout.boxmode = 'overlay';
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
     });
 });
 
