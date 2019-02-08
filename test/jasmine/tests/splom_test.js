@@ -1360,6 +1360,18 @@ describe('Test splom hover:', function() {
         nums: 'Apr 2003',
         axis: 'Jan 2000',
         evtPts: [{x: '2000-01-01', y: '2003-04-21', pointNumber: 0}]
+    }, {
+        desc: 'with a hovertemplate',
+        patch: function(fig) {
+            fig.data.forEach(function(t) {
+                t.hovertemplate = '%{x}|%{y}<extra>pt %{pointNumber}</extra>';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: '2.6|7.7',
+        name: 'pt 18',
+        evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
     }];
 
     specs.forEach(function(s) {
