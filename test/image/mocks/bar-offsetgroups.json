@@ -1,0 +1,88 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 1, 2, 3, 4 ],
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1"
+    },
+    {
+      "type": "bar",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 2, 3, 1, 5 ],
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2"
+    },
+    {
+      "type": "bar",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 1, 2, 3, 4 ],
+      "yaxis": "y2",
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1"
+    },
+    {
+      "type": "bar",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 2, 3, 1, 5 ],
+      "yaxis": "y2",
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2"
+    },
+    {
+      "type": "bar",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 1, 2, 3, 4 ],
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1",
+      "xaxis": "x2"
+    },
+    {
+      "type": "bar",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 2, 3, 1, 5 ],
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2",
+      "xaxis": "x2"
+    },
+    {
+      "type": "bar",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 1, 2, 3, 4 ],
+      "yaxis": "y2",
+      "offsetgroup": 3,
+      "hovertext": "offsetgroup: 3",
+      "xaxis": "x2"
+    },
+    {
+      "type": "bar",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 2, 3, 1, 5 ],
+      "yaxis": "y2",
+      "offsetgroup": 4,
+      "hovertext": "offsetgroup: 4",
+      "xaxis": "x2"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "title": {
+      "text": "Bar offset groups"
+    },
+    "xaxis": {
+      "title": {
+        "text": "two distinct offset groups"
+      }
+    },
+    "xaxis2": {
+      "title": {
+        "text": "four distinct offset groups"
+      }
+    }
+  }
+}

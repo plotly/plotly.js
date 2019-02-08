@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -17,7 +16,7 @@ var handleXYDefaults = require('../scatter/xy_defaults');
 var handleStyleDefaults = require('../bar/style_defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -77,5 +76,54 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 
+    handleGroupingDefaults(traceIn, traceOut, layout, coerce);
+
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
+}
+
+function handleGroupingDefaults(traceIn, traceOut, layout, coerce) {
+    var orientation = traceOut.orientation;
+    // TODO make this work across matching axes too?!?
+    // TODO should this work per trace-type?
+    //      one set for bar/histogram another for box/violin?
+    //      or just one set for all trace trace types?
+    var posAxId = traceOut[{v: 'x', h: 'y'}[orientation] + 'axis'];
+    var groupId = posAxId + orientation;
+
+    var alignmentOpts = layout._alignmentOpts || {};
+    var alignmentgroup = coerce('alignmentgroup');
+
+    var alignmentGroups = alignmentOpts[groupId];
+    if(!alignmentGroups) alignmentGroups = alignmentOpts[groupId] = {};
+
+    var alignmentGroupOpts = alignmentGroups[alignmentgroup];
+
+    if(alignmentGroupOpts) {
+        alignmentGroupOpts.traces.push(traceOut);
+    } else {
+        alignmentGroupOpts = alignmentGroups[alignmentgroup] = {
+            traces: [traceOut],
+            alignmentIndex: Object.keys(alignmentGroups).length,
+            offsetGroups: {}
+        };
+    }
+
+    var offsetgroup = coerce('offsetgroup');
+    var offsetGroups = alignmentGroupOpts.offsetGroups;
+    var offsetGroupOpts = offsetGroups[offsetgroup];
+
+    if(offsetgroup) {
+        if(!offsetGroupOpts) {
+            offsetGroupOpts = offsetGroups[offsetgroup] = {
+                offsetIndex: Object.keys(offsetGroups).length
+            };
+        }
+
+        traceOut._offsetIndex = offsetGroupOpts.offsetIndex;
+    }
+}
+
+module.exports = {
+    supplyDefaults: supplyDefaults,
+    handleGroupingDefaults: handleGroupingDefaults
 };

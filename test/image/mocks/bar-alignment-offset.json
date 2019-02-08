@@ -1,0 +1,547 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 0.6,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a0",
+      "xaxis": "x",
+      "yaxis": "y",
+      "alignmentgroup": "a",
+      "offsetgroup": 0,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 1,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": true,
+      "hoverinfo": "text",
+      "hovertext": "a1",
+      "xaxis": "x",
+      "yaxis": "y",
+      "alignmentgroup": "a",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "blue"
+      },
+      "opacity": 0.7,
+      "name": "A",
+      "legendgroup": "A",
+      "showlegend": true,
+      "hoverinfo": "text",
+      "hovertext": "a2",
+      "xaxis": "x",
+      "yaxis": "y",
+      "alignmentgroup": "a",
+      "offsetgroup": 2,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 0.6,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a0",
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "alignmentgroup": "a",
+      "offsetgroup": 0,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 1,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a1",
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "alignmentgroup": "a",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "blue"
+      },
+      "opacity": 0.7,
+      "name": "A",
+      "legendgroup": "A",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a1",
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "alignmentgroup": "a",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 0.6,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a0",
+      "xaxis": "x3",
+      "yaxis": "y3",
+      "alignmentgroup": "a",
+      "offsetgroup": 0,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 1,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a1",
+      "xaxis": "x3",
+      "yaxis": "y3",
+      "alignmentgroup": "a",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "blue"
+      },
+      "opacity": 0.7,
+      "name": "A",
+      "legendgroup": "A",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "b1",
+      "xaxis": "x3",
+      "yaxis": "y3",
+      "alignmentgroup": "b",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 0.6,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a0",
+      "xaxis": "x4",
+      "yaxis": "y5",
+      "alignmentgroup": "a",
+      "offsetgroup": 0,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 1,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a1",
+      "xaxis": "x4",
+      "yaxis": "y5",
+      "alignmentgroup": "a",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "blue"
+      },
+      "opacity": 0.7,
+      "name": "A",
+      "legendgroup": "A",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a2",
+      "xaxis": "x4",
+      "yaxis": "y4",
+      "alignmentgroup": "a",
+      "offsetgroup": 2,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 0.6,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a0",
+      "xaxis": "x5",
+      "yaxis": "y7",
+      "alignmentgroup": "a",
+      "offsetgroup": 0,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 1,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a1",
+      "xaxis": "x5",
+      "yaxis": "y7",
+      "alignmentgroup": "a",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "blue"
+      },
+      "opacity": 0.7,
+      "name": "A",
+      "legendgroup": "A",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a1",
+      "xaxis": "x5",
+      "yaxis": "y6",
+      "alignmentgroup": "a",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 0.6,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a0",
+      "xaxis": "x6",
+      "yaxis": "y9",
+      "alignmentgroup": "a",
+      "offsetgroup": 0,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "orange"
+      },
+      "opacity": 1,
+      "name": "B",
+      "legendgroup": "B",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "a1",
+      "xaxis": "x6",
+      "yaxis": "y9",
+      "alignmentgroup": "a",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    },
+    {
+      "type": "bar",
+      "marker": {
+        "color": "blue"
+      },
+      "opacity": 0.7,
+      "name": "A",
+      "legendgroup": "A",
+      "showlegend": false,
+      "hoverinfo": "text",
+      "hovertext": "b1",
+      "xaxis": "x6",
+      "yaxis": "y8",
+      "alignmentgroup": "b",
+      "offsetgroup": 1,
+      "x": [
+        1
+      ],
+      "y": [
+        1
+      ]
+    }
+  ],
+  "layout": {
+    "legend": {
+      "x": 1,
+      "xanchor": "right",
+      "y": 1,
+      "yanchor": "bottom",
+      "tracegroupgap": 0
+    },
+    "margin": {
+      "l": 25,
+      "r": 25,
+      "t": 60,
+      "b": 80
+    },
+    "title": {
+      "text": "Each zone refers to the relationship <br>between the <span style=\"fill:blue\">blue bar</span> and the opaque <span style=\"fill:orange\">orange bar</span>",
+      "x": 0,
+      "xref": "paper",
+      "y": 0.96,
+      "yref": "cont",
+      "font": {
+        "size": 20
+      }
+    },
+    "shapes": [
+      {
+        "type": "line",
+        "xref": "paper",
+        "yref": "paper",
+        "x0": 0.49,
+        "x1": 0.49,
+        "y0": -0.5,
+        "y1": 1
+      }
+    ],
+    "xaxis": {
+      "domain": [
+        0,
+        0.14666666666666667
+      ],
+      "anchor": "y",
+      "title": "=alignment<br>≠offset"
+    },
+    "yaxis": {
+      "domain": [
+        0,
+        1
+      ],
+      "anchor": "x"
+    },
+    "xaxis2": {
+      "domain": [
+        0.18666666666666665,
+        0.3133333333333333
+      ],
+      "anchor": "y2",
+      "title": "=alignment<br>=offset"
+    },
+    "yaxis2": {
+      "domain": [
+        0,
+        1
+      ],
+      "anchor": "x2"
+    },
+    "xaxis3": {
+      "domain": [
+        0.35333333333333333,
+        0.48
+      ],
+      "anchor": "y3",
+      "title": "≠alignment<br>=offset"
+    },
+    "yaxis3": {
+      "domain": [
+        0,
+        1
+      ],
+      "anchor": "x3"
+    },
+    "xaxis4": {
+      "domain": [
+        0.52,
+        0.6466666666666666
+      ],
+      "anchor": "y4",
+      "title": "=alignment<br>≠offset"
+    },
+    "yaxis4": {
+      "domain": [
+        0,
+        0.45
+      ],
+      "anchor": "x4"
+    },
+    "yaxis5": {
+      "domain": [
+        0.55,
+        1
+      ],
+      "anchor": "x4"
+    },
+    "xaxis5": {
+      "domain": [
+        0.6866666666666666,
+        0.8133333333333332
+      ],
+      "anchor": "y6",
+      "title": "=alignment<br>=offset"
+    },
+    "yaxis6": {
+      "domain": [
+        0,
+        0.45
+      ],
+      "anchor": "x5"
+    },
+    "yaxis7": {
+      "domain": [
+        0.55,
+        1
+      ],
+      "anchor": "x5"
+    },
+    "xaxis6": {
+      "domain": [
+        0.8533333333333333,
+        1
+      ],
+      "anchor": "y8",
+      "title": "≠alignment<br>=offset"
+    },
+    "yaxis8": {
+      "domain": [
+        0,
+        0.45
+      ],
+      "anchor": "x6"
+    },
+    "yaxis9": {
+      "domain": [
+        0.55,
+        1
+      ],
+      "anchor": "x6"
+    }
+  }
+}

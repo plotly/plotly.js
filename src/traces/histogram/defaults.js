@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -14,6 +13,7 @@ var Lib = require('../../lib');
 var Color = require('../../components/color');
 
 var handleStyleDefaults = require('../bar/style_defaults');
+var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var attributes = require('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -70,4 +70,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
+
+    handleGroupingDefaults(traceIn, traceOut, layout, coerce);
 };
