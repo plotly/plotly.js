@@ -71,18 +71,21 @@ function render(scene) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
         var ptNumber = selection.index;
+
+        var labels = {
+            xLabel: formatter('xaxis', selection.traceCoordinate[0]),
+            yLabel: formatter('yaxis', selection.traceCoordinate[1]),
+            zLabel: formatter('zaxis', selection.traceCoordinate[2])
+        };
+
         var hoverinfo = Fx.castHoverinfo(trace, scene.fullLayout, ptNumber);
-        var hoverinfoParts = hoverinfo.split('+');
-        var isHoverinfoAll = hoverinfo === 'all';
+        var hoverinfoParts = (hoverinfo || '').split('+');
+        var isHoverinfoAll = hoverinfo && hoverinfo === 'all';
 
-        var xVal = formatter('xaxis', selection.traceCoordinate[0]);
-        var yVal = formatter('yaxis', selection.traceCoordinate[1]);
-        var zVal = formatter('zaxis', selection.traceCoordinate[2]);
-
-        if(!isHoverinfoAll) {
-            if(hoverinfoParts.indexOf('x') === -1) xVal = undefined;
-            if(hoverinfoParts.indexOf('y') === -1) yVal = undefined;
-            if(hoverinfoParts.indexOf('z') === -1) zVal = undefined;
+        if(!trace.hovertemplate && !isHoverinfoAll) {
+            if(hoverinfoParts.indexOf('x') === -1) labels.xLabel = undefined;
+            if(hoverinfoParts.indexOf('y') === -1) labels.yLabel = undefined;
+            if(hoverinfoParts.indexOf('z') === -1) labels.zLabel = undefined;
             if(hoverinfoParts.indexOf('text') === -1) selection.textLabel = undefined;
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
         }
@@ -91,27 +94,38 @@ function render(scene) {
         var vectorTx = [];
 
         if(trace.type === 'cone' || trace.type === 'streamtube') {
+            labels.uLabel = formatter('xaxis', selection.traceCoordinate[3]);
             if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
-                vectorTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
+                vectorTx.push('u: ' + labels.uLabel);
             }
+
+            labels.vLabel = formatter('yaxis', selection.traceCoordinate[4]);
             if(isHoverinfoAll || hoverinfoParts.indexOf('v') !== -1) {
-                vectorTx.push('v: ' + formatter('yaxis', selection.traceCoordinate[4]));
+                vectorTx.push('v: ' + labels.vLabel);
             }
+
+            labels.wLabel = formatter('zaxis', selection.traceCoordinate[5]);
             if(isHoverinfoAll || hoverinfoParts.indexOf('w') !== -1) {
-                vectorTx.push('w: ' + formatter('zaxis', selection.traceCoordinate[5]));
+                vectorTx.push('w: ' + labels.wLabel);
             }
+
+            labels.normLabel = selection.traceCoordinate[6].toPrecision(3);
             if(isHoverinfoAll || hoverinfoParts.indexOf('norm') !== -1) {
-                vectorTx.push('norm: ' + selection.traceCoordinate[6].toPrecision(3));
+                vectorTx.push('norm: ' + labels.normLabel);
             }
-            if(trace.type === 'streamtube' && (isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1)) {
-                vectorTx.push('divergence: ' + selection.traceCoordinate[7].toPrecision(3));
+            if(trace.type === 'streamtube') {
+                labels.divergenceLabel = selection.traceCoordinate[7].toPrecision(3);
+                if(isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1) {
+                    vectorTx.push('divergence: ' + labels.divergenceLabel);
+                }
             }
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
             }
             tx = vectorTx.join('<br>');
         } else if(trace.type === 'isosurface') {
-            vectorTx.push('value: ' + Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text);
+            labels.valueLabel = Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text;
+            vectorTx.push('value: ' + labels.valueLabel);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
             }
@@ -120,27 +134,6 @@ function render(scene) {
             tx = selection.textLabel;
         }
 
-        if(scene.fullSceneLayout.hovermode) {
-            Fx.loneHover({
-                x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
-                y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
-                xLabel: xVal,
-                yLabel: yVal,
-                zLabel: zVal,
-                text: tx,
-                name: lastPicked.name,
-                color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
-                borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
-                fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
-                fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
-                fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
-            }, {
-                container: svgContainer,
-                gd: scene.graphDiv
-            });
-        }
-
-        // TODO not sure if streamtube x/y/z should be emitted as x/y/z
         var pointData = {
             x: selection.traceCoordinate[0],
             y: selection.traceCoordinate[1],
@@ -151,18 +144,41 @@ function render(scene) {
             pointNumber: ptNumber
         };
 
+        Fx.appendArrayPointValue(pointData, trace, ptNumber);
+
         if(trace._module.eventData) {
             pointData = trace._module.eventData(pointData, selection, trace, {}, ptNumber);
         }
 
-        Fx.appendArrayPointValue(pointData, trace, ptNumber);
-
         var eventData = {points: [pointData]};
+
+        if(scene.fullSceneLayout.hovermode) {
+            Fx.loneHover({
+                trace: trace,
+                x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
+                y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
+                xLabel: labels.xLabel,
+                yLabel: labels.yLabel,
+                zLabel: labels.zLabel,
+                text: tx,
+                name: lastPicked.name,
+                color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
+                borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
+                fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
+                fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
+                fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color'),
+                hovertemplate: Lib.castOption(trace, ptNumber, 'hovertemplate'),
+                hovertemplateLabels: Lib.extendFlat({}, pointData, labels),
+                eventData: [pointData]
+            }, {
+                container: svgContainer,
+                gd: scene.graphDiv
+            });
+        }
 
         if(selection.buttons && selection.distance < 5) {
             scene.graphDiv.emit('plotly_click', eventData);
-        }
-        else {
+        } else {
             scene.graphDiv.emit('plotly_hover', eventData);
         }
 

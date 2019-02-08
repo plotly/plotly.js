@@ -32,7 +32,7 @@ module.exports = function(opts, extra) {
         role: 'info',
         dflt: '',
         arrayOk: true,
-        editType: 'none',
+        editType: opts.editType || 'none',
         description: [
             'Template string used for rendering the information that appear on hover box.',
             'Note that this will override `hoverinfo`.',

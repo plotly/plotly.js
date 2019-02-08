@@ -10,6 +10,7 @@
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var surfaceAtts = require('../surface/attributes');
 var meshAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -226,6 +227,7 @@ var attrs = module.exports = overrideAll(extendFlat({
             'these elements will be seen in the hover labels.'
         ].join(' ')
     },
+    hovertemplate: hovertemplateAttrs()
 },
 
 colorscaleAttrs('', {

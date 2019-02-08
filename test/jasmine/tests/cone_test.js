@@ -297,6 +297,16 @@ describe('Test cone interactions', function() {
                     'norm: 3.00'
                 ].join('\n')
             });
+
+            return Plotly.restyle(gd, 'hovertemplate', 'NORM : %{norm}<br>at %{x},%{y},%{z}<extra>LOOKOUT</extra>');
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'LOOKOUT',
+                nums: 'NORM : 3.00\nat 2,2,2'
+            });
         })
         .catch(failTest)
         .then(done);

@@ -398,6 +398,17 @@ describe('Test isosurface', function() {
                     ].join('\n')
                 });
             })
+            .then(function() {
+                return Plotly.restyle(gd, 'hovertemplate', '%{value}<br>(%{x},%{y},%{z})<extra>!!</extra>');
+            })
+            .then(delay(20))
+            .then(_hover4)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '−1.3\n(0.4,100μ,−4)',
+                    name: '!!'
+                });
+            })
             .catch(failTest)
             .then(done);
         });

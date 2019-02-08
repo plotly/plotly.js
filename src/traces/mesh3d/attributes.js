@@ -10,6 +10,7 @@
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var surfaceAtts = require('../surface/attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -89,6 +90,7 @@ module.exports = extendFlat({
             'these elements will be seen in the hover labels.'
         ].join(' ')
     },
+    hovertemplate: hovertemplateAttrs({editType: 'calc'}),
 
     delaunayaxis: {
         valType: 'enumerated',
