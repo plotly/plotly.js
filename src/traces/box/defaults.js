@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
-
+var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var attributes = require('./attributes');
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -34,6 +34,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(notched) coerce('notchwidth');
 
     handlePointsDefaults(traceIn, traceOut, coerce, {prefix: 'box'});
+    handleGroupingDefaults(traceIn, traceOut, layout, coerce);
 }
 
 function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
