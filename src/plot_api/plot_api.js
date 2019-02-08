@@ -2539,7 +2539,7 @@ function getTraceIndexFromUid(uid, data, tracei) {
         if(data[i].uid === uid) return i;
     }
     // fall back on trace order, but only if user didn't provide a uid for that trace
-    return data[tracei].uid ? -1 : tracei;
+    return (!data[tracei] || data[tracei].uid) ? -1 : tracei;
 }
 
 function valsMatch(v1, v2) {
