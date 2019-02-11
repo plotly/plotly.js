@@ -29,6 +29,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    coerce('hovertemplate');
 
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 
