@@ -1177,7 +1177,6 @@ describe('sankey layout generators', function() {
                 sankey = d3SankeyCircular
                   .sankeyCircular()
                   .iterations(32)
-                  .circularLinkGap(2)
                   .nodePadding(10)
                   .size([500, 500])
                   .nodeId(function(d) {
@@ -1194,7 +1193,7 @@ describe('sankey layout generators', function() {
                 var circularLinks = graph.links.filter(function(link) {
                     return link.circular;
                 });
-                expect(circularLinks.length).toEqual(194, 'right number of circular links');
+                expect(circularLinks.length).toEqual(89, 'right number of circular links');
             });
         });
     });
