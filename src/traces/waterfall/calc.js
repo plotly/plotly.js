@@ -33,6 +33,7 @@ module.exports = function calc(gd, trace) {
 
     // set position and size (as well as for waterfall total size)
     var previousSum = 0;
+
     for(var i = 0; i < serieslen; i++) {
         cd[i] = {
             p: pos[i],

@@ -49,8 +49,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
     if(!hasBars) return;
 
-    var mode = coerce('barmode');
-    if(mode !== 'overlay') coerce('barnorm');
+    coerce('barmode');
 
     coerce('bargap', (shouldBeGapless && !gappedAnyway) ? 0 : 0.2);
     coerce('bargroupgap');

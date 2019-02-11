@@ -12,9 +12,9 @@
 var Waterfall = {};
 
 Waterfall.attributes = require('./attributes');
-Waterfall.layoutAttributes = require('../bar/layout_attributes');
+Waterfall.layoutAttributes = require('./layout_attributes');
 Waterfall.supplyDefaults = require('./defaults');
-Waterfall.supplyLayoutDefaults = require('../bar/layout_defaults');
+Waterfall.supplyLayoutDefaults = require('./layout_defaults');
 Waterfall.calc = require('./calc');
 Waterfall.crossTraceCalc = require('../bar/cross_trace_calc').crossTraceCalc;
 Waterfall.colorbar = require('../scatter/marker_colorbar');

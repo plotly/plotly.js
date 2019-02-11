@@ -42,8 +42,6 @@ module.exports = {
 
     orientation: barAttrs.orientation,
 
-    base: barAttrs.base,
-
     offset: barAttrs.offset,
 
     width: barAttrs.width,
