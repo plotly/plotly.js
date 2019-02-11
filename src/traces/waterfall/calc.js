@@ -14,20 +14,30 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
+function extractInstructions(list) {
+    var result = [];
+    for(var i = 0; i < list.length; i++) {
+        result.push(
+            (list[i].length) ? list[i][0] : ''
+        );
+    }
+    return result;
+}
+
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, i;
+    var size, pos, instr;
 
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
+        instr = extractInstructions(trace.y);
     } else {
         size = ya.makeCalcdata(trace, 'y');
         pos = xa.makeCalcdata(trace, 'x');
+        instr = extractInstructions(trace.x);
     }
-
-    console.log("pos=", pos);
 
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length, size.length);
@@ -35,20 +45,33 @@ module.exports = function calc(gd, trace) {
 
     // set position and size (as well as for waterfall total size)
     var previousSum = 0;
+    var newSize;
 
-    for(i = 0; i < serieslen; i++) {
+    for(var i = 0; i < serieslen; i++) {
         cd[i] = {
             p: pos[i],
             s: size[i]
         };
 
-        if(cd[i].s === undefined) {
+        if(instr[i] === '=' || instr[i] === '|') {
             cd[i].isSum = true;
             cd[i].s = previousSum;
-        } else {
+        } else if(instr[i] === '%') {
             cd[i].isSum = false;
-            var newSize = cd[i].s;
-            cd[i].s += previousSum;
+            var delta = Math.abs(cd[i].s);
+            var sign = (cd[i].s < 0) ? -1 : 1;
+            newSize = sign * (delta * previousSum * 0.01);
+            cd[i].s = previousSum + newSize;
+            previousSum += newSize;
+        } else if(instr[i] === '-') {
+            cd[i].isSum = false;
+            newSize = -cd[i].s;
+            cd[i].s = previousSum + newSize;
+            previousSum += newSize;
+        } else { // default is to add
+            cd[i].isSum = false;
+            newSize = cd[i].s;
+            cd[i].s = previousSum + newSize;
             previousSum += newSize;
         }
 
