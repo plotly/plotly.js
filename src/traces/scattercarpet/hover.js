@@ -48,8 +48,15 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     var trace = newPointData.trace;
     var carpet = trace._carpet;
-    var hoverinfo = cdi.hi || trace.hoverinfo;
-    var parts = hoverinfo.split('+');
+
+    var ij = carpet.ab2ij([cdi.a, cdi.b]);
+    var i0 = Math.floor(ij[0]);
+    var ti = ij[0] - i0;
+    var j0 = Math.floor(ij[1]);
+    var tj = ij[1] - j0;
+    var xy = carpet.evalxy([], i0, j0, ti, tj);
+    newPointData.yLabel = xy[1].toFixed(3);
+
     var text = [];
 
     function textPart(ax, val) {
@@ -64,21 +71,19 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         text.push(prefix + ': ' + val.toFixed(3) + ax.labelsuffix);
     }
 
-    if(parts.indexOf('all') !== -1) parts = ['a', 'b'];
-    if(parts.indexOf('a') !== -1) textPart(carpet.aaxis, cdi.a);
-    if(parts.indexOf('b') !== -1) textPart(carpet.baxis, cdi.b);
 
-    var ij = carpet.ab2ij([cdi.a, cdi.b]);
-    var i0 = Math.floor(ij[0]);
-    var ti = ij[0] - i0;
+    if(!trace.hovertemplate) {
+        var hoverinfo = cdi.hi || trace.hoverinfo;
+        var parts = hoverinfo.split('+');
 
-    var j0 = Math.floor(ij[1]);
-    var tj = ij[1] - j0;
+        if(parts.indexOf('all') !== -1) parts = ['a', 'b'];
+        if(parts.indexOf('a') !== -1) textPart(carpet.aaxis, cdi.a);
+        if(parts.indexOf('b') !== -1) textPart(carpet.baxis, cdi.b);
 
-    var xy = carpet.evalxy([], i0, j0, ti, tj);
-    text.push('y: ' + xy[1].toFixed(3));
+        text.push('y: ' + newPointData.yLabel);
 
-    newPointData.extraText = text.join('<br>');
+        newPointData.extraText = text.join('<br>');
+    }
 
     return scatterPointData;
 };
