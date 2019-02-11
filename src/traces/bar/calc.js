@@ -43,10 +43,10 @@ module.exports = function calc(gd, trace) {
 
         if(isWaterfall) {
             if(cd[i].s === undefined) {
-                cd[i].isFall = true;
+                cd[i].isSum = true;
                 cd[i].s = previousSum;
             } else {
-                cd[i].isFall = false;
+                cd[i].isSum = false;
                 var newSize = cd[i].s;
                 cd[i].s += previousSum;
                 previousSum += newSize;

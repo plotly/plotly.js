@@ -671,7 +671,7 @@ function collectExtents(calcTraces, pa) {
             di.s1 = di.s0 + di.s;
 
             if(isWaterfall) {
-                if(di.isFall === false) {
+                if(di.isSum === false) {
                     di.s0 += (j === 0) ? 0 : cd[j - 1].s;
                 }
             }
