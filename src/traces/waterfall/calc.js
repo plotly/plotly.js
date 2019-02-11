@@ -17,7 +17,7 @@ var calcSelection = require('../scatter/calc_selection');
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos;
+    var size, pos, i;
 
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
@@ -27,6 +27,8 @@ module.exports = function calc(gd, trace) {
         pos = xa.makeCalcdata(trace, 'x');
     }
 
+    console.log("pos=", pos);
+
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length, size.length);
     var cd = new Array(serieslen);
@@ -34,7 +36,7 @@ module.exports = function calc(gd, trace) {
     // set position and size (as well as for waterfall total size)
     var previousSum = 0;
 
-    for(var i = 0; i < serieslen; i++) {
+    for(i = 0; i < serieslen; i++) {
         cd[i] = {
             p: pos[i],
             s: size[i]
