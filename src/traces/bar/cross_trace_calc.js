@@ -36,8 +36,7 @@ function crossTraceCalc(gd, plotinfo) {
         var fullTrace = fullTraces[i];
         if(
             fullTrace.visible === true &&
-            (Registry.traceIs(fullTrace, 'bar') ||
-            Registry.traceIs(fullTrace, 'waterfall')) &&
+            Registry.traceIs(fullTrace, 'bar') &&
             fullTrace.xaxis === xa._id &&
             fullTrace.yaxis === ya._id
         ) {

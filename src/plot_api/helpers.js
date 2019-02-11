@@ -290,9 +290,7 @@ exports.cleanData = function(data) {
         // error_y.opacity is obsolete - merge into color
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Color.defaults;
-            var yeColor = trace.error_y.color ||
-                ((Registry.traceIs(trace, 'bar') ||
-                Registry.traceIs(trace, 'waterfall')) ?
+            var yeColor = trace.error_y.color || (Registry.traceIs(trace, 'bar') ?
                 Color.defaultLine :
                 dc[tracei % dc.length]);
             trace.error_y.color = Color.addOpacity(
@@ -304,9 +302,7 @@ exports.cleanData = function(data) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir === 'h' &&
-                ((Registry.traceIs(trace, 'bar') ||
-                Registry.traceIs(trace, 'waterfall')) ||
+            if(trace.bardir === 'h' && (Registry.traceIs(trace, 'bar') ||
                 trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
                 exports.swapXYData(trace);
@@ -340,9 +336,7 @@ exports.cleanData = function(data) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!Registry.traceIs(trace, 'pie') &&
-            !Registry.traceIs(trace, 'bar') &&
-            !Registry.traceIs(trace, 'waterfall')) {
+        if(!Registry.traceIs(trace, 'pie') && !Registry.traceIs(trace, 'bar')) {
             if(Array.isArray(trace.textposition)) {
                 for(i = 0; i < trace.textposition.length; i++) {
                     trace.textposition[i] = cleanTextPosition(trace.textposition[i]);

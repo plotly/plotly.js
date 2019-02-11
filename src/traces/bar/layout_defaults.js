@@ -28,8 +28,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        if((Registry.traceIs(trace, 'bar') ||
-            Registry.traceIs(trace, 'waterfall')) &&
+        if(Registry.traceIs(trace, 'bar') &&
             trace.visible) hasBars = true;
         else continue;
 

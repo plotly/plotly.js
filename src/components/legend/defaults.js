@@ -50,9 +50,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
             }
         }
 
-        if(((Registry.traceIs(trace, 'bar') ||
-            Registry.traceIs(trace, 'waterfall')) &&
-            layoutOut.barmode === 'stack') ||
+        if((Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
                 ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
             defaultOrder = helpers.isGrouped({traceorder: defaultOrder}) ?
                 'grouped+reversed' : 'reversed';
