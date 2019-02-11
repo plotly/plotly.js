@@ -11,7 +11,7 @@
 var Axes = require('../../plots/cartesian/axes');
 var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleCalc = require('../../components/colorscale/calc');
-var arraysToCalcdata = require('./arrays_to_calcdata');
+var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
 module.exports = function calc(gd, trace) {
@@ -32,11 +32,22 @@ module.exports = function calc(gd, trace) {
     var cd = new Array(serieslen);
 
     // set position and size (as well as for waterfall total size)
+    var previousSum = 0;
     for(var i = 0; i < serieslen; i++) {
         cd[i] = {
             p: pos[i],
             s: size[i]
         };
+
+        if(cd[i].s === undefined) {
+            cd[i].isSum = true;
+            cd[i].s = previousSum;
+        } else {
+            cd[i].isSum = false;
+            var newSize = cd[i].s;
+            cd[i].s += previousSum;
+            previousSum += newSize;
+        }
 
         if(trace.ids) {
             cd[i].id = String(trace.ids[i]);
