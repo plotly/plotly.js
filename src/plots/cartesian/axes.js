@@ -2181,29 +2181,29 @@ axes.makeTickPath = function(ax, shift, sgn, len) {
  *  - {fn} labelXFn
  *  - {fn} labelYFn
  *  - {fn} labelAnchorFn
- *  - {number} labelStandoff
- *  - {number} labelShift
+ *  - {number} labelStandoff (gap parallel to ticks)
+ *  - {number} labelShift (gap perpendicular to ticks)
  */
 axes.makeLabelFns = function(ax, shift, angle) {
     var axLetter = ax._id.charAt(0);
-    var pad = (ax.linewidth || 1) / 2;
     var ticksOnOutsideLabels = ax.tickson !== 'boundaries' && ax.ticks === 'outside';
 
-    var labelStandoff = ticksOnOutsideLabels ? ax.ticklen : 0;
+    var labelStandoff = 0;
     var labelShift = 0;
 
+    if(ticksOnOutsideLabels) {
+        labelStandoff += ax.ticklen;
+    }
     if(angle && ax.ticks === 'outside') {
         var rad = Lib.deg2rad(angle);
         labelStandoff = ax.ticklen * Math.cos(rad) + 1;
         labelShift = ax.ticklen * Math.sin(rad);
     }
-
     if(ax.showticklabels && (ticksOnOutsideLabels || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
+    labelStandoff += (ax.linewidth || 1) / 2;
 
-    // Used in polar angular label x/y functions
-    // TODO generalize makeLabelFns so that it just work for angular axes
     var out = {
         labelStandoff: labelStandoff,
         labelShift: labelShift
@@ -2213,7 +2213,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
     if(axLetter === 'x') {
         flipIt = ax.side === 'bottom' ? 1 : -1;
         x0 = labelShift * flipIt;
-        y0 = shift + (labelStandoff + pad) * flipIt;
+        y0 = shift + labelStandoff * flipIt;
         ff = ax.side === 'bottom' ? 1 : -0.2;
 
         out.labelXFn = function(d) { return d.dx + x0; };
@@ -2226,7 +2226,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
         };
     } else if(axLetter === 'y') {
         flipIt = ax.side === 'right' ? 1 : -1;
-        x0 = labelStandoff + pad;
+        x0 = labelStandoff;
         y0 = -labelShift * flipIt;
         ff = Math.abs(ax.tickangle) === 90 ? 0.5 : 0;
 
