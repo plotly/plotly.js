@@ -556,36 +556,25 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     var out = Axes.makeLabelFns(ax, 0);
     var labelStandoff = out.labelStandoff;
-    var labelShift = out.labelShift;
-    var offset4fontsize = (angularLayout.ticks !== 'outside' ? 0.7 : 0.5);
-    var pad = (ax.linewidth || 1) / 2;
 
     var labelXFn = function(d) {
         var rad = t2g(d);
-
-        var offset4tx = signSin(rad) === 0 ?
-            0 :
-            Math.cos(rad) * (labelStandoff + pad + offset4fontsize * d.fontSize);
-        var offset4tick = signCos(rad) * (d.dx + labelStandoff + pad);
-
-        return offset4tx + offset4tick;
+        return Math.cos(rad) * labelStandoff;
     };
 
     var labelYFn = function(d) {
         var rad = t2g(d);
-
-        var offset4tx = d.dy + d.fontSize * MID_SHIFT - labelShift;
-        var offset4tick = -Math.sin(rad) * (labelStandoff + pad + offset4fontsize * d.fontSize);
-
-        return offset4tx + offset4tick;
+        var ff = Math.sin(rad) > 0 ? 0.2 : 1;
+        return -Math.sin(rad) * (labelStandoff + d.fontSize * ff) +
+            Math.abs(Math.cos(rad)) * (d.fontSize * MID_SHIFT);
     };
 
-    // TODO maybe switch angle, d ordering ??
     var labelAnchorFn = function(angle, d) {
         var rad = t2g(d);
-        return signSin(rad) === 0 ?
-            (signCos(rad) > 0 ? 'start' : 'end') :
-            'middle';
+        var cos = Math.cos(rad);
+        return Math.abs(cos) < 0.1 ?
+            'middle' :
+            (cos > 0 ? 'start' : 'end');
     };
 
     var newTickLayout = strTickLayout(angularLayout);
@@ -623,6 +612,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     if(ax.visible) {
         var tickSign = ax.ticks === 'inside' ? -1 : 1;
+        var pad = (ax.linewidth || 1) / 2;
 
         Axes.drawTicks(gd, ax, {
             vals: vals,
@@ -1412,19 +1402,4 @@ function strTranslate(x, y) {
 
 function strRotate(angle) {
     return 'rotate(' + angle + ')';
-}
-
-// because Math.sign(Math.cos(Math.PI / 2)) === 1
-// oh javascript ;)
-function sign(v) {
-    return Math.abs(v) < 1e-10 ? 0 :
-        v > 0 ? 1 : -1;
-}
-
-function signCos(v) {
-    return sign(Math.cos(v));
-}
-
-function signSin(v) {
-    return sign(Math.sin(v));
 }
