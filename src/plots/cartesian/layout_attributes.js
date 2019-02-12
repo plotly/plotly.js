@@ -169,7 +169,9 @@ module.exports = {
             'or the same letter (to match scales across subplots).',
             'Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant',
             'and the last constraint encountered will be ignored to avoid possible',
-            'inconsistent constraints via `scaleratio`.'
+            'inconsistent constraints via `scaleratio`.',
+            'Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint',
+            'is currently forbidden.'
         ].join(' ')
     },
     scaleratio: {
@@ -224,8 +226,8 @@ module.exports = {
             'will match the range of the corresponding axis in data-coordinates space.',
             'Moreover, matching axes share auto-range values, category lists and',
             'histogram auto-bins.',
-            'Note that setting `matches` and `scaleratio` under a *range* `constrain`',
-            'to the same axis id is forbidden.'
+            'Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint',
+            'is currently forbidden.'
         ].join(' ')
     },
     // ticks

@@ -29,7 +29,6 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
     // coerce the constraint mechanics even if this axis has no scaleanchor
     // because it may be the anchor of another axis.
     var constrain = coerce('constrain');
-
     Lib.coerce(containerIn, containerOut, {
         constraintoward: {
             valType: 'enumerated',
@@ -38,37 +37,40 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
         }
     }, 'constraintoward');
 
-    var scaleOpts = containerIn.scaleanchor && !(containerOut.fixedrange && constrain !== 'domain') ?
-        getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain) :
-        {};
+    var matches, matchOpts;
 
-    var matchOpts = (containerIn.matches || splomStash.matches) && !containerOut.fixedrange ?
-        getConstraintOpts(matchGroups, thisID, allAxisIds, layoutOut) :
-        {};
-
-    var scaleanchor = Lib.coerce(containerIn, containerOut, {
-        scaleanchor: {
-            valType: 'enumerated',
-            values: scaleOpts.linkableAxes || []
-        }
-    }, 'scaleanchor');
-
-    var matches = Lib.coerce(containerIn, containerOut, {
-        matches: {
-            valType: 'enumerated',
-            values: matchOpts.linkableAxes || [],
-            dflt: splomStash.matches
-        }
-    }, 'matches');
-
-    // disallow constraining AND matching range
-    if(constrain === 'range' && scaleanchor && matches && scaleanchor === matches) {
-        delete containerOut.scaleanchor;
-        delete containerOut.constrain;
-        scaleanchor = null;
+    if((containerIn.matches || splomStash.matches) && !containerOut.fixedrange) {
+        matchOpts = getConstraintOpts(matchGroups, thisID, allAxisIds, layoutOut);
+        matches = Lib.coerce(containerIn, containerOut, {
+            matches: {
+                valType: 'enumerated',
+                values: matchOpts.linkableAxes || [],
+                dflt: splomStash.matches
+            }
+        }, 'matches');
     }
 
-    var found = false;
+    // 'matches' wins over 'scaleanchor' (for now)
+    var scaleanchor, scaleOpts;
+
+    if(!matches && containerIn.scaleanchor && !(containerOut.fixedrange && constrain !== 'domain')) {
+        scaleOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain);
+        scaleanchor = Lib.coerce(containerIn, containerOut, {
+            scaleanchor: {
+                valType: 'enumerated',
+                values: scaleOpts.linkableAxes || []
+            }
+        }, 'scaleanchor');
+    }
+
+    if(matches) {
+        delete containerOut.constrain;
+        updateConstraintGroups(matchGroups, matchOpts.thisGroup, thisID, matches, 1);
+    } else if(allAxisIds.indexOf(containerIn.matches) !== -1) {
+        Lib.warn('ignored ' + containerOut._name + '.matches: "' +
+            containerIn.matches + '" to avoid either an infinite loop ' +
+            'or because the target axis has fixed range.');
+    }
 
     if(scaleanchor) {
         var scaleratio = coerce('scaleratio');
@@ -81,19 +83,11 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
         if(!scaleratio) scaleratio = containerOut.scaleratio = 1;
 
         updateConstraintGroups(constraintGroups, scaleOpts.thisGroup, thisID, scaleanchor, scaleratio);
-        found = true;
-    }
-
-    if(matches) {
-        updateConstraintGroups(matchGroups, matchOpts.thisGroup, thisID, matches, 1);
-        found = true;
-    }
-
-    if(!found && allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
+    } else if(allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
         Lib.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
             containerIn.scaleanchor + '" to avoid either an infinite loop ' +
-            'and possibly inconsistent scaleratios, or because the target' +
-            'axis has fixed range.');
+            'and possibly inconsistent scaleratios, or because the target ' +
+            'axis has fixed range or this axis declares a *matches* constraint.');
     }
 };
 

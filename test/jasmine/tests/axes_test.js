@@ -588,8 +588,8 @@ describe('Test axes', function() {
         });
 
         var warnTxt = ' to avoid either an infinite loop and possibly ' +
-            'inconsistent scaleratios, or because the targetaxis has ' +
-            'fixed range.';
+            'inconsistent scaleratios, or because the target axis has ' +
+            'fixed range or this axis declares a *matches* constraint.';
 
         it('breaks scaleanchor loops and drops conflicting ratios', function() {
             var warnings = [];
@@ -705,6 +705,48 @@ describe('Test axes', function() {
 
             expect(layoutOut._axisConstraintGroups).toEqual([]);
             expect(layoutOut._axisMatchGroups).toEqual([{x: 1, x2: 1}]);
+        });
+
+        it('remove axes from constraint groups if they are in a match group', function() {
+            layoutIn = {
+                // this one is ok
+                xaxis: {},
+                yaxis: {scaleanchor: 'x'},
+                // this one too
+                xaxis2: {},
+                yaxis2: {matches: 'x2'},
+                // not these ones
+                xaxis3: {scaleanchor: 'x2'},
+                yaxis3: {scaleanchor: 'y2'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2, x3y3');
+            layoutOut._subplots.xaxis.push('x2', 'x3');
+            layoutOut._subplots.yaxis.push('y2', 'y3');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(1);
+            expect(layoutOut._axisMatchGroups).toContain({x2: 1, y2: 1});
+
+            expect(layoutOut._axisConstraintGroups.length).toBe(1);
+            expect(layoutOut._axisConstraintGroups).toContain({x: 1, y: 1});
+        });
+
+        it('remove constraint group if they are one or zero items left in it', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {matches: 'x'},
+                xaxis2: {scaleanchor: 'y'}
+            };
+            layoutOut._subplots.cartesian.push('x2y');
+            layoutOut._subplots.xaxis.push('x2');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(1);
+            expect(layoutOut._axisMatchGroups).toContain({x: 1, y: 1});
+
+            expect(layoutOut._axisConstraintGroups.length).toBe(0);
         });
 
         it('drops scaleanchor settings if either the axis or target has fixedrange', function() {
