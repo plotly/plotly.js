@@ -2174,6 +2174,7 @@ axes.makeTickPath = function(ax, shift, sgn, len) {
  *  - {fn} xFn
  *  - {fn} yFn
  *  - {fn} anchorFn
+ *  - {fn} heightFn
  *  - {number} labelStandoff (gap parallel to ticks)
  *  - {number} labelShift (gap perpendicular to ticks)
  */
@@ -2218,6 +2219,11 @@ axes.makeLabelFns = function(ax, shift, angle) {
             }
             return (a * flipIt < 0) ? 'end' : 'start';
         };
+        out.heightFn = function(d, a, h) {
+            return (a < -60 || a > 60) ? -0.5 * h :
+                ax.side === 'top' ? -h :
+                0;
+        };
     } else if(axLetter === 'y') {
         flipIt = ax.side === 'right' ? 1 : -1;
         x0 = labelStandoff;
@@ -2231,6 +2237,12 @@ axes.makeLabelFns = function(ax, shift, angle) {
                 return 'middle';
             }
             return ax.side === 'right' ? 'start' : 'end';
+        };
+        out.heightFn = function(d, a, h) {
+            a *= ax.side === 'left' ? 1 : -1;
+            return a < -30 ? -h :
+                a < 30 ? -0.5 * h :
+                0;
         };
     }
 
@@ -2466,26 +2478,6 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    // How much to shift a multi-line label to center it vertically.
-    function getAnchorHeight(lineCount, lineHeight, angle) {
-        var h = (lineCount - 1) * lineHeight;
-        if(axLetter === 'x') {
-            if(angle < -60 || 60 < angle) {
-                return -0.5 * h;
-            } else if(ax.side === 'top') {
-                return -h;
-            }
-        } else {
-            angle *= ax.side === 'left' ? 1 : -1;
-            if(angle < -30) {
-                return -h;
-            } else if(angle < 30) {
-                return -0.5 * h;
-            }
-        }
-        return 0;
-    }
-
     function positionLabels(s, angle) {
         s.each(function(d) {
             var thisLabel = d3.select(this);
@@ -2498,11 +2490,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     (labelFns.yFn(d) - d.fontSize / 2) + ')') :
                 '');
 
-            var anchorHeight = getAnchorHeight(
-                svgTextUtils.lineCount(thisLabel),
-                LINE_SPACING * d.fontSize,
-                isNumeric(angle) ? +angle : 0
-            );
+            // how much to shift a multi-line label to center it vertically.
+            var nLines = svgTextUtils.lineCount(thisLabel);
+            var lineHeight = LINE_SPACING * d.fontSize;
+            var anchorHeight = labelFns.heightFn(d, isNumeric(angle) ? +angle : 0, (nLines - 1) * lineHeight);
 
             if(anchorHeight) {
                 transform += ' translate(0, ' + anchorHeight + ')';

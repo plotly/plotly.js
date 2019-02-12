@@ -575,6 +575,11 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             (cos > 0 ? 'start' : 'end');
     };
 
+    labelFns.heightFn = function(d, a, h) {
+        var rad = t2g(d);
+        return -0.5 * (1 + Math.sin(rad)) * h;
+    };
+
     var newTickLayout = strTickLayout(angularLayout);
     if(_this.angularTickLayout !== newTickLayout) {
         layers['angular-axis'].selectAll('.' + ax._id + 'tick').remove();
