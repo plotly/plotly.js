@@ -2539,7 +2539,7 @@ function getTraceIndexFromUid(uid, data, tracei) {
         if(data[i].uid === uid) return i;
     }
     // fall back on trace order, but only if user didn't provide a uid for that trace
-    return data[tracei].uid ? -1 : tracei;
+    return (!data[tracei] || data[tracei].uid) ? -1 : tracei;
 }
 
 function valsMatch(v1, v2) {
@@ -2952,6 +2952,11 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         // track cartesian axes with altered ranges
         if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
             flags.rangesAltered[outerparts[0]] = 1;
+        }
+
+        // clear _inputDomain on cartesian axes with altered domains
+        if(AX_DOMAIN_RE.test(astr)) {
+            nestedProperty(newContainer, '_inputDomain').set(null);
         }
 
         // track datarevision changes

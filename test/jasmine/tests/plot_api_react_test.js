@@ -217,7 +217,7 @@ describe('@noCIdep Plotly.react', function() {
             // Really need to simplify that pipeline...
             countCalls({plot: 1, layoutStyles: 1});
 
-            layout.scene.camera = {up: {x: 1, y: -1, z: 0}};
+            layout.scene.camera = {up: {x: 1, y: 0, z: -1}};
 
             return Plotly.react(gd, data, layout);
         })
@@ -1076,6 +1076,64 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(checkState([{visible: 'legendonly'}, {visible: [undefined, true]}]))
         .catch(failTest)
         .then(done);
+    });
+
+    describe('should handle case where traces are removed', function() {
+        var y0 = [1, 2, 1];
+        var y1 = [2, 1, 2];
+
+        function mockLegendClick() {
+            return Registry.call('_guiRestyle', gd, 'visible', 'legendonly');
+        }
+
+        function _assert(msg, exp) {
+            return function() {
+                expect(gd._fullData.length).toBe(exp.length, msg + ' - # traces');
+                exp.forEach(function(expi, i) {
+                    expect(gd._fullData[i].visible).toBe(expi, msg + ' trace ' + i + ' visibility');
+                });
+            };
+        }
+
+        it('- case no uirevision no uid', function(done) {
+            Plotly.newPlot(gd, [{y: y0}, {y: y1}])
+            .then(_assert('base', [true, true]))
+            .then(mockLegendClick)
+            .then(_react([{y: [1, 2, 1]}]))
+            .then(_assert('after react', [true]))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- case no uirevision with uid', function(done) {
+            Plotly.newPlot(gd, [{y: y0, uid: 'a'}, {y: y1, uid: 'b'}])
+            .then(_assert('base', [true, true]))
+            .then(mockLegendClick)
+            .then(_react([{y: [1, 2, 1], uid: 'a'}]))
+            .then(_assert('after react', [true]))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- case with uirevision no uid', function(done) {
+            Plotly.newPlot(gd, [{y: y0}, {y: y1}], {uirevision: true})
+            .then(_assert('base', [true, true]))
+            .then(mockLegendClick)
+            .then(_react({data: [{y: [1, 2, 1]}], layout: {uirevision: true}}))
+            .then(_assert('after react', ['legendonly']))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- case with uirevision with uid', function(done) {
+            Plotly.newPlot(gd, [{y: y0, uid: 'a'}, {y: y1, uid: 'b'}], {uirevision: true})
+            .then(_assert('base', [true, true]))
+            .then(mockLegendClick)
+            .then(_react({data: [{y: [1, 2, 1], uid: 'a'}], layout: {uirevision: true}}))
+            .then(_assert('after react', ['legendonly']))
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     it('controls axis edits with axis.uirevision', function(done) {

@@ -1007,6 +1007,69 @@ describe('Test axes', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('can react from different layout *grid* settings', function(done) {
+            var fig1 = function() {
+                return {
+                    data: [{}, {xaxis: 'x2'}, {xaxis: 'x3'}, {xaxis: 'x4'}],
+                    layout: {
+                        grid: {
+                            xaxes: ['x', 'x2', 'x3', 'x4'],
+                            yaxes: ['y'],
+                            xgap: 0.1,
+                            ygap: 0.1,
+                            xside: 'bottom',
+                            yside: 'left'
+                        },
+                        xaxis2: {scaleanchor: 'x'},
+                        xaxis3: {scaleanchor: 'x'},
+                        xaxis4: {scaleanchor: 'x'}
+                    }
+                };
+            };
+
+            var fig2 = function() {
+                return {
+                    data: [{}, {xaxis: 'x2'}, {xaxis: 'x3'}, {xaxis: 'x4'}],
+                    layout: {
+                        grid: {
+                            xaxes: ['x', 'x2'],
+                            yaxes: ['y'],
+                            xgap: 0.1,
+                            ygap: 0.1,
+                            xside: 'bottom',
+                            yside: 'left'
+                        },
+                        xaxis2: {scaleanchor: 'x'}
+                    }
+                };
+            };
+
+            var rng = [-1, 6];
+
+            Plotly.plot(gd, fig1())
+            .then(function() {
+                var msg = 'fig1';
+                assertRangeDomain('xaxis', rng, [0, 0.230769], [0, 0.230769], msg);
+                assertRangeDomain('xaxis2', rng, [0.256410, 0.487179], [0.256410, 0.487179], msg);
+                assertRangeDomain('xaxis3', rng, [0.512820, 0.743589], [0.512820, 0.743589], msg);
+            })
+            .then(function() { return Plotly.react(gd, fig2()); })
+            .then(function() {
+                var msg = 'fig2';
+                assertRangeDomain('xaxis', rng, [0, 0.473684], [0, 0.473684], msg);
+                assertRangeDomain('xaxis2', rng, [0.526315, 1], [0.526315, 1], msg);
+            })
+            .then(function() { return Plotly.react(gd, fig1()); })
+            .then(function() {
+                var msg = 'back to fig1';
+                assertRangeDomain('xaxis', rng, [0, 0.230769], [0, 0.230769], msg);
+                assertRangeDomain('xaxis2', rng, [0.256410, 0.487179], [0.256410, 0.487179], msg);
+                assertRangeDomain('xaxis3', rng, [0.512820, 0.743589], [0.512820, 0.743589], msg);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('categoryorder', function() {
@@ -3087,7 +3150,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 var size = gd._fullLayout._size;
-                expect(size.l).toBe(previousSize.l);
+                expect(size.l).toBeWithin(previousSize.l, 1.1);
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
@@ -3124,7 +3187,7 @@ describe('Test axes', function() {
                 expect(size.l).toBe(initialSize.r);
                 expect(size.r).toBe(previousSize.l);
                 expect(size.b).toBe(initialSize.b);
-                expect(size.t).toBe(previousSize.b);
+                expect(size.t).toBeWithin(previousSize.b, 1.1);
 
                 return Plotly.relayout(gd, {
                     'xaxis.automargin': false,

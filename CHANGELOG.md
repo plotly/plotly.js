@@ -10,6 +10,95 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.44.4] -- 2019-02-12
+
+### Fixed
+- Fix `Plotly.react` used with `uirevision` when removing traces [#3527]
+- Fix `scattergl` update calls that change the number of on-graph text elements [#3536]
+- Fix annotations SVG errors on trace-less subplots [#3534]
+- Fix `ohlc` and `candlestick` hover on blank coordinates (bug introduced in 1.43.2) [#3537]
+
+
+## [1.44.3] -- 2019-02-06
+
+### Fixed
+- Fix axis `automargin` push offset which resulted in clipped
+  tick labels in some scenarios [#3510]
+- Fix handling of alpha channel in marker, line and error bar `rgba`
+  coloring in `scatter3d` traces [#3496]
+- Fix subplots with multiple `carpet` traces each with a `scattercarpet`
+  trace on top of them [#3512]
+- Fix MathJax placement in ternary `aaxis` titles [#3513]
+
+
+## [1.44.2] -- 2019-02-04
+
+### Fixed
+- Fix vertical modebars in IE11 [@3491]
+- Fix `hovertemplate` for traces with blank `name` [#3480]
+- Fix 3D grid lines and tick labels colored by rgba color
+  with full transparency [#3494]
+- Fix white highlights rendering problems for `mesh3d` trace on
+  some devices (bug introduced in 1.44.0) [#3483]
+- Fix `fill.color` description for `table` traces [#3481]
+
+
+## [1.44.1] -- 2019-01-24
+
+### Fixed
+- Fix `mesh3d` rendering on (some) mobile devices (bug introduced in 1.44.0) [#3463]
+- Fix scene camera update when changing to `turntable` mode when `up.z` is zero
+  (bug introduced in 1.43.0) [#3465, #3475]
+- Fix `react` when cartesian axis `scaleanchor` patterns change [#3461]
+- Fix "days" entries in polish (`pl`) locales [#3464]
+- Remove inner function declarations in our `vectorize-text` that caused
+  bundling errors for some (bug introduced in 1.43.0) [#3474]
+
+
+## [1.44.0] -- 2019-01-22
+
+### Added
+- Add `isosurface` gl3d trace type [#3438]
+- Add support for transitions from `Plotly.react` via new layout
+ `transition` attribute [#3217]
+- Add `meta` layout attribute, intended for making references
+  to strings in text templates [#3439]
+- Add support for `line.color` colorbars for `scatter3d` traces [#3384]
+- Add support for `hovertemplate` on `scatterpolar`, `scatterpolargl`,
+  `scatterternary`, `barpolar`, `choropleth`, `scattergeo` and
+  `scattermapbox` trace [#3398, #3436]
+- Add `width` attribute to `box` and `violin` traces [#3234]
+- Add support for `<sup>`, `<sup>`, `<b>`, `<i>` and `<em>` pseudo-html
+  tags in extra (aka trace "name") hover labels [#3443]
+- Add support for div id as 1st arg to `Plotly.makeTemplate` [#3375]
+- Add `config` option in plot-schema JSON output [#3376]
+
+### Changed
+- Config option `scrollZoom` is now a flaglist (instead of a boolean),
+  each flag corresponding to subplot types where scroll is to be enabled [#3422]
+- Use `glslify@7.0.0` across all our dependencies [#3421]
+
+### Fixed
+- Fix `error_(x|y|z)` color attribute inheritance [#3408]
+- Fix `scrollZoom: false` config behavior for `geo`, `gl3d` and `mapbox` subplots [#3422]
+- Fix cartesian scroll zoom when `responsive` config option is turned on [#3424]
+- Fix cartesian scroll zoom when the page where the graph is embedded is scrollable [#3424]
+- Fix `box` / `violin` autorange edge cases [#3234]
+- Fix `box` / `violin` points hover labels on numeric positions [#3441, #3458]
+- Fix `box` / `violin` grouping algorithm for subplots with as many distinct positions
+  as the number of traces [#3445]
+- Fix bar autorange calculations for trace with `base` above zero [#3452]
+- Fix bar + errorbar autorange calculations [#3452]
+- Fix `lightposition` behavior for `mesh3d` traces [#3415]
+- Fix legend `valign` behavior for `pie` traces [#3435]
+- Fix wrapped horizontal legends height edge cases [#3446]
+- Fix hover label alignment for hover labels with multi-line extra (aka trace "name") labels [#3443]
+- Fix cartesian axis domain lower limit [#3404]
+- Fix dynamic imports of `lib/` trace modules [#3448]
+- Fix `scl` and `reversescl` backward-compatible logic [#3423]
+- Fix range slider `borderwidth` attribute description [#3453]
+
+
 ## [1.43.2] -- 2019-01-08
 
 First 2019 release.

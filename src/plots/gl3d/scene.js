@@ -407,6 +407,29 @@ function computeTraceBounds(scene, trace, bounds) {
     }
 }
 
+function computeAnnotationBounds(scene, bounds) {
+    var sceneLayout = scene.fullSceneLayout;
+    var annotations = sceneLayout.annotations || [];
+
+    for(var d = 0; d < 3; d++) {
+        var axisName = axisProperties[d];
+        var axLetter = axisName.charAt(0);
+        var ax = sceneLayout[axisName];
+
+        for(var j = 0; j < annotations.length; j++) {
+            var ann = annotations[j];
+
+            if(ann.visible) {
+                var pos = ax.r2l(ann[axLetter]);
+                if(!isNaN(pos) && isFinite(pos)) {
+                    bounds[0][d] = Math.min(bounds[0][d], pos);
+                    bounds[1][d] = Math.max(bounds[1][d], pos);
+                }
+            }
+        }
+    }
+}
+
 proto.plot = function(sceneData, fullLayout, layout) {
     // Save parameters
     this.plotArgs = [sceneData, fullLayout, layout];
@@ -451,18 +474,20 @@ proto.plot = function(sceneData, fullLayout, layout) {
         [Infinity, Infinity, Infinity],
         [-Infinity, -Infinity, -Infinity]
     ];
+
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
         if(data.visible !== true) continue;
 
         computeTraceBounds(this, data, dataBounds);
     }
+    computeAnnotationBounds(this, dataBounds);
+
     var dataScale = [1, 1, 1];
     for(j = 0; j < 3; ++j) {
         if(dataBounds[1][j] === dataBounds[0][j]) {
             dataScale[j] = 1.0;
-        }
-        else {
+        } else {
             dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
         }
     }
