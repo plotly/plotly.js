@@ -2417,11 +2417,12 @@ axes.drawZeroLine = function(gd, ax, opts) {
  * - {string (optional)} cls (node className)
  * - {boolean} repositionOnUpdate (set to true to reposition update selection)
  * - {boolean} secondary
+ * - {fn} transFn
  * - {object} labelFns
- *   + {fn} transFn
- *   + {fn} labelXFn
- *   + {fn} labelYFn
- *   + {fn} labelAnchorFn
+ *  + {fn} xFn
+ *  + {fn} yFn
+ *  + {fn} anchorFn
+ *  + {fn} heightFn
  */
 axes.drawLabels = function(gd, ax, opts) {
     opts = opts || {};
