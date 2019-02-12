@@ -16,6 +16,8 @@ var calcSelection = require('../scatter/calc_selection');
 
 function extractInstructions(list) {
     var result = [];
+    if(!list || !list.length) return result;
+
     for(var i = 0; i < list.length; i++) {
         result.push(
             (list[i].length) ? list[i][0] : ''
