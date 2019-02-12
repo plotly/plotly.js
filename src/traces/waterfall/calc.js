@@ -63,7 +63,7 @@ module.exports = function calc(gd, trace) {
             s: size[i]
         };
 
-        if(instr[i] === '= ' || instr[i] === '| ') {
+        if(instr[i] === '= ') {
             cd[i].isSum = true;
             cd[i].s = previousSum;
         } else if(instr[i] === '% ') {
