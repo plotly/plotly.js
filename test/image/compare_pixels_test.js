@@ -100,6 +100,8 @@ function untestableFilter(mockName) {
         mockName.indexOf('gl3d_cone-') !== -1
     );
 
+    cond = (mockName.indexOf('waterfall') !== -1); // only run waterfall on CI.
+
     if(!cond) console.log(' -', mockName);
 
     return cond;
