@@ -1802,14 +1802,11 @@ axes.drawOne = function(gd, ax, opts) {
     // TODO: mirror labels, esp for subplots
 
     seq.push(function() {
-        var labelFns = axes.makeLabelFns(ax, mainLinePosition);
         return axes.drawLabels(gd, ax, {
             vals: vals,
             layer: mainAxLayer,
             transFn: transFn,
-            labelXFn: labelFns.labelXFn,
-            labelYFn: labelFns.labelYFn,
-            labelAnchorFn: labelFns.labelAnchorFn,
+            labelFns: axes.makeLabelFns(ax, mainLinePosition)
         });
     });
 
@@ -1821,8 +1818,6 @@ axes.drawOne = function(gd, ax, opts) {
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick') + pad;
             labelLength += ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0;
-            var secondaryPosition = mainLinePosition + labelLength * sgn;
-            var secondaryLabelFns = axes.makeLabelFns(ax, secondaryPosition);
 
             return axes.drawLabels(gd, ax, {
                 vals: getSecondaryLabelVals(ax, vals),
@@ -1831,9 +1826,7 @@ axes.drawOne = function(gd, ax, opts) {
                 repositionOnUpdate: true,
                 secondary: true,
                 transFn: transFn,
-                labelXFn: secondaryLabelFns.labelXFn,
-                labelYFn: secondaryLabelFns.labelYFn,
-                labelAnchorFn: secondaryLabelFns.labelAnchorFn,
+                labelFns: axes.makeLabelFns(ax, mainLinePosition + labelLength * sgn)
             });
         });
 
@@ -2178,9 +2171,9 @@ axes.makeTickPath = function(ax, shift, sgn, len) {
  * @param {number} shift
  * @param {number} angle [in degrees] ...
  * @return {object}
- *  - {fn} labelXFn
- *  - {fn} labelYFn
- *  - {fn} labelAnchorFn
+ *  - {fn} xFn
+ *  - {fn} yFn
+ *  - {fn} anchorFn
  *  - {number} labelStandoff (gap parallel to ticks)
  *  - {number} labelShift (gap perpendicular to ticks)
  */
@@ -2210,15 +2203,16 @@ axes.makeLabelFns = function(ax, shift, angle) {
     };
 
     var x0, y0, ff, flipIt;
+
     if(axLetter === 'x') {
         flipIt = ax.side === 'bottom' ? 1 : -1;
         x0 = labelShift * flipIt;
         y0 = shift + labelStandoff * flipIt;
         ff = ax.side === 'bottom' ? 1 : -0.2;
 
-        out.labelXFn = function(d) { return d.dx + x0; };
-        out.labelYFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
-        out.labelAnchorFn = function(a) {
+        out.xFn = function(d) { return d.dx + x0; };
+        out.yFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
+        out.anchorFn = function(d, a) {
             if(!isNumeric(a) || a === 0 || a === 180) {
                 return 'middle';
             }
@@ -2230,9 +2224,9 @@ axes.makeLabelFns = function(ax, shift, angle) {
         y0 = -labelShift * flipIt;
         ff = Math.abs(ax.tickangle) === 90 ? 0.5 : 0;
 
-        out.labelXFn = function(d) { return d.dx + shift + (x0 + d.fontSize * ff) * flipIt; };
-        out.labelYFn = function(d) { return d.dy + y0 + d.fontSize * MID_SHIFT; };
-        out.labelAnchorFn = function(a) {
+        out.xFn = function(d) { return d.dx + shift + (x0 + d.fontSize * ff) * flipIt; };
+        out.yFn = function(d) { return d.dy + y0 + d.fontSize * MID_SHIFT; };
+        out.anchorFn = function(d, a) {
             if(isNumeric(a) && Math.abs(a) === 90) {
                 return 'middle';
             }
@@ -2411,10 +2405,11 @@ axes.drawZeroLine = function(gd, ax, opts) {
  * - {string (optional)} cls (node className)
  * - {boolean} repositionOnUpdate (set to true to reposition update selection)
  * - {boolean} secondary
- * - {fn} transFn
- * - {fn} labelXFn
- * - {fn} labelYFn
- * - {fn} labelAnchorFn
+ * - {object} labelFns
+ *   + {fn} transFn
+ *   + {fn} labelXFn
+ *   + {fn} labelYFn
+ *   + {fn} labelAnchorFn
  */
 axes.drawLabels = function(gd, ax, opts) {
     opts = opts || {};
@@ -2423,9 +2418,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
     var vals = opts.vals;
-    var labelXFn = opts.labelXFn;
-    var labelYFn = opts.labelYFn;
-    var labelAnchorFn = opts.labelAnchorFn;
+    var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
     var lastAngle = (ax._tickAngles || {})[cls];
 
@@ -2445,7 +2438,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var newPromise = gd._promises.length;
 
                 thisLabel
-                    .call(svgTextUtils.positionText, labelXFn(d), labelYFn(d))
+                    .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d))
                     .call(Drawing.font, d.font, d.fontSize, d.fontColor)
                     .text(d.text)
                     .call(svgTextUtils.convertToTspans, gd);
@@ -2469,7 +2462,7 @@ axes.drawLabels = function(gd, ax, opts) {
     if(opts.repositionOnUpdate) {
         tickLabels.each(function(d) {
             d3.select(this).select('text')
-                .call(svgTextUtils.positionText, labelXFn(d), labelYFn(d));
+                .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d));
         });
     }
 
@@ -2497,12 +2490,12 @@ axes.drawLabels = function(gd, ax, opts) {
         s.each(function(d) {
             var thisLabel = d3.select(this);
             var mathjaxGroup = thisLabel.select('.text-math-group');
-            var anchor = labelAnchorFn(angle, d);
+            var anchor = labelFns.anchorFn(d, angle);
 
             var transform = opts.transFn.call(thisLabel.node(), d) +
                 ((isNumeric(angle) && +angle !== 0) ?
-                (' rotate(' + angle + ',' + labelXFn(d) + ',' +
-                    (labelYFn(d) - d.fontSize / 2) + ')') :
+                (' rotate(' + angle + ',' + labelFns.xFn(d) + ',' +
+                    (labelFns.yFn(d) - d.fontSize / 2) + ')') :
                 '');
 
             var anchorHeight = getAnchorHeight(

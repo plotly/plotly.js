@@ -459,15 +459,11 @@ proto.drawAx = function(ax) {
         crisp: false
     });
 
-    var labelFns = Axes.makeLabelFns(ax, 0, counterAngle);
-
     Axes.drawLabels(gd, ax, {
         vals: vals,
         layer: axLayer,
         transFn: transFn,
-        labelXFn: labelFns.labelXFn,
-        labelYFn: labelFns.labelYFn,
-        labelAnchorFn: labelFns.labelAnchorFn
+        labelFns: Axes.makeLabelFns(ax, 0, counterAngle)
     });
 };
 

@@ -404,7 +404,6 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
         var vals = Axes.calcTicks(ax);
         var valsClipped = Axes.clipEnds(ax, vals);
-        var labelFns = Axes.makeLabelFns(ax, 0);
         var tickSign = Axes.getTickSigns(ax)[2];
 
         Axes.drawTicks(gd, ax, {
@@ -427,9 +426,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             vals: vals,
             layer: layers['radial-axis'],
             transFn: transFn,
-            labelXFn: labelFns.labelXFn,
-            labelYFn: labelFns.labelYFn,
-            labelAnchorFn: labelFns.labelAnchorFn
+            labelFns: Axes.makeLabelFns(ax, 0)
         });
     }
 
@@ -556,20 +553,21 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     var out = Axes.makeLabelFns(ax, 0);
     var labelStandoff = out.labelStandoff;
+    var labelFns = {};
 
-    var labelXFn = function(d) {
+    labelFns.xFn = function(d) {
         var rad = t2g(d);
         return Math.cos(rad) * labelStandoff;
     };
 
-    var labelYFn = function(d) {
+    labelFns.yFn = function(d) {
         var rad = t2g(d);
         var ff = Math.sin(rad) > 0 ? 0.2 : 1;
         return -Math.sin(rad) * (labelStandoff + d.fontSize * ff) +
             Math.abs(Math.cos(rad)) * (d.fontSize * MID_SHIFT);
     };
 
-    var labelAnchorFn = function(angle, d) {
+    labelFns.anchorFn = function(d) {
         var rad = t2g(d);
         var cos = Math.cos(rad);
         return Math.abs(cos) < 0.1 ?
@@ -635,9 +633,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             layer: layers['angular-axis'],
             repositionOnUpdate: true,
             transFn: transFn,
-            labelXFn: labelXFn,
-            labelYFn: labelYFn,
-            labelAnchorFn: labelAnchorFn
+            labelFns: labelFns
         });
     }
 
