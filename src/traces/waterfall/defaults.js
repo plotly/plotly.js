@@ -78,4 +78,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 
+    traceOut._autoMarkerColor = !!(
+        traceIn.marker &&
+        traceIn.marker.color &&
+        Lib.isArrayOrTypedArray(traceIn.marker.color) &&
+        traceIn.marker.color.length === 0
+    );
+
+    traceOut._autoMarkerLineColor = !!(
+        traceIn.marker &&
+        traceIn.marker.line &&
+        traceIn.marker.line.color &&
+        Lib.isArrayOrTypedArray(traceIn.marker.line.color) &&
+        traceIn.marker.line.color.length === 0
+    );
+
 };

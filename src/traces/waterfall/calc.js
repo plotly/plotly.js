@@ -11,7 +11,7 @@
 var Axes = require('../../plots/cartesian/axes');
 var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleCalc = require('../../components/colorscale/calc');
-var arraysToCalcdata = require('../bar/arrays_to_calcdata');
+var arraysToCalcdata = require('./arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
 function extractInstructions(list) {
@@ -48,8 +48,9 @@ module.exports = function calc(gd, trace) {
     // set position and size (as well as for waterfall total size)
     var previousSum = 0;
     var newSize;
+    var i;
 
-    for(var i = 0; i < serieslen; i++) {
+    for(i = 0; i < serieslen; i++) {
         cd[i] = {
             p: pos[i],
             s: size[i]
@@ -82,23 +83,31 @@ module.exports = function calc(gd, trace) {
         }
     }
 
+    var vals = [];
+    if(trace._autoMarkerColor || trace._autoMarkerLineColor) {
+        for(i = 0; i < serieslen; i++) {
+            vals[i] = (cd[i].isSum) ? 0 :
+                (i === 0) ? 0 : cd[i].s - cd[i - 1].s;
+        }
+    }
+
     // auto-z and autocolorscale if applicable
     if(hasColorscale(trace, 'marker')) {
         colorscaleCalc(gd, trace, {
-            vals: trace.marker.color,
+            vals: (trace._autoMarkerColor) ? vals : trace.marker.color,
             containerStr: 'marker',
             cLetter: 'c'
         });
     }
     if(hasColorscale(trace, 'marker.line')) {
         colorscaleCalc(gd, trace, {
-            vals: trace.marker.line.color,
+            vals: (trace._autoMarkerLineColor) ? vals : trace.marker.line.color,
             containerStr: 'marker.line',
             cLetter: 'c'
         });
     }
 
-    arraysToCalcdata(cd, trace);
+    arraysToCalcdata(cd, trace, vals);
     calcSelection(cd, trace);
 
     return cd;
