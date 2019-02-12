@@ -74,6 +74,9 @@ function getClosestPoint(pointData, xval, yval, hovermode) {
     if(pointData.index === false) return null;
 
     var di = cd[pointData.index];
+
+    if(di.empty) return null;
+
     var dir = di.dir;
     var container = trace[dir];
     var lc = container.line.color;
