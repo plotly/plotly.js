@@ -1025,8 +1025,8 @@ axes.tickText = function(ax, x, hover) {
         ];
     }
 
-    if(ax._instr && index !== undefined && index < ax._instr.length) {
-        out.text = out.text.substring(ax._instr[index].length);
+    if(ax._operators && index !== undefined && index < ax._operators.length) {
+        out.text = out.text.substring(ax._operators[index].length);
     }
 
     return out;

@@ -14,19 +14,19 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('./arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
-function extractInstructions(list) {
+function extractOperators(list) {
     var result = [];
     if(!list || !list.length) return result;
 
     for(var i = 0; i < list.length; i++) {
-        var token = (list[i].length > 1) ? list[i].substring(0, 2) : '';
+        var operator = (list[i].length > 1) ? list[i].substring(0, 2) : '';
         if(
-            token !== '= ' &&
-            token !== '+ ' &&
-            token !== '- ' &&
-            token !== '% '
-        ) token = '';
-        result.push(token);
+            operator !== '= ' &&
+            operator !== '+ ' &&
+            operator !== '- ' &&
+            operator !== '% '
+        ) operator = '';
+        result.push(operator);
     }
     return result;
 }
@@ -34,18 +34,18 @@ function extractInstructions(list) {
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, instr;
+    var size, pos, operators;
 
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
-        instr = extractInstructions(trace.y);
-        ya._instr = instr;
+        operators = extractOperators(trace.y);
+        ya._operators = operators;
     } else {
         size = ya.makeCalcdata(trace, 'y');
         pos = xa.makeCalcdata(trace, 'x');
-        instr = extractInstructions(trace.x);
-        xa._instr = instr;
+        operators = extractOperators(trace.x);
+        xa._operators = operators;
     }
 
     // create the "calculated data" to plot
@@ -63,17 +63,17 @@ module.exports = function calc(gd, trace) {
             s: size[i]
         };
 
-        if(instr[i] === '= ') {
+        if(operators[i] === '= ') {
             cd[i].isSum = true;
             cd[i].s = previousSum;
-        } else if(instr[i] === '% ') {
+        } else if(operators[i] === '% ') {
             cd[i].isSum = false;
             var delta = Math.abs(cd[i].s);
             var sign = (cd[i].s < 0) ? -1 : 1;
             newSize = sign * (delta * previousSum * 0.01);
             cd[i].s = previousSum + newSize;
             previousSum += newSize;
-        } else if(instr[i] === '- ') {
+        } else if(operators[i] === '- ') {
             cd[i].isSum = false;
             newSize = -cd[i].s;
             cd[i].s = previousSum + newSize;
