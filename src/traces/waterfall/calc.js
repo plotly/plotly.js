@@ -20,7 +20,7 @@ function extractInstructions(list) {
 
     for(var i = 0; i < list.length; i++) {
         result.push(
-            (list[i].length) ? list[i][0] : ''
+            (list[i].length > 1) ? list[i].substring(0, 2) : ''
         );
     }
     return result;
@@ -35,10 +35,12 @@ module.exports = function calc(gd, trace) {
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
         instr = extractInstructions(trace.y);
+        ya._instr = instr;
     } else {
         size = ya.makeCalcdata(trace, 'y');
         pos = xa.makeCalcdata(trace, 'x');
         instr = extractInstructions(trace.x);
+        xa._instr = instr;
     }
 
     // create the "calculated data" to plot
@@ -56,17 +58,17 @@ module.exports = function calc(gd, trace) {
             s: size[i]
         };
 
-        if(instr[i] === '=' || instr[i] === '|') {
+        if(instr[i] === '= ' || instr[i] === '| ') {
             cd[i].isSum = true;
             cd[i].s = previousSum;
-        } else if(instr[i] === '%') {
+        } else if(instr[i] === '% ') {
             cd[i].isSum = false;
             var delta = Math.abs(cd[i].s);
             var sign = (cd[i].s < 0) ? -1 : 1;
             newSize = sign * (delta * previousSum * 0.01);
             cd[i].s = previousSum + newSize;
             previousSum += newSize;
-        } else if(instr[i] === '-') {
+        } else if(instr[i] === '- ') {
             cd[i].isSum = false;
             newSize = -cd[i].s;
             cd[i].s = previousSum + newSize;
