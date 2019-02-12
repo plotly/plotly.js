@@ -19,24 +19,24 @@ describe('end-to-end scattergl tests', function() {
             x: [1, 2, 3, 4, 5, 6, 7],
             y: [2, 3, 4, 5, 6, 7, 8],
             text: 'Test'
-        }]).then(function () {
+        }]).then(function() {
             var fullLayout = gd._fullLayout;
-            var subplot = fullLayout._plots['xy'];
+            var subplot = fullLayout._plots.xy;
             var scene = subplot._scene;
             expect(scene.glText.length).toEqual(1);
         }).catch(failTest).then(done);
     });
 
-    it('should update a plot with text labels', function (done) {
+    it('should update a plot with text labels', function(done) {
         Plotly.react(gd, [{
             type: 'scattergl',
             mode: 'text+lines',
             x: [1, 2, 3, 4, 5, 6, 7],
             y: [2, 3, 4, 5, 6, 7, 8],
             text: 'Test'
-        }]).then(function () {
+        }]).then(function() {
             var fullLayout = gd._fullLayout;
-            var subplot = fullLayout._plots['xy'];
+            var subplot = fullLayout._plots.xy;
             var scene = subplot._scene;
             expect(scene.glText.length).toEqual(1);
 
@@ -64,9 +64,9 @@ describe('end-to-end scattergl tests', function() {
                     text: 'Test 3'
                 }
             ]);
-        }).then(function () {
+        }).then(function() {
             var fullLayout = gd._fullLayout;
-            var subplot = fullLayout._plots['xy'];
+            var subplot = fullLayout._plots.xy;
             var scene = subplot._scene;
             expect(scene.glText.length).toEqual(3);
 
@@ -87,9 +87,9 @@ describe('end-to-end scattergl tests', function() {
                     text: 'Test 2'
                 }
             ]);
-        }).then(function () {
+        }).then(function() {
             var fullLayout = gd._fullLayout;
-            var subplot = fullLayout._plots['xy'];
+            var subplot = fullLayout._plots.xy;
             var scene = subplot._scene;
             expect(scene.glText.length).toEqual(2);
         }).catch(failTest).then(done);
