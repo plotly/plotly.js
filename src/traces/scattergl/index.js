@@ -389,7 +389,20 @@ function plot(gd, subplot, cdata) {
         }
 
         // update main marker options
-        if(scene.glText) {
+        if(scene.glText) {            
+            if (scene.count > scene.glText.length) {
+                // add gl text marker
+                var textsToAdd = scene.count - scene.glText.length;
+                for(i=0; i < textsToAdd; i++) {
+                    scene.glText.push(new Text(regl));
+                }
+            } else if (scene.count < scene.glText.length) {
+                // remove gl text marker
+                var textsToRemove = scene.glText.length - scene.count;
+                var removedTexts = scene.glText.splice(scene.count, textsToRemove);
+                removedTexts.forEach(function (text) { text.destroy(); });
+            }
+
             for(i = 0; i < scene.count; i++) {
                 scene.glText[i].update(scene.textOptions[i]);
             }
