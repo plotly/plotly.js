@@ -19,9 +19,14 @@ function extractInstructions(list) {
     if(!list || !list.length) return result;
 
     for(var i = 0; i < list.length; i++) {
-        result.push(
-            (list[i].length > 1) ? list[i].substring(0, 2) : ''
-        );
+        var token = (list[i].length > 1) ? list[i].substring(0, 2) : '';
+        if(
+            token !== '= ' &&
+            token !== '+ ' &&
+            token !== '- ' &&
+            token !== '% '
+        ) token = '';
+        result.push(token);
     }
     return result;
 }
