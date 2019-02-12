@@ -64,6 +64,8 @@ module.exports = function calc(gd, trace) {
         };
 
         if(operators[i] === '= ') {
+            if(i === 0) previousSum = cd[i].s; // this is a special case to allow using first element contain an initial value
+
             cd[i].isSum = true;
             cd[i].s = previousSum;
         } else if(operators[i] === '% ') {
@@ -94,7 +96,7 @@ module.exports = function calc(gd, trace) {
     if(trace._autoMarkerColor || trace._autoMarkerLineColor) {
         for(i = 0; i < serieslen; i++) {
             vals[i] = (cd[i].isSum) ? 0 :
-                (i === 0) ? 0 : cd[i].s - cd[i - 1].s;
+                (i === 0) ? cd[i].s : cd[i].s - cd[i - 1].s;
         }
     }
 

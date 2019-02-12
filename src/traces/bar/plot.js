@@ -125,7 +125,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
             }
 
             var shape;
-            if(isWaterfall && isTriangle && i > 0 && cd[i].isSum === false) {
+            if(isWaterfall && isTriangle && cd[i].isSum === false) {
                 if(isVertical) {
                     shape = 'M' + x0 + ',' + y0 + 'L' + (0.5 * (x1 + x0)) + ',' + y1 + 'L' + x1 + ',' + y0 + 'Z';
                 } else {
