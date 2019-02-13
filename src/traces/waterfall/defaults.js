@@ -30,6 +30,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
+    coerce('operator');
     coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
     coerce('offset');
     coerce('width');

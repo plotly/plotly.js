@@ -998,12 +998,10 @@ axes.tickText = function(ax, x, hover) {
         'never' :
         ax.exponentformat !== 'none' && isHidden(ax.showexponent) ? 'hide' : '';
 
-    var index;
-
     if(axType === 'date') formatDate(ax, out, hover, extraPrecision);
     else if(axType === 'log') formatLog(ax, out, hover, extraPrecision, hideexp);
-    else if(axType === 'category') index = formatCategory(ax, out);
-    else if(axType === 'multicategory') index = formatMultiCategory(ax, out, hover);
+    else if(axType === 'category') formatCategory(ax, out);
+    else if(axType === 'multicategory') formatMultiCategory(ax, out, hover);
     else if(isAngular(ax)) formatAngle(ax, out, hover, extraPrecision, hideexp);
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
@@ -1023,10 +1021,6 @@ axes.tickText = function(ax, x, hover) {
             inbounds(out.x - 0.5),
             inbounds(out.x + ax.dtick - 0.5)
         ];
-    }
-
-    if(ax._operators && index !== undefined && index < ax._operators.length) {
-        out.text = out.text.substring(ax._operators[index].length);
     }
 
     return out;
@@ -1201,17 +1195,14 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
 }
 
 function formatCategory(ax, out) {
-    var index = Math.round(out.x);
-    var tt = ax._categories[index];
+    var tt = ax._categories[Math.round(out.x)];
     if(tt === undefined) tt = '';
     out.text = String(tt);
-
-    return index;
 }
 
 function formatMultiCategory(ax, out, hover) {
-    var index = Math.round(out.x);
-    var cats = ax._categories[index] || [];
+    var v = Math.round(out.x);
+    var cats = ax._categories[v] || [];
     var tt = cats[1] === undefined ? '' : String(cats[1]);
     var tt2 = cats[0] === undefined ? '' : String(cats[0]);
 
@@ -1223,8 +1214,6 @@ function formatMultiCategory(ax, out, hover) {
         out.text = tt;
         out.text2 = tt2;
     }
-
-    return index;
 }
 
 function formatLinear(ax, out, hover, extraPrecision, hideexp) {

@@ -14,39 +14,20 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('./arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
-function extractOperators(list) {
-    var result = [];
-    if(!list || !list.length) return result;
-
-    for(var i = 0; i < list.length; i++) {
-        var operator = (list[i].length > 1) ? list[i].substring(0, 2) : '';
-        if(
-            operator !== '= ' &&
-            operator !== '+ ' &&
-            operator !== '- ' &&
-            operator !== '% '
-        ) operator = '';
-        result.push(operator);
-    }
-    return result;
-}
-
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, operators;
+    var size, pos;
 
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
-        operators = extractOperators(trace.y);
-        ya._operators = operators;
     } else {
         size = ya.makeCalcdata(trace, 'y');
         pos = xa.makeCalcdata(trace, 'x');
-        operators = extractOperators(trace.x);
-        xa._operators = operators;
     }
+
+    var operators = trace.operator;
 
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length, size.length);
@@ -63,19 +44,19 @@ module.exports = function calc(gd, trace) {
             s: size[i]
         };
 
-        if(operators[i] === '= ') {
+        if(operators[i] === '=') {
             if(i === 0) previousSum = cd[i].s; // this is a special case to allow using first element contain an initial value
 
             cd[i].isSum = true;
             cd[i].s = previousSum;
-        } else if(operators[i] === '% ') {
+        } else if(operators[i] === '%') {
             cd[i].isSum = false;
             var delta = Math.abs(cd[i].s);
             var sign = (cd[i].s < 0) ? -1 : 1;
             newSize = sign * (delta * previousSum * 0.01);
             cd[i].s = previousSum + newSize;
             previousSum += newSize;
-        } else if(operators[i] === '- ') {
+        } else if(operators[i] === '-') {
             cd[i].isSum = false;
             newSize = -cd[i].s;
             cd[i].s = previousSum + newSize;

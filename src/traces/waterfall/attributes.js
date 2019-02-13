@@ -17,6 +17,24 @@ var lineAttrs = require('../scatter/attributes').line;
 
 module.exports = {
 
+    operator: {
+        valType: 'flaglist',
+        flags: ['=', '+', '-', '%'],
+        dflt: '+',
+        arrayOk: true,
+        role: 'calc',
+        description: [
+            'Sets the operation associated with each column/row depending on',
+            'the `direction` of waterfall chart being horizontal or vertical.',
+            '\'+\' The defualt operation is to add values to the previous sum.',
+            '\'-\' Minus is to subtract (often positive) values from the sum.',
+            '\'=\' could be used to show the sum.',
+            '\'%\' Percent with either negative or positive values could be',
+            'applied to compute percentage of the sum and then subtract/add the',
+            'result to the sum. For example using -15 for 15% tax reduction.'
+        ].join(' ')
+    },
+
     x: barAttrs.x,
     x0: barAttrs.x0,
     dx: barAttrs.dx,
