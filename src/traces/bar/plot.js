@@ -40,7 +40,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 
         var isWaterfall = (trace.type === 'waterfall');
         var isTriangle = (isWaterfall) ? (trace.marker.shape === 'triangle') : false;
-        var isVertical = (trace.orientation === 'v');
+        var isHorizontal = (trace.orientation === 'h');
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
@@ -61,7 +61,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
             // log values go off-screen by plotwidth
             // so you see them continue if you drag the plot
             var x0, x1, y0, y1;
-            if(trace.orientation === 'h') {
+            if(isHorizontal) {
                 y0 = ya.c2p(di.p0, true);
                 y1 = ya.c2p(di.p1, true);
                 x0 = xa.c2p(di.s0, true);
@@ -69,8 +69,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 
                 // for selections
                 di.ct = [x1, (y0 + y1) / 2];
-            }
-            else {
+            } else {
                 x0 = xa.c2p(di.p0, true);
                 x1 = xa.c2p(di.p1, true);
                 y0 = ya.c2p(di.s0, true);
@@ -126,10 +125,10 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 
             var shape;
             if(isWaterfall && isTriangle && cd[i].isSum === false) {
-                if(isVertical) {
-                    shape = 'M' + x0 + ',' + y0 + 'L' + (0.5 * (x1 + x0)) + ',' + y1 + 'L' + x1 + ',' + y0 + 'Z';
-                } else {
+                if(isHorizontal) {
                     shape = 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + (0.5 * (y1 + y0)) + 'L' + x0 + ',' + y1 + 'Z';
+                } else {
+                    shape = 'M' + x0 + ',' + y0 + 'L' + (0.5 * (x1 + x0)) + ',' + y1 + 'L' + x1 + ',' + y0 + 'Z';
                 }
             } else {
                 shape = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
@@ -235,14 +234,12 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
             if(textHasSize &&
                     (fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk)) {
                 textPosition = 'inside';
-            }
-            else {
+            } else {
                 textPosition = 'outside';
                 textSelection.remove();
                 textSelection = null;
             }
-        }
-        else textPosition = 'inside';
+        } else textPosition = 'inside';
     }
 
     if(!textSelection) {
@@ -266,8 +263,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'outside';
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
             orientation, constrained);
-    }
-    else {
+    } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
             orientation, constrained);
@@ -295,8 +291,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
         textpad = TEXTPAD;
         barWidth -= 2 * textpad;
         barHeight -= 2 * textpad;
-    }
-    else textpad = 0;
+    } else textpad = 0;
 
     // compute rotation and scale
     var rotate,
@@ -306,18 +301,15 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
         // no scale or rotation is required
         rotate = false;
         scale = 1;
-    }
-    else if(textWidth <= barHeight && textHeight <= barWidth) {
+    } else if(textWidth <= barHeight && textHeight <= barWidth) {
         // only rotation is required
         rotate = true;
         scale = 1;
-    }
-    else if((textWidth < textHeight) === (barWidth < barHeight)) {
+    } else if((textWidth < textHeight) === (barWidth < barHeight)) {
         // only scale is required
         rotate = false;
         scale = constrained ? Math.min(barWidth / textWidth, barHeight / textHeight) : 1;
-    }
-    else {
+    } else {
         // both scale and rotation are required
         rotate = true;
         scale = constrained ? Math.min(barHeight / textWidth, barWidth / textHeight) : 1;
@@ -329,8 +321,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
     if(rotate) {
         targetWidth = scale * textHeight;
         targetHeight = scale * textWidth;
-    }
-    else {
+    } else {
         targetWidth = scale * textWidth;
         targetHeight = scale * textHeight;
     }
@@ -340,19 +331,16 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
             // bar end is on the left hand side
             targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
-        }
-        else {
+        } else {
             targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
-    }
-    else {
+    } else {
         if(y1 > y0) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
             targetY = y1 - textpad - targetHeight / 2;
-        }
-        else {
+        } else {
             targetX = (x0 + x1) / 2;
             targetY = y1 + textpad + targetHeight / 2;
         }
@@ -397,19 +385,16 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
             // bar end is on the left hand side
             targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
-        }
-        else {
+        } else {
             targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
-    }
-    else {
+    } else {
         if(y1 > y0) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
             targetY = y1 + textpad + targetHeight / 2;
-        }
-        else {
+        } else {
             targetX = (x0 + x1) / 2;
             targetY = y1 - textpad - targetHeight / 2;
         }
