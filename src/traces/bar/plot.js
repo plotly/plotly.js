@@ -167,12 +167,10 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
         var cd0 = cd[0];
         var trace = cd0.trace;
 
-        var isWaterfall = (trace.type === 'waterfall');
-        if(isWaterfall === false) return;
+        if(trace.type !== 'waterfall') return;
+        if(!trace.connector || !trace.connector.width) return;
 
         var lw = trace.connector.width * 0.5;
-        if(!lw) return;
-
         var isHorizontal = (trace.orientation === 'h');
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
@@ -186,7 +184,10 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
 
         connectors.exit().remove();
 
-        connectors.each(function(di) {
+        connectors.each(function(di, i) {
+            // do not draw connectors from the last item
+            if(i === connectors[0].length - 1) return;
+
             var connector = d3.select(this);
             var x0, x1, y0, y1;
             if(isHorizontal) {

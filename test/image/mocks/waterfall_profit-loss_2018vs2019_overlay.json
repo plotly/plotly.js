@@ -37,7 +37,7 @@
                 "Investment income",
                 "Financial income",
                 "Profit before tax",
-                "Income tax",
+                "Income tax (15%)",
                 "Profit after tax"
             ],
             "x": [
@@ -101,7 +101,7 @@
                 "Investment income",
                 "Financial income",
                 "Profit before tax",
-                "Income tax",
+                "Income tax (15%)",
                 "Profit after tax"
             ],
             "x": [
