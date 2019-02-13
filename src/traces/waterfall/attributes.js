@@ -12,6 +12,10 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var barAttrs = require('../bar/attributes');
 
+var dash = require('../../components/drawing/attributes').dash;
+var scatterAttrs = require('../scatter/attributes');
+var lineAttrs = scatterAttrs.line;
+
 module.exports = {
 
     x: barAttrs.x,
@@ -60,6 +64,13 @@ module.exports = {
             ].join(' ')
         }
     }),
+
+    connector: {
+        color: extendFlat({}, lineAttrs.color, {dflt: '#BBBBBB'}),
+        width: lineAttrs.width,
+        dash: dash,
+        editType: 'style'
+    },
 
     selected: barAttrs.selected,
     unselected: barAttrs.unselected

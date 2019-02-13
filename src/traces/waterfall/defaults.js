@@ -93,4 +93,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceIn.marker.line.color.length === 0
     );
 
+    coerce('connector.color');
+    coerce('connector.width');
+    coerce('connector.dash');
 };
