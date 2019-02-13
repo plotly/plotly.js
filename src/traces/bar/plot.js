@@ -186,26 +186,26 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
         connectors.each(function(di) {
             var connector = d3.select(this);
 
-            var lw = trace.connector.width;
+            var lw = trace.connector.width * 0.5;
 
             var x0, x1, y0, y1;
             if(isHorizontal) {
                 y0 = ya.c2p(di.p0, true);
-                y1 = ya.c2p(di.p1, true);
+                y1 = ya.c2p(di.p0 + ya.dtick, true);
                 x0 = xa.c2p(di.s0, true);
                 x1 = xa.c2p(di.s1, true);
             } else {
                 x0 = xa.c2p(di.p0, true);
-                x1 = xa.c2p(di.p1, true);
+                x1 = xa.c2p(di.p0 + xa.dtick, true);
                 y0 = ya.c2p(di.s0, true);
                 y1 = ya.c2p(di.s1, true);
             }
 
             var shape;
             if(isHorizontal) {
-                shape = 'M' + x1 + ',' + y0 + 'V' + y1 + 'H' + (x1 - lw) + 'V' + y0 + 'Z';
+                shape = 'M' + (x1 + lw) + ',' + y0 + 'V' + y1 + 'H' + (x1 - lw) + 'V' + y0 + 'Z';
             } else {
-                shape = 'M' + x0 + ',' + y1 + 'V' + (y1 - lw) + 'H' + x1 + 'V' + y1 + 'Z';
+                shape = 'M' + x0 + ',' + (y1 + lw) + 'V' + (y1 - lw) + 'H' + x1 + 'V' + y1 + 'Z';
             }
 
             Lib.ensureSingle(connector, 'path')
