@@ -25,6 +25,9 @@ function SurfaceTrace(scene, surface, uid) {
     this.surface = surface;
     this.data = null;
     this.showContour = [false, false, false];
+    this.contourStart = [null, null, null];
+    this.contourEnd = [null, null, null];
+    this.contourSize = [0, 0, 0];
     this.contourLocations = [[], [], []];
     this.contourRelative = [0, 0]; // note: only available on x & y not z.
     this.minValues = [Infinity, Infinity, Infinity];
@@ -412,6 +415,22 @@ proto.setContourLevels = function() {
                     insertIfNewLevel(newLevels[i], value);
                 }
             }
+
+            if(
+                this.contourSize[i] > 0 &&
+                this.contourStart[i] !== null &&
+                this.contourEnd[i] !== null &&
+                this.contourEnd[i] > this.contourStart[i]
+            ) {
+                useNewLevels[i] = true;
+
+                for(j = this.contourStart[i]; j < this.contourEnd[i]; j += this.contourSize[i]) {
+                    value = j * this.scene.dataScale[i];
+
+                    insertIfNewLevel(newLevels[i], value);
+                }
+            }
+
         }
     }
 
@@ -613,10 +632,19 @@ proto.update = function(data) {
             }
             params.contourWidth[i] = contourParams.width;
 
+            this.contourStart[i] = contourParams.start;
+            this.contourEnd[i] = contourParams.end;
+            this.contourSize[i] = contourParams.size;
+
             this.contourLocations[i] = contourParams.locations;
             if(i < 2) this.contourRelative[i] = contourParams.relative;
         } else {
             this.showContour[i] = false;
+
+            this.contourStart[i] = null;
+            this.contourEnd[i] = null;
+            this.contourSize[i] = 0;
+
             this.contourLocations[i] = [];
             if(i < 2) this.contourRelative[i] = 0;
         }

@@ -82,6 +82,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             coerce(contourDim + '.highlightcolor');
             coerce(contourDim + '.highlightwidth');
         }
+
+        coerce(contourDim + '.start');
+        coerce(contourDim + '.end');
+        coerce(contourDim + '.size');
     }
 
     // backward compatibility block

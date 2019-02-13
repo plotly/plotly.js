@@ -43,6 +43,40 @@ function makeContourAttr(axLetter) {
                 'dimension are drawn.'
             ].join(' ')
         },
+        start: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            editType: 'plot',
+         // impliedEdits: {'^autocontour': false},
+            description: [
+                'Sets the starting contour level value.',
+                'Must be less than `contours.end`'
+            ].join(' ')
+        },
+        end: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            editType: 'plot',
+         // impliedEdits: {'^autocontour': false},
+            description: [
+                'Sets the end contour level value.',
+                'Must be more than `contours.start`'
+            ].join(' ')
+        },
+        size: {
+            valType: 'number',
+            dflt: null,
+            min: 0,
+            role: 'style',
+            editType: 'plot',
+         // impliedEdits: {'^autocontour': false},
+            description: [
+                'Sets the step between each contour level.',
+                'Must be positive.'
+            ].join(' ')
+        },
         locations: {
             valType: 'data_array',
             dflt: false,

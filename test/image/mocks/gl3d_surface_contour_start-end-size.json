@@ -1,0 +1,40 @@
+{
+    "data": [
+        {
+            "type": "surface",
+            "contours": {
+                "x": { "show": true, "start": 0.1, "end": 0.4, "size": 0.05 },
+                "y": { "show": true, "start": 0.1, "end": 0.4, "size": 0.05 },
+                "z": { "show": true, "start": 0.1, "end": 0.4, "size": 0.05 }
+            },
+            "x": [0, 0.25, 0.5, 0.75, 1],
+            "y": [0, 0.25, 0.5, 0.75, 1],
+            "z": [
+                [0, 1, 0, 1, 0],
+                [1, 0, 1, 0, 1],
+                [0, 1, 0, 1, 0],
+                [1, 0, 1, 0, 1],
+                [0, 1, 0, 1, 0]
+            ]
+        }
+    ],
+    "layout": {
+        "title": "Surface contours using start, end and size",
+        "width": 900,
+        "height": 600,
+        "scene": {
+            "xaxis": { "nticks": 12 },
+            "yaxis": { "nticks": 12 },
+            "zaxis": { "nticks": 4 },
+            "camera": {
+                "eye": { "x": 0, "y": -1, "z": 0.75 },
+                "center": { "x": 0, "y": 0, "z": 0 }
+            },
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 0.2
+            }
+        }
+    }
+}
