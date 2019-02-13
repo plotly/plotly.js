@@ -28,12 +28,12 @@ var style = require('./style');
 // padding in pixels around text
 var TEXTPAD = 3;
 
-module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
+module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
 
-    var bartraces = Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function(cd) {
+    var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
@@ -152,9 +152,69 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
         Drawing.setClipUrl(plotGroup, hasClipOnAxisFalse ? null : plotinfo.layerClipId, gd);
     });
 
+    plotConnectors(gd, plotinfo, cdModule, traceLayer);
+
     // error bars are on the top
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo);
 };
+
+function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+
+    Lib.makeTraceGroups(traceLayer, cdModule, 'trace connectors').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
+
+        var isWaterfall = (trace.type === 'waterfall');
+        if(isWaterfall === false) return;
+
+        var isHorizontal = (trace.orientation === 'h');
+
+        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
+
+        var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'connectors');
+
+        var connectors = pointGroup.selectAll('g.connector').data(Lib.identity);
+
+        connectors.enter().append('g')
+            .classed('connector', true);
+
+        connectors.exit().remove();
+
+        connectors.each(function(di) {
+            var connector = d3.select(this);
+
+            var lw = trace.connector.width;
+
+            var x0, x1, y0, y1;
+            if(isHorizontal) {
+                y0 = ya.c2p(di.p0, true);
+                y1 = ya.c2p(di.p1, true);
+                x0 = xa.c2p(di.s0, true);
+                x1 = xa.c2p(di.s1, true);
+            } else {
+                x0 = xa.c2p(di.p0, true);
+                x1 = xa.c2p(di.p1, true);
+                y0 = ya.c2p(di.s0, true);
+                y1 = ya.c2p(di.s1, true);
+            }
+
+            var shape;
+            if(isHorizontal) {
+                shape = 'M' + x1 + ',' + y0 + 'V' + y1 + 'H' + (x1 - lw) + 'V' + y0 + 'Z';
+            } else {
+                shape = 'M' + x0 + ',' + y1 + 'V' + (y1 - lw) + 'H' + x1 + 'V' + y1 + 'Z';
+            }
+
+            Lib.ensureSingle(connector, 'path')
+            .style('vector-effect', 'non-scaling-stroke')
+            .attr('d', shape)
+            .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
+        });
+    });
+}
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var textPosition;
