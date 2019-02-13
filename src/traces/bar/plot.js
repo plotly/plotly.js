@@ -170,6 +170,9 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
         var isWaterfall = (trace.type === 'waterfall');
         if(isWaterfall === false) return;
 
+        var lw = trace.connector.width * 0.5;
+        if(!lw) return;
+
         var isHorizontal = (trace.orientation === 'h');
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
@@ -185,18 +188,15 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
 
         connectors.each(function(di) {
             var connector = d3.select(this);
-
-            var lw = trace.connector.width * 0.5;
-
             var x0, x1, y0, y1;
             if(isHorizontal) {
                 y0 = ya.c2p(di.p0, true);
-                y1 = ya.c2p(di.p0 + ya.dtick, true);
+                y1 = ya.c2p(di.p0 + 1, true);
                 x0 = xa.c2p(di.s0, true);
                 x1 = xa.c2p(di.s1, true);
             } else {
                 x0 = xa.c2p(di.p0, true);
-                x1 = xa.c2p(di.p0 + xa.dtick, true);
+                x1 = xa.c2p(di.p0 + 1, true);
                 y0 = ya.c2p(di.s0, true);
                 y1 = ya.c2p(di.s1, true);
             }
@@ -205,7 +205,7 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
             if(isHorizontal) {
                 shape = 'M' + (x1 + lw) + ',' + y0 + 'V' + y1 + 'H' + (x1 - lw) + 'V' + y0 + 'Z';
             } else {
-                shape = 'M' + x0 + ',' + (y1 + lw) + 'V' + (y1 - lw) + 'H' + x1 + 'V' + y1 + 'Z';
+                shape = 'M' + x0 + ',' + (y1 + lw) + 'H' + x1 + 'V' + (y1 - lw) + 'H' + x0 + 'Z';
             }
 
             Lib.ensureSingle(connector, 'path')
