@@ -7,6 +7,7 @@ var d3SankeyCircular = require('d3-sankey-circular');
 var mock = require('@mocks/sankey_energy.json');
 var mockDark = require('@mocks/sankey_energy_dark.json');
 var mockCircular = require('@mocks/sankey_circular.json');
+var mockCircularLarge = require('@mocks/sankey_circular_large.json');
 var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -1069,91 +1070,131 @@ describe('sankey layout generators', function() {
     describe('d3-sankey-ciruclar', function() {
         var data, sankey, graph;
 
-        function _calc(trace) {
-            var gd = { data: [trace] };
+        describe('implements d3-sankey compatible API', function() {
+            function _calc(trace) {
+                var gd = { data: [trace] };
 
-            supplyAllDefaults(gd);
-            var fullTrace = gd._fullData[0];
-            return Sankey.calc(gd, fullTrace);
-        }
+                supplyAllDefaults(gd);
+                var fullTrace = gd._fullData[0];
+                return Sankey.calc(gd, fullTrace);
+            }
 
-        beforeEach(function() {
-            data = _calc(mockCircular.data[0]);
-            data = {
-                nodes: data[0]._nodes,
-                links: data[0]._links
-            };
-            sankey = d3SankeyCircular
-              .sankeyCircular()
-              .iterations(32)
-              .circularLinkGap(2)
-              .nodePadding(10)
-              .size([500, 500])
-              .nodeId(function(d) {
-                  return d.pointNumber;
-              })
-              .nodes(data.nodes)
-              .links(data.links);
+            beforeEach(function() {
+                data = _calc(mockCircular.data[0]);
+                data = {
+                    nodes: data[0]._nodes,
+                    links: data[0]._links
+                };
+                sankey = d3SankeyCircular
+                  .sankeyCircular()
+                  .iterations(32)
+                  .circularLinkGap(2)
+                  .nodePadding(10)
+                  .size([500, 500])
+                  .nodeId(function(d) {
+                      return d.pointNumber;
+                  })
+                  .nodes(data.nodes)
+                  .links(data.links);
 
-            graph = sankey();
-        });
-
-        it('creates a graph with circular links', function() {
-            expect(graph.nodes.length).toEqual(6, 'there are 6 nodes');
-            var circularLinks = graph.links.filter(function(link) {
-                return link.circular;
+                graph = sankey();
             });
-            expect(circularLinks.length).toEqual(2, 'there are two circular links');
-        });
 
-        it('keep a list of nodes with positions in integer (depth, height)', function() {
-            checkArray(graph.nodes, 'depth', [0, 0, 2, 3, 1, 1]);
-            checkArray(graph.nodes, 'height', [1, 3, 1, 0, 2, 0]);
-        });
-
-        it('keep a list of nodes with positions in x and y', function() {
-            checkRoundedArray(graph.nodes, 'x0', [72, 72, 267, 365, 169, 169]);
-            checkRoundedArray(graph.nodes, 'y0', [303, 86, 72, 109, 86, 359]);
-        });
-
-        it('supports column reordering', function() {
-            var reorder = [ 2, 2, 1, 1, 0, 0 ];
-
-            checkArray(graph.nodes, 'column', [0, 0, 2, 3, 1, 1]);
-
-            var a = graph.nodes[0].x0;
-            sankey.nodeAlign(function(node) {
-                return reorder[node.pointNumber];
+            it('creates a graph with circular links', function() {
+                expect(graph.nodes.length).toEqual(6, 'there are 6 nodes');
+                var circularLinks = graph.links.filter(function(link) {
+                    return link.circular;
+                });
+                expect(circularLinks.length).toEqual(2, 'there are two circular links');
             });
-            graph = sankey();
-            checkArray(graph.nodes, 'column', [2, 2, 1, 1, 0, 0]);
-            checkArray(graph.nodes, 'height', [1, 3, 1, 0, 2, 0]);
-            var b = graph.nodes[0].x0;
-            expect(a).not.toEqual(b);
+
+            it('keep a list of nodes with positions in integer (depth, height)', function() {
+                checkArray(graph.nodes, 'depth', [0, 0, 2, 3, 1, 1]);
+                checkArray(graph.nodes, 'height', [1, 3, 1, 0, 2, 0]);
+            });
+
+            it('keep a list of nodes with positions in x and y', function() {
+                checkRoundedArray(graph.nodes, 'x0', [72, 72, 267, 365, 169, 169]);
+                checkRoundedArray(graph.nodes, 'y0', [303, 86, 72, 109, 86, 359]);
+            });
+
+            it('supports column reordering', function() {
+                var reorder = [ 2, 2, 1, 1, 0, 0 ];
+
+                checkArray(graph.nodes, 'column', [0, 0, 2, 3, 1, 1]);
+
+                var a = graph.nodes[0].x0;
+                sankey.nodeAlign(function(node) {
+                    return reorder[node.pointNumber];
+                });
+                graph = sankey();
+                checkArray(graph.nodes, 'column', [2, 2, 1, 1, 0, 0]);
+                checkArray(graph.nodes, 'height', [1, 3, 1, 0, 2, 0]);
+                var b = graph.nodes[0].x0;
+                expect(a).not.toEqual(b);
+            });
+
+            it('updates links vertical position and circularLinkType upon moving nodes', function() {
+                var linkIndex = 6;
+                var nodeIndex = 2;
+                var delta = [0, 400];
+
+                var link = graph.links[linkIndex];
+                var linkY1 = link.y1;
+                var node = graph.nodes[nodeIndex];
+                var offsetTopToBottom = (node.y1 - node.y0) * link.value / node.value;
+
+                // Start with a circular link on top
+                expect(link.circular).toBeTruthy();
+                expect(link.circularLinkType).toEqual('top');
+
+                // Update graph
+                var updatedGraph = moveNode(sankey, graph, nodeIndex, delta);
+                var updatedLink = updatedGraph.links[linkIndex];
+
+                // End up with a cirular link on bottom
+                expect(updatedLink.circular).toBeTruthy();
+                expect(updatedLink.circularLinkType).toEqual('bottom');
+                expect(updatedLink.y1).toBeCloseTo(linkY1 + delta[1] + offsetTopToBottom, 0);
+            });
         });
 
-        it('updates links vertical position and circularLinkType upon moving nodes', function() {
-            var linkIndex = 6;
-            var nodeIndex = 2;
-            var delta = [0, 400];
+        describe('handles large number of links', function() {
+            function _calc(trace) {
+                var gd = { data: [trace] };
 
-            var link = graph.links[linkIndex];
-            var linkY1 = link.y1;
-            var node = graph.nodes[nodeIndex];
-            var offsetTopToBottom = (node.y1 - node.y0) * link.value / node.value;
+                supplyAllDefaults(gd);
+                var fullTrace = gd._fullData[0];
+                return Sankey.calc(gd, fullTrace);
+            }
 
-            // Start with a circular link on top
-            expect(link.circular).toBeTruthy();
-            expect(link.circularLinkType).toEqual('top');
+            beforeEach(function() {
+                data = _calc(mockCircularLarge.data[0]);
+                data = {
+                    nodes: data[0]._nodes,
+                    links: data[0]._links
+                };
+                sankey = d3SankeyCircular
+                  .sankeyCircular()
+                  .iterations(32)
+                  .nodePadding(10)
+                  .size([500, 500])
+                  .nodeId(function(d) {
+                      return d.pointNumber;
+                  })
+                  .nodes(data.nodes)
+                  .links(data.links);
 
-            // Update graph
-            var updatedGraph = moveNode(sankey, graph, nodeIndex, delta);
-            var updatedLink = updatedGraph.links[linkIndex];
+                graph = sankey();
+            });
 
-            // End up with a cirular link on bottom
-            expect(updatedLink.circular).toBeTruthy();
-            expect(updatedLink.circularLinkType).toEqual('bottom');
-            expect(updatedLink.y1).toBeCloseTo(linkY1 + delta[1] + offsetTopToBottom, 0);
+            it('creates a graph with circular links', function() {
+                expect(graph.nodes.length).toEqual(26, 'right number of nodes');
+                var circularLinks = graph.links.filter(function(link) {
+                    return link.circular;
+                });
+                expect(circularLinks.length).toEqual(89, 'right number of circular links');
+            });
         });
     });
 });
