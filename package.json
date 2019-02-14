@@ -66,7 +66,7 @@
     "country-regex": "^1.1.0",
     "d3": "^3.5.12",
     "@plotly/d3-sankey": "0.7.2",
-    "d3-sankey-circular": "git://github.com/plotly/d3-sankey-circular.git#4ba2ecfb4b1403cfe1fb77c38d925659b90e3fda",
+    "d3-sankey-circular": "0.32.0",
     "d3-force": "^1.0.6",
     "d3-interpolate": "1",
     "delaunay-triangulate": "^1.1.6",
