@@ -90,7 +90,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
 
             cd.push(pt);
         } else {
-            cd.push({empty: true});
+            cd.push({pos: xi, empty: true});
         }
     }
 

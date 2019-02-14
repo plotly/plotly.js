@@ -428,7 +428,7 @@ describe('finance charts calc', function() {
         addJunk(trace1);
 
         var out = _calcRaw([trace0, trace1]);
-        var indices = [0, 1, 2, 3, 4, 5, 6, 7, undefined, undefined, undefined, undefined];
+        var indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         var i = 'increasing';
         var d = 'decreasing';
         var directions = [i, d, d, i, d, i, d, i, undefined, undefined, undefined, undefined];
@@ -642,6 +642,44 @@ describe('finance charts calc', function() {
                 low: 'low: ',
                 close: 'close: '
             });
+        });
+    });
+});
+
+describe('finance charts auto-range', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    describe('should give correct results with trailing nulls', function() {
+        var base = {
+            x: ['time1', 'time2', 'time3'],
+            high: [10, 11, null],
+            close: [5, 6, null],
+            low: [3, 3, null],
+            open: [4, 4, null]
+        };
+
+        it('- ohlc case', function(done) {
+            var trace = Lib.extendDeep({}, base, {type: 'ohlc'});
+
+            Plotly.plot(gd, [trace]).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- candlestick case', function(done) {
+            var trace = Lib.extendDeep({}, base, {type: 'candlestick'});
+
+            Plotly.plot(gd, [trace]).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });
