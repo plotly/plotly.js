@@ -58,7 +58,6 @@
   },
   "dependencies": {
     "3d-view": "^2.0.0",
-    "@plotly/d3-sankey": "^0.5.1",
     "alpha-shape": "^1.0.0",
     "array-range": "^1.0.1",
     "canvas-fit": "^1.5.0",
@@ -66,7 +65,10 @@
     "convex-hull": "^1.0.3",
     "country-regex": "^1.1.0",
     "d3": "^3.5.12",
+    "@plotly/d3-sankey": "0.7.2",
+    "d3-sankey-circular": "0.32.0",
     "d3-force": "^1.0.6",
+    "d3-interpolate": "1",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.2",
