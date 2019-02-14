@@ -235,10 +235,11 @@ colorscaleAttrs('', {
 
     colorbar: colorbarAttrs,
 
-    contour: meshAttrs.contour,
+    opacity: meshAttrs.opacity,
     lightposition: meshAttrs.lightposition,
     lighting: meshAttrs.lighting,
     flatshading: meshAttrs.flatshading,
+    contour: meshAttrs.contour,
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }), 'calc', 'nested');
