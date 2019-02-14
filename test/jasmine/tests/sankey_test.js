@@ -360,6 +360,47 @@ describe('sankey tests', function() {
                     done();
                 });
         });
+
+        it('switch from normal to circular Sankey on react', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            var mockCircularCopy = Lib.extendDeep({}, mockCircular);
+
+            Plotly.plot(gd, mockCopy)
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+                  return Plotly.react(gd, mockCircularCopy);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(true);
+                  done();
+              });
+        });
+
+        it('switch from circular to normal Sankey on react', function(done) {
+            var gd = createGraphDiv();
+            var mockCircularCopy = Lib.extendDeep({}, mockCircular);
+
+            Plotly.plot(gd, mockCircularCopy)
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(true);
+
+                  // Remove circular links
+                  var source = mockCircularCopy.data[0].link.source;
+                  source.splice(6, 1);
+                  source.splice(4, 1);
+
+                  var target = mockCircularCopy.data[0].link.target;
+                  target.splice(6, 1);
+                  target.splice(4, 1);
+
+                  return Plotly.react(gd, mockCircularCopy);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+                  done();
+              });
+        });
     });
 
     describe('Test hover/click interactions:', function() {
