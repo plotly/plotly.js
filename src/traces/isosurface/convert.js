@@ -369,7 +369,7 @@ function generateIsosurfaceMesh(data) {
     }
 
     function almostInFinalRange(value) {
-        var vErr = 0.01 * (vMax - vMin);
+        var vErr = 0.001 * (vMax - vMin);
         return (
             value >= vMin - vErr &&
             value <= vMax + vErr
