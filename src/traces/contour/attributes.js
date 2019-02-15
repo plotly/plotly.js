@@ -248,7 +248,7 @@ module.exports = extendFlat({
             ].join(' ')
         }),
         editType: 'plot'
-    },
+    }
 },
     colorscaleAttrs('', {
         cLetter: 'z',
