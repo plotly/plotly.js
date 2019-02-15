@@ -58,6 +58,10 @@ function checkAttrVal(sel, key, val) {
     if(/--/.test(val) && isNumeric(val.split('--')[1].charAt(0))) {
         throw new Error('d3 selection.attr called with value ' + val + ' which includes a double negative');
     }
+
+    if(/transform/.test(key) && /NaN/.test(val)) {
+        throw new Error('d3 selection.attr called with ' + key + ' ' + val + ' containing a NaN');
+    }
 }
 
 function checkStyleVal(sel, key, val) {

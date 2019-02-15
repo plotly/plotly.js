@@ -10,6 +10,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.44.4] -- 2019-02-12
+
+### Fixed
+- Fix `Plotly.react` used with `uirevision` when removing traces [#3527]
+- Fix `scattergl` update calls that change the number of on-graph text elements [#3536]
+- Fix annotations SVG errors on trace-less subplots [#3534]
+- Fix `ohlc` and `candlestick` hover on blank coordinates (bug introduced in 1.43.2) [#3537]
+
+
 ## [1.44.3] -- 2019-02-06
 
 ### Fixed

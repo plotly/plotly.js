@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.44.3
+* plotly.js (gl2d) v1.44.4
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -48961,6 +48961,9 @@ function drawOne(gd, index) {
     var xa = Axes.getFromId(gd, options.xref);
     var ya = Axes.getFromId(gd, options.yref);
 
+    if(xa) xa.setScale();
+    if(ya) ya.setScale();
+
     drawRaw(gd, options, index, false, xa, ya);
 }
 
@@ -67116,7 +67119,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.44.3';
+exports.version = '1.44.4';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -77570,7 +77573,7 @@ function getTraceIndexFromUid(uid, data, tracei) {
         if(data[i].uid === uid) return i;
     }
     // fall back on trace order, but only if user didn't provide a uid for that trace
-    return data[tracei].uid ? -1 : tracei;
+    return (!data[tracei] || data[tracei].uid) ? -1 : tracei;
 }
 
 function valsMatch(v1, v2) {
@@ -110202,6 +110205,19 @@ function plot(gd, subplot, cdata) {
 
         // update main marker options
         if(scene.glText) {
+            if(scene.count > scene.glText.length) {
+                // add gl text marker
+                var textsToAdd = scene.count - scene.glText.length;
+                for(i = 0; i < textsToAdd; i++) {
+                    scene.glText.push(new Text(regl));
+                }
+            } else if(scene.count < scene.glText.length) {
+                // remove gl text marker
+                var textsToRemove = scene.glText.length - scene.count;
+                var removedTexts = scene.glText.splice(scene.count, textsToRemove);
+                removedTexts.forEach(function(text) { text.destroy(); });
+            }
+
             for(i = 0; i < scene.count; i++) {
                 scene.glText[i].update(scene.textOptions[i]);
             }

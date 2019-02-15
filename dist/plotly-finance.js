@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.44.3
+* plotly.js (finance) v1.44.4
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -15696,6 +15696,9 @@ function drawOne(gd, index) {
     var options = fullLayout.annotations[index] || {};
     var xa = Axes.getFromId(gd, options.xref);
     var ya = Axes.getFromId(gd, options.yref);
+
+    if(xa) xa.setScale();
+    if(ya) ya.setScale();
 
     drawRaw(gd, options, index, false, xa, ya);
 }
@@ -33814,7 +33817,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.44.3';
+exports.version = '1.44.4';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -43967,7 +43970,7 @@ function getTraceIndexFromUid(uid, data, tracei) {
         if(data[i].uid === uid) return i;
     }
     // fall back on trace order, but only if user didn't provide a uid for that trace
-    return data[tracei].uid ? -1 : tracei;
+    return (!data[tracei] || data[tracei].uid) ? -1 : tracei;
 }
 
 function valsMatch(v1, v2) {
@@ -70355,6 +70358,9 @@ function getClosestPoint(pointData, xval, yval, hovermode) {
     if(pointData.index === false) return null;
 
     var di = cd[pointData.index];
+
+    if(di.empty) return null;
+
     var dir = di.dir;
     var container = trace[dir];
     var lc = container.line.color;

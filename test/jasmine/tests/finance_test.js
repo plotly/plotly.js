@@ -428,7 +428,7 @@ describe('finance charts calc', function() {
         addJunk(trace1);
 
         var out = _calcRaw([trace0, trace1]);
-        var indices = [0, 1, 2, 3, 4, 5, 6, 7, undefined, undefined, undefined, undefined];
+        var indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         var i = 'increasing';
         var d = 'decreasing';
         var directions = [i, d, d, i, d, i, d, i, undefined, undefined, undefined, undefined];
@@ -642,6 +642,44 @@ describe('finance charts calc', function() {
                 low: 'low: ',
                 close: 'close: '
             });
+        });
+    });
+});
+
+describe('finance charts auto-range', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    describe('should give correct results with trailing nulls', function() {
+        var base = {
+            x: ['time1', 'time2', 'time3'],
+            high: [10, 11, null],
+            close: [5, 6, null],
+            low: [3, 3, null],
+            open: [4, 4, null]
+        };
+
+        it('- ohlc case', function(done) {
+            var trace = Lib.extendDeep({}, base, {type: 'ohlc'});
+
+            Plotly.plot(gd, [trace]).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- candlestick case', function(done) {
+            var trace = Lib.extendDeep({}, base, {type: 'candlestick'});
+
+            Plotly.plot(gd, [trace]).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });
@@ -1265,6 +1303,45 @@ describe('finance trace hover via Fx.hover():', function() {
                     nums: 'hover off by 1\nopen: 7\nhigh: 7\nlow: 7\nclose: 7  ▲',
                     name: ''
                 }, 'after removing 2nd trace');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should ignore empty ' + type + ' item', function(done) {
+            // only the bar chart's hover will be displayed when hovering over the 3rd items
+            var x = ['time1', 'time2', 'time3', 'time4'];
+
+            Plotly.newPlot(gd, [{
+                x: x,
+                high: [6, 3, null, 8],
+                close: [4, 3, null, 8],
+                low: [5, 3, null, 8],
+                open: [3, 3, null, 8],
+                type: type
+            }, {
+                x: x,
+                y: [1, 2, 3, 4],
+                type: 'bar'
+            }], {
+                xaxis: { rangeslider: {visible: false} },
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                gd.on('plotly_hover', function(d) {
+                    Plotly.Fx.hover(gd, [
+                        {curveNumber: 0, pointNumber: d.points[0].pointNumber},
+                        {curveNumber: 1, pointNumber: d.points[0].pointNumber}
+                    ]);
+                });
+            })
+            .then(function() { hover(281, 252); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '(time3, 3)',
+                    name: 'trace 1'
+                }, 'hover over 3rd items');
             })
             .catch(failTest)
             .then(done);
