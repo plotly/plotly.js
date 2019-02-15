@@ -393,13 +393,27 @@ function generateIsosurfaceMesh(data) {
         return xyzv;
     }
 
-    function tryCreateTri(style, xyzv, abc, min, max, isSecondPass) {
+    var MAX_PASS = 3;
+
+    function tryCreateTri(style, xyzv, abc, min, max, nPass) {
+
+        if(!nPass) nPass = 1;
 
         abc = [-1, -1, -1]; // Note: for the moment we override indices
         // to run faster! But it is possible to comment this line
         // to reduce the number of vertices.
 
         var result = false;
+
+        var ok = [
+            inRange(xyzv[0][3], min, max),
+            inRange(xyzv[1][3], min, max),
+            inRange(xyzv[2][3], min, max)
+        ];
+
+        if(!ok[0] && !ok[1] && !ok[2]) {
+            return false;
+        }
 
         var tryDrawTri = function(style, xyzv, abc) {
             if( // we check here if the points are in `real` iso-min/max range
@@ -409,27 +423,17 @@ function generateIsosurfaceMesh(data) {
             ) {
                 drawTri(style, xyzv, abc);
                 return true;
-            } else if(!isSecondPass) {
-                return tryCreateTri(style, xyzv, abc, vMin, vMax, true); // i.e. second pass
+            } else if(nPass < MAX_PASS) {
+                return tryCreateTri(style, xyzv, abc, vMin, vMax, ++nPass); // i.e. second pass using actual vMin vMax bounds
             }
             return false;
         };
 
-        var ok = [
-            inRange(xyzv[0][3], min, max),
-            inRange(xyzv[1][3], min, max),
-            inRange(xyzv[2][3], min, max)
-        ];
-
-        var interpolated = false;
-
-        if(!ok[0] && !ok[1] && !ok[2]) {
-            return false;
-        }
-
         if(ok[0] && ok[1] && ok[2]) {
             return tryDrawTri(style, xyzv, abc) || result;
         }
+
+        var interpolated = false;
 
         [
             [0, 1, 2],
@@ -486,8 +490,6 @@ function generateIsosurfaceMesh(data) {
             inRange(xyzv[3][3], min, max)
         ];
 
-        var interpolated = false;
-
         if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
             return result;
         }
@@ -498,6 +500,8 @@ function generateIsosurfaceMesh(data) {
             }
             return result;
         }
+
+        var interpolated = false;
 
         [
             [0, 1, 2, 3],
@@ -615,10 +619,14 @@ function generateIsosurfaceMesh(data) {
         return result;
     }
 
-    function addRect(style, a, b, c, d, min, max, previousResult) {
+    function addRect(style, a, b, c, d, min, max
+        // , previousResult
+    ) {
         return [
-            (previousResult[0] === true) ? true : tryCreateTri(style, getXYZV([a, b, c]), [a, b, c], min, max),
-            (previousResult[1] === true) ? true : tryCreateTri(style, getXYZV([c, d, a]), [c, d, a], min, max)
+            // (previousResult[0] === true) ? true :
+            tryCreateTri(style, getXYZV([a, b, c]), [a, b, c], min, max),
+            // (previousResult[1] === true) ? true :
+            tryCreateTri(style, getXYZV([c, d, a]), [c, d, a], min, max)
         ];
     }
 
@@ -676,17 +684,14 @@ function generateIsosurfaceMesh(data) {
     function begin3dCell(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max, isEven) {
         // used to create spaceframe and/or iso-surfaces
 
-        var result = false;
         var cellStyle = style;
         if(isEven) {
             if(drawingSurface && style === 'even') cellStyle = null;
-            result = addCube(cellStyle, p000, p001, p010, p011, p100, p101, p110, p111, min, max) || result;
+            return addCube(cellStyle, p000, p001, p010, p011, p100, p101, p110, p111, min, max);
         } else {
             if(drawingSurface && style === 'odd') cellStyle = null;
-            result = addCube(cellStyle, p111, p110, p101, p100, p011, p010, p001, p000, min, max) || result;
+            return addCube(cellStyle, p111, p110, p101, p100, p011, p010, p001, p000, min, max);
         }
-
-        return result;
     }
 
     function draw2dX(style, items, min, max, previousResult) {
@@ -705,7 +710,7 @@ function generateIsosurfaceMesh(data) {
                             min,
                             max,
                             (i + j + k) % 2,
-                            (previousResult && previousResult[n]) ? previousResult[n] : [false, false]
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
                         )
                     );
                     n++;
@@ -731,7 +736,7 @@ function generateIsosurfaceMesh(data) {
                             min,
                             max,
                             (i + j + k) % 2,
-                            (previousResult && previousResult[n]) ? previousResult[n] : [false, false]
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
                         )
                     );
                     n++;
@@ -757,7 +762,7 @@ function generateIsosurfaceMesh(data) {
                             min,
                             max,
                             (i + j + k) % 2,
-                            (previousResult && previousResult[n]) ? previousResult[n] : [false, false]
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
                         )
                     );
                     n++;
@@ -810,7 +815,7 @@ function generateIsosurfaceMesh(data) {
                 for(var j = 1; j < height; j++) {
                     result.push(
                         beginSection(style, i, j, k, min, max, distRatios[q],
-                            (previousResult && previousResult[n]) ? previousResult[n] : [false, false]
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
                         )
                     );
                     n++;
@@ -829,7 +834,7 @@ function generateIsosurfaceMesh(data) {
                 for(var k = 1; k < depth; k++) {
                     result.push(
                         beginSection(style, i, j, k, min, max, distRatios[q],
-                            (previousResult && previousResult[n]) ? previousResult[n] : [false, false]
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
                         )
                     );
                     n++;
@@ -848,7 +853,7 @@ function generateIsosurfaceMesh(data) {
                 for(var i = 1; i < width; i++) {
                     result.push(
                         beginSection(style, i, j, k, min, max, distRatios[q],
-                            (previousResult && previousResult[n]) ? previousResult[n] : [false, false]
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
                         )
                     );
                     n++;
