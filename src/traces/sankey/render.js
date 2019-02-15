@@ -10,7 +10,6 @@
 
 var c = require('./constants');
 var d3 = require('d3');
-var sum = require('d3-array').sum;
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
