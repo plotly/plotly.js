@@ -352,7 +352,7 @@ function generateIsosurfaceMesh(data) {
         if(value < min) value = min;
         if(value > max) value = max;
 
-        var ratio = (pointOut[3] - value) / (pointOut[3] - pointIn[3]);
+        var ratio = (pointOut[3] - value) / (pointOut[3] - pointIn[3] + 0.000000001); // we had to add this error to force solve the tiny caps
 
         var result = [];
         for(var s = 0; s < 4; s++) {
@@ -619,13 +619,11 @@ function generateIsosurfaceMesh(data) {
         return result;
     }
 
-    function addRect(style, a, b, c, d, min, max
-        // , previousResult
-    ) {
+    function addRect(style, a, b, c, d, min, max, previousResult) {
         return [
-            // (previousResult[0] === true) ? true :
+            (previousResult[0] === true) ? true :
             tryCreateTri(style, getXYZV([a, b, c]), [a, b, c], min, max),
-            // (previousResult[1] === true) ? true :
+            (previousResult[1] === true) ? true :
             tryCreateTri(style, getXYZV([c, d, a]), [c, d, a], min, max)
         ];
     }
