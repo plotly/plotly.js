@@ -69,53 +69,68 @@ function sankeyModel(layout, d, traceIndex) {
     }
 
     function computeLinkConcentrations() {
-        graph.nodes.forEach(function(node) {
+        var i, j, k;
+        for(i = 0; i < graph.nodes.length; i++) {
+            var node = graph.nodes[i];
             // Links connecting the same two nodes are part of a flow
             var flows = {};
-            node.targetLinks.forEach(function(link) {
-                var flowKey = link.source.pointNumber + ':' + link.target.pointNumber;
+            var flowKey;
+            var link;
+            for(j = 0; j < node.targetLinks.length; j++) {
+                link = node.targetLinks[j];
+                flowKey = link.source.pointNumber + ':' + link.target.pointNumber;
                 if(!flows.hasOwnProperty(flowKey)) flows[flowKey] = [];
                 flows[flowKey].push(link);
-            });
+            }
 
             // Compute statistics for each flow
-            Object.keys(flows).forEach(function(flowKey) {
+            var keys = Object.keys(flows);
+            for(j = 0; j < keys.length; j++) {
+                flowKey = keys[j];
                 var flowLinks = flows[flowKey];
 
                 // Find the total size of the flow and total size per label
                 var total = 0;
                 var totalPerLabel = {};
-                flowLinks.forEach(function(link) {
+                for(k = 0; k < flowLinks.length; k++) {
+                    link = flowLinks[k];
                     if(!totalPerLabel[link.label]) totalPerLabel[link.label] = 0;
                     totalPerLabel[link.label] += link.value;
                     total += link.value;
-                });
+                }
 
                 // Find the ratio of the link's value and the size of the flow
-                flowLinks.forEach(function(link) {
+                for(k = 0; k < flowLinks.length; k++) {
+                    link = flowLinks[k];
                     link.flow = {
                         value: total,
                         labelConcentration: totalPerLabel[link.label] / total,
                         concentration: link.value / total,
                         links: flowLinks
                     };
-                });
-            });
+                }
+            }
 
             // Gather statistics of all links at current node
-            var totalOutflow = sum(node.sourceLinks, function(n) {
-                return n.value;
-            });
-            node.sourceLinks.forEach(function(link) {
+            var totalOutflow = 0;
+            for(j = 0; j < node.sourceLinks.length; j++) {
+                totalOutflow += node.sourceLinks[j].value;
+            }
+            for(j = 0; j < node.sourceLinks.length; j++) {
+                link = node.sourceLinks[j];
                 link.concentrationOut = link.value / totalOutflow;
-            });
-            var totalInflow = sum(node.targetLinks, function(n) {
-                return n.value;
-            });
-            node.targetLinks.forEach(function(link) {
+            }
+
+            var totalInflow = 0;
+            for(j = 0; j < node.targetLinks.length; j++) {
+                totalInflow += node.targetLinks[j].value;
+            }
+
+            for(j = 0; j < node.targetLinks.length; j++) {
+                link = node.targetLinks[j];
                 link.concenrationIn = link.value / totalInflow;
-            });
-        });
+            }
+        }
     }
     computeLinkConcentrations();
 

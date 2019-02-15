@@ -8,6 +8,7 @@
                   "color": "white",
                   "width": 2
                 },
+                "color": "black",
                 "label": ["process0", "process1", "process2", "process3", "process4"]
             },
             "link": {
@@ -30,7 +31,7 @@
                     10, 5, 10, 20,
                     0, 10, 10, 10,
                     15, 5,
-                    5
+                    20
 
                 ],
                 "label": [
