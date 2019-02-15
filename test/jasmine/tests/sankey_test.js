@@ -830,6 +830,11 @@ describe('sankey tests', function() {
                 expect(pt.hasOwnProperty('source')).toBeTruthy();
                 expect(pt.hasOwnProperty('target')).toBeTruthy();
                 expect(pt.hasOwnProperty('flow')).toBeTruthy();
+
+                expect(pt.flow.hasOwnProperty('concentration')).toBeTruthy();
+                expect(pt.flow.hasOwnProperty('labelConcentration')).toBeTruthy();
+                expect(pt.flow.hasOwnProperty('value')).toBeTruthy();
+                expect(pt.flow.hasOwnProperty('links')).toBeTruthy();
             })
             .then(function() { return _unhover('node'); })
             .then(function(d) {
