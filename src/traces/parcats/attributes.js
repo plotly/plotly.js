@@ -12,6 +12,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var plotAttrs = require('../../plots/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var scatterAttrs = require('../scatter/attributes');
 var scatterLineAttrs = scatterAttrs.line;
@@ -34,16 +35,26 @@ var line = extendFlat({
                 'If `linear`, paths are composed of straight lines.',
                 'If `hspline`, paths are composed of horizontal curved splines'
             ].join(' ')
-        }
+        },
+
+        hovertemplate: hovertemplateAttrs({
+            editType: 'plot',
+            arrayOk: false
+        }, {
+            keys: ['count', 'probability'],
+            description: [
+                'This value here applies when hovering over lines.'
+            ].join(' ')
+        })
     });
 
 module.exports = {
     domain: domainAttrs({name: 'parcats', trace: true, editType: 'calc'}),
+
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['count', 'probability'],
         editType: 'plot',
         arrayOk: false
-        // plotAttrs.hoverinfo description is appropriate
     }),
     hoveron: {
         valType: 'enumerated',
@@ -58,6 +69,21 @@ module.exports = {
             'If `dimension`, hover interactions take place across all categories per dimension.'
         ].join(' ')
     },
+    hovertemplate: hovertemplateAttrs({
+        editType: 'plot',
+        arrayOk: false
+    }, {
+        keys: [
+            'count', 'probability', 'category',
+            'categorycount', 'colorcount', 'bandcolorcount'
+        ],
+        description: [
+            'This value here applies when hovering over dimensions.',
+            'Note tath `*categorycount`, *colorcount* and *bandcolorcount*',
+            'are only available when `hoveron` contains the *color* flag'
+        ].join(' ')
+    }),
+
     arrangement: {
         valType: 'enumerated',
         values: ['perpendicular', 'freeform', 'fixed'],

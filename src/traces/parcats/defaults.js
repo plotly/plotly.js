@@ -18,8 +18,9 @@ var attributes = require('./attributes');
 var mergeLength = require('../parcoords/merge_length');
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
-
     coerce('line.shape');
+    coerce('line.hovertemplate');
+
     var lineColor = coerce('line.color', layout.colorway[0]);
     if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
         if(lineColor.length) {
@@ -96,6 +97,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     mergeLength(traceOut, dimensions, 'values', len);
 
     coerce('hoveron');
+    coerce('hovertemplate');
     coerce('arrangement');
     coerce('bundlecolors');
     coerce('sortpaths');

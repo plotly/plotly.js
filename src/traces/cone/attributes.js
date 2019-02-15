@@ -10,6 +10,7 @@
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var mesh3dAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -157,7 +158,8 @@ var attrs = {
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
-    }
+    },
+    hovertemplate: hovertemplateAttrs({editType: 'calc'}, {keys: ['norm']})
 };
 
 extendFlat(attrs, colorscaleAttrs('', {

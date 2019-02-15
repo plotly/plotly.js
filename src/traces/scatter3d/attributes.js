@@ -10,6 +10,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var baseAttrs = require('../../plots/attributes');
 var DASHES = require('../../constants/gl3d_dashes');
 
@@ -94,6 +95,7 @@ var attrs = module.exports = overrideAll({
             'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
     }),
+    hovertemplate: hovertemplateAttrs(),
 
     mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),

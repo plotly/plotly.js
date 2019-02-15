@@ -678,6 +678,28 @@ describe('scattercarpet hover labels', function() {
         )
         .then(done);
     });
+
+    it('should generate hover label with *hovertemplate*', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        fig.data[5].hovertemplate = 'f(%{a}, %{b}) = %{y}<extra>scattercarpet #%{curveNumber}</extra>';
+
+        run(
+            [200, 200], fig,
+            [['f(0.2, 3.5) = 2.900'], 'scattercarpet #5']
+        )
+        .then(done);
+    });
+
+    it('should generate hover label with arrayOk *hovertemplate*', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        fig.data[5].hovertemplate = ['', '', '', 'f(%{a}, %{b}) = %{y:.1f}<extra>pt #%{pointNumber}</extra>'];
+
+        run(
+            [200, 200], fig,
+            [['f(0.2, 3.5) = 3.0'], 'pt #3']
+        )
+        .then(done);
+    });
 });
 
 describe('contourcarpet plotting & editing', function() {

@@ -10,6 +10,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
@@ -118,4 +119,5 @@ module.exports = {
         flags: ['a', 'b', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
+    hovertemplate: hovertemplateAttrs()
 };

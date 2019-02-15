@@ -766,6 +766,22 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
+            .then(function() {
+                return Plotly.restyle(gd, 'hovertemplate', '(%{x},%{y}) -- %{z}<extra>trace %{data.name}</extra>');
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: '(1,3) -- 2',
+                    name: 'trace two'
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: '(1,1) -- 5.56',
+                    name: 'trace one'
+                });
+            })
             .catch(failTest)
             .then(done);
         });
@@ -874,6 +890,22 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
+            .then(function() {
+                return Plotly.restyle(gd, 'hovertemplate', 'f(%{x:.3f},%{y:.3f})=%{z}');
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                assertHoverLabelContent({
+                    nums: 'f(1.000,3.000)=2',
+                    name: 'two'
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'f(1.000,1.000)=5.56',
+                    name: 'one'
+                });
+            })
             .catch(failTest)
             .then(done);
         });
@@ -910,6 +942,22 @@ describe('hover info', function() {
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
                     name: 'one'
+                });
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'hovertemplate', 'f(%{x:.1f}, %{y:.1f})=%{z}<extra></extra>');
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: 'f(1.0, 3.0)=2',
+                    name: ''
+                });
+
+                _hover(gd, 250, 270);
+                assertHoverLabelContent({
+                    nums: 'f(1.0, 1.0)=5.56',
+                    name: ''
                 });
             })
             .catch(failTest)
@@ -2224,6 +2272,17 @@ describe('Hover on multicategory axes', function() {
         .then(function() {
             assertHoverLabelContent({
                 nums: 'x: 2017 - q3\ny: Group 3 - A\nz: 2.303'
+            });
+            expect(eventData.x).toEqual(['2017', 'q3']);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hovertemplate', '%{z} @ %{x} | %{y}');
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: '2.303 @ 2017 - q3 | Group 3 - A',
+                name: 'w/ 2d z'
             });
             expect(eventData.x).toEqual(['2017', 'q3']);
         })

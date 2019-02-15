@@ -10,6 +10,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttrs = require('../../components/colorscale/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
@@ -123,6 +124,7 @@ module.exports = {
             'this trace\'s (x,y) coordinates.'
         ].join(' ')
     }),
+    hovertemplate: hovertemplateAttrs(),
 
     marker: markerAttrs,
 
