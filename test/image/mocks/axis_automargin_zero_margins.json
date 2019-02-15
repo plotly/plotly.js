@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "x": [ "12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM" ],
+      "y": [ 59.44, 68.75, 87.5, 100.5, 95.56, 92.8, 85.25, 77.4, 76.4, 73.94, 74.56, 81.06 ]
+    },
+    {
+      "x": [ "12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM" ],
+      "y": [ 59.44, 68.75, 87.5, 100.5, 95.56, 92.8, 85.25, 77.4, 76.4, 73.94, 74.56, 81.06 ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "margin": {"l": 0, "r": 0, "t": 0, "b": 0},
+    "grid": {"rows": 1, "columns": 2, "pattern": "independent"},
+    "xaxis": {
+      "automargin": true
+    },
+    "yaxis": {
+      "automargin": true
+    },
+    "xaxis2": {
+      "automargin": true,
+      "side": "top"
+    },
+    "yaxis2": {
+      "automargin": true,
+      "side": "right"
+    },
+    "showlegend": false,
+    "width": 700,
+    "height": 450
+  }
+}

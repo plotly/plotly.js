@@ -20,8 +20,6 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         var orientation = orientations[i];
         var posAxis = orientation === 'h' ? ya : xa;
         var violinList = [];
-        var minPad = 0;
-        var maxPad = 0;
 
         for(var j = 0; j < calcdata.length; j++) {
             var cd = calcdata[j];
@@ -35,14 +33,9 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
                     trace.yaxis === ya._id
               ) {
                 violinList.push(j);
-
-                if(trace.points !== false) {
-                    minPad = Math.max(minPad, trace.jitter - trace.pointpos - 1);
-                    maxPad = Math.max(maxPad, trace.jitter + trace.pointpos - 1);
-                }
             }
         }
 
-        setPositionOffset('violin', gd, violinList, posAxis, [minPad, maxPad]);
+        setPositionOffset('violin', gd, violinList, posAxis);
     }
 };

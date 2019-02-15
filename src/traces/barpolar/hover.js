@@ -61,6 +61,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var _cdi = Lib.extendFlat({}, cdi, {r: cdi.s, theta: cdi.p});
     fillHoverText(cdi, trace, pointData);
     makeHoverPointText(_cdi, trace, subplot, pointData);
+    pointData.hovertemplate = trace.hovertemplate;
     pointData.color = getTraceColor(trace, cdi);
     pointData.xLabelVal = pointData.yLabelVal = undefined;
 

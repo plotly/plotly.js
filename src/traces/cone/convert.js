@@ -80,7 +80,7 @@ function convert(scene, trace) {
         trace._len
     );
 
-    coneOpts.colormap = parseColorScale(trace.colorscale);
+    coneOpts.colormap = parseColorScale(trace);
     coneOpts.vertexIntensityBounds = [trace.cmin / trace._normMax, trace.cmax / trace._normMax];
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
 

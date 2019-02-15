@@ -110,6 +110,23 @@ describe('Test scatterpolar hover:', function() {
         nums: 'r: 4.022892\nθ: 128.342°',
         name: 'Trial 3'
     }, {
+        desc: 'with hovertemplate',
+        patch: function(fig) {
+            fig.data[2].hovertemplate = 'template %{r} %{theta}';
+            return fig;
+        },
+        nums: 'template 4.02289202968 128.342009045',
+        name: 'Trial 3'
+    }, {
+        desc: 'with hovertemplate and empty trace name',
+        patch: function(fig) {
+            fig.data[2].hovertemplate = 'template %{r} %{theta}';
+            fig.data[2].name = '';
+            return fig;
+        },
+        nums: 'template 4.02289202968 128.342009045',
+        name: ''
+    }, {
         desc: '(no labels - out of sector)',
         patch: function(fig) {
             fig.layout.polar.sector = [15, 75];

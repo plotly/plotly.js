@@ -22,7 +22,8 @@ module.exports = {
             'If *group*, the boxes are plotted next to one another',
             'centered around the shared location.',
             'If *overlay*, the boxes are plotted over one another,',
-            'you might need to set *opacity* to see them multiple boxes.'
+            'you might need to set *opacity* to see them multiple boxes.',
+            'Has no effect on traces that have *width* set.'
         ].join(' ')
     },
     boxgap: {
@@ -34,7 +35,8 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
-            'adjacent location coordinates.'
+            'adjacent location coordinates.',
+            'Has no effect on traces that have *width* set.'
         ].join(' ')
     },
     boxgroupgap: {
@@ -46,7 +48,8 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
-            'the same location coordinate.'
+            'the same location coordinate.',
+            'Has no effect on traces that have *width* set.'
         ].join(' ')
     }
 };

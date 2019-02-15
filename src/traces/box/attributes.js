@@ -171,6 +171,20 @@ module.exports = {
             'the vertical (horizontal).'
         ].join(' ')
     },
+
+    width: {
+        valType: 'number',
+        min: 0,
+        role: 'info',
+        dflt: 0,
+        editType: 'calc',
+        description: [
+            'Sets the width of the box in data coordinate',
+            'If *0* (default value) the width is automatically selected based on the positions',
+            'of other box traces in the same subplot.'
+        ].join(' ')
+    },
+
     marker: {
         outliercolor: {
             valType: 'color',
@@ -244,7 +258,6 @@ module.exports = {
         marker: scatterAttrs.unselected.marker,
         editType: 'style'
     },
-
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],

@@ -31,7 +31,7 @@ module.exports = function style(s, gd) {
         var height = d[0].height;
 
         if(valign === 'middle' || !lineHeight || !height) {
-            layers.attr('transform', null); // this here is a fun d3 trick to unset DOM attributes
+            layers.attr('transform', null);
         } else {
             var factor = {top: 1, bottom: -1}[valign];
             var markerOffsetY = factor * (0.5 * (lineHeight - height + 3));

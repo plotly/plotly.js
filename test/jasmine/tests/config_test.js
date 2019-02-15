@@ -1,12 +1,15 @@
 var Plotly = require('@lib/index');
 var Plots = Plotly.Plots;
 var Lib = require('@src/lib');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
+
 var RESIZE_DELAY = 300;
 
 describe('config argument', function() {
@@ -548,213 +551,372 @@ describe('config argument', function() {
         });
     });
 
-    describe('responsive figure', function() {
-        var gd;
-        var data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
-        var width = 960;
-        var height = 800;
+    ['scatter', 'scattergl'].forEach(function(traceType) {
+        describe('responsive ' + traceType + ' trace', function() {
+            var gd;
+            var data = [{type: traceType, x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
+            var width = 960;
+            var height = 800;
 
-        var parent, elWidth, elHeight;
+            var parent, elWidth, elHeight;
 
-        beforeEach(function() {
-            viewport.set(width, height);
+            beforeEach(function() {
+                viewport.set(width, height);
 
-            // Prepare a parent container that fills the viewport
-            parent = document.createElement('div');
-            parent.style.width = '100vw';
-            parent.style.height = '100vh';
-            parent.style.position = 'fixed';
-            parent.style.top = '0';
-            parent.style.left = '0';
-        });
+                // Prepare a parent container that fills the viewport
+                parent = document.createElement('div');
+                parent.style.width = '100vw';
+                parent.style.height = '100vh';
+                parent.style.position = 'fixed';
+                parent.style.top = '0';
+                parent.style.left = '0';
+            });
 
-        afterEach(function() {
-            Plotly.purge(gd); // Needed to remove all event listeners
-            document.body.removeChild(parent);
-            viewport.reset();
-        });
+            afterEach(function() {
+                Plotly.purge(gd); // Needed to remove all event listeners
+                document.body.removeChild(parent);
+                viewport.reset();
+            });
 
-        function checkLayoutSize(width, height) {
-            expect(gd._fullLayout.width).toBe(width);
-            expect(gd._fullLayout.height).toBe(height);
-
-            var svg = document.getElementsByClassName('main-svg')[0];
-            expect(+svg.getAttribute('width')).toBe(width);
-            expect(+svg.getAttribute('height')).toBe(height);
-        }
-
-        function testResponsive() {
-            checkLayoutSize(elWidth, elHeight);
-            viewport.set(width / 2, height / 2);
-
-            return Promise.resolve()
-            .then(delay(RESIZE_DELAY))
-            .then(function() {
-                checkLayoutSize(elWidth / 2, elHeight / 2);
-            })
-            .catch(failTest);
-        }
-
-        function fillParent(numRows, numCols, cb) {
-            elWidth = width / numCols, elHeight = height / numRows;
-
-            // Fill parent
-            for(var i = 0; i < (numCols * numRows); i++) {
-                var col = document.createElement('div');
-                col.style.height = '100%';
-                col.style.width = '100%';
-                if(typeof(cb) === typeof(Function)) cb.call(col, i);
-                parent.appendChild(col);
+            function checkLayoutSize(width, height) {
+                expect(gd._fullLayout.width).toBe(width);
+                expect(gd._fullLayout.height).toBe(height);
             }
-            document.body.appendChild(parent);
-            gd = parent.childNodes[0];
+
+            function checkElementsSize(nodeList, width, height) {
+                var i;
+                for(i = 0; i < nodeList.length; i++) {
+                    var domRect = nodeList[i].getBoundingClientRect();
+                    expect(domRect.width).toBe(width);
+                    expect(domRect.height).toBe(height);
+                    expect(+nodeList[i].getAttribute('width')).toBe(width);
+                    expect(+nodeList[i].getAttribute('height')).toBe(height);
+                }
+            }
+
+            function testResponsive() {
+                checkLayoutSize(elWidth, elHeight);
+                viewport.set(width / 2, height / 2);
+
+                return Promise.resolve()
+                .then(delay(RESIZE_DELAY))
+                .then(function() {
+                    checkLayoutSize(elWidth / 2, elHeight / 2);
+
+                    var mainSvgs = document.getElementsByClassName('main-svg');
+                    checkElementsSize(mainSvgs, elWidth / 2, elHeight / 2);
+
+                    var canvases = document.getElementsByTagName('canvas');
+                    checkElementsSize(canvases, elWidth / 2, elHeight / 2);
+
+                })
+                .catch(failTest);
+            }
+
+            function fillParent(numRows, numCols, cb) {
+                elWidth = width / numCols, elHeight = height / numRows;
+
+                // Fill parent
+                for(var i = 0; i < (numCols * numRows); i++) {
+                    var col = document.createElement('div');
+                    col.style.height = '100%';
+                    col.style.width = '100%';
+                    if(typeof(cb) === typeof(Function)) cb.call(col, i);
+                    parent.appendChild(col);
+                }
+                document.body.appendChild(parent);
+                gd = parent.childNodes[0];
+            }
+
+            it('@flaky should resize when the viewport width/height changes', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should still be responsive if the plot is edited', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should still be responsive if the plot is purged and replotted', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should only have one resize handler when plotted more than once', function(done) {
+                fillParent(1, 1);
+                var cntWindowResize = 0;
+                window.addEventListener('resize', function() {cntWindowResize++;});
+                spyOn(Plotly.Plots, 'resize').and.callThrough();
+
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+                .then(function() {viewport.set(width / 2, width / 2);})
+                .then(delay(RESIZE_DELAY))
+                // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
+                .then(function() {
+                    expect(cntWindowResize).toBe(1);
+                    expect(Plotly.Plots.resize.calls.count()).toBe(1);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('@flaky should become responsive if configured as such via Plotly.react', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: false})
+                .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should stop being responsive if configured as such via Plotly.react', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                // Check initial size
+                .then(function() {checkLayoutSize(width, height);})
+                // Turn off responsiveness
+                .then(function() {return Plotly.react(gd, data, {}, {responsive: false});})
+                // Resize viewport
+                .then(function() {viewport.set(width / 2, height / 2);})
+                // Wait for resize to happen (Plotly.resize has an internal timeout)
+                .then(delay(RESIZE_DELAY))
+                // Check that final figure's size hasn't changed
+                .then(function() {checkLayoutSize(width, height);})
+                .catch(failTest)
+                .then(done);
+            });
+
+            // Testing fancier CSS layouts
+            it('@flaky should resize horizontally in a flexbox when responsive: true', function(done) {
+                parent.style.display = 'flex';
+                parent.style.flexDirection = 'row';
+                fillParent(1, 2, function() {
+                    this.style.flexGrow = '1';
+                });
+
+                Plotly.plot(gd, data, {}, { responsive: true })
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should resize vertically in a flexbox when responsive: true', function(done) {
+                parent.style.display = 'flex';
+                parent.style.flexDirection = 'column';
+                fillParent(2, 1, function() {
+                    this.style.flexGrow = '1';
+                });
+
+                Plotly.plot(gd, data, {}, { responsive: true })
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should resize in both direction in a grid when responsive: true', function(done) {
+                var numCols = 2;
+                var numRows = 2;
+                parent.style.display = 'grid';
+                parent.style.gridTemplateColumns = 'repeat(' + numCols + ', 1fr)';
+                parent.style.gridTemplateRows = 'repeat(' + numRows + ', 1fr)';
+                fillParent(numRows, numCols);
+
+                Plotly.plot(gd, data, {}, { responsive: true })
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
+                fillParent(1, 1, function() {
+                    this.style.display = 'inline-block';
+                    this.style.width = null;
+                    this.style.height = null;
+                });
+                Plotly.plot(gd, data, {autosize: true}, {responsive: true})
+                .then(function() {
+                    checkLayoutSize(700, 450);
+                    expect(gd.clientWidth).toBe(700);
+                    expect(gd.clientHeight).toBe(450);
+                })
+                .then(function() {
+                    return Plotly.newPlot(gd, data, {autosize: true}, {responsive: true});
+                })
+                // It is important to test newPlot to make sure an initially zero size container
+                // is still considered to have zero size after a plot is drawn into it.
+                .then(function() {
+                    checkLayoutSize(700, 450);
+                    expect(gd.clientWidth).toBe(700);
+                    expect(gd.clientHeight).toBe(450);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            // The following test is to guarantee we're not breaking the existing (although maybe not ideal) behaviour.
+            // In a future version, one may prefer responsive/autosize:true winning over an explicit width/height when embedded in a webpage.
+            it('@flaky should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
+                fillParent(1, 1, function() {
+                    this.style.width = '1000px';
+                    this.style.height = '500px';
+                });
+
+                Plotly.plot(gd, data, {autosize: true, width: 1200, height: 700}, {responsive: true})
+                .then(function() {
+                    expect(gd.clientWidth).toBe(1000);
+                    expect(gd.clientHeight).toBe(500);
+                    // The plot should overflow the container!
+                    checkLayoutSize(1200, 700);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
+    describe('scrollZoom:', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        function plot(config) {
+            return Plotly.plot(gd, [], {}, config);
         }
 
-        it('@flaky should resize when the viewport width/height changes', function(done) {
-            fillParent(1, 1);
-            Plotly.plot(gd, data, {}, {responsive: true})
-            .then(testResponsive)
-            .then(done);
-        });
-
-        it('@flaky should still be responsive if the plot is edited', function(done) {
-            fillParent(1, 1);
-            Plotly.plot(gd, data, {}, {responsive: true})
-            .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
-            .then(testResponsive)
-            .then(done);
-        });
-
-        it('@flaky should still be responsive if the plot is purged and replotted', function(done) {
-            fillParent(1, 1);
-            Plotly.plot(gd, data, {}, {responsive: true})
-            .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
-            .then(testResponsive)
-            .then(done);
-        });
-
-        it('@flaky should only have one resize handler when plotted more than once', function(done) {
-            fillParent(1, 1);
-            var cntWindowResize = 0;
-            window.addEventListener('resize', function() {cntWindowResize++;});
-            spyOn(Plotly.Plots, 'resize').and.callThrough();
-
-            Plotly.plot(gd, data, {}, {responsive: true})
-            .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
-            .then(function() {viewport.set(width / 2, width / 2);})
-            .then(delay(RESIZE_DELAY))
-            // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
-            .then(function() {
-                expect(cntWindowResize).toBe(1);
-                expect(Plotly.Plots.resize.calls.count()).toBe(1);
+        it('should fill in scrollZoom default', function(done) {
+            plot(undefined).then(function() {
+                expect(gd._context.scrollZoom).toBe('gl3d+geo+mapbox');
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .catch(failTest)
             .then(done);
         });
 
-        it('@flaky should become responsive if configured as such via Plotly.react', function(done) {
-            fillParent(1, 1);
-            Plotly.plot(gd, data, {}, {responsive: false})
-            .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
-            .then(testResponsive)
-            .then(done);
-        });
-
-        it('@flaky should stop being responsive if configured as such via Plotly.react', function(done) {
-            fillParent(1, 1);
-            Plotly.plot(gd, data, {}, {responsive: true})
-            // Check initial size
-            .then(function() {checkLayoutSize(width, height);})
-            // Turn off responsiveness
-            .then(function() {return Plotly.react(gd, data, {}, {responsive: false});})
-            // Resize viewport
-            .then(function() {viewport.set(width / 2, height / 2);})
-            // Wait for resize to happen (Plotly.resize has an internal timeout)
-            .then(delay(RESIZE_DELAY))
-            // Check that final figure's size hasn't changed
-            .then(function() {checkLayoutSize(width, height);})
-            .catch(failTest)
-            .then(done);
-        });
-
-        // Testing fancier CSS layouts
-        it('@flaky should resize horizontally in a flexbox when responsive: true', function(done) {
-            parent.style.display = 'flex';
-            parent.style.flexDirection = 'row';
-            fillParent(1, 2, function() {
-                this.style.flexGrow = '1';
-            });
-
-            Plotly.plot(gd, data, {}, { responsive: true })
-            .then(testResponsive)
-            .then(done);
-        });
-
-        it('@flaky should resize vertically in a flexbox when responsive: true', function(done) {
-            parent.style.display = 'flex';
-            parent.style.flexDirection = 'column';
-            fillParent(2, 1, function() {
-                this.style.flexGrow = '1';
-            });
-
-            Plotly.plot(gd, data, {}, { responsive: true })
-            .then(testResponsive)
-            .then(done);
-        });
-
-        it('@flaky should resize in both direction in a grid when responsive: true', function(done) {
-            var numCols = 2;
-            var numRows = 2;
-            parent.style.display = 'grid';
-            parent.style.gridTemplateColumns = 'repeat(' + numCols + ', 1fr)';
-            parent.style.gridTemplateRows = 'repeat(' + numRows + ', 1fr)';
-            fillParent(numRows, numCols);
-
-            Plotly.plot(gd, data, {}, { responsive: true })
-            .then(testResponsive)
-            .then(done);
-        });
-
-        it('@flaky should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
-            fillParent(1, 1, function() {
-                this.style.display = 'inline-block';
-                this.style.width = null;
-                this.style.height = null;
-            });
-            Plotly.plot(gd, data, {autosize: true}, {responsive: true})
-            .then(function() {
-                checkLayoutSize(700, 450);
-                expect(gd.clientWidth).toBe(700);
-                expect(gd.clientHeight).toBe(450);
-            })
-            .then(function() {
-                return Plotly.newPlot(gd, data, {autosize: true}, {responsive: true});
-            })
-            // It is important to test newPlot to make sure an initially zero size container
-            // is still considered to have zero size after a plot is drawn into it.
-            .then(function() {
-                checkLayoutSize(700, 450);
-                expect(gd.clientWidth).toBe(700);
-                expect(gd.clientHeight).toBe(450);
+        it('should fill in blank scrollZoom value', function(done) {
+            plot({scrollZoom: null}).then(function() {
+                expect(gd._context.scrollZoom).toBe(null);
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .catch(failTest)
             .then(done);
         });
 
-        // The following test is to guarantee we're not breaking the existing (although maybe not ideal) behaviour.
-        // In a future version, one may prefer responsive/autosize:true winning over an explicit width/height when embedded in a webpage.
-        it('@flaky should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
-            fillParent(1, 1, function() {
-                this.style.width = '1000px';
-                this.style.height = '500px';
-            });
+        it('should honor scrollZoom:true', function(done) {
+            plot({scrollZoom: true}).then(function() {
+                expect(gd._context.scrollZoom).toBe(true);
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
 
-            Plotly.plot(gd, data, {autosize: true, width: 1200, height: 700}, {responsive: true})
+        it('should honor scrollZoom:false', function(done) {
+            plot({scrollZoom: false}).then(function() {
+                expect(gd._context.scrollZoom).toBe(false);
+                expect(gd._context._scrollZoom).toEqual({});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom flaglist', function(done) {
+            plot({scrollZoom: 'mapbox+cartesian'}).then(function() {
+                expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
+                expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('scrollZoom interactions:', function() {
+        var gd;
+
+        afterEach(destroyGraphDiv);
+
+        function _scroll() {
+            var mainDrag = d3.select('.nsewdrag[data-subplot="xy"]').node();
+            mouseEvent('scroll', 200, 200, {deltaY: -200, element: mainDrag});
+        }
+
+        it('should not disable scrollZoom when *responsive:true*', function(done) {
+            gd = document.createElement('div');
+            gd.id = 'graph';
+            gd.style.height = '85vh';
+            gd.style.minHeight = '300px';
+            document.body.appendChild(gd);
+
+            // locking down fix for:
+            // https://github.com/plotly/plotly.js/issues/3337
+
+            var xrng0;
+            var yrng0;
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 1]
+            }], {}, {
+                scrollZoom: true,
+                responsive: true
+            })
             .then(function() {
-                expect(gd.clientWidth).toBe(1000);
-                expect(gd.clientHeight).toBe(500);
-                // The plot should overflow the container!
-                checkLayoutSize(1200, 700);
+                xrng0 = gd._fullLayout.xaxis.range.slice();
+                yrng0 = gd._fullLayout.yaxis.range.slice();
+            })
+            .then(_scroll)
+            .then(function() {
+                var xrng = gd._fullLayout.xaxis.range;
+                expect(xrng[0]).toBeGreaterThan(xrng0[0], 'scrolled x-range[0]');
+                expect(xrng[1]).toBeLessThan(xrng0[1], 'scrolled x-range[1]');
+
+                var yrng = gd._fullLayout.yaxis.range;
+                expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
+                expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not disable scrollZoom when page is made scrollable by large graph', function(done) {
+            gd = document.createElement('div');
+            gd.id = 'graph';
+            document.body.appendChild(gd);
+
+            // locking down fix for:
+            // https://github.com/plotly/plotly.js/issues/2371
+
+            var xrng0;
+            var yrng0;
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 1]
+            }], {
+                width: 2 * window.innerWidth
+            }, {
+                scrollZoom: true
+            })
+            .then(function() {
+                xrng0 = gd._fullLayout.xaxis.range.slice();
+                yrng0 = gd._fullLayout.yaxis.range.slice();
+            })
+            .then(_scroll)
+            .then(function() {
+                var xrng = gd._fullLayout.xaxis.range;
+                expect(xrng[0]).toBeGreaterThan(xrng0[0], 'scrolled x-range[0]');
+                expect(xrng[1]).toBeLessThan(xrng0[1], 'scrolled x-range[1]');
+
+                var yrng = gd._fullLayout.yaxis.range;
+                expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
+                expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
             })
             .catch(failTest)
             .then(done);

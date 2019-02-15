@@ -88,9 +88,9 @@ function render(scene) {
         }
 
         var tx;
+        var vectorTx = [];
 
         if(trace.type === 'cone' || trace.type === 'streamtube') {
-            var vectorTx = [];
             if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
                 vectorTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
             }
@@ -106,6 +106,12 @@ function render(scene) {
             if(trace.type === 'streamtube' && (isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1)) {
                 vectorTx.push('divergence: ' + selection.traceCoordinate[7].toPrecision(3));
             }
+            if(selection.textLabel) {
+                vectorTx.push(selection.textLabel);
+            }
+            tx = vectorTx.join('<br>');
+        } else if(trace.type === 'isosurface') {
+            vectorTx.push('value: ' + Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
             }
@@ -227,8 +233,15 @@ function initializeGLPlot(scene, canvas, gl) {
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
-    scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
-    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
+    scene.glplot.canvas.addEventListener('mouseup', function() {
+        relayoutCallback(scene);
+    });
+
+    scene.glplot.canvas.addEventListener('wheel', function() {
+        if(gd._context._scrollZoom.gl3d) {
+            relayoutCallback(scene);
+        }
+    }, passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
@@ -263,6 +276,8 @@ function initializeGLPlot(scene, canvas, gl) {
 
     // List of scene objects
     scene.traces = {};
+
+    scene.make4thDimension();
 
     return true;
 }
@@ -305,7 +320,7 @@ function Scene(options, fullLayout) {
     /*
      * Move this to calc step? Why does it work here?
      */
-    this.axesOptions = createAxesOptions(fullLayout[this.id]);
+    this.axesOptions = createAxesOptions(fullLayout, fullLayout[this.id]);
     this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
     this.container = sceneContainer;
     this.staticMode = !!options.staticPlot;
@@ -384,8 +399,30 @@ function computeTraceBounds(scene, trace, bounds) {
     }
 }
 
-proto.plot = function(sceneData, fullLayout, layout) {
+function computeAnnotationBounds(scene, bounds) {
+    var sceneLayout = scene.fullSceneLayout;
+    var annotations = sceneLayout.annotations || [];
 
+    for(var d = 0; d < 3; d++) {
+        var axisName = axisProperties[d];
+        var axLetter = axisName.charAt(0);
+        var ax = sceneLayout[axisName];
+
+        for(var j = 0; j < annotations.length; j++) {
+            var ann = annotations[j];
+
+            if(ann.visible) {
+                var pos = ax.r2l(ann[axLetter]);
+                if(!isNaN(pos) && isFinite(pos)) {
+                    bounds[0][d] = Math.min(bounds[0][d], pos);
+                    bounds[1][d] = Math.max(bounds[1][d], pos);
+                }
+            }
+        }
+    }
+}
+
+proto.plot = function(sceneData, fullLayout, layout) {
     // Save parameters
     this.plotArgs = [sceneData, fullLayout, layout];
 
@@ -406,12 +443,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.fullSceneLayout = fullSceneLayout;
 
     this.glplotLayout = fullSceneLayout;
-    this.axesOptions.merge(fullSceneLayout);
+    this.axesOptions.merge(fullLayout, fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
 
     // Update camera and camera mode
     this.setCamera(fullSceneLayout.camera);
     this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
+    this.camera.enableWheel = this.graphDiv._context._scrollZoom.gl3d;
 
     // Update scene
     this.glplot.update({});
@@ -428,18 +466,20 @@ proto.plot = function(sceneData, fullLayout, layout) {
         [Infinity, Infinity, Infinity],
         [-Infinity, -Infinity, -Infinity]
     ];
+
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
         if(data.visible !== true) continue;
 
         computeTraceBounds(this, data, dataBounds);
     }
+    computeAnnotationBounds(this, dataBounds);
+
     var dataScale = [1, 1, 1];
     for(j = 0; j < 3; ++j) {
         if(dataBounds[1][j] === dataBounds[0][j]) {
             dataScale[j] = 1.0;
-        }
-        else {
+        } else {
             dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
         }
     }
@@ -776,7 +816,6 @@ proto.updateFx = function(dragmode, hovermode) {
             fullCamera.up = zUp;
             Lib.nestedProperty(layout, attr).set(zUp);
         } else {
-
             // none rotation modes [pan or zoom]
             camera.keyBindingMode = dragmode;
         }
@@ -847,6 +886,21 @@ proto.setConvert = function() {
         Axes.setConvert(ax, this.fullLayout);
         ax.setScale = Lib.noop;
     }
+};
+
+proto.make4thDimension = function() {
+
+    var _this = this;
+    var gd = _this.graphDiv;
+    var fullLayout = gd._fullLayout;
+
+    // mock axis for hover formatting
+    _this.mockAxis = {
+        type: 'linear',
+        showexponent: 'all',
+        exponentformat: 'B'
+    };
+    Axes.setConvert(_this.mockAxis, fullLayout);
 };
 
 module.exports = Scene;

@@ -22,7 +22,7 @@
     float: left;
     display: inline-block;
     box-sizing: border-box;
-    margin-left: 8px;
+    padding-left: 8px;
     position: relative;
     vertical-align: middle;
     white-space: nowrap;
@@ -60,8 +60,8 @@
     .modebar-group {
         display: block;
         float: none;
-        margin-left: 0px;
-        margin-bottom: 8px;
+        padding-left: 0px;
+        padding-bottom: 8px;
 
         .modebar-btn {
             display: block;

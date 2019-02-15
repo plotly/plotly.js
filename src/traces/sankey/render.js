@@ -14,7 +14,7 @@ var sum = require('d3-array').sum;
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-var d3Sankey = require('d3-sankey');
+var d3Sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('d3-sankey-circular');
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
@@ -46,7 +46,7 @@ function sankeyModel(layout, d, traceIndex) {
     if(circular) {
         sankey = d3SankeyCircular
             .sankeyCircular()
-            .circularLinkGap(2)
+            .circularLinkGap(0)
             .nodeId(function(d) {
                 return d.pointNumber;
             });

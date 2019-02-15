@@ -116,6 +116,22 @@ describe('Test barpolar hover:', function() {
             color: '#1f77b4'
         }
     }, {
+        desc: 'hovertemplate',
+        traces: [{
+            r: [1, 2, 3],
+            theta: [0, 90, 180],
+            hovertemplate: 'tpl',
+        }],
+        xval: 1,
+        yval: 0,
+        exp: {
+            index: 0,
+            x: 263.33,
+            y: 200,
+            hovertemplate: 'tpl',
+            color: '#1f77b4'
+        }
+    }, {
         desc: 'with custom text scalar',
         traces: [{
             r: [1, 2, 3],

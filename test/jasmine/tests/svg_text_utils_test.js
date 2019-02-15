@@ -468,4 +468,49 @@ describe('svg+text utils', function() {
             expect(node.text()).toEqual('test\u200b5\u200bmore');
         });
     });
+
+    describe('plainText:', function() {
+        var fn = util.plainText;
+
+        it('should strip tags except <br> by default', function() {
+            expect(fn('a<b>b</b><br><sup>tm</sup>a')).toBe('ab<br>tma');
+        });
+
+        it('should work in various cases w/o <br>', function() {
+            var sIn = 'ThisIsDATA<sup>300</sup>';
+
+            expect(fn(sIn)).toBe('ThisIsDATA300');
+            expect(fn(sIn, {len: 3})).toBe('Thi');
+            expect(fn(sIn, {len: 4})).toBe('T...');
+            expect(fn(sIn, {len: 13})).toBe('ThisIsDATA...');
+            expect(fn(sIn, {len: 16})).toBe('ThisIsDATA300');
+            expect(fn(sIn, {allowedTags: ['sup']})).toBe('ThisIsDATA<sup>300</sup>');
+            expect(fn(sIn, {len: 13, allowedTags: ['sup']})).toBe('ThisIsDATA...');
+            expect(fn(sIn, {len: 16, allowedTags: ['sup']})).toBe('ThisIsDATA<sup>300</sup>');
+        });
+
+        it('should work in various cases w/ <br>', function() {
+            var sIn = 'ThisIs<br>DATA<sup>300</sup>';
+
+            expect(fn(sIn)).toBe('ThisIs<br>DATA300');
+            expect(fn(sIn, {len: 3})).toBe('Thi');
+            expect(fn(sIn, {len: 4})).toBe('T...');
+            expect(fn(sIn, {len: 7})).toBe('ThisIs...');
+            expect(fn(sIn, {len: 8})).toBe('ThisIs...');
+            expect(fn(sIn, {len: 9})).toBe('ThisIs...');
+            expect(fn(sIn, {len: 10})).toBe('ThisIs<br>D...');
+            expect(fn(sIn, {len: 13})).toBe('ThisIs<br>DATA...');
+            expect(fn(sIn, {len: 16})).toBe('ThisIs<br>DATA300');
+            expect(fn(sIn, {allowedTags: ['sup']})).toBe('ThisIsDATA<sup>300</sup>');
+            expect(fn(sIn, {allowedTags: ['br', 'sup']})).toBe('ThisIs<br>DATA<sup>300</sup>');
+        });
+
+        it('should work in various cases w/ <b>, <i> and <em>', function() {
+            var sIn = '<i>ThisIs</i><b>DATA</b><em>300</em>';
+
+            expect(fn(sIn)).toBe('ThisIsDATA300');
+            expect(fn(sIn, {allowedTags: ['i', 'b', 'em']})).toBe('<i>ThisIs</i><b>DATA</b><em>300</em>');
+            expect(fn(sIn, {len: 10, allowedTags: ['i', 'b', 'em']})).toBe('<i>ThisIs</i>D...');
+        });
+    });
 });

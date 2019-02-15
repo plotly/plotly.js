@@ -1269,5 +1269,44 @@ describe('finance trace hover via Fx.hover():', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should ignore empty ' + type + ' item', function(done) {
+            // only the bar chart's hover will be displayed when hovering over the 3rd items
+            var x = ['time1', 'time2', 'time3', 'time4'];
+
+            Plotly.newPlot(gd, [{
+                x: x,
+                high: [6, 3, null, 8],
+                close: [4, 3, null, 8],
+                low: [5, 3, null, 8],
+                open: [3, 3, null, 8],
+                type: type
+            }, {
+                x: x,
+                y: [1, 2, 3, 4],
+                type: 'bar'
+            }], {
+                xaxis: { rangeslider: {visible: false} },
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                gd.on('plotly_hover', function(d) {
+                    Plotly.Fx.hover(gd, [
+                        {curveNumber: 0, pointNumber: d.points[0].pointNumber},
+                        {curveNumber: 1, pointNumber: d.points[0].pointNumber}
+                    ]);
+                });
+            })
+            .then(function() { hover(281, 252); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '(time3, 3)',
+                    name: 'trace 1'
+                }, 'hover over 3rd items');
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

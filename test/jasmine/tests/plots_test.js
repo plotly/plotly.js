@@ -153,6 +153,26 @@ describe('Test Plots', function() {
 
             testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
         });
+
+        it('should accept trace uids as non-empty strings or numbers', function() {
+            var gd = {
+                data: [{}, {uid: false}, {uid: 'my-id'}, {uid: ''}, {uid: 0}, {uid: 2}]
+            };
+            supplyAllDefaults(gd);
+
+            var traceUids = gd._fullLayout._traceUids;
+            expect(traceUids.length).toBe(6, '# of trace uids');
+            expect(traceUids[2]).toBe('my-id');
+            expect(traceUids[4]).toBe('0');
+            expect(traceUids[5]).toBe('2');
+
+            var indicesOfRandomUid = [0, 1, 3];
+            indicesOfRandomUid.forEach(function(ind) {
+                var msg = 'fullData[' + ind + '].uid';
+                expect(typeof traceUids[ind]).toBe('string', msg + 'is a string');
+                expect(traceUids[ind].length).toBe(6, msg + 'is of length 6');
+            });
+        });
     });
 
     describe('Plots.supplyLayoutGlobalDefaults should', function() {

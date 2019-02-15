@@ -23,6 +23,7 @@ module.exports = {
 
     text: scatterPolarAttrs.text,
     hovertext: scatterPolarAttrs.hovertext,
+    hovertemplate: scatterPolarAttrs.hovertemplate,
 
     line: scatterGlAttrs.line,
     connectgaps: scatterGlAttrs.connectgaps,
