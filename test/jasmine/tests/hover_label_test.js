@@ -1733,6 +1733,51 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should work with layout.meta references', function(done) {
+            var gd = document.getElementById('graph');
+
+            Plotly.update(gd,
+                {hovertemplate: 'TRACE -- %{meta[0]}<extra>%{meta[1]}</extra>'},
+                {meta: ['A', '$$$']}
+            ).then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                assertHoverLabelContent({
+                    nums: 'TRACE -- A',
+                    name: '$$$',
+                    axis: '0.388'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    it('should work with trace.name linked to layout.meta', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            y: [1, 1, 1],
+            name: '%{meta[0]}',
+            marker: {size: 40}
+        }, {
+            y: [1]
+        }], {
+            meta: ['yo!'],
+            width: 400,
+            height: 400
+        })
+        .then(function() { _hoverNatural(gd, 200, 200); })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: '1',
+                name: 'yo!',
+                axis: '2'
+            });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
