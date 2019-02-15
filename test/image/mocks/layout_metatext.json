@@ -35,7 +35,16 @@
     "title": {"text": "This graph is %{meta[2]}"},
     "xaxis": {
       "domain": {"row": 0, "column": 0},
-      "title": {"text": "Worth more than %{meta[4]} %{meta[1]}"}
+      "title": {"text": "Worth more than %{meta[4]} %{meta[1]}"},
+      "rangeselector": {
+        "buttons": [{
+          "step": "all"
+        }, {
+          "step": "month",
+          "count": 2,
+          "label": "backup %{meta[2]}"
+        }]
+      }
     },
     "yaxis": {
       "domain": {"row": 0, "column": 0},
@@ -81,6 +90,28 @@
       "yref": "y",
       "x": "2019-02-10",
       "y": 2
+    }],
+
+    "updatemenus": [{
+      "buttons": [{
+        "label": "Btn-%{meta[0]}",
+        "method": "restyle",
+        "args": ["visible", false]
+      }],
+      "y": 1,
+      "yanchor": "bottom"
+    }],
+
+    "sliders": [{
+      "steps": [{
+        "label": "step-%{meta[0]}",
+        "method": "restyle",
+        "args": ["marker.color", "red"]
+      }, {
+        "label": "step-%{meta[1]}",
+        "method": "restyle",
+        "args": ["marker.color", "blue"]
+      }]
     }]
   }
 }
