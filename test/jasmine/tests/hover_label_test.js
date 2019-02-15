@@ -1734,6 +1734,32 @@ describe('hover info', function() {
             .then(done);
         });
     });
+
+    it('should work with trace.name linked to layout.meta', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            y: [1, 1, 1],
+            name: '%{meta[0]}',
+            marker: {size: 40}
+        }, {
+            y: [1]
+        }], {
+            meta: ['yo!'],
+            width: 400,
+            height: 400
+        })
+        .then(function() { _hoverNatural(gd, 200, 200); })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: '1',
+                name: 'yo!',
+                axis: '2'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('hover info on stacked subplots', function() {

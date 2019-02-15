@@ -1,6 +1,8 @@
 {
   "data": [{
-    "y": [1, 2, 1]
+    "x": ["2019-01-01", "2019-02-10", "2019-03-24"],
+    "y": [1, 2, 1],
+    "name": "TRACE %{meta[3]}"
   }, {
     "type": "scatterpolar",
     "r": [1, 2, 1]
@@ -29,7 +31,6 @@
     "width": 700,
     "height": 800,
     "margin": {"b": 40},
-    "showlegend": false,
 
     "title": {"text": "This graph is %{meta[2]}"},
     "xaxis": {
@@ -78,7 +79,7 @@
       "text": "<i>N.B.</i> %{meta[2]}",
       "xref": "x",
       "yref": "y",
-      "x": 1,
+      "x": "2019-02-10",
       "y": 2
     }]
   }
