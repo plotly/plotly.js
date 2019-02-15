@@ -87,6 +87,8 @@ module.exports = function colorScaleAttrs(context, opts) {
     var auto = cLetter + 'auto';
     var min = cLetter + 'min';
     var max = cLetter + 'max';
+    var mid = cLetter + 'mid';
+    var autoFull = code(contextHead + auto);
     var minFull = code(contextHead + min);
     var maxFull = code(contextHead + max);
     var minmaxFull = minFull + ' and ' + maxFull;
@@ -157,6 +159,21 @@ module.exports = function colorScaleAttrs(context, opts) {
             effectDesc,
             ' Value should have the same units as ', colorAttrFull,
             ' and if set, ', minFull, ' must be set as well.'
+        ].join('')
+    };
+
+    attrs[mid] = {
+        valType: 'number',
+        role: 'info',
+        dflt: null,
+        editType: editTypeOverride || 'plot',
+        impliedEdits: minmaxImpliedEdits,
+        description: [
+            'Sets the mid-point of the color domain by scaling ', minFull,
+            ' and/or ', maxFull, ' to be equidistant to this point.',
+            effectDesc,
+            ' Value should have the same units as ', colorAttrFull, '. ',
+            'Has no effect when ', autoFull, ' is `false`.'
         ].join('')
     };
 
