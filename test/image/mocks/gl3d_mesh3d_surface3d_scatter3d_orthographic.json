@@ -124,7 +124,7 @@
         "zerolinewidth": 5
       },
       "camera": {
-        "ortho": true,
+        "projection": { "type": "orthographic" },
         "eye": {
           "x": -1.75,
           "y": -0.75,

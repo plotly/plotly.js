@@ -11,7 +11,7 @@ var failTest = require('../assets/fail_test');
 
 // Expected shape of projection-related data
 var cameraStructure = {
-    ortho: jasmine.any(Boolean),
+    projection: {type: jasmine.any(String)},
     up: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
     center: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
     eye: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)}

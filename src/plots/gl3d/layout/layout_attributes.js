@@ -72,16 +72,21 @@ module.exports = {
                 'of this scene.'
             ].join(' ')
         }),
-        ortho: extendFlat({
-            valType: 'boolean',
-            role: 'info',
-            dflt: false,
-            editType: 'camera',
-            description: [
-                'Enable/disable orthographic camera.',
-                'Default is perspective.'
-            ].join(' ')
-        }),
+        projection: {
+            type: {
+                valType: 'enumerated',
+                role: 'info',
+                values: ['perspective', 'orthographic'],
+                dflt: 'perspective',
+                editType: 'camera',
+                description: [
+                    'Sets the projection type. The projection type could be',
+                    'either *perspective* or *orthographic*. The default is',
+                    '*perspective*.'
+                ].join(' ')
+            },
+            editType: 'camera'
+        },
         editType: 'camera'
     },
     domain: domainAttrs({name: 'scene', editType: 'plot'}),

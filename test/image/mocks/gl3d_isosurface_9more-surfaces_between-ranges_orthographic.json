@@ -2646,7 +2646,7 @@
             "yaxis": { "nticks": 12 },
             "zaxis": { "nticks": 12 },
             "camera": {
-                "ortho": true,
+                "projection": { "type": "orthographic" },
                 "eye": {
                     "x": 1.5,
                     "y": 2.5,

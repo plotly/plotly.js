@@ -10,7 +10,7 @@
     "height": 600,
     "scene": {
       "camera": {
-        "ortho": true,
+        "projection": { "type": "orthographic" },
         "eye": {"x": 2.1, "y": 0.1, "z": 0.9}
       },
       "xaxis": {

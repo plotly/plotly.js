@@ -68,7 +68,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         coerce('camera.' + cameraKeys[j] + '.y');
         coerce('camera.' + cameraKeys[j] + '.z');
     }
-    coerce('camera.ortho');
+
+    coerce('camera.projection.type');
 
     /*
      * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)
