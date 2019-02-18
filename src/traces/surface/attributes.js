@@ -239,7 +239,13 @@ colorscaleAttrs('', {
         min: 0,
         max: 1,
         dflt: 1,
-        description: 'Sets the opacity of the surface.'
+        description: [
+            'Sets the opacity of the surface.',
+            'Please note that in the case of using high `opacity` values for example a value',
+            'greater than or equal to 0.5 on two surfaces (and 0.25 with four surfaces), an',
+            'overlay of multiple transparent surfaces may not perfectly be sorted in depth by the',
+            'webgl API. This behavior may be improved in the near future and is subject to change.'
+        ].join(' ')
     },
 
     _deprecated: {
