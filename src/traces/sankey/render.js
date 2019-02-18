@@ -686,7 +686,6 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
           .attr('d', linkPath())
           .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
-
     sankeyLink
         .style('stroke', function(d) {
             return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
