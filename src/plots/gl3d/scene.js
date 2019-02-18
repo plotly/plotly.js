@@ -350,7 +350,7 @@ var proto = Scene.prototype;
 proto.initializeGLCamera = function() {
 
     var cameraData = this.fullSceneLayout.camera;
-    var ortho = (cameraData.projection.type === 'orthographic');
+    var ortho = (cameraData.projection && cameraData.projection.type === 'orthographic');
 
     this.camera = createCamera(this.container, {
         center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
@@ -791,7 +791,13 @@ proto.saveCamera = function saveCamera(layout) {
                 }
             }
         }
-        if(cameraData.projection.type !== cameraDataLastSave.projection.type) hasChanged = true;
+
+        if(!cameraDataLastSave.projection || (
+            cameraData.projection &&
+            cameraData.projection.type !== cameraDataLastSave.projection.type)) {
+
+            hasChanged = true;
+        }
     }
 
     if(hasChanged) {
