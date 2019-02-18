@@ -14,6 +14,7 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
+var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 var Sieve = require('./sieve.js');
 
 /*
@@ -286,7 +287,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var overlap = (positions.length !== distinctPositions.length);
     var barGroupWidth = minDiff * (1 - bargap);
 
-    var groupId = pa._id + calcTraces[0][0].trace.orientation;
+    var groupId = getAxisGroup(fullLayout, pa._id) + calcTraces[0][0].trace.orientation;
     var alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
 
     for(var i = 0; i < nTraces; i++) {

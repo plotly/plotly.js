@@ -6,12 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
 var nestedProperty = Lib.nestedProperty;
 
+var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 var attributes = require('./attributes');
 
 var BINATTRS = {
@@ -65,6 +66,8 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
                 direction: binDirection
             };
         }
+
+        handleGroupingDefaults(traceOut._input, traceOut, fullLayout, coerce);
     }
 
     for(group in allBinOpts) {
@@ -111,13 +114,3 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         }
     }
 };
-
-function getAxisGroup(fullLayout, axId) {
-    var matchGroups = fullLayout._axisMatchGroups;
-
-    for(var i = 0; i < matchGroups.length; i++) {
-        var group = matchGroups[i];
-        if(group[axId]) return 'g' + i;
-    }
-    return axId;
-}

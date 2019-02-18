@@ -13,36 +13,22 @@ var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 
 function _supply(layoutIn, layoutOut, fullData, coerce, traceType) {
-    var i, trace;
-
     var category = traceType + 'Layout';
     var hasTraceType = false;
-    var tracesWithGroupAttrs = [];
 
-    for(i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
+    for(var i = 0; i < fullData.length; i++) {
+        var trace = fullData[i];
 
         if(Registry.traceIs(trace, category)) {
             hasTraceType = true;
-
-            if(trace.alignmentgroup || trace.offsetgroup) {
-                tracesWithGroupAttrs.push(trace);
-            }
+            break;
         }
     }
     if(!hasTraceType) return;
 
-    var mode = coerce(traceType + 'mode');
+    coerce(traceType + 'mode');
     coerce(traceType + 'gap');
     coerce(traceType + 'groupgap');
-
-    if(mode !== 'group') {
-        for(i = 0; i < tracesWithGroupAttrs.length; i++) {
-            trace = tracesWithGroupAttrs[i];
-            delete trace.alignmentgroup;
-            delete trace.offsetgroup;
-        }
-    }
 }
 
 function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {

@@ -14,6 +14,7 @@ var Registry = require('../../registry');
 
 var handleXYDefaults = require('../scatter/xy_defaults');
 var handleStyleDefaults = require('../bar/style_defaults');
+var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 var attributes = require('./attributes');
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -76,21 +77,16 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 
-    handleGroupingDefaults(traceIn, traceOut, layout, coerce);
-
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
-function handleGroupingDefaults(traceIn, traceOut, layout, coerce) {
+function handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce) {
     var orientation = traceOut.orientation;
-    // TODO make this work across matching axes too?!?
-    // TODO should this work per trace-type?
-    //      one set for bar/histogram another for box/violin?
-    //      or just one set for all trace trace types?
+    // N.B. grouping is done across all trace trace types that support it
     var posAxId = traceOut[{v: 'x', h: 'y'}[orientation] + 'axis'];
-    var groupId = posAxId + orientation;
+    var groupId = getAxisGroup(fullLayout, posAxId) + orientation;
 
-    var alignmentOpts = layout._alignmentOpts || {};
+    var alignmentOpts = fullLayout._alignmentOpts || {};
     var alignmentgroup = coerce('alignmentgroup');
 
     var alignmentGroups = alignmentOpts[groupId];
@@ -123,7 +119,27 @@ function handleGroupingDefaults(traceIn, traceOut, layout, coerce) {
     }
 }
 
+function crossTraceDefaults(fullData, fullLayout) {
+    var traceIn, traceOut;
+
+    function coerce(attr) {
+        return Lib.coerce(traceOut._input, traceOut, attributes, attr);
+    }
+
+    for(var i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
+
+        if(traceOut.type === 'bar') {
+            traceIn = traceOut._input;
+            if(fullLayout.barmode === 'group') {
+                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+            }
+        }
+    }
+}
+
 module.exports = {
     supplyDefaults: supplyDefaults,
+    crossTraceDefaults: crossTraceDefaults,
     handleGroupingDefaults: handleGroupingDefaults
 };

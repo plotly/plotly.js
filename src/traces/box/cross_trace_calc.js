@@ -10,6 +10,7 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 
 var orientations = ['v', 'h'];
 
@@ -104,7 +105,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
             dPos = dPos0;
 
             if(group) {
-                var groupId = posAxis._id + trace.orientation;
+                var groupId = getAxisGroup(fullLayout, posAxis._id) + trace.orientation;
                 var alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
                 var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
                 var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;

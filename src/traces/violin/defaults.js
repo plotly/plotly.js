@@ -12,7 +12,6 @@ var Lib = require('../../lib');
 var Color = require('../../components/color');
 
 var boxDefaults = require('../box/defaults');
-var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var attributes = require('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -57,6 +56,4 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var meanLineWidth = coerce2('meanline.width', lineWidth);
     var meanLineVisible = coerce('meanline.visible', Boolean(meanLineColor || meanLineWidth));
     if(!meanLineVisible) traceOut.meanline = {visible: false};
-
-    handleGroupingDefaults(traceIn, traceOut, layout, coerce);
 };

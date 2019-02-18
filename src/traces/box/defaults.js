@@ -34,7 +34,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(notched) coerce('notchwidth');
 
     handlePointsDefaults(traceIn, traceOut, coerce, {prefix: 'box'});
-    handleGroupingDefaults(traceIn, traceOut, layout, coerce);
 }
 
 function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
@@ -110,8 +109,30 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
+function crossTraceDefaults(fullData, fullLayout) {
+    var traceIn, traceOut;
+
+    function coerce(attr) {
+        return Lib.coerce(traceOut._input, traceOut, attributes, attr);
+    }
+
+    for(var i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
+        var traceType = traceOut.type;
+
+        if(traceType === 'box' || traceType === 'violin') {
+            traceIn = traceOut._input;
+            if(fullLayout[traceType + 'mode'] === 'group') {
+                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+            }
+        }
+    }
+}
+
 module.exports = {
     supplyDefaults: supplyDefaults,
+    crossTraceDefaults: crossTraceDefaults,
+
     handleSampleDefaults: handleSampleDefaults,
     handlePointsDefaults: handlePointsDefaults
 };

@@ -15,8 +15,6 @@ var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 
 module.exports = function(layoutIn, layoutOut, fullData) {
-    var i, trace;
-
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
@@ -25,10 +23,9 @@ module.exports = function(layoutIn, layoutOut, fullData) {
     var shouldBeGapless = false;
     var gappedAnyway = false;
     var usedSubplots = {};
-    var tracesWithGroupAttrs = [];
 
-    for(i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
+    for(var i = 0; i < fullData.length; i++) {
+        var trace = fullData[i];
         if(Registry.traceIs(trace, 'bar') && trace.visible) hasBars = true;
         else continue;
 
@@ -45,10 +42,6 @@ module.exports = function(layoutIn, layoutOut, fullData) {
                         trace[trace.orientation === 'v' ? 'xaxis' : 'yaxis']);
             if(pa.type !== 'category') shouldBeGapless = true;
         }
-
-        if(trace.alignmentgroup || trace.offsetgroup) {
-            tracesWithGroupAttrs.push(trace);
-        }
     }
 
     if(!hasBars) return;
@@ -58,12 +51,4 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
     coerce('bargap', (shouldBeGapless && !gappedAnyway) ? 0 : 0.2);
     coerce('bargroupgap');
-
-    if(mode !== 'group') {
-        for(i = 0; i < tracesWithGroupAttrs.length; i++) {
-            trace = tracesWithGroupAttrs[i];
-            delete trace.alignmentgroup;
-            delete trace.offsetgroup;
-        }
-    }
 };
