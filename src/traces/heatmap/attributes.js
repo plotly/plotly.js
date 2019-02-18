@@ -33,6 +33,11 @@ module.exports = extendFlat({
         editType: 'calc',
         description: 'Sets the text elements associated with each z value.'
     },
+    hovertext: {
+        valType: 'data_array',
+        editType: 'calc',
+        description: 'Same as `text`.'
+    },
     transpose: {
         valType: 'boolean',
         dflt: false,

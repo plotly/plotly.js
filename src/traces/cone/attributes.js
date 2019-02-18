@@ -159,6 +159,14 @@ var attrs = {
             'these elements will be seen in the hover labels.'
         ].join(' ')
     },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        editType: 'calc',
+        description: 'Same as `text`.'
+    },
     hovertemplate: hovertemplateAttrs({editType: 'calc'}, {keys: ['norm']})
 };
 

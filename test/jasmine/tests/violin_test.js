@@ -425,6 +425,22 @@ describe('Test violin hover:', function() {
         nums: 'look:0.7',
         name: ''
     }, {
+        desc: 'only hovertext items on hover',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.points = 'all';
+                trace.hoveron = 'points';
+                trace.hovertext = trace.y.map(function(v) { return 'look:' + v; });
+                trace.text = trace.y.map(function(v) { return 'NOT THIS:' + v; });
+                trace.hoverinfo = 'text';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        pos: [180, 240],
+        nums: 'look:0.7',
+        name: ''
+    }, {
         desc: 'one-sided violin under hovermode closest',
         // hoveron: 'kde+points'
         // hovermode: 'closest'

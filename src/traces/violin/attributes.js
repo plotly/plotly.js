@@ -146,6 +146,7 @@ module.exports = {
 
     marker: boxAttrs.marker,
     text: boxAttrs.text,
+    hovertext: boxAttrs.hovertext,
 
     box: {
         visible: {

@@ -152,6 +152,20 @@ describe('Test choropleth hover:', function() {
         .then(done);
     });
 
+    it('should generate hover labels from `hovertext`', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+        fig.data[1].hovertext = ['tExT', 'TeXt', '-text-'];
+        fig.data[1].text = ['N', 'O', 'P'];
+        fig.data[1].hoverinfo = 'text';
+
+        run(
+            [400, 160],
+            fig,
+            ['-text-', null]
+        )
+        .then(done);
+    });
+
     it('should generate hover label with custom styling', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
         fig.data[1].hoverlabel = {

@@ -1361,6 +1361,19 @@ describe('Test splom hover:', function() {
         axis: 'Jan 2000',
         evtPts: [{x: '2000-01-01', y: '2003-04-21', pointNumber: 0}]
     }, {
+        desc: 'with hovertext',
+        patch: function(fig) {
+            fig.data.forEach(function(t) {
+                t.hovertext = 'LOOK';
+                t.text = 'NOP';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: '(2.6, 7.7)\nLOOK',
+        name: 'Virginica',
+        evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
+    }, {
         desc: 'with a hovertemplate',
         patch: function(fig) {
             fig.data.forEach(function(t) {

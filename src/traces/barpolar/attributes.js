@@ -58,7 +58,9 @@ module.exports = {
             'this trace\'s coordinates.'
         ].join(' ')
     }),
-    // hovertext: barAttrs.hovertext,
+    hovertext: extendFlat({}, barAttrs.hovertext, {
+        description: 'Same as `text`.'
+    }),
 
     // textposition: {},
     // textfont: {},

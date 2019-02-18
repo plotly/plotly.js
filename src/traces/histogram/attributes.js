@@ -38,6 +38,9 @@ module.exports = {
             'this trace\'s coordinates.'
         ].join(' ')
     }),
+    hovertext: extendFlat({}, barAttrs.hovertext, {
+        description: 'Same as `text`.'
+    }),
     orientation: barAttrs.orientation,
 
     histfunc: {

@@ -359,6 +359,12 @@ describe('@noCI Test streamtube hover', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelContent({nums: '!SCALAR TX!'});
+            return Plotly.restyle(gd, 'hovertext', 'SCALAR HOVERTEXT !!');
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({nums: 'SCALAR HOVERTEXT !!'});
         })
         .catch(failTest)
         .then(done);

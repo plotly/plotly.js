@@ -399,6 +399,24 @@ describe('Test isosurface', function() {
                 });
             })
             .then(function() {
+                return Plotly.restyle(gd, 'hovertext', [
+                    fig.data[0].value.map(function(v) { return '!! ' + v + ' !!'; })
+                ]);
+            })
+            .then(delay(20))
+            .then(_hover4)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.4',
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3',
+                        '!! -1.3 !!'
+                    ].join('\n')
+                });
+            })
+            .then(function() {
                 return Plotly.restyle(gd, 'hovertemplate', '%{value}<br>(%{x},%{y},%{z})<extra>!!</extra>');
             })
             .then(delay(20))

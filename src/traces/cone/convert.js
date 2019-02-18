@@ -40,7 +40,7 @@ proto.handlePick = function(selection) {
             Math.sqrt(uu * uu + vv * vv + ww * ww)
         ];
 
-        var text = this.data.text;
+        var text = this.data.hovertext || this.data.text;
         if(Array.isArray(text) && text[selectIndex] !== undefined) {
             selection.textLabel = text[selectIndex];
         } else if(text) {

@@ -84,6 +84,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Coerce remaining properties
     [
         'text',
+        'hovertext',
         'hovertemplate',
         'lighting.ambient',
         'lighting.diffuse',
