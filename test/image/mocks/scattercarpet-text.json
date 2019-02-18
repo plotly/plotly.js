@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "type": "carpet",
+      "a": [0.1, 0.2, 0.3],
+      "b": [1, 2, 3],
+      "y": [
+        [1, 2.2, 3],
+        [1.5, 2.7, 3.5],
+        [1.7, 2.9, 3.7]
+      ],
+      "cheaterslope": 1,
+      "aaxis": {
+        "title": "a",
+        "tickmode": "linear",
+        "dtick": 0.05
+      },
+      "baxis": {
+        "title": "b",
+        "tickmode": "linear",
+        "dtick": 0.5
+      }
+    },
+    {
+      "type": "scattercarpet",
+      "name": "b = 1.5",
+      "mode": "markers+text",
+      "a": [0.05, 0.15, 0.25, 0.35],
+      "b": [1.5, 1.5, 1.5, 1.5],
+      "text": ["a", "b", "c", "d"]
+    },
+    {
+      "type": "scattercarpet",
+      "name": "b = 2",
+      "mode": "markers+lines+text",
+      "a": [0.05, 0.15, 0.25, 0.35],
+      "b": [2, 2, 2, 2],
+      "text": ["a", "b", "c", "d"]
+    },
+    {
+      "type": "scattercarpet",
+      "name": "b = 2.5",
+      "mode": "text",
+      "a": [0.05, 0.15, 0.25, 0.35],
+      "b": [2.5, 2.5, 2.5, 2.5],
+      "text": ["a", "b", "c", "d"]
+    }
+  ],
+  "layout": {
+    "title": "scattercarpet with text",
+    "hovermode": "closest"
+  }
+}
