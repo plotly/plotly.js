@@ -228,7 +228,7 @@ module.exports = {
             'histogram auto-bins.',
             'Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint',
             'is currently forbidden.',
-            'Moreover, note that matching must have the same `type`.'
+            'Moreover, note that matching axes must have the same `type`.'
         ].join(' ')
     },
     // ticks
