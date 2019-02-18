@@ -350,13 +350,13 @@ var proto = Scene.prototype;
 proto.initializeGLCamera = function() {
 
     var cameraData = this.fullSceneLayout.camera;
-    var ortho = (cameraData.projection && cameraData.projection.type === 'orthographic');
+    var isOrtho = (cameraData.projection && cameraData.projection.type === 'orthographic');
 
     this.camera = createCamera(this.container, {
         center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
         eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
         up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-        ortho: ortho,
+        _ortho: isOrtho,
         zoomMin: 0.01,
         zoomMax: 100,
         mode: 'orbit'
@@ -747,11 +747,19 @@ function getOrbitCamera(camera) {
 // getLayoutCamera :: orbit_camera_coords -> plotly_coords
 // inverse of getOrbitCamera
 function getLayoutCamera(camera) {
+    var cameraProjectionType;
+    if(camera._ortho === false) { cameraProjectionType = 'perspective'; }
+    else if(camera._ortho === true) { cameraProjectionType = 'orthographic'; }
+    else {
+        cameraProjectionType = (camera.projection && camera.projection.type === 'orthographic') ?
+        'orthographic' : 'perspective';
+    }
+
     return {
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
         center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
         eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]},
-        projection: {type: (camera.projection && camera.projection.type === 'orthographic') ? 'orthographic' : 'perspective'}
+        projection: {type: cameraProjectionType}
     };
 }
 
