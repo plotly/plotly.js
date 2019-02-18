@@ -34,7 +34,8 @@ module.exports = extendFlat({
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
     line: contourAttrs.line,
-    zhoverformat: histogram2dAttrs.zhoverformat
+    zhoverformat: histogram2dAttrs.zhoverformat,
+    hovertemplate: histogram2dAttrs.hovertemplate
 },
     colorscaleAttrs('', {
         cLetter: 'z',

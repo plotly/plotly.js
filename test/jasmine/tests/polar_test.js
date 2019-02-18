@@ -1300,8 +1300,6 @@ describe('Test polar *gridshape linear* interactions', function() {
     it('should rotate all non-symmetrical layers on angular drag', function(done) {
         var evtCnt = 0;
         var evtData = {};
-        var dragCoverNode;
-        var p1;
 
         var layersRotateFromZero = ['.plotbg > path', '.radial-grid'];
         var layersRotateFromRadialAxis = ['.radial-axis', '.radial-line > line'];
@@ -1317,29 +1315,19 @@ describe('Test polar *gridshape linear* interactions', function() {
             }
         }
 
-        function _dragStart(p0, dp) {
+        function _run(msg, p0, dp, exp) {
             var node = d3.select('.polar > .draglayer > .angulardrag').node();
-            mouseEvent('mousemove', p0[0], p0[1], {element: node});
-            mouseEvent('mousedown', p0[0], p0[1], {element: node});
+            var dragFns = drag.makeFns(node, dp[0], dp[1], {x0: p0[0], y0: p0[1]});
 
-            var promise = drag.waitForDragCover().then(function(dcn) {
-                dragCoverNode = dcn;
-                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
-                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
-            });
-            return promise;
-        }
-
-        function _assertAndDragEnd(msg, exp) {
-            layersRotateFromZero.forEach(function(q) {
-                _assertTransformRotate(msg, q, exp.fromZero);
-            });
-            layersRotateFromRadialAxis.forEach(function(q) {
-                _assertTransformRotate(msg, q, exp.fromRadialAxis);
-            });
-
-            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
-            return drag.waitForDragCoverRemoval();
+            return dragFns.start().then(function() {
+                layersRotateFromZero.forEach(function(q) {
+                    _assertTransformRotate(msg, q, exp.fromZero);
+                });
+                layersRotateFromRadialAxis.forEach(function(q) {
+                    _assertTransformRotate(msg, q, exp.fromRadialAxis);
+                });
+            })
+            .then(dragFns.end);
         }
 
         Plotly.plot(gd, [{
@@ -1370,9 +1358,8 @@ describe('Test polar *gridshape linear* interactions', function() {
                 _assertTransformRotate('base', q, -90);
             });
         })
-        .then(function() { return _dragStart([150, 20], [30, 30]); })
         .then(function() {
-            return _assertAndDragEnd('rotate clockwise', {
+            return _run('rotate clockwise', [150, 20], [30, 30], {
                 fromZero: 7.2,
                 fromRadialAxis: -82.8
             });
@@ -1390,9 +1377,6 @@ describe('Test polar *gridshape linear* interactions', function() {
     });
 
     it('should place zoombox handles at correct place on main drag', function(done) {
-        var dragCoverNode;
-        var p1;
-
         // d attr to array of segment [x,y]
         function path2coords(path) {
             if(!path.size()) return [[]];
@@ -1407,29 +1391,19 @@ describe('Test polar *gridshape linear* interactions', function() {
                 .reduce(function(a, b) { return a.concat(b); });
         }
 
-        function _dragStart(p0, dp) {
+        function _run(msg, p0, dp, exp) {
             var node = d3.select('.polar > .draglayer > .maindrag').node();
-            mouseEvent('mousemove', p0[0], p0[1], {element: node});
-            mouseEvent('mousedown', p0[0], p0[1], {element: node});
+            var dragFns = drag.makeFns(node, dp[0], dp[1], {x0: p0[0], y0: p0[1]});
 
-            var promise = drag.waitForDragCover().then(function(dcn) {
-                dragCoverNode = dcn;
-                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
-                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
-            });
-            return promise;
-        }
+            return dragFns.start().then(function() {
+                var zl = d3.select(gd).select('g.zoomlayer');
 
-        function _assertAndDragEnd(msg, exp) {
-            var zl = d3.select(gd).select('g.zoomlayer');
-
-            expect(path2coords(zl.select('.zoombox')))
-                .toBeCloseTo2DArray(exp.zoombox, 2, msg + ' - zoombox');
-            expect(path2coords(zl.select('.zoombox-corners')))
-                .toBeCloseTo2DArray(exp.corners, 2, msg + ' - corners');
-
-            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
-            return drag.waitForDragCoverRemoval();
+                expect(path2coords(zl.select('.zoombox')))
+                    .toBeCloseTo2DArray(exp.zoombox, 2, msg + ' - zoombox');
+                expect(path2coords(zl.select('.zoombox-corners')))
+                    .toBeCloseTo2DArray(exp.corners, 2, msg + ' - corners');
+            })
+            .then(dragFns.end);
         }
 
         Plotly.plot(gd, [{
@@ -1445,9 +1419,8 @@ describe('Test polar *gridshape linear* interactions', function() {
             height: 400,
             margin: {l: 50, t: 50, b: 50, r: 50}
         })
-        .then(function() { return _dragStart([170, 170], [220, 220]); })
         .then(function() {
-            _assertAndDragEnd('drag outward toward bottom right', {
+            return _run('drag outward toward bottom right', [170, 170], [220, 220], {
                 zoombox: [
                     [-142.658, -46.353], [-88.167, 121.352],
                     [88.167, 121.352], [142.658, -46.352],
@@ -1470,9 +1443,8 @@ describe('Test polar *gridshape linear* interactions', function() {
         .then(function() {
             return Plotly.relayout(gd, 'polar.sector', [-90, 90]);
         })
-        .then(function() { return _dragStart([200, 200], [200, 230]); })
         .then(function() {
-            _assertAndDragEnd('half-sector, drag outward', {
+            return _run('half-sector, drag outward', [200, 200], [200, 230], {
                 zoombox: [
                     [0, 121.352], [88.167, 121.352],
                     [142.658, -46.352], [0, -150],

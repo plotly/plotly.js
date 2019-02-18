@@ -395,6 +395,14 @@ describe('@noCI Test streamtube hover', function() {
                 ].join('\n'),
                 name: 'TUBE!'
             });
+
+            return Plotly.restyle(gd, 'hovertemplate', '∇·F = %{divergence:.3f}<extra>TUBE</extra>');
+        })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: '∇·F = 0.465',
+                name: 'TUBE'
+            });
         })
         .catch(failTest)
         .then(done);

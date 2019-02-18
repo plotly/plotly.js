@@ -1,0 +1,84 @@
+{
+  "data": [
+    {
+      "r": [0.97, 0.97, 0.75, 0.83, 1, 1, 0.45, 0.97, 1, 0, 0.01, 0.97 ],
+      "mode": "lines",
+      "theta": ["Abstracts", "Affiliations", "Award Numbers", "Funders", "Licenses", "Open References", "Orcids", "References", "Resource Links", "Similarity Checking", "Update Policies", "Abstracts"],
+      "line": {
+        "color": "orangered",
+        "width": 4
+      },
+      "type": "scatterpolar",
+      "name": "Backfile",
+      "legendgroup": "Backfile"
+    },
+    {
+      "r": [0.98, 0.98, 0.83, 0.89, 1, 1, 0.99, 0.96, 1, 0, 0, 0.98],
+      "mode": "lines",
+      "theta": ["Abstracts", "Affiliations", "Award Numbers", "Funders", "Licenses", "Open References", "Orcids", "References", "Resource Links", "Similarity Checking", "Update Policies", "Abstracts"],
+      "line": {
+        "color": "blue",
+        "width": 2
+      },
+      "type": "scatterpolar",
+      "name": "Current",
+      "legendgroup": "Current"
+    },
+    {
+      "r": [0.97, 0.97, 0.75, 0.83, 1, 1, 0.45, 0.97, 1, 0, 0.01, 0.97 ],
+      "mode": "lines",
+      "theta": ["Abstracts<br>Abstracts", "Affiliations<br>Affiliations", "Award<br>Numbers", "Funders<br>Funders", "Licenses<br>Licenses", "Open<br>References", "Orcids<br>Orcids<br>Orcids", "References<br>References", "Resource<br>Links", "Similarity<br>Checking", "Update<br>Policies", "Abstracts<br>Abstracts"],
+      "line": {
+        "color": "orangered",
+        "width": 4
+      },
+      "type": "scatterpolar",
+      "name": "Backfile",
+      "legendgroup": "Backfile",
+      "showlegend": false,
+      "subplot": "polar2"
+    },
+    {
+      "r": [0.98, 0.98, 0.83, 0.89, 1, 1, 0.99, 0.96, 1, 0, 0, 0.98],
+      "mode": "lines",
+      "theta": ["Abstracts<br>Abstracts", "Affiliations<br>Affiliations", "Award<br>Numbers", "Funders<br>Funders", "Licenses<br>Licenses", "Open<br>References", "Orcids<br>Orcids<br>Orcids", "References<br>References", "Resource<br>Links", "Similarity<br>Checking", "Update<br>Policies", "Abstracts<br>Abstracts"],
+      "line": {
+        "color": "blue",
+        "width": 2
+      },
+      "type": "scatterpolar",
+      "name": "Current",
+      "legendgroup": "Current",
+      "showlegend": false,
+      "subplot": "polar2"
+    }
+  ],
+  "layout": {
+    "grid": {"rows": 2, "columns": 1, "ygap": 0.15},
+    "height": 800,
+    "polar": {
+      "domain": {"row": 0, "column": 0},
+      "angularaxis": {
+        "rotation": 90,
+        "direction": "clockwise"
+      }
+    },
+    "polar2": {
+      "domain": {"row": 1, "column": 0},
+      "angularaxis": {
+        "rotation": 90,
+        "direction": "clockwise"
+      }
+    },
+    "legend": {
+      "y": 0,
+      "yanchor": "top",
+      "x": 0,
+      "xanchor": "left",
+      "tracegroupgap": 0
+    },
+    "title": {
+      "text": "eLife Sciences Publications<br>Ltd: journal-article (8.62 - 7.95 = 0.67)"
+    }
+  }
+}

@@ -22,6 +22,10 @@ module.exports = {
     },
     calc: require('./calc'),
     plot: require('./convert'),
+    eventData: function(out, pt) {
+        out.norm = pt.traceCoordinate[6];
+        return out;
+    },
 
     meta: {
         description: [

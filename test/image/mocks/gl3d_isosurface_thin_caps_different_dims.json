@@ -3638,11 +3638,11 @@
             -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10
         ],
         "lighting": {
-        "ambient": 0.5,
-        "diffuse": 1.0,
-        "specular": 0.75,
-        "roughness": 1.0,
-        "fresnel": 0.25
+            "ambient": 0.5,
+            "diffuse": 1.0,
+            "specular": 0.75,
+            "roughness": 1.0,
+            "fresnel": 0.25
         },
         "lightposition": {
             "x": 10000,

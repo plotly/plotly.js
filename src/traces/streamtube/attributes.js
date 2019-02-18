@@ -10,6 +10,7 @@
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var mesh3dAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -130,7 +131,14 @@ var attrs = {
             'this text element will be seen in all hover labels.',
             'Note that streamtube traces do not support array `text` values.'
         ].join(' ')
-    }
+    },
+    hovertemplate: hovertemplateAttrs({editType: 'calc'}, {
+        keys: [
+            'tubex', 'tubey', 'tubez',
+            'tubeu', 'tubev', 'tubew',
+            'norm', 'divergence'
+        ]
+    })
 };
 
 extendFlat(attrs, colorscaleAttrs('', {

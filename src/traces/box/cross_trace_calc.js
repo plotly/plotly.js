@@ -204,11 +204,12 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
             vpadminus = pushminus;
         }
 
-        // calcdata[i][j] are in ascending order
-        var firstPos = calcTrace[0].pos;
-        var lastPos = calcTrace[calcTrace.length - 1].pos;
+        var pos = new Array(calcTrace.length);
+        for(j = 0; j < calcTrace.length; j++) {
+            pos[j] = calcTrace[j].pos;
+        }
 
-        trace._extremes[axId] = Axes.findExtremes(posAxis, [firstPos, lastPos], {
+        trace._extremes[axId] = Axes.findExtremes(posAxis, pos, {
             padded: padded,
             vpadminus: vpadminus,
             vpadplus: vpadplus,
