@@ -115,7 +115,7 @@ proto.update = function(data) {
         fresnel: data.lighting.fresnel,
         vertexNormalsEpsilon: data.lighting.vertexnormalsepsilon,
         faceNormalsEpsilon: data.lighting.facenormalsepsilon,
-        opacity: 1, // Note: no need to create transparent surfaces
+        opacity: data.opacity,
         contourEnable: data.contour.show,
         contourColor: str2RgbaArray(data.contour.color).slice(0, 3),
         contourWidth: data.contour.width,
@@ -149,7 +149,6 @@ function generateIsosurfaceMesh(data) {
 
     var drawingSurface = false;
     var drawingSpaceframe = false;
-    var drawingEdge = false;
 
     var numFaces = 0;
     var numVertices;
@@ -353,7 +352,7 @@ function generateIsosurfaceMesh(data) {
         if(value < min) value = min;
         if(value > max) value = max;
 
-        var ratio = (pointOut[3] - value) / (pointOut[3] - pointIn[3]);
+        var ratio = (pointOut[3] - value) / (pointOut[3] - pointIn[3] + 0.000000001); // we had to add this error to force solve the tiny caps
 
         var result = [];
         for(var s = 0; s < 4; s++) {
@@ -370,7 +369,7 @@ function generateIsosurfaceMesh(data) {
     }
 
     function almostInFinalRange(value) {
-        var vErr = 0.01 * (vMax - vMin);
+        var vErr = 0.001 * (vMax - vMin);
         return (
             value >= vMin - vErr &&
             value <= vMax + vErr
@@ -394,11 +393,27 @@ function generateIsosurfaceMesh(data) {
         return xyzv;
     }
 
-    function tryCreateTri(style, xyzv, abc, min, max, isSecondPass) {
+    var MAX_PASS = 3;
+
+    function tryCreateTri(style, xyzv, abc, min, max, nPass) {
+
+        if(!nPass) nPass = 1;
 
         abc = [-1, -1, -1]; // Note: for the moment we override indices
         // to run faster! But it is possible to comment this line
         // to reduce the number of vertices.
+
+        var result = false;
+
+        var ok = [
+            inRange(xyzv[0][3], min, max),
+            inRange(xyzv[1][3], min, max),
+            inRange(xyzv[2][3], min, max)
+        ];
+
+        if(!ok[0] && !ok[1] && !ok[2]) {
+            return false;
+        }
 
         var tryDrawTri = function(style, xyzv, abc) {
             if( // we check here if the points are in `real` iso-min/max range
@@ -407,29 +422,18 @@ function generateIsosurfaceMesh(data) {
                 almostInFinalRange(xyzv[2][3])
             ) {
                 drawTri(style, xyzv, abc);
-            } else if(!isSecondPass) {
-                tryCreateTri(style, xyzv, abc, vMin, vMax, true); // i.e. second pass
+                return true;
+            } else if(nPass < MAX_PASS) {
+                return tryCreateTri(style, xyzv, abc, vMin, vMax, ++nPass); // i.e. second pass using actual vMin vMax bounds
             }
+            return false;
         };
 
-        var ok = [
-            inRange(xyzv[0][3], min, max),
-            inRange(xyzv[1][3], min, max),
-            inRange(xyzv[2][3], min, max)
-        ];
+        if(ok[0] && ok[1] && ok[2]) {
+            return tryDrawTri(style, xyzv, abc) || result;
+        }
 
         var interpolated = false;
-
-        if(!ok[0] && !ok[1] && !ok[2]) {
-            return interpolated;
-        }
-
-        if(ok[0] && ok[1] && ok[2]) {
-            if(!drawingEdge) {
-                tryDrawTri(style, xyzv, abc);
-            }
-            return interpolated;
-        }
 
         [
             [0, 1, 2],
@@ -444,13 +448,13 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(C, A, min, max);
                 var p2 = calcIntersection(C, B, min, max);
 
-                tryDrawTri(style, [p2, p1, A], [-1, -1, abc[e[0]]]);
-                tryDrawTri(style, [A, B, p2], [abc[e[0]], abc[e[1]], -1]);
+                result = tryDrawTri(style, [p2, p1, A], [-1, -1, abc[e[0]]]) || result;
+                result = tryDrawTri(style, [A, B, p2], [abc[e[0]], abc[e[1]], -1]) || result;
 
                 interpolated = true;
             }
         });
-        if(interpolated) return interpolated;
+        if(interpolated) return result;
 
         [
             [0, 1, 2],
@@ -465,15 +469,17 @@ function generateIsosurfaceMesh(data) {
                 var p1 = calcIntersection(B, A, min, max);
                 var p2 = calcIntersection(C, A, min, max);
 
-                tryDrawTri(style, [p2, p1, A], [-1, -1, abc[e[0]]]);
+                result = tryDrawTri(style, [p2, p1, A], [-1, -1, abc[e[0]]]) || result;
 
                 interpolated = true;
             }
         });
-        return interpolated;
+        return result;
     }
 
     function tryCreateTetra(style, abcd, min, max) {
+
+        var result = false;
 
         var xyzv = getXYZV(abcd);
 
@@ -484,18 +490,18 @@ function generateIsosurfaceMesh(data) {
             inRange(xyzv[3][3], min, max)
         ];
 
-        var interpolated = false;
-
         if(!ok[0] && !ok[1] && !ok[2] && !ok[3]) {
-            return interpolated;
+            return result;
         }
 
         if(ok[0] && ok[1] && ok[2] && ok[3]) {
             if(drawingSpaceframe) {
-                drawTetra(style, xyzv, abcd);
+                result = drawTetra(style, xyzv, abcd) || result;
             }
-            return interpolated;
+            return result;
         }
+
+        var interpolated = false;
 
         [
             [0, 1, 2, 3],
@@ -510,19 +516,19 @@ function generateIsosurfaceMesh(data) {
                 var D = xyzv[e[3]];
 
                 if(drawingSpaceframe) {
-                    drawTri(style, [A, B, C], [abcd[e[0]], abcd[e[1]], abcd[e[2]]]);
+                    result = drawTri(style, [A, B, C], [abcd[e[0]], abcd[e[1]], abcd[e[2]]]) || result;
                 } else {
                     var p1 = calcIntersection(D, A, min, max);
                     var p2 = calcIntersection(D, B, min, max);
                     var p3 = calcIntersection(D, C, min, max);
 
-                    drawTri(null, [p1, p2, p3], [-1, -1, -1]);
+                    result = drawTri(null, [p1, p2, p3], [-1, -1, -1]) || result;
                 }
 
                 interpolated = true;
             }
         });
-        if(interpolated) return interpolated;
+        if(interpolated) return result;
 
         [
             [0, 1, 2, 3],
@@ -544,16 +550,16 @@ function generateIsosurfaceMesh(data) {
                 var p4 = calcIntersection(D, A, min, max);
 
                 if(drawingSpaceframe) {
-                    drawTri(style, [A, p4, p1], [abcd[e[0]], -1, -1]);
-                    drawTri(style, [B, p2, p3], [abcd[e[1]], -1, -1]);
+                    result = drawTri(style, [A, p4, p1], [abcd[e[0]], -1, -1]) || result;
+                    result = drawTri(style, [B, p2, p3], [abcd[e[1]], -1, -1]) || result;
                 } else {
-                    drawQuad(null, [p1, p2, p3, p4], [-1, -1, -1, -1]);
+                    result = drawQuad(null, [p1, p2, p3, p4], [-1, -1, -1, -1]) || result;
                 }
 
                 interpolated = true;
             }
         });
-        if(interpolated) return interpolated;
+        if(interpolated) return result;
 
         [
             [0, 1, 2, 3],
@@ -572,66 +578,74 @@ function generateIsosurfaceMesh(data) {
                 var p3 = calcIntersection(D, A, min, max);
 
                 if(drawingSpaceframe) {
-                    drawTri(style, [A, p1, p2], [abcd[e[0]], -1, -1]);
-                    drawTri(style, [A, p2, p3], [abcd[e[0]], -1, -1]);
-                    drawTri(style, [A, p3, p1], [abcd[e[0]], -1, -1]);
+                    result = drawTri(style, [A, p1, p2], [abcd[e[0]], -1, -1]) || result;
+                    result = drawTri(style, [A, p2, p3], [abcd[e[0]], -1, -1]) || result;
+                    result = drawTri(style, [A, p3, p1], [abcd[e[0]], -1, -1]) || result;
                 } else {
-                    drawTri(null, [p1, p2, p3], [-1, -1, -1]);
+                    result = drawTri(null, [p1, p2, p3], [-1, -1, -1]) || result;
                 }
 
                 interpolated = true;
             }
         });
-        return interpolated;
+        return result;
     }
 
     function addCube(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max) {
+        var result = false;
 
         if(drawingSurface) {
             if(styleIncludes(style, 'A')) {
-                tryCreateTetra(null, [p000, p001, p010, p100], min, max);
+                result = tryCreateTetra(null, [p000, p001, p010, p100], min, max) || result;
             }
             if(styleIncludes(style, 'B')) {
-                tryCreateTetra(null, [p001, p010, p011, p111], min, max);
+                result = tryCreateTetra(null, [p001, p010, p011, p111], min, max) || result;
             }
             if(styleIncludes(style, 'C')) {
-                tryCreateTetra(null, [p001, p100, p101, p111], min, max);
+                result = tryCreateTetra(null, [p001, p100, p101, p111], min, max) || result;
             }
             if(styleIncludes(style, 'D')) {
-                tryCreateTetra(null, [p010, p100, p110, p111], min, max);
+                result = tryCreateTetra(null, [p010, p100, p110, p111], min, max) || result;
             }
             if(styleIncludes(style, 'E')) {
-                tryCreateTetra(null, [p001, p010, p100, p111], min, max);
+                result = tryCreateTetra(null, [p001, p010, p100, p111], min, max) || result;
             }
         }
 
         if(drawingSpaceframe) {
-            tryCreateTetra(style, [p001, p010, p100, p111], min, max);
+            result = tryCreateTetra(style, [p001, p010, p100, p111], min, max) || result;
         }
+
+        return result;
     }
 
-    function addRect(style, a, b, c, d, min, max) {
-        tryCreateTri(style, getXYZV([a, b, c]), [a, b, c], min, max);
-        tryCreateTri(style, getXYZV([c, d, a]), [c, d, a], min, max);
+    function addRect(style, a, b, c, d, min, max, previousResult) {
+        return [
+            (previousResult[0] === true) ? true :
+            tryCreateTri(style, getXYZV([a, b, c]), [a, b, c], min, max),
+            (previousResult[1] === true) ? true :
+            tryCreateTri(style, getXYZV([c, d, a]), [c, d, a], min, max)
+        ];
     }
 
-    function begin2dCell(style, p00, p01, p10, p11, min, max, isEven) {
+    function begin2dCell(style, p00, p01, p10, p11, min, max, isEven, previousResult) {
         // used to create caps and/or slices on exact axis points
         if(isEven) {
-            addRect(style, p00, p01, p11, p10, min, max);
+            return addRect(style, p00, p01, p11, p10, min, max, previousResult);
         } else {
-            addRect(style, p01, p11, p10, p00, min, max);
+            return addRect(style, p01, p11, p10, p00, min, max, previousResult);
         }
     }
 
     function beginSection(style, i, j, k, min, max, distRatios) {
         // used to create slices between axis points
 
+        var result = false;
         var A, B, C, D;
 
         var makeSection = function() {
-            tryCreateTri(style, [A, B, C], [-1, -1, -1], min, max);
-            tryCreateTri(style, [C, D, A], [-1, -1, -1], min, max);
+            result = tryCreateTri(style, [A, B, C], [-1, -1, -1], min, max) || result;
+            result = tryCreateTri(style, [C, D, A], [-1, -1, -1], min, max) || result;
         };
 
         var rX = distRatios[0];
@@ -661,75 +675,99 @@ function generateIsosurfaceMesh(data) {
             D = getBetween(getXYZV([getIndex(i - 1, j - 0, k)])[0], getXYZV([getIndex(i - 1, j - 0, k - 1)])[0], rZ);
             makeSection();
         }
+
+        return result;
     }
 
     function begin3dCell(style, p000, p001, p010, p011, p100, p101, p110, p111, min, max, isEven) {
         // used to create spaceframe and/or iso-surfaces
+
         var cellStyle = style;
         if(isEven) {
             if(drawingSurface && style === 'even') cellStyle = null;
-            addCube(cellStyle, p000, p001, p010, p011, p100, p101, p110, p111, min, max);
+            return addCube(cellStyle, p000, p001, p010, p011, p100, p101, p110, p111, min, max);
         } else {
             if(drawingSurface && style === 'odd') cellStyle = null;
-            addCube(cellStyle, p111, p110, p101, p100, p011, p010, p001, p000, min, max);
+            return addCube(cellStyle, p111, p110, p101, p100, p011, p010, p001, p000, min, max);
         }
     }
 
-    function draw2dX(style, items, min, max) {
+    function draw2dX(style, items, min, max, previousResult) {
+        var result = [];
+        var n = 0;
         for(var q = 0; q < items.length; q++) {
             var i = items[q];
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
-                    begin2dCell(style,
-                        getIndex(i, j - 1, k - 1),
-                        getIndex(i, j - 1, k),
-                        getIndex(i, j, k - 1),
-                        getIndex(i, j, k),
-                        min,
-                        max,
-                        (i + j + k) % 2
+                    result.push(
+                        begin2dCell(style,
+                            getIndex(i, j - 1, k - 1),
+                            getIndex(i, j - 1, k),
+                            getIndex(i, j, k - 1),
+                            getIndex(i, j, k),
+                            min,
+                            max,
+                            (i + j + k) % 2,
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
+                        )
                     );
+                    n++;
                 }
             }
         }
+        return result;
     }
 
-    function draw2dY(style, items, min, max) {
+    function draw2dY(style, items, min, max, previousResult) {
+        var result = [];
+        var n = 0;
         for(var q = 0; q < items.length; q++) {
             var j = items[q];
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
-                    begin2dCell(style,
-                        getIndex(i - 1, j, k - 1),
-                        getIndex(i, j, k - 1),
-                        getIndex(i - 1, j, k),
-                        getIndex(i, j, k),
-                        min,
-                        max,
-                        (i + j + k) % 2
+                    result.push(
+                        begin2dCell(style,
+                            getIndex(i - 1, j, k - 1),
+                            getIndex(i, j, k - 1),
+                            getIndex(i - 1, j, k),
+                            getIndex(i, j, k),
+                            min,
+                            max,
+                            (i + j + k) % 2,
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
+                        )
                     );
+                    n++;
                 }
             }
         }
+        return result;
     }
 
-    function draw2dZ(style, items, min, max) {
+    function draw2dZ(style, items, min, max, previousResult) {
+        var result = [];
+        var n = 0;
         for(var q = 0; q < items.length; q++) {
             var k = items[q];
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
-                    begin2dCell(style,
-                        getIndex(i - 1, j - 1, k),
-                        getIndex(i - 1, j, k),
-                        getIndex(i, j - 1, k),
-                        getIndex(i, j, k),
-                        min,
-                        max,
-                        (i + j + k) % 2
+                    result.push(
+                        begin2dCell(style,
+                            getIndex(i - 1, j - 1, k),
+                            getIndex(i - 1, j, k),
+                            getIndex(i, j - 1, k),
+                            getIndex(i, j, k),
+                            min,
+                            max,
+                            (i + j + k) % 2,
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
+                        )
                     );
+                    n++;
                 }
             }
         }
+        return result;
     }
 
     function draw3d(style, min, max) {
@@ -766,37 +804,61 @@ function generateIsosurfaceMesh(data) {
         drawingSurface = false;
     }
 
-    function drawSectionX(style, items, min, max, distRatios) {
+    function drawSectionX(style, items, min, max, distRatios, previousResult) {
+        var result = [];
+        var n = 0;
         for(var q = 0; q < items.length; q++) {
             var i = items[q];
             for(var k = 1; k < depth; k++) {
                 for(var j = 1; j < height; j++) {
-                    beginSection(style, i, j, k, min, max, distRatios[q]);
+                    result.push(
+                        beginSection(style, i, j, k, min, max, distRatios[q],
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
+                        )
+                    );
+                    n++;
                 }
             }
         }
+        return result;
     }
 
-    function drawSectionY(style, items, min, max, distRatios) {
+    function drawSectionY(style, items, min, max, distRatios, previousResult) {
+        var result = [];
+        var n = 0;
         for(var q = 0; q < items.length; q++) {
             var j = items[q];
             for(var i = 1; i < width; i++) {
                 for(var k = 1; k < depth; k++) {
-                    beginSection(style, i, j, k, min, max, distRatios[q]);
+                    result.push(
+                        beginSection(style, i, j, k, min, max, distRatios[q],
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
+                        )
+                    );
+                    n++;
                 }
             }
         }
+        return result;
     }
 
-    function drawSectionZ(style, items, min, max, distRatios) {
+    function drawSectionZ(style, items, min, max, distRatios, previousResult) {
+        var result = [];
+        var n = 0;
         for(var q = 0; q < items.length; q++) {
             var k = items[q];
             for(var j = 1; j < height; j++) {
                 for(var i = 1; i < width; i++) {
-                    beginSection(style, i, j, k, min, max, distRatios[q]);
+                    result.push(
+                        beginSection(style, i, j, k, min, max, distRatios[q],
+                            (previousResult && previousResult[n]) ? previousResult[n] : []
+                        )
+                    );
+                    n++;
                 }
             }
         }
+        return result;
     }
 
     function createRange(a, b) {
@@ -865,9 +927,9 @@ function generateIsosurfaceMesh(data) {
         ];
 
         ['x', 'y', 'z'].forEach(function(e) {
+            var preRes = [];
             for(var s = 0; s < setupMinMax.length; s++) {
-
-                drawingEdge = (s === 0) ? false : true;
+                var count = 0;
 
                 var activeMin = setupMinMax[s][0];
                 var activeMax = setupMinMax[s][1];
@@ -915,22 +977,24 @@ function generateIsosurfaceMesh(data) {
 
                     if(ceilIndices.length > 0) {
                         if(e === 'x') {
-                            drawSectionX(activeStyle, ceilIndices, activeMin, activeMax, distRatios);
+                            preRes[count] = drawSectionX(activeStyle, ceilIndices, activeMin, activeMax, distRatios, preRes[count]);
                         } else if(e === 'y') {
-                            drawSectionY(activeStyle, ceilIndices, activeMin, activeMax, distRatios);
+                            preRes[count] = drawSectionY(activeStyle, ceilIndices, activeMin, activeMax, distRatios, preRes[count]);
                         } else {
-                            drawSectionZ(activeStyle, ceilIndices, activeMin, activeMax, distRatios);
+                            preRes[count] = drawSectionZ(activeStyle, ceilIndices, activeMin, activeMax, distRatios, preRes[count]);
                         }
+                        count++;
                     }
 
                     if(exactIndices.length > 0) {
                         if(e === 'x') {
-                            draw2dX(activeStyle, exactIndices, activeMin, activeMax);
+                            preRes[count] = draw2dX(activeStyle, exactIndices, activeMin, activeMax, preRes[count]);
                         } else if(e === 'y') {
-                            draw2dY(activeStyle, exactIndices, activeMin, activeMax);
+                            preRes[count] = draw2dY(activeStyle, exactIndices, activeMin, activeMax, preRes[count]);
                         } else {
-                            draw2dZ(activeStyle, exactIndices, activeMin, activeMax);
+                            preRes[count] = draw2dZ(activeStyle, exactIndices, activeMin, activeMax, preRes[count]);
                         }
+                        count++;
                     }
                 }
 
@@ -939,12 +1003,13 @@ function generateIsosurfaceMesh(data) {
                 if(cap.show && cap.fill) {
                     setFill(cap.fill);
                     if(e === 'x') {
-                        draw2dX(activeStyle, [0, width - 1], activeMin, activeMax);
+                        preRes[count] = draw2dX(activeStyle, [0, width - 1], activeMin, activeMax, preRes[count]);
                     } else if(e === 'y') {
-                        draw2dY(activeStyle, [0, height - 1], activeMin, activeMax);
+                        preRes[count] = draw2dY(activeStyle, [0, height - 1], activeMin, activeMax, preRes[count]);
                     } else {
-                        draw2dZ(activeStyle, [0, depth - 1], activeMin, activeMax);
+                        preRes[count] = draw2dZ(activeStyle, [0, depth - 1], activeMin, activeMax, preRes[count]);
                     }
+                    count++;
                 }
             }
         });

@@ -14,7 +14,7 @@ var wrap = require('../../lib/gup').wrap;
 
 var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var isIndex = Lib.isIndex;
-
+var Colorscale = require('../../components/colorscale');
 
 function convertToD3Sankey(trace) {
     var nodeSpec = trace.node;
@@ -24,8 +24,17 @@ function convertToD3Sankey(trace) {
     var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
     var linkedNodes = {};
 
-    var nodeCount = nodeSpec.label.length;
+    var components = {};
+    var componentCount = linkSpec.colorscales.length;
     var i;
+    for(i = 0; i < componentCount; i++) {
+        var cscale = linkSpec.colorscales[i];
+        var specs = Colorscale.extractScale(cscale, {cLetter: 'c'});
+        var scale = Colorscale.makeColorScaleFunc(specs);
+        components[cscale.label] = scale;
+    }
+
+    var nodeCount = nodeSpec.label.length;
     for(i = 0; i < linkSpec.value.length; i++) {
         var val = linkSpec.value[i];
         // remove negative values, but keep zeros with special treatment
@@ -42,10 +51,14 @@ function convertToD3Sankey(trace) {
         var label = '';
         if(linkSpec.label && linkSpec.label[i]) label = linkSpec.label[i];
 
+        var concentrationscale = null;
+        if(label && components.hasOwnProperty(label)) concentrationscale = components[label];
+
         links.push({
             pointNumber: i,
             label: label,
             color: hasLinkColorArray ? linkSpec.color[i] : linkSpec.color,
+            concentrationscale: concentrationscale,
             source: source,
             target: target,
             value: +val

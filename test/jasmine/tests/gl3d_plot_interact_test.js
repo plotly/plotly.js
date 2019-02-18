@@ -242,6 +242,11 @@ describe('Test gl3d plots', function() {
         })
         .then(function() {
             assertHoverText(null, null, '100k');
+
+            return Plotly.restyle(gd, 'hovertemplate', 'THIS Y -- %{y}<extra></extra>');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'THIS Y -- c');
         })
         .catch(failTest)
         .then(done);
@@ -339,6 +344,11 @@ describe('Test gl3d plots', function() {
         })
         .then(function() {
             assertHoverText(null, null, null, 'yo!');
+
+            return Plotly.restyle(gd, 'hovertemplate', '!!! %{z} !!!<extra></extra>');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, '!!! 43 !!!');
         })
         .then(done);
     });
@@ -417,6 +427,12 @@ describe('Test gl3d plots', function() {
         })
         .then(function() {
             assertHoverText(null, null, null, 'yo!');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hovertemplate', '%{x}-%{y}-%{z}<extra></extra>');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, '3-4-5');
         })
         .catch(failTest)
         .then(done);

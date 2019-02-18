@@ -442,8 +442,14 @@ function drawItemText(item, menuOpts, itemOpts, gd) {
             });
     });
 
+    var tx = itemOpts.label;
+    var meta = gd._fullLayout.meta;
+    if(meta) {
+        tx = Lib.templateString(tx, {meta: meta});
+    }
+
     text.call(Drawing.font, menuOpts.font)
-        .text(itemOpts.label)
+        .text(tx)
         .call(svgTextUtils.convertToTspans, gd);
 }
 

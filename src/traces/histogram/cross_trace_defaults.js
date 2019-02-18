@@ -50,15 +50,16 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         binDirection = traceOut.orientation === 'v' ? 'x' : 'y';
         // in overlay mode make a separate group for each trace
         // otherwise collect all traces of the same subplot & orientation
-        group = isOverlay ? traceOut.uid : (traceOut.xaxis + traceOut.yaxis + binDirection);
-        traceOut._groupName = group;
-
+        group = traceOut._groupName = isOverlay ? traceOut.uid : (
+            getAxisGroup(fullLayout, traceOut.xaxis) +
+            getAxisGroup(fullLayout, traceOut.yaxis) +
+            binDirection
+        );
         binOpts = allBinOpts[group];
 
         if(binOpts) {
             binOpts.traces.push(traceOut);
-        }
-        else {
+        } else {
             binOpts = allBinOpts[group] = {
                 traces: [traceOut],
                 direction: binDirection
@@ -110,3 +111,13 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         }
     }
 };
+
+function getAxisGroup(fullLayout, axId) {
+    var matchGroups = fullLayout._axisMatchGroups;
+
+    for(var i = 0; i < matchGroups.length; i++) {
+        var group = matchGroups[i];
+        if(group[axId]) return 'g' + i;
+    }
+    return axId;
+}

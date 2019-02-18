@@ -232,6 +232,7 @@ describe('Test splom trace defaults:', function() {
         expect(subplots.yaxis).toEqual(['y6', 'y7']);
         expect(subplots.cartesian).toEqual(['x6y6', 'x7y6', 'x7y7']);
     });
+
     it('should use special `grid.xside` and `grid.yside` defaults on splom w/o lower half generated grids', function() {
         var gridOut;
 
@@ -524,6 +525,96 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.yaxis.type).toBe('linear');
         expect(fullLayout.xaxis2.type).toBe('category');
         expect(fullLayout.yaxis2.type).toBe('category');
+    });
+
+    it('axis *matches* setting should propagate to layout axis containers', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 1], axis: {matches: true}},
+                {values: [-1, 2, 3], axis: {matches: true}}
+            ]
+        }, {});
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.matches).toBe('y');
+        expect(fullLayout.yaxis.matches).toBe('x');
+        expect(fullLayout.xaxis2.matches).toBe('y2');
+        expect(fullLayout.yaxis2.matches).toBe('x2');
+
+        var groups = fullLayout._axisMatchGroups;
+        expect(groups.length).toBe(2);
+        expect(groups).toContain({x: 1, y: 1});
+        expect(groups).toContain({x2: 1, y2: 1});
+    });
+
+    it('axis *matches* setting should propagate to layout axis containers (lower + no-diag case)', function() {
+        _supply({
+            diagonal: {visible: false},
+            showlowerhalf: false,
+            dimensions: [
+                {values: [1, 2, 1], axis: {matches: true}},
+                {values: [-1, 2, 3], axis: {matches: true}},
+                {values: [-10, 9, 3], axis: {matches: true}}
+            ]
+        }, {});
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis).toBe(undefined);
+        expect(fullLayout.yaxis.matches).toBe(undefined);
+        expect(fullLayout.xaxis2.matches).toBe('y2');
+        expect(fullLayout.yaxis2.matches).toBe('x2');
+        expect(fullLayout.xaxis3.matches).toBe(undefined);
+        expect(fullLayout.yaxis3).toBe(undefined);
+
+        var groups = fullLayout._axisMatchGroups;
+        expect(groups.length).toBe(1);
+        expect(groups).toContain({x2: 1, y2: 1});
+    });
+
+    it('axis *matches* setting should propagate to layout axis containers (upper + no-diag case)', function() {
+        _supply({
+            diagonal: {visible: false},
+            showupperhalf: false,
+            dimensions: [
+                {values: [1, 2, 1], axis: {matches: true}},
+                {values: [-1, 2, 3], axis: {matches: true}},
+                {values: [-10, 9, 3], axis: {matches: true}}
+            ]
+        }, {});
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.matches).toBe(undefined);
+        expect(fullLayout.yaxis).toBe(undefined);
+        expect(fullLayout.xaxis2.matches).toBe('y2');
+        expect(fullLayout.yaxis2.matches).toBe('x2');
+        expect(fullLayout.xaxis3).toBe(undefined);
+        expect(fullLayout.yaxis3.matches).toBe(undefined);
+
+        var groups = fullLayout._axisMatchGroups;
+        expect(groups.length).toBe(1);
+        expect(groups).toContain({x2: 1, y2: 1});
+    });
+
+    it('axis *matches* in layout take precedence over dimensions settings', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 1], axis: {matches: true}},
+                {values: [-1, 2, 3], axis: {matches: true}}
+            ]
+        }, {
+            xaxis: {},
+            xaxis2: {matches: 'x'}
+        });
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.matches).toBe('y');
+        expect(fullLayout.yaxis.matches).toBe('x');
+        expect(fullLayout.xaxis2.matches).toBe('x');
+        expect(fullLayout.yaxis2.matches).toBe('x2');
+
+        var groups = fullLayout._axisMatchGroups;
+        expect(groups.length).toBe(1);
+        expect(groups).toContain({x: 1, y: 1, x2: 1, y2: 1});
     });
 });
 
@@ -1360,6 +1451,18 @@ describe('Test splom hover:', function() {
         nums: 'Apr 2003',
         axis: 'Jan 2000',
         evtPts: [{x: '2000-01-01', y: '2003-04-21', pointNumber: 0}]
+    }, {
+        desc: 'with a hovertemplate',
+        patch: function(fig) {
+            fig.data.forEach(function(t) {
+                t.hovertemplate = '%{x}|%{y}<extra>pt %{pointNumber}</extra>';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: '2.6|7.7',
+        name: 'pt 18',
+        evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
     }];
 
     specs.forEach(function(s) {
