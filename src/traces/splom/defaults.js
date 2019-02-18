@@ -64,6 +64,7 @@ function dimensionDefaults(dimIn, dimOut) {
     else coerce('visible');
 
     coerce('axis.type');
+    coerce('axis.matches');
 }
 
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
@@ -98,7 +99,7 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     var xList = [];
     var yList = [];
 
-    function fillAxisStashes(axId, dim, list) {
+    function fillAxisStashes(axId, counterAxId, dim, list) {
         if(!axId) return;
 
         var axLetter = axId.charAt(0);
@@ -112,7 +113,8 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
             if(dim) {
                 s.label = dim.label || '';
                 if(dim.visible && dim.axis) {
-                    s.type = dim.axis.type;
+                    if(dim.axis.type) s.type = dim.axis.type;
+                    if(dim.axis.matches) s.matches = counterAxId;
                 }
             }
         }
@@ -137,8 +139,8 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
             undefined :
             yaxes[i];
 
-        fillAxisStashes(xaId, dim, xList);
-        fillAxisStashes(yaId, dim, yList);
+        fillAxisStashes(xaId, yaId, dim, xList);
+        fillAxisStashes(yaId, xaId, dim, yList);
         diag[i] = [xaId, yaId];
     }
 

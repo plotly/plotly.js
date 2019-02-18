@@ -1,0 +1,92 @@
+{
+  "data": [
+    {
+      "x": [ "a", "b", "c" ],
+      "y": [ 1, 2, 1 ]
+    },
+    {
+      "x": [ "b", "c", "d", "e" ],
+      "y": [ 2, 1, 2, 3 ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "x": [
+        [ 2018, 2019, 2019 ],
+        [ "q1", "q1", "q2" ]
+      ],
+      "y": [ 1, 2, 1 ],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "x": [
+        [ 2018, 2018, 2019, 2019 ],
+        [ "q1", "q2", "q1", "q2" ]
+      ],
+      "y": [ 2, 1, 2, 3 ],
+      "xaxis": "x4",
+      "yaxis": "y4"
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "domain": [ 0, 0.2 ]
+    },
+    "yaxis": {
+      "domain": [ 0.65, 1 ]
+    },
+    "xaxis2": {
+      "matches": "x",
+      "anchor": "y2",
+      "domain": [ 0.3, 1 ]
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [ 0.65, 1 ]
+    },
+    "xaxis3": {
+      "anchor": "y3",
+      "domain": [ 0, 0.2 ]
+    },
+    "yaxis3": {
+      "anchor": "x3",
+      "domain": [ 0, 0.5 ]
+    },
+    "xaxis4": {
+      "matches": "x3",
+      "anchor": "y4",
+      "domain": [ 0.3, 1 ]
+    },
+    "yaxis4": {
+      "anchor": "x4",
+      "domain": [ 0, 0.5 ]
+    },
+    "showlegend": false,
+    "margin": { "t": 40, "b": 40, "l": 20, "r": 20 },
+    "annotations": [
+      {
+        "text": "matching category x-axes",
+        "showarrow": false,
+        "xref": "paper",
+        "yref": "paper",
+        "x": 0,
+        "xanchor": "left",
+        "y": 1,
+        "yanchor": "bottom",
+        "bgcolor": "#d3d3d3"
+      },
+      {
+        "text": "matching multicategory x-axes",
+        "showarrow": false,
+        "xref": "paper",
+        "yref": "paper",
+        "x": 0,
+        "xanchor": "left",
+        "y": 0.5,
+        "yanchor": "bottom",
+        "bgcolor": "#d3d3d3"
+      }
+    ]
+  }
+}
