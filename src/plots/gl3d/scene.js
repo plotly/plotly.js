@@ -9,8 +9,8 @@
 
 'use strict';
 
-var createCamera = require('3d-view-controls');
-var createPlot = require('gl-plot3d');
+var createCamera = require('gl-plot3d').createCamera;
+var createPlot = require('gl-plot3d').createScene;
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
 
