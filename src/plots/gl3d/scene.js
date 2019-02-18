@@ -9,6 +9,7 @@
 
 'use strict';
 
+var createCamera = require('3d-view-controls');
 var createPlot = require('gl-plot3d');
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
@@ -22,7 +23,6 @@ var Fx = require('../../components/fx');
 var str2RGBAarray = require('../../lib/str2rgbarray');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
-var createCamera = require('./camera');
 var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
@@ -192,7 +192,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function initializeGLPlot(scene, canvas, gl) {
+function initializeGLPlot(scene, camera, canvas, gl) {
     var gd = scene.graphDiv;
 
     var glplotOptions = {
@@ -204,7 +204,8 @@ function initializeGLPlot(scene, canvas, gl) {
         pickRadius: 10,
         snapToData: true,
         autoScale: true,
-        autoBounds: false
+        autoBounds: false,
+        camera: camera
     };
 
     // for static plots, we reuse the WebGL context
@@ -270,17 +271,7 @@ function initializeGLPlot(scene, canvas, gl) {
         }, false);
     }
 
-    if(!scene.camera) {
-        var cameraData = scene.fullSceneLayout.camera;
-        scene.camera = createCamera(scene.container, {
-            center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
-            eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
-            up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-            zoomMin: 0.1,
-            zoomMax: 100,
-            mode: 'orbit'
-        });
-    }
+    if(!scene.camera) scene.initializeGLCamera();
 
     scene.glplot.camera = scene.camera;
 
@@ -350,15 +341,32 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    if(!initializeGLPlot(this)) return; // todo check the necessity for this line
+    var camera = fullLayout.scene.camera;
+    initializeGLPlot(this, camera);
 }
 
 var proto = Scene.prototype;
+
+proto.initializeGLCamera = function() {
+
+    var cameraData = this.fullSceneLayout.camera;
+
+    this.camera = createCamera(this.container, {
+        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+        eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+        up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+        ortho: cameraData.ortho,
+        zoomMin: 0.01,
+        zoomMax: 100,
+        mode: 'orbit'
+    });
+};
 
 proto.recoverContext = function() {
     var scene = this;
     var gl = this.glplot.gl;
     var canvas = this.glplot.canvas;
+    var camera = this.glplot.camera;
     this.glplot.dispose();
 
     function tryRecover() {
@@ -366,7 +374,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, canvas, gl)) {
+        if(!initializeGLPlot(scene, camera, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
@@ -741,7 +749,8 @@ function getLayoutCamera(camera) {
     return {
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
         center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
-        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]}
+        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]},
+        ortho: !!camera.ortho
     };
 }
 
@@ -781,6 +790,7 @@ proto.saveCamera = function saveCamera(layout) {
                 }
             }
         }
+        if(cameraData.ortho !== cameraDataLastSave.ortho) hasChanged = true;
     }
 
     if(hasChanged) {

@@ -57,7 +57,7 @@
     ]
   },
   "dependencies": {
-    "3d-view": "^2.0.0",
+    "3d-view-controls": "git://github.com/archmoj/3d-view-controls.git#fe3c77b807618c0d51f4c50a691e2af0486bfda9",
     "alpha-shape": "^1.0.0",
     "array-range": "^1.0.1",
     "canvas-fit": "^1.5.0",
@@ -81,7 +81,7 @@
     "gl-mat4": "^1.2.0",
     "gl-mesh3d": "^2.0.7",
     "gl-plot2d": "^1.4.2",
-    "gl-plot3d": "^1.6.3",
+    "gl-plot3d": "git://github.com/gl-vis/gl-plot3d.git#33d5169a62d9b903a8f3a4607f4dae726c4bb57b",
     "gl-pointcloud2d": "^1.0.2",
     "gl-scatter3d": "^1.1.6",
     "gl-select-box": "^1.0.3",

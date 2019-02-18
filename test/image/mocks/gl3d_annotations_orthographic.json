@@ -1,0 +1,112 @@
+{
+  "data": [{
+    "type": "scatter3d",
+    "x": ["2017-01-01", "2017-02-10", "2017-03-20", "2017-04-29"],
+    "y": ["A", "B", "C", "B"],
+    "z": [1, 1e3, 1e5, 100]
+  }],
+  "layout": {
+    "width": 600,
+    "height": 600,
+    "scene": {
+      "camera": {
+        "ortho": true,
+        "eye": {"x": 2.1, "y": 0.1, "z": 0.9}
+      },
+      "xaxis": {
+        "title": ""
+      },
+      "yaxis": {
+        "title": ""
+      },
+      "zaxis": {
+        "type": "log",
+        "title": ""
+      },
+      "annotations": [{
+        "showarrow": false,
+        "x": "2017-01-01",
+        "y": "A",
+        "z": 0,
+        "text": "Point 1",
+        "xanchor": "left",
+        "xshift": 10,
+        "opacity": 0.7
+      }, {
+        "x": "2017-02-20",
+        "y": "B",
+        "z": 4,
+        "text": "Point 2<br><b>watch out!!</b>",
+        "textangle": 30,
+        "ax": 30,
+        "ay": -100,
+        "font": {
+          "color": "blue",
+          "size": 20
+        },
+        "bgcolor": "#d3d3d3",
+        "bordercolor": "#000",
+        "borderwidth": 2,
+        "borderpad": 10,
+        "standoff": 12,
+        "arrowcolor": "blue",
+        "arrowsize": 3,
+        "arrowwidth": 1,
+        "arrowhead": 5
+      }, {
+        "x": "2017-03-20",
+        "y": "C",
+        "z": 5,
+        "ax": 50,
+        "ay": 0,
+        "text": "<i>Threshold</i>",
+        "bordercolor": "#000",
+        "borderwidth": 2,
+        "arrowhead": 7,
+        "width": 100,
+        "height": 50,
+        "xanchor": "left",
+        "yanchor": "bottom",
+        "align": "right",
+        "valign": "bottom"
+      }, {
+        "x": "2016-12-25",
+        "y": "A",
+        "z": 6,
+        "text": "autorange bump!",
+        "ax": -50
+      }, {
+        "x": "2017-04-29",
+        "y": "B",
+        "z": 2,
+        "ax": 50,
+        "ay": 50,
+        "arrowside": "start+end",
+        "arrowhead": 2,
+        "startarrowhead": 3,
+        "standoff": 10,
+        "startstandoff": 20
+      }, {
+        "x": "2017-04-29",
+        "y": "B",
+        "z": 2,
+        "ax": -100,
+        "ay": 0,
+        "arrowside": "start",
+        "startarrowhead": 6,
+        "standoff": 10,
+        "startstandoff": 20
+      }, {
+        "x": "2017-04-29",
+        "y": "B",
+        "z": 2,
+        "ax": 80,
+        "ay": -50,
+        "arrowside": "none",
+        "standoff": 10,
+        "startstandoff": 20
+      }
+    ]
+    }
+  }
+}

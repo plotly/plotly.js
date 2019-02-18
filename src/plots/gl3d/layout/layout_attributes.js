@@ -72,6 +72,16 @@ module.exports = {
                 'of this scene.'
             ].join(' ')
         }),
+        ortho: extendFlat({
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            editType: 'camera',
+            description: [
+                'Enable/disable orthographic camera.',
+                'Default is perspective.'
+            ].join(' ')
+        }),
         editType: 'camera'
     },
     domain: domainAttrs({name: 'scene', editType: 'plot'}),
