@@ -586,7 +586,10 @@ describe('Test colorscale restyle calls:', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
 
     function getFill(q) {
         return d3.select(q).node().style.fill;
@@ -898,6 +901,30 @@ describe('Test colorscale restyle calls:', function() {
             _assert('after relayouting in template', {
                 mcc: ['rgb(68, 1, 84)', 'rgb(33, 145, 140)', 'rgb(253, 231, 37)']
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should work with scatter3d', function(done) {
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1],
+            marker: {color: [1, 2, 1], showscale: true}
+        }])
+        .then(function() {
+            expect(gd._fullData[0].marker.cmin).toBe(1);
+            expect(gd._fullData[0].marker.cmax).toBe(2);
+        })
+        .then(function() {
+            // some non-calc edit
+            return Plotly.relayout(gd, 'scene.dragmode', 'pab');
+        })
+        .then(function() {
+            expect(gd._fullData[0].marker.cmin).toBe(1);
+            expect(gd._fullData[0].marker.cmax).toBe(2);
         })
         .catch(failTest)
         .then(done);
