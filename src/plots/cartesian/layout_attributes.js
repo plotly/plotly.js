@@ -227,7 +227,8 @@ module.exports = {
             'Moreover, matching axes share auto-range values, category lists and',
             'histogram auto-bins.',
             'Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint',
-            'is currently forbidden.'
+            'is currently forbidden.',
+            'Moreover, note that matching must have the same `type`.'
         ].join(' ')
     },
     // ticks
