@@ -72,13 +72,21 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
     var label = sankeyLink.datum().link.label;
 
-    sankeyLink.style('fill-opacity', 0.4);
+    sankeyLink.style('fill-opacity', function(l) {
+        if(!l.link.concentrationscale) {
+            return 0.4;
+        }
+    });
 
     if(label) {
         ownTrace(sankey, d)
             .selectAll('.' + cn.sankeyLink)
             .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', 0.4);
+            .style('fill-opacity', function(l) {
+                if(!l.link.concentrationscale) {
+                    return 0.4;
+                }
+            });
     }
 
     if(visitNodes) {
@@ -143,6 +151,7 @@ module.exports = function plot(gd, calcData) {
 
     var sourceLabel = _(gd, 'source:') + ' ';
     var targetLabel = _(gd, 'target:') + ' ';
+    var concentrationLabel = _(gd, 'concentration:') + ' ';
     var incomingLabel = _(gd, 'incoming flow count:') + ' ';
     var outgoingLabel = _(gd, 'outgoing flow count:') + ' ';
 
@@ -172,7 +181,8 @@ module.exports = function plot(gd, calcData) {
             text: [
                 d.link.label || '',
                 sourceLabel + d.link.source.label,
-                targetLabel + d.link.target.label
+                targetLabel + d.link.target.label,
+                d.link.concentrationscale ? concentrationLabel + d3.format('%0.2f')(d.link.flow.labelConcentration) : ''
             ].filter(renderableValuePresent).join('<br>'),
             color: castHoverOption(obj, 'bgcolor') || Color.addOpacity(d.tinyColorHue, 1),
             borderColor: castHoverOption(obj, 'bordercolor'),
@@ -190,7 +200,9 @@ module.exports = function plot(gd, calcData) {
             gd: gd
         });
 
-        makeTranslucent(tooltip, 0.65);
+        if(!d.link.concentrationscale) {
+            makeTranslucent(tooltip, 0.65);
+        }
         makeTextContrasty(tooltip);
     };
 
@@ -288,6 +300,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     render(
+        gd,
         svg,
         calcData,
         {

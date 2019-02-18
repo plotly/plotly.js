@@ -15,6 +15,7 @@ var tinycolor = require('tinycolor2');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleHoverLabelDefaults = require('../../components/fx/hoverlabel_defaults');
 var Template = require('../../plot_api/plot_template');
+var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -48,7 +49,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }));
 
     // link attributes
-    var linkIn = traceIn.link;
+    var linkIn = traceIn.link || {};
     var linkOut = Template.newContainer(traceOut, 'link');
 
     function coerceLink(attr, dflt) {
@@ -70,6 +71,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerceLink('color', Lib.repeat(defaultLinkColor, linkOut.value.length));
 
+    handleArrayContainerDefaults(linkIn, linkOut, {
+        name: 'colorscales',
+        handleItemDefaults: concentrationscalesDefaults
+    });
+
     handleDomainDefaults(traceOut, layout, coerce);
 
     coerce('orientation');
@@ -83,3 +89,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // don't match, between nodes and links
     traceOut._length = null;
 };
+
+function concentrationscalesDefaults(In, Out) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(In, Out, attributes.link.colorscales, attr, dflt);
+    }
+
+    coerce('label');
+    coerce('cmin');
+    coerce('cmax');
+    coerce('colorscale');
+}
