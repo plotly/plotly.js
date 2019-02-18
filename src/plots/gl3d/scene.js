@@ -744,31 +744,9 @@ proto.getCamera = function getCamera() {
     return getLayoutCamera(this.glplot.camera);
 };
 
-
-var prevOrtho = '';
-
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera(cameraData) {
-
-    console.log("cameraData.ortho=", cameraData.ortho);
-
-    if(prevOrtho !== '' && prevOrtho !== cameraData.ortho) {
-        console.log("New ortho!");
-
-        //this.initializeGLCamera(this, cameraData);
-
-        var scene = this;
-        var gl = this.glplot.gl;
-        var canvas = this.glplot.canvas;
-        //this.glplot.dispose();
-        initializeGLPlot(scene, cameraData, canvas, gl);
-
-
-    } else {
-       this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
-    }
-
-    prevOrtho = cameraData.ortho;
+    this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
 };
 
 // save camera to user layout (i.e. gd.layout)
