@@ -920,7 +920,7 @@ describe('Test colorscale restyle calls:', function() {
         })
         .then(function() {
             // some non-calc edit
-            return Plotly.relayout(gd, 'scene.dragmode', 'pab');
+            return Plotly.relayout(gd, 'scene.dragmode', 'pan');
         })
         .then(function() {
             expect(gd._fullData[0].marker.cmin).toBe(1);
