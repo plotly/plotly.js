@@ -192,8 +192,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function initializeGLPlot(scene, camera, canvas, gl) {
-    var gd = scene.graphDiv;
+function tryCreatePlot(scene, camera, canvas, gl) {
 
     var glplotOptions = {
         canvas: canvas,
@@ -240,12 +239,19 @@ function initializeGLPlot(scene, camera, canvas, gl) {
         */
         return showNoWebGlMsg(scene);
     }
+}
+
+function initializeGLPlot(scene, camera, canvas, gl) {
+
+    tryCreatePlot(scene, camera, canvas, gl);
+
+    var gd = scene.graphDiv;
 
     var relayoutCallback = function(scene) {
         if(scene.fullSceneLayout.dragmode === false) return;
 
         var update = {};
-        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera, scene.camera._ortho);
         scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
@@ -350,7 +356,7 @@ var proto = Scene.prototype;
 proto.initializeGLCamera = function() {
 
     var cameraData = this.fullSceneLayout.camera;
-    var isOrtho = (cameraData.projection && cameraData.projection.type === 'orthographic');
+    var isOrtho = (cameraData.projection.type === 'orthographic');
 
     this.camera = createCamera(this.container, {
         center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
@@ -746,32 +752,38 @@ function getOrbitCamera(camera) {
 
 // getLayoutCamera :: orbit_camera_coords -> plotly_coords
 // inverse of getOrbitCamera
-function getLayoutCamera(camera) {
-    var cameraProjectionType;
-    if(camera._ortho === false) { cameraProjectionType = 'perspective'; }
-    else if(camera._ortho === true) { cameraProjectionType = 'orthographic'; }
-    else {
-        cameraProjectionType = (camera.projection && camera.projection.type === 'orthographic') ?
-        'orthographic' : 'perspective';
-    }
-
+function getLayoutCamera(camera, isOrtho) {
     return {
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
         center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
         eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]},
-        projection: {type: cameraProjectionType}
+        projection: {type: (isOrtho === true) ? 'orthographic' : 'perspective'}
     };
 }
 
 // get camera position in plotly coords from 'orbit-camera' coords
 proto.getCamera = function getCamera() {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-    return getLayoutCamera(this.glplot.camera);
+    return getLayoutCamera(this.glplot.camera, this.glplot.camera._ortho);
 };
 
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera(cameraData) {
     this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
+
+    var newOrtho = (cameraData.projection.type === 'orthographic');
+    var oldOrtho = this.glplot.camera._ortho;
+
+    if(newOrtho !== oldOrtho) {
+
+        this.glplot.dispose();
+        this.glplot = null;
+
+        // Need to clear gl-container here
+
+        initializeGLPlot(this, cameraData);
+        this.glplot.camera._ortho = newOrtho;
+    }
 };
 
 // save camera to user layout (i.e. gd.layout)
