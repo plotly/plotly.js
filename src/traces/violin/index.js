@@ -12,6 +12,7 @@ module.exports = {
     attributes: require('./attributes'),
     layoutAttributes: require('./layout_attributes'),
     supplyDefaults: require('./defaults'),
+    crossTraceDefaults: require('../box/defaults').crossTraceDefaults,
     supplyLayoutDefaults: require('./layout_defaults'),
     calc: require('./calc'),
     crossTraceCalc: require('./cross_trace_calc'),

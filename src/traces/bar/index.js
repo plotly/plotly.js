@@ -6,14 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Bar = {};
 
 Bar.attributes = require('./attributes');
 Bar.layoutAttributes = require('./layout_attributes');
-Bar.supplyDefaults = require('./defaults');
+Bar.supplyDefaults = require('./defaults').supplyDefaults;
+Bar.crossTraceDefaults = require('./defaults').crossTraceDefaults;
 Bar.supplyLayoutDefaults = require('./layout_defaults');
 Bar.calc = require('./calc');
 Bar.crossTraceCalc = require('./cross_trace_calc').crossTraceCalc;

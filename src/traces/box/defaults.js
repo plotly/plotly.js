@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
-
+var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var attributes = require('./attributes');
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -109,8 +109,30 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
+function crossTraceDefaults(fullData, fullLayout) {
+    var traceIn, traceOut;
+
+    function coerce(attr) {
+        return Lib.coerce(traceOut._input, traceOut, attributes, attr);
+    }
+
+    for(var i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
+        var traceType = traceOut.type;
+
+        if(traceType === 'box' || traceType === 'violin') {
+            traceIn = traceOut._input;
+            if(fullLayout[traceType + 'mode'] === 'group') {
+                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+            }
+        }
+    }
+}
+
 module.exports = {
     supplyDefaults: supplyDefaults,
+    crossTraceDefaults: crossTraceDefaults,
+
     handleSampleDefaults: handleSampleDefaults,
     handlePointsDefaults: handlePointsDefaults
 };

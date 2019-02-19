@@ -238,6 +238,9 @@ module.exports = {
         ].join(' ')
     },
 
+    offsetgroup: boxAttrs.offsetgroup,
+    alignmentgroup: boxAttrs.alignmentgroup,
+
     selected: boxAttrs.selected,
     unselected: boxAttrs.unselected,
 

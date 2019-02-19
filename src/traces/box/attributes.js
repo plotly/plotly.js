@@ -9,6 +9,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
+var barAttrs = require('../bar/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -249,6 +250,9 @@ module.exports = {
         editType: 'plot'
     },
     fillcolor: scatterAttrs.fillcolor,
+
+    offsetgroup: barAttrs.offsetgroup,
+    alignmentgroup: barAttrs.alignmentgroup,
 
     selected: {
         marker: scatterAttrs.selected.marker,

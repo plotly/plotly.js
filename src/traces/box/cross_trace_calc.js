@@ -10,6 +10,7 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 
 var orientations = ['v', 'h'];
 
@@ -51,9 +52,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
     var axId = posAxis._id;
     var axLetter = axId.charAt(0);
 
-    // N.B. reused in violin
-    var numKey = traceType === 'violin' ? '_numViolins' : '_numBoxes';
-
     var i, j, calcTrace;
     var pointList = [];
     var shownPts = 0;
@@ -76,8 +74,9 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
     // check for forced minimum dtick
     Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
-    var num = fullLayout[numKey];
-    var group = (fullLayout[traceType + 'mode'] === 'group' && num > 1);
+    var numKey = traceType === 'violin' ? '_numViolins' : '_numBoxes';
+    var numTotal = fullLayout[numKey];
+    var group = fullLayout[traceType + 'mode'] === 'group' && numTotal > 1;
     var groupFraction = 1 - fullLayout[traceType + 'gap'];
     var groupGapFraction = 1 - fullLayout[traceType + 'groupgap'];
 
@@ -104,9 +103,23 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
             bPos = 0;
         } else {
             dPos = dPos0;
-            bdPos = dPos * groupFraction * groupGapFraction / (group ? num : 1);
-            bPos = group ? 2 * dPos * (-0.5 + (t.num + 0.5) / num) * groupFraction : 0;
-            wHover = dPos * (group ? groupFraction / num : 1);
+
+            if(group) {
+                var groupId = getAxisGroup(fullLayout, posAxis._id) + trace.orientation;
+                var alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
+                var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
+                var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;
+                var num = nOffsetGroups || numTotal;
+                var shift = nOffsetGroups ? trace._offsetIndex : t.num;
+
+                bdPos = dPos * groupFraction * groupGapFraction / num;
+                bPos = 2 * dPos * (-0.5 + (shift + 0.5) / num) * groupFraction;
+                wHover = dPos * groupFraction / num;
+            } else {
+                bdPos = dPos * groupFraction * groupGapFraction;
+                bPos = 0;
+                wHover = dPos;
+            }
         }
         t.dPos = dPos;
         t.bPos = bPos;

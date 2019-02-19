@@ -188,6 +188,9 @@ module.exports = {
 
     marker: barAttrs.marker,
 
+    offsetgroup: barAttrs.offsetgroup,
+    alignmentgroup: barAttrs.alignmentgroup,
+
     selected: barAttrs.selected,
     unselected: barAttrs.unselected,
 

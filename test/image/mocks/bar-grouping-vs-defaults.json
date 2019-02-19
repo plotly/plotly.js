@@ -1,0 +1,61 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "y": [ 1, 2, 1 ],
+      "yaxis": "y2"
+    },
+    {
+      "type": "bar",
+      "y": [ 2, 1, 2 ]
+    },
+    {
+      "type": "bar",
+      "y": [ 1, 3, 0 ]
+    },
+    {
+      "type": "bar",
+      "y": [ 1, 2, 1 ],
+      "alignmentgroup": "top",
+      "hovertext": "alignmentgroup: top",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "bar",
+      "y": [ 2, 1, 2 ],
+      "hovertext": "alignmentgroup: top<br>offsetgroup: 1",
+      "alignmentgroup": "bottom",
+      "offsetgroup": "1",
+      "xaxis": "x2"
+    },
+    {
+      "type": "bar",
+      "y": [ 1, 3, 0 ],
+      "hovertext": "alignmentgroup: top<br>offsetgroup: 2",
+      "alignmentgroup": "bottom",
+      "offsetgroup": "2",
+      "xaxis": "x2"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "grid": {
+      "rows": 2,
+      "columns": 2,
+      "roworder": "bottom to top"
+    },
+    "colorway": [ "blue", "orange", "green" ],
+    "margin": { "t": 20 },
+    "xaxis": {
+      "title": {
+        "text": "no alignmentgroup<br>no offsetgroup"
+      }
+    },
+    "xaxis2": {
+      "title": {
+        "text": "with alignmentgroup<br>with offsetgroup"
+      }
+    }
+  }
+}

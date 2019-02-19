@@ -1,0 +1,111 @@
+{
+  "data": [
+    {
+      "type": "violin",
+      "x": ["A", "B"],
+      "y": [1, 2],
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1"
+    },
+    {
+      "type": "violin",
+      "x": ["A", "B"],
+      "y": [2, 3],
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2"
+    },
+    {
+      "type": "box",
+      "x": ["A", "A", "A", "A", "A", "B", "B", "B", "B", "B"],
+      "y": [1, 2, 2, 2, 3, 1, 2, 2, 2, 3],
+      "yaxis": "y2",
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1"
+    },
+    {
+      "type": "box",
+      "x": ["A", "A", "A", "A", "A", "B", "B", "B", "B", "B"],
+      "y": [1, 2, 2, 2, 3, 1, 2, 2, 2, 3],
+      "yaxis": "y2",
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2"
+    },
+    {
+      "type": "violin",
+      "x": ["A", "B"],
+      "y": [1, 2],
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1",
+      "xaxis": "x2"
+    },
+    {
+      "type": "violin",
+      "x": ["A", "B"],
+      "y": [2, 3],
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2",
+      "xaxis": "x2"
+    },
+    {
+      "type": "box",
+      "x": ["A", "A", "A", "A", "A", "B", "B", "B", "B", "B"],
+      "y": [1, 2, 2, 2, 3, 1, 2, 2, 2, 3],
+      "yaxis": "y2",
+      "offsetgroup": 3,
+      "hovertext": "offsetgroup: 3",
+      "xaxis": "x2"
+    },
+    {
+      "type": "box",
+      "x": ["A", "A", "A", "A", "A", "B", "B", "B", "B", "B"],
+      "y": [1, 2, 2, 2, 3, 1, 2, 2, 2, 3],
+      "yaxis": "y2",
+      "offsetgroup": 4,
+      "hovertext": "offsetgroup: 4",
+      "xaxis": "x2"
+    },
+    {
+      "type": "bar",
+      "name": "some bar",
+      "marker": {"color": "black"},
+      "x": ["B"],
+      "y": [2],
+      "offsetgroup": 3,
+      "hovertext": "offsetgroup: 3",
+      "xaxis": "x2"
+    },
+    {
+      "type": "bar",
+      "name": "some other bar",
+      "marker": {"color": "black"},
+      "x": ["A"],
+      "y": [0.5],
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "boxmode": "group",
+    "violinmode": "group",
+    "showlegend": false,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "title": {
+      "text": "4 offsetgroups in total across matching x-axes"
+    },
+    "xaxis": {
+      "title": {
+        "text": "offsetgroup 1-2-1-2"
+      }
+    },
+    "xaxis2": {
+      "title": {
+        "text": "offsetgroup 1-2-3-4"
+      },
+      "matches": "x"
+    }
+  }
+}

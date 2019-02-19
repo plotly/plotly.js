@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -14,7 +13,6 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 var layoutAttributes = require('./layout_attributes');
-
 
 module.exports = function(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
