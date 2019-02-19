@@ -91,7 +91,7 @@ function sankeyModel(layout, d, traceIndex) {
         };
 
         graph.nodes.unshift(child);
-        groupingNode.children.unshift(child);
+        groupingNode.childrenNodes.unshift(child);
     }
 
     function computeLinkConcentrations() {
@@ -562,9 +562,9 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('dragend', function(d) {
             d.interactionState.dragInProgress = false;
-            for(var i = 0; i < d.node.children.length; i++) {
-                d.node.children[i].x = d.node.x;
-                d.node.children[i].y = d.node.y;
+            for(var i = 0; i < d.node.childrenNodes.length; i++) {
+                d.node.childrenNodes[i].x = d.node.x;
+                d.node.childrenNodes[i].y = d.node.y;
             }
         });
 
