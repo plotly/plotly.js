@@ -79,7 +79,7 @@ function sankeyModel(layout, d, traceIndex) {
             }
         }
 
-        graph.nodes.unshift({
+        var child = {
             pointNumber: parseInt(nodePointNumber),
             x0: groupingNode.x0,
             x1: groupingNode.x1,
@@ -88,7 +88,10 @@ function sankeyModel(layout, d, traceIndex) {
             partOfGroup: true,
             sourceLinks: [],
             targetLinks: []
-        });
+        };
+
+        graph.nodes.unshift(child);
+        groupingNode.children.unshift(child);
     }
 
     function computeLinkConcentrations() {
@@ -559,6 +562,10 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('dragend', function(d) {
             d.interactionState.dragInProgress = false;
+            for(var i = 0; i < d.node.children.length; i++) {
+                d.node.children[i].x = d.node.x;
+                d.node.children[i].y = d.node.y;
+            }
         });
 
     sankeyNode

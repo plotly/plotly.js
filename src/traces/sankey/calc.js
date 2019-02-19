@@ -111,6 +111,7 @@ function convertToD3Sankey(trace) {
 
         nodes.push({
             group: (i > nodeCount - 1),
+            children: [],
             pointNumber: i,
             label: l,
             color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
