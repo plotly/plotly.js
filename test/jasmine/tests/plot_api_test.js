@@ -1195,6 +1195,77 @@ describe('Test plot api', function() {
             .then(done);
         });
 
+        it('turns on cauto when cmid is edited', function(done) {
+            function _assert(msg, exp) {
+                return function() {
+                    var mk = gd._fullData[0].marker;
+                    for(var k in exp) {
+                        expect(mk[k]).toBe(exp[k], [msg, k].join(' - '));
+                    }
+                };
+            }
+
+            function _restyle(arg) {
+                return function() { return Plotly.restyle(gd, arg); };
+            }
+
+            Plotly.plot(gd, [{
+                mode: 'markers',
+                y: [1, 2, 1],
+                marker: { color: [1, -1, 4] }
+            }])
+            .then(_assert('base', {
+                cauto: true,
+                cmid: undefined,
+                cmin: -1,
+                cmax: 4
+            }))
+            .then(_restyle({'marker.cmid': 0}))
+            .then(_assert('set cmid=0', {
+                cauto: true,
+                cmid: 0,
+                cmin: -4,
+                cmax: 4
+            }))
+            .then(_restyle({'marker.cmid': -2}))
+            .then(_assert('set cmid=-2', {
+                cauto: true,
+                cmid: -2,
+                cmin: -8,
+                cmax: 4
+            }))
+            .then(_restyle({'marker.cmid': 2}))
+            .then(_assert('set cmid=2', {
+                cauto: true,
+                cmid: 2,
+                cmin: -1,
+                cmax: 5
+            }))
+            .then(_restyle({'marker.cmin': 0}))
+            .then(_assert('set cmin=0', {
+                cauto: false,
+                cmid: undefined,
+                cmin: 0,
+                cmax: 5
+            }))
+            .then(_restyle({'marker.cmax': 10}))
+            .then(_assert('set cmin=0 + cmax=10', {
+                cauto: false,
+                cmid: undefined,
+                cmin: 0,
+                cmax: 10
+            }))
+            .then(_restyle({'marker.cauto': true, 'marker.cmid': null}))
+            .then(_assert('back to cauto=true', {
+                cauto: true,
+                cmid: undefined,
+                cmin: -1,
+                cmax: 4
+            }))
+            .catch(failTest)
+            .then(done);
+        });
+
         it('turns off autobin when you edit bin specs', function(done) {
             // test retained (modified) for backward compat with new autobin logic
             var start0 = 0.2;

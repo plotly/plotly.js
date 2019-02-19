@@ -166,8 +166,8 @@ module.exports = function colorScaleAttrs(context, opts) {
         valType: 'number',
         role: 'info',
         dflt: null,
-        editType: editTypeOverride || 'plot',
-        impliedEdits: minmaxImpliedEdits,
+        editType: 'calc',
+        impliedEdits: autoImpliedEdits,
         description: [
             'Sets the mid-point of the color domain by scaling ', minFull,
             ' and/or ', maxFull, ' to be equidistant to this point.',
