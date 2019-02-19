@@ -153,7 +153,8 @@ function convertOpts(opts) {
             Lib.extendFlat(paint, {
                 'line-width': opts.line.width,
                 'line-color': opts.color,
-                'line-opacity': opts.opacity
+                'line-opacity': opts.opacity,
+                'line-dasharray': opts.line.dash
             });
             break;
 

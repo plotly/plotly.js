@@ -71,6 +71,7 @@ function handleLayerDefaults(layerIn, layerOut) {
 
         if(type === 'line') {
             coerce('line.width');
+            coerce('line.dash');
         }
 
         if(type === 'fill') {

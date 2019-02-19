@@ -19,7 +19,7 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var fontAttr = fontAttrs({
     description: [
-        'Sets the icon text font.',
+        'Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size).',
         'Has an effect only when `type` is set to *symbol*.'
     ].join(' ')
 });
@@ -71,13 +71,13 @@ var attrs = module.exports = overrideAll({
         valType: 'number',
         dflt: 1,
         role: 'info',
-        description: 'Sets the zoom level of the map.'
+        description: 'Sets the zoom level of the map (mapbox.zoom).'
     },
     bearing: {
         valType: 'number',
         dflt: 0,
         role: 'info',
-        description: 'Sets the bearing angle of the map (in degrees counter-clockwise from North).'
+        description: 'Sets the bearing angle of the map in degrees counter-clockwise from North (mapbox.bearing).'
     },
     pitch: {
         valType: 'number',
@@ -85,7 +85,7 @@ var attrs = module.exports = overrideAll({
         role: 'info',
         description: [
             'Sets the pitch angle of the map',
-            '(in degrees, where *0* means perpendicular to the surface of the map).'
+            '(in degrees, where *0* means perpendicular to the surface of the map) (mapbox.pitch).'
         ].join(' ')
     },
 
@@ -113,7 +113,7 @@ var attrs = module.exports = overrideAll({
             valType: 'any',
             role: 'info',
             description: [
-                'Sets the source data for this layer.',
+                'Sets the source data for this layer (mapbox.layer.source).',
                 'Source can be either a URL,',
                 'a geojson object (with `sourcetype` set to *geojson*)',
                 'or an array of tile URLS (with `sourcetype` set to *vector*).'
@@ -125,7 +125,7 @@ var attrs = module.exports = overrideAll({
             dflt: '',
             role: 'info',
             description: [
-                'Specifies the layer to use from a vector tile source.',
+                'Specifies the layer to use from a vector tile source (mapbox.layer.source-layer).',
                 'Required for *vector* source type that supports multiple layers.'
             ].join(' ')
         },
@@ -136,7 +136,7 @@ var attrs = module.exports = overrideAll({
             dflt: 'circle',
             role: 'info',
             description: [
-                'Sets the layer type.',
+                'Sets the layer type (mapbox.layer.type).',
                 'Support for *raster*, *background* types is coming soon.',
                 'Note that *line* and *fill* are not compatible with Point',
                 'GeoJSON geometries.'
@@ -161,10 +161,10 @@ var attrs = module.exports = overrideAll({
             role: 'style',
             description: [
                 'Sets the primary layer color.',
-                'If `type` is *circle*, color corresponds to the circle color',
-                'If `type` is *line*, color corresponds to the line color',
-                'If `type` is *fill*, color corresponds to the fill color',
-                'If `type` is *symbol*, color corresponds to the icon color'
+                'If `type` is *circle*, color corresponds to the circle color (mapbox.layer.paint.circle-color)',
+                'If `type` is *line*, color corresponds to the line color (mapbox.layer.paint.line-color)',
+                'If `type` is *fill*, color corresponds to the fill color (mapbox.layer.paint.fill-color)',
+                'If `type` is *symbol*, color corresponds to the icon color (mapbox.layer.paint.icon-color)'
             ].join(' ')
         },
         opacity: {
@@ -173,7 +173,13 @@ var attrs = module.exports = overrideAll({
             max: 1,
             dflt: 1,
             role: 'info',
-            description: 'Sets the opacity of the layer.'
+            description: [
+                'Sets the opacity of the layer.',
+                'If `type` is *circle*, opacity corresponds to the circle opacity (mapbox.layer.paint.circle-opacity)',
+                'If `type` is *line*, opacity corresponds to the line opacity (mapbox.layer.paint.line-opacity)',
+                'If `type` is *fill*, opacity corresponds to the fill opacity (mapbox.layer.paint.fill-opacity)',
+                'If `type` is *symbol*, opacity corresponds to the icon/text opacity (mapbox.layer.paint.text-opacity)'
+            ].join(' ')
         },
         minzoom: {
             valType: 'number',
@@ -182,8 +188,8 @@ var attrs = module.exports = overrideAll({
             dflt: 0,
             role: 'info',
             description: [
-                'Sets the minimum zoom level.',
-                'At zoom levels less than the minzoom, the layer will be hidden.'
+                'Sets the minimum zoom level (mapbox.layer.minzoom).',
+                'At zoom levels less than the minzoom, the layer will be hidden.',
             ].join(' ')
         },
         maxzoom: {
@@ -193,7 +199,7 @@ var attrs = module.exports = overrideAll({
             dflt: 24,
             role: 'info',
             description: [
-                'Sets the maximum zoom level.',
+                'Sets the maximum zoom level (mapbox.layer.maxzoom).',
                 'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
             ].join(' ')
         },
@@ -205,7 +211,7 @@ var attrs = module.exports = overrideAll({
                 dflt: 15,
                 role: 'style',
                 description: [
-                    'Sets the circle radius.',
+                    'Sets the circle radius (mapbox.layer.paint.circle-radius).',
                     'Has an effect only when `type` is set to *circle*.'
                 ].join(' ')
             }
@@ -217,7 +223,15 @@ var attrs = module.exports = overrideAll({
                 dflt: 2,
                 role: 'style',
                 description: [
-                    'Sets the line width.',
+                    'Sets the line width (mapbox.layer.paint.line-width).',
+                    'Has an effect only when `type` is set to *line*.'
+                ].join(' ')
+            },
+            dash: {
+                valType: 'data_array',
+                role: 'style',
+                description: [
+                    'Sets the length of dashes and gaps (mapbox.layer.paint.line-dasharray).',
                     'Has an effect only when `type` is set to *line*.'
                 ].join(' ')
             }
@@ -229,7 +243,7 @@ var attrs = module.exports = overrideAll({
                 dflt: defaultLine,
                 role: 'style',
                 description: [
-                    'Sets the fill outline color.',
+                    'Sets the fill outline color (mapbox.layer.paint.fill-outline-color).',
                     'Has an effect only when `type` is set to *fill*.'
                 ].join(' ')
             }
@@ -241,7 +255,7 @@ var attrs = module.exports = overrideAll({
                 dflt: 'marker',
                 role: 'style',
                 description: [
-                    'Sets the symbol icon image.',
+                    'Sets the symbol icon image (mapbox.layer.layout.icon-image).',
                     'Full list: https://www.mapbox.com/maki-icons/'
                 ].join(' ')
             },
@@ -250,7 +264,7 @@ var attrs = module.exports = overrideAll({
                 dflt: 10,
                 role: 'style',
                 description: [
-                    'Sets the symbol icon size.',
+                    'Sets the symbol icon size (mapbox.layer.layout.icon-size).',
                     'Has an effect only when `type` is set to *symbol*.'
                 ].join(' ')
             },
@@ -259,7 +273,7 @@ var attrs = module.exports = overrideAll({
                 dflt: '',
                 role: 'info',
                 description: [
-                    'Sets the symbol text.'
+                    'Sets the symbol text (mapbox.layer.layout.text-field).'
                 ].join(' ')
             },
             placement: {
@@ -268,7 +282,7 @@ var attrs = module.exports = overrideAll({
                 dflt: 'point',
                 role: 'info',
                 description: [
-                    'Sets the symbol placement.',
+                    'Sets the symbol and/or text placement (mapbox.layer.layout.symbol-placement).',
                     'If `placement` is *point*, the label is placed where the geometry is located',
                     'If `placement` is *line*, the label is placed along the line of the geometry',
                     'If `placement` is *line-center*, the label is placed on the center of the geometry',

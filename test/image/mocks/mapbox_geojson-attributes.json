@@ -1,0 +1,77 @@
+{
+    "data": [
+      {
+        "type": "scattermapbox"
+      }
+    ],
+    "layout": {
+      "mapbox": {
+        "style": "outdoors",
+        "layers": [
+          {
+            "sourcetype": "geojson",
+            "type": "line",
+            "minzoom": 4,
+            "maxzoom": 12,
+            "color": "gray",
+            "line": {
+              "dash": [2.5, 1]
+            },
+            "source": {
+              "type": "FeatureCollection",
+              "features": [
+                {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[-0.5, 52], [0.5, 50]]
+                  },
+                  "properties": {
+                    "title": "Line Text Example"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "sourcetype": "geojson",
+            "type": "symbol",
+            "symbol": {
+              "text": "{title}",
+              "textfont": {
+                "size": 10,
+                "color": "red"
+              },
+              "iconsize": 0,
+              "placement": "line"
+            },
+            "source": {
+              "type": "FeatureCollection",
+              "features": [
+                {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[-0.5, 52], [0.5, 50]]
+                  },
+                  "properties": {
+                    "title": "Line Text Example"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "zoom": 5,
+        "center": {
+          "lon": 0,
+          "lat": 51
+        }
+      },
+      "showlegend": false,
+      "height": 450,
+      "width": 1100,
+      "autosize": true
+    }
+}
+  
