@@ -82,7 +82,6 @@ function convertToD3Sankey(trace) {
         }
 
         // if link originates from a node in a group, relink source to that group
-        // if(group.indexOf(source) !== -1) {
         if(groupLookup.hasOwnProperty(source)) {
             source = groupLookup[source];
         }

@@ -79,7 +79,7 @@ function sankeyModel(layout, d, traceIndex) {
             }
         }
 
-        graph.nodes.push({
+        graph.nodes.unshift({
             pointNumber: parseInt(nodePointNumber),
             x0: groupingNode.x0,
             x1: groupingNode.x1,
@@ -474,19 +474,19 @@ function attachPointerEvents(selection, sankey, eventSet) {
     selection
         .on('.basic', null) // remove any preexisting handlers
         .on('mouseover.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.hover(this, d, sankey);
                 d.interactionState.hovered = [this, d];
             }
         })
         .on('mousemove.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.follow(this, d);
                 d.interactionState.hovered = [this, d];
             }
         })
         .on('mouseout.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
@@ -496,7 +496,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.select(this, d, sankey);
             }
         });
