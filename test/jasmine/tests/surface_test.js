@@ -127,16 +127,14 @@ describe('Test surface', function() {
         it('should coerce \'c\' attributes with \'c\' values regardless of `\'z\' if \'c\' is present', function() {
             traceIn = {
                 z: [[1, 2, 3], [2, 1, 2]],
-                zauto: false,
                 zmin: 0,
                 zmax: 10,
-                cauto: true,
                 cmin: -10,
                 cmax: 20
             };
 
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.cauto).toEqual(true);
+            expect(traceOut.cauto).toEqual(false);
             expect(traceOut.cmin).toEqual(-10);
             expect(traceOut.cmax).toEqual(20);
         });
