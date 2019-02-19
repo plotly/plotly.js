@@ -263,7 +263,7 @@ describe('sankey tests', function() {
                     label: ['a', 'b', 'c', 'd', 'e']
                 },
                 link: {
-                    value: [1, 1, 1, 1, 1, 1, 1, 1],
+                    value: [1, 1, 1, 1],
                     source: [0, 1, 2, 3],
                     target: [1, 2, 0, 4]
                 }
@@ -277,11 +277,30 @@ describe('sankey tests', function() {
                     label: ['a', 'b', 'c', 'd', 'e']
                 },
                 link: {
-                    value: [1, 1, 1, 1, 1, 1, 1, 1],
+                    value: [1, 1, 1, 1],
                     source: [0, 1, 2, 3],
                     target: [1, 2, 4, 4]
                 }
             }));
+            expect(calcData[0].circular).toBe(false);
+        });
+
+        it('keep an index of groups', function() {
+            var calcData = _calc(Lib.extendDeep({}, base, {
+                node: {
+                    label: ['a', 'b', 'c', 'd', 'e'],
+                    groups: [[0, 1], [2, 3]]
+                },
+                link: {
+                    value: [1, 1, 1, 1],
+                    source: [0, 1, 2, 3],
+                    target: [1, 2, 4, 4]
+                }
+            }));
+            var groups = calcData[0]._nodes.filter(function(node) {
+                return node.group;
+            });
+            expect(groups.length).toBe(2);
             expect(calcData[0].circular).toBe(false);
         });
     });
@@ -401,6 +420,22 @@ describe('sankey tests', function() {
               })
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(false);
+                  done();
+              });
+        });
+
+        it('can create groups', function(done) {
+            var gd = createGraphDiv();
+            var mockCircularCopy = Lib.extendDeep({}, mockCircular);
+            mockCircularCopy.data[0].node.groups = [[2, 3], [0, 1]];
+            Plotly.plot(gd, mockCircularCopy)
+              .then(function() {
+                  expect(gd._fullData[0].node.groups).toEqual([[2, 3], [0, 1]]);
+                  return Plotly.restyle(gd, {'node.groups': [[[3, 4]]]});
+              })
+              .then(function() {
+                  expect(gd._fullData[0].node.groups).toEqual([[3, 4]]);
+                  destroyGraphDiv();
                   done();
               });
         });

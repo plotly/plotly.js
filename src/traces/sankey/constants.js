@@ -15,8 +15,8 @@ module.exports = {
     sankeyIterations: 50,
     forceIterations: 5,
     forceTicksPerFrame: 10,
-    duration: 500,
-    ease: 'cubic-in-out',
+    duration: 350,
+    ease: 'quart-in-out',
     cn: {
         sankey: 'sankey',
         sankeyLinks: 'sankey-links',

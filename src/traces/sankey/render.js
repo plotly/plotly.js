@@ -45,10 +45,7 @@ function sankeyModel(layout, d, traceIndex) {
     if(circular) {
         sankey = d3SankeyCircular
             .sankeyCircular()
-            .circularLinkGap(0)
-            .nodeId(function(d) {
-                return d.pointNumber;
-            });
+            .circularLinkGap(0);
     } else {
         sankey = d3Sankey.sankey();
     }
@@ -58,6 +55,9 @@ function sankeyModel(layout, d, traceIndex) {
       .size(horizontal ? [width, height] : [height, width])
       .nodeWidth(nodeThickness)
       .nodePadding(nodePad)
+      .nodeId(function(d) {
+          return d.pointNumber;
+      })
       .nodes(nodes)
       .links(links);
 
@@ -66,6 +66,30 @@ function sankeyModel(layout, d, traceIndex) {
     if(sankey.nodePadding() < nodePad) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
+
+    // Create transient nodes for animations
+    Object.keys(calcData._groupLookup).forEach(function(nodePointNumber) {
+        var groupIndex = parseInt(calcData._groupLookup[nodePointNumber]);
+
+        var groupingNode;
+        for(var i = 0; i < graph.nodes.length; i++) {
+            if(graph.nodes[i].pointNumber === groupIndex) {
+                groupingNode = graph.nodes[i];
+                break;
+            }
+        }
+
+        graph.nodes.push({
+            pointNumber: parseInt(nodePointNumber),
+            x0: groupingNode.x0,
+            x1: groupingNode.x1,
+            y0: groupingNode.y0,
+            y1: groupingNode.y1,
+            partOfGroup: true,
+            sourceLinks: [],
+            targetLinks: []
+        });
+    });
 
     function computeLinkConcentrations() {
         var i, j, k;
@@ -343,7 +367,7 @@ function linkPath() {
     return path;
 }
 
-function nodeModel(d, n, i) {
+function nodeModel(d, n) {
     var tc = tinycolor(n.color);
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
@@ -352,8 +376,11 @@ function nodeModel(d, n, i) {
     var visibleThickness = n.dx;
     var visibleLength = Math.max(0.5, n.dy);
 
-    var basicKey = n.label;
-    var key = basicKey + '__' + i;
+    var key = 'node_' + n.pointNumber;
+    // If it's a group, it's mutable and should be unique
+    if(n.group) {
+        key = 'group_' + Math.floor(1e12 * (1 + Math.random()));
+    }
 
     // for event data
     n.trace = d.trace;
@@ -362,6 +389,8 @@ function nodeModel(d, n, i) {
     return {
         index: n.pointNumber,
         key: key,
+        partOfGroup: n.partOfGroup || false,
+        group: n.group,
         traceId: d.key,
         node: n,
         nodePad: d.nodePad,
@@ -540,7 +569,10 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 function attachForce(sankeyNode, forceKey, d) {
     // Attach force to nodes in the same column (same x coordinate)
     switchToForceFormat(d.graph.nodes);
-    var nodes = d.graph.nodes.filter(function(n) {return n.originalX === d.node.originalX;});
+    var nodes = d.graph.nodes
+        .filter(function(n) {return n.originalX === d.node.originalX;})
+        // Filter out children
+        .filter(function(n) {return !n.partOfGroup;});
     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
         .alphaDecay(0)
         .force('collide', d3Force.forceCollide()
@@ -683,7 +715,6 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
     sankeyLink
           .enter().append('path')
           .classed(c.cn.sankeyLink, true)
-          .attr('d', linkPath())
           .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
@@ -701,13 +732,17 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         })
         .style('stroke-width', function(d) {
             return salientEnough(d) ? d.linkLineWidth : 1;
-        });
+        })
+        .attr('d', linkPath());
 
-    sankeyLink.transition()
-       .ease(c.ease).duration(c.duration)
-       .attr('d', linkPath());
+    sankeyLink
+        .style('opacity', 0)
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .style('opacity', 1);
 
-    sankeyLink.exit().transition()
+    sankeyLink.exit()
+        .transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
@@ -733,24 +768,26 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             var nodes = d.graph.nodes;
             persistOriginalPlace(nodes);
             return nodes
-                .filter(function(n) {return n.value;})
-                .map(nodeModel.bind(null, d));
+              .map(nodeModel.bind(null, d));
         }, keyFun);
 
     sankeyNode.enter()
         .append('g')
         .classed(c.cn.sankeyNode, true)
         .call(updateNodePositions)
-        .call(attachPointerEvents, sankey, callbacks.nodeEvents);
+        .style('opacity', 0);
 
     sankeyNode
+        .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
 
     sankeyNode.transition()
         .ease(c.ease).duration(c.duration)
-        .call(updateNodePositions);
+        .call(updateNodePositions)
+        .style('opacity', function(n) { return n.partOfGroup ? 0 : 1;});
 
-    sankeyNode.exit().transition()
+    sankeyNode.exit()
+        .transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();

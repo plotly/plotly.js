@@ -17,8 +17,10 @@ var isIndex = Lib.isIndex;
 var Colorscale = require('../../components/colorscale');
 
 function convertToD3Sankey(trace) {
-    var nodeSpec = trace.node;
-    var linkSpec = trace.link;
+    // var nodeSpec = trace.node;
+    // var linkSpec = trace.link;
+    var nodeSpec = Lib.extendDeep({}, trace.node);
+    var linkSpec = Lib.extendDeep({}, trace.link);
 
     var links = [];
     var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
@@ -34,7 +36,32 @@ function convertToD3Sankey(trace) {
         components[cscale.label] = scale;
     }
 
-    var nodeCount = nodeSpec.label.length;
+    var maxNodeId = 0;
+    for(i = 0; i < linkSpec.value.length; i++) {
+        if(linkSpec.source[i] > maxNodeId) maxNodeId = linkSpec.source[i];
+        if(linkSpec.target[i] > maxNodeId) maxNodeId = linkSpec.target[i];
+    }
+    var nodeCount = maxNodeId + 1;
+
+    // Group nodes
+    var j;
+    var groups = trace.node.groups;
+    var groupLookup = {};
+    for(i = 0; i < groups.length; i++) {
+        var group = groups[i];
+        // Build a lookup table to quickly find in which group a node is
+        if(Array.isArray(group)) {
+            for(j = 0; j < group.length; j++) {
+                var nodeIndex = group[j];
+                var groupIndex = nodeCount + i;
+                groupLookup[nodeIndex] = groupIndex;
+            }
+        } else {
+            Lib.warn('node.groups must be an array, default to empty array []');
+        }
+    }
+
+    // Process links
     for(i = 0; i < linkSpec.value.length; i++) {
         var val = linkSpec.value[i];
         // remove negative values, but keep zeros with special treatment
@@ -42,6 +69,22 @@ function convertToD3Sankey(trace) {
         var target = linkSpec.target[i];
         if(!(val > 0 && isIndex(source, nodeCount) && isIndex(target, nodeCount))) {
             continue;
+        }
+
+        // Remove links that are within the same group
+        if(groupLookup.hasOwnProperty(source) && groupLookup.hasOwnProperty(target) && groupLookup[source] === groupLookup[target]) {
+            continue;
+        }
+
+        // if link targets a node in the group, relink target to that group
+        if(groupLookup.hasOwnProperty(target)) {
+            target = groupLookup[target];
+        }
+
+        // if link originates from a node in a group, relink source to that group
+        // if(group.indexOf(source) !== -1) {
+        if(groupLookup.hasOwnProperty(source)) {
+            source = groupLookup[source];
         }
 
         source = +source;
@@ -65,34 +108,29 @@ function convertToD3Sankey(trace) {
         });
     }
 
+    // Process nodes
+    var totalCount = nodeCount + groups.length;
     var hasNodeColorArray = isArrayOrTypedArray(nodeSpec.color);
     var nodes = [];
-    var removedNodes = false;
-    var nodeIndices = {};
+    for(i = 0; i < totalCount; i++) {
+        if(!linkedNodes[i]) continue;
+        var l = nodeSpec.label[i];
 
-    for(i = 0; i < nodeCount; i++) {
-        if(linkedNodes[i]) {
-            var l = nodeSpec.label[i];
-            nodeIndices[i] = nodes.length;
-            nodes.push({
-                pointNumber: i,
-                label: l,
-                color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
-            });
-        } else removedNodes = true;
-    }
-
-    // need to re-index links now, since we didn't put all the nodes in
-    if(removedNodes) {
-        for(i = 0; i < links.length; i++) {
-            links[i].source = nodeIndices[links[i].source];
-            links[i].target = nodeIndices[links[i].target];
-        }
+        nodes.push({
+            group: (i > nodeCount - 1),
+            pointNumber: i,
+            label: l,
+            color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
+        });
     }
 
     return {
         links: links,
-        nodes: nodes
+        nodes: nodes,
+
+        // Data structure for groups
+        groups: groups,
+        groupLookup: groupLookup
     };
 }
 
@@ -130,6 +168,10 @@ module.exports = function calc(gd, trace) {
     return wrap({
         circular: circular,
         _nodes: result.nodes,
-        _links: result.links
+        _links: result.links,
+
+        // Data structure for grouping
+        _groups: result.groups,
+        _groupLookup: result.groupLookup,
     });
 };

@@ -89,6 +89,16 @@ var attrs = module.exports = overrideAll({
             role: 'info',
             description: 'The shown name of the node.'
         },
+        groups: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'calc',
+            description: [
+                'Groups of nodes.',
+                'Each group is defined by an array with the indices of the nodes it contains.',
+                'Multiple groups can be specified.'
+            ].join(' ')
+        },
         color: {
             valType: 'color',
             role: 'style',
