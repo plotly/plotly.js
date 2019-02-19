@@ -23,9 +23,11 @@ module.exports = function calc(gd, trace, opts) {
     var autoAttr = cLetter + 'auto';
     var minAttr = cLetter + 'min';
     var maxAttr = cLetter + 'max';
+    var midAttr = cLetter + 'mid';
     var auto = container[autoAttr];
     var min = container[minAttr];
     var max = container[maxAttr];
+    var mid = container[midAttr];
     var scl = container.colorscale;
 
     if(auto !== false || min === undefined) {
@@ -34,6 +36,15 @@ module.exports = function calc(gd, trace, opts) {
 
     if(auto !== false || max === undefined) {
         max = Lib.aggNums(Math.max, null, vals);
+    }
+
+    if(auto !== false && mid !== undefined) {
+        if(max - mid > mid - min) {
+            min = mid - (max - mid);
+        }
+        else if(max - mid < mid - min) {
+            max = mid + (mid - min);
+        }
     }
 
     if(min === max) {
