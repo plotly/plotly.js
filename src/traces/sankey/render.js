@@ -736,7 +736,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .attr('d', linkPath());
 
     sankeyLink
-        .style('opacity', 0)
+        .style('opacity', function() { return gd._context.staticPlot ? 1 : 0;})
         .transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 1);
@@ -775,7 +775,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .append('g')
         .classed(c.cn.sankeyNode, true)
         .call(updateNodePositions)
-        .style('opacity', 0);
+        .style('opacity', function(n) { return (!gd._context.staticPlot && n.partOfGroup) ? 0 : 1;});
 
     sankeyNode
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
