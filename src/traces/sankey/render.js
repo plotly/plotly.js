@@ -775,7 +775,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .append('g')
         .classed(c.cn.sankeyNode, true)
         .call(updateNodePositions)
-        .style('opacity', function(n) { return (!gd._context.staticPlot && n.partOfGroup) ? 0 : 1;});
+        .style('opacity', function(n) { return (gd._context.staticPlot && !n.partOfGroup) ? 1 : 0;});
 
     sankeyNode
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
