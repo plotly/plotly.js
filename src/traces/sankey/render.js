@@ -68,7 +68,7 @@ function sankeyModel(layout, d, traceIndex) {
     }
 
     // Create transient nodes for animations
-    Object.keys(calcData._groupLookup).forEach(function(nodePointNumber) {
+    for(var nodePointNumber in calcData._groupLookup) {
         var groupIndex = parseInt(calcData._groupLookup[nodePointNumber]);
 
         var groupingNode;
@@ -89,7 +89,7 @@ function sankeyModel(layout, d, traceIndex) {
             sourceLinks: [],
             targetLinks: []
         });
-    });
+    }
 
     function computeLinkConcentrations() {
         var i, j, k;
@@ -161,7 +161,7 @@ function sankeyModel(layout, d, traceIndex) {
         circular: circular,
         key: traceIndex,
         trace: trace,
-        guid: Math.floor(1e12 * (1 + Math.random())),
+        guid: Lib.randstr(),
         horizontal: horizontal,
         width: width,
         height: height,
@@ -379,7 +379,7 @@ function nodeModel(d, n) {
     var key = 'node_' + n.pointNumber;
     // If it's a group, it's mutable and should be unique
     if(n.group) {
-        key = 'group_' + Math.floor(1e12 * (1 + Math.random()));
+        key = Lib.randstr();
     }
 
     // for event data

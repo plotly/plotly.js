@@ -17,10 +17,8 @@ var isIndex = Lib.isIndex;
 var Colorscale = require('../../components/colorscale');
 
 function convertToD3Sankey(trace) {
-    // var nodeSpec = trace.node;
-    // var linkSpec = trace.link;
-    var nodeSpec = Lib.extendDeep({}, trace.node);
-    var linkSpec = Lib.extendDeep({}, trace.link);
+    var nodeSpec = trace.node;
+    var linkSpec = trace.link;
 
     var links = [];
     var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
@@ -50,14 +48,10 @@ function convertToD3Sankey(trace) {
     for(i = 0; i < groups.length; i++) {
         var group = groups[i];
         // Build a lookup table to quickly find in which group a node is
-        if(Array.isArray(group)) {
-            for(j = 0; j < group.length; j++) {
-                var nodeIndex = group[j];
-                var groupIndex = nodeCount + i;
-                groupLookup[nodeIndex] = groupIndex;
-            }
-        } else {
-            Lib.warn('node.groups must be an array, default to empty array []');
+        for(j = 0; j < group.length; j++) {
+            var nodeIndex = group[j];
+            var groupIndex = nodeCount + i;
+            groupLookup[nodeIndex] = groupIndex;
         }
     }
 
