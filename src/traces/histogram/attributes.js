@@ -12,6 +12,7 @@ var barAttrs = require('../bar/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var makeBinAttrs = require('./bin_attributes');
 var constants = require('./constants');
+var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
     x: {
@@ -29,7 +30,17 @@ module.exports = {
         ].join(' ')
     },
 
-    text: barAttrs.text,
+    text: extendFlat({}, barAttrs.text, {
+        description: [
+            'Sets hover text elements associated with each bar.',
+            'If a single string, the same string appears over all bars.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s coordinates.'
+        ].join(' ')
+    }),
+    hovertext: extendFlat({}, barAttrs.hovertext, {
+        description: 'Same as `text`.'
+    }),
     orientation: barAttrs.orientation,
 
     histfunc: {

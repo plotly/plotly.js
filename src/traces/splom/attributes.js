@@ -138,6 +138,10 @@ module.exports = {
             'this trace\'s (x,y) coordinates.'
         ].join(' ')
     }),
+    hovertext: extendFlat({}, scatterGlAttrs.hovertext, {
+        description: 'Same as `text`.'
+    }),
+
     hovertemplate: hovertemplateAttrs(),
 
     marker: markerAttrs,

@@ -132,6 +132,13 @@ var attrs = {
             'Note that streamtube traces do not support array `text` values.'
         ].join(' ')
     },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        editType: 'calc',
+        description: 'Same as `text`.'
+    },
     hovertemplate: hovertemplateAttrs({editType: 'calc'}, {
         keys: [
             'tubex', 'tubey', 'tubez',

@@ -104,6 +104,14 @@ module.exports = {
             'this trace\'s sample points.'
         ].join(' ')
     },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        editType: 'calc',
+        description: 'Same as `text`.'
+    },
 
     tickwidth: {
         valType: 'number',

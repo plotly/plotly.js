@@ -36,6 +36,9 @@ module.exports = extendFlat({
     text: extendFlat({}, scatterGeoAttrs.text, {
         description: 'Sets the text elements associated with each location.'
     }),
+    hovertext: extendFlat({}, scatterGeoAttrs.hovertext, {
+        description: 'Same as `text`.'
+    }),
     marker: {
         line: {
             color: scatterGeoMarkerLineAttrs.color,

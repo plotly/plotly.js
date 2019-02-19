@@ -1219,6 +1219,20 @@ describe('finance trace hover:', function() {
             }
         }, {
             type: type,
+            desc: 'just scalar hovertext',
+            traces: [{hoverinfo: 'text', hovertext: 'SCALAR', text: 'NOP'}],
+            exp: {
+                extraText: 'SCALAR'
+            }
+        }, {
+            type: type,
+            desc: 'just array hovertext',
+            traces: [{hoverinfo: 'text', hovertext: ['A', 'B'], text: ['N', 'O', 'P']}],
+            exp: {
+                extraText: 'A'
+            }
+        }, {
+            type: type,
             desc: 'just array text with array hoverinfo',
             traces: [{hoverinfo: ['text', 'text'], text: ['A', 'B']}],
             exp: {

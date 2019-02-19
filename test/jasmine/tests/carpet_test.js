@@ -657,6 +657,18 @@ describe('scattercarpet hover labels', function() {
         .then(done);
     });
 
+    it('should generate hover label (with hovertext array)', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        fig.data[5].hovertext = ['A', 'B', 'C', 'D'];
+        fig.data[5].text = ['N', 'O', 'P', '!'];
+
+        run(
+            [200, 200], fig,
+            [['a: 0.200', 'b: 3.500', 'y: 2.900', 'D'], 'a = 0.2']
+        )
+        .then(done);
+    });
+
     it('should generate hover label with \'hoverinfo\' set', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
         fig.data[5].hoverinfo = 'a+y';

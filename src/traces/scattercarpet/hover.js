@@ -6,10 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var scatterHover = require('../scatter/hover');
+var fillHoverText = require('../scatter/fill_hover_text');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
@@ -57,6 +57,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var xy = carpet.evalxy([], i0, j0, ti, tj);
     newPointData.yLabel = xy[1].toFixed(3);
 
+    delete newPointData.text;
     var text = [];
 
     function textPart(ax, val) {
@@ -76,11 +77,15 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         var hoverinfo = cdi.hi || trace.hoverinfo;
         var parts = hoverinfo.split('+');
 
-        if(parts.indexOf('all') !== -1) parts = ['a', 'b'];
+        if(parts.indexOf('all') !== -1) parts = ['a', 'b', 'text'];
         if(parts.indexOf('a') !== -1) textPart(carpet.aaxis, cdi.a);
         if(parts.indexOf('b') !== -1) textPart(carpet.baxis, cdi.b);
 
         text.push('y: ' + newPointData.yLabel);
+
+        if(parts.indexOf('text') !== -1) {
+            fillHoverText(cdi, trace, text);
+        }
 
         newPointData.extraText = text.join('<br>');
     }

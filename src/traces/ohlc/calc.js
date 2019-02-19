@@ -56,6 +56,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
     var c = ya.makeCalcdata(trace, 'close');
 
     var hasTextArray = Array.isArray(trace.text);
+    var hasHovertextArray = Array.isArray(trace.hovertext);
 
     // we're optimists - before we have any changing data, assume increasing
     var increasing = true;
@@ -87,6 +88,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
             pt.dir = increasing ? 'increasing' : 'decreasing';
 
             if(hasTextArray) pt.tx = trace.text[i];
+            if(hasHovertextArray) pt.htx = trace.hovertext[i];
 
             cd.push(pt);
         } else {

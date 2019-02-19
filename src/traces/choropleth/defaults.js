@@ -30,6 +30,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('locationmode');
 
     coerce('text');
+    coerce('hovertext');
     coerce('hovertemplate');
 
     coerce('marker.line.color');

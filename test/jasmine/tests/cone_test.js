@@ -298,6 +298,21 @@ describe('Test cone interactions', function() {
                 ].join('\n')
             });
 
+            return Plotly.restyle(gd, 'hovertext', 'look');
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'trace 0',
+                nums: [
+                    'x: 2', 'y: 2', 'z: 2',
+                    'u: 0', 'v: 3', 'w: 0',
+                    'norm: 3.00',
+                    'look'
+                ].join('\n')
+            });
+
             return Plotly.restyle(gd, 'hovertemplate', 'NORM : %{norm}<br>at %{x},%{y},%{z}<extra>LOOKOUT</extra>');
         })
         .then(delay(20))

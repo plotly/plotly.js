@@ -34,33 +34,33 @@ module.exports = {
     a: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-            'Sets the quantity of component `a` in each data point.',
-            'If `a`, `b`, and `c` are all provided, they need not be',
-            'normalized, only the relative values matter. If only two',
-            'arrays are provided they must be normalized to match',
-            '`ternary<i>.sum`.'
-        ].join(' ')
+        description: 'Sets the a-axis coordinates.'
     },
     b: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-            'Sets the quantity of component `a` in each data point.',
-            'If `a`, `b`, and `c` are all provided, they need not be',
-            'normalized, only the relative values matter. If only two',
-            'arrays are provided they must be normalized to match',
-            '`ternary<i>.sum`.'
-        ].join(' ')
+        description: 'Sets the b-axis coordinates.'
     },
     mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
     text: extendFlat({}, scatterAttrs.text, {
         description: [
-            'Sets text elements associated with each (a,b,c) point.',
+            'Sets text elements associated with each (a,b) point.',
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of strings, the items are mapped in order to the',
-            'the data points in (a,b,c).'
+            'the data points in (a,b).',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
+    }),
+    hovertext: extendFlat({}, scatterAttrs.hovertext, {
+        description: [
+            'Sets hover text elements associated with each (a,b) point.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of strings, the items are mapped in order to the',
+            'the data points in (a,b).',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
     }),
     line: {

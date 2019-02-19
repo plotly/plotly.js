@@ -335,6 +335,22 @@ describe('Test box hover:', function() {
         nums: 'look:0.7',
         name: ''
     }, {
+        desc: 'only hovertext items on hover',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points';
+                trace.text = trace.y.map(function(v) { return 'NOT THIS:' + v; });
+                trace.hovertext = trace.y.map(function(v) { return 'look:' + v; });
+                trace.hoverinfo = 'text';
+            });
+            fig.layout.hovermode = 'closest';
+            fig.layout.xaxis = {range: [-0.565, 1.5]};
+            return fig;
+        },
+        nums: 'look:0.7',
+        name: ''
+    }, {
         desc: 'orientation:h | hovermode:y',
         mock: require('@mocks/box_grouped_horz.json'),
         pos: [430, 130],

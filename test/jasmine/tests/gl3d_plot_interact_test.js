@@ -342,8 +342,14 @@ describe('Test gl3d plots', function() {
 
             return Plotly.restyle(gd, 'text', 'yo!');
         })
+        .then(_hover)
         .then(function() {
             assertHoverText(null, null, null, 'yo!');
+
+            return Plotly.restyle(gd, 'hovertext', 'ONE TWO');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'ONE TWO');
 
             return Plotly.restyle(gd, 'hovertemplate', '!!! %{z} !!!<extra></extra>');
         })
@@ -427,6 +433,14 @@ describe('Test gl3d plots', function() {
         })
         .then(function() {
             assertHoverText(null, null, null, 'yo!');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hovertext', [
+                text.map(function(tx) { return tx + ' !!'; })
+            ]);
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'ts: 3\nhz: 4\nftt:5 !!');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hovertemplate', '%{x}-%{y}-%{z}<extra></extra>');

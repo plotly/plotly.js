@@ -655,6 +655,18 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
+            .then(function() {
+                return Plotly.restyle(gd, 'hovertext', [
+                    [['A', 'B', 'C'], ['X', 'Y', 'Z']]
+                ], [1]);
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2\nY',
+                    name: 'two'
+                });
+            })
             .catch(failTest)
             .then(done);
         });
@@ -764,6 +776,18 @@ describe('hover info', function() {
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
                     name: 'one'
+                });
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'hovertext', [
+                    [['A', 'B', 'C'], ['X', 'Y', 'Z']]
+                ]);
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2\nY',
+                    name: 'two'
                 });
             })
             .then(function() {
@@ -1068,6 +1092,14 @@ describe('hover info', function() {
                 _hover(gd, 250, 200);
                 assertHoverLabelContent({
                     nums: '3',
+                    axis: '3.3'
+                });
+            })
+            .then(function() { return Plotly.restyle(gd, 'hovertext', 'LOOK'); })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '3\nLOOK',
                     axis: '3.3'
                 });
             })

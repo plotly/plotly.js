@@ -124,6 +124,13 @@ var attrs = module.exports = overrideAll(extendFlat({
             'these elements will be seen in the hover labels.'
         ].join(' ')
     },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: 'Same as `text`.'
+    },
     hovertemplate: hovertemplateAttrs(),
 
     surfacecolor: {

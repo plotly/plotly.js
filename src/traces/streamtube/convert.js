@@ -55,7 +55,7 @@ proto.handlePick = function(selection) {
             selection.data.divergence
         ];
 
-        selection.textLabel = this.data.text;
+        selection.textLabel = this.data.hovertext || this.data.text;
 
         return true;
     }
