@@ -778,6 +778,8 @@ proto.setCamera = function setCamera(cameraData) {
     var oldOrtho = this.glplot.camera._ortho;
 
     if(newOrtho !== oldOrtho) {
+        this.glplot.redraw();
+
         var RGBA = this.glplot.clearColor;
         this.glplot.gl.clearColor(
             RGBA[0], RGBA[1], RGBA[2], RGBA[3]
