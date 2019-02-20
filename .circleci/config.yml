@@ -137,9 +137,19 @@ jobs:
           path: dist
           destination: dist
       - run:
+          name: Pack tarball
+          command: |
+            npm pack
+            version=$(node -e "console.log(require('./package.json').version)")
+            mv plotly.js-$version.tgz plotly.js.tgz
+      - store_artifacts:
+          path: plotly.js.tgz
+          destination: /plotly.js.tgz
+      - run:
           name: Show URLs to build files
           command: |
             PROJECT_NUM=45646037
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plotly.js.tgz
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
