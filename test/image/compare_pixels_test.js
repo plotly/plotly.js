@@ -14,7 +14,7 @@ var gm = require('gm');
 var TOLERANCE = 1e-6;
 
 // wait time between each test batch
-var BATCH_WAIT = 500;
+var BATCH_WAIT = 1500;
 
 // number of tests in each test batch
 var BATCH_SIZE = 5;
@@ -93,14 +93,15 @@ else {
  *
  */
 function untestableFilter(mockName) {
-    var cond = !(
+    var cond = mockName.indexOf('gl3d_volume' !== -1); /* &&
+    !(
         mockName === 'font-wishlist' ||
         mockName.indexOf('gl2d_') !== -1 ||
         mockName.indexOf('mapbox_') !== -1 ||
         mockName.indexOf('gl3d_cone-') !== -1 ||
         mockName.indexOf('gl3d_volume_between-ranges') !== -1 ||
         mockName.indexOf('gl3d_volume_mri') !== -1
-    );
+    ); */
 
     if(!cond) console.log(' -', mockName);
 
