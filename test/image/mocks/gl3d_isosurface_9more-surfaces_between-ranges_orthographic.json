@@ -2638,9 +2638,9 @@
         "height": 900,
         "scene": {
             "aspectratio": {
-                "x": 1.3,
-                "y": 1.3,
-                "z": 1
+                "x": 1.5,
+                "y": 1.5,
+                "z": 1.5
             },
             "xaxis": { "nticks": 12 },
             "yaxis": { "nticks": 12 },
@@ -2648,9 +2648,9 @@
             "camera": {
                 "projection": { "type": "orthographic" },
                 "eye": {
-                    "x": 1.5,
-                    "y": 2.5,
-                    "z": -0.5
+                    "x": 0.5,
+                    "y": 0.4,
+                    "z": -0.3
                 },
                 "center": {
                     "x": 0,
