@@ -568,6 +568,99 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
+    it('@gl should set the camera projection type to perspective if the camera.projection.type is not set', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho).toBe(false);
+        })
+        .then(done);
+    });
+
+    it('@gl should set the camera projection type to orthographic if the camera.projection.type is set to orthographic', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        projection: {
+                            type: 'orthographic'
+                        }
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho).toBe(true);
+        })
+        .then(done);
+    });
+
+    it('@gl should enable orthographic & perspective projections using relayout', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        projection: {
+                            type: 'perspective'
+                        }
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            return Plotly.relayout(gd, 'scene.camera.projection.type', 'orthographic');
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho).toBe(true);
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'scene.camera.projection.type', 'perspective');
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho).toBe(false);
+        })
+        .then(done);
+    });
+
     it('@gl should be able to reversibly change trace type', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };

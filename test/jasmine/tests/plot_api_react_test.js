@@ -1896,6 +1896,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             var sceneLayout = gd._fullLayout.scene;
             var cameraOld = sceneLayout.camera;
             sceneLayout._scene.setCamera({
+                projection: {type: 'perspective'},
                 eye: {x: 2, y: 2, z: 2},
                 center: cameraOld.center,
                 up: cameraOld.up

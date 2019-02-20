@@ -231,19 +231,23 @@ function tryCreatePlot(scene, camera, canvas, gl) {
         scene.glplot = createPlot(glplotOptions);
     }
     catch(e) {
-        /*
-        * createPlot will throw when webgl is not enabled in the client.
-        * Lets return an instance of the module with all functions noop'd.
-        * The destroy method - which will remove the container from the DOM
-        * is overridden with a function that removes the container only.
-        */
-        return showNoWebGlMsg(scene);
+        return false;
     }
+
+    return true;
 }
 
 function initializeGLPlot(scene, camera, canvas, gl) {
 
-    tryCreatePlot(scene, camera, canvas, gl);
+    var success = tryCreatePlot(scene, camera, canvas, gl);
+    /*
+    * createPlot will throw when webgl is not enabled in the client.
+    * Lets return an instance of the module with all functions noop'd.
+    * The destroy method - which will remove the container from the DOM
+    * is overridden with a function that removes the container only.
+    */
+    if(!success) return showNoWebGlMsg(scene);
+
 
     var gd = scene.graphDiv;
 
