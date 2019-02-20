@@ -43,10 +43,16 @@ module.exports = function crossTraceDefaults(fullData) {
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        var _module = trace._module;
+        var colorbar = trace._module.colorbar;
 
-        if(_module.colorbar) {
-            relinkColorAtts(trace, _module.colorbar);
+        if(colorbar) {
+            if(Array.isArray(colorbar)) {
+                for(var j = 0; j < colorbar.length; j++) {
+                    relinkColorAtts(trace, colorbar[j]);
+                }
+            } else {
+                relinkColorAtts(trace, colorbar);
+            }
         }
 
         // TODO could generalize _module.colorscale and use it here?

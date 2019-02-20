@@ -244,8 +244,6 @@ exports.plot = function(gd, data, layout, config) {
                     'position': 'absolute',
                     'top': 0,
                     'left': 0,
-                    'width': '100%',
-                    'height': '100%',
                     'overflow': 'visible',
                     'pointer-events': 'none'
                 });
@@ -277,6 +275,16 @@ exports.plot = function(gd, data, layout, config) {
                     }
                 }
             }
+        }
+
+        if(fullLayout.modebar.orientation === 'h') {
+            fullLayout._modebardiv
+              .style('height', null)
+              .style('width', '100%');
+        } else {
+            fullLayout._modebardiv
+              .style('width', null)
+              .style('height', fullLayout.height + 'px');
         }
 
         return Plots.previousPromises(gd);
@@ -1932,22 +1940,34 @@ exports.relayout = relayout;
 // Optimization mostly for large splom traces where
 // Plots.supplyDefaults can take > 100ms
 function axRangeSupplyDefaultsByPass(gd, flags, specs) {
-    var k;
+    var fullLayout = gd._fullLayout;
 
     if(!flags.axrange) return false;
 
-    for(k in flags) {
+    for(var k in flags) {
         if(k !== 'axrange' && flags[k]) return false;
     }
 
-    for(k in specs.rangesAltered) {
-        var axName = Axes.id2name(k);
+    for(var axId in specs.rangesAltered) {
+        var axName = Axes.id2name(axId);
         var axIn = gd.layout[axName];
-        var axOut = gd._fullLayout[axName];
+        var axOut = fullLayout[axName];
         axOut.autorange = axIn.autorange;
         axOut.range = axIn.range.slice();
         axOut.cleanRange();
+
+        if(axOut._matchGroup) {
+            for(var axId2 in axOut._matchGroup) {
+                if(axId2 !== axId) {
+                    var ax2 = fullLayout[Axes.id2name(axId2)];
+                    ax2.autorange = axOut.autorange;
+                    ax2.range = axOut.range.slice();
+                    ax2._input.range = axOut.range.slice();
+                }
+            }
+        }
     }
+
     return true;
 }
 
@@ -1957,14 +1977,25 @@ function addAxRangeSequence(seq, rangesAltered) {
     // executed after drawData
     var drawAxes = rangesAltered ?
         function(gd) {
-            var opts = {skipTitle: true};
+            var axIds = [];
+            var skipTitle = true;
+
             for(var id in rangesAltered) {
-                if(Axes.getFromId(gd, id).automargin) {
-                    opts = {};
-                    break;
+                var ax = Axes.getFromId(gd, id);
+                axIds.push(id);
+
+                if(ax._matchGroup) {
+                    for(var id2 in ax._matchGroup) {
+                        if(!rangesAltered[id2]) {
+                            axIds.push(id2);
+                        }
+                    }
                 }
+
+                if(ax.automargin) skipTitle = false;
             }
-            return Axes.draw(gd, Object.keys(rangesAltered), opts);
+
+            return Axes.draw(gd, axIds, {skipTitle: skipTitle});
         } :
         function(gd) {
             return Axes.draw(gd, 'redraw');
@@ -2539,7 +2570,7 @@ function getTraceIndexFromUid(uid, data, tracei) {
         if(data[i].uid === uid) return i;
     }
     // fall back on trace order, but only if user didn't provide a uid for that trace
-    return data[tracei].uid ? -1 : tracei;
+    return (!data[tracei] || data[tracei].uid) ? -1 : tracei;
 }
 
 function valsMatch(v1, v2) {
@@ -3844,6 +3875,14 @@ function makePlotFramework(gd) {
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+
+    // Make the modebar container
+    fullLayout._modebardiv = fullLayout._paperdiv.selectAll('.modebar-container').data([0]);
+    fullLayout._modebardiv.enter().append('div')
+        .classed('modebar-container', true)
+        .style('position', 'absolute')
+        .style('top', '0px')
+        .style('right', '0px');
 
     gd.emit('plotly_framework');
 }

@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -7,6 +8,9 @@ var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var delay = require('../assets/delay');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var CALLBACK_DELAY = 500;
 
@@ -1724,5 +1728,73 @@ describe('Hover events with hoveron color', function() {
             })
             .catch(failTest)
             .then(done);
+    });
+});
+
+describe('Parcats hover:', function() {
+    var gd;
+
+    afterEach(destroyGraphDiv);
+
+    function run(s, done) {
+        gd = createGraphDiv();
+
+        var fig = Lib.extendDeep({},
+            s.mock || require('@mocks/parcats_basic.json')
+        );
+        if(s.patch) fig = s.patch(fig);
+
+        return Plotly.plot(gd, fig).then(function() {
+            mouseEvent('mousemove', s.pos[0], s.pos[1]);
+            mouseEvent('mouseover', s.pos[0], s.pos[1]);
+
+            setTimeout(function() {
+                assertHoverLabelContent(s);
+                done();
+            }, CALLBACK_DELAY);
+
+        })
+        .catch(failTest);
+    }
+
+    var dimPos = [320, 310];
+    var linePos = [272, 415];
+
+    var specs = [{
+        desc: 'basic - on dimension',
+        pos: dimPos,
+        nums: 'Count: 9',
+        name: ''
+    }, {
+        desc: 'basic - on line',
+        pos: linePos,
+        nums: 'Count: 1',
+        name: ''
+    }, {
+        desc: 'with hovetemplate - on dimension',
+        pos: dimPos,
+        patch: function(fig) {
+            fig.data[0].hovertemplate = 'probz=%{probability:.1f}<extra>LOOK</extra>';
+            return fig;
+        },
+        nums: 'probz=1.0',
+        name: 'LOOK'
+    }, {
+        desc: 'with hovertemplate - on line',
+        pos: linePos,
+        patch: function(fig) {
+            fig.data[0].line = {
+                hovertemplate: 'P=%{probability}<extra>with count=%{count}</extra>'
+            };
+            return fig;
+        },
+        nums: 'P=0.111',
+        name: 'with count=1'
+    }];
+
+    specs.forEach(function(s) {
+        it('should generate correct hover labels ' + s.desc, function(done) {
+            run(s, done);
+        });
     });
 });

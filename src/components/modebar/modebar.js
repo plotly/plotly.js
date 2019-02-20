@@ -64,7 +64,7 @@ proto.update = function(graphInfo, buttons) {
     var bgSelector = context.displayModeBar === 'hover' ? '.js-plotly-plot .plotly:hover ' : '';
 
     Lib.deleteRelatedStyleRule(modeBarId);
-    Lib.addRelatedStyleRule(modeBarId, bgSelector + '#' + modeBarId, 'background-color: ' + style.bgcolor);
+    Lib.addRelatedStyleRule(modeBarId, bgSelector + '#' + modeBarId + ' .modebar-group', 'background-color: ' + style.bgcolor);
     Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + style.color);
     Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + style.activecolor);
     Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + style.activecolor);
@@ -88,7 +88,7 @@ proto.update = function(graphInfo, buttons) {
             }
 
             if(fullLayout.modebar.orientation === 'v') {
-                this.element.prepend(logoGroup);
+                this.element.insertBefore(logoGroup, this.element.childNodes[0]);
             } else {
                 this.element.appendChild(logoGroup);
             }
@@ -333,7 +333,7 @@ function createModeBar(gd, buttons) {
 
     var modeBar = new ModeBar({
         graphInfo: gd,
-        container: fullLayout._paperdiv.node(),
+        container: fullLayout._modebardiv.node(),
         buttons: buttons
     });
 

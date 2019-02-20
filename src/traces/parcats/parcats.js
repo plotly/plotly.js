@@ -413,6 +413,7 @@ function mouseoverPath(d) {
 
                 // Label
                 var gd = d.parcatsViewModel.graphDiv;
+                var trace = d.parcatsViewModel.trace;
                 var fullLayout = gd._fullLayout;
                 var rootBBox = fullLayout._paperdiv.node().getBoundingClientRect();
                 var graphDivBBox = d.parcatsViewModel.graphDiv.getBoundingClientRect();
@@ -438,19 +439,27 @@ function mouseoverPath(d) {
 
                 var textColor = tinycolor.mostReadable(d.model.color, ['black', 'white']);
 
+                var count = d.model.count;
+                var prob = count / d.parcatsViewModel.model.count;
+                var labels = {
+                    countLabel: count,
+                    probabilityLabel: prob.toFixed(3)
+                };
+
                 // Build hover text
                 var hovertextParts = [];
                 if(d.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
-                    hovertextParts.push(['Count:', d.model.count].join(' '));
+                    hovertextParts.push(['Count:', labels.countLabel].join(' '));
                 }
                 if(d.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
-                    hovertextParts.push(['P:', (d.model.count / d.parcatsViewModel.model.count).toFixed(3)].join(' '));
+                    hovertextParts.push(['P:', labels.probabilityLabel].join(' '));
                 }
 
                 var hovertext = hovertextParts.join('<br>');
                 var mouseX = d3.mouse(gd)[0];
 
                 Fx.loneHover({
+                    trace: trace,
                     x: hoverCenterX - rootBBox.left + graphDivBBox.left,
                     y: hoverCenterY - rootBBox.top + graphDivBBox.top,
                     text: hovertext,
@@ -459,7 +468,15 @@ function mouseoverPath(d) {
                     fontFamily: 'Monaco, "Courier New", monospace',
                     fontSize: 10,
                     fontColor: textColor,
-                    idealAlign: mouseX < hoverCenterX ? 'right' : 'left'
+                    idealAlign: mouseX < hoverCenterX ? 'right' : 'left',
+                    hovertemplate: (trace.line || {}).hovertemplate,
+                    hovertemplateLabels: labels,
+                    eventData: [{
+                        data: trace._input,
+                        fullData: trace,
+                        count: count,
+                        probability: prob
+                    }]
                 }, {
                     container: fullLayout._hoverlayer.node(),
                     outerContainer: fullLayout._paper.node(),
@@ -715,6 +732,7 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
     var catViewModel = rectSelection.datum();
     var parcatsViewModel = catViewModel.parcatsViewModel;
     var dimensionModel = parcatsViewModel.model.dimensions[catViewModel.model.dimensionInd];
+    var trace = parcatsViewModel.trace;
 
     // Positions
     var hoverCenterY = rectBoundingBox.top + rectBoundingBox.height / 2;
@@ -732,19 +750,27 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
         hoverLabelIdealAlign = 'right';
     }
 
+    var count = catViewModel.model.count;
+    var catLabel = catViewModel.model.categoryLabel;
+    var prob = count / catViewModel.parcatsViewModel.model.count;
+    var labels = {
+        countLabel: count,
+        categoryLabel: catLabel,
+        probabilityLabel: prob.toFixed(3)
+    };
+
     // Hover label text
     var hoverinfoParts = [];
     if(catViewModel.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
-        hoverinfoParts.push(['Count:', catViewModel.model.count].join(' '));
+        hoverinfoParts.push(['Count:', labels.countLabel].join(' '));
     }
     if(catViewModel.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
-        hoverinfoParts.push([
-            'P(' + catViewModel.model.categoryLabel + '):',
-            (catViewModel.model.count / catViewModel.parcatsViewModel.model.count).toFixed(3)].join(' '));
+        hoverinfoParts.push(['P(' + labels.categoryLabel + '):', labels.probabilityLabel].join(' '));
     }
 
     var hovertext = hoverinfoParts.join('<br>');
     return {
+        trace: trace,
         x: hoverCenterX - rootBBox.left,
         y: hoverCenterY - rootBBox.top,
         text: hovertext,
@@ -753,7 +779,16 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
         fontFamily: 'Monaco, "Courier New", monospace',
         fontSize: 12,
         fontColor: 'black',
-        idealAlign: hoverLabelIdealAlign
+        idealAlign: hoverLabelIdealAlign,
+        hovertemplate: trace.hovertemplate,
+        hovertemplateLabels: labels,
+        eventData: [{
+            data: trace._input,
+            fullData: trace,
+            count: count,
+            category: catLabel,
+            probability: prob
+        }]
     };
 }
 
@@ -800,6 +835,7 @@ function createHoverLabelForColorHovermode(rootBBox, bandElement) {
     var catViewModel = bandViewModel.categoryViewModel;
     var parcatsViewModel = catViewModel.parcatsViewModel;
     var dimensionModel = parcatsViewModel.model.dimensions[catViewModel.model.dimensionInd];
+    var trace = parcatsViewModel.trace;
 
     // positions
     var hoverCenterY = bandBoundingBox.y + bandBoundingBox.height / 2;
@@ -840,26 +876,25 @@ function createHoverLabelForColorHovermode(rootBBox, bandElement) {
             }
         });
 
+    var pColorAndCat = bandColorCount / totalCount;
+    var pCatGivenColor = bandColorCount / colorCount;
+    var pColorGivenCat = bandColorCount / catCount;
+
+    var labels = {
+        countLabel: totalCount,
+        categoryLabel: catLabel,
+        probabilityLabel: pColorAndCat.toFixed(3)
+    };
+
     // Hover label text
     var hoverinfoParts = [];
     if(catViewModel.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
-        hoverinfoParts.push(['Count:', bandColorCount].join(' '));
+        hoverinfoParts.push(['Count:', labels.countLabel].join(' '));
     }
     if(catViewModel.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
-        var pColorAndCatLable = 'P(color ∩ ' + catLabel + '): ';
-        var pColorAndCatValue = (bandColorCount / totalCount).toFixed(3);
-        var pColorAndCatRow = pColorAndCatLable + pColorAndCatValue;
-        hoverinfoParts.push(pColorAndCatRow);
-
-        var pCatGivenColorLabel = 'P(' + catLabel + ' | color): ';
-        var pCatGivenColorValue = (bandColorCount / colorCount).toFixed(3);
-        var pCatGivenColorRow = pCatGivenColorLabel + pCatGivenColorValue;
-        hoverinfoParts.push(pCatGivenColorRow);
-
-        var pColorGivenCatLabel = 'P(color | ' + catLabel + '): ';
-        var pColorGivenCatValue = (bandColorCount / catCount).toFixed(3);
-        var pColorGivenCatRow = pColorGivenCatLabel + pColorGivenCatValue;
-        hoverinfoParts.push(pColorGivenCatRow);
+        hoverinfoParts.push('P(color ∩ ' + catLabel + '): ' + labels.probabilityLabel);
+        hoverinfoParts.push('P(' + catLabel + ' | color): ' + pCatGivenColor.toFixed(3));
+        hoverinfoParts.push('P(color | ' + catLabel + '): ' + pColorGivenCat.toFixed(3));
     }
 
     var hovertext = hoverinfoParts.join('<br>');
@@ -868,6 +903,7 @@ function createHoverLabelForColorHovermode(rootBBox, bandElement) {
     var textColor = tinycolor.mostReadable(bandViewModel.color, ['black', 'white']);
 
     return {
+        trace: trace,
         x: hoverCenterX - rootBBox.left,
         y: hoverCenterY - rootBBox.top,
         // name: 'NAME',
@@ -877,7 +913,19 @@ function createHoverLabelForColorHovermode(rootBBox, bandElement) {
         fontFamily: 'Monaco, "Courier New", monospace',
         fontColor: textColor,
         fontSize: 10,
-        idealAlign: hoverLabelIdealAlign
+        idealAlign: hoverLabelIdealAlign,
+        hovertemplate: trace.hovertemplate,
+        hovertemplateLabels: labels,
+        eventData: [{
+            data: trace._input,
+            fullData: trace,
+            category: catLabel,
+            count: totalCount,
+            probability: pColorAndCat,
+            categorycount: catCount,
+            colorcount: colorCount,
+            bandcolorcount: bandColorCount
+        }]
     };
 }
 
@@ -1475,12 +1523,13 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
     if(trace.hoverinfo === 'all') {
         hoverinfoItems = ['count', 'probability'];
     } else {
-        hoverinfoItems = trace.hoverinfo.split('+');
+        hoverinfoItems = (trace.hoverinfo || '').split('+');
     }
 
     // Construct parcatsViewModel
     // --------------------------
     var parcatsViewModel = {
+        trace: trace,
         key: trace.uid,
         model: parcatsModel,
         x: traceX,

@@ -12,7 +12,7 @@
 var Volume = {};
 
 Volume.attributes = require('./attributes');
-Volume.supplyDefaults = require('../isosurface/defaults');
+Volume.supplyDefaults = require('./defaults');
 Volume.calc = require('../isosurface/calc');
 Volume.colorbar = {
     min: 'cmin',

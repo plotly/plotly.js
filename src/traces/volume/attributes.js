@@ -8,6 +8,7 @@
 
 'use strict';
 
+var opacityscaleAttrs = require('../../components/opacityscale/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var isosurfaceAttrs = require('../isosurface/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -51,7 +52,13 @@ var attrs = module.exports = overrideAll(extendFlat({
     slices: isosurfaceAttrs.slices,
     caps: isosurfaceAttrs.caps,
     text: isosurfaceAttrs.text,
+    hovertext: isosurfaceAttrs.hovertext,
+    hovertemplate: isosurfaceAttrs.hovertemplate
 },
+
+opacityscaleAttrs('', {
+    editTypeOverride: 'calc'
+}),
 
 colorscaleAttrs('', {
     colorAttr: '`value`',
@@ -60,8 +67,6 @@ colorscaleAttrs('', {
 }), {
 
     colorbar: isosurfaceAttrs.colorbar,
-
-    opacityscale: isosurfaceAttrs.opacityscale,
     opacity: isosurfaceAttrs.opacity,
     lightposition: isosurfaceAttrs.lightposition,
     lighting: isosurfaceAttrs.lighting,

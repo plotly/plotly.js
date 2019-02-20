@@ -6,13 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
-var opacityscaleDefaults = require('../../components/opacityscale/defaults');
 var attributes = require('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -86,6 +84,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Coerce remaining properties
     [
         'text',
+        'hovertext',
+        'hovertemplate',
         'lighting.ambient',
         'lighting.diffuse',
         'lighting.specular',
@@ -101,8 +101,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
-
-    opacityscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: ''});
 
     // disable 1D transforms (for now)
     traceOut._length = null;

@@ -1084,6 +1084,7 @@ describe('pie hovering', function() {
         });
 
         it('should use hovertemplate if specified', function(done) {
+            mockCopy.data[0].name = '';
             Plotly.plot(gd, mockCopy.data, mockCopy.layout)
             .then(_hover)
             .then(function() {

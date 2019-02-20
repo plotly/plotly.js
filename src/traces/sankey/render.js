@@ -13,179 +13,149 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-var d3sankey = require('@plotly/d3-sankey').sankey;
+var d3Sankey = require('@plotly/d3-sankey');
+var d3SankeyCircular = require('d3-sankey-circular');
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
-var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
-var isIndex = Lib.isIndex;
 var gup = require('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
-
-// basic data utilities
-
-function persistOriginalPlace(nodes) {
-    var i;
-    var distinctLayerPositions = [];
-    for(i = 0; i < nodes.length; i++) {
-        nodes[i].originalX = nodes[i].x;
-        nodes[i].originalY = nodes[i].y;
-        if(distinctLayerPositions.indexOf(nodes[i].x) === -1) {
-            distinctLayerPositions.push(nodes[i].x);
-        }
-    }
-    distinctLayerPositions.sort(function(a, b) {return a - b;});
-    for(i = 0; i < nodes.length; i++) {
-        nodes[i].originalLayerIndex = distinctLayerPositions.indexOf(nodes[i].originalX);
-        nodes[i].originalLayer = nodes[i].originalLayerIndex / (distinctLayerPositions.length - 1);
-    }
-}
-
-function saveCurrentDragPosition(d) {
-    d.lastDraggedX = d.x;
-    d.lastDraggedY = d.y;
-}
-
-function sameLayer(d) {
-    return function(n) {return n.node.originalX === d.node.originalX;};
-}
-
-function switchToForceFormat(nodes) {
-    // force uses x, y as centers
-    for(var i = 0; i < nodes.length; i++) {
-        nodes[i].y = nodes[i].y + nodes[i].dy / 2;
-    }
-}
-
-function switchToSankeyFormat(nodes) {
-    // sankey uses x, y as top left
-    for(var i = 0; i < nodes.length; i++) {
-        nodes[i].y = nodes[i].y - nodes[i].dy / 2;
-    }
-}
+var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
 // view models
 
 function sankeyModel(layout, d, traceIndex) {
-    var trace = unwrap(d).trace;
+    var calcData = unwrap(d);
+    var trace = calcData.trace;
     var domain = trace.domain;
-    var nodeSpec = trace.node;
-    var linkSpec = trace.link;
-    var arrangement = trace.arrangement;
     var horizontal = trace.orientation === 'h';
     var nodePad = trace.node.pad;
     var nodeThickness = trace.node.thickness;
-    var nodeLineColor = trace.node.line.color;
-    var nodeLineWidth = trace.node.line.width;
-    var linkLineColor = trace.link.line.color;
-    var linkLineWidth = trace.link.line.width;
-    var valueFormat = trace.valueformat;
-    var valueSuffix = trace.valuesuffix;
-    var textFont = trace.textfont;
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
 
-    var links = [];
-    var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
-    var linkedNodes = {};
+    var nodes = calcData._nodes;
+    var links = calcData._links;
+    var circular = calcData.circular;
 
-    var nodeCount = nodeSpec.label.length;
-    var i;
-    for(i = 0; i < linkSpec.value.length; i++) {
-        var val = linkSpec.value[i];
-        // remove negative values, but keep zeros with special treatment
-        var source = linkSpec.source[i];
-        var target = linkSpec.target[i];
-        if(!(val > 0 && isIndex(source, nodeCount) && isIndex(target, nodeCount))) {
-            continue;
-        }
-
-        source = +source;
-        target = +target;
-        linkedNodes[source] = linkedNodes[target] = true;
-
-        links.push({
-            pointNumber: i,
-            label: linkSpec.label[i],
-            color: hasLinkColorArray ? linkSpec.color[i] : linkSpec.color,
-            source: source,
-            target: target,
-            value: +val
-        });
-    }
-
-    var hasNodeColorArray = isArrayOrTypedArray(nodeSpec.color);
-    var nodes = [];
-    var removedNodes = false;
-    var nodeIndices = {};
-    for(i = 0; i < nodeCount; i++) {
-        if(linkedNodes[i]) {
-            var l = nodeSpec.label[i];
-            nodeIndices[i] = nodes.length;
-            nodes.push({
-                pointNumber: i,
-                label: l,
-                color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
+    // Select Sankey generator
+    var sankey;
+    if(circular) {
+        sankey = d3SankeyCircular
+            .sankeyCircular()
+            .circularLinkGap(0)
+            .nodeId(function(d) {
+                return d.pointNumber;
             });
-        }
-        else removedNodes = true;
+    } else {
+        sankey = d3Sankey.sankey();
     }
 
-    // need to re-index links now, since we didn't put all the nodes in
-    if(removedNodes) {
-        for(i = 0; i < links.length; i++) {
-            links[i].source = nodeIndices[links[i].source];
-            links[i].target = nodeIndices[links[i].target];
-        }
-    }
+    sankey
+      .iterations(c.sankeyIterations)
+      .size(horizontal ? [width, height] : [height, width])
+      .nodeWidth(nodeThickness)
+      .nodePadding(nodePad)
+      .nodes(nodes)
+      .links(links);
 
-    var sankey = d3sankey()
-        .size(horizontal ? [width, height] : [height, width])
-        .nodeWidth(nodeThickness)
-        .nodePadding(nodePad)
-        .nodes(nodes)
-        .links(links)
-        .layout(c.sankeyIterations);
+    var graph = sankey();
 
     if(sankey.nodePadding() < nodePad) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
-    var node;
-    var sankeyNodes = sankey.nodes();
-    for(var n = 0; n < sankeyNodes.length; n++) {
-        node = sankeyNodes[n];
-        node.width = width;
-        node.height = height;
-    }
+    function computeLinkConcentrations() {
+        var i, j, k;
+        for(i = 0; i < graph.nodes.length; i++) {
+            var node = graph.nodes[i];
+            // Links connecting the same two nodes are part of a flow
+            var flows = {};
+            var flowKey;
+            var link;
+            for(j = 0; j < node.targetLinks.length; j++) {
+                link = node.targetLinks[j];
+                flowKey = link.source.pointNumber + ':' + link.target.pointNumber;
+                if(!flows.hasOwnProperty(flowKey)) flows[flowKey] = [];
+                flows[flowKey].push(link);
+            }
 
-    switchToForceFormat(nodes);
+            // Compute statistics for each flow
+            var keys = Object.keys(flows);
+            for(j = 0; j < keys.length; j++) {
+                flowKey = keys[j];
+                var flowLinks = flows[flowKey];
+
+                // Find the total size of the flow and total size per label
+                var total = 0;
+                var totalPerLabel = {};
+                for(k = 0; k < flowLinks.length; k++) {
+                    link = flowLinks[k];
+                    if(!totalPerLabel[link.label]) totalPerLabel[link.label] = 0;
+                    totalPerLabel[link.label] += link.value;
+                    total += link.value;
+                }
+
+                // Find the ratio of the link's value and the size of the flow
+                for(k = 0; k < flowLinks.length; k++) {
+                    link = flowLinks[k];
+                    link.flow = {
+                        value: total,
+                        labelConcentration: totalPerLabel[link.label] / total,
+                        concentration: link.value / total,
+                        links: flowLinks
+                    };
+                }
+            }
+
+            // Gather statistics of all links at current node
+            var totalOutflow = 0;
+            for(j = 0; j < node.sourceLinks.length; j++) {
+                totalOutflow += node.sourceLinks[j].value;
+            }
+            for(j = 0; j < node.sourceLinks.length; j++) {
+                link = node.sourceLinks[j];
+                link.concentrationOut = link.value / totalOutflow;
+            }
+
+            var totalInflow = 0;
+            for(j = 0; j < node.targetLinks.length; j++) {
+                totalInflow += node.targetLinks[j].value;
+            }
+
+            for(j = 0; j < node.targetLinks.length; j++) {
+                link = node.targetLinks[j];
+                link.concenrationIn = link.value / totalInflow;
+            }
+        }
+    }
+    computeLinkConcentrations();
 
     return {
+        circular: circular,
         key: traceIndex,
         trace: trace,
         guid: Math.floor(1e12 * (1 + Math.random())),
         horizontal: horizontal,
         width: width,
         height: height,
-        nodePad: nodePad,
-        nodeLineColor: nodeLineColor,
-        nodeLineWidth: nodeLineWidth,
-        linkLineColor: linkLineColor,
-        linkLineWidth: linkLineWidth,
-        valueFormat: valueFormat,
-        valueSuffix: valueSuffix,
-        textFont: textFont,
+        nodePad: trace.node.pad,
+        nodeLineColor: trace.node.line.color,
+        nodeLineWidth: trace.node.line.width,
+        linkLineColor: trace.link.line.color,
+        linkLineWidth: trace.link.line.width,
+        valueFormat: trace.valueformat,
+        valueSuffix: trace.valuesuffix,
+        textFont: trace.textfont,
         translateX: domain.x[0] * layout.width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
         dragParallel: horizontal ? height : width,
         dragPerpendicular: horizontal ? width : height,
-        nodes: nodes,
-        links: links,
-        arrangement: arrangement,
+        arrangement: trace.arrangement,
         sankey: sankey,
+        graph: graph,
         forceLayouts: {},
         interactionState: {
             dragInProgress: false,
@@ -194,20 +164,23 @@ function sankeyModel(layout, d, traceIndex) {
     };
 }
 
-function linkModel(uniqueKeys, d, l) {
+function linkModel(d, l, i) {
     var tc = tinycolor(l.color);
+    if(l.concentrationscale) {
+        tc = tinycolor(l.concentrationscale(l.flow.labelConcentration));
+    }
     var basicKey = l.source.label + '|' + l.target.label;
-    var foundKey = uniqueKeys[basicKey];
-    uniqueKeys[basicKey] = (foundKey || 0) + 1;
-    var key = basicKey + '__' + uniqueKeys[basicKey];
+    var key = basicKey + '__' + i;
 
     // for event data
     l.trace = d.trace;
     l.curveNumber = d.trace.index;
 
     return {
+        circular: d.circular,
         key: key,
         traceId: d.key,
+        pointNumber: l.pointNumber,
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
@@ -216,27 +189,178 @@ function linkModel(uniqueKeys, d, l) {
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
-        interactionState: d.interactionState
+        parent: d,
+        interactionState: d.interactionState,
+        flow: l.flow
     };
 }
 
-function nodeModel(uniqueKeys, d, n) {
+function createCircularClosedPathString(link) {
+    // Using coordinates computed by d3-sankey-circular
+    var pathString = '';
+    var offset = link.width / 2;
+    var coords = link.circularPathData;
+    if(link.circularLinkType === 'top') {
+        // Top path
+        pathString =
+          // start at the left of the target node
+          'M ' +
+          coords.targetX + ' ' + (coords.targetY + offset) + ' ' +
+          'L' +
+          coords.rightInnerExtent + ' ' + (coords.targetY + offset) +
+          'A' +
+          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 1 ' +
+          (coords.rightFullExtent - offset) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
+          'L' +
+          (coords.rightFullExtent - offset) + ' ' + coords.verticalRightInnerExtent +
+          'A' +
+          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 1 ' +
+          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          'L' +
+          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          'A' +
+          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 1 ' +
+          (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent +
+          'L' +
+          (coords.leftFullExtent + offset) + ' ' + (coords.sourceY - coords.leftSmallArcRadius) +
+          'A' +
+          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 1 ' +
+          coords.leftInnerExtent + ' ' + (coords.sourceY + offset) +
+          'L' +
+          coords.sourceX + ' ' + (coords.sourceY + offset) +
+
+          // Walking back
+          'L' +
+          coords.sourceX + ' ' + (coords.sourceY - offset) +
+          'L' +
+          coords.leftInnerExtent + ' ' + (coords.sourceY - offset) +
+          'A' +
+          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftSmallArcRadius - offset) + ' 0 0 0 ' +
+          (coords.leftFullExtent - offset) + ' ' + (coords.sourceY - coords.leftSmallArcRadius) +
+          'L' +
+          (coords.leftFullExtent - offset) + ' ' + coords.verticalLeftInnerExtent +
+          'A' +
+          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 0 ' +
+          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          'L' +
+          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          'A' +
+          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 0 ' +
+          (coords.rightFullExtent + offset) + ' ' + coords.verticalRightInnerExtent +
+          'L' +
+          (coords.rightFullExtent + offset) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
+          'A' +
+          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 0 ' +
+          coords.rightInnerExtent + ' ' + (coords.targetY - offset) +
+          'L' +
+          coords.targetX + ' ' + (coords.targetY - offset) +
+          'Z';
+    } else {
+        // Bottom path
+        pathString =
+          // start at the left of the target node
+          'M ' +
+          coords.targetX + ' ' + (coords.targetY - offset) + ' ' +
+          'L' +
+          coords.rightInnerExtent + ' ' + (coords.targetY - offset) +
+          'A' +
+          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 0 ' +
+          (coords.rightFullExtent - offset) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
+          'L' +
+          (coords.rightFullExtent - offset) + ' ' + coords.verticalRightInnerExtent +
+          'A' +
+          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' +
+          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          'L' +
+          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          'A' +
+          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 0 ' +
+          (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent +
+          'L' +
+          (coords.leftFullExtent + offset) + ' ' + (coords.sourceY + coords.leftSmallArcRadius) +
+          'A' +
+          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 0 ' +
+          coords.leftInnerExtent + ' ' + (coords.sourceY - offset) +
+          'L' +
+          coords.sourceX + ' ' + (coords.sourceY - offset) +
+
+          // Walking back
+          'L' +
+          coords.sourceX + ' ' + (coords.sourceY + offset) +
+          'L' +
+          coords.leftInnerExtent + ' ' + (coords.sourceY + offset) +
+          'A' +
+          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftSmallArcRadius - offset) + ' 0 0 1 ' +
+          (coords.leftFullExtent - offset) + ' ' + (coords.sourceY + coords.leftSmallArcRadius) +
+          'L' +
+          (coords.leftFullExtent - offset) + ' ' + coords.verticalLeftInnerExtent +
+          'A' +
+          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 1 ' +
+          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          'L' +
+          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          'A' +
+          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 1 ' +
+          (coords.rightFullExtent + offset) + ' ' + coords.verticalRightInnerExtent +
+          'L' +
+          (coords.rightFullExtent + offset) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
+          'A' +
+          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' +
+          coords.rightInnerExtent + ' ' + (coords.targetY + offset) +
+          'L' +
+          coords.targetX + ' ' + (coords.targetY + offset) +
+          'Z';
+    }
+    return pathString;
+}
+
+function linkPath() {
+    var curvature = 0.5;
+    function path(d) {
+        if(d.link.circular) {
+            return createCircularClosedPathString(d.link);
+        } else {
+            var x0 = d.link.source.x1;
+            var x1 = d.link.target.x0;
+            var xi = interpolateNumber(x0, x1);
+            var x2 = xi(curvature);
+            var x3 = xi(1 - curvature);
+            var y0a = d.link.y0 - d.link.width / 2;
+            var y0b = d.link.y0 + d.link.width / 2;
+            var y1a = d.link.y1 - d.link.width / 2;
+            var y1b = d.link.y1 + d.link.width / 2;
+            return 'M' + x0 + ',' + y0a +
+                 'C' + x2 + ',' + y0a +
+                 ' ' + x3 + ',' + y1a +
+                 ' ' + x1 + ',' + y1a +
+                 'L' + x1 + ',' + y1b +
+                 'C' + x3 + ',' + y1b +
+                 ' ' + x2 + ',' + y0b +
+                 ' ' + x0 + ',' + y0b +
+                 'Z';
+        }
+    }
+    return path;
+}
+
+function nodeModel(d, n, i) {
     var tc = tinycolor(n.color);
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
+    n.dx = n.x1 - n.x0;
+    n.dy = n.y1 - n.y0;
     var visibleThickness = n.dx;
     var visibleLength = Math.max(0.5, n.dy);
 
     var basicKey = n.label;
-    var foundKey = uniqueKeys[basicKey];
-    uniqueKeys[basicKey] = (foundKey || 0) + 1;
-    var key = basicKey + '__' + uniqueKeys[basicKey];
+    var key = basicKey + '__' + i;
 
     // for event data
     n.trace = d.trace;
     n.curveNumber = d.trace.index;
 
     return {
+        index: n.pointNumber,
         key: key,
         traceId: d.key,
         node: n,
@@ -262,8 +386,9 @@ function nodeModel(uniqueKeys, d, n) {
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
+        graph: d.graph,
         arrangement: d.arrangement,
-        uniqueNodeLabelPathId: [d.guid, d.key, key].join(' '),
+        uniqueNodeLabelPathId: [d.guid, d.key, key].join('_'),
         interactionState: d.interactionState
     };
 }
@@ -273,16 +398,8 @@ function nodeModel(uniqueKeys, d, n) {
 function updateNodePositions(sankeyNode) {
     sankeyNode
         .attr('transform', function(d) {
-            return 'translate(' + d.node.x.toFixed(3) + ', ' + (d.node.y - d.node.dy / 2).toFixed(3) + ')';
+            return 'translate(' + d.node.x0.toFixed(3) + ', ' + (d.node.y0).toFixed(3) + ')';
         });
-}
-
-function linkPath(d) {
-    var nodes = d.sankey.nodes();
-    switchToSankeyFormat(nodes);
-    var result = d.sankey.link()(d.link);
-    switchToForceFormat(nodes);
-    return result;
 }
 
 function updateNodeShapes(sankeyNode) {
@@ -291,15 +408,16 @@ function updateNodeShapes(sankeyNode) {
 
 function updateShapes(sankeyNode, sankeyLink) {
     sankeyNode.call(updateNodeShapes);
-    sankeyLink.attr('d', linkPath);
+    sankeyLink.attr('d', linkPath());
 }
 
 function sizeNode(rect) {
-    rect.attr('width', function(d) {return d.visibleWidth;})
-        .attr('height', function(d) {return d.visibleHeight;});
+    rect
+      .attr('width', function(d) {return d.node.x1 - d.node.x0;})
+      .attr('height', function(d) {return d.visibleHeight;});
 }
 
-function salientEnough(d) {return d.link.dy > 1 || d.linkLineWidth > 0;}
+function salientEnough(d) {return (d.link.width > 1 || d.linkLineWidth > 0);}
 
 function sankeyTransform(d) {
     var offset = 'translate(' + d.translateX + ',' + d.translateY + ')';
@@ -356,25 +474,29 @@ function attachPointerEvents(selection, sankey, eventSet) {
 }
 
 function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
-
     var dragBehavior = d3.behavior.drag()
-
-        .origin(function(d) {return d.node;})
+        .origin(function(d) {
+            return {
+                x: d.node.x0,
+                y: d.node.y0
+            };
+        })
 
         .on('dragstart', function(d) {
             if(d.arrangement === 'fixed') return;
             Lib.raiseToTop(this);
             d.interactionState.dragInProgress = d.node;
+
             saveCurrentDragPosition(d.node);
             if(d.interactionState.hovered) {
                 callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
                 d.interactionState.hovered = false;
             }
             if(d.arrangement === 'snap') {
-                var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
+                var forceKey = d.traceId + '|' + d.key;
                 if(d.forceLayouts[forceKey]) {
                     d.forceLayouts[forceKey].alpha(1);
-                } else { // make a forceLayout iff needed
+                } else { // make a forceLayout if needed
                     attachForce(sankeyNode, forceKey, d);
                 }
                 startForce(sankeyNode, sankeyLink, d, forceKey);
@@ -386,17 +508,22 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             var x = d3.event.x;
             var y = d3.event.y;
             if(d.arrangement === 'snap') {
-                d.node.x = x;
-                d.node.y = y;
+                d.node.x0 = x - d.visibleWidth / 2;
+                d.node.x1 = x + d.visibleWidth / 2;
+                d.node.y0 = y - d.visibleHeight / 2;
+                d.node.y1 = y + d.visibleHeight / 2;
             } else {
                 if(d.arrangement === 'freeform') {
-                    d.node.x = x;
+                    d.node.x0 = x - d.visibleWidth / 2;
+                    d.node.x1 = x + d.visibleWidth / 2;
                 }
-                d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
+                d.node.y0 = Math.max(0, Math.min(d.size - d.visibleHeight, y));
+                d.node.y1 = d.node.y0 + d.visibleHeight;
             }
+
             saveCurrentDragPosition(d.node);
             if(d.arrangement !== 'snap') {
-                d.sankey.relayout();
+                d.sankey.update(d.graph);
                 updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
             }
         })
@@ -411,7 +538,9 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 }
 
 function attachForce(sankeyNode, forceKey, d) {
-    var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
+    // Attach force to nodes in the same column (same x coordinate)
+    switchToForceFormat(d.graph.nodes);
+    var nodes = d.graph.nodes.filter(function(n) {return n.originalX === d.node.originalX;});
     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
         .alphaDecay(0)
         .force('collide', d3Force.forceCollide()
@@ -424,11 +553,17 @@ function attachForce(sankeyNode, forceKey, d) {
 
 function startForce(sankeyNode, sankeyLink, d, forceKey) {
     window.requestAnimationFrame(function faster() {
-        for(var i = 0; i < c.forceTicksPerFrame; i++) {
+        var i;
+        for(i = 0; i < c.forceTicksPerFrame; i++) {
             d.forceLayouts[forceKey].tick();
         }
-        d.sankey.relayout();
+
+        var nodes = d.graph.nodes;
+        switchToSankeyFormat(nodes);
+
+        d.sankey.update(d.graph);
         updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
+
         if(d.forceLayouts[forceKey].alpha() > 0) {
             window.requestAnimationFrame(faster);
         }
@@ -455,13 +590,62 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
     };
 }
 
+// basic data utilities
+
+function persistOriginalPlace(nodes) {
+    var distinctLayerPositions = [];
+    var i;
+    for(i = 0; i < nodes.length; i++) {
+        nodes[i].originalX = (nodes[i].x0 + nodes[i].x1) / 2;
+        nodes[i].originalY = (nodes[i].y0 + nodes[i].y1) / 2;
+        if(distinctLayerPositions.indexOf(nodes[i].originalX) === -1) {
+            distinctLayerPositions.push(nodes[i].originalX);
+        }
+    }
+    distinctLayerPositions.sort(function(a, b) {return a - b;});
+    for(i = 0; i < nodes.length; i++) {
+        nodes[i].originalLayerIndex = distinctLayerPositions.indexOf(nodes[i].originalX);
+        nodes[i].originalLayer = nodes[i].originalLayerIndex / (distinctLayerPositions.length - 1);
+    }
+}
+
+function saveCurrentDragPosition(d) {
+    d.lastDraggedX = d.x0 + d.dx / 2;
+    d.lastDraggedY = d.y0 + d.dy / 2;
+}
+
+function sameLayer(d) {
+    return function(n) {return n.node.originalX === d.node.originalX;};
+}
+
+function switchToForceFormat(nodes) {
+    // force uses x, y as centers
+    for(var i = 0; i < nodes.length; i++) {
+        nodes[i].y = nodes[i].y0 + nodes[i].dy / 2;
+        nodes[i].x = nodes[i].x0 + nodes[i].dx / 2;
+    }
+}
+
+function switchToSankeyFormat(nodes) {
+    // sankey uses x0, x1, y0, y1
+    for(var i = 0; i < nodes.length; i++) {
+        nodes[i].y0 = nodes[i].y - nodes[i].dy / 2;
+        nodes[i].y1 = nodes[i].y0 + nodes[i].dy;
+
+        nodes[i].x0 = nodes[i].x - nodes[i].dx / 2;
+        nodes[i].x1 = nodes[i].x0 + nodes[i].dx;
+    }
+}
+
 // scene graph
-module.exports = function(svg, styledData, layout, callbacks) {
+module.exports = function(gd, svg, calcData, layout, callbacks) {
+
+    var styledData = calcData
+            .filter(function(d) {return unwrap(d).trace.visible;})
+            .map(sankeyModel.bind(null, layout));
+
     var sankey = svg.selectAll('.' + c.cn.sankey)
-        .data(styledData
-                .filter(function(d) {return unwrap(d).trace.visible;})
-                .map(sankeyModel.bind(null, layout)),
-            keyFun);
+        .data(styledData, keyFun);
 
     sankey.exit()
         .remove();
@@ -489,18 +673,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill', 'none');
 
     var sankeyLink = sankeyLinks.selectAll('.' + c.cn.sankeyLink)
-        .data(function(d) {
-            var uniqueKeys = {};
-            return d.sankey.links()
+          .data(function(d) {
+              var links = d.graph.links;
+              return links
                 .filter(function(l) {return l.value;})
-                .map(linkModel.bind(null, uniqueKeys, d));
-        }, keyFun);
+                .map(linkModel.bind(null, d));
+          }, keyFun);
 
-    sankeyLink.enter()
-        .append('path')
-        .classed(c.cn.sankeyLink, true)
-        .attr('d', linkPath)
-        .call(attachPointerEvents, sankey, callbacks.linkEvents);
+    sankeyLink
+          .enter().append('path')
+          .classed(c.cn.sankeyLink, true)
+          .attr('d', linkPath())
+          .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
         .style('stroke', function(d) {
@@ -509,13 +693,19 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke-opacity', function(d) {
             return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
         })
-        .style('stroke-width', function(d) {return salientEnough(d) ? d.linkLineWidth : 1;})
-        .style('fill', function(d) {return d.tinyColorHue;})
-        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+        .style('fill', function(d) {
+            return d.tinyColorHue;
+        })
+        .style('fill-opacity', function(d) {
+            return d.tinyColorAlpha;
+        })
+        .style('stroke-width', function(d) {
+            return salientEnough(d) ? d.linkLineWidth : 1;
+        });
 
     sankeyLink.transition()
-        .ease(c.ease).duration(c.duration)
-        .attr('d', linkPath);
+       .ease(c.ease).duration(c.duration)
+       .attr('d', linkPath());
 
     sankeyLink.exit().transition()
         .ease(c.ease).duration(c.duration)
@@ -540,12 +730,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankeyNode = sankeyNodeSet.selectAll('.' + c.cn.sankeyNode)
         .data(function(d) {
-            var nodes = d.sankey.nodes();
-            var uniqueKeys = {};
+            var nodes = d.graph.nodes;
             persistOriginalPlace(nodes);
             return nodes
                 .filter(function(n) {return n.value;})
-                .map(nodeModel.bind(null, uniqueKeys, d));
+                .map(nodeModel.bind(null, d));
         }, keyFun);
 
     sankeyNode.enter()

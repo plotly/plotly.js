@@ -146,6 +146,7 @@ module.exports = {
 
     marker: boxAttrs.marker,
     text: boxAttrs.text,
+    hovertext: boxAttrs.hovertext,
 
     box: {
         visible: {
@@ -237,6 +238,9 @@ module.exports = {
             'has `side` set to *positive* and the other to *negative*.'
         ].join(' ')
     },
+
+    offsetgroup: boxAttrs.offsetgroup,
+    alignmentgroup: boxAttrs.alignmentgroup,
 
     selected: boxAttrs.selected,
     unselected: boxAttrs.unselected,

@@ -90,7 +90,7 @@ describe('Test scattergeo defaults', function() {
 describe('Test scattergeo calc', function() {
 
     function _calc(opts) {
-        var base = { type: 'scattermapbox' };
+        var base = { type: 'scattergeo' };
         var trace = Lib.extendFlat({}, base, opts);
         var gd = { data: [trace] };
 
@@ -293,6 +293,17 @@ describe('Test scattergeo hover', function() {
 
     it('should use the hovertemplate', function(done) {
         Plotly.restyle(gd, 'hovertemplate', 'tpl %{lat}<extra>x</extra>').then(function() {
+            check([381, 221], ['tpl 10', 'x']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not hide hover label when hovertemplate', function(done) {
+        Plotly.restyle(gd, {
+            name: '',
+            hovertemplate: 'tpl %{lat}<extra>x</extra>'
+        }).then(function() {
             check([381, 221], ['tpl 10', 'x']);
         })
         .catch(failTest)

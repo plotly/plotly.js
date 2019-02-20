@@ -15,8 +15,8 @@ var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var zip3 = require('../../plots/gl3d/zip3');
 
-var findNearestOnAxis = require('../isosurface/fn_find-nearest-on-axis');
-var generateIsoMeshes = require('../isosurface/fn_generate-iso-meshes');
+var findNearestOnAxis = require('../isosurface/convert').findNearestOnAxis;
+var generateIsoMeshes = require('../isosurface/convert').generateIsoMeshes;
 
 function VolumeTrace(scene, mesh, uid) {
     this.scene = scene;

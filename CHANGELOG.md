@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.44.4] -- 2019-02-12
+
+### Fixed
+- Fix `Plotly.react` used with `uirevision` when removing traces [#3527]
+- Fix `scattergl` update calls that change the number of on-graph text elements [#3536]
+- Fix annotations SVG errors on trace-less subplots [#3534]
+- Fix `ohlc` and `candlestick` hover on blank coordinates (bug introduced in 1.43.2) [#3537]
+
+
+## [1.44.3] -- 2019-02-06
+
+### Fixed
+- Fix axis `automargin` push offset which resulted in clipped
+  tick labels in some scenarios [#3510]
+- Fix handling of alpha channel in marker, line and error bar `rgba`
+  coloring in `scatter3d` traces [#3496]
+- Fix subplots with multiple `carpet` traces each with a `scattercarpet`
+  trace on top of them [#3512]
+- Fix MathJax placement in ternary `aaxis` titles [#3513]
+
+
+## [1.44.2] -- 2019-02-04
+
+### Fixed
+- Fix vertical modebars in IE11 [@3491]
+- Fix `hovertemplate` for traces with blank `name` [#3480]
+- Fix 3D grid lines and tick labels colored by rgba color
+  with full transparency [#3494]
+- Fix white highlights rendering problems for `mesh3d` trace on
+  some devices (bug introduced in 1.44.0) [#3483]
+- Fix `fill.color` description for `table` traces [#3481]
+
+
 ## [1.44.1] -- 2019-01-24
 
 ### Fixed

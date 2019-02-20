@@ -159,6 +159,22 @@ describe('Test violin defaults', function() {
         expect(traceOut.scalemode).toBe('width');
         expect(traceOut.scalegroup).toBe('');
     });
+
+    it('should not include alignementgroup/offsetgroup when violinmode is not *group*', function() {
+        var gd = {
+            data: [{type: 'violin', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
+            layout: {violinmode: 'group'}
+        };
+
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
+
+        gd.layout.violinmode = 'overlay';
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+    });
 });
 
 describe('Test violin calc:', function() {
@@ -416,6 +432,22 @@ describe('Test violin hover:', function() {
                 trace.points = 'all';
                 trace.hoveron = 'points';
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
+                trace.hoverinfo = 'text';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        pos: [180, 240],
+        nums: 'look:0.7',
+        name: ''
+    }, {
+        desc: 'only hovertext items on hover',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.points = 'all';
+                trace.hoveron = 'points';
+                trace.hovertext = trace.y.map(function(v) { return 'look:' + v; });
+                trace.text = trace.y.map(function(v) { return 'NOT THIS:' + v; });
                 trace.hoverinfo = 'text';
             });
             fig.layout.hovermode = 'closest';

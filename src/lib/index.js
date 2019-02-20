@@ -994,7 +994,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
     return x1 + x2;
 };
 
-var TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)(:[^}]*)?}/g;
+lib.TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)(:[^}]*)?}/g;
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
 /**
@@ -1014,7 +1014,7 @@ lib.templateString = function(string, obj) {
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-    return string.replace(TEMPLATE_STRING_REGEX, function(dummy, key) {
+    return string.replace(lib.TEMPLATE_STRING_REGEX, function(dummy, key) {
         if(SIMPLE_PROPERTY_REGEX.test(key)) {
             return obj[key] || '';
         }
@@ -1047,7 +1047,7 @@ lib.hovertemplateString = function(string, labels) {
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-    return string.replace(TEMPLATE_STRING_REGEX, function(match, key, format) {
+    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
         var obj, value, i;
         for(i = 2; i < args.length; i++) {
             obj = args[i];

@@ -317,6 +317,10 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
         str += valueOverride;
     } else {
         var curVal = sliderOpts.steps[sliderOpts.active].label;
+        var meta = sliderOpts._gd._fullLayout.meta;
+        if(meta) {
+            curVal = Lib.templateString(curVal, {meta: meta});
+        }
         str += curVal;
     }
 
@@ -364,8 +368,14 @@ function drawLabel(item, data, sliderOpts) {
             });
     });
 
+    var tx = data.step.label;
+    var meta = sliderOpts._gd._fullLayout.meta;
+    if(meta) {
+        tx = Lib.templateString(tx, {meta: meta});
+    }
+
     text.call(Drawing.font, sliderOpts.font)
-        .text(data.step.label)
+        .text(tx)
         .call(svgTextUtils.convertToTspans, sliderOpts._gd);
 
     return text;

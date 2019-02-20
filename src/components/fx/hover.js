@@ -738,6 +738,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
 function createHoverText(hoverData, opts, gd) {
+    var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
     var bgColor = opts.bgColor;
@@ -925,6 +926,10 @@ function createHoverText(hoverData, opts, gd) {
         if(d.nameOverride !== undefined) d.name = d.nameOverride;
 
         if(d.name) {
+            if(fullLayout.meta) {
+                d.name = Lib.templateString(d.name, {meta: fullLayout.meta});
+            }
+
             name = svgTextUtils.plainText(d.name || '', {
                 len: d.nameLength,
                 allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
@@ -940,7 +945,7 @@ function createHoverText(hoverData, opts, gd) {
             text = d[(hovermode === 'x' ? 'y' : 'x') + 'Label'] || '';
         }
         else if(d.xLabel === undefined) {
-            if(d.yLabel !== undefined) text = d.yLabel;
+            if(d.yLabel !== undefined && d.trace.type !== 'scattercarpet') text = d.yLabel;
         }
         else if(d.yLabel === undefined) text = d.xLabel;
         else text = '(' + d.xLabel + ', ' + d.yLabel + ')';
@@ -957,8 +962,9 @@ function createHoverText(hoverData, opts, gd) {
         if(d.extraText !== undefined) text += (text ? '<br>' : '') + d.extraText;
 
         // if 'text' is empty at this point,
+        // and hovertemplate is not defined,
         // put 'name' in main label and don't show secondary label
-        if(text === '') {
+        if(text === '' && !d.hovertemplate) {
             // if 'name' is also empty, remove entire label
             if(name === '') g.remove();
             text = name;
@@ -969,7 +975,12 @@ function createHoverText(hoverData, opts, gd) {
         var hovertemplateLabels = d.hovertemplateLabels || d;
         var eventData = d.eventData[0] || {};
         if(hovertemplate) {
-            text = Lib.hovertemplateString(hovertemplate, hovertemplateLabels, eventData);
+            text = Lib.hovertemplateString(
+                hovertemplate,
+                hovertemplateLabels,
+                eventData,
+                {meta: fullLayout.meta}
+            );
 
             text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {
                 name = extra; // Assign name for secondary text label

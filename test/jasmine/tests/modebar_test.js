@@ -27,12 +27,19 @@ describe('ModeBar', function() {
         return parent;
     }
 
+    function getMockModeBarTree() {
+        var el = document.createElement('div');
+        el.className = 'modebar-container';
+        return el;
+    }
+
     function getMockGraphInfo(xaxes, yaxes) {
         return {
             _fullLayout: {
                 _uid: '6ea6a7',
                 dragmode: 'zoom',
                 _paperdiv: d3.select(getMockContainerTree()),
+                _modebardiv: d3.select(getMockModeBarTree()),
                 _has: Plots._hasPlotType,
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
                 modebar: {
@@ -1349,13 +1356,13 @@ describe('ModeBar', function() {
         it('changes background color (displayModeBar: hover)', function(done) {
             Plotly.plot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
-                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
                 expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
                 expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
             })
             .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
             .then(function() {
-                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
                 expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
                 expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
             })
@@ -1366,13 +1373,13 @@ describe('ModeBar', function() {
         it('changes background color (displayModeBar: true)', function(done) {
             Plotly.plot(gd, [], {modebar: {bgcolor: colors[0]}}, {displayModeBar: true})
             .then(function() {
-                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
                 expect(style.backgroundColor).toBe(colors[0]);
                 expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
             })
             .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
             .then(function() {
-                style = window.getComputedStyle(gd._fullLayout._modeBar.element);
+                style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
                 expect(style.backgroundColor).toBe(colors[1]);
                 expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
             })

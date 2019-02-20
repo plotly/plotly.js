@@ -9,8 +9,8 @@
 'use strict';
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
-var opacityscaleAttrs = require('../../components/opacityscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var meshAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -225,12 +225,16 @@ var attrs = module.exports = overrideAll(extendFlat({
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
-    }
+    },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: 'Same as `text`.'
+    },
+    hovertemplate: hovertemplateAttrs()
 },
-
-opacityscaleAttrs('', {
-    editTypeOverride: 'calc'
-}),
 
 colorscaleAttrs('', {
     colorAttr: '`value`',
@@ -248,6 +252,9 @@ colorscaleAttrs('', {
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }), 'calc', 'nested');
+
+// required defaults to speed up surface normal calculations
+attrs.flatshading.dflt = true; attrs.lighting.facenormalsepsilon.dflt = 0;
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;

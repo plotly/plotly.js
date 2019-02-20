@@ -1,0 +1,30 @@
+{
+  "data":[
+    {"x": [0,1,1,0,0,1,1,2,2,3,3,2,2,3], "y": [0,0,1,1,3,3,2,2,3,3,1,1,0,0]},
+    {"x": [0,1,2,3], "y": [1,2,4,8], "xaxis": "x2", "yaxis":"y2"}
+  ],
+  "layout":{
+    "width": 500,
+    "height": 500,
+    "title": {"text": "Bottom subplot has scaleanchor constrained axes<br>Top subplot has matching axes"},
+    "xaxis": {
+        "constrain": "range"
+    },
+    "yaxis": {
+        "scaleanchor": "x",
+        "constrain": "range",
+        "domain": [0, 0.45],
+        "title": {"text": "1:1<br>x|y scale constrain range"}
+    },
+    "xaxis2": {
+        "anchor": "y2"
+    },
+    "yaxis2": {
+        "anchor": "x2",
+        "matches": "x2",
+        "domain": [0.55, 1],
+        "title": {"text": "matching x|y"}
+    },
+    "showlegend": false
+  }
+}
