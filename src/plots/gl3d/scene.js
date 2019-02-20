@@ -9,7 +9,8 @@
 
 'use strict';
 
-var createPlot = require('gl-plot3d');
+var createCamera = require('gl-plot3d').createCamera;
+var createPlot = require('gl-plot3d').createScene;
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
 
@@ -22,7 +23,6 @@ var Fx = require('../../components/fx');
 var str2RGBAarray = require('../../lib/str2rgbarray');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
-var createCamera = require('./camera');
 var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
@@ -192,8 +192,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function initializeGLPlot(scene, canvas, gl) {
-    var gd = scene.graphDiv;
+function tryCreatePlot(scene, camera, canvas, gl) {
 
     var glplotOptions = {
         canvas: canvas,
@@ -204,7 +203,8 @@ function initializeGLPlot(scene, canvas, gl) {
         pickRadius: 10,
         snapToData: true,
         autoScale: true,
-        autoBounds: false
+        autoBounds: false,
+        camera: camera
     };
 
     // for static plots, we reuse the WebGL context
@@ -231,20 +231,30 @@ function initializeGLPlot(scene, canvas, gl) {
         scene.glplot = createPlot(glplotOptions);
     }
     catch(e) {
-        /*
-        * createPlot will throw when webgl is not enabled in the client.
-        * Lets return an instance of the module with all functions noop'd.
-        * The destroy method - which will remove the container from the DOM
-        * is overridden with a function that removes the container only.
-        */
-        return showNoWebGlMsg(scene);
+        return false;
     }
+
+    return true;
+}
+
+function initializeGLPlot(scene, camera, canvas, gl) {
+
+    var success = tryCreatePlot(scene, camera, canvas, gl);
+    /*
+    * createPlot will throw when webgl is not enabled in the client.
+    * Lets return an instance of the module with all functions noop'd.
+    * The destroy method - which will remove the container from the DOM
+    * is overridden with a function that removes the container only.
+    */
+    if(!success) return showNoWebGlMsg(scene);
+
+    var gd = scene.graphDiv;
 
     var relayoutCallback = function(scene) {
         if(scene.fullSceneLayout.dragmode === false) return;
 
         var update = {};
-        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera, scene.camera._ortho);
         scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
@@ -270,17 +280,7 @@ function initializeGLPlot(scene, canvas, gl) {
         }, false);
     }
 
-    if(!scene.camera) {
-        var cameraData = scene.fullSceneLayout.camera;
-        scene.camera = createCamera(scene.container, {
-            center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
-            eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
-            up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-            zoomMin: 0.1,
-            zoomMax: 100,
-            mode: 'orbit'
-        });
-    }
+    if(!scene.camera) scene.initializeGLCamera();
 
     scene.glplot.camera = scene.camera;
 
@@ -350,15 +350,33 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    if(!initializeGLPlot(this)) return; // todo check the necessity for this line
+    var camera = fullLayout.scene.camera;
+    initializeGLPlot(this, camera);
 }
 
 var proto = Scene.prototype;
+
+proto.initializeGLCamera = function() {
+
+    var cameraData = this.fullSceneLayout.camera;
+    var isOrtho = (cameraData.projection.type === 'orthographic');
+
+    this.camera = createCamera(this.container, {
+        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+        eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+        up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+        _ortho: isOrtho,
+        zoomMin: 0.01,
+        zoomMax: 100,
+        mode: 'orbit'
+    });
+};
 
 proto.recoverContext = function() {
     var scene = this;
     var gl = this.glplot.gl;
     var canvas = this.glplot.canvas;
+    var camera = this.glplot.camera;
     this.glplot.dispose();
 
     function tryRecover() {
@@ -366,7 +384,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, canvas, gl)) {
+        if(!initializeGLPlot(scene, camera, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
@@ -737,23 +755,45 @@ function getOrbitCamera(camera) {
 
 // getLayoutCamera :: orbit_camera_coords -> plotly_coords
 // inverse of getOrbitCamera
-function getLayoutCamera(camera) {
+function getLayoutCamera(camera, isOrtho) {
     return {
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
         center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
-        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]}
+        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]},
+        projection: {type: (isOrtho === true) ? 'orthographic' : 'perspective'}
     };
 }
 
 // get camera position in plotly coords from 'orbit-camera' coords
 proto.getCamera = function getCamera() {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-    return getLayoutCamera(this.glplot.camera);
+    return getLayoutCamera(this.glplot.camera, this.glplot.camera._ortho);
 };
 
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera(cameraData) {
     this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
+
+    var newOrtho = (cameraData.projection.type === 'orthographic');
+    var oldOrtho = this.glplot.camera._ortho;
+
+    if(newOrtho !== oldOrtho) {
+        this.glplot.redraw();
+
+        var RGBA = this.glplot.clearColor;
+        this.glplot.gl.clearColor(
+            RGBA[0], RGBA[1], RGBA[2], RGBA[3]
+        );
+        this.glplot.gl.clear(
+            this.glplot.gl.DEPTH_BUFFER_BIT |
+            this.glplot.gl.COLOR_BUFFER_BIT
+        );
+
+        this.glplot.dispose();
+
+        initializeGLPlot(this, cameraData);
+        this.glplot.camera._ortho = newOrtho;
+    }
 };
 
 // save camera to user layout (i.e. gd.layout)
@@ -780,6 +820,13 @@ proto.saveCamera = function saveCamera(layout) {
                     break;
                 }
             }
+        }
+
+        if(!cameraDataLastSave.projection || (
+            cameraData.projection &&
+            cameraData.projection.type !== cameraDataLastSave.projection.type)) {
+
+            hasChanged = true;
         }
     }
 

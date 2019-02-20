@@ -600,7 +600,10 @@ exports.doCamera = function(gd) {
         var sceneLayout = fullLayout[sceneIds[i]];
         var scene = sceneLayout._scene;
 
-        scene.setCamera(sceneLayout.camera);
+        var cameraData = sceneLayout.camera;
+        var isOrtho = !!(cameraData && cameraData.projection && cameraData.projection.type === 'orthographic');
+
+        scene.setCamera(cameraData, isOrtho);
     }
 };
 

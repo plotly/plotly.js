@@ -582,6 +582,105 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
+    it('@gl should set the camera projection type to perspective if the camera.projection.type is not set', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === false).toBe(true);
+        })
+        .then(done);
+    });
+
+    it('@gl should set the camera projection type to orthographic if the camera.projection.type is set to orthographic', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        projection: {
+                            type: 'orthographic'
+                        }
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === true).toBe(true);
+        })
+        .then(done);
+    });
+
+    it('@gl should enable orthographic & perspective projections using relayout', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [2, 3, 1],
+                z: [3, 1, 2]
+            }],
+            layout: {
+                scene: {
+                    camera: {
+                        projection: {
+                            type: 'perspective'
+                        }
+                    }
+                }
+            }
+        })
+        .then(delay(20))
+        .then(function() {
+            return Plotly.relayout(gd, 'scene.camera.projection.type', 'orthographic');
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === true).toBe(true);
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'scene.camera.eye.z', 2);
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === true).toBe(true);
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'scene.camera.projection.type', 'perspective');
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === false).toBe(true);
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'scene.camera.eye.z', 3);
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
+            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === false).toBe(true);
+        })
+        .then(done);
+    });
+
     it('@gl should be able to reversibly change trace type', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
@@ -1114,7 +1213,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(done);
     });
 
-    it('@gl should update the scene camera', function(done) {
+    it('@gl should update the scene camera - perspective case', function(done) {
         var sceneLayout, sceneLayout2, sceneTarget, sceneTarget2, relayoutCallback;
 
         var mock = {
@@ -1147,6 +1246,114 @@ describe('Test gl3d drag and wheel interactions', function() {
                 .toEqual({x: 0.1, y: 0.1, z: 1});
             expect(sceneLayout2.camera.eye)
                 .toEqual({x: 2.5, y: 2.5, z: 2.5});
+            expect(sceneLayout.camera.projection)
+                .toEqual({type: 'perspective'});
+            expect(sceneLayout2.camera.projection)
+                .toEqual({type: 'perspective'});
+
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            _assertAndReset(1);
+            return scroll(sceneTarget2);
+        })
+        .then(function() {
+            _assertAndReset(1);
+            return drag(sceneTarget2, [0, 0], [100, 100]);
+        })
+        .then(function() {
+            _assertAndReset(1);
+            return drag(sceneTarget, [0, 0], [100, 100]);
+        })
+        .then(function() {
+            _assertAndReset(1);
+            return Plotly.relayout(gd, {'scene.dragmode': false, 'scene2.dragmode': false});
+        })
+        .then(function() {
+            _assertAndReset(1);
+            return drag(sceneTarget, [0, 0], [100, 100]);
+        })
+        .then(function() {
+            return drag(sceneTarget2, [0, 0], [100, 100]);
+        })
+        .then(function() {
+            _assertAndReset(0);
+
+            return Plotly.relayout(gd, {'scene.dragmode': 'orbit', 'scene2.dragmode': 'turntable'});
+        })
+        .then(function() {
+            expect(relayoutCallback).toHaveBeenCalledTimes(1);
+            relayoutCallback.calls.reset();
+
+            return drag(sceneTarget, [0, 0], [100, 100]);
+        })
+        .then(function() {
+            return drag(sceneTarget2, [0, 0], [100, 100]);
+        })
+        .then(function() {
+            _assertAndReset(2);
+            return Plotly.plot(gd, [], {}, {scrollZoom: false});
+        })
+        .then(function() {
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            return scroll(sceneTarget2);
+        })
+        .then(function() {
+            _assertAndReset(0);
+            return Plotly.plot(gd, [], {}, {scrollZoom: 'gl3d'});
+        })
+        .then(function() {
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            return scroll(sceneTarget2);
+        })
+        .then(function() {
+            _assertAndReset(2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should update the scene camera - orthographic case', function(done) {
+        var sceneLayout, sceneLayout2, sceneTarget, sceneTarget2, relayoutCallback;
+
+        var mock = {
+            data: [
+                { type: 'scatter3d', x: [1, 2, 3], y: [2, 3, 1], z: [3, 1, 2] },
+                { type: 'surface', scene: 'scene2', x: [1, 2], y: [2, 1], z: [[1, 2], [2, 1]] }
+            ],
+            layout: {
+                scene: { camera: { projection: {type: 'orthographic'}, eye: { x: 0.1, y: 0.1, z: 1 }}},
+                scene2: { camera: { projection: {type: 'orthographic'}, eye: { x: 2.5, y: 2.5, z: 2.5 }}}
+            }
+        };
+
+        function _assertAndReset(cnt) {
+            expect(relayoutCallback).toHaveBeenCalledTimes(cnt);
+            relayoutCallback.calls.reset();
+        }
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            relayoutCallback = jasmine.createSpy('relayoutCallback');
+            gd.on('plotly_relayout', relayoutCallback);
+
+            sceneLayout = gd._fullLayout.scene;
+            sceneLayout2 = gd._fullLayout.scene2;
+            sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas');
+            sceneTarget2 = gd.querySelector('.svg-container .gl-container #scene2 canvas');
+
+            expect(sceneLayout.camera.eye)
+                .toEqual({x: 0.1, y: 0.1, z: 1});
+            expect(sceneLayout2.camera.eye)
+                .toEqual({x: 2.5, y: 2.5, z: 2.5});
+            expect(sceneLayout.camera.projection)
+                .toEqual({type: 'orthographic'});
+            expect(sceneLayout2.camera.projection)
+                .toEqual({type: 'orthographic'});
 
             return scroll(sceneTarget);
         })
