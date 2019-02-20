@@ -93,7 +93,7 @@ else {
  *
  */
 function untestableFilter(mockName) {
-    var cond = mockName.indexOf('gl3d_volume' !== -1); /* &&
+    var cond = mockName.indexOf('gl3d_volume' === -1); /* &&
     !(
         mockName === 'font-wishlist' ||
         mockName.indexOf('gl2d_') !== -1 ||
