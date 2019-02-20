@@ -121,6 +121,15 @@ var attrs = module.exports = overrideAll({
                 ].join(' ')
             }
         },
+        align: {
+            valType: 'enumerated',
+            values: ['justify', 'left', 'right', 'center'],
+            dflt: 'justify',
+            role: 'calc',
+            description: [
+                'Sets the alignment method used to position the nodes along the horizontal axis.'
+            ].join(' ')
+        },
         pad: {
             valType: 'number',
             arrayOk: false,
