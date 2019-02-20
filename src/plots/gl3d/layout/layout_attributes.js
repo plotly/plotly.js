@@ -78,14 +78,14 @@ module.exports = {
                 role: 'info',
                 values: ['perspective', 'orthographic'],
                 dflt: 'perspective',
-                editType: 'plot',
+                editType: 'calc',
                 description: [
                     'Sets the projection type. The projection type could be',
                     'either *perspective* or *orthographic*. The default is',
                     '*perspective*.'
                 ].join(' ')
             },
-            editType: 'plot'
+            editType: 'calc'
         },
         editType: 'camera'
     },

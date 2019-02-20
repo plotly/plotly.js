@@ -248,7 +248,6 @@ function initializeGLPlot(scene, camera, canvas, gl) {
     */
     if(!success) return showNoWebGlMsg(scene);
 
-
     var gd = scene.graphDiv;
 
     var relayoutCallback = function(scene) {
@@ -779,11 +778,16 @@ proto.setCamera = function setCamera(cameraData) {
     var oldOrtho = this.glplot.camera._ortho;
 
     if(newOrtho !== oldOrtho) {
+        var RGBA = this.glplot.clearColor;
+        this.glplot.gl.clearColor(
+            RGBA[0], RGBA[1], RGBA[2], RGBA[3]
+        );
+        this.glplot.gl.clear(
+            this.glplot.gl.DEPTH_BUFFER_BIT |
+            this.glplot.gl.COLOR_BUFFER_BIT
+        );
 
         this.glplot.dispose();
-        this.glplot = null;
-
-        // Need to clear gl-container here
 
         initializeGLPlot(this, cameraData);
         this.glplot.camera._ortho = newOrtho;
