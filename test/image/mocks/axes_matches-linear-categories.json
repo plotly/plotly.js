@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "y": [ "a", "b" ],
+      "x": [ 1, 2 ],
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "y": [ "a", "b" ],
+      "x": [ 1, 2 ],
+      "xaxis": "x2",
+      "yaxis": "y"
+    },
+    {
+      "x": [ "a", "b" ],
+      "y": [ 1, 2 ],
+      "xaxis": "x3",
+      "yaxis": "y2"
+    },
+    {
+      "x": [ "a", "b" ],
+      "y": [ 1, 2 ],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "xaxis": {
+      "title": {
+        "text": "matches ->"
+      },
+      "domain": [ 0, 0.5 ]
+    },
+    "xaxis2": {
+      "title": {
+        "text": "matches <-"
+      },
+      "domain": [ 0.5, 1 ],
+      "matches": "x"
+    },
+    "xaxis3": {
+      "anchor": "y2"
+    },
+    "yaxis": {
+      "domain": [ 0, 0.4 ]
+    },
+    "yaxis2": {
+      "title": {
+        "text": "matches<br>->"
+      },
+      "anchor": "x3",
+      "domain": [ 0.5, 0.75 ]
+    },
+    "yaxis3": {
+      "anchor": "x3",
+      "title": {
+        "text": "matches<br><-"
+      },
+      "domain": [ 0.75, 1 ],
+      "matches": "y2"
+    }
+  }
+}

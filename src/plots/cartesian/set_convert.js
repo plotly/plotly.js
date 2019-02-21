@@ -575,13 +575,21 @@ module.exports = function setConvert(ax, fullLayout) {
 
     // should skip if not category nor multicategory
     ax.clearCalc = function() {
+        var emptyCategories = function() {
+            ax._categories = [];
+            ax._categoriesMap = {};
+        };
+
         var matchGroups = fullLayout._axisMatchGroups;
 
         if(matchGroups && matchGroups.length) {
+            var found = false;
+
             for(var i = 0; i < matchGroups.length; i++) {
                 var group = matchGroups[i];
 
                 if(group[axId]) {
+                    found = true;
                     var categories = null;
                     var categoriesMap = null;
 
@@ -598,14 +606,14 @@ module.exports = function setConvert(ax, fullLayout) {
                         ax._categories = categories;
                         ax._categoriesMap = categoriesMap;
                     } else {
-                        ax._categories = [];
-                        ax._categoriesMap = {};
+                        emptyCategories();
                     }
+                    break;
                 }
             }
+            if(!found) emptyCategories();
         } else {
-            ax._categories = [];
-            ax._categoriesMap = {};
+            emptyCategories();
         }
 
         if(ax._initialCategories) {
