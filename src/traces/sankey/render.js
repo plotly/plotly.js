@@ -477,8 +477,8 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
     var dragBehavior = d3.behavior.drag()
         .origin(function(d) {
             return {
-                x: d.node.x0,
-                y: d.node.y0
+                x: d.node.x0 + d.visibleWidth / 2,
+                y: d.node.y0 + d.visibleHeight / 2
             };
         })
 
