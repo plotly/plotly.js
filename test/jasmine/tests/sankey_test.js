@@ -303,6 +303,30 @@ describe('sankey tests', function() {
             expect(groups.length).toBe(2);
             expect(calcData[0].circular).toBe(false);
         });
+
+        it('emits a warning if a node is part of more than one group', function() {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+
+            var calcData = _calc(Lib.extendDeep({}, base, {
+                node: {
+                    label: ['a', 'b', 'c', 'd', 'e'],
+                    groups: [[0, 1], [1, 2, 3]]
+                },
+                link: {
+                    value: [1, 1, 1, 1],
+                    source: [0, 1, 2, 3],
+                    target: [1, 2, 4, 4]
+                }
+            }));
+
+            expect(warnings.length).toBe(1);
+
+            // Expect node '1' to be in the first group
+            expect(calcData[0]._groupLookup[1]).toBe(5);
+        });
     });
 
     describe('lifecycle methods', function() {

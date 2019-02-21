@@ -51,7 +51,11 @@ function convertToD3Sankey(trace) {
         for(j = 0; j < group.length; j++) {
             var nodeIndex = group[j];
             var groupIndex = nodeCount + i;
-            groupLookup[nodeIndex] = groupIndex;
+            if(groupLookup.hasOwnProperty(nodeIndex)) {
+                Lib.warn('Node ' + nodeIndex + ' is already part of a group.');
+            } else {
+                groupLookup[nodeIndex] = groupIndex;
+            }
         }
     }
 

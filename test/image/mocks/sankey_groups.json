@@ -8,8 +8,8 @@
                   "color": "white",
                   "width": 2
                 },
-                "color": ["black", "black", "black", "black", "black", "orange" ],
-                "label": ["process0", "process1", "process2", "process3", "process4", "Group A"],
+                "color": ["black", "black", "black", "black", "black", "orange", "orange" ],
+                "label": ["process0", "process1", "process2", "process3", "process4", "Group A", "Group B"],
                 "groups": [[2, 3, 4]]
             },
             "link": {
