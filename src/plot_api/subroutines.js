@@ -601,9 +601,7 @@ exports.doCamera = function(gd) {
         var scene = sceneLayout._scene;
 
         var cameraData = sceneLayout.camera;
-        var isOrtho = !!(cameraData && cameraData.projection && cameraData.projection.type === 'orthographic');
-
-        scene.setCamera(cameraData, isOrtho);
+        scene.setCamera(cameraData);
     }
 };
 

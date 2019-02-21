@@ -384,7 +384,7 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@gl should display correct hover labels (mesh3d case)', function(done) {
+    it('@noCI @gl should display correct hover labels (mesh3d case)', function(done) {
         var x = [1, 1, 2, 3, 4, 2];
         var y = [2, 1, 3, 4, 5, 3];
         var z = [3, 7, 4, 5, 3.5, 2];
