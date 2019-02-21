@@ -575,7 +575,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
     // should skip if not category nor multicategory
     ax.clearCalc = function() {
-        var init = function() {
+        var emptyCategories = function() {
             ax._categories = [];
             ax._categoriesMap = {};
         };
@@ -606,14 +606,14 @@ module.exports = function setConvert(ax, fullLayout) {
                         ax._categories = categories;
                         ax._categoriesMap = categoriesMap;
                     } else {
-                        init();
+                        emptyCategories();
                     }
+                    break;
                 }
-
-                if(!found) init();
             }
+            if(!found) emptyCategories();
         } else {
-            init();
+            emptyCategories();
         }
 
         if(ax._initialCategories) {
