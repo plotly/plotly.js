@@ -14,6 +14,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var getNodeCoords = require('../assets/get_node_coords');
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var defaultColors = require('@src/components/color/attributes').defaults;
@@ -905,6 +906,57 @@ describe('sankey tests', function() {
         });
     });
 
+    describe('Test drag interactions:', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _drag(fromX, fromY, dX, dY, delay) {
+            var toX = fromX + dX;
+            var toY = fromY + dY;
+
+            return new Promise(function(resolve) {
+                mouseEvent('mousemove', fromX, fromY);
+                mouseEvent('mousedown', fromX, fromY);
+                mouseEvent('mousemove', toX, toY);
+
+                setTimeout(function() {
+                    mouseEvent('mouseup', toX, toY);
+                    resolve();
+                }, delay);
+            });
+        }
+
+        it('should change the position of a node', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+            var nodes;
+            var node;
+            var position;
+            var nodePos = [404, 302];
+            var move = [0, -100];
+
+            Plotly.plot(gd, fig)
+              .then(function() {
+                  nodes = document.getElementsByClassName('sankey-node');
+                  node = nodes.item(4); // Selecting node with label 'Solid'
+                  position = getNodeCoords(node);
+                  return _drag(nodePos[0], nodePos[1], move[0], move[1], 500);
+              })
+              .then(function() {
+                  nodes = document.getElementsByClassName('sankey-node');
+                  node = nodes.item(nodes.length - 1); // Dragged node is now the last one
+                  var newPosition = getNodeCoords(node);
+                  expect(newPosition.x).toBeCloseTo(position.x + move[0]);
+                  expect(newPosition.y).toBeCloseTo(position.y + move[1]);
+              })
+              .catch(failTest)
+              .then(done);
+        });
+    });
     it('emits a warning if node.pad is too large', function(done) {
         var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
