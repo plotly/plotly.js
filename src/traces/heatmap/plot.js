@@ -25,7 +25,8 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-
+        var sel = d[0].node3 = d3.select(this);
+        
         var z = cd0.z;
         var x = cd0.x;
         var y = cd0.y;
@@ -34,6 +35,46 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var isContour = Registry.traceIs(trace, 'contour');
         var zsmooth = isContour ? 'best' : trace.zsmooth;
 
+         sel.selectAll('g.point')
+                .data(Lib.identity)
+              .enter().append('g').classed('point', true)
+                .each(function(di, i) {
+                    // now display the bar
+                    // clipped xf/yf (2nd arg true): non-positive
+                    // log values go off-screen by plotwidth
+                    // so you see them continue if you drag the plot
+                    var p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset),
+                        p1 = p0 + di.w,
+                        s0 = di.b,
+                        s1 = s0 + di.s;
+
+                    var x0, x1, y0, y1;
+                    if(trace.orientation === 'h') {
+                        y0 = ya.c2p(p0, true);
+                        y1 = ya.c2p(p1, true);
+                        x0 = xa.c2p(s0, true);
+                        x1 = xa.c2p(s1, true);
+
+                        // for selections
+                        di.ct = [x1, (y0 + y1) / 2];
+                    }
+                    else {
+                        x0 = xa.c2p(p0, true);
+                        x1 = xa.c2p(p1, true);
+                        y0 = ya.c2p(s0, true);
+                        y1 = ya.c2p(s1, true);
+
+                        // for selections
+                        di.ct = [(x0 + x1) / 2, y1];
+                    }
+
+                    if(!isNumeric(x0) || !isNumeric(x1) ||
+                            !isNumeric(y0) || !isNumeric(y1) ||
+                            x0 === x1 || y0 === y1) {
+                        d3.select(this).remove();
+                        return;
+                    }
+        
         // get z dims
         var m = z.length;
         var n = Lib.maxRowLength(z);
