@@ -18,7 +18,7 @@ Heatmap.plot = require('./plot');
 Heatmap.colorbar = require('./colorbar');
 Heatmap.style = require('./style');
 Heatmap.hoverPoints = require('./hover');
-Heatmap.selectPoints = require("./select');
+Heatmap.selectPoints = require('./select');
 
 Heatmap.moduleType = 'trace';
 Heatmap.name = 'heatmap';
