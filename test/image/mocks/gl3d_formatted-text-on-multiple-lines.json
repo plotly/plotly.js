@@ -12,7 +12,7 @@
   ],
   "layout": {
     "title":"Now texts could be displayed in 3D on multiple lines.",
-    "width": 1200,
+    "width": 900,
     "height": 900,
     "scene":{
       "xaxis":{
