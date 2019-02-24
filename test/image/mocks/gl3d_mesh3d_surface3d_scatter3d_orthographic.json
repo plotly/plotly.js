@@ -94,8 +94,8 @@
     }
   ],
   "layout": {
-    "height": 758,
-    "width": 1310,
+    "height": 750,
+    "width": 1000,
     "title": "X-axis using autorange:'reversed',Y-axis using range:[30,-5] & Z-axis using range:'reversed' & type:log",
     "scene": {
       "xaxis": {
