@@ -678,6 +678,11 @@ function switchToSankeyFormat(nodes) {
 
 // scene graph
 module.exports = function(gd, svg, calcData, layout, callbacks) {
+    // To prevent animation on first render
+    var firstRender = false;
+    Lib.ensureSingle(gd._fullLayout._infolayer, 'g', 'first-render', function() {
+        firstRender = true;
+    });
 
     var styledData = calcData
             .filter(function(d) {return unwrap(d).trace.visible;})
@@ -743,7 +748,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .attr('d', linkPath());
 
     sankeyLink
-        .style('opacity', function() { return gd._context.staticPlot ? 1 : 0;})
+        .style('opacity', function() { return (gd._context.staticPlot || firstRender) ? 1 : 0;})
         .transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 1);
@@ -782,7 +787,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .append('g')
         .classed(c.cn.sankeyNode, true)
         .call(updateNodePositions)
-        .style('opacity', function(n) { return (gd._context.staticPlot && !n.partOfGroup) ? 1 : 0;});
+        .style('opacity', function(n) { return ((gd._context.staticPlot || firstRender) && !n.partOfGroup) ? 1 : 0;});
 
     sankeyNode
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
