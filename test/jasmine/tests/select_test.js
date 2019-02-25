@@ -1226,6 +1226,28 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
+    it('@flaky should have their selection outlines cleared during *axrange* relayout calls', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, mock);
+        fig.layout.dragmode = 'select';
+
+        function _drag() {
+            resetEvents(gd);
+            drag(selectPath);
+            return selectedPromise;
+        }
+
+        Plotly.plot(gd, fig)
+        .then(_drag)
+        .then(function() { assertSelectionNodes(0, 2, 'after drag 1'); })
+        .then(function() { return Plotly.relayout(gd, 'xaxis.range', [-5, 5]); })
+        .then(function() { assertSelectionNodes(0, 0, 'after axrange relayout'); })
+        .then(_drag)
+        .then(function() { assertSelectionNodes(0, 2, 'after drag 2'); })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@flaky should select the right data with the corresponding select direction', function(done) {
 
         var gd = createGraphDiv();
