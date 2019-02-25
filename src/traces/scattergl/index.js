@@ -634,7 +634,8 @@ function plot(gd, subplot, cdata) {
 
         if(scene.glText) {
             cdata.forEach(function(cdscatter) {
-                if(cdscatter && cdscatter[0] && cdscatter[0].trace) {
+                var trace = ((cdscatter || [])[0] || {}).trace || {};
+                if(subTypes.hasText(trace)) {
                     styleTextSelection(cdscatter);
                 }
             });

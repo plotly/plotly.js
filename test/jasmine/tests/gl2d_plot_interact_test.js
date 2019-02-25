@@ -932,8 +932,9 @@ describe('Test gl2d plots', function() {
             var trace = {
                 x: [2],
                 y: [1],
+                text: ['a'],
                 type: 'scattergl',
-                mode: 'markers',
+                mode: 'markers+text',
                 marker: {color: 'red'}
             };
 
@@ -947,6 +948,8 @@ describe('Test gl2d plots', function() {
             expect(scene.unselectBatch).toEqual([[]]);
             expect(scene.markerOptions.length).toBe(2);
             expect(scene.markerOptions[1].color).toEqual(new Uint8Array([255, 0, 0, 255]));
+            expect(scene.textOptions.length).toBe(2);
+            expect(scene.textOptions[1].color).toEqual('#444');
             expect(scene.scatter2d.draw).toHaveBeenCalled();
 
             return Plotly.restyle(gd, 'selectedpoints', null);
