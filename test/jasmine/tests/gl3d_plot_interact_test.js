@@ -359,7 +359,7 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should emit correct event data on click (scatter3d case)', function(done) {
+    it('@gl should emit correct event data on click (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         // N.B. gl3d click events are 'mouseover' events
