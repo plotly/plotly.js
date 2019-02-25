@@ -95,7 +95,7 @@ var attrs = module.exports = overrideAll({
             freeLength: true,
             dflt: [],
             items: {valType: 'number', editType: 'calc'},
-            role: 'calc',
+            role: 'info',
             description: [
                 'Groups of nodes.',
                 'Each group is defined by an array with the indices of the nodes it contains.',
