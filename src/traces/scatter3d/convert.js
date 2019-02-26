@@ -343,7 +343,7 @@ proto.update = function(data) {
     this.dataPoints = options.position;
 
     lineOptions = {
-        gl: gl,
+        gl: this.scene.glplot.gl,
         position: options.position,
         color: options.lineColor,
         lineWidth: options.lineWidth || 1,
@@ -371,7 +371,7 @@ proto.update = function(data) {
     if(data.marker && data.marker.opacity) scatterOpacity *= data.marker.opacity;
 
     scatterOptions = {
-        gl: gl,
+        gl: this.scene.glplot.gl,
         position: options.position,
         color: options.scatterColor,
         size: options.scatterSize,
@@ -400,7 +400,7 @@ proto.update = function(data) {
     }
 
     textOptions = {
-        gl: gl,
+        gl: this.scene.glplot.gl,
         position: options.position,
         glyph: options.text,
         color: options.textColor,
@@ -431,7 +431,7 @@ proto.update = function(data) {
     }
 
     errorOptions = {
-        gl: gl,
+        gl: this.scene.glplot.gl,
         position: options.position,
         color: options.errorColor,
         error: options.errorBounds,
