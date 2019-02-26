@@ -387,7 +387,7 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should display correct hover labels (mesh3d case)', function(done) {
+    it('@gl should display correct hover labels (mesh3d case)', function(done) {
         var x = [1, 1, 2, 3, 4, 2];
         var y = [2, 1, 3, 4, 5, 3];
         var z = [3, 7, 4, 5, 3.5, 2];
@@ -417,19 +417,19 @@ describe('Test gl3d plots', function() {
         .then(delay(20))
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 3', 'y: 4', 'z: 5', 'ts: 3\nhz: 4\nftt:5');
+            assertHoverText('x: 4', 'y: 5', 'z: 3.5', 'ts: 4\nhz: 5\nftt:3.5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'x+y');
         })
         .then(function() {
-            assertHoverText('(3, 4)');
+            assertHoverText('(4, 5)');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
         .then(function() {
-            assertHoverText('ts: 3\nhz: 4\nftt:5');
+            assertHoverText('ts: 4\nhz: 5\nftt:3.5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'text', 'yo!');
@@ -443,13 +443,13 @@ describe('Test gl3d plots', function() {
             ]);
         })
         .then(function() {
-            assertHoverText(null, null, null, 'ts: 3\nhz: 4\nftt:5 !!');
+            assertHoverText(null, null, null, 'ts: 4\nhz: 5\nftt:3.5 !!');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hovertemplate', '%{x}-%{y}-%{z}<extra></extra>');
         })
         .then(function() {
-            assertHoverText(null, null, null, '3-4-5');
+            assertHoverText(null, null, null, '4-5-3.5');
         })
         .catch(failTest)
         .then(done);
