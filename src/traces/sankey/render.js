@@ -45,10 +45,7 @@ function sankeyModel(layout, d, traceIndex) {
     if(circular) {
         sankey = d3SankeyCircular
             .sankeyCircular()
-            .circularLinkGap(0)
-            .nodeId(function(d) {
-                return d.pointNumber;
-            });
+            .circularLinkGap(0);
     } else {
         sankey = d3Sankey.sankey();
     }
@@ -58,6 +55,9 @@ function sankeyModel(layout, d, traceIndex) {
       .size(horizontal ? [width, height] : [height, width])
       .nodeWidth(nodeThickness)
       .nodePadding(nodePad)
+      .nodeId(function(d) {
+          return d.pointNumber;
+      })
       .nodes(nodes)
       .links(links);
 
@@ -65,6 +65,36 @@ function sankeyModel(layout, d, traceIndex) {
 
     if(sankey.nodePadding() < nodePad) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
+    }
+
+    // Create transient nodes for animations
+    for(var nodePointNumber in calcData._groupLookup) {
+        var groupIndex = parseInt(calcData._groupLookup[nodePointNumber]);
+
+        // Find node representing groupIndex
+        var groupingNode;
+        for(var i = 0; i < graph.nodes.length; i++) {
+            if(graph.nodes[i].pointNumber === groupIndex) {
+                groupingNode = graph.nodes[i];
+                break;
+            }
+        }
+        // If groupinNode is undefined, no links are targeting this group
+        if(!groupingNode) continue;
+
+        var child = {
+            pointNumber: parseInt(nodePointNumber),
+            x0: groupingNode.x0,
+            x1: groupingNode.x1,
+            y0: groupingNode.y0,
+            y1: groupingNode.y1,
+            partOfGroup: true,
+            sourceLinks: [],
+            targetLinks: []
+        };
+
+        graph.nodes.unshift(child);
+        groupingNode.childrenNodes.unshift(child);
     }
 
     function computeLinkConcentrations() {
@@ -137,7 +167,7 @@ function sankeyModel(layout, d, traceIndex) {
         circular: circular,
         key: traceIndex,
         trace: trace,
-        guid: Math.floor(1e12 * (1 + Math.random())),
+        guid: Lib.randstr(),
         horizontal: horizontal,
         width: width,
         height: height,
@@ -184,6 +214,7 @@ function linkModel(d, l, i) {
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
+        linkPath: linkPath,
         linkLineColor: d.linkLineColor,
         linkLineWidth: d.linkLineWidth,
         valueFormat: d.valueFormat,
@@ -343,7 +374,7 @@ function linkPath() {
     return path;
 }
 
-function nodeModel(d, n, i) {
+function nodeModel(d, n) {
     var tc = tinycolor(n.color);
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
@@ -352,8 +383,11 @@ function nodeModel(d, n, i) {
     var visibleThickness = n.dx;
     var visibleLength = Math.max(0.5, n.dy);
 
-    var basicKey = n.label;
-    var key = basicKey + '__' + i;
+    var key = 'node_' + n.pointNumber;
+    // If it's a group, it's mutable and should be unique
+    if(n.group) {
+        key = Lib.randstr();
+    }
 
     // for event data
     n.trace = d.trace;
@@ -362,6 +396,8 @@ function nodeModel(d, n, i) {
     return {
         index: n.pointNumber,
         key: key,
+        partOfGroup: n.partOfGroup || false,
+        group: n.group,
         traceId: d.key,
         node: n,
         nodePad: d.nodePad,
@@ -445,19 +481,19 @@ function attachPointerEvents(selection, sankey, eventSet) {
     selection
         .on('.basic', null) // remove any preexisting handlers
         .on('mouseover.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.hover(this, d, sankey);
                 d.interactionState.hovered = [this, d];
             }
         })
         .on('mousemove.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.follow(this, d);
                 d.interactionState.hovered = [this, d];
             }
         })
         .on('mouseout.basic', function(d) {
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
@@ -467,7 +503,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
-            if(!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress && !d.partOfGroup) {
                 eventSet.select(this, d, sankey);
             }
         });
@@ -530,6 +566,10 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('dragend', function(d) {
             d.interactionState.dragInProgress = false;
+            for(var i = 0; i < d.node.childrenNodes.length; i++) {
+                d.node.childrenNodes[i].x = d.node.x;
+                d.node.childrenNodes[i].y = d.node.y;
+            }
         });
 
     sankeyNode
@@ -540,7 +580,10 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 function attachForce(sankeyNode, forceKey, d) {
     // Attach force to nodes in the same column (same x coordinate)
     switchToForceFormat(d.graph.nodes);
-    var nodes = d.graph.nodes.filter(function(n) {return n.originalX === d.node.originalX;});
+    var nodes = d.graph.nodes
+        .filter(function(n) {return n.originalX === d.node.originalX;})
+        // Filter out children
+        .filter(function(n) {return !n.partOfGroup;});
     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
         .alphaDecay(0)
         .force('collide', d3Force.forceCollide()
@@ -639,6 +682,11 @@ function switchToSankeyFormat(nodes) {
 
 // scene graph
 module.exports = function(gd, svg, calcData, layout, callbacks) {
+    // To prevent animation on first render
+    var firstRender = false;
+    Lib.ensureSingle(gd._fullLayout._infolayer, 'g', 'first-render', function() {
+        firstRender = true;
+    });
 
     var styledData = calcData
             .filter(function(d) {return unwrap(d).trace.visible;})
@@ -683,7 +731,6 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
     sankeyLink
           .enter().append('path')
           .classed(c.cn.sankeyLink, true)
-          .attr('d', linkPath())
           .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
@@ -701,13 +748,17 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         })
         .style('stroke-width', function(d) {
             return salientEnough(d) ? d.linkLineWidth : 1;
-        });
+        })
+        .attr('d', linkPath());
 
-    sankeyLink.transition()
-       .ease(c.ease).duration(c.duration)
-       .attr('d', linkPath());
+    sankeyLink
+        .style('opacity', function() { return (gd._context.staticPlot || firstRender) ? 1 : 0;})
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .style('opacity', 1);
 
-    sankeyLink.exit().transition()
+    sankeyLink.exit()
+        .transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
@@ -733,24 +784,26 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             var nodes = d.graph.nodes;
             persistOriginalPlace(nodes);
             return nodes
-                .filter(function(n) {return n.value;})
-                .map(nodeModel.bind(null, d));
+              .map(nodeModel.bind(null, d));
         }, keyFun);
 
     sankeyNode.enter()
         .append('g')
         .classed(c.cn.sankeyNode, true)
         .call(updateNodePositions)
-        .call(attachPointerEvents, sankey, callbacks.nodeEvents);
+        .style('opacity', function(n) { return ((gd._context.staticPlot || firstRender) && !n.partOfGroup) ? 1 : 0;});
 
     sankeyNode
+        .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
 
     sankeyNode.transition()
         .ease(c.ease).duration(c.duration)
-        .call(updateNodePositions);
+        .call(updateNodePositions)
+        .style('opacity', function(n) { return n.partOfGroup ? 0 : 1;});
 
-    sankeyNode.exit().transition()
+    sankeyNode.exit()
+        .transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();

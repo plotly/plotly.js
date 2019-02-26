@@ -264,7 +264,7 @@ describe('sankey tests', function() {
                     label: ['a', 'b', 'c', 'd', 'e']
                 },
                 link: {
-                    value: [1, 1, 1, 1, 1, 1, 1, 1],
+                    value: [1, 1, 1, 1],
                     source: [0, 1, 2, 3],
                     target: [1, 2, 0, 4]
                 }
@@ -278,21 +278,67 @@ describe('sankey tests', function() {
                     label: ['a', 'b', 'c', 'd', 'e']
                 },
                 link: {
-                    value: [1, 1, 1, 1, 1, 1, 1, 1],
+                    value: [1, 1, 1, 1],
                     source: [0, 1, 2, 3],
                     target: [1, 2, 4, 4]
                 }
             }));
             expect(calcData[0].circular).toBe(false);
         });
+
+        it('keep an index of groups', function() {
+            var calcData = _calc(Lib.extendDeep({}, base, {
+                node: {
+                    label: ['a', 'b', 'c', 'd', 'e'],
+                    groups: [[0, 1], [2, 3]]
+                },
+                link: {
+                    value: [1, 1, 1, 1],
+                    source: [0, 1, 2, 3],
+                    target: [1, 2, 4, 4]
+                }
+            }));
+            var groups = calcData[0]._nodes.filter(function(node) {
+                return node.group;
+            });
+            expect(groups.length).toBe(2);
+            expect(calcData[0].circular).toBe(false);
+        });
+
+        it('emits a warning if a node is part of more than one group', function() {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+
+            var calcData = _calc(Lib.extendDeep({}, base, {
+                node: {
+                    label: ['a', 'b', 'c', 'd', 'e'],
+                    groups: [[0, 1], [1, 2, 3]]
+                },
+                link: {
+                    value: [1, 1, 1, 1],
+                    source: [0, 1, 2, 3],
+                    target: [1, 2, 4, 4]
+                }
+            }));
+
+            expect(warnings.length).toBe(1);
+
+            // Expect node '1' to be in the first group
+            expect(calcData[0]._groupLookup[1]).toBe(5);
+        });
     });
 
     describe('lifecycle methods', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
         afterEach(destroyGraphDiv);
 
         it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mockDark);
 
@@ -321,7 +367,6 @@ describe('sankey tests', function() {
 
         it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy)
@@ -344,7 +389,6 @@ describe('sankey tests', function() {
 
         it('\'node\' remains visible even if \'value\' is very low', function(done) {
 
-            var gd = createGraphDiv();
             var minimock = [{
                 type: 'sankey',
                 node: {
@@ -366,7 +410,6 @@ describe('sankey tests', function() {
         });
 
         it('switch from normal to circular Sankey on react', function(done) {
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCircularCopy = Lib.extendDeep({}, mockCircular);
 
@@ -382,7 +425,6 @@ describe('sankey tests', function() {
         });
 
         it('switch from circular to normal Sankey on react', function(done) {
-            var gd = createGraphDiv();
             var mockCircularCopy = Lib.extendDeep({}, mockCircular);
 
             Plotly.plot(gd, mockCircularCopy)
@@ -405,6 +447,67 @@ describe('sankey tests', function() {
                   done();
               });
         });
+
+        it('can create groups, restyle groups and properly update DOM', function(done) {
+            var mockCircularCopy = Lib.extendDeep({}, mockCircular);
+            var firstGroup = [[2, 3], [0, 1]];
+            var newGroup = [[2, 3]];
+            mockCircularCopy.data[0].node.groups = firstGroup;
+
+            Plotly.plot(gd, mockCircularCopy)
+              .then(function() {
+                  expect(gd._fullData[0].node.groups).toEqual(firstGroup);
+                  return Plotly.restyle(gd, {'node.groups': [newGroup]});
+              })
+              .then(function() {
+                  expect(gd._fullData[0].node.groups).toEqual(newGroup);
+
+                  // Check that all links have updated their links
+                  d3.selectAll('.sankey .sankey-link').each(function(d, i) {
+                      var path = this.getAttribute('d');
+                      expect(path).toBe(d.linkPath()(d), 'link ' + i + ' has wrong `d` attribute');
+                  });
+
+                  // Check that ghost nodes used for animations:
+                  // 1) are drawn first so they apear behind
+                  var seeRealNode = false;
+                  var sankeyNodes = d3.selectAll('.sankey .sankey-node');
+                  sankeyNodes.each(function(d, i) {
+                      if(d.partOfGroup) {
+                          if(seeRealNode) fail('node ' + i + ' is a ghost node and should be behind');
+                      } else {
+                          seeRealNode = true;
+                      }
+                  });
+                  // 2) have an element for each grouped node
+                  var L = sankeyNodes.filter(function(d) { return d.partOfGroup;}).size();
+                  expect(L).toBe(newGroup.flat().length, 'does not have the right number of ghost nodes');
+              })
+              .catch(failTest)
+              .then(done);
+        });
+
+        it('switches from normal to circular Sankey on grouping', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy)
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+
+                  // Group two nodes that creates a circularity
+                  return Plotly.restyle(gd, 'node.groups', [[[1, 3]]]);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(true);
+                  // Group two nodes that do not create a circularity
+                  return Plotly.restyle(gd, 'node.groups', [[[1, 4]]]);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+                  done();
+              });
+        });
+
     });
 
     describe('Test hover/click interactions:', function() {
