@@ -69,13 +69,17 @@ function sankeyModel(layout, d, traceIndex) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
+    // Counters for nested loops
+    var i, j, k;
+
     // Create transient nodes for animations
     for(var nodePointNumber in calcData._groupLookup) {
         var groupIndex = parseInt(calcData._groupLookup[nodePointNumber]);
 
         // Find node representing groupIndex
         var groupingNode;
-        for(var i = 0; i < graph.nodes.length; i++) {
+
+        for(i = 0; i < graph.nodes.length; i++) {
             if(graph.nodes[i].pointNumber === groupIndex) {
                 groupingNode = graph.nodes[i];
                 break;
@@ -100,7 +104,6 @@ function sankeyModel(layout, d, traceIndex) {
     }
 
     function computeLinkConcentrations() {
-        var i, j, k;
         for(i = 0; i < graph.nodes.length; i++) {
             var node = graph.nodes[i];
             // Links connecting the same two nodes are part of a flow
@@ -167,7 +170,6 @@ function sankeyModel(layout, d, traceIndex) {
 
     // Force node position
     if(trace.node.x.length !== 0 && trace.node.y.length !== 0) {
-        var i;
         for(i = 0; i < Math.min(trace.node.x.length, trace.node.y.length, graph.nodes.length); i++) {
             if(trace.node.x[i] && trace.node.y[i]) {
                 var pos = [trace.node.x[i] * width, trace.node.y[i] * height];
