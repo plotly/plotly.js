@@ -367,10 +367,10 @@ describe('Test isosurface', function() {
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
-                        'x: 0.3',
+                        'x: 0.4',
                         'y: 0.001',
-                        'z: −16',
-                        'value: −0.27'
+                        'z: −8',
+                        'value: −1.28'
                     ].join('\n')
                 });
             })
@@ -379,10 +379,10 @@ describe('Test isosurface', function() {
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
-                        'x: 0.2',
+                        'x: 0.3',
                         'y: 100μ',
-                        'z: −16',
-                        'value: −1.12'
+                        'z: −8',
+                        'value: −1.19'
                     ].join('\n')
                 });
             })
@@ -393,8 +393,8 @@ describe('Test isosurface', function() {
                     nums: [
                         'x: 0.4',
                         'y: 100μ',
-                        'z: −4',
-                        'value: −1.3'
+                        'z: −2',
+                        'value: −1.29'
                     ].join('\n')
                 });
             })
@@ -410,9 +410,9 @@ describe('Test isosurface', function() {
                     nums: [
                         'x: 0.4',
                         'y: 100μ',
-                        'z: −4',
-                        'value: −1.3',
-                        '!! -1.3 !!'
+                        'z: −2',
+                        'value: −1.29',
+                        '!! -1.29 !!'
                     ].join('\n')
                 });
             })
@@ -423,7 +423,7 @@ describe('Test isosurface', function() {
             .then(_hover4)
             .then(function() {
                 assertHoverLabelContent({
-                    nums: '−1.3\n(0.4,100μ,−4)',
+                    nums: '−1.29\n(0.4,100μ,−2)',
                     name: '!!'
                 });
             })
