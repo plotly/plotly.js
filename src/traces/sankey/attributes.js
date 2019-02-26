@@ -102,6 +102,18 @@ var attrs = module.exports = overrideAll({
                 'Multiple groups can be specified.'
             ].join(' ')
         },
+        x: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'info',
+            description: 'The normalized horizontal position of the node.'
+        },
+        y: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'info',
+            description: 'The normalized vertical position of the node.'
+        },
         color: {
             valType: 'color',
             role: 'style',

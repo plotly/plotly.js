@@ -33,6 +33,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
     coerceNode('label');
     coerceNode('groups');
+    coerceNode('x');
+    coerceNode('y');
     coerceNode('pad');
     coerceNode('thickness');
     coerceNode('line.color');
