@@ -62,7 +62,7 @@ function convertToD3Sankey(trace) {
     // Process links
     var groupedLinks = {
         source: [],
-        target: []
+        target: []
     };
     for(i = 0; i < linkSpec.value.length; i++) {
         var val = linkSpec.value[i];

@@ -493,12 +493,12 @@ describe('sankey tests', function() {
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(false);
 
-                  // Group two nodes to create circularity
+                  // Group two nodes that creates a circularity
                   return Plotly.restyle(gd, 'node.groups', [[[1, 3]]]);
               })
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(true);
-                  // Group two nodes to that do not create circularity
+                  // Group two nodes that do not create a circularity
                   return Plotly.restyle(gd, 'node.groups', [[[1, 4]]]);
               })
               .then(function() {
