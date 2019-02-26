@@ -60,6 +60,10 @@ function convertToD3Sankey(trace) {
     }
 
     // Process links
+    var groupedLinks = {
+        source: [],
+        target: []
+    };
     for(i = 0; i < linkSpec.value.length; i++) {
         var val = linkSpec.value[i];
         // remove negative values, but keep zeros with special treatment
@@ -103,6 +107,9 @@ function convertToD3Sankey(trace) {
             target: target,
             value: +val
         });
+
+        groupedLinks.source.push(source);
+        groupedLinks.target.push(target);
     }
 
     // Process nodes
@@ -122,7 +129,14 @@ function convertToD3Sankey(trace) {
         });
     }
 
+    // Check if we have circularity on the resulting graph
+    var circular = false;
+    if(circularityPresent(totalCount, groupedLinks.source, groupedLinks.target)) {
+        circular = true;
+    }
+
     return {
+        circular: circular,
         links: links,
         nodes: nodes,
 
@@ -132,9 +146,7 @@ function convertToD3Sankey(trace) {
     };
 }
 
-function circularityPresent(nodeList, sources, targets) {
-
-    var nodeLen = nodeList.length;
+function circularityPresent(nodeLen, sources, targets) {
     var nodes = Lib.init2dArray(nodeLen, 0);
 
     for(var i = 0; i < Math.min(sources.length, targets.length); i++) {
@@ -156,15 +168,10 @@ function circularityPresent(nodeList, sources, targets) {
 }
 
 module.exports = function calc(gd, trace) {
-    var circular = false;
-    if(circularityPresent(trace.node.label, trace.link.source, trace.link.target)) {
-        circular = true;
-    }
-
     var result = convertToD3Sankey(trace);
 
     return wrap({
-        circular: circular,
+        circular: result.circular,
         _nodes: result.nodes,
         _links: result.links,
 

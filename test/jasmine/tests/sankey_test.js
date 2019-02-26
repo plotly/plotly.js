@@ -485,6 +485,28 @@ describe('sankey tests', function() {
               .catch(failTest)
               .then(done);
         });
+
+        it('switches from normal to circular Sankey on grouping', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy)
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+
+                  // Group two nodes to create circularity
+                  return Plotly.restyle(gd, 'node.groups', [[[1, 3]]]);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(true);
+                  // Group two nodes to that do not create circularity
+                  return Plotly.restyle(gd, 'node.groups', [[[1, 4]]]);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+                  done();
+              });
+        });
+
     });
 
     describe('Test hover/click interactions:', function() {
