@@ -330,11 +330,14 @@ describe('sankey tests', function() {
     });
 
     describe('lifecycle methods', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
         afterEach(destroyGraphDiv);
 
         it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mockDark);
 
@@ -363,7 +366,6 @@ describe('sankey tests', function() {
 
         it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy)
@@ -386,7 +388,6 @@ describe('sankey tests', function() {
 
         it('\'node\' remains visible even if \'value\' is very low', function(done) {
 
-            var gd = createGraphDiv();
             var minimock = [{
                 type: 'sankey',
                 node: {
@@ -408,7 +409,6 @@ describe('sankey tests', function() {
         });
 
         it('switch from normal to circular Sankey on react', function(done) {
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCircularCopy = Lib.extendDeep({}, mockCircular);
 
@@ -424,7 +424,6 @@ describe('sankey tests', function() {
         });
 
         it('switch from circular to normal Sankey on react', function(done) {
-            var gd = createGraphDiv();
             var mockCircularCopy = Lib.extendDeep({}, mockCircular);
 
             Plotly.plot(gd, mockCircularCopy)
@@ -448,20 +447,43 @@ describe('sankey tests', function() {
               });
         });
 
-        it('can create groups', function(done) {
-            var gd = createGraphDiv();
+        it('can create groups, restyle groups and properly update DOM', function(done) {
             var mockCircularCopy = Lib.extendDeep({}, mockCircular);
-            mockCircularCopy.data[0].node.groups = [[2, 3], [0, 1]];
+            var firstGroup = [[2, 3], [0, 1]];
+            var newGroup = [[2, 3]];
+            mockCircularCopy.data[0].node.groups = firstGroup;
+
             Plotly.plot(gd, mockCircularCopy)
               .then(function() {
-                  expect(gd._fullData[0].node.groups).toEqual([[2, 3], [0, 1]]);
-                  return Plotly.restyle(gd, {'node.groups': [[[3, 4]]]});
+                  expect(gd._fullData[0].node.groups).toEqual(firstGroup);
+                  return Plotly.restyle(gd, {'node.groups': [newGroup]});
               })
               .then(function() {
-                  expect(gd._fullData[0].node.groups).toEqual([[3, 4]]);
-                  destroyGraphDiv();
-                  done();
-              });
+                  expect(gd._fullData[0].node.groups).toEqual(newGroup);
+
+                  // Check that all links have updated their links
+                  d3.selectAll('.sankey .sankey-link').each(function(d, i) {
+                      var path = this.getAttribute('d');
+                      expect(path).toBe(d.linkPath()(d), 'link ' + i + ' has wrong `d` attribute');
+                  });
+
+                  // Check that ghost nodes used for animations:
+                  // 1) are drawn first so they apear behind
+                  var seeRealNode = false;
+                  var sankeyNodes = d3.selectAll('.sankey .sankey-node');
+                  sankeyNodes.each(function(d, i) {
+                      if(d.partOfGroup) {
+                          if(seeRealNode) fail('node ' + i + ' is a ghost node and should be behind');
+                      } else {
+                          seeRealNode = true;
+                      }
+                  });
+                  // 2) have an element for each grouped node
+                  var L = sankeyNodes.filter(function(d) { return d.partOfGroup;}).size();
+                  expect(L).toBe(newGroup.flat().length, 'does not have the right number of ghost nodes');
+              })
+              .catch(failTest)
+              .then(done);
         });
     });
 

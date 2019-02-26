@@ -71,6 +71,7 @@ function sankeyModel(layout, d, traceIndex) {
     for(var nodePointNumber in calcData._groupLookup) {
         var groupIndex = parseInt(calcData._groupLookup[nodePointNumber]);
 
+        // Find node representing groupIndex
         var groupingNode;
         for(var i = 0; i < graph.nodes.length; i++) {
             if(graph.nodes[i].pointNumber === groupIndex) {
@@ -78,6 +79,8 @@ function sankeyModel(layout, d, traceIndex) {
                 break;
             }
         }
+        // If groupinNode is undefined, no links are targeting this group
+        if(!groupingNode) continue;
 
         var child = {
             pointNumber: parseInt(nodePointNumber),
@@ -211,6 +214,7 @@ function linkModel(d, l, i) {
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
+        linkPath: linkPath,
         linkLineColor: d.linkLineColor,
         linkLineWidth: d.linkLineWidth,
         valueFormat: d.valueFormat,
