@@ -365,7 +365,10 @@ describe('Test gl3d plots', function() {
         // N.B. gl3d click events are 'mouseover' events
         // with button 1 pressed
         function _click() {
-            mouseEvent('mouseover', 605, 271, {buttons: 1});
+            var x = 605;
+            var y = 271;
+            mouseEvent('mousemove', x, y);
+            mouseEvent('mouseover', x, y, {buttons: 1});
             return delay(20)();
         }
 
@@ -379,7 +382,7 @@ describe('Test gl3d plots', function() {
         .then(_click)
         .then(delay(20))
         .then(function() {
-            assertEventData(140.72, -96.97, -96.97, 0, 2);
+            assertEventData(134.03, -163.59, -163.59, 0, 3);
         })
         .then(done);
     });
