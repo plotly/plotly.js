@@ -10,7 +10,6 @@
 'use strict';
 
 var d3 = require('d3');
-var d3format = require('d3-format');
 var isNumeric = require('fast-isnumeric');
 
 var numConstants = require('../constants/numerical');
@@ -1036,14 +1035,14 @@ var maximumNumberOfHoverTemplateWarnings = 10;
  *  Lib.hovertemplateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
  *  Lib.hovertemplateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
  *
- * @param {obj}     data object containing the locale
+ * @param {obj}     d3 locale
  * @param {string}  input string containing %{...:...} template strings
  * @param {obj}     data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
  * @param {obj}     data objects containing substitution values
  *
  * @return {string} templated string
  */
-lib.hovertemplateString = function(string, labels, locale) {
+lib.hovertemplateString = function(string, labels, d3locale) {
     var args = arguments;
     // Not all that useful, but cache nestedProperty instantiation
     // just in case it speeds things up *slightly*:
@@ -1078,9 +1077,13 @@ lib.hovertemplateString = function(string, labels, locale) {
         }
 
         if(format) {
-            var fmt = d3format;
-            if(locale) fmt = fmt.formatLocale(locale);
-            value = fmt.format(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+            var fmt;
+            if(d3locale) {
+                fmt = d3locale.numberFormat;
+            } else {
+                fmt = d3.format;
+            }
+            value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
         } else {
             if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
         }

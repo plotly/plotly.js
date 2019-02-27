@@ -2241,18 +2241,6 @@ describe('Test lib.js:', function() {
             }
             expect(Lib.warn.calls.count()).toBe(10);
         });
-
-        describe('support different locale as argument', function() {
-            var locale = {
-                decimal: ',',
-                thousands: ' ',
-                currency: ['£', ''],
-                grouping: [3]
-            };
-            it('formats value using d3 mini-language', function() {
-                expect(Lib.hovertemplateString('a: %{a:$010,.2f}', {}, locale, {a: 1253})).toEqual('a: £001 253,00');
-            });
-        });
     });
 
     describe('relativeAttr()', function() {
