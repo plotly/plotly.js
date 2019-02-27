@@ -355,8 +355,7 @@ function Scene(options, fullLayout) {
 
     initializeGLPlot(this, camera, this.pixelRatio);
 
-    // enable mouse listener which was disabled at camera init
-    this.camera.mouseListener.enabled = true;
+    this.enableGLCameraMouseListener();
 }
 
 var proto = Scene.prototype;
@@ -376,7 +375,14 @@ proto.initializeGLCamera = function() {
         mode: 'orbit'
     });
 
-    // Note: we shoule disable camera interactions until the scene is complete
+    this.disableGLCameraMouseListener();
+};
+
+proto.enableGLCameraMouseListener = function() {
+    this.camera.mouseListener.enabled = true;
+};
+
+proto.disableGLCameraMouseListener = function() {
     this.camera.mouseListener.enabled = false;
 };
 
