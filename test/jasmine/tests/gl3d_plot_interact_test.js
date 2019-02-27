@@ -21,6 +21,113 @@ function countCanvases() {
     return d3.selectAll('canvas').size();
 }
 
+describe('Test gl3d before/after plot', function() {
+    var gd;
+
+    var mock = require('@mocks/gl3d_marker-arrays.json');
+
+    beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 4000;
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should not rotate camera on the very first click before scene is complete and then should rotate', function(done) {
+        var _mock = Lib.extendDeep(
+            {
+                layout: {
+                    scene: {
+                        camera: {
+                            up: {
+                                x: 0,
+                                y: 0,
+                                z: 1
+                            },
+                            eye: {
+                                x: 1.2,
+                                y: 1.2,
+                                z: 1.2
+                            },
+                            center: {
+                                x: 0,
+                                y: 0,
+                                z: 0
+                            }
+                        }
+                    }
+                }
+            },
+            mock
+        );
+
+        var x = 605;
+        var y = 271;
+
+        function _stayThere() {
+            mouseEvent('mousemove', x, y);
+            return delay(20)();
+        }
+
+        function _clickThere() {
+            mouseEvent('mouseover', x, y, {buttons: 1});
+            return delay(20)();
+        }
+
+        _stayThere()
+        .then(function() {
+            gd = createGraphDiv();
+            return Plotly.plot(gd, _mock);
+        })
+        .then(delay(20))
+        .then(function() {
+            var cameraIn = gd._fullLayout.scene.camera;
+            expect(cameraIn.up.x).toEqual(0, 'cameraIn.up.x');
+            expect(cameraIn.up.y).toEqual(0, 'cameraIn.up.y');
+            expect(cameraIn.up.z).toEqual(1, 'cameraIn.up.z');
+            expect(cameraIn.center.x).toEqual(0, 'cameraIn.center.x');
+            expect(cameraIn.center.y).toEqual(0, 'cameraIn.center.y');
+            expect(cameraIn.center.z).toEqual(0, 'cameraIn.center.z');
+            expect(cameraIn.eye.x).toEqual(1.2, 'cameraIn.eye.x');
+            expect(cameraIn.eye.y).toEqual(1.2, 'cameraIn.eye.y');
+            expect(cameraIn.eye.z).toEqual(1.2, 'cameraIn.eye.z');
+        })
+        .then(delay(20))
+        .then(function() {
+            var cameraBefore = gd._fullLayout.scene._scene.glplot.camera;
+            expect(cameraBefore.up[0]).toBeCloseTo(0, 2, 'cameraBefore.up[0]');
+            expect(cameraBefore.up[1]).toBeCloseTo(0, 2, 'cameraBefore.up[1]');
+            expect(cameraBefore.up[2]).toBeCloseTo(1, 2, 'cameraBefore.up[2]');
+            expect(cameraBefore.center[0]).toBeCloseTo(0, 2, 'cameraBefore.center[0]');
+            expect(cameraBefore.center[1]).toBeCloseTo(0, 2, 'cameraBefore.center[1]');
+            expect(cameraBefore.center[2]).toBeCloseTo(0, 2, 'cameraBefore.center[2]');
+            expect(cameraBefore.eye[0]).toBeCloseTo(1.2, 2, 'cameraBefore.eye[0]');
+            expect(cameraBefore.eye[1]).toBeCloseTo(1.2, 2, 'cameraBefore.eye[1]');
+            expect(cameraBefore.eye[2]).toBeCloseTo(1.2, 2, 'cameraBefore.eye[2]');
+            expect(cameraBefore.mouseListener.enabled === true);
+        })
+        .then(_clickThere)
+        .then(delay(20))
+        .then(function() {
+            var cameraAfter = gd._fullLayout.scene._scene.glplot.camera;
+            expect(cameraAfter.up[0]).toBeCloseTo(0, 2, 'cameraAfter.up[0]');
+            expect(cameraAfter.up[1]).toBeCloseTo(0, 2, 'cameraAfter.up[1]');
+            expect(cameraAfter.up[2]).toBeCloseTo(1, 2, 'cameraAfter.up[2]');
+            expect(cameraAfter.center[0]).toBeCloseTo(0, 2, 'cameraAfter.center[0]');
+            expect(cameraAfter.center[1]).toBeCloseTo(0, 2, 'cameraAfter.center[1]');
+            expect(cameraAfter.center[2]).toBeCloseTo(0, 2, 'cameraAfter.center[2]');
+            expect(cameraAfter.eye[0]).not.toBeCloseTo(1.2, 2, 'cameraAfter.eye[0]');
+            expect(cameraAfter.eye[1]).not.toBeCloseTo(1.2, 2, 'cameraAfter.eye[1]');
+            expect(cameraAfter.eye[2]).not.toBeCloseTo(1.2, 2, 'cameraAfter.eye[2]');
+            expect(cameraAfter.mouseListener.enabled === true);
+        })
+        .then(done);
+    });
+
+});
+
 describe('Test gl3d plots', function() {
     var gd, ptData;
 
@@ -73,89 +180,6 @@ describe('Test gl3d plots', function() {
     afterEach(function() {
         Plotly.purge(gd);
         destroyGraphDiv();
-    });
-
-    it('@gl should not rotate camera on the very first click before scene is complete and then should rotate', function(done) {
-        var _mock = Lib.extendDeep(
-            {
-                layout: {
-                    scene: {
-                        camera: {
-                            up: {
-                                x: 0,
-                                y: 0,
-                                z: 1
-                            },
-                            eye: {
-                                x: 1.2,
-                                y: 1.2,
-                                z: 1.2
-                            },
-                            center: {
-                                x: 0,
-                                y: 0,
-                                z: 0
-                            }
-                        }
-                    }
-                }
-            },
-            mock2
-        );
-
-        // N.B. gl3d click events are 'mouseover' events
-        // with button 1 pressed
-        function _click() {
-            mouseEvent('mouseover', 605, 271, {buttons: 1});
-            return delay(20)();
-        }
-
-        Plotly.plot(gd, _mock)
-        .then(delay(20))
-        .then(function() {
-            gd.on('plotly_click', function(eventData) {
-                ptData = eventData.points[0];
-            });
-        })
-        .then(delay(20))
-        .then(function() {
-            var cameraIn = gd._fullLayout.scene.camera;
-            expect(cameraIn.up.x).toEqual(0, 'cameraIn.up.x');
-            expect(cameraIn.up.y).toEqual(0, 'cameraIn.up.y');
-            expect(cameraIn.up.z).toEqual(1, 'cameraIn.up.z');
-            expect(cameraIn.center.x).toEqual(0, 'cameraIn.center.x');
-            expect(cameraIn.center.y).toEqual(0, 'cameraIn.center.y');
-            expect(cameraIn.center.z).toEqual(0, 'cameraIn.center.z');
-            expect(cameraIn.eye.x).toEqual(1.2, 'cameraIn.eye.x');
-            expect(cameraIn.eye.y).toEqual(1.2, 'cameraIn.eye.y');
-            expect(cameraIn.eye.z).toEqual(1.2, 'cameraIn.eye.z');
-
-            var cameraBefore = gd._fullLayout.scene._scene.glplot.camera;
-            expect(cameraBefore.up[0]).toBeCloseTo(0, 3, 'cameraBefore.up[0]');
-            expect(cameraBefore.up[1]).toBeCloseTo(0, 3, 'cameraBefore.up[1]');
-            expect(cameraBefore.up[2]).toBeCloseTo(1, 3, 'cameraBefore.up[2]');
-            expect(cameraBefore.center[0]).toBeCloseTo(0, 3, 'cameraBefore.center[0]');
-            expect(cameraBefore.center[1]).toBeCloseTo(0, 3, 'cameraBefore.center[1]');
-            expect(cameraBefore.center[2]).toBeCloseTo(0, 3, 'cameraBefore.center[2]');
-            expect(cameraBefore.eye[0]).toBeCloseTo(1.2, 3, 'cameraBefore.eye[0]');
-            expect(cameraBefore.eye[1]).toBeCloseTo(1.2, 3, 'cameraBefore.eye[1]');
-            expect(cameraBefore.eye[2]).toBeCloseTo(1.2, 3, 'cameraBefore.eye[2]');
-        })
-        .then(_click)
-        .then(delay(20))
-        .then(function() {
-            var cameraAfter = gd._fullLayout.scene._scene.glplot.camera;
-            expect(cameraAfter.up[0]).toBeCloseTo(0, 3, 'cameraAfter.up[0]');
-            expect(cameraAfter.up[1]).toBeCloseTo(0, 3, 'cameraAfter.up[1]');
-            expect(cameraAfter.up[2]).toBeCloseTo(1, 3, 'cameraAfter.up[2]');
-            expect(cameraAfter.center[0]).toBeCloseTo(0, 3, 'cameraAfter.center[0]');
-            expect(cameraAfter.center[1]).toBeCloseTo(0, 3, 'cameraAfter.center[1]');
-            expect(cameraAfter.center[2]).toBeCloseTo(0, 3, 'cameraAfter.center[2]');
-            expect(cameraAfter.eye[0]).not.toBeCloseTo(1.2, 3, 'cameraAfter.eye[0]');
-            expect(cameraAfter.eye[1]).not.toBeCloseTo(1.2, 3, 'cameraAfter.eye[1]');
-            expect(cameraAfter.eye[2]).not.toBeCloseTo(1.2, 3, 'cameraAfter.eye[2]');
-        })
-        .then(done);
     });
 
     it('@noCI @gl should display correct hover labels of the second point of the very first scatter3d trace', function(done) {
