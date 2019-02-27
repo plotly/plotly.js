@@ -971,6 +971,7 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         // hovertemplate
+        var d3locale = gd._fullLayout._d3locale;
         var hovertemplate = d.hovertemplate || false;
         var hovertemplateLabels = d.hovertemplateLabels || d;
         var eventData = d.eventData[0] || {};
@@ -978,6 +979,7 @@ function createHoverText(hoverData, opts, gd) {
             text = Lib.hovertemplateString(
                 hovertemplate,
                 hovertemplateLabels,
+                d3locale,
                 eventData,
                 {meta: fullLayout.meta}
             );
