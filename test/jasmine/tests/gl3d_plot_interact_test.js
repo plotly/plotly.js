@@ -75,7 +75,7 @@ describe('Test gl3d plots', function() {
         destroyGraphDiv();
     });
 
-    it('@gl should not rotate camera on the very first click before scene is complete and modebar setup', function(done) {
+    it('@gl should not rotate camera on the very first click before scene is complete and then should rotate', function(done) {
         var _mock = Lib.extendDeep(
             {
                 layout: {
@@ -117,28 +117,43 @@ describe('Test gl3d plots', function() {
                 ptData = eventData.points[0];
             });
         })
+        .then(delay(20))
+        .then(function() {
+            var cameraIn = gd._fullLayout.scene.camera;
+            expect(cameraIn.up.x).toEqual(0, 'cameraIn.up.x');
+            expect(cameraIn.up.y).toEqual(0, 'cameraIn.up.y');
+            expect(cameraIn.up.z).toEqual(1, 'cameraIn.up.z');
+            expect(cameraIn.center.x).toEqual(0, 'cameraIn.center.x');
+            expect(cameraIn.center.y).toEqual(0, 'cameraIn.center.y');
+            expect(cameraIn.center.z).toEqual(0, 'cameraIn.center.z');
+            expect(cameraIn.eye.x).toEqual(1.2, 'cameraIn.eye.x');
+            expect(cameraIn.eye.y).toEqual(1.2, 'cameraIn.eye.y');
+            expect(cameraIn.eye.z).toEqual(1.2, 'cameraIn.eye.z');
+
+            var cameraBefore = gd._fullLayout.scene._scene.glplot.camera;
+            expect(cameraBefore.up[0]).toBeCloseTo(0, 3, 'cameraBefore.up[0]');
+            expect(cameraBefore.up[1]).toBeCloseTo(0, 3, 'cameraBefore.up[1]');
+            expect(cameraBefore.up[2]).toBeCloseTo(1, 3, 'cameraBefore.up[2]');
+            expect(cameraBefore.center[0]).toBeCloseTo(0, 3, 'cameraBefore.center[0]');
+            expect(cameraBefore.center[1]).toBeCloseTo(0, 3, 'cameraBefore.center[1]');
+            expect(cameraBefore.center[2]).toBeCloseTo(0, 3, 'cameraBefore.center[2]');
+            expect(cameraBefore.eye[0]).toBeCloseTo(1.2, 3, 'cameraBefore.eye[0]');
+            expect(cameraBefore.eye[1]).toBeCloseTo(1.2, 3, 'cameraBefore.eye[1]');
+            expect(cameraBefore.eye[2]).toBeCloseTo(1.2, 3, 'cameraBefore.eye[2]');
+        })
         .then(_click)
         .then(delay(20))
         .then(function() {
-            expect(gd._fullLayout.scene.camera.up.x).toEqual(0, 'camera.up.x');
-            expect(gd._fullLayout.scene.camera.up.y).toEqual(0, 'camera.up.y');
-            expect(gd._fullLayout.scene.camera.up.z).toEqual(1, 'camera.up.z');
-            expect(gd._fullLayout.scene.camera.eye.x).toEqual(1.2, 'camera.eye.x');
-            expect(gd._fullLayout.scene.camera.eye.y).toEqual(1.2, 'camera.eye.y');
-            expect(gd._fullLayout.scene.camera.eye.z).toEqual(1.2, 'camera.eye.z');
-            expect(gd._fullLayout.scene.camera.center.x).toEqual(0, 'camera.center.x');
-            expect(gd._fullLayout.scene.camera.center.y).toEqual(0, 'camera.center.y');
-            expect(gd._fullLayout.scene.camera.center.z).toEqual(0, 'camera.center.z');
-
-            expect(gd._fullLayout.scene._scene.glplot.camera.up[0]).toEqual(0, 'camera.up[0]');
-            expect(gd._fullLayout.scene._scene.glplot.camera.up[1]).toEqual(0, 'camera.up[1]');
-            expect(gd._fullLayout.scene._scene.glplot.camera.up[2]).toEqual(1, 'camera.up[2]');
-            expect(gd._fullLayout.scene._scene.glplot.camera.eye[0]).toBeCloseTo(1.2, 6, 'camera.eye[0]');
-            expect(gd._fullLayout.scene._scene.glplot.camera.eye[1]).toBeCloseTo(1.2, 6, 'camera.eye[1]');
-            expect(gd._fullLayout.scene._scene.glplot.camera.eye[2]).toBeCloseTo(1.2, 6, 'camera.eye[2]');
-            expect(gd._fullLayout.scene._scene.glplot.camera.center[0]).toEqual(0, 'camera.center[0]');
-            expect(gd._fullLayout.scene._scene.glplot.camera.center[1]).toEqual(0, 'camera.center[1]');
-            expect(gd._fullLayout.scene._scene.glplot.camera.center[2]).toEqual(0, 'camera.center[2]');
+            var cameraAfter = gd._fullLayout.scene._scene.glplot.camera;
+            expect(cameraAfter.up[0]).toBeCloseTo(0, 3, 'cameraAfter.up[0]');
+            expect(cameraAfter.up[1]).toBeCloseTo(0, 3, 'cameraAfter.up[1]');
+            expect(cameraAfter.up[2]).toBeCloseTo(1, 3, 'cameraAfter.up[2]');
+            expect(cameraAfter.center[0]).toBeCloseTo(0, 3, 'cameraAfter.center[0]');
+            expect(cameraAfter.center[1]).toBeCloseTo(0, 3, 'cameraAfter.center[1]');
+            expect(cameraAfter.center[2]).toBeCloseTo(0, 3, 'cameraAfter.center[2]');
+            expect(cameraAfter.eye[0]).not.toBeCloseTo(1.2, 3, 'cameraAfter.eye[0]');
+            expect(cameraAfter.eye[1]).not.toBeCloseTo(1.2, 3, 'cameraAfter.eye[1]');
+            expect(cameraAfter.eye[2]).not.toBeCloseTo(1.2, 3, 'cameraAfter.eye[2]');
         })
         .then(done);
     });
@@ -433,10 +448,7 @@ describe('Test gl3d plots', function() {
         // N.B. gl3d click events are 'mouseover' events
         // with button 1 pressed
         function _click() {
-            var x = 605;
-            var y = 271;
-            mouseEvent('mousemove', x, y);
-            mouseEvent('mouseover', x, y, {buttons: 1});
+            mouseEvent('mouseover', 605, 271, {buttons: 1});
             return delay(20)();
         }
 

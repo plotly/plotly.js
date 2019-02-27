@@ -354,6 +354,9 @@ function Scene(options, fullLayout) {
     var camera = fullLayout.scene.camera;
 
     initializeGLPlot(this, camera, this.pixelRatio);
+
+    // enable mouse listener which was disabled at camera init
+    this.camera.mouseListener.enabled = true;
 }
 
 var proto = Scene.prototype;
@@ -854,7 +857,6 @@ proto.saveCamera = function saveCamera(layout) {
 
 proto.updateFx = function(dragmode, hovermode) {
     var camera = this.camera;
-
     if(camera) {
         // rotate and orbital are synonymous
         if(dragmode === 'orbit') {
@@ -876,16 +878,16 @@ proto.updateFx = function(dragmode, hovermode) {
             var y = fullCamera.up.y;
             var z = fullCamera.up.z;
             // only push `up` back to (full)layout if it's going to change
-            if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) return;
-
-            var attr = this.id + '.camera.up';
-            var zUp = {x: 0, y: 0, z: 1};
-            var edits = {};
-            edits[attr] = zUp;
-            var layout = gd.layout;
-            Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
-            fullCamera.up = zUp;
-            Lib.nestedProperty(layout, attr).set(zUp);
+            if(z / Math.sqrt(x * x + y * y + z * z) < 0.999) {
+                var attr = this.id + '.camera.up';
+                var zUp = {x: 0, y: 0, z: 1};
+                var edits = {};
+                edits[attr] = zUp;
+                var layout = gd.layout;
+                Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
+                fullCamera.up = zUp;
+                Lib.nestedProperty(layout, attr).set(zUp);
+            }
         } else {
             // none rotation modes [pan or zoom]
             camera.keyBindingMode = dragmode;
