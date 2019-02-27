@@ -75,6 +75,74 @@ describe('Test gl3d plots', function() {
         destroyGraphDiv();
     });
 
+    it('@gl should not rotate camera on the very first click before scene is complete and modebar setup', function(done) {
+        var _mock = Lib.extendDeep(
+            {
+                layout: {
+                    scene: {
+                        camera: {
+                            up: {
+                                x: 0,
+                                y: 0,
+                                z: 1
+                            },
+                            eye: {
+                                x: 1.2,
+                                y: 1.2,
+                                z: 1.2
+                            },
+                            center: {
+                                x: 0,
+                                y: 0,
+                                z: 0
+                            }
+                        }
+                    }
+                }
+            },
+            mock2
+        );
+
+        // N.B. gl3d click events are 'mouseover' events
+        // with button 1 pressed
+        function _click() {
+            mouseEvent('mouseover', 605, 271, {buttons: 1});
+            return delay(20)();
+        }
+
+        Plotly.plot(gd, _mock)
+        .then(delay(20))
+        .then(function() {
+            gd.on('plotly_click', function(eventData) {
+                ptData = eventData.points[0];
+            });
+        })
+        .then(_click)
+        .then(delay(20))
+        .then(function() {
+            expect(gd._fullLayout.scene.camera.up.x).toEqual(0, 'camera.up.x');
+            expect(gd._fullLayout.scene.camera.up.y).toEqual(0, 'camera.up.y');
+            expect(gd._fullLayout.scene.camera.up.z).toEqual(1, 'camera.up.z');
+            expect(gd._fullLayout.scene.camera.eye.x).toEqual(1.2, 'camera.eye.x');
+            expect(gd._fullLayout.scene.camera.eye.y).toEqual(1.2, 'camera.eye.y');
+            expect(gd._fullLayout.scene.camera.eye.z).toEqual(1.2, 'camera.eye.z');
+            expect(gd._fullLayout.scene.camera.center.x).toEqual(0, 'camera.center.x');
+            expect(gd._fullLayout.scene.camera.center.y).toEqual(0, 'camera.center.y');
+            expect(gd._fullLayout.scene.camera.center.z).toEqual(0, 'camera.center.z');
+
+            expect(gd._fullLayout.scene._scene.glplot.camera.up[0]).toEqual(0, 'camera.up[0]');
+            expect(gd._fullLayout.scene._scene.glplot.camera.up[1]).toEqual(0, 'camera.up[1]');
+            expect(gd._fullLayout.scene._scene.glplot.camera.up[2]).toEqual(1, 'camera.up[2]');
+            expect(gd._fullLayout.scene._scene.glplot.camera.eye[0]).toBeCloseTo(1.2, 6, 'camera.eye[0]');
+            expect(gd._fullLayout.scene._scene.glplot.camera.eye[1]).toBeCloseTo(1.2, 6, 'camera.eye[1]');
+            expect(gd._fullLayout.scene._scene.glplot.camera.eye[2]).toBeCloseTo(1.2, 6, 'camera.eye[2]');
+            expect(gd._fullLayout.scene._scene.glplot.camera.center[0]).toEqual(0, 'camera.center[0]');
+            expect(gd._fullLayout.scene._scene.glplot.camera.center[1]).toEqual(0, 'camera.center[1]');
+            expect(gd._fullLayout.scene._scene.glplot.camera.center[2]).toEqual(0, 'camera.center[2]');
+        })
+        .then(done);
+    });
+
     it('@noCI @gl should display correct hover labels of the second point of the very first scatter3d trace', function(done) {
         var _mock = Lib.extendDeep({}, multipleScatter3dMock);
 

@@ -372,6 +372,9 @@ proto.initializeGLCamera = function() {
         zoomMax: 100,
         mode: 'orbit'
     });
+
+    // Note: we shoule disable camera interactions until the scene is complete
+    this.camera.mouseListener.enabled = false;
 };
 
 proto.recoverContext = function() {
