@@ -372,6 +372,7 @@ plots.supplyDefaults = function(gd, opts) {
 
     newFullLayout._d3locale = getFormatter(formatObj, newFullLayout.separators);
     newFullLayout._extraFormat = getFormatObj(gd, extraFormatKeys);
+    newFullLayout._format = formatObj;
 
     newFullLayout._initialAutoSizeIsDone = true;
 

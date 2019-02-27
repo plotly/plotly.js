@@ -971,6 +971,7 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         // hovertemplate
+        var locale = gd._fullLayout._format;
         var hovertemplate = d.hovertemplate || false;
         var hovertemplateLabels = d.hovertemplateLabels || d;
         var eventData = d.eventData[0] || {};
@@ -978,6 +979,7 @@ function createHoverText(hoverData, opts, gd) {
             text = Lib.hovertemplateString(
                 hovertemplate,
                 hovertemplateLabels,
+                locale,
                 eventData,
                 {meta: fullLayout.meta}
             );
