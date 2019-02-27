@@ -1731,7 +1731,7 @@ describe('hover info', function() {
                 locales: {
                     'fr-eu': {
                         format: {
-                            currency: ['£', ''],
+                            currency: ['€', ''],
                             decimal: ',',
                             thousands: ' ',
                             grouping: [3]
@@ -1753,7 +1753,7 @@ describe('hover info', function() {
                 expect(hoverTrace.y).toEqual(1);
 
                 assertHoverLabelContent({
-                    nums: '£000 001,00',
+                    nums: '€000 001,00',
                     name: 'trace 0',
                     axis: '0,388'
                 });
