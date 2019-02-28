@@ -35,7 +35,7 @@ describe('Test gl3d before/after plot', function() {
         destroyGraphDiv();
     });
 
-    it('@gl should not rotate camera on the very first click before scene is complete and then should rotate', function(done) {
+    it('@noCI @gl should not rotate camera on the very first click before scene is complete and then should rotate', function(done) {
         var _mock = Lib.extendDeep(
             {
                 layout: {
