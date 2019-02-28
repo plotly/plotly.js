@@ -91,6 +91,7 @@ var attrs = module.exports = overrideAll({
         },
         groups: {
             valType: 'info_array',
+            impliedEdits: {'x': [], 'y': []},
             dimensions: 2,
             freeLength: true,
             dflt: [],

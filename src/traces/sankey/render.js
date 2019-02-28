@@ -641,7 +641,7 @@ function startForce(sankeyNode, sankeyLink, d, forceKey, gd) {
             window.requestAnimationFrame(faster);
         } else {
             // Make sure the final x position is equal to its original value
-            // necessary because the force simulation will have numerical error
+            // because the force simulation will have numerical error
             var x = d.node.originalX;
             d.node.x0 = x - d.visibleWidth / 2;
             d.node.x1 = x + d.visibleWidth / 2;
@@ -744,6 +744,9 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         firstRender = true;
     });
 
+    // To prevent animation on dragging
+    var dragcover = gd.querySelector('.dragcover');
+
     var styledData = calcData
             .filter(function(d) {return unwrap(d).trace.visible;})
             .map(sankeyModel.bind(null, layout));
@@ -808,7 +811,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .attr('d', linkPath());
 
     sankeyLink
-        .style('opacity', function() { return (gd._context.staticPlot || firstRender) ? 1 : 0;})
+        .style('opacity', function() { return (gd._context.staticPlot || firstRender || dragcover) ? 1 : 0;})
         .transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 1);

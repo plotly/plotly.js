@@ -1012,7 +1012,7 @@ describe('sankey tests', function() {
     });
 
     describe('Test drag interactions', function() {
-        ['freeform', 'perpendicular'].forEach(function(arrangement) {
+        ['freeform', 'perpendicular', 'snap'].forEach(function(arrangement) {
             describe('for arrangement ' + arrangement + ':', function() {
                 var gd;
                 var mockCopy;
@@ -1037,9 +1037,10 @@ describe('sankey tests', function() {
                         return Promise.resolve()
                         .then(function() {
                             nodes = document.getElementsByClassName('sankey-node');
-                            node = nodes.item(nodeId); // Selecting node with label 'Solid'
+                            node = nodes.item(nodeId);
                             position = getNodeCoords(node);
-                            return drag(node, move[0], move[1]);
+                            var timeDelay = (arrangement === 'snap') ? 1000 : 0; // Wait for force simulation to finish
+                            return drag(node, move[0], move[1], false, false, false, 10, false, timeDelay);
                         })
                         .then(function() {
                             nodes = document.getElementsByClassName('sankey-node');
@@ -1072,7 +1073,7 @@ describe('sankey tests', function() {
                       .then(done);
                 });
 
-                it('should persist the position of evry nodes after drag in attributes nodes.(x|y)', function(done) {
+                it('should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
                     mockCopy.data[0].arrangement = arrangement;
                     var move = [50, 50];
                     var nodes;
