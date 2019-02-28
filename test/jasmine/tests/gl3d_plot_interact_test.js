@@ -76,6 +76,11 @@ describe('Test gl3d before/after plot', function() {
             return delay(20)();
         }
 
+        function _clickOtherplace() {
+            mouseEvent('mouseover', 300, 300, {buttons: 1});
+            return delay(20)();
+        }
+
         _stayThere()
         .then(function() {
             gd = createGraphDiv();
@@ -118,10 +123,25 @@ describe('Test gl3d before/after plot', function() {
             expect(cameraAfter.center[0]).toBeCloseTo(0, 2, 'cameraAfter.center[0]');
             expect(cameraAfter.center[1]).toBeCloseTo(0, 2, 'cameraAfter.center[1]');
             expect(cameraAfter.center[2]).toBeCloseTo(0, 2, 'cameraAfter.center[2]');
-            expect(cameraAfter.eye[0]).not.toBeCloseTo(1.2, 2, 'cameraAfter.eye[0]');
-            expect(cameraAfter.eye[1]).not.toBeCloseTo(1.2, 2, 'cameraAfter.eye[1]');
-            expect(cameraAfter.eye[2]).not.toBeCloseTo(1.2, 2, 'cameraAfter.eye[2]');
+            expect(cameraAfter.eye[0]).toBeCloseTo(1.2, 2, 'cameraAfter.eye[0]');
+            expect(cameraAfter.eye[1]).toBeCloseTo(1.2, 2, 'cameraAfter.eye[1]');
+            expect(cameraAfter.eye[2]).toBeCloseTo(1.2, 2, 'cameraAfter.eye[2]');
             expect(cameraAfter.mouseListener.enabled === true);
+        })
+        .then(_clickOtherplace)
+        .then(delay(20))
+        .then(function() {
+            var cameraFinal = gd._fullLayout.scene._scene.glplot.camera;
+            expect(cameraFinal.up[0]).toBeCloseTo(0, 2, 'cameraFinal.up[0]');
+            expect(cameraFinal.up[1]).toBeCloseTo(0, 2, 'cameraFinal.up[1]');
+            expect(cameraFinal.up[2]).toBeCloseTo(1, 2, 'cameraFinal.up[2]');
+            expect(cameraFinal.center[0]).toBeCloseTo(0, 2, 'cameraFinal.center[0]');
+            expect(cameraFinal.center[1]).toBeCloseTo(0, 2, 'cameraFinal.center[1]');
+            expect(cameraFinal.center[2]).toBeCloseTo(0, 2, 'cameraFinal.center[2]');
+            expect(cameraFinal.eye[0]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[0]');
+            expect(cameraFinal.eye[1]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[1]');
+            expect(cameraFinal.eye[2]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[2]');
+            expect(cameraFinal.mouseListener.enabled === true);
         })
         .then(done);
     });

@@ -352,8 +352,6 @@ function Scene(options, fullLayout) {
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
     initializeGLPlot(this, this.pixelRatio);
-
-    this.enableGLCameraMouseListener();
 }
 
 var proto = Scene.prototype;
@@ -372,16 +370,6 @@ proto.initializeGLCamera = function() {
         zoomMax: 100,
         mode: 'orbit'
     });
-
-    this.disableGLCameraMouseListener();
-};
-
-proto.enableGLCameraMouseListener = function() {
-    this.camera.mouseListener.enabled = true;
-};
-
-proto.disableGLCameraMouseListener = function() {
-    this.camera.mouseListener.enabled = false;
 };
 
 proto.recoverContext = function() {
