@@ -329,7 +329,7 @@ describe('Test Plots', function() {
 
             it('should resize the main svgs', function() {
                 var mainSvgs = document.getElementsByClassName('main-svg');
-                expect(mainSvgs.length).toBe(2);
+                expect(mainSvgs.length).toBe(3);
 
                 for(var i = 0; i < mainSvgs.length; i++) {
                     var svg = mainSvgs[i];
@@ -343,7 +343,7 @@ describe('Test Plots', function() {
 
             it('should update the axis scales', function() {
                 var mainSvgs = document.getElementsByClassName('main-svg');
-                expect(mainSvgs.length).toBe(2);
+                expect(mainSvgs.length).toBe(3);
 
                 var fullLayout = gd._fullLayout;
                 var plotinfo = fullLayout._plots.xy;
@@ -357,7 +357,7 @@ describe('Test Plots', function() {
 
             it('should allow resizing by plot ID', function(done) {
                 var mainSvgs = document.getElementsByClassName('main-svg');
-                expect(mainSvgs.length).toBe(2);
+                expect(mainSvgs.length).toBe(3);
 
                 expect(typeof gd.id).toBe('string');
                 expect(gd.id).toBeTruthy();
