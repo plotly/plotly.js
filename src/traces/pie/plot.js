@@ -66,139 +66,11 @@ module.exports = function plot(gd, cdpie) {
                 var sliceTop = d3.select(this);
                 var slicePath = sliceTop.selectAll('path.surface').data([pt]);
 
-                // hover state vars
-                // have we drawn a hover label, so it should be cleared later
-                var hasHoverLabel = false;
-                // have we emitted a hover event, so later an unhover event should be emitted
-                // note that click events do not depend on this - you can still get them
-                // with hovermode: false or if you were earlier dragging, then clicked
-                // in the same slice that you moused up in
-                var hasHoverEvent = false;
-
-                function handleMouseOver() {
-                    // in case fullLayout or fullData has changed without a replot
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(gd._dragging || fullLayout2.hovermode === false) return;
-
-                    var hoverinfo = trace2.hoverinfo;
-                    if(Array.isArray(hoverinfo)) {
-                        // super hacky: we need to pull out the *first* hoverinfo from
-                        // pt.pts, then put it back into an array in a dummy trace
-                        // and call castHoverinfo on that.
-                        // TODO: do we want to have Fx.castHoverinfo somehow handle this?
-                        // it already takes an array for index, for 2D, so this seems tricky.
-                        hoverinfo = Fx.castHoverinfo({
-                            hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
-                            _module: trace._module
-                        }, fullLayout2, 0);
-                    }
-
-                    if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
-
-                    // in case we dragged over the pie from another subplot,
-                    // or if hover is turned off
-                    if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
-                        var rInscribed = getInscribedRadiusFraction(pt, cd0);
-                        var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
-                        var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
-                        var separators = fullLayout.separators;
-                        var thisText = [];
-
-                        if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
-                        pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
-                        if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
-                            var texti = pt.text;
-                            if(texti) thisText.push(texti);
-                        }
-                        pt.value = pt.v;
-                        pt.valueLabel = helpers.formatPieValue(pt.v, separators);
-                        if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
-                        pt.percent = pt.v / cd0.vTotal;
-                        pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
-                        if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
-
-                        var hoverLabel = trace.hoverlabel;
-                        var hoverFont = hoverLabel.font;
-
-                        Fx.loneHover({
-                            x0: hoverCenterX - rInscribed * cd0.r,
-                            x1: hoverCenterX + rInscribed * cd0.r,
-                            y: hoverCenterY,
-                            text: thisText.join('<br>'),
-                            name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
-                            idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
-                            color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
-                            borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
-                            fontFamily: helpers.castOption(hoverFont.family, pt.pts),
-                            fontSize: helpers.castOption(hoverFont.size, pt.pts),
-                            fontColor: helpers.castOption(hoverFont.color, pt.pts),
-
-                            trace: trace2,
-                            hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
-                            hovertemplateLabels: pt,
-                            eventData: [eventData(pt, trace2)]
-                        }, {
-                            container: fullLayout2._hoverlayer.node(),
-                            outerContainer: fullLayout2._paper.node(),
-                            gd: gd
-                        });
-
-                        hasHoverLabel = true;
-                    }
-
-                    gd.emit('plotly_hover', {
-                        points: [eventData(pt, trace2)],
-                        event: d3.event
-                    });
-                    hasHoverEvent = true;
-                }
-
-                function handleMouseOut(evt) {
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(hasHoverEvent) {
-                        evt.originalEvent = d3.event;
-                        gd.emit('plotly_unhover', {
-                            points: [eventData(pt, trace2)],
-                            event: d3.event
-                        });
-                        hasHoverEvent = false;
-                    }
-
-                    if(hasHoverLabel) {
-                        Fx.loneUnhover(fullLayout2._hoverlayer.node());
-                        hasHoverLabel = false;
-                    }
-                }
-
-                function handleClick() {
-                    // TODO: this does not support right-click. If we want to support it, we
-                    // would likely need to change pie to use dragElement instead of straight
-                    // mapbox event binding. Or perhaps better, make a simple wrapper with the
-                    // right mousedown, mousemove, and mouseup handlers just for a left/right click
-                    // mapbox would use this too.
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(gd._dragging || fullLayout2.hovermode === false) return;
-
-                    gd._hoverdata = [eventData(pt, trace2)];
-                    Fx.click(gd, d3.event);
-                }
-
                 slicePath.enter().append('path')
                     .classed('surface', true)
                     .style({'pointer-events': 'all'});
 
-                sliceTop.select('path.textline').remove();
-
-                sliceTop
-                    .on('mouseover', handleMouseOver)
-                    .on('mouseout', handleMouseOut)
-                    .on('click', handleClick);
+                sliceTop.call(attachFxHandlers, gd, cd);
 
                 if(trace.pull) {
                     var pull = +helpers.castOption(trace.pull, pt.pts) || 0;
@@ -423,6 +295,137 @@ module.exports = function plot(gd, cdpie) {
         });
     }, 0);
 };
+
+function attachFxHandlers(sliceTop, gd, cd) {
+    var cd0 = cd[0];
+    var trace = cd0.trace;
+    var cx = cd0.cx;
+    var cy = cd0.cy;
+
+    // hover state vars
+    // have we drawn a hover label, so it should be cleared later
+    var hasHoverLabel = false;
+    // have we emitted a hover event, so later an unhover event should be emitted
+    // note that click events do not depend on this - you can still get them
+    // with hovermode: false or if you were earlier dragging, then clicked
+    // in the same slice that you moused up in
+    var hasHoverEvent = false;
+
+    sliceTop.on('mouseover', function(pt) {
+        // in case fullLayout or fullData has changed without a replot
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+
+        if(gd._dragging || fullLayout2.hovermode === false) return;
+
+        var hoverinfo = trace2.hoverinfo;
+        if(Array.isArray(hoverinfo)) {
+            // super hacky: we need to pull out the *first* hoverinfo from
+            // pt.pts, then put it back into an array in a dummy trace
+            // and call castHoverinfo on that.
+            // TODO: do we want to have Fx.castHoverinfo somehow handle this?
+            // it already takes an array for index, for 2D, so this seems tricky.
+            hoverinfo = Fx.castHoverinfo({
+                hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
+                _module: trace._module
+            }, fullLayout2, 0);
+        }
+
+        if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
+
+        // in case we dragged over the pie from another subplot,
+        // or if hover is turned off
+        if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
+            var rInscribed = pt.rInscribed;
+            var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
+            var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
+            var separators = fullLayout2.separators;
+            var thisText = [];
+
+            if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+            pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+            if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
+                var texti = pt.text;
+                if(texti) thisText.push(texti);
+            }
+            pt.value = pt.v;
+            pt.valueLabel = helpers.formatPieValue(pt.v, separators);
+            if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
+            pt.percent = pt.v / cd0.vTotal;
+            pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
+            if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
+
+            var hoverLabel = trace.hoverlabel;
+            var hoverFont = hoverLabel.font;
+
+            Fx.loneHover({
+                x0: hoverCenterX - rInscribed * cd0.r,
+                x1: hoverCenterX + rInscribed * cd0.r,
+                y: hoverCenterY,
+                text: thisText.join('<br>'),
+                name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
+                idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
+                color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
+                borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
+                fontFamily: helpers.castOption(hoverFont.family, pt.pts),
+                fontSize: helpers.castOption(hoverFont.size, pt.pts),
+                fontColor: helpers.castOption(hoverFont.color, pt.pts),
+
+                trace: trace2,
+                hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
+                hovertemplateLabels: pt,
+                eventData: [eventData(pt, trace2)]
+            }, {
+                container: fullLayout2._hoverlayer.node(),
+                outerContainer: fullLayout2._paper.node(),
+                gd: gd
+            });
+
+            hasHoverLabel = true;
+        }
+
+        gd.emit('plotly_hover', {
+            points: [eventData(pt, trace2)],
+            event: d3.event
+        });
+        hasHoverEvent = true;
+    });
+
+    sliceTop.on('mouseout', function(evt) {
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+        var pt = d3.select(this).datum();
+
+        if(hasHoverEvent) {
+            evt.originalEvent = d3.event;
+            gd.emit('plotly_unhover', {
+                points: [eventData(pt, trace2)],
+                event: d3.event
+            });
+            hasHoverEvent = false;
+        }
+
+        if(hasHoverLabel) {
+            Fx.loneUnhover(fullLayout2._hoverlayer.node());
+            hasHoverLabel = false;
+        }
+    });
+
+    sliceTop.on('click', function(pt) {
+        // TODO: this does not support right-click. If we want to support it, we
+        // would likely need to change pie to use dragElement instead of straight
+        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // right mousedown, mousemove, and mouseup handlers just for a left/right click
+        // mapbox would use this too.
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+
+        if(gd._dragging || fullLayout2.hovermode === false) return;
+
+        gd._hoverdata = [eventData(pt, trace2)];
+        Fx.click(gd, d3.event);
+    });
+}
 
 function determineOutsideTextFont(trace, pt, layoutFont) {
     var color = helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
