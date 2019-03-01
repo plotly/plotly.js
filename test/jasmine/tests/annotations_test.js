@@ -814,6 +814,28 @@ describe('annotations autorange', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should not error out on subplots w/o visible traces', function(done) {
+        Plotly.plot(gd, [{}], {
+            annotations: [{
+                x: 0.1,
+                y: 0.1,
+                text: 't',
+                showarrow: false
+            }, {
+                x: 0.2,
+                y: 0.3,
+                text: 'a'
+            }]
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.099, 0.201], 1, 'x rng');
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0.091, 0.335], 1, 'y rng');
+            assertVisible([0, 1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('annotation clicktoshow', function() {

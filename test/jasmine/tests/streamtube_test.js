@@ -359,6 +359,12 @@ describe('@noCI Test streamtube hover', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelContent({nums: '!SCALAR TX!'});
+            return Plotly.restyle(gd, 'hovertext', 'SCALAR HOVERTEXT !!');
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({nums: 'SCALAR HOVERTEXT !!'});
         })
         .catch(failTest)
         .then(done);
@@ -394,6 +400,14 @@ describe('@noCI Test streamtube hover', function() {
                     'norm: 2.07'
                 ].join('\n'),
                 name: 'TUBE!'
+            });
+
+            return Plotly.restyle(gd, 'hovertemplate', '∇·F = %{divergence:.3f}<extra>TUBE</extra>');
+        })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: '∇·F = 0.465',
+                name: 'TUBE'
             });
         })
         .catch(failTest)

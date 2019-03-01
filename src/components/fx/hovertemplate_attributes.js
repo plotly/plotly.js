@@ -31,8 +31,7 @@ module.exports = function(opts, extra) {
         valType: 'string',
         role: 'info',
         dflt: '',
-        arrayOk: true,
-        editType: 'none',
+        editType: opts.editType || 'none',
         description: [
             'Template string used for rendering the information that appear on hover box.',
             'Note that this will override `hoverinfo`.',
@@ -45,6 +44,10 @@ module.exports = function(opts, extra) {
             'Anything contained in tag `<extra>` is displayed in the secondary box, for example "<extra>{fullData.name}</extra>".'
         ].join(' ')
     };
+
+    if(opts.arrayOk !== false) {
+        hovertemplate.arrayOk = true;
+    }
 
     return hovertemplate;
 };

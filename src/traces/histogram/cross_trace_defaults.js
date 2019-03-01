@@ -6,12 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
 var nestedProperty = Lib.nestedProperty;
 
+var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 var attributes = require('./attributes');
 
 var BINATTRS = {
@@ -50,20 +51,23 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         binDirection = traceOut.orientation === 'v' ? 'x' : 'y';
         // in overlay mode make a separate group for each trace
         // otherwise collect all traces of the same subplot & orientation
-        group = isOverlay ? traceOut.uid : (traceOut.xaxis + traceOut.yaxis + binDirection);
-        traceOut._groupName = group;
-
+        group = traceOut._groupName = isOverlay ? traceOut.uid : (
+            getAxisGroup(fullLayout, traceOut.xaxis) +
+            getAxisGroup(fullLayout, traceOut.yaxis) +
+            binDirection
+        );
         binOpts = allBinOpts[group];
 
         if(binOpts) {
             binOpts.traces.push(traceOut);
-        }
-        else {
+        } else {
             binOpts = allBinOpts[group] = {
                 traces: [traceOut],
                 direction: binDirection
             };
         }
+
+        handleGroupingDefaults(traceOut._input, traceOut, fullLayout, coerce);
     }
 
     for(group in allBinOpts) {

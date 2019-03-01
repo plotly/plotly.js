@@ -96,8 +96,7 @@ function untestableFilter(mockName) {
     var cond = !(
         mockName === 'font-wishlist' ||
         mockName.indexOf('gl2d_') !== -1 ||
-        mockName.indexOf('mapbox_') !== -1 ||
-        mockName.indexOf('gl3d_cone-') !== -1
+        mockName.indexOf('mapbox_') !== -1
     );
 
     cond = (mockName.indexOf('waterfall') !== -1); // only run waterfall on CI.

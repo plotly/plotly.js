@@ -13,6 +13,7 @@ var Box = {};
 Box.attributes = require('./attributes');
 Box.layoutAttributes = require('./layout_attributes');
 Box.supplyDefaults = require('./defaults').supplyDefaults;
+Box.crossTraceDefaults = require('./defaults').crossTraceDefaults;
 Box.supplyLayoutDefaults = require('./layout_defaults').supplyLayoutDefaults;
 Box.calc = require('./calc');
 Box.crossTraceCalc = require('./cross_trace_calc').crossTraceCalc;

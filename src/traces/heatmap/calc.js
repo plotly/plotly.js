@@ -131,7 +131,8 @@ module.exports = function calc(gd, trace) {
         x: xArray,
         y: yArray,
         z: z,
-        text: trace._text || trace.text
+        text: trace._text || trace.text,
+        hovertext: trace._hovertext || trace.hovertext
     };
 
     if(xIn && xIn.length === xArray.length - 1) cd0.xCenter = xIn;

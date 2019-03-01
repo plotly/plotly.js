@@ -52,6 +52,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
 
     coerce('text');
+    coerce('hovertext');
+    coerce('hovertemplate');
 
     // disable 1D transforms (for now)
     traceOut._length = null;

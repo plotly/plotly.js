@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -85,6 +84,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Coerce remaining properties
     [
         'text',
+        'hovertext',
+        'hovertemplate',
         'lighting.ambient',
         'lighting.diffuse',
         'lighting.specular',
@@ -96,6 +97,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lightposition.y',
         'lightposition.z',
         'flatshading',
+        'opacity'
     ].forEach(function(x) { coerce(x); });
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});

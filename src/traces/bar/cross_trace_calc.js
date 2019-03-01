@@ -14,6 +14,7 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
+var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 var Sieve = require('./sieve.js');
 
 /*
@@ -279,26 +280,42 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var distinctPositions = sieve.distinctPositions;
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
+    var nTraces = calcTraces.length;
 
     // if there aren't any overlapping positions,
     // let them have full width even if mode is group
     var overlap = (positions.length !== distinctPositions.length);
-
-    var nTraces = calcTraces.length;
     var barGroupWidth = minDiff * (1 - bargap);
-    var barWidthPlusGap = (overlap) ? barGroupWidth / nTraces : barGroupWidth;
-    var barWidth = barWidthPlusGap * (1 - bargroupgap);
+
+    var groupId = getAxisGroup(fullLayout, pa._id) + calcTraces[0][0].trace.orientation;
+    var alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
 
     for(var i = 0; i < nTraces; i++) {
         var calcTrace = calcTraces[i];
+        var trace = calcTrace[0].trace;
+
+        var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
+        var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;
+
+        var barWidthPlusGap;
+        if(nOffsetGroups) {
+            barWidthPlusGap = barGroupWidth / nOffsetGroups;
+        } else {
+            barWidthPlusGap = overlap ? barGroupWidth / nTraces : barGroupWidth;
+        }
+
+        var barWidth = barWidthPlusGap * (1 - bargroupgap);
+
+        var offsetFromCenter;
+        if(nOffsetGroups) {
+            offsetFromCenter = ((2 * trace._offsetIndex + 1 - nOffsetGroups) * barWidthPlusGap - barWidth) / 2;
+        } else {
+            offsetFromCenter = overlap ?
+                ((2 * i + 1 - nTraces) * barWidthPlusGap - barWidth) / 2 :
+                -barWidth / 2;
+        }
+
         var t = calcTrace[0].t;
-
-        // computer bar group center and bar offset
-        var offsetFromCenter = overlap ?
-            ((2 * i + 1 - nTraces) * barWidthPlusGap - barWidth) / 2 :
-            -barWidth / 2;
-
-        // store bar width and offset for this trace
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;

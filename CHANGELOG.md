@@ -10,6 +10,60 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.45.0] -- 2019-02-26
+
+### Added
+- Add support for circular networks in `sankey` traces [#3406, #3535, #3564]
+- Add matching axes behavior to cartesian axes via new axis attribute and
+  new splom attribute dimensions attribute `matches` [#3506, #3565]
+- Add attributes `alignmentgroup` and `offsetgroup` to `bar`, `histogram`, `box`
+  and `violin` traces to make cross-trace positioning easier [#3529]
+- Add support for orthographic projections in gl3d subplots via new attribute
+  `scene.camera.projection.type` [#3550]
+- Add `cmid` and `zmid` colorscale attributes to pick the middle of the color
+  range during the auto-colorscale computations [#3549]
+- Add support for `sankey` grouping via new attribute `groups` [#3556]
+- Add support for `sankey` concentration `colorscales` [#3501]
+- Add support for `hovertemplate` for all `gl3d` traces, `contour`,
+  `heatmap`, `histogram*`, `parcats`, `scattercarpet` and `splom` traces [#3530]
+- Add `hovertext` attribute to all traces that support hover 'text',
+  for consistency with traces that already have an `hovertext` attribute [#3553]
+- Add support for layout `meta` templating in trace `name`,
+  `rangeselector`, `updatemenus` and `sliders` labels as well as
+  within `hovertemplate` [#3548]
+- Add support for `opacity` to `isosurface` traces [#3545]
+- Add `mapbox.layers` attributes: `minzoom`, `maxzoom`, `line.dash` and `symbol.placement` [#3399]
+
+### Changed
+- More consistency pass down WebGL pixel ratio to gl3d renderers,
+  this leads to better axis line and error bar rendering on some hardwares [#3573]
+- Performance boost for `isosurface` trace generation [#3521]
+- Export template string regex of `Lib` [#3548]
+- Do no cluster points in  `scattergl` trace with less than 1e5 data pts,
+  this fixes reported "missing data points" scenarios [#3578]
+
+### Fixed
+- Fix selection outline clearing during cartesian axis-range relayout calls
+  (bug introduced in 1.42.0) [#3577]
+- Fix modebar interactions on graphs with `scatter3d` traces with
+  marker colorscales (bug introduced in 1.44.0) [#3554]
+- Fix axis `automargin` for superimposed subplots (bug introduced in 1.44.3) [#3566]
+- Fix polar angular tick labels placement [#3538]
+- Fix `scattergl` updates after selections for trace with on-graph text [#3575]
+- Fix `responsive: true` config option for graph with WebGL traces [#3500]
+- Fix `modebar.bgcolor` for vertical modebars with wrapped buttons [#3500]
+- Fix `ohlc` and `candlestick` auto-range computations [#3544]
+
+
+## [1.44.4] -- 2019-02-12
+
+### Fixed
+- Fix `Plotly.react` used with `uirevision` when removing traces [#3527]
+- Fix `scattergl` update calls that change the number of on-graph text elements [#3536]
+- Fix annotations SVG errors on trace-less subplots [#3534]
+- Fix `ohlc` and `candlestick` hover on blank coordinates (bug introduced in 1.43.2) [#3537]
+
+
 ## [1.44.3] -- 2019-02-06
 
 ### Fixed

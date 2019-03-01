@@ -1,0 +1,43 @@
+{
+  "data": [{
+    "y": [1, 2, 1],
+    "mode": "markers",
+    "marker": {
+      "size": 20,
+      "color": [-1, 1, 10],
+      "cmid": "0",
+      "colorbar": {
+        "len": 0.3,
+        "y": "1",
+        "yanchor": "top",
+        "title": {"text": "marker.cmid=0", "side": "right"}
+      }
+    }
+  }, {
+    "type": "heatmap",
+    "z": [[1,2], [2, 3]],
+    "zmid": -1,
+    "colorbar": {
+      "len": 0.3,
+      "y": "0.5",
+      "yanchor": "middle",
+      "title": {"text": "zmid=-1", "side": "right"}
+    }
+  }, {
+    "type": "bar",
+    "y": [0.5, 1, 0.5],
+    "name": "marker.line.cmid=2",
+    "hoverlabel": {"namelength": -1},
+    "marker": {
+      "line": {
+          "width": 2,
+          "color": [-1, -1, -10],
+          "cmid": 2
+      }
+    }
+  }],
+  "layout": {
+    "title": {"text": "Traces with set <b>cmid</b> / <b>zmid</b>"},
+    "showlegend": false
+  }
+}

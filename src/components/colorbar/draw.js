@@ -434,7 +434,6 @@ module.exports = function draw(gd, id) {
 
                     var vals = Axes.calcTicks(cbAxisOut);
                     var transFn = Axes.makeTransFn(cbAxisOut);
-                    var labelFns = Axes.makeLabelFns(cbAxisOut, shift);
                     var tickSign = Axes.getTickSigns(cbAxisOut)[2];
 
                     Axes.drawTicks(gd, cbAxisOut, {
@@ -448,9 +447,7 @@ module.exports = function draw(gd, id) {
                         vals: vals,
                         layer: axisLayer,
                         transFn: transFn,
-                        labelXFn: labelFns.labelXFn,
-                        labelYFn: labelFns.labelYFn,
-                        labelAnchorFn: labelFns.labelAnchorFn
+                        labelFns: Axes.makeLabelFns(cbAxisOut, shift)
                     });
                 },
                 function() {

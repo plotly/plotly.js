@@ -237,6 +237,8 @@ function concatExtremes(gd, ax) {
 }
 
 function doAutoRange(gd, ax) {
+    ax.setScale();
+
     if(ax.autorange) {
         ax.range = getAutoRange(gd, ax);
 

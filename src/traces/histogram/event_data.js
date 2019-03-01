@@ -13,6 +13,9 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     out.x = 'xVal' in pt ? pt.xVal : pt.x;
     out.y = 'yVal' in pt ? pt.yVal : pt.y;
 
+    // for 2d histograms
+    if('zLabelVal' in pt) out.z = pt.zLabelVal;
+
     if(pt.xa) out.xaxis = pt.xa;
     if(pt.ya) out.yaxis = pt.ya;
 

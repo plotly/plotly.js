@@ -72,13 +72,21 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
     var label = sankeyLink.datum().link.label;
 
-    sankeyLink.style('fill-opacity', 0.4);
+    sankeyLink.style('fill-opacity', function(l) {
+        if(!l.link.concentrationscale) {
+            return 0.4;
+        }
+    });
 
     if(label) {
         ownTrace(sankey, d)
             .selectAll('.' + cn.sankeyLink)
             .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', 0.4);
+            .style('fill-opacity', function(l) {
+                if(!l.link.concentrationscale) {
+                    return 0.4;
+                }
+            });
     }
 
     if(visitNodes) {
@@ -94,7 +102,6 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     var label = sankeyLink.datum().link.label;
 
     sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
-
     if(label) {
         ownTrace(sankey, d)
             .selectAll('.' + cn.sankeyLink)
@@ -144,6 +151,7 @@ module.exports = function plot(gd, calcData) {
 
     var sourceLabel = _(gd, 'source:') + ' ';
     var targetLabel = _(gd, 'target:') + ' ';
+    var concentrationLabel = _(gd, 'concentration:') + ' ';
     var incomingLabel = _(gd, 'incoming flow count:') + ' ';
     var outgoingLabel = _(gd, 'outgoing flow count:') + ' ';
 
@@ -152,21 +160,29 @@ module.exports = function plot(gd, calcData) {
         var obj = d.link.trace.link;
         if(obj.hoverinfo === 'none' || obj.hoverinfo === 'skip') return;
         var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
-        var boundingBox = element.getBoundingClientRect();
-        var hoverCenterX = boundingBox.left + boundingBox.width / 2;
-        var hoverCenterY = boundingBox.top + boundingBox.height / 2;
+        var hoverCenterX;
+        var hoverCenterY;
+        if(d.link.circular) {
+            hoverCenterX = (d.link.circularPathData.leftInnerExtent + d.link.circularPathData.rightInnerExtent) / 2 + d.parent.translateX;
+            hoverCenterY = d.link.circularPathData.verticalFullExtent + d.parent.translateY;
+        } else {
+            var boundingBox = element.getBoundingClientRect();
+            hoverCenterX = boundingBox.left + boundingBox.width / 2 - rootBBox.left;
+            hoverCenterY = boundingBox.top + boundingBox.height / 2 - rootBBox.top;
+        }
 
         var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix};
         d.link.fullData = d.link.trace;
 
         var tooltip = Fx.loneHover({
-            x: hoverCenterX - rootBBox.left,
-            y: hoverCenterY - rootBBox.top,
+            x: hoverCenterX,
+            y: hoverCenterY,
             name: hovertemplateLabels.valueLabel,
             text: [
                 d.link.label || '',
                 sourceLabel + d.link.source.label,
-                targetLabel + d.link.target.label
+                targetLabel + d.link.target.label,
+                d.link.concentrationscale ? concentrationLabel + d3.format('%0.2f')(d.link.flow.labelConcentration) : ''
             ].filter(renderableValuePresent).join('<br>'),
             color: castHoverOption(obj, 'bgcolor') || Color.addOpacity(d.tinyColorHue, 1),
             borderColor: castHoverOption(obj, 'bordercolor'),
@@ -184,7 +200,9 @@ module.exports = function plot(gd, calcData) {
             gd: gd
         });
 
-        makeTranslucent(tooltip, 0.65);
+        if(!d.link.concentrationscale) {
+            makeTranslucent(tooltip, 0.65);
+        }
         makeTextContrasty(tooltip);
     };
 
@@ -282,6 +300,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     render(
+        gd,
         svg,
         calcData,
         {

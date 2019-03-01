@@ -212,7 +212,8 @@ function initNestedArray(len) {
 
 function arraysToCalcdata(pt, trace, i) {
     var trace2calc = {
-        text: 'tx'
+        text: 'tx',
+        hovertext: 'htx'
     };
 
     for(var k in trace2calc) {

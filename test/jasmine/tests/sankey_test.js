@@ -2,14 +2,19 @@ var Plotly = require('@lib/index');
 var attributes = require('@src/traces/sankey/attributes');
 var Lib = require('@src/lib');
 var d3 = require('d3');
+var d3sankey = require('@plotly/d3-sankey');
+var d3SankeyCircular = require('d3-sankey-circular');
 var mock = require('@mocks/sankey_energy.json');
 var mockDark = require('@mocks/sankey_energy_dark.json');
+var mockCircular = require('@mocks/sankey_circular.json');
+var mockCircularLarge = require('@mocks/sankey_circular_large.json');
 var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var getNodeCoords = require('../assets/get_node_coords');
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var defaultColors = require('@src/components/color/attributes').defaults;
@@ -117,6 +122,9 @@ describe('sankey tests', function() {
 
                 expect(fullTrace.link.label)
                     .toEqual([], 'presence of link target array is guaranteed');
+
+                expect(fullTrace.link.colorscales)
+                    .toEqual([], 'presence of link colorscales array is guaranteed');
             });
 
         it('\'Sankey\' specification should have proper types',
@@ -240,78 +248,97 @@ describe('sankey tests', function() {
     });
 
     describe('sankey calc', function() {
-
         function _calc(trace) {
             var gd = { data: [trace] };
 
             supplyAllDefaults(gd);
             var fullTrace = gd._fullData[0];
-            Sankey.calc(gd, fullTrace);
-            return fullTrace;
+            return Sankey.calc(gd, fullTrace);
         }
 
         var base = { type: 'sankey' };
 
-        describe('remove nodes if encountering circularity', function() {
-            var errors;
+        it('detects circularity', function() {
+            var calcData = _calc(Lib.extendDeep({}, base, {
+                node: {
+                    label: ['a', 'b', 'c', 'd', 'e']
+                },
+                link: {
+                    value: [1, 1, 1, 1],
+                    source: [0, 1, 2, 3],
+                    target: [1, 2, 0, 4]
+                }
+            }));
+            expect(calcData[0].circular).toBeTruthy();
+        });
 
-            beforeEach(function() {
-                errors = [];
-                spyOn(Lib, 'error').and.callFake(function(msg) {
-                    errors.push(msg);
-                });
+        it('detects the absence of circularity', function() {
+            var calcData = _calc(Lib.extendDeep({}, base, {
+                node: {
+                    label: ['a', 'b', 'c', 'd', 'e']
+                },
+                link: {
+                    value: [1, 1, 1, 1],
+                    source: [0, 1, 2, 3],
+                    target: [1, 2, 4, 4]
+                }
+            }));
+            expect(calcData[0].circular).toBe(false);
+        });
+
+        it('keep an index of groups', function() {
+            var calcData = _calc(Lib.extendDeep({}, base, {
+                node: {
+                    label: ['a', 'b', 'c', 'd', 'e'],
+                    groups: [[0, 1], [2, 3]]
+                },
+                link: {
+                    value: [1, 1, 1, 1],
+                    source: [0, 1, 2, 3],
+                    target: [1, 2, 4, 4]
+                }
+            }));
+            var groups = calcData[0]._nodes.filter(function(node) {
+                return node.group;
+            });
+            expect(groups.length).toBe(2);
+            expect(calcData[0].circular).toBe(false);
+        });
+
+        it('emits a warning if a node is part of more than one group', function() {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
             });
 
-            it('removing a single self-pointing node', function() {
-                expect(errors.length).toBe(0);
+            var calcData = _calc(Lib.extendDeep({}, base, {
+                node: {
+                    label: ['a', 'b', 'c', 'd', 'e'],
+                    groups: [[0, 1], [1, 2, 3]]
+                },
+                link: {
+                    value: [1, 1, 1, 1],
+                    source: [0, 1, 2, 3],
+                    target: [1, 2, 4, 4]
+                }
+            }));
 
-                var fullTrace = _calc(Lib.extendDeep({}, base, {
-                    node: {
-                        label: ['a']
-                    },
-                    link: {
-                        value: [1],
-                        source: [0],
-                        target: [0]
-                    }
-                }));
+            expect(warnings.length).toBe(1);
 
-                expect(fullTrace.node.label).toEqual([], 'node label(s) removed');
-                expect(fullTrace.link.value).toEqual([], 'link value(s) removed');
-                expect(fullTrace.link.source).toEqual([], 'link source(s) removed');
-                expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
-                expect(errors.length).toBe(1);
-            });
-
-            it('removing everything if detecting a circle', function() {
-                expect(errors.length).toBe(0);
-
-                var fullTrace = _calc(Lib.extendDeep({}, base, {
-                    node: {
-                        label: ['a', 'b', 'c', 'd', 'e']
-                    },
-                    link: {
-                        value: [1, 1, 1, 1, 1, 1, 1, 1],
-                        source: [0, 1, 2, 3],
-                        target: [1, 2, 0, 4]
-                    }
-                }));
-
-                expect(fullTrace.node.label).toEqual([], 'node label(s) removed');
-                expect(fullTrace.link.value).toEqual([], 'link value(s) removed');
-                expect(fullTrace.link.source).toEqual([], 'link source(s) removed');
-                expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
-                expect(errors.length).toBe(1);
-            });
+            // Expect node '1' to be in the first group
+            expect(calcData[0]._groupLookup[1]).toBe(5);
         });
     });
 
     describe('lifecycle methods', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
         afterEach(destroyGraphDiv);
 
         it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mockDark);
 
@@ -340,7 +367,6 @@ describe('sankey tests', function() {
 
         it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
 
-            var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy)
@@ -363,7 +389,6 @@ describe('sankey tests', function() {
 
         it('\'node\' remains visible even if \'value\' is very low', function(done) {
 
-            var gd = createGraphDiv();
             var minimock = [{
                 type: 'sankey',
                 node: {
@@ -383,6 +408,106 @@ describe('sankey tests', function() {
                     done();
                 });
         });
+
+        it('switch from normal to circular Sankey on react', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+            var mockCircularCopy = Lib.extendDeep({}, mockCircular);
+
+            Plotly.plot(gd, mockCopy)
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+                  return Plotly.react(gd, mockCircularCopy);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(true);
+                  done();
+              });
+        });
+
+        it('switch from circular to normal Sankey on react', function(done) {
+            var mockCircularCopy = Lib.extendDeep({}, mockCircular);
+
+            Plotly.plot(gd, mockCircularCopy)
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(true);
+
+                  // Remove circular links
+                  var source = mockCircularCopy.data[0].link.source;
+                  source.splice(6, 1);
+                  source.splice(4, 1);
+
+                  var target = mockCircularCopy.data[0].link.target;
+                  target.splice(6, 1);
+                  target.splice(4, 1);
+
+                  return Plotly.react(gd, mockCircularCopy);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+                  done();
+              });
+        });
+
+        it('can create groups, restyle groups and properly update DOM', function(done) {
+            var mockCircularCopy = Lib.extendDeep({}, mockCircular);
+            var firstGroup = [[2, 3], [0, 1]];
+            var newGroup = [[2, 3]];
+            mockCircularCopy.data[0].node.groups = firstGroup;
+
+            Plotly.plot(gd, mockCircularCopy)
+              .then(function() {
+                  expect(gd._fullData[0].node.groups).toEqual(firstGroup);
+                  return Plotly.restyle(gd, {'node.groups': [newGroup]});
+              })
+              .then(function() {
+                  expect(gd._fullData[0].node.groups).toEqual(newGroup);
+
+                  // Check that all links have updated their links
+                  d3.selectAll('.sankey .sankey-link').each(function(d, i) {
+                      var path = this.getAttribute('d');
+                      expect(path).toBe(d.linkPath()(d), 'link ' + i + ' has wrong `d` attribute');
+                  });
+
+                  // Check that ghost nodes used for animations:
+                  // 1) are drawn first so they apear behind
+                  var seeRealNode = false;
+                  var sankeyNodes = d3.selectAll('.sankey .sankey-node');
+                  sankeyNodes.each(function(d, i) {
+                      if(d.partOfGroup) {
+                          if(seeRealNode) fail('node ' + i + ' is a ghost node and should be behind');
+                      } else {
+                          seeRealNode = true;
+                      }
+                  });
+                  // 2) have an element for each grouped node
+                  var L = sankeyNodes.filter(function(d) { return d.partOfGroup;}).size();
+                  expect(L).toBe(newGroup.flat().length, 'does not have the right number of ghost nodes');
+              })
+              .catch(failTest)
+              .then(done);
+        });
+
+        it('switches from normal to circular Sankey on grouping', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy)
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+
+                  // Group two nodes that creates a circularity
+                  return Plotly.restyle(gd, 'node.groups', [[[1, 3]]]);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(true);
+                  // Group two nodes that do not create a circularity
+                  return Plotly.restyle(gd, 'node.groups', [[[1, 4]]]);
+              })
+              .then(function() {
+                  expect(gd.calcdata[0][0].circular).toBe(false);
+                  done();
+              });
+        });
+
     });
 
     describe('Test hover/click interactions:', function() {
@@ -808,6 +933,12 @@ describe('sankey tests', function() {
                 var pt = d.points[0];
                 expect(pt.hasOwnProperty('source')).toBeTruthy();
                 expect(pt.hasOwnProperty('target')).toBeTruthy();
+                expect(pt.hasOwnProperty('flow')).toBeTruthy();
+
+                expect(pt.flow.hasOwnProperty('concentration')).toBeTruthy();
+                expect(pt.flow.hasOwnProperty('labelConcentration')).toBeTruthy();
+                expect(pt.flow.hasOwnProperty('value')).toBeTruthy();
+                expect(pt.flow.hasOwnProperty('links')).toBeTruthy();
             })
             .then(function() { return _unhover('node'); })
             .then(function(d) {
@@ -878,6 +1009,57 @@ describe('sankey tests', function() {
         });
     });
 
+    describe('Test drag interactions:', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _drag(fromX, fromY, dX, dY, delay) {
+            var toX = fromX + dX;
+            var toY = fromY + dY;
+
+            return new Promise(function(resolve) {
+                mouseEvent('mousemove', fromX, fromY);
+                mouseEvent('mousedown', fromX, fromY);
+                mouseEvent('mousemove', toX, toY);
+
+                setTimeout(function() {
+                    mouseEvent('mouseup', toX, toY);
+                    resolve();
+                }, delay);
+            });
+        }
+
+        it('should change the position of a node', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+            var nodes;
+            var node;
+            var position;
+            var nodePos = [404, 302];
+            var move = [0, -100];
+
+            Plotly.plot(gd, fig)
+              .then(function() {
+                  nodes = document.getElementsByClassName('sankey-node');
+                  node = nodes.item(4); // Selecting node with label 'Solid'
+                  position = getNodeCoords(node);
+                  return _drag(nodePos[0], nodePos[1], move[0], move[1], 500);
+              })
+              .then(function() {
+                  nodes = document.getElementsByClassName('sankey-node');
+                  node = nodes.item(nodes.length - 1); // Dragged node is now the last one
+                  var newPosition = getNodeCoords(node);
+                  expect(newPosition.x).toBeCloseTo(position.x + move[0]);
+                  expect(newPosition.y).toBeCloseTo(position.y + move[1]);
+              })
+              .catch(failTest)
+              .then(done);
+        });
+    });
     it('emits a warning if node.pad is too large', function(done) {
         var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
@@ -931,3 +1113,293 @@ function assertNoLabel() {
     var g = d3.selectAll('.hovertext');
     expect(g.size()).toBe(0);
 }
+
+describe('sankey layout generators', function() {
+    function checkArray(arr, key, result) {
+        var value = arr.map(function(obj) {
+            return obj[key];
+        });
+        expect(value).toEqual(result, 'invalid property named ' + key);
+    }
+
+    function checkRoundedArray(arr, key, result) {
+        var value = arr.map(function(obj) {
+            return Math.round(obj[key]);
+        });
+        expect(value).toEqual(result, 'invalid property named ' + key);
+    }
+
+    function moveNode(sankey, graph, nodeIndex, delta) {
+        var node = graph.nodes[nodeIndex];
+        var pos0 = [node.x0, node.y0];
+        var pos1 = [node.x1, node.y1];
+
+        // Update node's position
+        node.x0 += delta[0];
+        node.x1 += delta[0];
+        node.y0 += delta[1];
+        node.y1 += delta[1];
+
+        // Update links
+        var updatedGraph = sankey.update(graph);
+
+        // Check node position
+        expect(updatedGraph.nodes[nodeIndex].x0).toBeCloseTo(pos0[0] + delta[0], 0);
+        expect(updatedGraph.nodes[nodeIndex].x1).toBeCloseTo(pos1[0] + delta[0], 0);
+        expect(updatedGraph.nodes[nodeIndex].y0).toBeCloseTo(pos0[1] + delta[1], 0);
+        expect(updatedGraph.nodes[nodeIndex].y1).toBeCloseTo(pos1[1] + delta[1], 0);
+
+        return updatedGraph;
+    }
+
+    describe('d3-sankey', function() {
+        var data = {
+            'nodes': [{
+                'node': 0,
+                'name': 'node0'
+            }, {
+                'node': 1,
+                'name': 'node1'
+            }, {
+                'node': 2,
+                'name': 'node2'
+            }, {
+                'node': 3,
+                'name': 'node3'
+            }, {
+                'node': 4,
+                'name': 'node4'
+            }],
+            'links': [{
+                'source': 0,
+                'target': 2,
+                'value': 2
+            }, {
+                'source': 1,
+                'target': 2,
+                'value': 2
+            }, {
+                'source': 1,
+                'target': 3,
+                'value': 2
+            }, {
+                'source': 0,
+                'target': 4,
+                'value': 2
+            }, {
+                'source': 2,
+                'target': 3,
+                'value': 2
+            }, {
+                'source': 2,
+                'target': 4,
+                'value': 2
+            }, {
+                'source': 3,
+                'target': 4,
+                'value': 4
+            }]
+        };
+        var sankey;
+        var graph;
+        var margin = {
+            top: 10,
+            right: 10,
+            bottom: 10,
+            left: 10
+        };
+        var width = 1200 - margin.left - margin.right;
+        var height = 740 - margin.top - margin.bottom;
+
+        beforeEach(function() {
+            sankey = d3sankey
+            .sankey()
+            .nodeWidth(36)
+            .nodePadding(10)
+            .nodes(data.nodes)
+            .links(data.links)
+            .size([width, height])
+            .iterations(32);
+
+            graph = sankey();
+        });
+
+        it('controls the width of nodes', function() {
+            expect(sankey.nodeWidth()).toEqual(36, 'incorrect nodeWidth');
+        });
+
+        it('controls the padding between nodes', function() {
+            expect(sankey.nodePadding()).toEqual(10, 'incorrect nodePadding');
+        });
+
+        it('controls the padding between nodes', function() {
+            expect(sankey.nodePadding()).toEqual(10, 'incorrect nodePadding');
+        });
+
+        it('keep a list of nodes', function() {
+            checkArray(graph.nodes, 'name', ['node0', 'node1', 'node2', 'node3', 'node4']);
+        });
+
+        it('keep a list of nodes with x and y values', function() {
+            checkRoundedArray(graph.nodes, 'x0', [0, 0, 381, 763, 1144]);
+            checkRoundedArray(graph.nodes, 'y0', [0, 365, 184, 253, 0]);
+        });
+
+        it('keep a list of nodes with positions in integer (depth, height)', function() {
+            checkArray(graph.nodes, 'depth', [0, 0, 1, 2, 3]);
+            checkArray(graph.nodes, 'height', [3, 3, 2, 1, 0]);
+        });
+
+        it('keep a list of links', function() {
+            var linkWidths = sankey().links.map(function(obj) {
+                return (obj.width);
+            });
+            expect(linkWidths).toEqual([177.5, 177.5, 177.5, 177.5, 177.5, 177.5, 355]);
+        });
+
+        it('controls the size of the figure', function() {
+            expect(sankey.size()).toEqual([1180, 720], 'incorrect size');
+        });
+
+        it('updates links vertical position upon moving nodes', function() {
+            var nodeIndex = 0;
+            var linkIndex = 0;
+            var delta = [200, 300];
+
+            var linkY0 = graph.links[linkIndex].y0;
+            var updatedGraph = moveNode(sankey, graph, nodeIndex, delta);
+            expect(updatedGraph.links[linkIndex].y0).toBeCloseTo(linkY0 + delta[1]);
+        });
+    });
+
+    describe('d3-sankey-ciruclar', function() {
+        var data, sankey, graph;
+
+        describe('implements d3-sankey compatible API', function() {
+            function _calc(trace) {
+                var gd = { data: [trace] };
+
+                supplyAllDefaults(gd);
+                var fullTrace = gd._fullData[0];
+                return Sankey.calc(gd, fullTrace);
+            }
+
+            beforeEach(function() {
+                data = _calc(mockCircular.data[0]);
+                data = {
+                    nodes: data[0]._nodes,
+                    links: data[0]._links
+                };
+                sankey = d3SankeyCircular
+                  .sankeyCircular()
+                  .iterations(32)
+                  .circularLinkGap(2)
+                  .nodePadding(10)
+                  .size([500, 500])
+                  .nodeId(function(d) {
+                      return d.pointNumber;
+                  })
+                  .nodes(data.nodes)
+                  .links(data.links);
+
+                graph = sankey();
+            });
+
+            it('creates a graph with circular links', function() {
+                expect(graph.nodes.length).toEqual(6, 'there are 6 nodes');
+                var circularLinks = graph.links.filter(function(link) {
+                    return link.circular;
+                });
+                expect(circularLinks.length).toEqual(2, 'there are two circular links');
+            });
+
+            it('keep a list of nodes with positions in integer (depth, height)', function() {
+                checkArray(graph.nodes, 'depth', [0, 0, 2, 3, 1, 1]);
+                checkArray(graph.nodes, 'height', [1, 3, 1, 0, 2, 0]);
+            });
+
+            it('keep a list of nodes with positions in x and y', function() {
+                checkRoundedArray(graph.nodes, 'x0', [72, 72, 267, 365, 169, 169]);
+                checkRoundedArray(graph.nodes, 'y0', [303, 86, 72, 109, 86, 359]);
+            });
+
+            it('supports column reordering', function() {
+                var reorder = [ 2, 2, 1, 1, 0, 0 ];
+
+                checkArray(graph.nodes, 'column', [0, 0, 2, 3, 1, 1]);
+
+                var a = graph.nodes[0].x0;
+                sankey.nodeAlign(function(node) {
+                    return reorder[node.pointNumber];
+                });
+                graph = sankey();
+                checkArray(graph.nodes, 'column', [2, 2, 1, 1, 0, 0]);
+                checkArray(graph.nodes, 'height', [1, 3, 1, 0, 2, 0]);
+                var b = graph.nodes[0].x0;
+                expect(a).not.toEqual(b);
+            });
+
+            it('updates links vertical position and circularLinkType upon moving nodes', function() {
+                var linkIndex = 6;
+                var nodeIndex = 2;
+                var delta = [0, 400];
+
+                var link = graph.links[linkIndex];
+                var linkY1 = link.y1;
+                var node = graph.nodes[nodeIndex];
+                var offsetTopToBottom = (node.y1 - node.y0) * link.value / node.value;
+
+                // Start with a circular link on top
+                expect(link.circular).toBeTruthy();
+                expect(link.circularLinkType).toEqual('top');
+
+                // Update graph
+                var updatedGraph = moveNode(sankey, graph, nodeIndex, delta);
+                var updatedLink = updatedGraph.links[linkIndex];
+
+                // End up with a cirular link on bottom
+                expect(updatedLink.circular).toBeTruthy();
+                expect(updatedLink.circularLinkType).toEqual('bottom');
+                expect(updatedLink.y1).toBeCloseTo(linkY1 + delta[1] + offsetTopToBottom, 0);
+            });
+        });
+
+        describe('handles large number of links', function() {
+            function _calc(trace) {
+                var gd = { data: [trace] };
+
+                supplyAllDefaults(gd);
+                var fullTrace = gd._fullData[0];
+                return Sankey.calc(gd, fullTrace);
+            }
+
+            beforeEach(function() {
+                data = _calc(mockCircularLarge.data[0]);
+                data = {
+                    nodes: data[0]._nodes,
+                    links: data[0]._links
+                };
+                sankey = d3SankeyCircular
+                  .sankeyCircular()
+                  .iterations(32)
+                  .nodePadding(10)
+                  .size([500, 500])
+                  .nodeId(function(d) {
+                      return d.pointNumber;
+                  })
+                  .nodes(data.nodes)
+                  .links(data.links);
+
+                graph = sankey();
+            });
+
+            it('creates a graph with circular links', function() {
+                expect(graph.nodes.length).toEqual(26, 'right number of nodes');
+                var circularLinks = graph.links.filter(function(link) {
+                    return link.circular;
+                });
+                expect(circularLinks.length).toEqual(89, 'right number of circular links');
+            });
+        });
+    });
+});

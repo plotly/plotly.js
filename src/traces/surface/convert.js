@@ -96,7 +96,7 @@ proto.handlePick = function(selection) {
             }
         }
 
-        var text = this.data.text;
+        var text = this.data.hovertext || this.data.text;
         if(Array.isArray(text) && text[k] && text[k][j] !== undefined) {
             selection.textLabel = text[k][j];
         } else if(text) {

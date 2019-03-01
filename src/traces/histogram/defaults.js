@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -31,6 +30,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    coerce('hovertext');
+    coerce('hovertemplate');
 
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v');
     var sampleLetter = orientation === 'v' ? 'x' : 'y';
@@ -57,8 +58,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Note: bin defaults are now handled in Histogram.crossTraceDefaults
     // autobin(x|y) are only included here to appease Plotly.validate
     coerce('autobin' + sampleLetter);
-
-    coerce('hovertemplate');
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
