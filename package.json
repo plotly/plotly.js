@@ -85,7 +85,7 @@
     "gl-scatter3d": "^1.2.0",
     "gl-select-box": "^1.0.3",
     "gl-spikes2d": "^1.0.2",
-    "gl-streamtube3d": "^1.1.3",
+    "gl-streamtube3d": "^1.2.0",
     "gl-surface3d": "^1.4.2",
     "gl-text": "^1.1.6",
     "glslify": "^7.0.0",
