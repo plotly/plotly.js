@@ -19,7 +19,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var helpers = require('./helpers');
 var eventData = require('./event_data');
 
-module.exports = function plot(gd, cdpie) {
+function plot(gd, cdpie) {
     var fullLayout = gd._fullLayout;
 
     prerenderTitles(cdpie, gd);
@@ -235,50 +235,8 @@ module.exports = function plot(gd, cdpie) {
 
             // now make sure no labels overlap (at least within one pie)
             if(hasOutsideText) scootLabels(quadrants, trace);
-            slices.each(function(pt) {
-                if(pt.labelExtraX || pt.labelExtraY) {
-                    // first move the text to its new location
-                    var sliceTop = d3.select(this);
-                    var sliceText = sliceTop.select('g.slicetext text');
 
-                    sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
-                        sliceText.attr('transform'));
-
-                    // then add a line to the new location
-                    var lineStartX = pt.cxFinal + pt.pxmid[0];
-                    var lineStartY = pt.cyFinal + pt.pxmid[1];
-                    var textLinePath = 'M' + lineStartX + ',' + lineStartY;
-                    var finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
-
-                    if(pt.labelExtraX) {
-                        var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0];
-                        var yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
-
-                        if(Math.abs(yFromX) > Math.abs(yNet)) {
-                            textLinePath +=
-                                'l' + (yNet * pt.pxmid[0] / pt.pxmid[1]) + ',' + yNet +
-                                'H' + (lineStartX + pt.labelExtraX + finalX);
-                        } else {
-                            textLinePath += 'l' + pt.labelExtraX + ',' + yFromX +
-                                'v' + (yNet - yFromX) +
-                                'h' + finalX;
-                        }
-                    } else {
-                        textLinePath +=
-                            'V' + (pt.yLabelMid + pt.labelExtraY) +
-                            'h' + finalX;
-                    }
-
-                    sliceTop.append('path')
-                        .classed('textline', true)
-                        .call(Color.stroke, trace.outsidetextfont.color)
-                        .attr({
-                            'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
-                            d: textLinePath,
-                            fill: 'none'
-                        });
-                }
-            });
+            plotTextLines(slices, trace);
         });
     });
 
@@ -294,7 +252,57 @@ module.exports = function plot(gd, cdpie) {
             if(s.attr('dy')) s.attr('dy', s.attr('dy'));
         });
     }, 0);
-};
+}
+
+function plotTextLines(slices, trace) {
+    slices.each(function(pt) {
+        var sliceTop = d3.select(this);
+
+        if(!pt.labelExtraX && !pt.labelExtraY) {
+            sliceTop.select('path.textline').remove();
+            return;
+        }
+
+        // first move the text to its new location
+        var sliceText = sliceTop.select('g.slicetext text');
+
+        sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
+            sliceText.attr('transform'));
+
+        // then add a line to the new location
+        var lineStartX = pt.cxFinal + pt.pxmid[0];
+        var lineStartY = pt.cyFinal + pt.pxmid[1];
+        var textLinePath = 'M' + lineStartX + ',' + lineStartY;
+        var finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
+
+        if(pt.labelExtraX) {
+            var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0];
+            var yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
+
+            if(Math.abs(yFromX) > Math.abs(yNet)) {
+                textLinePath +=
+                    'l' + (yNet * pt.pxmid[0] / pt.pxmid[1]) + ',' + yNet +
+                    'H' + (lineStartX + pt.labelExtraX + finalX);
+            } else {
+                textLinePath += 'l' + pt.labelExtraX + ',' + yFromX +
+                    'v' + (yNet - yFromX) +
+                    'h' + finalX;
+            }
+        } else {
+            textLinePath +=
+                'V' + (pt.yLabelMid + pt.labelExtraY) +
+                'h' + finalX;
+        }
+
+        Lib.ensureSingle(sliceTop, 'path', 'textline')
+            .call(Color.stroke, trace.outsidetextfont.color)
+            .attr({
+                'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
+                d: textLinePath,
+                fill: 'none'
+            });
+    });
+}
 
 function attachFxHandlers(sliceTop, gd, cd) {
     var cd0 = cd[0];
@@ -879,3 +887,12 @@ function setCoords(cd) {
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
     }
 }
+
+module.exports = {
+    plot: plot,
+    plotTextLines: plotTextLines,
+
+    transformInsideText: transformInsideText,
+    transformOutsideText: transformOutsideText,
+    scootLabels: scootLabels
+};
