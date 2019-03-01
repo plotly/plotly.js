@@ -13,11 +13,12 @@ var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Registry = require('../../registry');
 
+var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var handleXYDefaults = require('../scatter/xy_defaults');
 var handleStyleDefaults = require('./style_defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -97,4 +98,29 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('connector.color');
     coerce('connector.width');
     coerce('connector.dash');
+}
+
+function crossTraceDefaults(fullData, fullLayout) {
+    var traceIn, traceOut;
+
+    function coerce(attr) {
+        return Lib.coerce(traceOut._input, traceOut, attributes, attr);
+    }
+
+    for(var i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
+
+        if(traceOut.type === 'waterfall') {
+            traceIn = traceOut._input;
+            if(fullLayout.barmode === 'group') {
+                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+            }
+        }
+    }
+}
+
+module.exports = {
+    supplyDefaults: supplyDefaults,
+    crossTraceDefaults: crossTraceDefaults,
+    handleGroupingDefaults: handleGroupingDefaults
 };

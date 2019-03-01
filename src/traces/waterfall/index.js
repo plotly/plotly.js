@@ -6,14 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Waterfall = {};
 
 Waterfall.attributes = require('./attributes');
 Waterfall.layoutAttributes = require('./layout_attributes');
-Waterfall.supplyDefaults = require('./defaults');
+Waterfall.supplyDefaults = require('./defaults').supplyDefaults;
+Waterfall.crossTraceDefaults = require('./defaults').crossTraceDefaults;
 Waterfall.supplyLayoutDefaults = require('./layout_defaults');
 Waterfall.calc = require('./calc');
 Waterfall.crossTraceCalc = require('../bar/cross_trace_calc').crossTraceCalc;

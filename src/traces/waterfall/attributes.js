@@ -22,7 +22,8 @@ module.exports = {
         flags: ['=', '+', '-', '%'],
         dflt: '+',
         arrayOk: true,
-        role: 'calc',
+        role: 'info',
+        editType: 'calc',
         description: [
             'Sets the operation associated with each column/row depending on',
             'the `direction` of waterfall chart being horizontal or vertical.',
@@ -88,6 +89,9 @@ module.exports = {
         dash: dash,
         editType: 'style'
     },
+
+    offsetgroup: barAttrs.offsetgroup,
+    alignmentgroup: barAttrs.offsetgroup,
 
     selected: barAttrs.selected,
     unselected: barAttrs.unselected
