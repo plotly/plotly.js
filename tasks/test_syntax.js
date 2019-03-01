@@ -143,7 +143,14 @@ function assertSrcContents() {
                         logs.push(file + ' : contains .' + lastPart + ' (IE failure)');
                     }
                     else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
-                        logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
+                        // add special case for sunburst where we use 'children'
+                        // off the d3-hierarchy output
+                        var dirParts = path.dirname(file).split(path.sep);
+                        var isSunburstFile = dirParts[dirParts.length - 1] === 'sunburst';
+                        var isLinkedToObject = ['pt', 'd'].indexOf(parts[parts.length - 2]) !== -1;
+                        if(!(isSunburstFile && isLinkedToObject)) {
+                            logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
+                        }
                     }
                     else if(FF_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (FF failure)');
