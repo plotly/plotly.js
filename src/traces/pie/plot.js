@@ -513,16 +513,17 @@ function prerenderTitles(cdpie, gd) {
 function transformInsideText(textBB, pt, cd0) {
     var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
     var textAspect = textBB.width / textBB.height;
-    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
-    var ring = 1 - cd0.trace.hole;
-    var rInscribed = getInscribedRadiusFraction(pt, cd0);
+    var halfAngle = pt.halfangle;
+    var ring = pt.ring;
+    var rInscribed = pt.rInscribed;
+    var r = cd0.r || pt.rpx1;
 
     // max size text can be inserted inside without rotating it
     // this inscribes the text rectangle in a circle, which is then inscribed
     // in the slice, so it will be an underestimate, which some day we may want
     // to improve so this case can get more use
     var transform = {
-        scale: rInscribed * cd0.r * 2 / textDiameter,
+        scale: rInscribed * r * 2 / textDiameter,
 
         // and the center position and rotation in this case
         rCenter: 1 - rInscribed,
@@ -533,28 +534,28 @@ function transformInsideText(textBB, pt, cd0) {
 
         // max size if text is rotated radially
     var Qr = textAspect + 1 / (2 * Math.tan(halfAngle));
-    var maxHalfHeightRotRadial = cd0.r * Math.min(
+    var maxHalfHeightRotRadial = r * Math.min(
         1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
         ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
     );
     var radialTransform = {
         scale: maxHalfHeightRotRadial * 2 / textBB.height,
-        rCenter: Math.cos(maxHalfHeightRotRadial / cd0.r) -
-            maxHalfHeightRotRadial * textAspect / cd0.r,
+        rCenter: Math.cos(maxHalfHeightRotRadial / r) -
+            maxHalfHeightRotRadial * textAspect / r,
         rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
     };
 
         // max size if text is rotated tangentially
     var aspectInv = 1 / textAspect;
     var Qt = aspectInv + 1 / (2 * Math.tan(halfAngle));
-    var maxHalfWidthTangential = cd0.r * Math.min(
+    var maxHalfWidthTangential = r * Math.min(
         1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
         ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
     );
     var tangentialTransform = {
         scale: maxHalfWidthTangential * 2 / textBB.width,
-        rCenter: Math.cos(maxHalfWidthTangential / cd0.r) -
-            maxHalfWidthTangential / textAspect / cd0.r,
+        rCenter: Math.cos(maxHalfWidthTangential / r) -
+            maxHalfWidthTangential / textAspect / r,
         rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
     };
     // if we need a rotated transform, pick the biggest one
@@ -569,8 +570,7 @@ function transformInsideText(textBB, pt, cd0) {
 function getInscribedRadiusFraction(pt, cd0) {
     if(pt.v === cd0.vTotal && !cd0.trace.hole) return 1;// special case of 100% with no hole
 
-    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
-    return Math.min(1 / (1 + 1 / Math.sin(halfAngle)), (1 - cd0.trace.hole) / 2);
+    return Math.min(1 / (1 + 1 / Math.sin(pt.halfangle)), pt.ring / 2);
 }
 
 function transformOutsideText(textBB, pt) {
@@ -838,7 +838,6 @@ function scalePies(cdpie, plotSize) {
             }
         }
     }
-
 }
 
 function setCoords(cd) {
@@ -885,6 +884,10 @@ function setCoords(cd) {
         cdi[lastPt] = currentCoords;
 
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
+
+        cdi.halfangle = Math.PI * Math.min(cdi.v / cd0.vTotal, 0.5);
+        cdi.ring = 1 - trace.hole;
+        cdi.rInscribed = getInscribedRadiusFraction(cdi, cd0);
     }
 }
 

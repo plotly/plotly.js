@@ -3864,6 +3864,9 @@ function makePlotFramework(gd) {
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
+    // single sunbursrt layer for the whole plot
+    fullLayout._sunburstlayer = fullLayout._paper.append('g').classed('sunbursrtlayer', true);
+
     // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
 
