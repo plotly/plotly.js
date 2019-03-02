@@ -347,14 +347,18 @@ function handleCamera3d(gd, ev) {
         var key = sceneId + '.camera';
         var scene = fullLayout[sceneId]._scene;
 
-        if(attr === 'resetDefault') {
+        if(attr === 'resetDefault' || attr === 'resetLastSave') {
             aobj[key] = Lib.extendDeep({}, scene.cameraInitial);
+
+            aobj[key].projection = {
+                type: (scene.camera._ortho) ? 'orthographic' : 'perspective'
+            };
+        }
+
+        if(attr === 'resetDefault') {
             aobj[key].up = null;
             aobj[key].eye = null;
             aobj[key].center = null;
-        }
-        else if(attr === 'resetLastSave') {
-            aobj[key] = Lib.extendDeep({}, scene.cameraInitial);
         }
     }
 
