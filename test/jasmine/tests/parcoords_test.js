@@ -145,7 +145,7 @@ describe('parcoords initialization tests', function() {
             });
         });
 
-        it('\'line.color\' should convert typed arrays to normal arrays', function() {
+        it('\'dimensions.values\' and \'line.color\' should convert typed arrays to normal arrays', function() {
             var fullTrace = _supply({
                 dimensions: [{
                     range: [1, 5],
@@ -154,17 +154,19 @@ describe('parcoords initialization tests', function() {
                 }, {
                     range: [1, 5],
                     label: 'B',
-                    values: [3, 1.5, 2],
+                    values: new Float64Array([3, 1.5, 2]),
                 }, {
                     range: [1, 5],
                     label: 'C',
-                    values: [2, 4, 1],
+                    values: new Int32Array([2, 4, 1]),
                 }],
                 line: {
                     color: new Int32Array([0, 1, 2])
                 }
             });
             expect(Array.isArray(fullTrace.line.color) === true).toEqual(true);
+            expect(Array.isArray(fullTrace.dimensions[1].values) === true).toEqual(true);
+            expect(Array.isArray(fullTrace.dimensions[2].values) === true).toEqual(true);
         });
 
         it('\'domain\' specification should have a default', function() {
