@@ -145,6 +145,28 @@ describe('parcoords initialization tests', function() {
             });
         });
 
+        it('\'line.color\' should convert typed arrays to normal arrays', function() {
+            var fullTrace = _supply({
+                dimensions: [{
+                    range: [1, 5],
+                    label: 'A',
+                    values: [1, 4, 3]
+                }, {
+                    range: [1, 5],
+                    label: 'B',
+                    values: [3, 1.5, 2],
+                }, {
+                    range: [1, 5],
+                    label: 'C',
+                    values: [2, 4, 1],
+                }],
+                line: {
+                    color: new Int32Array([0, 1, 2])
+                }
+            });
+            expect(Array.isArray(fullTrace.line.color) === true).toEqual(true);
+        });
+
         it('\'domain\' specification should have a default', function() {
             var fullTrace = _supply({});
             expect(fullTrace.domain).toEqual({x: [0, 1], y: [0, 1]});
