@@ -1489,6 +1489,103 @@ describe('Test gl3d relayout calls', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should maintain projection type when resetCamera buttons clicked after switching projection type from perspective to orthographic', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'surface',
+                x: [0, 1],
+                y: [0, 1],
+                z: [[0, 1], [1, 0]]
+            }],
+            layout: {
+                width: 300,
+                height: 200,
+                scene: {
+                    camera: {
+                        eye: {
+                            x: 2,
+                            y: 1,
+                            z: 0.5
+                        }
+                    }
+                }
+            }
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'scene.camera.projection.type', 'orthographic');
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
+        })
+        .then(function() {
+            return selectButton(gd._fullLayout._modeBar, 'resetCameraLastSave3d').click();
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
+        })
+        .then(function() {
+            return selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should maintain projection type when resetCamera buttons clicked after switching projection type from orthographic to perspective', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'surface',
+                x: [0, 1],
+                y: [0, 1],
+                z: [[0, 1], [1, 0]]
+            }],
+            layout: {
+                width: 300,
+                height: 200,
+                scene: {
+                    camera: {
+                        eye: {
+                            x: 2,
+                            y: 1,
+                            z: 0.5
+                        },
+                        projection: {
+                            type: 'orthographic'
+                        }
+                    }
+                }
+            }
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'scene.camera.projection.type', 'perspective');
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
+        })
+        .then(function() {
+            return selectButton(gd._fullLayout._modeBar, 'resetCameraLastSave3d').click();
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
+        })
+        .then(function() {
+            return selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl3d annotations', function() {
