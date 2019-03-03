@@ -22,6 +22,11 @@ var mergeLength = require('./merge_length');
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var lineColor = coerce('line.color', defaultColor);
 
+    if(!Array.isArray(lineColor) && Lib.isArrayOrTypedArray(lineColor)) {
+        // should convert typed arrays e.g. integers to real numbers
+        lineColor = traceOut.line.color = Array.prototype.slice.call(lineColor);
+    }
+
     if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
         if(lineColor.length) {
             coerce('line.colorscale');
