@@ -175,7 +175,7 @@ describe('Click-to-select', function() {
         } else {
             setTimeout(function() {
                 click(x, y, clickOpts);
-            }, DBLCLICKDELAY * 1.01);
+            }, DBLCLICKDELAY * 2);
         }
 
         return selectedPromise;
