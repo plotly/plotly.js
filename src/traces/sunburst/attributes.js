@@ -100,8 +100,14 @@ module.exports = {
         // },
 
         line: {
-            color: pieAtts.marker.line.color,
-            width: pieAtts.marker.line.width,
+            color: extendFlat({}, pieAtts.marker.line.color, {
+                dflt: null,
+                description: [
+                    'Sets the color of the line enclosing each sector.',
+                    'Defaults to the `paper_bgcolor` value.'
+                ].join(' ')
+            }),
+            width: extendFlat({}, pieAtts.marker.line.width, {dflt: 1}),
             editType: 'calc'
         },
         editType: 'calc'
