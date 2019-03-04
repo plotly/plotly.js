@@ -3383,6 +3383,86 @@ describe('Test axes', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should not lead to negative plot area heights', function(done) {
+            function _assert(msg, exp) {
+                var gs = gd._fullLayout._size;
+                expect(gs.h).toBeGreaterThan(0, msg + '- positive height');
+                expect(gs.b).toBeGreaterThan(exp.bottomLowerBound, msg + ' - margin bottom');
+                expect(gs.b + gs.h + gs.t).toBeWithin(exp.totalHeight, 1.5, msg + ' - total height');
+            }
+
+            Plotly.plot(gd, [{
+                x: ['loooooong label 1', 'loooooong label 2'],
+                y: [1, 2]
+            }], {
+                xaxis: {automargin: true, tickangle: 90},
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                _assert('base', {
+                    bottomLowerBound: 80,
+                    totalHeight: 500
+                });
+            })
+            .then(function() { return Plotly.relayout(gd, 'height', 100); })
+            .then(function() {
+                _assert('after relayout to *small* height', {
+                    bottomLowerBound: 30,
+                    totalHeight: 100
+                });
+            })
+            .then(function() { return Plotly.relayout(gd, 'height', 800); })
+            .then(function() {
+                _assert('after relayout to *big* height', {
+                    bottomLowerBound: 80,
+                    totalHeight: 800
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not lead to negative plot area widths', function(done) {
+            function _assert(msg, exp) {
+                var gs = gd._fullLayout._size;
+                expect(gs.w).toBeGreaterThan(0, msg + '- positive width');
+                expect(gs.l).toBeGreaterThan(exp.leftLowerBound, msg + ' - margin left');
+                expect(gs.l + gs.w + gs.r).toBeWithin(exp.totalWidth, 1.5, msg + ' - total width');
+            }
+
+            Plotly.plot(gd, [{
+                y: ['loooooong label 1', 'loooooong label 2'],
+                x: [1, 2]
+            }], {
+                yaxis: {automargin: true},
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                _assert('base', {
+                    leftLowerBound: 80,
+                    totalWidth: 500
+                });
+            })
+            .then(function() { return Plotly.relayout(gd, 'width', 100); })
+            .then(function() {
+                _assert('after relayout to *small* width', {
+                    leftLowerBound: 30,
+                    totalWidth: 100
+                });
+            })
+            .then(function() { return Plotly.relayout(gd, 'width', 1000); })
+            .then(function() {
+                _assert('after relayout to *big* width', {
+                    leftLowerBound: 80,
+                    totalWidth: 1000
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('zeroline visibility logic', function() {

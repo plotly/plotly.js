@@ -1841,6 +1841,8 @@ plots.doAutoMargin = function(gd) {
     var mr = margin.r;
     var mt = margin.t;
     var mb = margin.b;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
 
@@ -1876,11 +1878,9 @@ plots.doAutoMargin = function(gd) {
                     var pr = pushMargin[k2].r.size;
 
                     if(fr > fl) {
-                        var newl = (pl * fr +
-                            (pr - fullLayout.width) * fl) / (fr - fl);
-                        var newr = (pr * (1 - fl) +
-                            (pl - fullLayout.width) * (1 - fr)) / (fr - fl);
-                        if(newl >= 0 && newr >= 0 && newl + newr > ml + mr) {
+                        var newl = (pl * fr + (pr - width) * fl) / (fr - fl);
+                        var newr = (pr * (1 - fl) + (pl - width) * (1 - fr)) / (fr - fl);
+                        if(newl >= 0 && newr >= 0 && width - (newl + newr) > 0 && newl + newr > ml + mr) {
                             ml = newl;
                             mr = newr;
                         }
@@ -1892,11 +1892,9 @@ plots.doAutoMargin = function(gd) {
                     var pt = pushMargin[k2].t.size;
 
                     if(ft > fb) {
-                        var newb = (pb * ft +
-                            (pt - fullLayout.height) * fb) / (ft - fb);
-                        var newt = (pt * (1 - fb) +
-                            (pb - fullLayout.height) * (1 - ft)) / (ft - fb);
-                        if(newb >= 0 && newt >= 0 && newb + newt > mb + mt) {
+                        var newb = (pb * ft + (pt - height) * fb) / (ft - fb);
+                        var newt = (pt * (1 - fb) + (pb - height) * (1 - ft)) / (ft - fb);
+                        if(newb >= 0 && newt >= 0 && height - (newt + newb) > 0 && newb + newt > mb + mt) {
                             mb = newb;
                             mt = newt;
                         }
@@ -1911,8 +1909,8 @@ plots.doAutoMargin = function(gd) {
     gs.t = Math.round(mt);
     gs.b = Math.round(mb);
     gs.p = Math.round(margin.pad);
-    gs.w = Math.round(fullLayout.width) - gs.l - gs.r;
-    gs.h = Math.round(fullLayout.height) - gs.t - gs.b;
+    gs.w = Math.round(width) - gs.l - gs.r;
+    gs.h = Math.round(height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
     if(!fullLayout._replotting &&
