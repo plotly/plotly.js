@@ -1043,8 +1043,8 @@ describe('Test gl3d modebar handlers', function() {
     it('@gl button resetCameraDefault3d should reset camera to default', function(done) {
         var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
 
-        expect(gd._fullLayout.scene._scene.cameraInitial.eye).toEqual({ x: 0.1, y: 0.1, z: 1 });
-        expect(gd._fullLayout.scene2._scene.cameraInitial.eye).toEqual({ x: 2.5, y: 2.5, z: 2.5 });
+        expect(gd._fullLayout.scene._scene.viewInitial.eye).toEqual({ x: 0.1, y: 0.1, z: 1 });
+        expect(gd._fullLayout.scene2._scene.viewInitial.eye).toEqual({ x: 2.5, y: 2.5, z: 2.5 });
 
         gd.once('plotly_relayout', function() {
             assertScenes(gd._fullLayout, 'camera.eye.x', 1.25);
@@ -1099,8 +1099,8 @@ describe('Test gl3d modebar handlers', function() {
             assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 1);
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 2.5);
 
-            delete gd._fullLayout.scene._scene.cameraInitial;
-            delete gd._fullLayout.scene2._scene.cameraInitial;
+            delete gd._fullLayout.scene._scene.viewInitial;
+            delete gd._fullLayout.scene2._scene.viewInitial;
 
             Plotly.relayout(gd, {
                 'scene.bgcolor': '#d3d3d3',

@@ -67,9 +67,25 @@ exports.plot = function plotGl3d(gd) {
             sceneLayout._scene = scene;
         }
 
-        // save 'initial' camera settings for modebar button
-        if(!scene.cameraInitial) {
-            scene.cameraInitial = Lib.extendDeep({}, sceneLayout.camera);
+        // save 'initial' camera view settings for modebar button
+        if(!scene.viewInitial) {
+            scene.viewInitial = {
+                up: {
+                    x: sceneLayout.camera.up.x,
+                    y: sceneLayout.camera.up.y,
+                    z: sceneLayout.camera.up.z
+                },
+                eye: {
+                    x: sceneLayout.camera.eye.x,
+                    y: sceneLayout.camera.eye.y,
+                    z: sceneLayout.camera.eye.z
+                },
+                center: {
+                    x: sceneLayout.camera.center.x,
+                    y: sceneLayout.camera.center.y,
+                    z: sceneLayout.camera.center.z
+                }
+            };
         }
 
         scene.plot(fullSceneData, fullLayout, gd.layout);
