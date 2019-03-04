@@ -145,30 +145,6 @@ describe('parcoords initialization tests', function() {
             });
         });
 
-        it('\'dimensions.values\' and \'line.color\' should convert typed arrays to normal arrays', function() {
-            var fullTrace = _supply({
-                dimensions: [{
-                    range: [1, 5],
-                    label: 'A',
-                    values: [1, 4, 3]
-                }, {
-                    range: [1, 5],
-                    label: 'B',
-                    values: new Float64Array([3, 1.5, 2]),
-                }, {
-                    range: [1, 5],
-                    label: 'C',
-                    values: new Int32Array([2, 4, 1]),
-                }],
-                line: {
-                    color: new Int32Array([0, 1, 2])
-                }
-            });
-            expect(Array.isArray(fullTrace.line.color) === true).toEqual(true);
-            expect(Array.isArray(fullTrace.dimensions[1].values) === true).toEqual(true);
-            expect(Array.isArray(fullTrace.dimensions[2].values) === true).toEqual(true);
-        });
-
         it('\'domain\' specification should have a default', function() {
             var fullTrace = _supply({});
             expect(fullTrace.domain).toEqual({x: [0, 1], y: [0, 1]});
@@ -349,6 +325,30 @@ describe('parcoords initialization tests', function() {
             expect(fullTrace.line).toEqual({
                 color: '#444'
             });
+        });
+
+        it('\'dimensions.values\' and \'line.color\' should convert typed arrays to normal arrays', function() {
+            var fullTrace = _calc(Lib.extendDeep({}, base, {
+                dimensions: [{
+                    range: [1, 5],
+                    label: 'A',
+                    values: [1, 4, 3]
+                }, {
+                    range: [1, 5],
+                    label: 'B',
+                    values: new Float64Array([3, 1.5, 2]),
+                }, {
+                    range: [1, 5],
+                    label: 'C',
+                    values: new Int32Array([2, 4, 1]),
+                }],
+                line: {
+                    color: new Int32Array([0, 1, 2])
+                }
+            }));
+            expect(Array.isArray(fullTrace.line.color) === true).toEqual(true);
+            expect(Array.isArray(fullTrace.dimensions[1].values) === true).toEqual(true);
+            expect(Array.isArray(fullTrace.dimensions[2].values) === true).toEqual(true);
         });
     });
 });
