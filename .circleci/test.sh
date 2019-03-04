@@ -45,7 +45,6 @@ case $1 in
         set_tz
 
         npm run test-jasmine -- --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
-        retry npm run test-jasmine -- --tags=flaky --skip-tags=noCI
         npm run test-bundle || EXIT_STATE=$?
 
         exit $EXIT_STATE
@@ -59,6 +58,14 @@ case $1 in
         for s in ${SHARDS[@]}; do
             retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI
         done
+
+        exit $EXIT_STATE
+        ;;
+
+    jasmine3)
+        set_tz
+
+        npm run test-jasmine -- --tags=flaky --skip-tags=gl,noCI || EXIT_STATE=$?
 
         exit $EXIT_STATE
         ;;
