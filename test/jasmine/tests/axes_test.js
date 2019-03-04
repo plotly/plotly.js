@@ -3235,23 +3235,7 @@ describe('Test axes', function() {
     });
 
     describe('automargin', function() {
-        var data = [{
-            x: [
-                'short label 1', 'loooooong label 1',
-                'short label 2', 'loooooong label 2',
-                'short label 3', 'loooooong label 3',
-                'short label 4', 'loooooongloooooongloooooong label 4',
-                'short label 5', 'loooooong label 5'
-            ],
-            y: [
-                'short label 1', 'loooooong label 1',
-                'short label 2', 'loooooong label 2',
-                'short label 3', 'loooooong label 3',
-                'short label 4', 'loooooong label 4',
-                'short label 5', 'loooooong label 5'
-            ]
-        }];
-        var gd, initialSize, previousSize, savedBottom;
+        var gd;
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -3260,170 +3244,144 @@ describe('Test axes', function() {
         afterEach(destroyGraphDiv);
 
         it('should grow and shrink margins', function(done) {
+            var initialSize;
+            var previousSize;
 
-            Plotly.plot(gd, data)
+            function assertSize(msg, actual, exp) {
+                for(var k in exp) {
+                    var parts = exp[k].split(' -');
+                    var op = parts[0];
+
+                    var method = {
+                        '=': 'toBe',
+                        '~=': 'toBeWithin',
+                        grew: 'toBeGreaterThan',
+                        shrunk: 'toBeLessThan',
+                        initial: 'toBe'
+                    }[op];
+
+                    var val = op === 'initial' ? initialSize[k] : previousSize[k];
+                    var msgk = msg + ' ' + k + (parts[1] ? ' -' + parts[1] : '');
+                    var args = op === '~=' ? [val, 1.1, msgk] : [val, msgk, ''];
+
+                    expect(actual[k])[method](args[0], args[1], args[2]);
+                }
+            }
+
+            function check(msg, relayoutObj, exp) {
+                return function() {
+                    return Plotly.relayout(gd, relayoutObj).then(function() {
+                        var gs = Lib.extendDeep({}, gd._fullLayout._size);
+                        assertSize(msg, gs, exp);
+                        previousSize = gs;
+                    });
+                };
+            }
+
+            Plotly.plot(gd, [{
+                x: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooongloooooongloooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ],
+                y: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ]
+            }], {
+                margin: {l: 0, r: 0, b: 0, t: 0},
+                width: 600, height: 600
+            })
             .then(function() {
                 expect(gd._fullLayout.xaxis._tickAngles.xtick).toBe(30);
 
-                initialSize = previousSize = Lib.extendDeep({}, gd._fullLayout._size);
-                return Plotly.relayout(gd, {'yaxis.automargin': true});
+                var gs = gd._fullLayout._size;
+                initialSize = Lib.extendDeep({}, gs);
+                previousSize = Lib.extendDeep({}, gs);
             })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBeGreaterThan(previousSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBe(previousSize.b);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'xaxis.automargin': true});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBe(previousSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBeGreaterThan(previousSize.b);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                savedBottom = previousSize.b;
-
-                // move all the long x labels off-screen
-                return Plotly.relayout(gd, {'xaxis.range': [-10, -5]});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBe(previousSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.t).toBe(previousSize.t);
-                expect(size.b).toBe(initialSize.b);
-
-                // move all the long y labels off-screen
-                return Plotly.relayout(gd, {'yaxis.range': [-10, -5]});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBe(initialSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.t).toBe(previousSize.t);
-                expect(size.b).toBe(initialSize.b);
-
-                // bring the long labels back
-                return Plotly.relayout(gd, {
-                    'xaxis.autorange': true,
-                    'yaxis.autorange': true
-                });
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBe(previousSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.t).toBe(previousSize.t);
-                expect(size.b).toBe(previousSize.b);
-
-                return Plotly.relayout(gd, {'xaxis.tickangle': 45});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBe(previousSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBeGreaterThan(previousSize.b);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'xaxis.tickangle': 30});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBe(previousSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBe(savedBottom);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.ticklen': 30});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBeGreaterThan(previousSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBe(previousSize.b);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.title.font.size': 30});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size).toEqual(previousSize);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.title.text': 'hello'});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBeGreaterThan(previousSize.l);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBe(previousSize.b);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.anchor': 'free'});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBeWithin(previousSize.l, 1.1);
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBe(previousSize.b);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.position': 0.1});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBeLessThan(previousSize.l, 'axis moved right');
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBe(previousSize.b);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {'yaxis.anchor': 'x'});
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                expect(size.l).toBeGreaterThan(previousSize.l, 'axis snapped back');
-                expect(size.r).toBe(previousSize.r);
-                expect(size.b).toBe(previousSize.b);
-                expect(size.t).toBe(previousSize.t);
-
-                previousSize = Lib.extendDeep({}, size);
-                return Plotly.relayout(gd, {
-                    'yaxis.side': 'right',
-                    'xaxis.side': 'top'
-                });
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                // left to right and bottom to top
-                expect(size.l).toBe(initialSize.r);
-                expect(size.r).toBe(previousSize.l);
-                expect(size.b).toBe(initialSize.b);
-                expect(size.t).toBeWithin(previousSize.b, 1.1);
-
-                return Plotly.relayout(gd, {
-                    'xaxis.automargin': false,
-                    'yaxis.automargin': false
-                });
-            })
-            .then(function() {
-                var size = gd._fullLayout._size;
-                // back to the defaults
-                expect(size).toEqual(initialSize);
-            })
+            .then(check('automargin y', {'yaxis.automargin': true}, {
+                t: '=', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin x', {'xaxis.automargin': true}, {
+                t: '=', l: '=',
+                b: 'grew', r: 'grew'
+            }))
+            .then(check('move all x label off-screen', {'xaxis.range': [-10, -5]}, {
+                t: '=', l: '=',
+                b: 'initial', r: 'initial'
+            }))
+            .then(check('move all y label off-screen', {'yaxis.range': [-10, -5]}, {
+                t: '=', l: 'initial',
+                b: '=', r: '='
+            }))
+            .then(check('back to label for auto ranges', {'xaxis.autorange': true, 'yaxis.autorange': true}, {
+                t: '=', l: 'grew',
+                b: 'grew', r: 'grew'
+            }))
+            .then(check('tilt x label to 45 degrees', {'xaxis.tickangle': 45}, {
+                t: '=', l: '=',
+                b: 'grew', r: 'shrunk'
+            }))
+            .then(check('tilt x labels back to 30 degrees', {'xaxis.tickangle': 30}, {
+                t: '=', l: '=',
+                b: 'shrunk', r: 'grew'
+            }))
+            .then(check('bump y-axis tick length', {'yaxis.ticklen': 30}, {
+                t: '=', l: 'grew',
+                b: '=', r: 'grew - as x ticks got shifted right'
+            }))
+            .then(check('add y-axis title', {'yaxis.title.text': 'hello'}, {
+                t: '=', l: 'grew',
+                b: '=', r: 'grew - as x ticks got shifted right'
+            }))
+            .then(check('size up y-axis title', {'yaxis.title.font.size': 30}, {
+                t: '=', l: 'grew',
+                b: '=', r: 'grew - as x ticks got shifted right'
+            }))
+            .then(check('tilt y labels up 30 degrees', {'yaxis.tickangle': 30}, {
+                t: 'grew', l: 'shrunk',
+                b: '=', r: 'shrunk - as x ticks got shifted left'
+            }))
+            .then(check('un-tilt y labels', {'yaxis.tickangle': null}, {
+                t: 'shrunk', l: 'grew',
+                b: '=', r: 'grew'
+            }))
+            .then(check('unanchor y-axis', {'yaxis.anchor': 'free'}, {
+                t: '=', l: '~=',
+                b: '=', r: '='
+            }))
+            .then(check('offset y-axis to the left', {'yaxis.position': 0.1}, {
+                t: '=', l: 'shrunk - as y-axis shifted right',
+                b: '=', r: 'shrunk - as y-axis shifted right'
+            }))
+            .then(check('re-anchor y-axis', {'yaxis.anchor': 'x'}, {
+                t: '=', l: 'grew',
+                b: '=', r: 'grew'
+            }))
+            .then(check('flip axis side', {'yaxis.side': 'right', 'xaxis.side': 'top'}, {
+                t: 'grew', l: 'shrunk',
+                b: 'shrunk', r: 'grew'
+            }))
+            .then(check('tilt x labels vertically', {'xaxis.tickangle': 90}, {
+                t: 'grew', l: 'shrunk',
+                b: '=', r: '='
+            }))
+            .then(check('tilt y labels down 30 degrees', {'yaxis.tickangle': 30}, {
+                t: '=', l: '=',
+                b: 'grew', r: 'shrunk'
+            }))
+            .then(check('turn off automargin', {'xaxis.automargin': false, 'yaxis.automargin': false}, {
+                t: 'initial', l: 'initial',
+                b: 'initial', r: 'initial'
+            }))
             .catch(failTest)
             .then(done);
-
         });
     });
 
