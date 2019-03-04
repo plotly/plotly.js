@@ -348,10 +348,14 @@ function handleCamera3d(gd, ev) {
         var scene = fullLayout[sceneId]._scene;
 
         if(attr === 'resetDefault' || attr === 'resetLastSave') {
-            aobj[key] = Lib.extendDeep({}, scene.viewInitial);
-
-            aobj[key].projection = {
-                type: (scene.camera._ortho) ? 'orthographic' : 'perspective'
+            aobj[key] = {
+                'up': scene.viewInitial.up,
+                'eye': scene.viewInitial.eye,
+                'center': scene.viewInitial.center,
+                'projection': {
+                    type: (scene.camera._ortho) ?
+                    'orthographic' : 'perspective'
+                }
             };
         }
 

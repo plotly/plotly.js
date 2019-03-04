@@ -71,19 +71,19 @@ exports.plot = function plotGl3d(gd) {
         if(!scene.viewInitial) {
             scene.viewInitial = {
                 up: {
-                    x: sceneLayout.camera.up.x,
-                    y: sceneLayout.camera.up.y,
-                    z: sceneLayout.camera.up.z
+                    x: camera.up.x,
+                    y: camera.up.y,
+                    z: camera.up.z
                 },
                 eye: {
-                    x: sceneLayout.camera.eye.x,
-                    y: sceneLayout.camera.eye.y,
-                    z: sceneLayout.camera.eye.z
+                    x: camera.eye.x,
+                    y: camera.eye.y,
+                    z: camera.eye.z
                 },
                 center: {
-                    x: sceneLayout.camera.center.x,
-                    y: sceneLayout.camera.center.y,
-                    z: sceneLayout.camera.center.z
+                    x: camera.center.x,
+                    y: camera.center.y,
+                    z: camera.center.z
                 }
             };
         }
