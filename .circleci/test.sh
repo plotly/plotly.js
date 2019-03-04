@@ -65,7 +65,11 @@ case $1 in
     jasmine3)
         set_tz
 
-        npm run test-jasmine -- --tags=flaky --skip-tags=gl,noCI || EXIT_STATE=$?
+        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=flaky))
+
+        for s in ${SHARDS[@]}; do
+            retry npm run test-jasmine -- --tags=flaky --skip-tags=noCI
+        done
 
         exit $EXIT_STATE
         ;;
