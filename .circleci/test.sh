@@ -68,7 +68,7 @@ case $1 in
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=flaky))
 
         for s in ${SHARDS[@]}; do
-            retry npm run test-jasmine -- --tags=flaky --skip-tags=noCI
+            retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI
         done
 
         exit $EXIT_STATE
