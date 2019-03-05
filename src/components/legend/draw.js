@@ -585,48 +585,6 @@ function computeLegendDimensions(gd, groups, traces) {
 
         extraWidth = 40;
     }
-    else if(isGrouped) {
-        var groupXOffsets = [opts._width];
-        var groupData = groups.data();
-
-        for(var i = 0, n = groupData.length; i < n; i++) {
-            var textWidths = groupData[i].map(function(legendItemArray) {
-                return legendItemArray[0].width;
-            });
-
-            var groupWidth = 40 + Math.max.apply(null, textWidths);
-
-            opts._width += opts.tracegroupgap + groupWidth;
-
-            groupXOffsets.push(opts._width);
-        }
-
-        groups.each(function(d, i) {
-            Drawing.setTranslate(this, groupXOffsets[i], 0);
-        });
-
-        groups.each(function() {
-            var group = d3.select(this);
-            var groupTraces = group.selectAll('g.traces');
-            var groupHeight = 0;
-
-            groupTraces.each(function(d) {
-                var legendItem = d[0];
-                var textHeight = legendItem.height;
-
-                Drawing.setTranslate(this,
-                    0,
-                    (5 + borderwidth + groupHeight + textHeight / 2));
-
-                groupHeight += textHeight;
-            });
-
-            opts._height = Math.max(opts._height, groupHeight);
-        });
-
-        opts._height += 10 + borderwidth * 2;
-        opts._width += borderwidth * 2;
-    }
     else {
         var rowHeight = 0;
         var maxTraceHeight = 0;
