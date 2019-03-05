@@ -484,15 +484,14 @@ module.exports = function setConvert(ax, fullLayout) {
             ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
             ax._m = ax._length / (rl0 - rl1);
             ax._b = -ax._m * rl1;
-        }
-        else {
+        } else {
             ax._offset = gs.l + ax.domain[0] * gs.w;
             ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
             ax._m = ax._length / (rl1 - rl0);
             ax._b = -ax._m * rl0;
         }
 
-        if(!isFinite(ax._m) || !isFinite(ax._b)) {
+        if(!isFinite(ax._m) || !isFinite(ax._b) || ax._length < 0) {
             fullLayout._replotting = false;
             throw new Error('Something went wrong with axis scaling');
         }
