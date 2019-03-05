@@ -3249,7 +3249,7 @@ describe('Test axes', function() {
 
             function assertSize(msg, actual, exp) {
                 for(var k in exp) {
-                    var parts = exp[k].split(' -');
+                    var parts = exp[k].split('|');
                     var op = parts[0];
 
                     var method = {
@@ -3261,7 +3261,7 @@ describe('Test axes', function() {
                     }[op];
 
                     var val = op === 'initial' ? initialSize[k] : previousSize[k];
-                    var msgk = msg + ' ' + k + (parts[1] ? ' -' + parts[1] : '');
+                    var msgk = msg + ' ' + k + (parts[1] ? ' |' + parts[1] : '');
                     var args = op === '~=' ? [val, 1.1, msgk] : [val, msgk, ''];
 
                     expect(actual[k])[method](args[0], args[1], args[2]);
@@ -3334,19 +3334,19 @@ describe('Test axes', function() {
             }))
             .then(check('bump y-axis tick length', {'yaxis.ticklen': 30}, {
                 t: '=', l: 'grew',
-                b: '=', r: 'grew - as x ticks got shifted right'
+                b: '=', r: 'grew| as x ticks got shifted right'
             }))
             .then(check('add y-axis title', {'yaxis.title.text': 'hello'}, {
                 t: '=', l: 'grew',
-                b: '=', r: 'grew - as x ticks got shifted right'
+                b: '=', r: 'grew| as x ticks got shifted right'
             }))
             .then(check('size up y-axis title', {'yaxis.title.font.size': 30}, {
                 t: '=', l: 'grew',
-                b: '=', r: 'grew - as x ticks got shifted right'
+                b: '=', r: 'grew| as x ticks got shifted right'
             }))
             .then(check('tilt y labels up 30 degrees', {'yaxis.tickangle': 30}, {
                 t: 'grew', l: 'shrunk',
-                b: '=', r: 'shrunk - as x ticks got shifted left'
+                b: '=', r: 'shrunk| as x ticks got shifted left'
             }))
             .then(check('un-tilt y labels', {'yaxis.tickangle': null}, {
                 t: 'shrunk', l: 'grew',
@@ -3357,8 +3357,8 @@ describe('Test axes', function() {
                 b: '=', r: '='
             }))
             .then(check('offset y-axis to the left', {'yaxis.position': 0.1}, {
-                t: '=', l: 'shrunk - as y-axis shifted right',
-                b: '=', r: 'shrunk - as y-axis shifted right'
+                t: '=', l: 'shrunk| as y-axis shifted right',
+                b: '=', r: 'shrunk| as y-axis shifted right'
             }))
             .then(check('re-anchor y-axis', {'yaxis.anchor': 'x'}, {
                 t: '=', l: 'grew',
