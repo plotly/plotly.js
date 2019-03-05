@@ -338,8 +338,6 @@ modeBarButtons.resetCameraLastSave3d = {
 function handleCamera3d(gd, ev) {
     var button = ev.currentTarget;
     var attr = button.getAttribute('data-attr');
-    if(attr !== 'resetLastSave' && attr !== 'resetDefault') return;
-
     var fullLayout = gd._fullLayout;
     var sceneIds = fullLayout._subplots.gl3d;
     var aobj = {};
