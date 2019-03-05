@@ -347,22 +347,15 @@ function handleCamera3d(gd, ev) {
         var key = sceneId + '.camera';
         var scene = fullLayout[sceneId]._scene;
 
-        if(attr === 'resetDefault' || attr === 'resetLastSave') {
-            aobj[key] = {
-                'up': scene.viewInitial.up,
-                'eye': scene.viewInitial.eye,
-                'center': scene.viewInitial.center,
-                'projection': {
-                    type: (scene.camera._ortho) ?
-                    'orthographic' : 'perspective'
-                }
-            };
-        }
+        if(attr === 'resetLastSave') {
+            aobj[key + '.up'] = scene.viewInitial.up;
+            aobj[key + '.eye'] = scene.viewInitial.eye;
+            aobj[key + '.center'] = scene.viewInitial.center;
 
-        if(attr === 'resetDefault') {
-            aobj[key].up = null;
-            aobj[key].eye = null;
-            aobj[key].center = null;
+        } else if(attr === 'resetDefault') {
+            aobj[key + '.up'] = null;
+            aobj[key + '.eye'] = null;
+            aobj[key + '.center'] = null;
         }
     }
 
