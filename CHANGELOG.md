@@ -10,6 +10,21 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.45.1] -- 2019-03-05
+
+### Fixed
+- Fix axis automargin pushes for rotated tick labels [#3605]
+- Fix automargin logic on (very) small graphs [#3605]
+- Fix locales support in `hovertemplate` strings [#3586]
+- Fix gl3d reset camera buttons for scenes with orthographic projection [#3597]
+- Fix typed array support for `parcoords` dimensions values and `line.color` [#3598]
+- Fix `cone` rendering on some older browsers [#3591]
+- Fix `lightposition` behavior for `cone` traces [#3591]
+- Fix `lightposition` behavior for `streamtube` trace [#3593]
+- Remove unused files from `gl-cone3d` dependency [#3591]
+- Remove unused files from `gl-streamtube3d` dependency [#3593]
+
+
 ## [1.45.0] -- 2019-02-26
 
 ### Added
