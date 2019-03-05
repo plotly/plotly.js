@@ -255,7 +255,7 @@ function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
         if(scene.fullSceneLayout.dragmode === false) return;
 
         var update = {};
-        update[scene.id + '.camera'] = getLayoutCamera(scene.camera, scene.camera._ortho);
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
         scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
@@ -758,19 +758,19 @@ function getOrbitCamera(camera) {
 
 // getLayoutCamera :: orbit_camera_coords -> plotly_coords
 // inverse of getOrbitCamera
-function getLayoutCamera(camera, isOrtho) {
+function getLayoutCamera(camera) {
     return {
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
         center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
         eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]},
-        projection: {type: (isOrtho === true) ? 'orthographic' : 'perspective'}
+        projection: {type: (camera._ortho === true) ? 'orthographic' : 'perspective'}
     };
 }
 
 // get camera position in plotly coords from 'orbit-camera' coords
 proto.getCamera = function getCamera() {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-    return getLayoutCamera(this.glplot.camera, this.glplot.camera._ortho);
+    return getLayoutCamera(this.glplot.camera);
 };
 
 // set camera position with a set of plotly coords
