@@ -70,9 +70,6 @@ exports.plot = function plotGl3d(gd) {
         // save 'initial' camera view settings for modebar button
         if(!scene.viewInitial) {
             scene.viewInitial = {
-                projection: {
-                    type: camera.projection.type
-                },
                 up: {
                     x: camera.up.x,
                     y: camera.up.y,

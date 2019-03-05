@@ -358,13 +358,6 @@ function handleCamera3d(gd, ev) {
             aobj[key + '.eye'] = null;
             aobj[key + '.center'] = null;
         }
-
-        var newOrtho = (scene.viewInitial.projection.type === 'orthographic');
-        var oldOrtho = scene.camera._ortho;
-
-        if(newOrtho !== oldOrtho) {
-            aobj[key + '.projection'] = scene.viewInitial.projection;
-        }
     }
 
     Registry.call('_guiRelayout', gd, aobj);
