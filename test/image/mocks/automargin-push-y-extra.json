@@ -1,0 +1,109 @@
+{
+  "data": [
+    {
+      "y": [
+        "12 AM diagonal",
+        "1 AM diagonal",
+        "2 AM diagonal",
+        "3 AM diagonal",
+        "4 AM diagonal",
+        "5 AM diagonal",
+        "6 AM diagonal",
+        "7 AM diagonal",
+        "8 AM diagonal",
+        "9 AM diagonal",
+        "10 AM diagonal",
+        "11 AM diagonal"
+      ],
+      "x": [
+        59.44,
+        68.75,
+        87.5,
+        100.5,
+        95.56,
+        92.8,
+        85.25,
+        77.4,
+        76.4,
+        73.94,
+        74.56,
+        81.06
+      ]
+    },
+    {
+      "y": [
+        "12 AM diagonal",
+        "1 AM diagonal",
+        "2 AM diagonal",
+        "3 AM diagonal",
+        "4 AM diagonal",
+        "5 AM diagonal",
+        "6 AM diagonal",
+        "7 AM diagonal",
+        "8 AM diagonal",
+        "9 AM diagonal",
+        "10 AM diagonal",
+        "11 AM diagonal"
+      ],
+      "x": [
+        81.06,
+        74.56,
+        73.94,
+        76.4,
+        77.4,
+        85.25,
+        92.8,
+        95.56,
+        100.5,
+        87.5,
+        68.75,
+        59.44
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "grid": {
+      "columns": 1,
+      "rows": 2,
+      "pattern": "independent"
+    },
+    "margin": {
+      "l": 0,
+      "r": 0,
+      "t": 0,
+      "b": 0
+    },
+    "xaxis": {
+      "showgrid": false,
+      "showline": true,
+      "zeroline": true,
+      "automargin": true,
+      "side": "bottom"
+    },
+    "yaxis": {
+      "side": "right",
+      "showgrid": false,
+      "showline": true,
+      "zeroline": true,
+      "automargin": true,
+      "tickangle": -45
+    },
+    "xaxis2": {
+      "showgrid": false,
+      "showline": true,
+      "zeroline": true,
+      "automargin": true,
+      "side": "top"
+    },
+    "yaxis2": {
+      "showgrid": false,
+      "showline": true,
+      "zeroline": true,
+      "automargin": true,
+      "tickangle": -45
+    },
+    "showlegend": false
+  }
+}

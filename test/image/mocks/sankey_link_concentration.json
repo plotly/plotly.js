@@ -63,7 +63,7 @@
                   }
                 ],
 
-                "hovertemplate": "%{label}<br><b>flow.labelConcentration</b>: %{flow.labelConcentration:%0.2f}<br><b>flow.concentration</b>: %{flow.concentration:%0.2f}<br><b>flow.value</b>: %{flow.value}"
+                "hovertemplate": "%{label}<br><b>flow.labelConcentration</b>: %{flow.labelConcentration:0.2%}<br><b>flow.concentration</b>: %{flow.concentration:0.2%}<br><b>flow.value</b>: %{flow.value}"
             }
 
         }],
