@@ -1490,7 +1490,7 @@ describe('Test gl3d relayout calls', function() {
         .then(done);
     });
 
-    it('@gl should maintain projection type when resetCamera buttons clicked after switching projection type from perspective to orthographic', function(done) {
+    it('@gl resetCamera buttons should be able to reset projection type after switching projection type from perspective to orthographic', function(done) {
         Plotly.plot(gd, {
             data: [{
                 type: 'surface',
@@ -1525,19 +1525,19 @@ describe('Test gl3d relayout calls', function() {
             return selectButton(gd._fullLayout._modeBar, 'resetCameraLastSave3d').click();
         })
         .then(function() {
-            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
         })
         .then(function() {
             return selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
         })
         .then(function() {
-            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
         })
         .catch(failTest)
         .then(done);
     });
 
-    it('@gl should maintain projection type when resetCamera buttons clicked after switching projection type from orthographic to perspective', function(done) {
+    it('@gl resetCamera buttons should be able to reset projection type after switching projection type from orthographic to perspective', function(done) {
         Plotly.plot(gd, {
             data: [{
                 type: 'surface',
@@ -1575,13 +1575,13 @@ describe('Test gl3d relayout calls', function() {
             return selectButton(gd._fullLayout._modeBar, 'resetCameraLastSave3d').click();
         })
         .then(function() {
-            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
         })
         .then(function() {
             return selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
         })
         .then(function() {
-            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
+            expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
         })
         .catch(failTest)
         .then(done);

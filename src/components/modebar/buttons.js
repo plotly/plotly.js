@@ -338,6 +338,8 @@ modeBarButtons.resetCameraLastSave3d = {
 function handleCamera3d(gd, ev) {
     var button = ev.currentTarget;
     var attr = button.getAttribute('data-attr');
+    if(attr !== 'resetLastSave' && attr !== 'resetDefault') return;
+
     var fullLayout = gd._fullLayout;
     var sceneIds = fullLayout._subplots.gl3d;
     var aobj = {};
@@ -351,11 +353,17 @@ function handleCamera3d(gd, ev) {
             aobj[key + '.up'] = scene.viewInitial.up;
             aobj[key + '.eye'] = scene.viewInitial.eye;
             aobj[key + '.center'] = scene.viewInitial.center;
-
         } else if(attr === 'resetDefault') {
             aobj[key + '.up'] = null;
             aobj[key + '.eye'] = null;
             aobj[key + '.center'] = null;
+        }
+
+        var newOrtho = (scene.viewInitial.projection.type === 'orthographic');
+        var oldOrtho = scene.camera._ortho;
+
+        if(newOrtho !== oldOrtho) {
+            aobj[key + '.projection'] = scene.viewInitial.projection;
         }
     }
 
