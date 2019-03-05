@@ -8,6 +8,7 @@ var mock = require('@mocks/sankey_energy.json');
 var mockDark = require('@mocks/sankey_energy_dark.json');
 var mockCircular = require('@mocks/sankey_circular.json');
 var mockCircularLarge = require('@mocks/sankey_circular_large.json');
+var mockXY = require('@mocks/sankey_x_y.json');
 var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -20,6 +21,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var defaultColors = require('@src/components/color/attributes').defaults;
 
 var drag = require('../assets/drag');
+var checkOverlap = require('../assets/check_overlap');
 
 describe('sankey tests', function() {
 
@@ -510,6 +512,32 @@ describe('sankey tests', function() {
               });
         });
 
+        it('prevents nodes from overlapping in snap arrangement', function(done) {
+            function checkElementOverlap(i, j) {
+                var base = document.querySelector('.sankey-node:nth-of-type(' + i + ')');
+                base = base.querySelector('.node-rect');
+                var compare = document.querySelector('.sankey-node:nth-of-type(' + j + ')');
+                compare = compare.querySelector('.node-rect');
+                return checkOverlap(base, compare);
+            }
+
+            var mockCopy = Lib.extendDeep({}, mockXY);
+
+            Plotly.plot(gd, mockCopy)
+            .then(function() {
+                // Nodes overlap
+                expect(checkElementOverlap(3, 6)).toBeTruthy('nodes do not overlap');
+
+                mockCopy.data[0].arrangement = 'snap';
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function() {
+                // Nodes do not overlap in snap
+                expect(checkElementOverlap(3, 6)).not.toBeTruthy('nodes overlap');
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('Test hover/click interactions:', function() {
@@ -1039,7 +1067,7 @@ describe('sankey tests', function() {
                             nodes = document.getElementsByClassName('sankey-node');
                             node = nodes.item(nodeId);
                             position = getNodeCoords(node);
-                            var timeDelay = (arrangement === 'snap') ? 1000 : 0; // Wait for force simulation to finish
+                            var timeDelay = (arrangement === 'snap') ? 2000 : 0; // Wait for force simulation to finish
                             return drag(node, move[0], move[1], false, false, false, 10, false, timeDelay);
                         })
                         .then(function() {
@@ -1075,11 +1103,12 @@ describe('sankey tests', function() {
 
                 it('should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
                     mockCopy.data[0].arrangement = arrangement;
-                    var move = [50, 50];
+                    var move = [50, -50];
                     var nodes;
                     var node;
                     var x, x1;
                     var y, y1;
+                    var precision = 3;
 
                     Plotly.newPlot(gd, mockCopy)
                       .then(function() {
@@ -1106,13 +1135,13 @@ describe('sankey tests', function() {
                           x1 = gd._fullData[0].node.x.slice();
                           y1 = gd._fullData[0].node.y.slice();
                           if(arrangement === 'freeform') expect(x1[nodeId]).not.toBeCloseTo(x[nodeId], 2, 'node ' + nodeId + ' has not changed x position');
-                          expect(y1[nodeId]).not.toBeCloseTo(y[nodeId], 2, 'node ' + nodeId + ' has not changed y position');
+                          expect(y1[nodeId]).not.toBeCloseTo(y[nodeId], precision, 'node ' + nodeId + ' has not changed y position');
 
                           // All nodes should have same x, y values after drag
                           for(var i = 0; i < x.length; i++) {
                               if(i === nodeId) continue; // except the one was just dragged
-                              if(arrangement === 'freeform') expect(x[i]).toBeCloseTo(x[i], 3, 'node ' + i + ' has changed x position');
-                              expect(y[i]).toBeCloseTo(y[i], 3, 'node ' + i + ' has changed y position');
+                              if(arrangement === 'freeform') expect(x1[i]).toBeCloseTo(x[i], 3, 'node ' + i + ' has changed x position');
+                              expect(y1[i]).toBeCloseTo(y[i], precision, 'node ' + i + ' has changed y position');
                           }
                           return true;
                       })
@@ -1121,8 +1150,8 @@ describe('sankey tests', function() {
                 });
             });
         });
-
     });
+
     it('emits a warning if node.pad is too large', function(done) {
         var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);

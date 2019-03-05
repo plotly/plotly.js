@@ -168,6 +168,70 @@ function sankeyModel(layout, d, traceIndex) {
     }
     computeLinkConcentrations();
 
+    // Push any overlapping nodes down.
+    function resolveCollisionsTopToBottom(columns) {
+        columns.forEach(function(nodes) {
+            var node;
+            var dy;
+            var y = 0;
+            var n = nodes.length;
+            var i;
+            nodes.sort(function(a, b) {
+                return a.y0 - b.y0;
+            });
+            for(i = 0; i < n; ++i) {
+                node = nodes[i];
+                if(node.y0 >= y) {
+                    // No overlap
+                } else {
+                    dy = (y - node.y0);
+                    if(dy > 1e-6) node.y0 += dy, node.y1 += dy;
+                }
+                y = node.y1 + nodePad;
+            }
+        });
+    }
+
+    // Group nodes into columns based on their x position
+    function snapToColumns(nodes) {
+        // Sort nodes by x position
+        var orderedNodes = nodes.map(function(n, i) {
+            return {
+                x0: n.x0,
+                index: i
+            };
+        })
+        .sort(function(a, b) {
+            return a.x0 - b.x0;
+        });
+
+        var columns = [];
+        var colNumber = -1;
+        var colX; // Position of column
+        var lastX = -nodeThickness; // Position of last node
+        var dx;
+        for(i = 0; i < orderedNodes.length; i++) {
+            var node = nodes[orderedNodes[i].index];
+            // If the node does not overlap with the last one
+            if(node.x0 > lastX + nodeThickness) {
+                // Start a new column
+                colNumber += 1;
+                colX = node.x0;
+            }
+            lastX = node.x0;
+
+            // Add node to its associated column
+            if(!columns[colNumber]) columns[colNumber] = [];
+            columns[colNumber].push(node);
+
+            // Change node's x position to align it with its column
+            dx = colX - node.x0;
+            node.x0 += dx, node.x1 += dx;
+
+        }
+        return columns;
+    }
+
     // Force node position
     if(trace.node.x.length !== 0 && trace.node.y.length !== 0) {
         for(i = 0; i < Math.min(trace.node.x.length, trace.node.y.length, graph.nodes.length); i++) {
@@ -180,6 +244,11 @@ function sankeyModel(layout, d, traceIndex) {
                 graph.nodes[i].y0 = pos[1] - nodeHeight / 2;
                 graph.nodes[i].y1 = pos[1] + nodeHeight / 2;
             }
+        }
+        if(trace.arrangement === 'snap') {
+            nodes = graph.nodes;
+            var columns = snapToColumns(nodes);
+            resolveCollisionsTopToBottom(columns);
         }
         // Update links
         sankey.update(graph);
@@ -720,8 +789,8 @@ function sameLayer(d) {
 function switchToForceFormat(nodes) {
     // force uses x, y as centers
     for(var i = 0; i < nodes.length; i++) {
-        nodes[i].y = nodes[i].y0 + nodes[i].dy / 2;
-        nodes[i].x = nodes[i].x0 + nodes[i].dx / 2;
+        nodes[i].y = (nodes[i].y0 + nodes[i].y1) / 2;
+        nodes[i].x = (nodes[i].x0 + nodes[i].x1) / 2;
     }
 }
 
