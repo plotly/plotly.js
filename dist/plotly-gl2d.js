@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.45.0
+* plotly.js (gl2d) v1.45.1
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -56455,6 +56455,7 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         // hovertemplate
+        var d3locale = gd._fullLayout._d3locale;
         var hovertemplate = d.hovertemplate || false;
         var hovertemplateLabels = d.hovertemplateLabels || d;
         var eventData = d.eventData[0] || {};
@@ -56462,6 +56463,7 @@ function createHoverText(hoverData, opts, gd) {
             text = Lib.hovertemplateString(
                 hovertemplate,
                 hovertemplateLabels,
+                d3locale,
                 eventData,
                 {meta: fullLayout.meta}
             );
@@ -60431,14 +60433,14 @@ function handleCamera3d(gd, ev) {
         var key = sceneId + '.camera';
         var scene = fullLayout[sceneId]._scene;
 
-        if(attr === 'resetDefault') {
-            aobj[key] = Lib.extendDeep({}, scene.cameraInitial);
-            aobj[key].up = null;
-            aobj[key].eye = null;
-            aobj[key].center = null;
-        }
-        else if(attr === 'resetLastSave') {
-            aobj[key] = Lib.extendDeep({}, scene.cameraInitial);
+        if(attr === 'resetLastSave') {
+            aobj[key + '.up'] = scene.viewInitial.up;
+            aobj[key + '.eye'] = scene.viewInitial.eye;
+            aobj[key + '.center'] = scene.viewInitial.center;
+        } else if(attr === 'resetDefault') {
+            aobj[key + '.up'] = null;
+            aobj[key + '.eye'] = null;
+            aobj[key + '.center'] = null;
         }
     }
 
@@ -67188,7 +67190,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.45.0';
+exports.version = '1.45.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -70772,17 +70774,18 @@ var maximumNumberOfHoverTemplateWarnings = 10;
  * or fallback to associated labels.
  *
  * Examples:
- *  Lib.templateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
- *  Lib.templateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
- *  Lib.templateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
+ *  Lib.hovertemplateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
+ *  Lib.hovertemplateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
+ *  Lib.hovertemplateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
  *
+ * @param {obj}     d3 locale
  * @param {string}  input string containing %{...:...} template strings
  * @param {obj}     data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
  * @param {obj}     data objects containing substitution values
  *
  * @return {string} templated string
  */
-lib.hovertemplateString = function(string, labels) {
+lib.hovertemplateString = function(string, labels, d3locale) {
     var args = arguments;
     // Not all that useful, but cache nestedProperty instantiation
     // just in case it speeds things up *slightly*:
@@ -70790,7 +70793,7 @@ lib.hovertemplateString = function(string, labels) {
 
     return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
         var obj, value, i;
-        for(i = 2; i < args.length; i++) {
+        for(i = 3; i < args.length; i++) {
             obj = args[i];
             if(obj.hasOwnProperty(key)) {
                 value = obj[key];
@@ -70817,7 +70820,13 @@ lib.hovertemplateString = function(string, labels) {
         }
 
         if(format) {
-            value = d3.format(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+            var fmt;
+            if(d3locale) {
+                fmt = d3locale.numberFormat;
+            } else {
+                fmt = d3.format;
+            }
+            value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
         } else {
             if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
         }
@@ -76692,7 +76701,7 @@ function _restyle(gd, aobj, traces) {
     // and figure out what kind of graphics update we need to do
     for(var ai in aobj) {
         if(helpers.hasParent(aobj, ai)) {
-            throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
+            throw new Error('cannot set ' + ai + ' and a parent attribute simultaneously');
         }
 
         var vi = aobj[ai];
@@ -77198,7 +77207,7 @@ function _relayout(gd, aobj) {
     // alter gd.layout
     for(var ai in aobj) {
         if(helpers.hasParent(aobj, ai)) {
-            throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
+            throw new Error('cannot set ' + ai + ' and a parent attribute simultaneously');
         }
 
         var p = layoutNP(layout, ai);
@@ -85030,6 +85039,30 @@ axes.drawOne = function(gd, ax, opts) {
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
                 push[s] += ax.title.font.size;
             }
+
+            if(axLetter === 'x' && bbox.width > 0) {
+                var rExtra = bbox.right - (ax._offset + ax._length);
+                if(rExtra > 0) {
+                    push.x = 1;
+                    push.r = rExtra;
+                }
+                var lExtra = ax._offset - bbox.left;
+                if(lExtra > 0) {
+                    push.x = 0;
+                    push.l = lExtra;
+                }
+            } else if(axLetter === 'y' && bbox.height > 0) {
+                var bExtra = bbox.bottom - (ax._offset + ax._length);
+                if(bExtra > 0) {
+                    push.y = 0;
+                    push.b = bExtra;
+                }
+                var tExtra = ax._offset - bbox.top;
+                if(tExtra > 0) {
+                    push.y = 1;
+                    push.t = tExtra;
+                }
+            }
         }
 
         Plots.autoMargin(gd, axAutoMarginID(ax), push);
@@ -91522,15 +91555,14 @@ module.exports = function setConvert(ax, fullLayout) {
             ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
             ax._m = ax._length / (rl0 - rl1);
             ax._b = -ax._m * rl1;
-        }
-        else {
+        } else {
             ax._offset = gs.l + ax.domain[0] * gs.w;
             ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
             ax._m = ax._length / (rl1 - rl0);
             ax._b = -ax._m * rl0;
         }
 
-        if(!isFinite(ax._m) || !isFinite(ax._b)) {
+        if(!isFinite(ax._m) || !isFinite(ax._b) || ax._length < 0) {
             fullLayout._replotting = false;
             throw new Error('Something went wrong with axis scaling');
         }
@@ -96634,6 +96666,8 @@ plots.doAutoMargin = function(gd) {
     var mr = margin.r;
     var mt = margin.t;
     var mb = margin.b;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
 
@@ -96669,13 +96703,11 @@ plots.doAutoMargin = function(gd) {
                     var pr = pushMargin[k2].r.size;
 
                     if(fr > fl) {
-                        var newl = (pl * fr +
-                            (pr - fullLayout.width) * fl) / (fr - fl);
-                        var newr = (pr * (1 - fl) +
-                            (pl - fullLayout.width) * (1 - fr)) / (fr - fl);
-                        if(newl >= 0 && newr >= 0 && newl + newr > ml + mr) {
-                            ml = newl;
-                            mr = newr;
+                        var newL = (pl * fr + (pr - width) * fl) / (fr - fl);
+                        var newR = (pr * (1 - fl) + (pl - width) * (1 - fr)) / (fr - fl);
+                        if(newL >= 0 && newR >= 0 && width - (newL + newR) > 0 && newL + newR > ml + mr) {
+                            ml = newL;
+                            mr = newR;
                         }
                     }
                 }
@@ -96685,13 +96717,11 @@ plots.doAutoMargin = function(gd) {
                     var pt = pushMargin[k2].t.size;
 
                     if(ft > fb) {
-                        var newb = (pb * ft +
-                            (pt - fullLayout.height) * fb) / (ft - fb);
-                        var newt = (pt * (1 - fb) +
-                            (pb - fullLayout.height) * (1 - ft)) / (ft - fb);
-                        if(newb >= 0 && newt >= 0 && newb + newt > mb + mt) {
-                            mb = newb;
-                            mt = newt;
+                        var newB = (pb * ft + (pt - height) * fb) / (ft - fb);
+                        var newT = (pt * (1 - fb) + (pb - height) * (1 - ft)) / (ft - fb);
+                        if(newB >= 0 && newT >= 0 && height - (newT + newB) > 0 && newB + newT > mb + mt) {
+                            mb = newB;
+                            mt = newT;
                         }
                     }
                 }
@@ -96704,8 +96734,8 @@ plots.doAutoMargin = function(gd) {
     gs.t = Math.round(mt);
     gs.b = Math.round(mb);
     gs.p = Math.round(margin.pad);
-    gs.w = Math.round(fullLayout.width) - gs.l - gs.r;
-    gs.h = Math.round(fullLayout.height) - gs.t - gs.b;
+    gs.w = Math.round(width) - gs.l - gs.r;
+    gs.h = Math.round(height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
     if(!fullLayout._replotting &&
@@ -104076,7 +104106,13 @@ var Lib = _dereq_('../../lib');
 var wrap = _dereq_('../../lib/gup').wrap;
 
 module.exports = function calc(gd, trace) {
-    var cs = !!trace.line.colorscale && Lib.isArrayOrTypedArray(trace.line.color);
+
+    for(var i = 0; i < trace.dimensions.length; i++) {
+        trace.dimensions[i].values = convertTypedArray(trace.dimensions[i].values);
+    }
+    trace.line.color = convertTypedArray(trace.line.color);
+
+    var cs = !!trace.line.colorscale && Array.isArray(trace.line.color);
     var color = cs ? trace.line.color : constHalf(trace._length);
     var cscale = cs ? trace.line.colorscale : [[0, trace.line.color], [1, trace.line.color]];
 
@@ -104100,6 +104136,10 @@ function constHalf(len) {
         out[i] = 0.5;
     }
     return out;
+}
+
+function convertTypedArray(a) {
+    return (Lib.isTypedArray(a)) ? Array.prototype.slice.call(a) : a;
 }
 
 },{"../../components/colorscale/calc":325,"../../components/colorscale/helpers":328,"../../lib":436,"../../lib/gup":434}],571:[function(_dereq_,module,exports){
