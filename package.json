@@ -67,7 +67,7 @@
     "d3": "^3.5.12",
     "d3-force": "^1.0.6",
     "d3-interpolate": "1",
-    "d3-sankey-circular": "0.32.0",
+    "d3-sankey-circular": "0.33.0",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.2",
