@@ -31,12 +31,9 @@ module.exports = function calc(gd, trace) {
     var serieslen = Math.min(pos.length, size.length);
     var cd = new Array(serieslen);
 
-    // set position and size (as well as for waterfall total size)
+    // set position and size
     for(var i = 0; i < serieslen; i++) {
-        cd[i] = {
-            p: pos[i],
-            s: size[i]
-        };
+        cd[i] = { p: pos[i], s: size[i] };
 
         if(trace.ids) {
             cd[i].id = String(trace.ids[i]);
