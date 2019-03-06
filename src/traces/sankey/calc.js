@@ -34,7 +34,36 @@ function convertToD3Sankey(trace) {
         components[cscale.label] = scale;
     }
 
-    var nodeCount = nodeSpec.label.length;
+    var maxNodeId = 0;
+    for(i = 0; i < linkSpec.value.length; i++) {
+        if(linkSpec.source[i] > maxNodeId) maxNodeId = linkSpec.source[i];
+        if(linkSpec.target[i] > maxNodeId) maxNodeId = linkSpec.target[i];
+    }
+    var nodeCount = maxNodeId + 1;
+
+    // Group nodes
+    var j;
+    var groups = trace.node.groups;
+    var groupLookup = {};
+    for(i = 0; i < groups.length; i++) {
+        var group = groups[i];
+        // Build a lookup table to quickly find in which group a node is
+        for(j = 0; j < group.length; j++) {
+            var nodeIndex = group[j];
+            var groupIndex = nodeCount + i;
+            if(groupLookup.hasOwnProperty(nodeIndex)) {
+                Lib.warn('Node ' + nodeIndex + ' is already part of a group.');
+            } else {
+                groupLookup[nodeIndex] = groupIndex;
+            }
+        }
+    }
+
+    // Process links
+    var groupedLinks = {
+        source: [],
+        target: []
+    };
     for(i = 0; i < linkSpec.value.length; i++) {
         var val = linkSpec.value[i];
         // remove negative values, but keep zeros with special treatment
@@ -42,6 +71,21 @@ function convertToD3Sankey(trace) {
         var target = linkSpec.target[i];
         if(!(val > 0 && isIndex(source, nodeCount) && isIndex(target, nodeCount))) {
             continue;
+        }
+
+        // Remove links that are within the same group
+        if(groupLookup.hasOwnProperty(source) && groupLookup.hasOwnProperty(target) && groupLookup[source] === groupLookup[target]) {
+            continue;
+        }
+
+        // if link targets a node in the group, relink target to that group
+        if(groupLookup.hasOwnProperty(target)) {
+            target = groupLookup[target];
+        }
+
+        // if link originates from a node in a group, relink source to that group
+        if(groupLookup.hasOwnProperty(source)) {
+            source = groupLookup[source];
         }
 
         source = +source;
@@ -63,42 +107,46 @@ function convertToD3Sankey(trace) {
             target: target,
             value: +val
         });
+
+        groupedLinks.source.push(source);
+        groupedLinks.target.push(target);
     }
 
+    // Process nodes
+    var totalCount = nodeCount + groups.length;
     var hasNodeColorArray = isArrayOrTypedArray(nodeSpec.color);
     var nodes = [];
-    var removedNodes = false;
-    var nodeIndices = {};
+    for(i = 0; i < totalCount; i++) {
+        if(!linkedNodes[i]) continue;
+        var l = nodeSpec.label[i];
 
-    for(i = 0; i < nodeCount; i++) {
-        if(linkedNodes[i]) {
-            var l = nodeSpec.label[i];
-            nodeIndices[i] = nodes.length;
-            nodes.push({
-                pointNumber: i,
-                label: l,
-                color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
-            });
-        } else removedNodes = true;
+        nodes.push({
+            group: (i > nodeCount - 1),
+            childrenNodes: [],
+            pointNumber: i,
+            label: l,
+            color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
+        });
     }
 
-    // need to re-index links now, since we didn't put all the nodes in
-    if(removedNodes) {
-        for(i = 0; i < links.length; i++) {
-            links[i].source = nodeIndices[links[i].source];
-            links[i].target = nodeIndices[links[i].target];
-        }
+    // Check if we have circularity on the resulting graph
+    var circular = false;
+    if(circularityPresent(totalCount, groupedLinks.source, groupedLinks.target)) {
+        circular = true;
     }
 
     return {
+        circular: circular,
         links: links,
-        nodes: nodes
+        nodes: nodes,
+
+        // Data structure for groups
+        groups: groups,
+        groupLookup: groupLookup
     };
 }
 
-function circularityPresent(nodeList, sources, targets) {
-
-    var nodeLen = nodeList.length;
+function circularityPresent(nodeLen, sources, targets) {
     var nodes = Lib.init2dArray(nodeLen, 0);
 
     for(var i = 0; i < Math.min(sources.length, targets.length); i++) {
@@ -120,16 +168,15 @@ function circularityPresent(nodeList, sources, targets) {
 }
 
 module.exports = function calc(gd, trace) {
-    var circular = false;
-    if(circularityPresent(trace.node.label, trace.link.source, trace.link.target)) {
-        circular = true;
-    }
-
     var result = convertToD3Sankey(trace);
 
     return wrap({
-        circular: circular,
+        circular: result.circular,
         _nodes: result.nodes,
-        _links: result.links
+        _links: result.links,
+
+        // Data structure for grouping
+        _groups: result.groups,
+        _groupLookup: result.groupLookup,
     });
 };

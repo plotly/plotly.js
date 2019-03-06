@@ -70,6 +70,19 @@ jobs:
           name: Run jasmine tests (batch 2)
           command: ./.circleci/test.sh jasmine2
 
+  test-jasmine3:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: circleci/node:10.9.0-browsers
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/plotly.js
+      - run:
+          name: Run jasmine tests (batch 3)
+          command: ./.circleci/test.sh jasmine3
+
   test-image:
     docker:
       - image: plotly/testbed:latest
@@ -131,24 +144,28 @@ jobs:
       - attach_workspace:
           at: ~/plotly.js
       - run:
-          name: Update plot-schema.json
-          command: node tasks/bundle_plot_schema.js
+          name: Build dist/
+          command: npm run build
       - store_artifacts:
-          path: build/plotly.js
-          destination: /plotly.js
+          path: dist
+          destination: dist
+      - run:
+          name: Pack tarball
+          command: |
+            npm pack
+            version=$(node -e "console.log(require('./package.json').version)")
+            mv plotly.js-$version.tgz plotly.js.tgz
       - store_artifacts:
-          path: dist/plotly.min.js
-          destination: /plotly.min.js
-      - store_artifacts:
-          path: dist/plot-schema.json
-          destination: /plot-schema.json
+          path: plotly.js.tgz
+          destination: /plotly.js.tgz
       - run:
           name: Show URLs to build files
           command: |
             PROJECT_NUM=45646037
-            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plotly.js
-            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plotly.min.js
-            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plot-schema.json
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/plotly.js.tgz
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.js
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
+            echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
 
 workflows:
   version: 2
@@ -159,6 +176,9 @@ workflows:
           requires:
             - build
       - test-jasmine2:
+          requires:
+            - build
+      - test-jasmine3:
           requires:
             - build
       - test-image:

@@ -1688,10 +1688,16 @@ describe('hover info', function() {
     });
 
     describe('hovertemplate', function() {
-        var mockCopy = Lib.extendDeep({}, mock);
+        var mockCopy;
 
         beforeEach(function(done) {
+            mockCopy = Lib.extendDeep({}, mock);
             Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        afterEach(function() {
+            Plotly.purge('graph');
+            destroyGraphDiv();
         });
 
         it('should format labels according to a template string', function(done) {
@@ -1711,6 +1717,45 @@ describe('hover info', function() {
                     nums: '$1.00',
                     name: 'trace 0',
                     axis: '0.388'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should format labels according to a template string and locale', function(done) {
+            var gd = document.getElementById('graph');
+            mockCopy.layout.separators = undefined;
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, {
+                locale: 'fr-eu',
+                locales: {
+                    'fr-eu': {
+                        format: {
+                            currency: ['€', ''],
+                            decimal: ',',
+                            thousands: ' ',
+                            grouping: [3]
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                Plotly.restyle(gd, 'hovertemplate', '%{y:$010,.2f}<extra>trace 0</extra>');
+            })
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                var hoverTrace = gd._hoverdata[0];
+
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(17);
+                expect(hoverTrace.x).toEqual(0.388);
+                expect(hoverTrace.y).toEqual(1);
+
+                assertHoverLabelContent({
+                    nums: '€000 001,00',
+                    name: 'trace 0',
+                    axis: '0,388'
                 });
             })
             .catch(failTest)

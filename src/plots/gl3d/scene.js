@@ -192,7 +192,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function tryCreatePlot(scene, camera, canvas, gl) {
+function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
 
     var glplotOptions = {
         canvas: canvas,
@@ -204,7 +204,8 @@ function tryCreatePlot(scene, camera, canvas, gl) {
         snapToData: true,
         autoScale: true,
         autoBounds: false,
-        camera: camera
+        camera: camera,
+        pixelRatio: pixelRatio
     };
 
     // for static plots, we reuse the WebGL context
@@ -237,9 +238,9 @@ function tryCreatePlot(scene, camera, canvas, gl) {
     return true;
 }
 
-function initializeGLPlot(scene, camera, canvas, gl) {
+function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
 
-    var success = tryCreatePlot(scene, camera, canvas, gl);
+    var success = tryCreatePlot(scene, camera, pixelRatio, canvas, gl);
     /*
     * createPlot will throw when webgl is not enabled in the client.
     * Lets return an instance of the module with all functions noop'd.
@@ -254,7 +255,7 @@ function initializeGLPlot(scene, camera, canvas, gl) {
         if(scene.fullSceneLayout.dragmode === false) return;
 
         var update = {};
-        update[scene.id + '.camera'] = getLayoutCamera(scene.camera, scene.camera._ortho);
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
         scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
@@ -340,7 +341,7 @@ function Scene(options, fullLayout) {
     this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
     this.container = sceneContainer;
     this.staticMode = !!options.staticPlot;
-    this.pixelRatio = options.plotGlPixelRatio || 2;
+    this.pixelRatio = this.pixelRatio || options.plotGlPixelRatio || 2;
 
     // Coordinate rescaling
     this.dataScale = [1, 1, 1];
@@ -351,7 +352,8 @@ function Scene(options, fullLayout) {
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
     var camera = fullLayout.scene.camera;
-    initializeGLPlot(this, camera);
+
+    initializeGLPlot(this, camera, this.pixelRatio);
 }
 
 var proto = Scene.prototype;
@@ -377,6 +379,7 @@ proto.recoverContext = function() {
     var gl = this.glplot.gl;
     var canvas = this.glplot.canvas;
     var camera = this.glplot.camera;
+    var pixelRatio = this.glplot.pixelRatio;
     this.glplot.dispose();
 
     function tryRecover() {
@@ -384,7 +387,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, camera, canvas, gl)) {
+        if(!initializeGLPlot(scene, camera, pixelRatio, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
@@ -755,19 +758,19 @@ function getOrbitCamera(camera) {
 
 // getLayoutCamera :: orbit_camera_coords -> plotly_coords
 // inverse of getOrbitCamera
-function getLayoutCamera(camera, isOrtho) {
+function getLayoutCamera(camera) {
     return {
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
         center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
         eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]},
-        projection: {type: (isOrtho === true) ? 'orthographic' : 'perspective'}
+        projection: {type: (camera._ortho === true) ? 'orthographic' : 'perspective'}
     };
 }
 
 // get camera position in plotly coords from 'orbit-camera' coords
 proto.getCamera = function getCamera() {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-    return getLayoutCamera(this.glplot.camera, this.glplot.camera._ortho);
+    return getLayoutCamera(this.glplot.camera);
 };
 
 // set camera position with a set of plotly coords
@@ -780,6 +783,8 @@ proto.setCamera = function setCamera(cameraData) {
     if(newOrtho !== oldOrtho) {
         this.glplot.redraw();
 
+        var pixelRatio = this.glplot.pixelRatio;
+
         var RGBA = this.glplot.clearColor;
         this.glplot.gl.clearColor(
             RGBA[0], RGBA[1], RGBA[2], RGBA[3]
@@ -791,7 +796,7 @@ proto.setCamera = function setCamera(cameraData) {
 
         this.glplot.dispose();
 
-        initializeGLPlot(this, cameraData);
+        initializeGLPlot(this, cameraData, pixelRatio);
         this.glplot.camera._ortho = newOrtho;
     }
 };
