@@ -27,8 +27,6 @@ module.exports = function calc(gd, trace) {
         pos = xa.makeCalcdata(trace, 'x');
     }
 
-    var operators = trace.operator;
-
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length, size.length);
     var cd = new Array(serieslen);
@@ -44,24 +42,16 @@ module.exports = function calc(gd, trace) {
             s: size[i]
         };
 
-        if(operators[i] === '=') {
-            if(i === 0) previousSum = cd[i].s; // this is a special case to allow using first element contain an initial value
+        if(i === 0 && trace.initialized === true) {
+            previousSum = cd[i].s; // this is a special case to allow using first element contain an initial value
 
             cd[i].isSum = true;
             cd[i].s = previousSum;
-        } else if(operators[i] === '%') {
-            cd[i].isSum = false;
-            var delta = Math.abs(cd[i].s);
-            var sign = (cd[i].s < 0) ? -1 : 1;
-            newSize = sign * (delta * previousSum * 0.01);
-            cd[i].s = previousSum + newSize;
-            previousSum += newSize;
-        } else if(operators[i] === '-') {
-            cd[i].isSum = false;
-            newSize = -cd[i].s;
-            cd[i].s = previousSum + newSize;
-            previousSum += newSize;
-        } else { // default is to add
+        } else if(cd[i].s === undefined) {
+
+            cd[i].isSum = true;
+            cd[i].s = previousSum;
+        } else {
             cd[i].isSum = false;
             newSize = cd[i].s;
             cd[i].s = previousSum + newSize;
