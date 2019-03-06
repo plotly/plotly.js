@@ -70,6 +70,19 @@ jobs:
           name: Run jasmine tests (batch 2)
           command: ./.circleci/test.sh jasmine2
 
+  test-jasmine3:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: circleci/node:10.9.0-browsers
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/plotly.js
+      - run:
+          name: Run jasmine tests (batch 3)
+          command: ./.circleci/test.sh jasmine3
+
   test-image:
     docker:
       - image: plotly/testbed:latest
@@ -163,6 +176,9 @@ workflows:
           requires:
             - build
       - test-jasmine2:
+          requires:
+            - build
+      - test-jasmine3:
           requires:
             - build
       - test-image:
