@@ -13,6 +13,7 @@ module.exports = {
     name: 'sunburst',
     basePlotModule: require('./base_plot'),
     categories: [],
+    animatable: true,
 
     attributes: require('./attributes'),
     layoutAttributes: require('./layout_attributes'),
