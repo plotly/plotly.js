@@ -100,7 +100,7 @@ module.exports = function plot(gd, cdmodule) {
                 pt.xmid = (pt.x0 + pt.x1) / 2;
                 pt.pxmid = rx2px(pt.rpx1, pt.xmid);
                 pt.midangle = -(pt.xmid - Math.PI / 2);
-                pt.halfangle = 0.5 * Math.min(Lib.angleDelta(pt.x0, pt.x1), Math.PI);
+                pt.halfangle = 0.5 * Math.min(Lib.angleDelta(pt.x0, pt.x1) || Math.PI, Math.PI);
                 pt.ring = 1 - (pt.rpx0 / pt.rpx1);
                 pt.rInscribed = getInscribedRadiusFraction(pt, trace);
                 quadrants[pt.pxmid[1] < 0 ? 0 : 1][pt.pxmid[0] < 0 ? 0 : 1].push(pt);
@@ -137,8 +137,8 @@ module.exports = function plot(gd, cdmodule) {
                         'text-anchor': 'middle'
                     })
                     .call(Drawing.font, isRoot || textPosition === 'outside' ?
-                      determineOutsideTextFont(trace, pt, gd._fullLayout.font) :
-                      determineInsideTextFont(trace, pt, gd._fullLayout.font))
+                      determineOutsideTextFont(trace, pt, fullLayout.font) :
+                      determineInsideTextFont(trace, pt, fullLayout.font))
                     .call(svgTextUtils.convertToTspans, gd);
 
                 // position the text relative to the slice
@@ -419,7 +419,8 @@ function formatSliceLabel(pt, trace, fullLayout) {
 }
 
 function determineOutsideTextFont(trace, pt, layoutFont) {
-    var ptNumber = pt.data.data.i;
+    var cdi = pt.data.data;
+    var ptNumber = cdi.i;
 
     var color = Lib.castOption(trace, ptNumber, 'outsidetextfont.color') ||
         Lib.castOption(trace, ptNumber, 'textfont.color') ||
@@ -441,7 +442,8 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
 }
 
 function determineInsideTextFont(trace, pt, layoutFont) {
-    var ptNumber = pt.data.data.i;
+    var cdi = pt.data.data;
+    var ptNumber = cdi.i;
 
     var customColor = Lib.castOption(trace, ptNumber, 'insidetextfont.color');
     if(!customColor && trace._input.textfont) {
@@ -462,7 +464,7 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         layoutFont.size;
 
     return {
-        color: customColor || Color.contrast(pt.color),
+        color: customColor || Color.contrast(cdi.color),
         family: family,
         size: size
     };
