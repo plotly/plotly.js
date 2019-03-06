@@ -59,7 +59,6 @@
                 0
             ],
             "marker": {
-                "shape": "triangle",
                 "color": "rgb(0, 0, 255)"
             },
             "opacity": 0.75
@@ -123,7 +122,6 @@
                 0
             ],
             "marker": {
-                "shape": "triangle",
                 "color": "rgb(255, 0, 0)"
             },
             "opacity": 0.75

@@ -38,8 +38,6 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
         var cd0 = cd[0];
         var trace = cd0.trace;
 
-        var isWaterfall = (trace.type === 'waterfall');
-        var isTriangle = (isWaterfall) ? (trace.marker.shape === 'triangle') : false;
         var isHorizontal = (trace.orientation === 'h');
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
@@ -123,20 +121,9 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 y1 = fixpx(y1, y0);
             }
 
-            var shape;
-            if(isWaterfall && isTriangle && cd[i].isSum === false) {
-                if(isHorizontal) {
-                    shape = 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + (0.5 * (y1 + y0)) + 'L' + x0 + ',' + y1 + 'Z';
-                } else {
-                    shape = 'M' + x0 + ',' + y0 + 'L' + (0.5 * (x1 + x0)) + ',' + y1 + 'L' + x1 + ',' + y0 + 'Z';
-                }
-            } else {
-                shape = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
-            }
-
             Lib.ensureSingle(bar, 'path')
             .style('vector-effect', 'non-scaling-stroke')
-            .attr('d', shape)
+            .attr('d', 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
             .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
             appendBarText(gd, bar, cd, i, x0, x1, y0, y1);

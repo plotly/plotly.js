@@ -59,7 +59,6 @@
                 0
             ],
             "marker": {
-                "shape": "rectangle",
                 "color": [],
                 "cmin": -500,
                 "cmax": 500,
@@ -139,7 +138,6 @@
                 0
             ],
             "marker": {
-                "shape": "rectangle",
                 "color": [],
                 "cmin": -500,
                 "cmax": 500,

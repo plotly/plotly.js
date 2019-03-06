@@ -68,20 +68,7 @@ module.exports = {
 
     width: barAttrs.width,
 
-    marker: extendFlat({}, barAttrs.marker, {
-        shape: {
-            valType: 'enumerated',
-            values: ['rectangle', 'triangle'],
-            dflt: 'rectangle',
-            role: 'style',
-            editType: 'style',
-            description: [
-                'Defines the shape of positive/negative bars on the plot.',
-                'Namely \'triangle`\ option could be used to emphasize on',
-                'the direction of the changes.'
-            ].join(' ')
-        }
-    }),
+    marker: barAttrs.marker,
 
     connector: {
         color: extendFlat({}, lineAttrs.color, {dflt: '#FFFFFF'}),
