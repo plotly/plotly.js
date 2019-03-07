@@ -17,7 +17,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            npm install
+            npm ci
       - run:
           name: List dependency versions
           command: |
