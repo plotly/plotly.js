@@ -9,6 +9,10 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.45.2] -- 2019-03-07
+
+### Fixed
+- Fix webpack builds that include `sankey` by upgrading d3-sankey-circular to 0.33.0 (bug introduced in 1.45.0) [#3611]
 
 ## [1.45.1] -- 2019-03-05
 
