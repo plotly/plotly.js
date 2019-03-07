@@ -218,7 +218,6 @@ describe('Test gl3d plots', function() {
             });
         })
         .then(_hover)
-        .then(delay(20))
         .then(function() {
             assertHoverLabelContent(
                 {
@@ -231,11 +230,12 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
+    it('@gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         function _hover() {
-            mouseEvent('mouseover', 605, 271);
+            mouseEvent('mouseover', 0, 0)
+            mouseEvent('mouseover', 655, 221);
             return delay(20)();
         }
 
@@ -247,14 +247,13 @@ describe('Test gl3d plots', function() {
             });
         })
         .then(_hover)
-        .then(delay(20))
         .then(function() {
-            assertHoverText('x: 134.03', 'y: −163.59', 'z: −163.59');
-            assertEventData(134.03, -163.59, -163.59, 0, 3, {
-                'marker.symbol': undefined,
-                'marker.size': 40,
-                'marker.color': 'black',
-                'marker.line.color': undefined
+            assertHoverText('x: 100.75', 'y: −102.63', 'z: −102.63');
+            assertEventData(100.75, -102.63, -102.63, 0, 0, {
+                'marker.symbol': 'circle',
+                'marker.size': 10,
+                'marker.color': 'blue',
+                'marker.line.color': 'black'
             });
             assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
                 bgcolor: 'rgb(0, 0, 255)',
@@ -270,7 +269,7 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: Feb 1, 2017', 'y: −163.59', 'z: −163.59');
+            assertHoverText('x: Jan 11, 2016', 'y: −102.63', 'z: −102.63');
 
             return Plotly.restyle(gd, {
                 x: [[new Date(2017, 2, 1), new Date(2017, 2, 2), new Date(2017, 2, 3), new Date(2017, 2, 4)]]
@@ -278,7 +277,7 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: Mar 4, 2017', 'y: −163.59', 'z: −163.59');
+            assertHoverText('x: Mar 1, 2017', 'y: −102.63', 'z: −102.63');
 
             return Plotly.update(gd, {
                 y: [['a', 'b', 'c', 'd']],
@@ -289,25 +288,25 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: Mar 4, 2017', 'y: d', 'z: 10B');
+            assertHoverText('x: Mar 1, 2017', 'y: a', 'z: 10');
 
             return Plotly.relayout(gd, 'scene.xaxis.calendar', 'chinese');
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 二 7, 2017', 'y: d', 'z: 10B');
+            assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10');
 
             return Plotly.restyle(gd, 'text', [['A', 'B', 'C', 'D']]);
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 二 7, 2017', 'y: d', 'z: 10B', 'D');
+            assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'A');
 
             return Plotly.restyle(gd, 'hovertext', [['Apple', 'Banana', 'Clementine', 'Dragon fruit']]);
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 二 7, 2017', 'y: d', 'z: 10B', 'Dragon fruit');
+            assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'Apple');
 
             return Plotly.restyle(gd, {
                 'hoverlabel.bgcolor': [['red', 'blue', 'green', 'yellow']],
@@ -317,11 +316,11 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
-                bgcolor: 'rgb(255, 255, 0)',
-                bordercolor: 'rgb(68, 68, 68)',
+                bgcolor: 'rgb(255, 0, 0)',
+                bordercolor: 'rgb(255, 255, 255)',
                 fontSize: 20,
                 fontFamily: 'Arial',
-                fontColor: 'rgb(68, 68, 68)'
+                fontColor: 'rgb(255, 255, 255)'
             }, 'restyled');
 
             return Plotly.relayout(gd, {
@@ -333,7 +332,7 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
-                bgcolor: 'rgb(255, 255, 0)',
+                bgcolor: 'rgb(255, 0, 0)',
                 bordercolor: 'rgb(255, 255, 0)',
                 fontSize: 20,
                 fontFamily: 'Roboto',
@@ -347,18 +346,18 @@ describe('Test gl3d plots', function() {
             var label = d3.selectAll('g.hovertext');
 
             expect(label.size()).toEqual(1);
-            expect(label.select('text').text()).toEqual('x: 二 7, 2017y: dz: 10BDragon fruit');
+            expect(label.select('text').text()).toEqual('x: 二 4, 2017y: az: 10Apple');
 
             return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'dont+know', null]]);
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 二 7, 2017', 'y: d', 'z: 10B', 'Dragon fruit');
+            assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'Apple');
 
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
         .then(function() {
-            assertHoverText(null, null, null, 'Dragon fruit');
+            assertHoverText(null, null, null, 'Apple');
 
             return Plotly.restyle(gd, 'hovertext', 'HEY');
         })
@@ -368,18 +367,18 @@ describe('Test gl3d plots', function() {
             return Plotly.restyle(gd, 'hoverinfo', 'z');
         })
         .then(function() {
-            assertHoverText(null, null, '10B');
+            assertHoverText(null, null, '10');
 
             return Plotly.restyle(gd, 'hovertemplate', 'THIS Y -- %{y}<extra></extra>');
         })
         .then(function() {
-            assertHoverText(null, null, null, 'THIS Y -- d');
+            assertHoverText(null, null, null, 'THIS Y -- a');
         })
         .catch(failTest)
         .then(done);
     });
 
-    it('@noCI @gl should display correct hover labels and emit correct event data (surface case)', function(done) {
+    it('@gl should display correct hover labels and emit correct event data (surface case)', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
 
         function _hover() {
@@ -395,7 +394,6 @@ describe('Test gl3d plots', function() {
             });
         })
         .then(_hover)
-        .then(delay(20))
         .then(function() {
             assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
             assertEventData(1, 2, 43, 0, [1, 2]);
