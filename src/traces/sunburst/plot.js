@@ -56,18 +56,19 @@ module.exports = function plot(gd, cdmodule) {
                 return;
             }
 
-            var sliceData = partition(entry)
-                .descendants()
-                .filter(function(d) { return d.y1 <= maxDepth; });
-
+            var sliceData = partition(entry).descendants();
             var maxHeight = entry.height + 1;
             var yOffset = 0;
+            var cutoff = maxDepth;
 
             if(cd0.hasMultipleRoots && sliceData[0].data.data.pid === '') {
                 sliceData = sliceData.slice(1);
                 maxHeight -= 1;
                 yOffset = 1;
+                cutoff += 1;
             }
+
+            sliceData = sliceData.filter(function(pt) { return pt.y1 <= cutoff; });
 
             slices = slices.data(sliceData, function(d) { return d.data.data.id; });
 
