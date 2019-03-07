@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.45.1
+* plotly.js (geo) v1.45.2
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -34625,7 +34625,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.45.1';
+exports.version = '1.45.2';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
