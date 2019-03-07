@@ -313,7 +313,7 @@ describe('Test isosurface', function() {
         });
     });
 
-    describe('@noCI hover', function() {
+    describe('hover', function() {
 
         var gd;
 
