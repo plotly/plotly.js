@@ -997,7 +997,7 @@ describe('sankey tests', function() {
         });
 
         ['node', 'link'].forEach(function(obj) {
-            it('should not output hover/unhover event data when ' + obj + '.hoverinfo is skip', function(done) {
+            it('@flaky should not output hover/unhover event data when ' + obj + '.hoverinfo is skip', function(done) {
                 var fig = Lib.extendDeep({}, mock);
 
                 Plotly.plot(gd, fig)

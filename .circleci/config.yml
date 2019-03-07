@@ -40,6 +40,7 @@ jobs:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:10.9.0-browsers
+    parallelism: 2
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -52,6 +53,7 @@ jobs:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:10.9.0-browsers
+    parallelism: 2
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -121,6 +123,18 @@ jobs:
           name: Run syntax tests
           command: ./.circleci/test.sh syntax
 
+  test-bundle:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: circleci/node:10.9.0-browsers
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run test-bundle
+          command: ./.circleci/test.sh bundle
+
   publish:
     docker:
       - image: circleci/node:10.9.0
@@ -157,6 +171,9 @@ workflows:
   build-and-test:
     jobs:
       - build
+      - test-bundle:
+          requires:
+            - build
       - test-jasmine:
           requires:
             - build
