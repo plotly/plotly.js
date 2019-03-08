@@ -2524,6 +2524,7 @@ var traceUIControlPatterns = [
     // "visible" includes trace.transforms[i].styles[j].value.visible
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
+    {pattern: /^node\.(x|y)/}, // for Sankey nodes
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`

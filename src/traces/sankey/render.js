@@ -208,7 +208,7 @@ function sankeyModel(layout, d, traceIndex) {
         var columns = [];
         var colNumber = -1;
         var colX; // Position of column
-        var lastX = -nodeThickness; // Position of last node
+        var lastX = -Infinity; // Position of last node
         var dx;
         for(i = 0; i < orderedNodes.length; i++) {
             var node = nodes[orderedNodes[i].index];
@@ -751,7 +751,7 @@ function persistFinalNodePositions(d, gd) {
         x.push(nodeX / d.figure.width);
         y.push(nodeY / d.figure.height);
     }
-    Plotly.restyle(gd, {
+    Plotly._guiRestyle(gd, {
         'node.x': [x],
         'node.y': [y]
     }, d.trace.index)

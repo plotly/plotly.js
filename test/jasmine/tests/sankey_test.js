@@ -22,6 +22,7 @@ var defaultColors = require('@src/components/color/attributes').defaults;
 
 var drag = require('../assets/drag');
 var checkOverlap = require('../assets/check_overlap');
+var delay = require('../assets/delay');
 
 describe('sankey tests', function() {
 
@@ -1144,6 +1145,80 @@ describe('sankey tests', function() {
                               expect(y1[i]).toBeCloseTo(y[i], precision, 'node ' + i + ' has changed y position');
                           }
                           return true;
+                      })
+                      .catch(failTest)
+                      .then(done);
+                });
+            });
+        });
+
+        describe('in relation to uirevision', function() {
+            var gd;
+
+            beforeEach(function() {
+                gd = createGraphDiv();
+            });
+
+            afterEach(function() {
+                Plotly.purge(gd);
+                destroyGraphDiv();
+            });
+
+            ['0', '1'].forEach(function(finalUIRevision) {
+                it('on Plotly.react, it preserves the position of nodes depending on layout.uirevision', function(done) {
+                    var nodes, node, positionBeforeDrag, positionAfterDrag;
+                    var move = [-50, 100];
+                    var uirevisions = ['0', finalUIRevision];
+
+                    // Use a freeform arrangement
+                    var mockCircularFreeform = Lib.extendDeep({}, mockCircular);
+                    mockCircularFreeform.data[0].arrangement = 'freeform';
+
+                    var mockCopy = Lib.extendDeep({}, mockCircularFreeform);
+                    mockCopy.layout.uirevision = uirevisions[0];
+
+                    Plotly.plot(gd, mockCopy)
+                      .then(function() {
+                          // move a node around
+                          nodes = document.getElementsByClassName('sankey-node');
+                          node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
+                          positionBeforeDrag = getNodeCoords(node);
+                          positionBeforeDrag = [positionBeforeDrag.x, positionBeforeDrag.y];
+                          positionAfterDrag = [positionBeforeDrag[0] + move[0], positionBeforeDrag[1] + move[1]];
+                          return drag(node, move[0], move[1], false, false, false, 10, false, 1000);
+                      })
+                      .then(function() {
+                          // Check that the node was really moved
+                          nodes = document.getElementsByClassName('sankey-node');
+                          node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
+                          var newPosition = getNodeCoords(node);
+                          expect(newPosition.x).toBeCloseTo(positionAfterDrag[0], 2, 'final x position is off');
+                          expect(newPosition.y).toBeCloseTo(positionAfterDrag[1], 2, 'final y position is off');
+
+                          // Change color of nodes
+                          var mockCopy = Lib.extendDeep({}, mockCircularFreeform);
+                          mockCopy.data[0].node.color = 'orange';
+                          mockCopy.layout.uirevision = uirevisions[1];
+                          return Plotly.react(gd, mockCopy);
+                      })
+                      .then(delay(1000))
+                      .then(function() {
+                          nodes = document.getElementsByClassName('sankey-node');
+                          node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
+                          var newPosition = getNodeCoords(node);
+
+                          var pos, msg;
+                          if(uirevisions[0] === uirevisions[1]) {
+                              // If uirevision is the same, the node should stay where it is
+                              pos = positionAfterDrag;
+                              msg = 'should stay the same because uirevision did not change';
+                          } else {
+                              // If uirevision changed, the node should go back to its default position
+                              pos = positionBeforeDrag;
+                              msg = 'should go back to its default because uirevision changed';
+                          }
+                          expect(newPosition.x).toBeCloseTo(pos[0], 2, 'x position ' + msg);
+                          expect(newPosition.y).toBeCloseTo(pos[1], 2, 'y position ' + msg);
                       })
                       .catch(failTest)
                       .then(done);
