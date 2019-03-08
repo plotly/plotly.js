@@ -96,8 +96,7 @@ function untestableFilter(mockName) {
     var cond = !(
         mockName === 'font-wishlist' ||
         mockName.indexOf('gl2d_') !== -1 ||
-        mockName.indexOf('mapbox_') !== -1 ||
-        mockName.indexOf('gl3d_cone-') !== -1
+        mockName.indexOf('mapbox_') !== -1
     );
 
     if(!cond) console.log(' -', mockName);
