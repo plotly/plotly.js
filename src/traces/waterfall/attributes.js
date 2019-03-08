@@ -8,24 +8,33 @@
 
 'use strict';
 
-var extendFlat = require('../../lib/extend').extendFlat;
-
 var barAttrs = require('../bar/attributes');
-
-var dash = require('../../components/drawing/attributes').dash;
 var lineAttrs = require('../scatter/attributes').line;
+
+function directionAttrs() {
+    return {
+        editType: 'style',
+        color: barAttrs.marker.color,
+        opacity: barAttrs.marker.opacity,
+        line: {
+            editType: 'style',
+            color: barAttrs.marker.line.color,
+            width: barAttrs.marker.line.width
+        }
+    };
+}
 
 module.exports = {
 
-    initialized: {
-        valType: 'boolean',
-        dflt: false,
-
+    valuetype: {
+        valType: 'enumerated',
+        values: ['r', 'relative', 'a', 'absolute', 't', 'total'],
+        dflt: [],
+        arrayOk: true,
         role: 'info',
         editType: 'calc',
         description: [
-            'Could be used to display the first value as an initial value',
-            'rather than the difference.'
+            'Using false to display relative values and true for total values.'
         ].join(' ')
     },
 
@@ -53,20 +62,20 @@ module.exports = {
 
     constraintext: barAttrs.constraintext,
 
-    cliponaxis: barAttrs.cliponaxis,
-
     orientation: barAttrs.orientation,
 
     offset: barAttrs.offset,
 
     width: barAttrs.width,
 
-    marker: barAttrs.marker,
+    marker: directionAttrs(),
+    increasing: directionAttrs(),
+    decreasing: directionAttrs(),
 
     connector: {
-        color: extendFlat({}, lineAttrs.color, {dflt: '#FFFFFF'}),
+        color: lineAttrs.color,
         width: lineAttrs.width,
-        dash: dash,
+        dash: lineAttrs.dash,
         editType: 'style'
     },
 

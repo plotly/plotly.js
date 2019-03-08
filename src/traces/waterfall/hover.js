@@ -6,10 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var barHoverPoints = require('../bar/hover').hoverPoints;
+
+var DIRSYMBOL = {
+    increasing: '▲',
+    decreasing: '▼'
+};
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
@@ -24,11 +28,17 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     var sizeLetter = (trace.orientation === 'h') ? 'x' : 'y';
 
-    var size = di.s;
-    if(trace.type === 'waterfall' && di.isSum === false) {
-        size -= (index === 0) ? 0 : cd[index - 1].s;
+    var size = (di.isSum) ? di.s : di.rawS;
+    if(di.isSum === false) {
+        // format numbers:
+        if(size > 0) {
+            pointData.extraText = size + ' ' + DIRSYMBOL.increasing;
+        } else if(size < 0) {
+            pointData.extraText = '(' + (-size) + ') ' + DIRSYMBOL.decreasing;
+        }
+    } else {
+        pointData[sizeLetter + 'LabelVal'] = size;
     }
-    pointData[sizeLetter + 'LabelVal'] = size;
 
     return [pointData];
 };

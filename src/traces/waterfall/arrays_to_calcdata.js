@@ -6,11 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var mergeArray = require('../../lib').mergeArray;
-
 
 // arrayOk attributes, merge them into calcdata array
 module.exports = function arraysToCalcdata(cd, trace, vals) {

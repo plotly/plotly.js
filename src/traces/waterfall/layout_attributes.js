@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 module.exports = {
     barmode: {
         valType: 'enumerated',

@@ -9,10 +9,16 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
-var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
-var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('./arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
+
+function isAbsolute(a) {
+    return (a === 'a' || a === 'absolute');
+}
+
+function isTotal(a) {
+    return (a === 't' || a === 'total');
+}
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
@@ -37,21 +43,24 @@ module.exports = function calc(gd, trace) {
     var i;
 
     for(i = 0; i < serieslen; i++) {
+        var amount = size[i] || 0;
         cd[i] = {
             p: pos[i],
-            s: size[i]
+            s: amount,
+            rawS: amount
         };
 
-        if(i === 0 && trace.initialized === true) {
-            previousSum = cd[i].s; // this is a special case to allow using first element contain an initial value
+        if(isAbsolute(trace.valuetype[i])) {
+
+            previousSum = cd[i].s;
 
             cd[i].isSum = true;
             cd[i].s = previousSum;
-        } else if(cd[i].s === undefined) {
+        } else if(isTotal(trace.valuetype[i])) {
 
             cd[i].isSum = true;
             cd[i].s = previousSum;
-        } else {
+        } else { // default: relative
             cd[i].isSum = false;
             newSize = cd[i].s;
             cd[i].s = previousSum + newSize;
@@ -69,22 +78,6 @@ module.exports = function calc(gd, trace) {
             vals[i] = (cd[i].isSum) ? 0 :
                 (i === 0) ? cd[i].s : cd[i].s - cd[i - 1].s;
         }
-    }
-
-    // auto-z and autocolorscale if applicable
-    if(hasColorscale(trace, 'marker')) {
-        colorscaleCalc(gd, trace, {
-            vals: (trace._autoMarkerColor) ? vals : trace.marker.color,
-            containerStr: 'marker',
-            cLetter: 'c'
-        });
-    }
-    if(hasColorscale(trace, 'marker.line')) {
-        colorscaleCalc(gd, trace, {
-            vals: (trace._autoMarkerLineColor) ? vals : trace.marker.line.color,
-            containerStr: 'marker.line',
-            cLetter: 'c'
-        });
     }
 
     arraysToCalcdata(cd, trace, vals);

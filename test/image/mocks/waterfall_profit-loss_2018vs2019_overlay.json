@@ -4,7 +4,24 @@
             "name": "2018",
             "type": "waterfall",
             "orientation": "h",
-            "initialized": true,
+            "valuetype": [
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "total"
+            ],
             "y": [
                 "2018/2019",
                 "Sales",
@@ -41,16 +58,35 @@
                 -45,
                 null
             ],
-            "marker": {
-                "color": "rgb(0, 0, 255)"
-            },
-            "opacity": 0.75
+            "opacity": 0.5,
+            "connector": {
+                "width": 1,
+                "color": "rgb(0, 0, 0)",
+                "dash": 0
+            }
         },
         {
             "name": "2019",
             "type": "waterfall",
             "orientation": "h",
-            "initialized": true,
+            "valuetype": [
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "total"
+            ],
             "y": [
                 "2018/2019",
                 "Sales",
@@ -87,10 +123,12 @@
                 -53.7,
                 null
             ],
-            "marker": {
-                "color": "rgb(255, 0, 0)"
-            },
-            "opacity": 0.75
+            "opacity": 0.5,
+            "connector": {
+                "width": 1,
+                "color": "rgb(0, 0, 0)",
+                "dash": 0
+            }
         }
     ],
     "layout": {
@@ -103,12 +141,11 @@
             "autorange": "reversed"
         },
         "xaxis": {
-            "type": "linear",
-            "autorange": true
+            "type": "linear"
         },
         "margin": { "l": 150 },
         "height": 800,
         "width": 800,
-        "autosize": true
+        "showlegend": true
     }
 }

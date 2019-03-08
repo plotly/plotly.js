@@ -6,17 +6,24 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
-var Color = require('../../components/color');
-var Registry = require('../../registry');
 
 var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var handleXYDefaults = require('../scatter/xy_defaults');
-var handleStyleDefaults = require('./style_defaults');
 var attributes = require('./attributes');
+var Color = require('../../components/color');
+
+var INCREASING_COLOR = '#3D9970';
+var DECREASING_COLOR = '#FF4136';
+
+function handleDirection(coerce, direction, defaultColor) {
+    coerce(direction + '.color', defaultColor);
+    coerce(direction + '.line.color', Color.defaultLine);
+    coerce(direction + '.line.width');
+    coerce(direction + '.opacity');
+}
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -31,7 +38,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         return;
     }
 
-    coerce('initialized');
+    coerce('valuetype');
 
     coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
     coerce('offset');
@@ -67,17 +74,14 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('constraintext');
         coerce('selected.textfont.color');
         coerce('unselected.textfont.color');
-        coerce('cliponaxis');
     }
 
-    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
+    handleDirection(coerce, 'increasing', INCREASING_COLOR);
+    handleDirection(coerce, 'decreasing', DECREASING_COLOR);
+    handleDirection(coerce, 'marker', defaultColor);
 
-    var lineColor = (traceOut.marker.line || {}).color;
-
-    // override defaultColor for error bars with defaultLine
-    var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
+    coerce('selected.marker.color');
+    coerce('unselected.marker.color');
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 

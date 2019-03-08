@@ -362,6 +362,10 @@ drawing.pointStyle = function(s, trace, gd) {
 
 drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
     var marker = trace.marker;
+    if(trace.type === 'waterfall' && !d.isSum) {
+        if(d.rawS > 0) marker = trace.increasing;
+        if(d.rawS < 0) marker = trace.decreasing;
+    }
     var markerLine = marker.line;
 
     sel.style('opacity',
@@ -497,7 +501,6 @@ drawing.makePointStyleFns = function(trace) {
     if(trace.selectedpoints) {
         Lib.extendFlat(out, drawing.makeSelectedPointStyleFns(trace));
     }
-
     return out;
 };
 

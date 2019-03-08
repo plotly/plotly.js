@@ -17,11 +17,10 @@ Waterfall.crossTraceDefaults = require('./defaults').crossTraceDefaults;
 Waterfall.supplyLayoutDefaults = require('./layout_defaults');
 Waterfall.calc = require('./calc');
 Waterfall.crossTraceCalc = require('./cross_trace_calc');
-Waterfall.colorbar = require('../scatter/marker_colorbar');
 Waterfall.arraysToCalcdata = require('../bar/arrays_to_calcdata');
 Waterfall.plot = require('./plot');
-Waterfall.style = require('../bar/style').style;
-Waterfall.styleOnSelect = require('../bar/style').styleOnSelect;
+Waterfall.style = require('./style').style;
+Waterfall.styleOnSelect = require('./style').styleOnSelect;
 Waterfall.hoverPoints = require('./hover');
 Waterfall.selectPoints = require('../bar/select');
 

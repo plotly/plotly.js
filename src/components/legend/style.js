@@ -61,6 +61,7 @@ module.exports = function style(s, gd) {
           .enter().append('g')
             .classed('legendpoints', true);
     })
+    .each(styleWaterfalls)
     .each(styleBars)
     .each(styleBoxes)
     .each(stylePies)
@@ -241,8 +242,49 @@ module.exports = function style(s, gd) {
         txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
     }
 
+    function styleWaterfalls(d) {
+        var trace = d[0].trace;
+        if(trace.type !== 'waterfall') return d;
+
+        var barpath = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendbar')
+            .data(Registry.traceIs(trace, 'bar') ? [d, d, d] : []);
+        barpath.enter().append('path').classed('legendbar', true)
+            .attr('d', function(_, i) {
+                return (
+                    (i === 0) ? 'M-6,-6V6H0Z' :
+                    (i === 1) ? 'M6,6V-6H0Z' : 'M6,6H0L-6,-6H-0Z'
+                );
+            })
+            .attr('transform', 'translate(20,0)');
+        barpath.exit().remove();
+
+        barpath.each(function(d, i) {
+
+            var container = trace[
+                (i % 3 === 0) ? 'increasing' :
+                (i % 3 === 1) ? 'decreasing' : 'marker'
+            ];
+
+            var line = container.line || {};
+
+            var p = d3.select(this);
+            var d0 = d[0];
+            var w = (d0.mlw + 1 || line.width + 1) - 1;
+
+            p.style('stroke-width', w + 'px')
+                .call(Color.fill, d0.mc || container.color);
+
+            if(w) {
+                p.call(Color.stroke, d0.mlc || container.color);
+            }
+        });
+    }
+
     function styleBars(d) {
         var trace = d[0].trace;
+        if(trace.type === 'waterfall') return d;
+
         var marker = trace.marker || {};
         var markerLine = marker.line || {};
 

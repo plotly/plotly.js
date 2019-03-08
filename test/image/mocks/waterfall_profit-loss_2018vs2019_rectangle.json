@@ -4,7 +4,25 @@
             "name": "2018",
             "type": "waterfall",
             "orientation": "h",
-            "initialized": true,
+            "opacity": 0.5,
+            "valuetype": [
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "total"
+            ],
             "y": [
                 "2018/2019",
                 "Sales",
@@ -41,32 +59,34 @@
                 -45,
                 null
             ],
-            "marker": {
-                "color": [],
-                "cmin": -500,
-                "cmax": 500,
-                "colorscale": [
-                    [0, "rgb(255, 0, 0)"],
-                    [0.499, "rgb(222, 222, 222)"],
-                    [0.5, "rgb(0, 255, 0)"],
-                    [0.501, "rgb(222, 222, 222)"],
-                    [1, "rgb(0, 0, 255)"]
-                ],
-                "reversescale": false,
-                "showscale": true,
-                "colorbar": {
-                    "title": "",
-                    "len": 0.4,
-                    "y": 0.3,
-                    "yanchor": "bottom"
-                }
+            "connector": {
+                "width": 1,
+                "color": "rgb(0, 0, 0)",
+                "dash": 0
             }
         },
         {
             "name": "2019",
             "type": "waterfall",
             "orientation": "h",
-            "initialized": true,
+            "valuetype": [
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "total"
+            ],
             "y": [
                 "2018/2019",
                 "Sales",
@@ -100,47 +120,30 @@
                 123,
                 198,
                 null,
-                -15,
+                -53.7,
                 null
             ],
-            "marker": {
-                "color": [],
-                "cmin": -500,
-                "cmax": 500,
-                "colorscale": [
-                    [0, "rgb(255, 0, 0)"],
-                    [0.499, "rgb(222, 222, 222)"],
-                    [0.5, "rgb(0, 191, 0)"],
-                    [0.501, "rgb(222, 222, 222)"],
-                    [1, "rgb(0, 0, 255)"]
-                ],
-                "reversescale": false,
-                "showscale": false,
-                "colorbar": {
-                    "title": "",
-                    "len": 0.4,
-                    "y": 0.3,
-                    "yanchor": "bottom"
-                }
+            "connector": {
+                "width": 1,
+                "color": "rgb(0, 0, 0)",
+                "dash": 0
             }
         }
     ],
     "layout": {
         "title": {
-            "text": "Profit and loss statement 2018 vs 2019<br>waterfall chart with colorscale"
+            "text": "Profit and loss statement 2018 vs 2019<br>waterfall chart"
         },
         "yaxis": {
             "type": "category",
             "autorange": "reversed"
         },
         "xaxis": {
-            "type": "linear",
-            "autorange": true
+            "type": "linear"
         },
         "margin": { "l": 150 },
         "height": 800,
         "width": 800,
-        "autosize": true,
-        "showlegend": false
+        "showlegend": true
     }
 }
