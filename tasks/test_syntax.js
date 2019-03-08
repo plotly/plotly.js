@@ -147,7 +147,7 @@ function assertSrcContents() {
                         // off the d3-hierarchy output
                         var dirParts = path.dirname(file).split(path.sep);
                         var isSunburstFile = dirParts[dirParts.length - 1] === 'sunburst';
-                        var isLinkedToObject = ['pt', 'd'].indexOf(parts[parts.length - 2]) !== -1;
+                        var isLinkedToObject = ['pt', 'd', 'parent'].indexOf(parts[parts.length - 2]) !== -1;
                         if(!(isSunburstFile && isLinkedToObject)) {
                             logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
                         }
