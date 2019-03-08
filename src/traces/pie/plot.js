@@ -254,6 +254,7 @@ function plot(gd, cdpie) {
     }, 0);
 }
 
+// TODO add support for transition
 function plotTextLines(slices, trace) {
     slices.each(function(pt) {
         var sliceTop = d3.select(this);
@@ -532,7 +533,7 @@ function transformInsideText(textBB, pt, cd0) {
 
     if(transform.scale >= 1) return transform;
 
-        // max size if text is rotated radially
+    // max size if text is rotated radially
     var Qr = textAspect + 1 / (2 * Math.tan(halfAngle));
     var maxHalfHeightRotRadial = r * Math.min(
         1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
@@ -545,7 +546,7 @@ function transformInsideText(textBB, pt, cd0) {
         rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
     };
 
-        // max size if text is rotated tangentially
+    // max size if text is rotated tangentially
     var aspectInv = 1 / textAspect;
     var Qt = aspectInv + 1 / (2 * Math.tan(halfAngle));
     var maxHalfWidthTangential = r * Math.min(

@@ -475,6 +475,8 @@ function plotOne(gd, cd, element, transitionOpts) {
                 }
             };
 
+            // TODO need to consider labelExtraX and labelExtraY ... at first (?)
+
             var out = {
                 rpx1: rpx1Fn(t),
                 translateX: transTextX(d),

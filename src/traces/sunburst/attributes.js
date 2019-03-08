@@ -123,6 +123,8 @@ module.exports = {
             dflt: 0.7,
             description: 'Sets the opacity of the leaves.'
         },
+        // TODO might be a PITA to animate, most sunburst don't have outside
+        // text lable, OK to take it out?
         textposition: {
             valType: 'enumerated',
             role: 'info',
