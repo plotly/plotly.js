@@ -234,7 +234,7 @@ describe('Test gl3d plots', function() {
         var _mock = Lib.extendDeep({}, mock2);
 
         function _hover() {
-            mouseEvent('mouseover', 0, 0)
+            mouseEvent('mouseover', 0, 0);
             mouseEvent('mouseover', 655, 221);
             return delay(20)();
         }
