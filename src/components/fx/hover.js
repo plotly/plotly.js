@@ -651,7 +651,18 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 createSpikelines(spikePoints, spikelineOpts);
             }
         }
-        return result;
+        console.debug('return end hoverdata.length is end', result, xval, yval)
+        gd.emit('plotly_hover', {
+            event: evt,
+            points: gd._hoverdata,
+            xaxes: xaArray,
+            yaxes: yaArray,
+            xvals: xvalArray,
+            yvals: yvalArray,
+            hasPoints: !!gd._hoverdata,
+
+        });
+        return { result, xval, yval };
     }
 
     if(hasCartesian) {
