@@ -23,6 +23,17 @@ module.exports = function click(gd, evt, subplot) {
     }
 
     function emitClick() { gd.emit('plotly_click', {points: gd._hoverdata, event: evt}); }
+    function emitClick2() {
+        gd.emit('plotly_click', {
+            points: gd._hoverdata, // 削っていい emitClick()とのプロパティ揃えるだけ
+            event: evt,
+            point: gd.point_data, // 座標データ
+            funcName: 'emitClick2', // emitClickとの識別 なくてもいい
+        });
+    }
+
+    // click時必ずコール
+    emitClick2();
 
     if(gd._hoverdata && evt && evt.target) {
         if(annotationsDone && annotationsDone.then) {
