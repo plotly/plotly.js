@@ -21977,6 +21977,17 @@ module.exports = function click(gd, evt, subplot) {
     }
 
     function emitClick() { gd.emit('plotly_click', {points: gd._hoverdata, event: evt}); }
+    function emitClick2() {
+        gd.emit('plotly_click', {
+            points: gd._hoverdata, // 削っていい emitClick()とのプロパティ揃えるだけ
+            event: evt,
+            point: gd.point_data, // 座標データ
+            funcName: 'emitClick2', // emitClickとの識別 なくてもいい
+        });
+    }
+
+    // click時必ずコール
+    emitClick2();
 
     if(gd._hoverdata && evt && evt.target) {
         if(annotationsDone && annotationsDone.then) {
@@ -22933,6 +22944,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
     }
 
+    gd.point_data = { xval, yval }; // 既存のデータに関係なくplot上でのマウス座標をセットする
+
     // if hoverData is empty check for the spikes to draw and quit if there are none
     if(hoverData.length === 0) {
         var result = dragElement.unhoverRaw(gd, evt);
@@ -22941,7 +22954,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 createSpikelines(spikePoints, spikelineOpts);
             }
         }
-        console.debug('return end hoverdata.length is end', result, xval, yval)
         gd.emit('plotly_hover', {
             event: evt,
             points: gd._hoverdata,
