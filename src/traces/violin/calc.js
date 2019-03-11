@@ -33,28 +33,36 @@ module.exports = function calc(gd, trace) {
     for(var i = 0; i < cd.length; i++) {
         var cdi = cd[i];
         var vals = cdi.pts.map(helpers.extractVal);
+        var span;
 
-        var bandwidth = cdi.bandwidth = calcBandwidth(trace, cdi, vals);
-        var span = cdi.span = calcSpan(trace, cdi, valAxis, bandwidth);
+        if (cdi.min === cdi.max) {
+            cdi.spanZero = true;
+            span = cdi.span = [cdi.min, cdi.max];
+            cdi.density = [{v:1, t: span[0]}];
+            maxKDE = Math.max(maxKDE, 1);
+        } else {
+            var bandwidth = cdi.bandwidth = calcBandwidth(trace, cdi, vals);
+            span = cdi.span = calcSpan(trace, cdi, valAxis, bandwidth);
 
-        // step that well covers the bandwidth and is multiple of span distance
-        var dist = span[1] - span[0];
-        var n = Math.ceil(dist / (bandwidth / 3));
-        var step = dist / n;
+            // step that well covers the bandwidth and is multiple of span distance
+            var dist = span[1] - span[0];
+            var n = Math.ceil(dist / (bandwidth / 3));
+            var step = dist / n;
 
-        if(!isFinite(step) || !isFinite(n)) {
-            Lib.error('Something went wrong with computing the violin span');
-            cd[0].t.empty = true;
-            return cd;
-        }
+            if(!isFinite(step) || !isFinite(n)) {
+                Lib.error('Something went wrong with computing the violin span');
+                cd[0].t.empty = true;
+                return cd;
+            }
 
-        var kde = helpers.makeKDE(cdi, trace, vals);
-        cdi.density = new Array(n);
+            var kde = helpers.makeKDE(cdi, trace, vals);
+            cdi.density = new Array(n);
 
-        for(var k = 0, t = span[0]; t < (span[1] + step / 2); k++, t += step) {
-            var v = kde(t);
-            cdi.density[k] = {v: v, t: t};
-            maxKDE = Math.max(maxKDE, v);
+            for(var k = 0, t = span[0]; t < (span[1] + step / 2); k++, t += step) {
+                var v = kde(t);
+                cdi.density[k] = {v: v, t: t};
+                maxKDE = Math.max(maxKDE, v);
+            }
         }
 
         maxCount = Math.max(maxCount, vals.length);
