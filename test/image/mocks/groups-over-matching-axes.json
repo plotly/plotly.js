@@ -86,6 +86,9 @@
     }
   ],
   "layout": {
+    "template": {
+      "data": {"violin": [{"bandwidth": 1}]}
+    },
     "boxmode": "group",
     "violinmode": "group",
     "showlegend": false,
