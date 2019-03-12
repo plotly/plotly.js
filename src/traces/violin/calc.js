@@ -35,10 +35,10 @@ module.exports = function calc(gd, trace) {
         var vals = cdi.pts.map(helpers.extractVal);
         var span;
 
-        if (cdi.min === cdi.max) {
+        if(cdi.min === cdi.max) {
             cdi.spanZero = true;
             span = cdi.span = [cdi.min, cdi.max];
-            cdi.density = [{v:1, t: span[0]}];
+            cdi.density = [{v: 1, t: span[0]}];
             maxKDE = Math.max(maxKDE, 1);
         } else {
             var bandwidth = cdi.bandwidth = calcBandwidth(trace, cdi, vals);
