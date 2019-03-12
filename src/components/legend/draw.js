@@ -553,6 +553,8 @@ function computeLegendDimensions(gd, groups, traces) {
 
     var extraWidth = 0;
 
+    var traceGap = 5;
+
     opts._width = 0;
     opts._height = 0;
 
@@ -610,14 +612,13 @@ function computeLegendDimensions(gd, groups, traces) {
         });
 
         maxHeight += opts.tracegroupgap;
-        var traceGroupGap = 5;
-        maxWidth += traceGroupGap;
+        maxWidth += traceGap;
 
         var groupXOffsets = [opts._width];
         var rowHeights = [];
         var rowNum = 1;
         for(var i = 0, n = groupData.length; i < n; i++) {
-            opts._width += maxWidth ;
+            opts._width += maxWidth;
 
             if(fullLayout._size.w < (borderwidth + opts._width + maxWidth)) {
                 groupXOffsets[groupXOffsets.length - 1] = groupXOffsets[0];
@@ -671,7 +672,6 @@ function computeLegendDimensions(gd, groups, traces) {
         var maxTraceWidth = 0;
         var offsetX = 0;
         var fullTracesWidth = 0;
-        var traceGap = 5;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
