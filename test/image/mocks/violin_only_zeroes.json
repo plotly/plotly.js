@@ -9,8 +9,9 @@
     }
   }, {
     "type": "violin",
-    "y": [2, 2, 2, 2],
+    "y": [0, 0, 0, 0],
     "points": "all",
+    "bandwidth": 0.25,
     "pointpos": 0
   }, {
     "type": "violin",
