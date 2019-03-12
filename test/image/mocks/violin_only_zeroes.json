@@ -4,7 +4,6 @@
     "y": [0, 0, 0, 0],
     "points": "all",
     "pointpos": 0,
-    "bandwidth": 0.025,
     "meanline": {
       "visible": true
     }
@@ -12,7 +11,6 @@
     "type": "violin",
     "y": [2, 2, 2, 2],
     "points": "all",
-    "bandwidth": 0.1,
     "pointpos": 0
   }, {
     "type": "violin",
