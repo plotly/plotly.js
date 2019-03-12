@@ -39,6 +39,7 @@ module.exports = function calc(gd, trace) {
             cdi.spanZero = true;
             span = cdi.span = [cdi.min, cdi.max];
             cdi.density = [{v: 1, t: span[0]}];
+            cdi.bandwidth = 1;
             maxKDE = Math.max(maxKDE, 1);
         } else {
             var bandwidth = cdi.bandwidth = calcBandwidth(trace, cdi, vals);
