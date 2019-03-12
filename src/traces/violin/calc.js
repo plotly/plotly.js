@@ -36,7 +36,6 @@ module.exports = function calc(gd, trace) {
         var span;
 
         if(cdi.min === cdi.max) {
-            cdi.spanZero = true;
             span = cdi.span = [cdi.min, cdi.max];
             cdi.density = [{v: 1, t: span[0]}];
             cdi.bandwidth = 1;
