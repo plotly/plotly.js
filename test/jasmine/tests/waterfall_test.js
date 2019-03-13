@@ -12,23 +12,17 @@ var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
-var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var color = require('../../../src/components/color');
 var rgb = color.rgb;
 
-var checkEventData = require('../assets/check_event_data');
-var constants = require('@src/traces/bar/constants');
-
 var customAssertions = require('../assets/custom_assertions');
-var assertClip = customAssertions.assertClip;
-var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
 
-var BAR_TEXT_SELECTOR = '.bars .bartext';
+var WATERFALL_TEXT_SELECTOR = '.bars .bartext';
 
 describe('Waterfall.supplyDefaults', function() {
     'use strict';
@@ -210,48 +204,10 @@ describe('Waterfall.supplyDefaults', function() {
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
-
-    it('should not include alignementgroup/offsetgroup when barmode is not *group*', function() {
-        var gd = {
-            data: [{type: 'waterfall', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
-            layout: {barmode: 'group'}
-        };
-
-        supplyAllDefaults(gd);
-        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
-        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
-
-        gd.layout.barmode = 'stack';
-        supplyAllDefaults(gd);
-        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
-        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
-    });
 });
 
 describe('waterfall calc / crossTraceCalc (formerly known as setPositions)', function() {
     'use strict';
-
-    it('should fill in calc pt fields (stack case)', function() {
-        var gd = mockWaterfallPlot([{
-            y: [2, 1, 2]
-        }, {
-            y: [3, 1, 2]
-        }, {
-            y: [null, null, 2]
-        }], {
-            barmode: 'stack'
-        });
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[2, 1, 2], [5, 2, 4], [undefined, undefined, 6]]);
-        assertPointField(cd, 'b', [[0, 0, 0], [2, 1, 2], [0, 0, 4]]);
-        assertPointField(cd, 's', [[2, 1, 2], [3, 1, 2], [undefined, undefined, 2]]);
-        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
-        assertTraceField(cd, 't.barwidth', [0.8, 0.8, 0.8]);
-        assertTraceField(cd, 't.poffset', [-0.4, -0.4, -0.4]);
-        assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8]);
-    });
 
     it('should fill in calc pt fields (overlay case)', function() {
         var gd = mockWaterfallPlot([{
@@ -264,9 +220,9 @@ describe('waterfall calc / crossTraceCalc (formerly known as setPositions)', fun
 
         var cd = gd.calcdata;
         assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[2, 1, 2], [3, 1, 2]]);
+        assertPointField(cd, 'y', [[2, 3, 5], [3, 4, 6]]);
         assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0]]);
-        assertPointField(cd, 's', [[2, 1, 2], [3, 1, 2]]);
+        assertPointField(cd, 's', [[2, 3, 5], [3, 4, 6]]);
         assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2]]);
         assertTraceField(cd, 't.barwidth', [0.8, 0.8]);
         assertTraceField(cd, 't.poffset', [-0.4, -0.4]);
@@ -286,55 +242,12 @@ describe('waterfall calc / crossTraceCalc (formerly known as setPositions)', fun
 
         var cd = gd.calcdata;
         assertPointField(cd, 'x', [[-0.2, 0.8, 1.8], [0.2, 1.2, 2.2]]);
-        assertPointField(cd, 'y', [[2, 1, 2], [3, 1, 2]]);
+        assertPointField(cd, 'y', [[2, 3, 5], [3, 4, 6]]);
         assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0]]);
-        assertPointField(cd, 's', [[2, 1, 2], [3, 1, 2]]);
+        assertPointField(cd, 's', [[2, 3, 5], [3, 4, 6]]);
         assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2]]);
         assertTraceField(cd, 't.barwidth', [0.36, 0.36]);
         assertTraceField(cd, 't.poffset', [-0.38, 0.02]);
-        assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8]);
-    });
-
-    it('should fill in calc pt fields (relative case)', function() {
-        var gd = mockWaterfallPlot([{
-            y: [20, 14, -23]
-        }, {
-            y: [-12, -18, -29]
-        }], {
-            barmode: 'relative'
-        });
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[20, 14, -23], [-12, -18, -52]]);
-        assertPointField(cd, 'b', [[0, 0, 0], [0, 0, -23]]);
-        assertPointField(cd, 's', [[20, 14, -23], [-12, -18, -29]]);
-        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2]]);
-        assertTraceField(cd, 't.barwidth', [0.8, 0.8]);
-        assertTraceField(cd, 't.poffset', [-0.4, -0.4]);
-        assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8]);
-    });
-
-    it('should fill in calc pt fields (relative / percent case)', function() {
-        var gd = mockWaterfallPlot([{
-            x: ['A', 'B', 'C', 'D'],
-            y: [20, 14, 40, -60]
-        }, {
-            x: ['A', 'B', 'C', 'D'],
-            y: [-12, -18, 60, -40]
-        }], {
-            barmode: 'relative',
-            barnorm: 'percent'
-        });
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'x', [[0, 1, 2, 3], [0, 1, 2, 3]]);
-        assertPointField(cd, 'y', [[100, 100, 40, -60], [-100, -100, 100, -100]]);
-        assertPointField(cd, 'b', [[0, 0, 0, 0], [0, 0, 40, -60]]);
-        assertPointField(cd, 's', [[100, 100, 40, -60], [-100, -100, 60, -40]]);
-        assertPointField(cd, 'p', [[0, 1, 2, 3], [0, 1, 2, 3]]);
-        assertTraceField(cd, 't.barwidth', [0.8, 0.8]);
-        assertTraceField(cd, 't.poffset', [-0.4, -0.4]);
         assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8]);
     });
 });
@@ -342,32 +255,23 @@ describe('waterfall calc / crossTraceCalc (formerly known as setPositions)', fun
 describe('Waterfall.calc', function() {
     'use strict';
 
-    it('should guard against invalid base items', function() {
-        var gd = mockWaterfallPlot([{
-            base: [null, 1, 2],
-            y: [1, 2, 3]
-        }, {
-            base: [null, 1],
-            y: [1, 2, 3]
-        }, {
-            base: null,
-            y: [1, 2]
-        }], {
-            barmode: 'overlay'
-        });
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0, 1, 2], [0, 1, 0], [0, 0]]);
-    });
-
-    it('should not exclude items with non-numeric x/y from calcdata', function() {
+    it('should not exclude items with non-numeric x from calcdata (vertical case)', function() {
         var gd = mockWaterfallPlot([{
             x: [5, NaN, 15, 20, null, 21],
-            y: [20, NaN, 23, 25, null, 26]
+            orientation: 'v',
         }]);
 
         var cd = gd.calcdata;
         assertPointField(cd, 'x', [[5, NaN, 15, 20, NaN, 21]]);
+    });
+
+    it('should not exclude items with non-numeric y from calcdata (horizontal case)', function() {
+        var gd = mockWaterfallPlot([{
+            orientation: 'h',
+            y: [20, NaN, 23, 25, null, 26]
+        }]);
+
+        var cd = gd.calcdata;
         assertPointField(cd, 'y', [[20, NaN, 23, 25, NaN, 26]]);
     });
 
@@ -379,7 +283,7 @@ describe('Waterfall.calc', function() {
 
         var cd = gd.calcdata;
         assertPointField(cd, 'x', [[0, 1, 2, 3]]);
-        assertPointField(cd, 'y', [[1, NaN, NaN, 15]]);
+        assertPointField(cd, 'y', [[1, 1, 1, 16]]);
     });
 
     it('should not exclude items with non-numeric x from calcdata (to plots gaps correctly)', function() {
@@ -390,7 +294,7 @@ describe('Waterfall.calc', function() {
 
         var cd = gd.calcdata;
         assertPointField(cd, 'x', [[1, NaN, NaN, 15]]);
-        assertPointField(cd, 'y', [[1, 2, 10, 30]]);
+        assertPointField(cd, 'y', [[1, 3, 13, 43]]);
     });
 });
 
@@ -500,26 +404,6 @@ describe('Waterfall.crossTraceCalc (formerly known as setPositions)', function()
         assertArrayField(cd[2][0], 't.barwidth', [0.33]);
     });
 
-    it('should stack vertical and horizontal traces separately', function() {
-        var gd = mockWaterfallPlot([{
-            y: [1, 2, 3]
-        }, {
-            y: [10, 20, 30]
-        }, {
-            x: [-1, -2, -3]
-        }, {
-            x: [-10, -20, -30]
-        }], {
-            barmode: 'stack'
-        });
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0, 0, 0], [1, 2, 3], [0, 0, 0], [-1, -2, -3]]);
-        assertPointField(cd, 's', [[1, 2, 3], [10, 20, 30], [-1, -2, -3], [-10, -20, -30]]);
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2], [-1, -2, -3], [-11, -22, -33]]);
-        assertPointField(cd, 'y', [[1, 2, 3], [11, 22, 33], [0, 1, 2], [0, 1, 2]]);
-    });
-
     it('should not group traces that set offset', function() {
         var gd = mockWaterfallPlot([{
             y: [1, 2, 3]
@@ -535,29 +419,9 @@ describe('Waterfall.crossTraceCalc (formerly known as setPositions)', function()
 
         var cd = gd.calcdata;
         assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0], [0, 0, 0]]);
-        assertPointField(cd, 's', [[1, 2, 3], [10, 20, 30], [-1, -2, -3]]);
+        assertPointField(cd, 's', [[1, 3, 6], [10, 30, 60], [-1, -3, -6]]);
         assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25], [-0.5, 0.5, 1.5]]);
-        assertPointField(cd, 'y', [[1, 2, 3], [10, 20, 30], [-1, -2, -3]]);
-    });
-
-    it('should not stack traces that set base', function() {
-        var gd = mockWaterfallPlot([{
-            y: [1, 2, 3]
-        }, {
-            y: [10, 20, 30]
-        }, {
-            base: -1,
-            y: [-1, -2, -3]
-        }], {
-            bargap: 0,
-            barmode: 'stack'
-        });
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0, 0, 0], [1, 2, 3], [-1, -1, -1]]);
-        assertPointField(cd, 's', [[1, 2, 3], [10, 20, 30], [-1, -2, -3]]);
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[1, 2, 3], [11, 22, 33], [-2, -3, -4]]);
+        assertPointField(cd, 'y', [[1, 3, 6], [10, 30, 60], [-1, -3, -6]]);
     });
 
     it('should draw traces separately in overlay mode', function() {
@@ -567,185 +431,29 @@ describe('Waterfall.crossTraceCalc (formerly known as setPositions)', function()
             y: [10, 20, 30]
         }], {
             bargap: 0,
-            barmode: 'overlay',
-            barnorm: false
+            barmode: 'overlay'
         });
 
         var cd = gd.calcdata;
         assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0]]);
-        assertPointField(cd, 's', [[1, 2, 3], [10, 20, 30]]);
+        assertPointField(cd, 's', [[1, 3, 6], [10, 30, 60]]);
         assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[1, 2, 3], [10, 20, 30]]);
-    });
-
-    it('should ignore barnorm in overlay mode', function() {
-        var gd = mockWaterfallPlot([{
-            y: [1, 2, 3]
-        }, {
-            y: [10, 20, 30]
-        }], {
-            bargap: 0,
-            barmode: 'overlay',
-            barnorm: 'percent'
-        });
-
-        expect(gd._fullLayout.barnorm).toBeUndefined();
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0]]);
-        assertPointField(cd, 's', [[1, 2, 3], [10, 20, 30]]);
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[1, 2, 3], [10, 20, 30]]);
-    });
-
-    it('should honor barnorm for traces that cannot be grouped', function() {
-        var gd = mockWaterfallPlot([{
-            offset: 0,
-            y: [1, 2, 3]
-        }], {
-            bargap: 0,
-            barmode: 'group',
-            barnorm: 'percent'
-        });
-
-        expect(gd._fullLayout.barnorm).toBe('percent');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0, 0, 0]]);
-        assertPointField(cd, 's', [[100, 100, 100]]);
-        assertPointField(cd, 'x', [[0.5, 1.5, 2.5]]);
-        assertPointField(cd, 'y', [[100, 100, 100]]);
-    });
-
-    it('should honor barnorm for traces that cannot be stacked', function() {
-        var gd = mockWaterfallPlot([{
-            offset: 0,
-            y: [1, 2, 3]
-        }], {
-            bargap: 0,
-            barmode: 'stack',
-            barnorm: 'percent'
-        });
-
-        expect(gd._fullLayout.barnorm).toBe('percent');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0, 0, 0]]);
-        assertPointField(cd, 's', [[100, 100, 100]]);
-        assertPointField(cd, 'x', [[0.5, 1.5, 2.5]]);
-        assertPointField(cd, 'y', [[100, 100, 100]]);
-    });
-
-    it('should honor barnorm (group case)', function() {
-        var gd = mockWaterfallPlot([{
-            y: [3, 2, 1]
-        }, {
-            y: [1, 2, 3]
-        }], {
-            bargap: 0,
-            barmode: 'group',
-            barnorm: 'fraction'
-        });
-
-        expect(gd._fullLayout.barnorm).toBe('fraction');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0]]);
-        assertPointField(cd, 's', [[0.75, 0.50, 0.25], [0.25, 0.50, 0.75]]);
-        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25]]);
-        assertPointField(cd, 'y', [[0.75, 0.50, 0.25], [0.25, 0.50, 0.75]]);
-    });
-
-    it('should honor barnorm (group+base case)', function() {
-        var gd = mockWaterfallPlot([{
-            base: [3, 2, 1],
-            y: [0, 0, 0]
-        }, {
-            y: [1, 2, 3]
-        }], {
-            bargap: 0,
-            barmode: 'group',
-            barnorm: 'fraction'
-        });
-
-        expect(gd._fullLayout.barnorm).toBe('fraction');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0.75, 0.50, 0.25], [0, 0, 0]]);
-        assertPointField(cd, 's', [[0, 0, 0], [0.25, 0.50, 0.75]]);
-        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25]]);
-        assertPointField(cd, 'y', [[0.75, 0.50, 0.25], [0.25, 0.50, 0.75]]);
-    });
-
-    it('should honor barnorm (stack case)', function() {
-        var gd = mockWaterfallPlot([{
-            y: [3, 2, 1]
-        }, {
-            y: [1, 2, 3]
-        }], {
-            bargap: 0,
-            barmode: 'stack',
-            barnorm: 'fraction'
-        });
-
-        expect(gd._fullLayout.barnorm).toBe('fraction');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0, 0, 0], [0.75, 0.50, 0.25]]);
-        assertPointField(cd, 's', [[0.75, 0.50, 0.25], [0.25, 0.50, 0.75]]);
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[0.75, 0.50, 0.25], [1, 1, 1]]);
-    });
-
-    it('should honor barnorm (relative case)', function() {
-        var gd = mockWaterfallPlot([{
-            y: [3, 2, 1]
-        }, {
-            y: [1, 2, 3]
-        }, {
-            y: [-3, -2, -1]
-        }, {
-            y: [-1, -2, -3]
-        }], {
-            bargap: 0,
-            barmode: 'relative',
-            barnorm: 'fraction'
-        });
-
-        expect(gd._fullLayout.barnorm).toBe('fraction');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [
-            [0, 0, 0], [0.75, 0.50, 0.25],
-            [0, 0, 0], [-0.75, -0.50, -0.25]
-        ]);
-        assertPointField(cd, 's', [
-            [0.75, 0.50, 0.25], [0.25, 0.50, 0.75],
-            [-0.75, -0.50, -0.25], [-0.25, -0.50, -0.75],
-        ]);
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2], [0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [
-            [0.75, 0.50, 0.25], [1, 1, 1],
-            [-0.75, -0.50, -0.25], [-1, -1, -1],
-        ]);
+        assertPointField(cd, 'y', [[1, 3, 6], [10, 30, 60]]);
     });
 
     it('should expand position axis', function() {
         var gd = mockWaterfallPlot([{
             offset: 10,
             width: 2,
-            y: [3, 2, 1]
+            y: [1.5, 1, 0.5]
         }, {
             offset: -5,
             width: 2,
-            y: [-1, -2, -3]
+            y: [-0.5, -1, -1.5]
         }], {
             bargap: 0,
-            barmode: 'overlay',
-            barnorm: false
+            barmode: 'overlay'
         });
-
-        expect(gd._fullLayout.barnorm).toBeUndefined();
 
         var xa = gd._fullLayout.xaxis;
         var ya = gd._fullLayout.yaxis;
@@ -768,93 +476,30 @@ describe('Waterfall.crossTraceCalc (formerly known as setPositions)', function()
             y: [-1, -2, -3]
         }], {
             bargap: 0,
-            barmode: 'overlay',
-            barnorm: false
+            barmode: 'overlay'
         });
-
-        expect(gd._fullLayout.barnorm).toBeUndefined();
 
         var xa = gd._fullLayout.xaxis;
         var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
-    });
-
-    it('should expand size axis (relative case)', function() {
-        var gd = mockWaterfallPlot([{
-            y: [3, 2, 1]
-        }, {
-            y: [1, 2, 3]
-        }, {
-            y: [-3, -2, -1]
-        }, {
-            y: [-1, -2, -3]
-        }], {
-            bargap: 0,
-            barmode: 'relative',
-            barnorm: false
-        });
-
-        expect(gd._fullLayout.barnorm).toBe('');
-
-        var xa = gd._fullLayout.xaxis;
-        var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-4.44, 4.44], undefined, '(ya.range)');
-    });
-
-    it('should expand size axis (barnorm case)', function() {
-        var gd = mockWaterfallPlot([{
-            y: [3, 2, 1]
-        }, {
-            y: [1, 2, 3]
-        }, {
-            y: [-3, -2, -1]
-        }, {
-            y: [-1, -2, -3]
-        }], {
-            bargap: 0,
-            barmode: 'relative',
-            barnorm: 'fraction'
-        });
-
-        expect(gd._fullLayout.barnorm).toBe('fraction');
-
-        var xa = gd._fullLayout.xaxis;
-        var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-14.44, 14.44], undefined, '(ya.range)');
     });
 
     it('should include explicit base in size axis range', function() {
-        var barmodes = ['stack', 'group', 'overlay'];
+        var barmodes = ['group', 'overlay'];
         barmodes.forEach(function(barmode) {
             var gd = mockWaterfallPlot([
-                {y: [3, 4, -5], base: [-1, -2, 7]}
+                {y: [3, 4, -5], base: 10}
             ], {
                 barmode: barmode
             });
 
             var ya = gd._fullLayout.yaxis;
-            expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-2.5, 7.5]);
+            expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([9.611, 17.388]);
         });
     });
 
-    it('should not include date zero (1970) in date axis range', function() {
-        var barmodes = ['stack', 'group', 'overlay'];
-        barmodes.forEach(function(barmode) {
-            var gd = mockWaterfallPlot([
-                {y: ['2017-01-01', '2017-01-03', '2017-01-19']}
-            ], {
-                barmode: barmode
-            });
-
-            var ya = gd._fullLayout.yaxis;
-            expect(Axes.getAutoRange(gd, ya)).toEqual(['2016-12-31', '2017-01-20']);
-        });
-    });
-
-    it('works with log axes (grouped bars)', function() {
+    it('works with log axes (grouped waterfalls)', function() {
         var gd = mockWaterfallPlot([
             {y: [1, 10, 1e10, -1]},
             {y: [2, 20, 2e10, -2]}
@@ -867,37 +512,9 @@ describe('Waterfall.crossTraceCalc (formerly known as setPositions)', function()
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.572, 10.873], undefined, '(ya.range)');
     });
 
-    it('works with log axes (stacked bars)', function() {
-        var gd = mockWaterfallPlot([
-            {y: [1, 10, 1e10, -1]},
-            {y: [2, 20, 2e10, -2]}
-        ], {
-            yaxis: {type: 'log'},
-            barmode: 'stack'
-        });
-
-        var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.582, 11.059], undefined, '(ya.range)');
-    });
-
-    it('works with log axes (normalized bars)', function() {
-        // strange case... but it should work!
-        var gd = mockWaterfallPlot([
-            {y: [1, 10, 1e10, -1]},
-            {y: [2, 20, 2e10, -2]}
-        ], {
-            yaxis: {type: 'log'},
-            barmode: 'stack',
-            barnorm: 'percent'
-        });
-
-        var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
-    });
-
     it('should ignore *base* on category axes', function() {
         var gd = mockWaterfallPlot([
-            {x: ['a', 'b', 'c'], base: [0.2, -0.2, 1]},
+            {x: ['a', 'b', 'c'], base: 10},
         ]);
 
         expect(gd._fullLayout.xaxis.type).toBe('category');
@@ -985,7 +602,7 @@ describe('A waterfall plot', function() {
 
     function assertTextFontColors(expFontColors, label) {
         return function() {
-            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontColors.length);
 
             selection.each(function(d, i) {
@@ -1002,7 +619,7 @@ describe('A waterfall plot', function() {
 
     function assertTextFontFamilies(expFontFamilies) {
         return function() {
-            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontFamilies.length);
             selection.each(function(d, i) {
                 expect(this.style.fontFamily).toBe(expFontFamilies[i]);
@@ -1012,7 +629,7 @@ describe('A waterfall plot', function() {
 
     function assertTextFontSizes(expFontSizes) {
         return function() {
-            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontSizes.length);
             selection.each(function(d, i) {
                 expect(this.style.fontSize).toBe(expFontSizes[i] + 'px');
@@ -1041,112 +658,6 @@ describe('A waterfall plot', function() {
                 if(textNode) {
                     foundTextNodes = true;
                     assertTextIsInsidePath(textNode, pathNode);
-                }
-            }
-
-            expect(foundTextNodes).toBe(true);
-        })
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('Pushes outside text relative bars inside when not outmost', function(done) {
-        var data = [{
-            x: [1, 2],
-            y: [20, 10],
-            type: 'waterfall',
-            text: ['a', 'b'],
-            textposition: 'outside',
-        }, {
-            x: [1, 2],
-            y: [20, 10],
-            type: 'waterfall',
-            text: ['c', 'd']
-        }];
-        var layout = {barmode: 'relative'};
-
-        Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd);
-            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
-            var foundTextNodes;
-
-            for(var i = 0; i < waterfallNodes.length; i++) {
-                var waterfallNode = waterfallNodes[i];
-                var pathNode = waterfallNode.querySelector('path');
-                var textNode = waterfallNode.querySelector('text');
-                if(textNode) {
-                    foundTextNodes = true;
-                    assertTextIsInsidePath(textNode, pathNode);
-                }
-            }
-
-            expect(foundTextNodes).toBe(true);
-        })
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('does not push text inside when base is set', function(done) {
-        var data = [{
-            x: [1, 2],
-            y: [20, 10],
-            base: [1, 2],
-            type: 'waterfall',
-            text: ['a', 'b'],
-            textposition: 'outside',
-        }, {
-            x: [3, 4],
-            y: [30, 40],
-            type: 'waterfall',
-            text: ['c', 'd']
-        }];
-        var layout = {barmode: 'relative'};
-
-        Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd);
-            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
-            var foundTextNodes;
-
-            for(var i = 0; i < waterfallNodes.length; i++) {
-                var waterfallNode = waterfallNodes[i];
-                var pathNode = waterfallNode.querySelector('path');
-                var textNode = waterfallNode.querySelector('text');
-                if(textNode) {
-                    foundTextNodes = true;
-                    assertTextIsAbovePath(textNode, pathNode);
-                }
-            }
-
-            expect(foundTextNodes).toBe(true);
-        })
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('should show waterfall texts (outside case)', function(done) {
-        var data = [{
-            y: [10, -20, 30],
-            type: 'waterfall',
-            text: ['1', 'Very very very very very long waterfall text'],
-            textposition: 'outside',
-        }];
-        var layout = {
-            barmode: 'relative'
-        };
-
-        Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd);
-            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
-            var foundTextNodes;
-
-            for(var i = 0; i < waterfallNodes.length; i++) {
-                var waterfallNode = waterfallNodes[i];
-                var pathNode = waterfallNode.querySelector('path');
-                var textNode = waterfallNode.querySelector('text');
-                if(textNode) {
-                    foundTextNodes = true;
-                    if(data[0].y[i] > 0) assertTextIsAbovePath(textNode, pathNode);
-                    else assertTextIsBelowPath(textNode, pathNode);
                 }
             }
 
@@ -1187,40 +698,6 @@ describe('A waterfall plot', function() {
         .then(done);
     });
 
-    it('should show waterfall texts (barnorm case)', function(done) {
-        var data = [{
-            x: [100, -100, 100],
-            type: 'waterfall',
-            text: [100, -100, 100],
-            textposition: 'outside',
-        }];
-        var layout = {
-            barmode: 'relative',
-            barnorm: 'percent'
-        };
-
-        Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd);
-            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
-            var foundTextNodes;
-
-            for(var i = 0; i < waterfallNodes.length; i++) {
-                var waterfallNode = waterfallNodes[i];
-                var pathNode = waterfallNode.querySelector('path');
-                var textNode = waterfallNode.querySelector('text');
-                if(textNode) {
-                    foundTextNodes = true;
-                    if(data[0].x[i] > 0) assertTextIsAfterPath(textNode, pathNode);
-                    else assertTextIsBeforePath(textNode, pathNode);
-                }
-            }
-
-            expect(foundTextNodes).toBe(true);
-        })
-        .catch(failTest)
-        .then(done);
-    });
-
     var insideTextTestsTrace = {
         x: ['giraffes', 'orangutans', 'monkeys', 'elefants', 'spiders', 'snakes'],
         y: [20, 14, 23, 10, 59, 15],
@@ -1231,21 +708,6 @@ describe('A waterfall plot', function() {
             color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
         }
     };
-
-    it('should use inside text colors contrasting to waterfall colors by default', function(done) {
-        var noMarkerTrace = Lib.extendFlat({}, insideTextTestsTrace);
-        delete noMarkerTrace.marker;
-
-        Plotly.plot(gd, [insideTextTestsTrace, noMarkerTrace])
-          .then(function() {
-              var trace1Colors = [DARK, DARK, LIGHT, LIGHT, DARK, LIGHT];
-              var trace2Colors = Lib.repeat(DARK, 6);
-              var allExpectedColors = trace1Colors.concat(trace2Colors);
-              assertTextFontColors(allExpectedColors)();
-          })
-          .catch(failTest)
-          .then(done);
-    });
 
     it('should take waterfall fill opacities into account when calculating contrasting inside text colors', function(done) {
         var trace = {
@@ -1270,95 +732,6 @@ describe('A waterfall plot', function() {
 
         Plotly.plot(gd, [data])
           .then(assertTextFontColors(Lib.repeat('#09f', 6)))
-          .catch(failTest)
-          .then(done);
-    });
-
-    it('should use matching color from textfont.color array for inside text, contrasting otherwise', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: ['#09f', 'green'] } });
-
-        Plotly.plot(gd, [data])
-          .then(assertTextFontColors(['#09f', 'green', LIGHT, LIGHT, DARK, LIGHT]))
-          .catch(failTest)
-          .then(done);
-    });
-
-    it('should use defined insidetextfont.color for inside text instead of the contrasting default', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTrace, { insidetextfont: { color: '#09f' } });
-
-        Plotly.plot(gd, [data])
-          .then(assertTextFontColors(Lib.repeat('#09f', 6)))
-          .catch(failTest)
-          .then(done);
-    });
-
-    it('should use matching color from insidetextfont.color array instead of the contrasting default', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTrace, { insidetextfont: { color: ['yellow', 'green'] } });
-
-        Plotly.plot(gd, [data])
-          .then(assertTextFontColors(['yellow', 'green', LIGHT, LIGHT, DARK, LIGHT]))
-          .catch(failTest)
-          .then(done);
-    });
-
-    it('should use a contrasting text color by default for outside labels being pushed inside ' +
-      'because of another waterfall stacked above', function(done) {
-        var trace1 = {
-            x: [5],
-            y: [5],
-            text: ['Giraffes'],
-            type: 'waterfall',
-            textposition: 'outside'
-        };
-        var trace2 = Lib.extendFlat({}, trace1);
-        var layout = {barmode: 'stack'};
-
-        Plotly.plot(gd, [trace1, trace2], layout)
-          .then(assertTextFontColors([LIGHT, DARK]))
-          .catch(failTest)
-          .then(done);
-    });
-
-    it('should style outside labels pushed inside by bars stacked above as inside labels', function(done) {
-        var trace1 = {
-            x: [5],
-            y: [5],
-            text: ['Giraffes'],
-            type: 'waterfall',
-            textposition: 'outside',
-            insidetextfont: {color: 'blue', family: 'serif', size: 24}
-        };
-        var trace2 = Lib.extendFlat({}, trace1);
-        var layout = {barmode: 'stack', font: {family: 'Arial'}};
-
-        Plotly.plot(gd, [trace1, trace2], layout)
-          .then(assertTextFontColors(['blue', DARK]))
-          .then(assertTextFontFamilies(['serif', 'Arial']))
-          .then(assertTextFontSizes([24, 12]))
-          .catch(failTest)
-          .then(done);
-    });
-
-    it('should fall back to textfont array values if insidetextfont array values don\'t ' +
-      'cover all bars', function(done) {
-        var trace = Lib.extendFlat({}, insideTextTestsTrace, {
-            textfont: {
-                color: ['blue', 'blue', 'blue'],
-                family: ['Arial', 'serif'],
-                size: [8, 24]
-            },
-            insidetextfont: {
-                color: ['yellow', 'green'],
-                family: ['Arial'],
-                size: [16]
-            }
-        });
-        var layout = {font: {family: 'Roboto', size: 12}};
-
-        Plotly.plot(gd, [trace], layout)
-          .then(assertTextFontColors(['yellow', 'green', 'blue', LIGHT, DARK, LIGHT]))
-          .then(assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Roboto', 'Roboto', 'Roboto']))
-          .then(assertTextFontSizes([16, 24, 12, 12, 12, 12]))
           .catch(failTest)
           .then(done);
     });
@@ -1442,7 +815,46 @@ describe('A waterfall plot', function() {
     });
 
     it('should be able to restyle', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
+        var mock = {
+            data: [
+                {
+                    width: [1, 0.8, 0.6, 0.4],
+                    text: [1, 2, 3333333333, 4],
+                    textposition: 'outside',
+                    y: [1, 2, 3, 4],
+                    x: [1, 2, 3, 4],
+                    type: 'waterfall'
+                }, {
+                    width: [0.4, 0.6, 0.8, 1],
+                    text: ['Three', 2, 'inside text', 0],
+                    textposition: 'auto',
+                    textfont: { size: [10] },
+                    y: [3, 2, 1, 0],
+                    x: [1, 2, 3, 4],
+                    type: 'waterfall'
+                }, {
+                    width: 1,
+                    text: [-1, -3, -2, -4],
+                    textposition: 'inside',
+                    y: [-1, -3, -2, -4],
+                    x: [1, 2, 3, 4],
+                    type: 'waterfall'
+                }, {
+                    text: [0, 'outside text', -3, -2],
+                    textposition: 'auto',
+                    y: [0, -0.25, -3, -2],
+                    x: [1, 2, 3, 4],
+                    type: 'waterfall'
+                }
+            ],
+            layout: {
+                xaxis: { showgrid: true },
+                yaxis: { range: [-6, 6] },
+                height: 400,
+                width: 400,
+                barmode: 'overlay'
+            }
+        };
 
         Plotly.plot(gd, mock.data, mock.layout).then(function() {
             var cd = gd.calcdata;
@@ -1450,14 +862,11 @@ describe('A waterfall plot', function() {
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
             assertPointField(cd, 'y', [
-                [1, 2, 3, 4], [4, 4, 4, 4],
-                [-1, -3, -2, -4], [4, -3.25, -5, -6]]);
-            assertPointField(cd, 'b', [
-                [0, 0, 0, 0], [1, 2, 3, 4],
-                [0, 0, 0, 0], [4, -3, -2, -4]]);
+                [1, 3, 6, 10], [3, 5, 6, 6],
+                [-1, -4, -6, -10], [0, -0.25, -3.25, -5.25]]);
             assertPointField(cd, 's', [
-                [1, 2, 3, 4], [3, 2, 1, 0],
-                [-1, -3, -2, -4], [0, -0.25, -3, -2]]);
+                [1, 3, 6, 10], [3, 5, 6, 6],
+                [-1, -4, -6, -10], [0, -0.25, -3.25, -5.25]]);
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
@@ -1478,14 +887,11 @@ describe('A waterfall plot', function() {
                 [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
                 [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
             assertPointField(cd, 'y', [
-                [1, 2, 3, 4], [4, 4, 4, 4],
-                [-1, -3, -2, -4], [4, -3.25, -5, -6]]);
-            assertPointField(cd, 'b', [
-                [0, 0, 0, 0], [1, 2, 3, 4],
-                [0, 0, 0, 0], [4, -3, -2, -4]]);
+                [1, 3, 6, 10], [3, 5, 6, 6],
+                [-1, -4, -6, -10], [0, -0.25, -3.25, -5.25]]);
             assertPointField(cd, 's', [
-                [1, 2, 3, 4], [3, 2, 1, 0],
-                [-1, -3, -2, -4], [0, -0.25, -3, -2]]);
+                [1, 3, 6, 10], [3, 5, 6, 6],
+                [-1, -4, -6, -10], [0, -0.25, -3.25, -5.25] ]);
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
@@ -1541,14 +947,11 @@ describe('A waterfall plot', function() {
                 [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
                 [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
             assertPointField(cd, 'y', [
-                [1, 2, 3, 4], [4, 4, 4, 4],
-                [-1, -3, -2, -4], [4, -3.25, -5, -6]]);
-            assertPointField(cd, 'b', [
-                [0, 0, 0, 0], [1, 2, 3, 4],
-                [0, 0, 0, 0], [4, -3, -2, -4]]);
+                [1, 3, 6, 10], [3, 5, 6, 6],
+                [-1, -4, -6, -10], [0, -0.25, -3.25, -5.25]]);
             assertPointField(cd, 's', [
-                [1, 2, 3, 4], [3, 2, 1, 0],
-                [-1, -3, -2, -4], [0, -0.25, -3, -2]]);
+                [1, 3, 6, 10], [3, 5, 6, 6],
+                [-1, -4, -6, -10], [0, -0.25, -3.25, -5.25]]);
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
@@ -1674,75 +1077,9 @@ describe('A waterfall plot', function() {
         .then(done);
     });
 
-    it('can change orientation and correctly sets axis types', function(done) {
-        function checkWaterfallsMatch(dims, msg) {
-            var bars = d3.selectAll('.bars .point');
-            var bbox1 = bars.node().getBoundingClientRect();
-            bars.each(function(d, i) {
-                if(!i) return;
-                var bbox = this.getBoundingClientRect();
-                ['left', 'right', 'top', 'bottom', 'width', 'height'].forEach(function(dim) {
-                    expect(bbox[dim]).negateIf(dims.indexOf(dim) === -1)
-                        .toBeWithin(bbox1[dim], 0.1, msg + ' (' + i + '): ' + dim);
-                });
-            });
-        }
-
-        Plotly.newPlot(gd, [{
-            x: ['a', 'b', 'c'],
-            y: [1, 2, 3],
-            type: 'waterfall'
-        }], {
-            width: 400, height: 400
-        })
-        .then(function() {
-            checkTicks('x', ['a', 'b', 'c'], 'initial x');
-            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'initial y');
-
-            checkWaterfallsMatch(['bottom', 'width'], 'initial');
-
-            // turn implicit "v" into explicit "v" - a noop but specifically
-            // for orientation this was broken at one point...
-            return Plotly.restyle(gd, {orientation: 'v'});
-        })
-        .then(function() {
-            checkTicks('x', ['a', 'b', 'c'], 'explicit v x');
-            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'explicit v y');
-
-            checkWaterfallsMatch(['bottom', 'width'], 'explicit v');
-
-            // back to implicit v
-            return Plotly.restyle(gd, {orientation: null});
-        })
-        .then(function() {
-            checkTicks('x', ['a', 'b', 'c'], 'implicit v x');
-            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'implicit v y');
-
-            checkWaterfallsMatch(['bottom', 'width'], 'implicit v');
-
-            return Plotly.restyle(gd, {orientation: 'h'});
-        })
-        .then(function() {
-            checkTicks('x', ['0', '1', '2', '3'], 'h x');
-            checkTicks('y', ['a', 'b', 'c'], 'h y');
-
-            checkWaterfallsMatch(['left', 'height'], 'initial');
-
-            return Plotly.restyle(gd, {orientation: 'v'});
-        })
-        .then(function() {
-            checkTicks('x', ['a', 'b', 'c'], 'final x');
-            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'final y');
-
-            checkWaterfallsMatch(['bottom', 'width'], 'final');
-        })
-        .catch(failTest)
-        .then(done);
-    });
-
     it('should be able to add/remove text node on restyle', function(done) {
         function _assertNumberOfWaterfallTextNodes(cnt) {
-            var sel = d3.select(gd).select('.barlayer').selectAll('text');
+            var sel = d3.select(gd).select('.waterfalllayer').selectAll('text');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -1811,7 +1148,7 @@ describe('A waterfall plot', function() {
     });
 });
 
-describe('bar visibility toggling:', function() {
+describe('waterfall visibility toggling:', function() {
     var gd;
 
     beforeEach(function() {
@@ -1832,8 +1169,8 @@ describe('bar visibility toggling:', function() {
 
     it('should update axis range according to visible edits (group case)', function(done) {
         Plotly.plot(gd, [
-            {type: 'waterfall', x: [1, 2, 3], y: [1, 2, 1]},
-            {type: 'waterfall', x: [1, 2, 3], y: [-1, -2, -1]}
+            {type: 'waterfall', x: [1, 2, 3], y: [0.5, 1, 0.5]},
+            {type: 'waterfall', x: [1, 2, 3], y: [-0.5, -1, -0.5]}
         ])
         .then(function() {
             spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
@@ -1865,76 +1202,9 @@ describe('bar visibility toggling:', function() {
         .catch(failTest)
         .then(done);
     });
-
-    it('should update axis range according to visible edits (stack case)', function(done) {
-        Plotly.plot(gd, [
-            {type: 'waterfall', x: [1, 2, 3], y: [1, 2, 1]},
-            {type: 'waterfall', x: [1, 2, 3], y: [2, 3, 2]}
-        ], {barmode: 'stack'})
-        .then(function() {
-            spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
-
-            _assert('base', [0.5, 3.5], [0, 5.263], 0);
-            expect(gd._fullLayout.legend.traceorder).toBe('reversed');
-            return Plotly.restyle(gd, 'visible', false, [1]);
-        })
-        .then(function() {
-            _assert('visible [true,false]', [0.5, 3.5], [0, 2.105], 1);
-            return Plotly.restyle(gd, 'visible', false, [0]);
-        })
-        .then(function() {
-            _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
-            return Plotly.restyle(gd, 'visible', 'legendonly');
-        })
-        .then(function() {
-            _assert('both legendonly', [0.5, 3.5], [0, 2.105], 0);
-            expect(gd._fullLayout.legend.traceorder).toBe('reversed');
-            return Plotly.restyle(gd, 'visible', true, [1]);
-        })
-        .then(function() {
-            _assert('visible [false,true]', [0.5, 3.5], [0, 3.157], 1);
-            return Plotly.restyle(gd, 'visible', true);
-        })
-        .then(function() {
-            _assert('back to both visible', [0.5, 3.5], [0, 5.263], 1);
-        })
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('gets the right legend traceorder if all bars are visible: false', function(done) {
-        function _assert(traceorder, yRange, legendCount) {
-            expect(gd._fullLayout.legend.traceorder).toBe(traceorder);
-            expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yRange, 2);
-            expect(d3.select(gd).selectAll('.legend .traces').size()).toBe(legendCount);
-        }
-        Plotly.newPlot(gd, [
-            {type: 'waterfall', y: [1, 2, 3]},
-            {type: 'waterfall', y: [3, 2, 1]},
-            {y: [2, 3, 2]},
-            {y: [3, 2, 3]}
-        ], {
-            barmode: 'stack', width: 400, height: 400
-        })
-        .then(function() {
-            _assert('reversed', [0, 4.211], 4);
-
-            return Plotly.restyle(gd, {visible: false}, [0, 1]);
-        })
-        .then(function() {
-            _assert('normal', [1.922, 3.077], 2);
-
-            return Plotly.restyle(gd, {visible: 'legendonly'}, [0, 1]);
-        })
-        .then(function() {
-            _assert('reversed', [1.922, 3.077], 4);
-        })
-        .catch(failTest)
-        .then(done);
-    });
 });
 
-describe('bar hover', function() {
+describe('waterfall hover', function() {
     'use strict';
 
     var gd;
@@ -1982,7 +1252,7 @@ describe('bar hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/11.json'));
+            var mock = Lib.extendDeep({}, require('@mocks/waterfall_11.json'));
 
             Plotly.plot(gd, mock.data, mock.layout)
             .catch(failTest)
@@ -1993,57 +1263,14 @@ describe('bar hover', function() {
             var out = _hover(gd, 0, 0, 'x');
 
             expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
-            assertPos(out.pos, [11.87, 106.8, 152.76, 152.76]);
+            assertPos(out.pos, [11.87, 106.8, 52.71, 52.71]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
             var out = _hover(gd, -0.2, 12, 'closest');
 
             expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
-            assertPos(out.pos, [11.87, 59.33, 152.76, 152.76]);
-        });
-    });
-
-    describe('with orientation *h*', function() {
-        beforeAll(function(done) {
-            gd = createGraphDiv();
-
-            var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_group_norm.json'));
-
-            Plotly.plot(gd, mock.data, mock.layout)
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('should return the correct hover point data (case y)', function() {
-            var out = _hover(gd, 0.75, 0.15, 'y');
-            var subplot = gd._fullLayout._plots.xy;
-            var xa = subplot.xaxis;
-            var ya = subplot.yaxis;
-            var barDelta = 1 * 0.8 / 2;
-            var x0 = xa.c2p(0.5, true);
-            var x1 = x0;
-            var y0 = ya.c2p(0 - barDelta, true);
-            var y1 = ya.c2p(0 + barDelta, true);
-
-            expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
-            assertPos(out.pos, [x0, x1, y0, y1]);
-        });
-
-        it('should return the correct hover point data (case closest)', function() {
-            var out = _hover(gd, 0.75, -0.15, 'closest');
-            var subplot = gd._fullLayout._plots.xy;
-            var xa = subplot.xaxis;
-            var ya = subplot.yaxis;
-            var barDelta = 1 * 0.8 / 2 / 2;
-            var barPos = 0 - 1 * 0.8 / 2 + barDelta;
-            var x0 = xa.c2p(0.5, true);
-            var x1 = x0;
-            var y0 = ya.c2p(barPos - barDelta, true);
-            var y1 = ya.c2p(barPos + barDelta, true);
-
-            expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
-            assertPos(out.pos, [x0, x1, y0, y1]);
+            assertPos(out.pos, [11.87, 59.33, 52.71, 52.71]);
         });
     });
 
@@ -2116,7 +1343,7 @@ describe('bar hover', function() {
             gd = createGraphDiv();
         });
 
-        it('should return correct hover data (single bar, trace width)', function(done) {
+        it('should return correct hover data (single waterfall, trace width)', function(done) {
             Plotly.plot(gd, [{
                 type: 'waterfall',
                 x: [1],
@@ -2159,7 +1386,7 @@ describe('bar hover', function() {
             .then(done);
         });
 
-        it('should return correct hover data (two bars, array width)', function(done) {
+        it('should return correct hover data (two waterfalls, array width)', function(done) {
             Plotly.plot(gd, [{
                 type: 'waterfall',
                 x: [1, 200],
@@ -2181,23 +1408,23 @@ describe('bar hover', function() {
                 var out = _hover(gd, -36, 1.5, 'closest');
 
                 expect(out.style).toEqual([0, 'red', 1, 2]);
-                assertPos(out.pos, [99, 106, 13, 13]);
+                assertPos(out.pos, [99, 106, 117.33, 117.33]);
 
                 out = _hover(gd, 164, 0.8, 'closest');
 
-                expect(out.style).toEqual([1, 'red', 200, 1]);
-                assertPos(out.pos, [222, 235, 168, 168]);
+                expect(out.style).toEqual([1, 'red', 200, 3]);
+                assertPos(out.pos, [222, 235, 16, 16]);
 
                 out = _hover(gd, 125, 0.8, 'x');
 
-                expect(out.style).toEqual([1, 'red', 200, 1]);
-                assertPos(out.pos, [222, 280, 168, 168]);
+                expect(out.style).toEqual([1, 'red', 200, 3]);
+                assertPos(out.pos, [222, 280, 16, 16]);
             })
             .catch(failTest)
             .then(done);
         });
 
-        it('positions labels correctly w.r.t. narrow bars', function(done) {
+        it('positions labels correctly w.r.t. narrow waterfalls', function(done) {
             Plotly.newPlot(gd, [{
                 x: [0, 10, 20],
                 y: [1, 3, 2],
@@ -2210,9 +1437,9 @@ describe('bar hover', function() {
             })
             .then(function() {
                 // you can still hover over the gap (14) but the label will
-                // get pushed in to the bar
+                // get pushed in to the waterfall
                 var out = _hover(gd, 14, 2, 'x');
-                assertPos(out.pos, [145, 155, 15, 15]);
+                assertPos(out.pos, [145, 155, 110, 110]);
 
                 // in closest mode you must be over the waterfall though
                 out = _hover(gd, 14, 2, 'closest');
@@ -2221,121 +1448,12 @@ describe('bar hover', function() {
                 // now for a single waterfall trace, closest and compare modes give the same
                 // positioning of hover labels
                 out = _hover(gd, 10, 2, 'closest');
-                assertPos(out.pos, [145, 155, 15, 15]);
+                assertPos(out.pos, [145, 155, 110, 110]);
             })
             .catch(failTest)
             .then(done);
         });
     });
-
-    it('should show/hide text in clipped and non-clipped layers', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/bar_cliponaxis-false.json'));
-        gd = createGraphDiv();
-
-        // only show one waterfall trace
-        fig.data = [fig.data[0]];
-
-        // add a non-bar trace to make sure its module layer gets clipped
-        fig.data.push({
-            type: 'contour',
-            z: [[0, 0.5, 1], [0.5, 1, 3]]
-        });
-
-        function _assertClip(sel, exp, size, msg) {
-            if(exp === null) {
-                expect(sel.size()).toBe(0, msg + 'selection should not exist');
-            } else {
-                assertClip(sel, exp, size, msg);
-            }
-        }
-
-        function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
-            var subplotLayer = d3.select('.plot');
-            var barLayer = subplotLayer.select('.barlayer');
-
-            _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
-            _assertClip(subplotLayer.select('.contourlayer'), layerClips[1], 1, 'some other trace layer');
-            _assertClip(barLayer, layerClips[2], 1, 'bar layer');
-
-            assertNodeDisplay(
-                barLayer.selectAll('.point'),
-                barDisplays,
-                'bar points (never hidden by display attr)'
-            );
-            assertNodeDisplay(
-                barLayer.selectAll('.bartext'),
-                barTextDisplays,
-                'bar text'
-            );
-
-            assertClip(
-                barLayer.selectAll('.point > path'),
-                barClips[0], barClips[1],
-                'bar clips'
-            );
-        }
-
-        Plotly.newPlot(gd, fig).then(function() {
-            _assert(
-                [false, true, false],
-                [null, null, null],
-                [null, null, 'none'],
-                [true, 3]
-            );
-            return Plotly.restyle(gd, 'visible', false);
-        })
-        .then(function() {
-            _assert(
-                [true, null, null],
-                [],
-                [],
-                [false, 0]
-            );
-            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
-        })
-        .then(function() {
-            _assert(
-                [true, false, false],
-                [null, null, null],
-                [null, null, null],
-                [false, 3]
-            );
-            return Plotly.restyle(gd, 'cliponaxis', false);
-        })
-        .then(function() {
-            _assert(
-                [false, true, false],
-                [null, null, null],
-                [null, null, 'none'],
-                [true, 3]
-            );
-            return Plotly.relayout(gd, 'yaxis.range', [0, 1]);
-        })
-        .then(function() {
-            _assert(
-                [false, true, false],
-                [null, null, null],
-                ['none', 'none', 'none'],
-                [true, 3]
-            );
-            return Plotly.relayout(gd, 'yaxis.range', [0, 4]);
-        })
-        .then(function() {
-            _assert(
-                [false, true, false],
-                [null, null, null],
-                [null, null, null],
-                [true, 3]
-            );
-        })
-        .catch(failTest)
-        .then(done);
-    });
-});
-
-describe('event data', function() {
-    var mock = require('@mocks/stacked_bar');
-    checkEventData(mock, 216, 309, constants.eventDataKeys);
 });
 
 function mockWaterfallPlot(dataWithoutTraceType, layout) {

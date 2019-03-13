@@ -51,13 +51,11 @@ module.exports = function calc(gd, trace) {
         };
 
         if(isAbsolute(trace.valuetype[i])) {
-
             previousSum = cd[i].s;
 
             cd[i].isSum = true;
             cd[i].s = previousSum;
         } else if(isTotal(trace.valuetype[i])) {
-
             cd[i].isSum = true;
             cd[i].s = previousSum;
         } else { // default: relative

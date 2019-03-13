@@ -17,28 +17,30 @@ var DIRSYMBOL = {
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
-    pointData = barHoverPoints(pointData, xval, yval, hovermode)[0];
+    var points = barHoverPoints(pointData, xval, yval, hovermode);
+    if(!points || !points.length) return points;
+    var point = points[0];
 
-    var cd = pointData.cd;
+    var cd = point.cd;
     var trace = cd[0].trace;
 
     // the closest data point
-    var index = pointData.index;
+    var index = point.index;
     var di = cd[index];
 
     var sizeLetter = (trace.orientation === 'h') ? 'x' : 'y';
 
-    var size = (di.isSum) ? di.s : di.rawS;
+    var size = (di.isSum) ? di.b + di.s : di.rawS;
     if(di.isSum === false) {
         // format numbers:
         if(size > 0) {
-            pointData.extraText = size + ' ' + DIRSYMBOL.increasing;
+            point.extraText = size + ' ' + DIRSYMBOL.increasing;
         } else if(size < 0) {
-            pointData.extraText = '(' + (-size) + ') ' + DIRSYMBOL.decreasing;
+            point.extraText = '(' + (-size) + ') ' + DIRSYMBOL.decreasing;
         }
     } else {
-        pointData[sizeLetter + 'LabelVal'] = size;
+        point[sizeLetter + 'LabelVal'] = size;
     }
 
-    return [pointData];
+    return [point];
 };

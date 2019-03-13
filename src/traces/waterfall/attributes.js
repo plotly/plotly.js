@@ -38,6 +38,17 @@ module.exports = {
         ].join(' ')
     },
 
+    base: {
+        valType: 'number',
+        dflt: null,
+        arrayOk: false,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Sets where the bar base is drawn (in position axis units).'
+        ].join(' ')
+    },
+
     x: barAttrs.x,
     x0: barAttrs.x0,
     dx: barAttrs.dx,
