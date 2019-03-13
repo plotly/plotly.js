@@ -654,13 +654,13 @@ function computeLegendDimensions(gd, groups, traces) {
 
                 Drawing.setTranslate(this,
                     0,
-                    (5 + borderwidth + textHeight / 2) + groupHeight);
+                    (5 + borderwidth + groupHeight + textHeight / 2));
 
                 groupHeight += textHeight;
             });
         });
 
-        opts._height = (borderwidth * 2) + (rowNum * maxHeight);
+        opts._height = 10 + (borderwidth * 2) + (rowNum * maxHeight) + ((rowNum - 1) * traceGap);
 
         var maxOffset = Math.max.apply(null, groupXOffsets);
         opts._width = maxOffset + maxWidth + 40;
