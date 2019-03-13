@@ -15,6 +15,8 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
+var mock = require('@mocks/legend_horizontal.json');
+
 var Drawing = require('@src/components/drawing');
 
 describe('legend defaults', function() {
@@ -1637,5 +1639,28 @@ describe('legend interaction', function() {
                 .then(done);
             });
         });
+    });
+});
+
+describe('legend DOM', function() {
+    'use strict';
+
+    it('draws `legendtoggle` last to make sure it is unobstructed', function(done) {
+        var gd = createGraphDiv();
+        Plotly.newPlot(gd, mock)
+        .then(function() {
+            // Find legend in figure
+            var legend = document.getElementsByClassName('legend')[0];
+
+            // For each legend item
+            var legendItems = legend.getElementsByClassName('traces');
+            Array.prototype.slice.call(legendItems).forEach(function(legendItem) {
+                // Check that the last element is our `legendtoggle`
+                var lastEl = legendItem.children[legendItem.children.length - 1];
+                expect(lastEl.getAttribute('class')).toBe('legendtoggle');
+            });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
