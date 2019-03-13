@@ -1645,6 +1645,8 @@ describe('legend interaction', function() {
 describe('legend DOM', function() {
     'use strict';
 
+    afterEach(destroyGraphDiv);
+
     it('draws `legendtoggle` last to make sure it is unobstructed', function(done) {
         var gd = createGraphDiv();
         Plotly.newPlot(gd, mock)
