@@ -75,7 +75,8 @@ case $1 in
         ;;
 
     image)
-        npm run test-image      || EXIT_STATE=$?
+        SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | circleci tests split)
+        npm run test-image -- $SUITE --filter || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
