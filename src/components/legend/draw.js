@@ -611,7 +611,6 @@ function computeLegendDimensions(gd, groups, traces) {
             maxItems = Math.max(maxItems, group.length);
         });
 
-        maxHeight += opts.tracegroupgap;
         maxWidth += traceGap;
         maxWidth += 40;
 
@@ -634,6 +633,8 @@ function computeLegendDimensions(gd, groups, traces) {
             var y = ((1 - (length / maxItems)) * maxHeight);
             currRowHeight = currRowHeight > (rowNum - 1 * maxHeight) ? (rowNum - 1) * maxHeight : y;
 
+            currRowHeight += rowNum > 1 ? traceGap : 0;
+
             rowHeights.push(currRowHeight);
             groupXOffsets.push(opts._width);
         }
@@ -653,7 +654,7 @@ function computeLegendDimensions(gd, groups, traces) {
 
                 Drawing.setTranslate(this,
                     0,
-                    (5 + borderwidth + groupHeight));
+                    (5 + borderwidth + textHeight / 2) + groupHeight);
 
                 groupHeight += textHeight;
             });
