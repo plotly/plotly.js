@@ -633,7 +633,7 @@ function computeLegendDimensions(gd, groups, traces) {
             var y = ((1 - (length / maxItems)) * maxHeight);
             currRowHeight = currRowHeight > (rowNum - 1 * maxHeight) ? (rowNum - 1) * maxHeight : y;
 
-            currRowHeight += rowNum > 1 ? traceGap : 0;
+            currRowHeight += rowNum > 1 ? opts.tracegroupgap : 0;
 
             rowHeights.push(currRowHeight);
             groupXOffsets.push(opts._width);
