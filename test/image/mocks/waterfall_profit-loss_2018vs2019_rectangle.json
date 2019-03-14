@@ -60,6 +60,7 @@
                 null
             ],
             "connector": {
+                "mode": "steps",
                 "width": 1,
                 "color": "rgb(0, 0, 0)",
                 "dash": 0
@@ -124,6 +125,7 @@
                 null
             ],
             "connector": {
+                "mode": "steps",
                 "width": 1,
                 "color": "rgb(0, 0, 0)",
                 "dash": 0

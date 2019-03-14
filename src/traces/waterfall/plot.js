@@ -28,11 +28,12 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
         var cd0 = cd[0];
         var trace = cd0.trace;
 
-        if(trace.type !== 'waterfall') return;
-        if(!trace.connector || !trace.connector.width) return;
+        if(!trace.connector || !trace.connector.width || !trace.connector.mode) return;
 
-        var lw = trace.connector.width * 0.5;
+        var hw = trace.connector.width * 0.5;
+
         var isHorizontal = (trace.orientation === 'h');
+        var mode = trace.connector.mode;
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
@@ -84,25 +85,33 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 }
             }
 
-            if(!di.isSum) {
+            if(mode === 'steps') {
+                if(!di.isSum) {
+                    if(isHorizontal) {
+                        shape += 'M' + x0 + ',' + (y1 - hw) + 'V' + (y1 + hw) + 'H' + x1 + 'V' + (y1 - hw) + 'Z';
+                    } else {
+                        shape += 'M' + (x1 - hw) + ',' + y0 + 'H' + (x1 + hw) + 'V' + y1 + 'H' + (x1 - hw) + 'Z';
+                    }
+                }
+            } else if(mode === 'begin+end') {
                 if(isHorizontal) {
-                    shape += 'M' + x0 + ',' + (y1 - lw) + 'V' + (y1 + lw) + 'H' + x1 + 'V' + (y1 - lw) + 'Z';
+                    shape += 'M' + (x1 + hw) + ',' + y0 + 'V' + y1 + 'H' + (x1 - hw) + 'V' + y0 + 'Z';
                 } else {
-                    shape += 'M' + (x1 - lw) + ',' + y0 + 'H' + (x1 + lw) + 'V' + y1 + 'H' + (x1 - lw) + 'Z';
+                    shape += 'M' + x0 + ',' + (y1 + hw) + 'H' + x1 + 'V' + (y1 - hw) + 'H' + x0 + 'Z';
                 }
             }
 
             if(isHorizontal) {
-                shape += 'M' + (x2 + lw) + ',' + y1 + 'V' + y2 + 'H' + (x2 - lw) + 'V' + y1 + 'Z';
+                shape += 'M' + (x2 + hw) + ',' + y1 + 'V' + y2 + 'H' + (x2 - hw) + 'V' + y1 + 'Z';
             } else {
-                shape += 'M' + x1 + ',' + (y2 + lw) + 'H' + x2 + 'V' + (y2 - lw) + 'H' + x1 + 'Z';
+                shape += 'M' + x1 + ',' + (y2 + hw) + 'H' + x2 + 'V' + (y2 - hw) + 'H' + x1 + 'Z';
             }
 
             if(x3 !== undefined && y3 !== undefined) {
                 if(isHorizontal) {
-                    shape += 'M' + (x2 + lw) + ',' + y2 + 'V' + y3 + 'H' + (x2 - lw) + 'V' + y2 + 'Z';
+                    shape += 'M' + (x2 + hw) + ',' + y2 + 'V' + y3 + 'H' + (x2 - hw) + 'V' + y2 + 'Z';
                 } else {
-                    shape += 'M' + x2 + ',' + (y2 + lw) + 'H' + x3 + 'V' + (y2 - lw) + 'H' + x2 + 'Z';
+                    shape += 'M' + x2 + ',' + (y2 + hw) + 'H' + x3 + 'V' + (y2 - hw) + 'H' + x2 + 'Z';
                 }
             }
 

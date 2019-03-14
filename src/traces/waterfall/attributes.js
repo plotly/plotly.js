@@ -87,7 +87,17 @@ module.exports = {
         color: lineAttrs.color,
         width: lineAttrs.width,
         dash: lineAttrs.dash,
-        editType: 'style'
+        mode: {
+            valType: 'enumerated',
+            values: ['begin+end', 'steps', false],
+            dflt: 'begin+end',
+            role: 'info',
+            editType: 'plot',
+            description: [
+                'Sets the shape of connector lines.'
+            ].join(' ')
+        },
+        editType: 'plot'
     },
 
     offsetgroup: barAttrs.offsetgroup,

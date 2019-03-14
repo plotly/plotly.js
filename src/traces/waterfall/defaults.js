@@ -104,6 +104,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('connector.color');
     coerce('connector.width');
     coerce('connector.dash');
+    coerce('connector.mode');
 }
 
 function crossTraceDefaults(fullData, fullLayout) {
