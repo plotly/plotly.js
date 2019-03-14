@@ -18,6 +18,7 @@ Plot.plot = require('./plot');
 Plot.moduleType = 'trace';
 Plot.name = 'sankey';
 Plot.basePlotModule = require('./base_plot');
+Plot.selectPoints = require('./select.js');
 Plot.categories = ['noOpacity'];
 Plot.meta = {
     description: [

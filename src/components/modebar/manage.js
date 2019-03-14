@@ -86,6 +86,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
     var hasPolar = fullLayout._has('polar');
+    var hasSankey = fullLayout._has('sankey');
     var allAxesFixed = areAllAxesFixed(fullLayout);
 
     var groups = [];
@@ -138,6 +139,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
     }
     else if(hasPie) {
         hoverGroup = ['hoverClosestPie'];
+    }
+    else if(hasSankey) {
+        hoverGroup = ['resetSankeyGroup'];
     }
     else { // hasPolar, hasTernary
         // always show at least one hover icon.
