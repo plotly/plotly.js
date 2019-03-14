@@ -56,7 +56,7 @@
                 null
             ],
             "connector": {
-                "width": 1,
+                "width": 2,
                 "color": "rgb(0, 0, 0)",
                 "dash": 0
             }

@@ -3,7 +3,7 @@
     [{
         "type": "waterfall",
         "connector": {
-            "width": 1,
+            "width": 2,
             "color": "rgb(0, 0, 0)",
             "dash": 0
         },
@@ -16,7 +16,7 @@
     }, {
         "type": "waterfall",
         "connector": {
-            "width": 1,
+            "width": 2,
             "color": "rgb(63, 63, 63)",
             "dash": 2
         },
@@ -29,7 +29,7 @@
     }, {
         "type": "waterfall",
         "connector": {
-            "width": 2,
+            "width": 4,
             "color": "rgb(127, 127, 127)",
             "dash": 4
         },
@@ -42,7 +42,7 @@
     }, {
         "type": "waterfall",
         "connector": {
-            "width": 2,
+            "width": 4,
             "color": "rgb(191, 191, 191)",
             "dash": 6
         },

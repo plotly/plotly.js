@@ -2,19 +2,23 @@
   "data": [
     {
       "type": "waterfall",
+      "connector": { "mode": "steps" },
       "y": [ 1, -2, 1 ],
       "yaxis": "y2"
     },
     {
       "type": "waterfall",
+      "connector": { "mode": "steps" },
       "y": [ 2, -1, 2 ]
     },
     {
       "type": "waterfall",
+      "connector": { "mode": "steps" },
       "y": [ 1, -3, 0 ]
     },
     {
       "type": "waterfall",
+      "connector": { "mode": "steps" },
       "y": [ 1, -2, 1 ],
       "alignmentgroup": "top",
       "hovertext": "alignmentgroup: top",
@@ -23,6 +27,7 @@
     },
     {
       "type": "waterfall",
+      "connector": { "mode": "steps" },
       "y": [ 2, -1, 2 ],
       "hovertext": "alignmentgroup: top<br>offsetgroup: 1",
       "alignmentgroup": "bottom",
@@ -31,6 +36,7 @@
     },
     {
       "type": "waterfall",
+      "connector": { "mode": "steps" },
       "y": [ 1, -3, 0 ],
       "hovertext": "alignmentgroup: top<br>offsetgroup: 2",
       "alignmentgroup": "bottom",

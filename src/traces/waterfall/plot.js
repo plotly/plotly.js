@@ -30,8 +30,6 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
 
         if(!trace.connector || !trace.connector.width || !trace.connector.mode) return;
 
-        var hw = trace.connector.width * 0.5;
-
         var isHorizontal = (trace.orientation === 'h');
         var mode = trace.connector.mode;
 
@@ -88,35 +86,36 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
             if(mode === 'steps') {
                 if(!di.isSum) {
                     if(isHorizontal) {
-                        shape += 'M' + x0 + ',' + (y1 - hw) + 'V' + (y1 + hw) + 'H' + x1 + 'V' + (y1 - hw) + 'Z';
+                        shape += 'M' + x0 + ',' + y1 + 'H' + x1;
                     } else {
-                        shape += 'M' + (x1 - hw) + ',' + y0 + 'H' + (x1 + hw) + 'V' + y1 + 'H' + (x1 - hw) + 'Z';
+                        shape += 'M' + x1 + ',' + y0 + 'V' + y1;
                     }
                 }
             } else if(mode === 'begin+end') {
-                if(isHorizontal) {
-                    shape += 'M' + (x1 + hw) + ',' + y0 + 'V' + y1 + 'H' + (x1 - hw) + 'V' + y0 + 'Z';
-                } else {
-                    shape += 'M' + x0 + ',' + (y1 + hw) + 'H' + x1 + 'V' + (y1 - hw) + 'H' + x0 + 'Z';
+                if(!di.isSum) {
+                    if(isHorizontal) {
+                        shape += 'M' + x1 + ',' + y0 + 'V' + y1;
+                    } else {
+                        shape += 'M' + x0 + ',' + y1 + 'H' + x1;
+                    }
                 }
             }
 
             if(isHorizontal) {
-                shape += 'M' + (x2 + hw) + ',' + y1 + 'V' + y2 + 'H' + (x2 - hw) + 'V' + y1 + 'Z';
+                shape += 'M' + x2 + ',' + y1 + 'V' + y2;
             } else {
-                shape += 'M' + x1 + ',' + (y2 + hw) + 'H' + x2 + 'V' + (y2 - hw) + 'H' + x1 + 'Z';
+                shape += 'M' + x1 + ',' + y2 + 'H' + x2;
             }
 
             if(x3 !== undefined && y3 !== undefined) {
                 if(isHorizontal) {
-                    shape += 'M' + (x2 + hw) + ',' + y2 + 'V' + y3 + 'H' + (x2 - hw) + 'V' + y2 + 'Z';
+                    shape += 'M' + x2 + ',' + y2 + 'V' + y3;
                 } else {
-                    shape += 'M' + x2 + ',' + (y2 + hw) + 'H' + x3 + 'V' + (y2 - hw) + 'H' + x2 + 'Z';
+                    shape += 'M' + x2 + ',' + y2 + 'H' + x3;
                 }
             }
 
             Lib.ensureSingle(connector, 'path')
-            .style('vector-effect', 'non-scaling-stroke')
             .attr('d', shape)
             .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
         });

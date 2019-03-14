@@ -22,18 +22,14 @@ function style(gd, cd) {
         if(i === 0) {
             var sel = d3.select(this);
             var trace = d[0].trace;
-            styleLines(sel, trace);
+
+            var l = sel.selectAll('path');
+            var lw = trace.connector.width;
+            var lc = trace.connector.color;
+            var ld = trace.connector.dash;
+            lineGroupStyle(l, lw, lc, ld);
         }
     });
-}
-
-function styleLines(sel, trace) {
-    var s = sel.selectAll('path');
-    var lw = trace.connector.width;
-    var lc = trace.connector.color;
-    var ld = trace.connector.dash;
-
-    lineGroupStyle(s, lw, lc, ld);
 }
 
 function styleOnSelect(gd, cd) {
