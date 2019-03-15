@@ -1,0 +1,21 @@
+{
+    "data": [
+      {
+        "type": "surface",
+        "connectgaps": true,
+        "x": [0, 1, 2, 3],
+        "y": [0, 1, 2, 3],
+        "z": [
+          [1, 1, 1, 1],
+          [1, null, 2, null],
+          [1, 1, 1, 1],
+          [1, null, 0, null]
+        ]
+      }
+    ],
+    "layout": {
+        "title": "Surface interpolate gaps",
+        "width": 600,
+        "height": 400
+    }
+}

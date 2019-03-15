@@ -19,6 +19,9 @@ var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 
+var interp2d = require('../heatmap/interp2d');
+var findEmpties = require('../heatmap/find_empties');
+
 function SurfaceTrace(scene, surface, uid) {
     this.scene = scene;
     this.uid = uid;
@@ -402,6 +405,11 @@ proto.update = function(data) {
             rawCoords[1][j][k] = this.getYat(j, k, data.ycalendar, sceneLayout.yaxis);
             rawCoords[2][j][k] = this.getZat(j, k, data.zcalendar, sceneLayout.zaxis);
         }
+    }
+
+    if(data.connectgaps) {
+        data._emptypoints = findEmpties(rawCoords[2]);
+        interp2d(rawCoords[2], data._emptypoints);
     }
 
     // Note: log axes are not defined in surfaces yet.
