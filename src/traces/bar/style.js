@@ -71,6 +71,8 @@ function styleOnSelect(gd, cd) {
         stylePointsInSelectionMode(s, trace, gd);
     } else {
         stylePoints(s, trace, gd);
+
+        Registry.getComponentMethod('errorbars', 'style')(s);
     }
 }
 
