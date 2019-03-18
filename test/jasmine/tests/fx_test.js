@@ -58,6 +58,24 @@ describe('Fx defaults', function() {
         expect(layoutOut._isHoriz).toBe(true, 'isHoriz to true');
     });
 
+    it('should default (cartesian horizontal version, stacked scatter)', function() {
+        var layoutOut = _supply([{
+            orientation: 'h',
+            stackgroup: '1',
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }, {
+            stackgroup: '1',
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }])
+        .layout;
+
+        expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
+        expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
+        expect(layoutOut._isHoriz).toBe(true, 'isHoriz to true');
+    });
+
     it('should default (gl3d version)', function() {
         var layoutOut = _supply([{
             type: 'scatter3d',
