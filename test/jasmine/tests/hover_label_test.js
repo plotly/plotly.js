@@ -1685,6 +1685,40 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should avoid overlaps on *too close* pts are filtered out', function(done) {
+            Plotly.plot(gd, [
+                {name: 'A', x: [9, 10], y: [9, 10]},
+                {name: 'B', x: [8, 9], y: [9, 10]},
+                {name: 'C', x: [9, 10], y: [10, 11]}
+            ], {
+                xaxis: {range: [0, 100]},
+                yaxis: {range: [0, 100]},
+                width: 700,
+                height: 450
+            })
+            .then(function() { _hover(gd, 67, 239); })
+            .then(function() {
+                var nodesA = hoverInfoNodes('A');
+                var nodesC = hoverInfoNodes('C');
+
+                // Ensure layout correct
+                assertLabelsInsideBoxes(nodesA, 'A');
+                assertLabelsInsideBoxes(nodesC, 'C');
+                assertSecondaryRightToPrimaryBox(nodesA, 'A');
+                assertSecondaryRightToPrimaryBox(nodesC, 'C');
+
+                // Ensure stacking, finally
+                var boxA = nodesA.primaryBox.getBoundingClientRect();
+                var boxC = nodesC.primaryBox.getBoundingClientRect();
+
+                // Be robust against floating point arithmetic and subtle future layout changes
+                expect(calcLineOverlap(boxA.top, boxA.bottom, boxC.top, boxC.bottom))
+                  .toBeWithin(0, 1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('hovertemplate', function() {
