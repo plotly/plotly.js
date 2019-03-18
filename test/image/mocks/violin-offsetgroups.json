@@ -66,9 +66,6 @@
     }
   ],
   "layout": {
-    "template": {
-      "data": {"violin": [{"bandwidth": 1}]}
-    },
     "violinmode": "group",
     "showlegend": false,
     "grid": {
