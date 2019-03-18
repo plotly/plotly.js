@@ -615,8 +615,8 @@ function computeLegendDimensions(gd, groups, traces) {
         maxWidth += 40;
 
         var groupXOffsets = [opts._width];
-        var rowHeights = [];
-        var rowNum = 1;
+        var groupYOffsets = [];
+        var rowNum = 0;
         for(var i = 0, n = groupData.length; i < n; i++) {
 
             if(fullLayout._size.w < (borderwidth + opts._width + traceGap + maxWidth)) {
@@ -627,20 +627,15 @@ function computeLegendDimensions(gd, groups, traces) {
                 opts._width += maxWidth + borderwidth;
             }
 
-            var currRowHeight = ((rowNum - 1) * maxHeight);
+            var rowYOffset = (rowNum * maxHeight);
+            rowYOffset += rowNum > 0 ? opts.tracegroupgap : 0;
 
-            var length = groupData[i].length;
-            var y = ((1 - (length / maxItems)) * maxHeight);
-            currRowHeight = currRowHeight > (rowNum - 1 * maxHeight) ? (rowNum - 1) * maxHeight : y;
-
-            currRowHeight += rowNum > 1 ? opts.tracegroupgap : 0;
-
-            rowHeights.push(currRowHeight);
+            groupYOffsets.push(rowYOffset);
             groupXOffsets.push(opts._width);
         }
 
         groups.each(function(d, i) {
-            Drawing.setTranslate(this, groupXOffsets[i], rowHeights[i]);
+            Drawing.setTranslate(this, groupXOffsets[i], groupYOffsets[i]);
         });
 
         groups.each(function() {
@@ -660,7 +655,8 @@ function computeLegendDimensions(gd, groups, traces) {
             });
         });
 
-        opts._height = 10 + (borderwidth * 2) + (rowNum * maxHeight) + ((rowNum - 1) * traceGap);
+        var maxYLegend = groupYOffsets[groupYOffsets.length - 1] + maxHeight;
+        opts._height = 10 + (borderwidth * 2) + maxYLegend;
 
         var maxOffset = Math.max.apply(null, groupXOffsets);
         opts._width = maxOffset + maxWidth + 40;
