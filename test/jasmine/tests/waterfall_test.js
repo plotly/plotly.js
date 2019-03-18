@@ -206,7 +206,7 @@ describe('Waterfall.supplyDefaults', function() {
     });
 });
 
-describe('waterfall calc / crossTraceCalc (formerly known as setPositions)', function() {
+describe('waterfall calc / crossTraceCalc', function() {
     'use strict';
 
     it('should fill in calc pt fields (overlay case)', function() {
@@ -298,7 +298,7 @@ describe('Waterfall.calc', function() {
     });
 });
 
-describe('Waterfall.crossTraceCalc (formerly known as setPositions)', function() {
+describe('Waterfall.crossTraceCalc', function() {
     'use strict';
 
     it('should guard against invalid offset items', function() {

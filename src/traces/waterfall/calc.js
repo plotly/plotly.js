@@ -50,12 +50,12 @@ module.exports = function calc(gd, trace) {
             rawS: amount
         };
 
-        if(isAbsolute(trace.valuetype[i])) {
+        if(isAbsolute(trace.measure[i])) {
             previousSum = cd[i].s;
 
             cd[i].isSum = true;
             cd[i].s = previousSum;
-        } else if(isTotal(trace.valuetype[i])) {
+        } else if(isTotal(trace.measure[i])) {
             cd[i].isSum = true;
             cd[i].s = previousSum;
         } else { // default: relative
@@ -70,15 +70,7 @@ module.exports = function calc(gd, trace) {
         }
     }
 
-    var vals = [];
-    if(trace._autoMarkerColor || trace._autoMarkerLineColor) {
-        for(i = 0; i < serieslen; i++) {
-            vals[i] = (cd[i].isSum) ? 0 :
-                (i === 0) ? cd[i].s : cd[i].s - cd[i - 1].s;
-        }
-    }
-
-    arraysToCalcdata(cd, trace, vals);
+    arraysToCalcdata(cd, trace);
     calcSelection(cd, trace);
 
     return cd;

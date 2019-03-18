@@ -7,7 +7,7 @@
         ["2016", "2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
         ["initial", "q1", "q2", "q3", "total", "q1", "q2", "q3", "total" ]
       ],
-      "valuetype": ["a", "r", "r", "r", "t", "r", "r", "r", "t"],
+      "measure": ["absolute", "relative", "relative", "relative", "total", "relative", "relative", "relative", "total"],
       "y": [1, 2, 3, -1, null, 1, 2, -4, null],
       "base": 1000
     },
@@ -18,7 +18,7 @@
         ["2016", "2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
         ["initial", "q1", "q2", "q3", "total", "q1", "q2", "q3", "total" ]
       ],
-      "valuetype": ["a", "r", "r", "r", "t", "r", "r", "r", "t"],
+      "measure": ["absolute", "relative", "relative", "relative", "total", "relative", "relative", "relative", "total"],
       "y": [1.1, 2.2, 3.3, -1.1, null, 1.1, 2.2, -4.4, null],
       "base": 1000
     }

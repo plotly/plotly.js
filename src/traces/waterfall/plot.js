@@ -44,6 +44,8 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
 
         connectors.exit().remove();
 
+        var len = connectors[0].length;
+
         connectors.each(function(di, i) {
             var connector = d3.select(this);
             var shape = '';
@@ -63,7 +65,7 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 x2 = xa.c2p(di.s1, true);
                 y2 = ya.c2p(di.p1, true);
 
-                if(i < connectors[0].length - 1) {
+                if(i < len - 1) {
                     x3 = xa.c2p(di.s0 + 1, true);
                     y3 = ya.c2p(di.p0 + 1, true);
                 }
@@ -77,7 +79,7 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 x2 = xa.c2p(di.p1, true);
                 y2 = ya.c2p(di.s1, true);
 
-                if(i < connectors[0].length - 1) {
+                if(i < len - 1) {
                     x3 = xa.c2p(di.p0 + 1, true);
                     y3 = ya.c2p(di.s0 + 1, true);
                 }

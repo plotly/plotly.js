@@ -4,7 +4,7 @@
             "name": "2018",
             "type": "waterfall",
             "orientation": "h",
-            "valuetype": [
+            "measure": [
                 "relative",
                 "relative",
                 "relative",

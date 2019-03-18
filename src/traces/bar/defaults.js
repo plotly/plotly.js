@@ -22,8 +22,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var coerceFont = Lib.coerceFont;
-
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
@@ -39,34 +37,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('hovertext');
     coerce('hovertemplate');
 
-    var textPosition = coerce('textposition');
-
-    var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
-    var hasInside = hasBoth || textPosition === 'inside';
-    var hasOutside = hasBoth || textPosition === 'outside';
-
-    if(hasInside || hasOutside) {
-        var textFont = coerceFont(coerce, 'textfont', layout.font);
-
-        // Note that coercing `insidetextfont` is always needed –
-        // even if `textposition` is `outside` for each trace – since
-        // an outside label can become an inside one, for example because
-        // of a bar being stacked on top of it.
-        var insideTextFontDefault = Lib.extendFlat({}, textFont);
-        var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
-        var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
-        if(isColorInheritedFromLayoutFont) {
-            delete insideTextFontDefault.color;
-        }
-        coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
-
-        if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
-
-        coerce('constraintext');
-        coerce('selected.textfont.color');
-        coerce('unselected.textfont.color');
-        coerce('cliponaxis');
-    }
+    handleText(traceIn, traceOut, layout, coerce);
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
@@ -138,8 +109,43 @@ function crossTraceDefaults(fullData, fullLayout) {
     }
 }
 
+function handleText(traceIn, traceOut, layout, coerce) {
+
+    var textPosition = coerce('textposition');
+
+    var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
+    var hasInside = hasBoth || textPosition === 'inside';
+    var hasOutside = hasBoth || textPosition === 'outside';
+
+    if(hasInside || hasOutside) {
+        var coerceFont = Lib.coerceFont;
+
+        var textFont = coerceFont(coerce, 'textfont', layout.font);
+
+        // Note that coercing `insidetextfont` is always needed –
+        // even if `textposition` is `outside` for each trace – since
+        // an outside label can become an inside one, for example because
+        // of a bar being stacked on top of it.
+        var insideTextFontDefault = Lib.extendFlat({}, textFont);
+        var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
+        var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
+        if(isColorInheritedFromLayoutFont) {
+            delete insideTextFontDefault.color;
+        }
+        coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
+
+        if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
+
+        coerce('constraintext');
+        coerce('selected.textfont.color');
+        coerce('unselected.textfont.color');
+        coerce('cliponaxis');
+    }
+}
+
 module.exports = {
     supplyDefaults: supplyDefaults,
     crossTraceDefaults: crossTraceDefaults,
-    handleGroupingDefaults: handleGroupingDefaults
+    handleGroupingDefaults: handleGroupingDefaults,
+    handleText: handleText
 };

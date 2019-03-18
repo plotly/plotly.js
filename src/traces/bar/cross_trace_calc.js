@@ -63,7 +63,7 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
     var included;
     var i, calcTrace, fullTrace;
 
-    initBase(sa, calcTraces);
+    initBase(gd, pa, sa, calcTraces);
 
     if(overlay) {
         setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
@@ -108,7 +108,7 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
     collectExtents(calcTraces, pa);
 }
 
-function initBase(sa, calcTraces) {
+function initBase(gd, pa, sa, calcTraces) {
     var i, j;
 
     for(i = 0; i < calcTraces.length; i++) {
@@ -171,10 +171,10 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
         // is defined, because this function is also invoked for traces that
         // can't be grouped or stacked)
         if(barnorm) {
-            sieveBars(sieve);
+            sieveBars(gd, sa, sieve);
             normalizeBars(gd, sa, sieve);
         } else {
-            setBaseAndTop(sa, sieve);
+            setBaseAndTop(gd, sa, sieve);
         }
     }
 }
@@ -191,10 +191,10 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
 
     // set bar bases and sizes, and update size axis
     if(barnorm) {
-        sieveBars(sieve);
+        sieveBars(gd, sa, sieve);
         normalizeBars(gd, sa, sieve);
     } else {
-        setBaseAndTop(sa, sieve);
+        setBaseAndTop(gd, sa, sieve);
     }
 }
 
@@ -266,10 +266,10 @@ function setOffsetAndWidth(gd, pa, sieve) {
     applyAttributes(sieve);
 
     // store the bar center in each calcdata item
-    setBarCenterAndWidth(pa, sieve);
+    setBarCenterAndWidth(gd, pa, sieve);
 
     // update position axes
-    updatePositionAxis(pa, sieve);
+    updatePositionAxis(gd, pa, sieve);
 }
 
 function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
@@ -329,10 +329,10 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     applyAttributes(sieve);
 
     // store the bar center in each calcdata item
-    setBarCenterAndWidth(pa, sieve);
+    setBarCenterAndWidth(gd, pa, sieve);
 
     // update position axes
-    updatePositionAxis(pa, sieve, overlap);
+    updatePositionAxis(gd, pa, sieve, overlap);
 }
 
 function applyAttributes(sieve) {
@@ -413,7 +413,7 @@ function applyAttributes(sieve) {
     }
 }
 
-function setBarCenterAndWidth(pa, sieve) {
+function setBarCenterAndWidth(gd, pa, sieve) {
     var calcTraces = sieve.traces;
     var pLetter = getAxisLetter(pa);
 
@@ -435,7 +435,7 @@ function setBarCenterAndWidth(pa, sieve) {
     }
 }
 
-function updatePositionAxis(pa, sieve, allowMinDtick) {
+function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
     var calcTraces = sieve.traces;
     var minDiff = sieve.minDiff;
     var vpad = minDiff / 2;
@@ -480,7 +480,7 @@ function updatePositionAxis(pa, sieve, allowMinDtick) {
 // store these bar bases and tops in calcdata
 // and make sure the size axis includes zero,
 // along with the bases and tops of each bar.
-function setBaseAndTop(sa, sieve) {
+function setBaseAndTop(gd, sa, sieve) {
     var calcTraces = sieve.traces;
     var sLetter = getAxisLetter(sa);
 
@@ -553,7 +553,7 @@ function stackBars(gd, sa, sieve) {
     }
 }
 
-function sieveBars(sieve) {
+function sieveBars(gd, sa, sieve) {
     var calcTraces = sieve.traces;
 
     for(var i = 0; i < calcTraces.length; i++) {

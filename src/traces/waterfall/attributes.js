@@ -26,15 +26,16 @@ function directionAttrs() {
 
 module.exports = {
 
-    valuetype: {
+    measure: {
         valType: 'enumerated',
-        values: ['r', 'relative', 'a', 'absolute', 't', 'total'],
+        values: ['relative', 'absolute', 'total'],
         dflt: [],
         arrayOk: true,
         role: 'info',
         editType: 'calc',
         description: [
-            'Using false to display relative values and true for total values.'
+            'Sets the type of value. It could generally be \'relative\' or \'total\'.',
+            'Also \'absolute\' could be applied to reset the computed total or to declare an initial value.'
         ].join(' ')
     },
 
@@ -72,6 +73,8 @@ module.exports = {
     outsidetextfont: barAttrs.outsidetextfont,
 
     constraintext: barAttrs.constraintext,
+
+    cliponaxis: barAttrs.cliponaxis,
 
     orientation: barAttrs.orientation,
 

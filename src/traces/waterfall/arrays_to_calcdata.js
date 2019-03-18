@@ -11,7 +11,7 @@
 var mergeArray = require('../../lib').mergeArray;
 
 // arrayOk attributes, merge them into calcdata array
-module.exports = function arraysToCalcdata(cd, trace, vals) {
+module.exports = function arraysToCalcdata(cd, trace) {
     for(var i = 0; i < cd.length; i++) cd[i].i = i;
 
     mergeArray(trace.text, cd, 'tx');
@@ -20,17 +20,11 @@ module.exports = function arraysToCalcdata(cd, trace, vals) {
     var marker = trace.marker;
     if(marker) {
         mergeArray(marker.opacity, cd, 'mo');
-        mergeArray(
-            (trace._autoMarkerColor) ? vals : marker.color,
-            cd, 'mc'
-        );
+        mergeArray(marker.color, cd, 'mc');
 
         var markerLine = marker.line;
         if(markerLine) {
-            mergeArray(
-                (trace._autoMarkerLineColor) ? vals : markerLine.color,
-                cd, 'mlc'
-            );
+            mergeArray(markerLine.color, cd, 'mlc');
             mergeArray(markerLine.width, cd, 'mlw');
         }
     }

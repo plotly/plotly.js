@@ -1,12 +1,11 @@
 {
     "data": [
         {
-            "name": "2018",
-            "type": "waterfall",
-            "orientation": "h",
+            "name": "bar",
+            "type": "bar",
+            "orientation": "v",
             "opacity": 0.5,
             "measure": [
-                "relative",
                 "relative",
                 "relative",
                 "relative",
@@ -23,8 +22,7 @@
                 "relative",
                 "total"
             ],
-            "y": [
-                "2018/2019",
+            "x": [
                 "Sales",
                 "Consulting",
                 "Maintenance",
@@ -41,8 +39,7 @@
                 "Income tax (15%)",
                 "Profit after tax"
             ],
-            "x": [
-                0,
+            "y": [
                 375,
                 128,
                 78,
@@ -65,13 +62,12 @@
                 "color": "rgb(0, 0, 0)",
                 "dash": 0
             }
-        },
-        {
-            "name": "2019",
+        },        {
+            "name": "waterfall",
             "type": "waterfall",
-            "orientation": "h",
+            "orientation": "v",
+            "opacity": 0.5,
             "measure": [
-                "relative",
                 "relative",
                 "relative",
                 "relative",
@@ -88,8 +84,7 @@
                 "relative",
                 "total"
             ],
-            "y": [
-                "2018/2019",
+            "x": [
                 "Sales",
                 "Consulting",
                 "Maintenance",
@@ -106,22 +101,21 @@
                 "Income tax (15%)",
                 "Profit after tax"
             ],
-            "x": [
-                0,
-                307,
-                102,
-                187,
-                172,
+            "y": [
+                375,
+                128,
+                78,
+                27,
                 null,
-                -302,
-                -121,
-                -187,
-                -121,
+                -327,
+                -12,
+                -78,
+                -12,
                 null,
-                123,
-                198,
+                32,
+                89,
                 null,
-                -53.7,
+                -45,
                 null
             ],
             "connector": {
@@ -134,18 +128,17 @@
     ],
     "layout": {
         "title": {
-            "text": "Profit and loss statement 2018 vs 2019<br>waterfall chart"
-        },
-        "yaxis": {
-            "type": "category",
-            "autorange": "reversed"
+            "text": "waterfall chart with bar chart"
         },
         "xaxis": {
+            "type": "category"
+        },
+        "yaxis": {
             "type": "linear"
         },
-        "margin": { "l": 150 },
-        "height": 800,
-        "width": 800,
-        "showlegend": true
+        "height": 600,
+        "width": 600,
+        "showlegend": true,
+        "barmode": "overlay"
     }
 }

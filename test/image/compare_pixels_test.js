@@ -99,8 +99,6 @@ function untestableFilter(mockName) {
         mockName.indexOf('mapbox_') !== -1
     );
 
-    cond = (mockName.indexOf('waterfall') !== -1); // only run waterfall on CI.
-
     if(!cond) console.log(' -', mockName);
 
     return cond;
