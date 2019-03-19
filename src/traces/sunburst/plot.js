@@ -712,6 +712,10 @@ function attachFxHandlers(sliceTop, gd, cd) {
         // we could remove this check later
         if(gd._transitioning) return;
 
+        // store 'old' level in guiEdit stash, so that subsequent Plotly.react
+        // calls with the same uirevision can start from the same entry
+        Registry.call('_storeDirectGUIEdit', traceNow, fullLayoutNow._tracePreGUI[traceNow.uid], {level: traceNow.level});
+
         var hierarchy = cd0.hierarchy;
         var id = getPtId(pt);
         var nextEntry = isEntry(pt) ?
@@ -738,8 +742,6 @@ function attachFxHandlers(sliceTop, gd, cd) {
 
         Fx.loneUnhover(fullLayoutNow._hoverlayer.node());
         Registry.call('animate', gd, frame, animOpts);
-
-        // TODO hook in uirevision
     });
 }
 

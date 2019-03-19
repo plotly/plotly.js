@@ -64,7 +64,6 @@ module.exports = {
         valType: 'any',
         editType: 'plot',
         role: 'info',
-        dflt: '',
         description: [
             'Sets the level from which this sunburst trace hierarchy is rendered.',
             'Set `level` to `\'\'` to start the sunburst from the root node in the hierarchy.',
