@@ -2306,6 +2306,9 @@ function _relayout(gd, aobj) {
             ) {
                 flags.plot = true;
             }
+            else if(fullLayout._has('gl2d')) {
+                flags.plot = true;
+            }
             else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
 
