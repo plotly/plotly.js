@@ -458,7 +458,14 @@ function plotOne(gd, cd, element, transitionOpts) {
         var x1Fn = d3.interpolate(prev.x1, pt.x1);
         var scaleFn = d3.interpolate(prev.transform.scale, transform.scale);
         var rotateFn = d3.interpolate(prev.transform.rotate, transform.rotate);
-        var rCenterFn = d3.interpolate(prev.transform.rCenter, transform.rCenter);
+
+        // smooth out start/end from entry, to try to keep text inside sector
+        // while keeping transition smooth
+        var pow = transform.rCenter === 0 ? 3 :
+            prev.transform.rCenter === 0 ? 1 / 3 :
+            1;
+        var _rCenterFn = d3.interpolate(prev.transform.rCenter, transform.rCenter);
+        var rCenterFn = function(t) { return _rCenterFn(Math.pow(t, pow)); };
 
         return function(t) {
             var rpx1 = rpx1Fn(t);
