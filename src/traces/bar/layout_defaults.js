@@ -46,7 +46,10 @@ module.exports = function(layoutIn, layoutOut, fullData) {
         }
     }
 
-    if(!hasBars) return;
+    if(!hasBars) {
+        delete layoutOut.barmode;
+        return;
+    }
 
     if(mode !== 'overlay') coerce('barnorm');
 
