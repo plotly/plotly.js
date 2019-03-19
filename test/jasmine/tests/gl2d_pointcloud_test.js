@@ -231,7 +231,7 @@ describe('pointcloud traces', function() {
             _assertRange('base', [-0.548, 9.548], [-1.415, 10.415]);
         })
         .then(function() { _drag([200, 200], [350, 350]); })
-        .then(delay(400))
+        .then(delay(40))
         .then(function() {
             _assertRange('after zoombox drag', [0.768, 1.591], [5.462, 7.584]);
         })
