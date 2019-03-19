@@ -37,24 +37,32 @@ module.exports = function calc(gd, trace) {
         var bandwidth = cdi.bandwidth = calcBandwidth(trace, cdi, vals);
         var span = cdi.span = calcSpan(trace, cdi, valAxis, bandwidth);
 
-        // step that well covers the bandwidth and is multiple of span distance
-        var dist = span[1] - span[0];
-        var n = Math.ceil(dist / (bandwidth / 3));
-        var step = dist / n;
+        if(cdi.min === cdi.max && bandwidth === 0) {
+            // if span is zero and bandwidth is zero, we want a violin with zero width
+            span = cdi.span = [cdi.min, cdi.max];
+            cdi.density = [{v: 1, t: span[0]}];
+            cdi.bandwidth = bandwidth;
+            maxKDE = Math.max(maxKDE, 1);
+        } else {
+            // step that well covers the bandwidth and is multiple of span distance
+            var dist = span[1] - span[0];
+            var n = Math.ceil(dist / (bandwidth / 3));
+            var step = dist / n;
 
-        if(!isFinite(step) || !isFinite(n)) {
-            Lib.error('Something went wrong with computing the violin span');
-            cd[0].t.empty = true;
-            return cd;
-        }
+            if(!isFinite(step) || !isFinite(n)) {
+                Lib.error('Something went wrong with computing the violin span');
+                cd[0].t.empty = true;
+                return cd;
+            }
 
-        var kde = helpers.makeKDE(cdi, trace, vals);
-        cdi.density = new Array(n);
+            var kde = helpers.makeKDE(cdi, trace, vals);
+            cdi.density = new Array(n);
 
-        for(var k = 0, t = span[0]; t < (span[1] + step / 2); k++, t += step) {
-            var v = kde(t);
-            cdi.density[k] = {v: v, t: t};
-            maxKDE = Math.max(maxKDE, v);
+            for(var k = 0, t = span[0]; t < (span[1] + step / 2); k++, t += step) {
+                var v = kde(t);
+                cdi.density[k] = {v: v, t: t};
+                maxKDE = Math.max(maxKDE, v);
+            }
         }
 
         maxCount = Math.max(maxCount, vals.length);
@@ -100,8 +108,16 @@ function silvermanRule(len, ssd, iqr) {
 function calcBandwidth(trace, cdi, vals) {
     var span = cdi.max - cdi.min;
 
-    // plot single-value violin with bandwidth of 1
-    if(!span) return 1;
+    // If span is zero
+    if(!span) {
+        if(trace.bandwidth) {
+            return trace.bandwidth;
+        } else {
+            // if span is zero and no bandwidth is specified
+            // it returns zero bandwidth which is a special case
+            return 0;
+        }
+    }
 
     // Limit how small the bandwidth can be.
     //
