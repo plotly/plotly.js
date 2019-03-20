@@ -378,6 +378,37 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
+    it('@gl should display correct hover labels and emit correct event data (surface case with connectgaps enabled)', function(done) {
+        var surfaceConnectgaps = require('@mocks/gl3d_surface_connectgaps');
+        var _mock = Lib.extendDeep({}, surfaceConnectgaps);
+
+        function _hover() {
+            mouseEvent('mouseover', 300, 200);
+            return delay(20)();
+        }
+
+        Plotly.plot(gd, _mock)
+        .then(delay(20))
+        .then(function() {
+            gd.on('plotly_hover', function(eventData) {
+                ptData = eventData.points[0];
+            });
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText('x: 0.2', 'y: 2', 'z: 1,001.25');
+            assertEventData(0.2, 2, 1001.25, 0, [1, 2]);
+            assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
+                bgcolor: 'rgb(68, 68, 68)',
+                bordercolor: 'rgb(255, 255, 255)',
+                fontSize: 13,
+                fontFamily: 'Arial',
+                fontColor: 'rgb(255, 255, 255)'
+            }, 'initial');
+        })
+        .then(done);
+    });
+
     it('@gl should display correct hover labels and emit correct event data (surface case)', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
 
