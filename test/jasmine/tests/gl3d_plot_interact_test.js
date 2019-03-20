@@ -21,6 +21,133 @@ function countCanvases() {
     return d3.selectAll('canvas').size();
 }
 
+describe('Test gl3d before/after plot', function() {
+    var gd;
+
+    var mock = require('@mocks/gl3d_marker-arrays.json');
+
+    beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 4000;
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@noCI @gl should not rotate camera on the very first click before scene is complete and then should rotate', function(done) {
+        var _mock = Lib.extendDeep(
+            {
+                layout: {
+                    scene: {
+                        camera: {
+                            up: {
+                                x: 0,
+                                y: 0,
+                                z: 1
+                            },
+                            eye: {
+                                x: 1.2,
+                                y: 1.2,
+                                z: 1.2
+                            },
+                            center: {
+                                x: 0,
+                                y: 0,
+                                z: 0
+                            }
+                        }
+                    }
+                }
+            },
+            mock
+        );
+
+        var x = 605;
+        var y = 271;
+
+        function _stayThere() {
+            mouseEvent('mousemove', x, y);
+            return delay(20)();
+        }
+
+        function _clickThere() {
+            mouseEvent('mouseover', x, y, {buttons: 1});
+            return delay(20)();
+        }
+
+        function _clickOtherplace() {
+            mouseEvent('mouseover', 300, 300, {buttons: 1});
+            return delay(20)();
+        }
+
+        _stayThere()
+        .then(function() {
+            gd = createGraphDiv();
+            return Plotly.plot(gd, _mock);
+        })
+        .then(delay(20))
+        .then(function() {
+            var cameraIn = gd._fullLayout.scene.camera;
+            expect(cameraIn.up.x).toEqual(0, 'cameraIn.up.x');
+            expect(cameraIn.up.y).toEqual(0, 'cameraIn.up.y');
+            expect(cameraIn.up.z).toEqual(1, 'cameraIn.up.z');
+            expect(cameraIn.center.x).toEqual(0, 'cameraIn.center.x');
+            expect(cameraIn.center.y).toEqual(0, 'cameraIn.center.y');
+            expect(cameraIn.center.z).toEqual(0, 'cameraIn.center.z');
+            expect(cameraIn.eye.x).toEqual(1.2, 'cameraIn.eye.x');
+            expect(cameraIn.eye.y).toEqual(1.2, 'cameraIn.eye.y');
+            expect(cameraIn.eye.z).toEqual(1.2, 'cameraIn.eye.z');
+        })
+        .then(delay(20))
+        .then(function() {
+            var cameraBefore = gd._fullLayout.scene._scene.glplot.camera;
+            expect(cameraBefore.up[0]).toBeCloseTo(0, 2, 'cameraBefore.up[0]');
+            expect(cameraBefore.up[1]).toBeCloseTo(0, 2, 'cameraBefore.up[1]');
+            expect(cameraBefore.up[2]).toBeCloseTo(1, 2, 'cameraBefore.up[2]');
+            expect(cameraBefore.center[0]).toBeCloseTo(0, 2, 'cameraBefore.center[0]');
+            expect(cameraBefore.center[1]).toBeCloseTo(0, 2, 'cameraBefore.center[1]');
+            expect(cameraBefore.center[2]).toBeCloseTo(0, 2, 'cameraBefore.center[2]');
+            expect(cameraBefore.eye[0]).toBeCloseTo(1.2, 2, 'cameraBefore.eye[0]');
+            expect(cameraBefore.eye[1]).toBeCloseTo(1.2, 2, 'cameraBefore.eye[1]');
+            expect(cameraBefore.eye[2]).toBeCloseTo(1.2, 2, 'cameraBefore.eye[2]');
+            expect(cameraBefore.mouseListener.enabled === true);
+        })
+        .then(_clickThere)
+        .then(delay(20))
+        .then(function() {
+            var cameraAfter = gd._fullLayout.scene._scene.glplot.camera;
+            expect(cameraAfter.up[0]).toBeCloseTo(0, 2, 'cameraAfter.up[0]');
+            expect(cameraAfter.up[1]).toBeCloseTo(0, 2, 'cameraAfter.up[1]');
+            expect(cameraAfter.up[2]).toBeCloseTo(1, 2, 'cameraAfter.up[2]');
+            expect(cameraAfter.center[0]).toBeCloseTo(0, 2, 'cameraAfter.center[0]');
+            expect(cameraAfter.center[1]).toBeCloseTo(0, 2, 'cameraAfter.center[1]');
+            expect(cameraAfter.center[2]).toBeCloseTo(0, 2, 'cameraAfter.center[2]');
+            expect(cameraAfter.eye[0]).toBeCloseTo(1.2, 2, 'cameraAfter.eye[0]');
+            expect(cameraAfter.eye[1]).toBeCloseTo(1.2, 2, 'cameraAfter.eye[1]');
+            expect(cameraAfter.eye[2]).toBeCloseTo(1.2, 2, 'cameraAfter.eye[2]');
+            expect(cameraAfter.mouseListener.enabled === true);
+        })
+        .then(_clickOtherplace)
+        .then(delay(20))
+        .then(function() {
+            var cameraFinal = gd._fullLayout.scene._scene.glplot.camera;
+            expect(cameraFinal.up[0]).toBeCloseTo(0, 2, 'cameraFinal.up[0]');
+            expect(cameraFinal.up[1]).toBeCloseTo(0, 2, 'cameraFinal.up[1]');
+            expect(cameraFinal.up[2]).toBeCloseTo(1, 2, 'cameraFinal.up[2]');
+            expect(cameraFinal.center[0]).toBeCloseTo(0, 2, 'cameraFinal.center[0]');
+            expect(cameraFinal.center[1]).toBeCloseTo(0, 2, 'cameraFinal.center[1]');
+            expect(cameraFinal.center[2]).toBeCloseTo(0, 2, 'cameraFinal.center[2]');
+            expect(cameraFinal.eye[0]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[0]');
+            expect(cameraFinal.eye[1]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[1]');
+            expect(cameraFinal.eye[2]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[2]');
+            expect(cameraFinal.mouseListener.enabled === true);
+        })
+        .then(done);
+    });
+
+});
+
 describe('Test gl3d plots', function() {
     var gd, ptData;
 
@@ -75,7 +202,7 @@ describe('Test gl3d plots', function() {
         destroyGraphDiv();
     });
 
-    it('@noCI @gl should display correct hover labels of the second point of the very first scatter3d trace', function(done) {
+    it('@gl should display correct hover labels of the second point of the very first scatter3d trace', function(done) {
         var _mock = Lib.extendDeep({}, multipleScatter3dMock);
 
         function _hover() {
@@ -91,7 +218,6 @@ describe('Test gl3d plots', function() {
             });
         })
         .then(_hover)
-        .then(delay(20))
         .then(function() {
             assertHoverLabelContent(
                 {
@@ -104,11 +230,12 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
+    it('@gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         function _hover() {
-            mouseEvent('mouseover', 605, 271);
+            mouseEvent('mouseover', 0, 0);
+            mouseEvent('mouseover', 655, 221);
             return delay(20)();
         }
 
@@ -120,14 +247,13 @@ describe('Test gl3d plots', function() {
             });
         })
         .then(_hover)
-        .then(delay(20))
         .then(function() {
-            assertHoverText('x: 134.03', 'y: −163.59', 'z: −163.59');
-            assertEventData(134.03, -163.59, -163.59, 0, 3, {
-                'marker.symbol': undefined,
-                'marker.size': 40,
-                'marker.color': 'black',
-                'marker.line.color': undefined
+            assertHoverText('x: 100.75', 'y: −102.63', 'z: −102.63');
+            assertEventData(100.75, -102.63, -102.63, 0, 0, {
+                'marker.symbol': 'circle',
+                'marker.size': 10,
+                'marker.color': 'blue',
+                'marker.line.color': 'black'
             });
             assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
                 bgcolor: 'rgb(0, 0, 255)',
@@ -143,7 +269,7 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: Feb 1, 2017', 'y: −163.59', 'z: −163.59');
+            assertHoverText('x: Jan 11, 2016', 'y: −102.63', 'z: −102.63');
 
             return Plotly.restyle(gd, {
                 x: [[new Date(2017, 2, 1), new Date(2017, 2, 2), new Date(2017, 2, 3), new Date(2017, 2, 4)]]
@@ -151,7 +277,7 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: Mar 4, 2017', 'y: −163.59', 'z: −163.59');
+            assertHoverText('x: Mar 1, 2017', 'y: −102.63', 'z: −102.63');
 
             return Plotly.update(gd, {
                 y: [['a', 'b', 'c', 'd']],
@@ -162,25 +288,25 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: Mar 4, 2017', 'y: d', 'z: 10B');
+            assertHoverText('x: Mar 1, 2017', 'y: a', 'z: 10');
 
             return Plotly.relayout(gd, 'scene.xaxis.calendar', 'chinese');
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 二 7, 2017', 'y: d', 'z: 10B');
+            assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10');
 
             return Plotly.restyle(gd, 'text', [['A', 'B', 'C', 'D']]);
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 二 7, 2017', 'y: d', 'z: 10B', 'D');
+            assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'A');
 
             return Plotly.restyle(gd, 'hovertext', [['Apple', 'Banana', 'Clementine', 'Dragon fruit']]);
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 二 7, 2017', 'y: d', 'z: 10B', 'Dragon fruit');
+            assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'Apple');
 
             return Plotly.restyle(gd, {
                 'hoverlabel.bgcolor': [['red', 'blue', 'green', 'yellow']],
@@ -190,11 +316,11 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
-                bgcolor: 'rgb(255, 255, 0)',
-                bordercolor: 'rgb(68, 68, 68)',
+                bgcolor: 'rgb(255, 0, 0)',
+                bordercolor: 'rgb(255, 255, 255)',
                 fontSize: 20,
                 fontFamily: 'Arial',
-                fontColor: 'rgb(68, 68, 68)'
+                fontColor: 'rgb(255, 255, 255)'
             }, 'restyled');
 
             return Plotly.relayout(gd, {
@@ -206,7 +332,7 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
-                bgcolor: 'rgb(255, 255, 0)',
+                bgcolor: 'rgb(255, 0, 0)',
                 bordercolor: 'rgb(255, 255, 0)',
                 fontSize: 20,
                 fontFamily: 'Roboto',
@@ -220,18 +346,18 @@ describe('Test gl3d plots', function() {
             var label = d3.selectAll('g.hovertext');
 
             expect(label.size()).toEqual(1);
-            expect(label.select('text').text()).toEqual('x: 二 7, 2017y: dz: 10BDragon fruit');
+            expect(label.select('text').text()).toEqual('x: 二 4, 2017y: az: 10Apple');
 
             return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'dont+know', null]]);
         })
         .then(_hover)
         .then(function() {
-            assertHoverText('x: 二 7, 2017', 'y: d', 'z: 10B', 'Dragon fruit');
+            assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'Apple');
 
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
         .then(function() {
-            assertHoverText(null, null, null, 'Dragon fruit');
+            assertHoverText(null, null, null, 'Apple');
 
             return Plotly.restyle(gd, 'hovertext', 'HEY');
         })
@@ -241,18 +367,18 @@ describe('Test gl3d plots', function() {
             return Plotly.restyle(gd, 'hoverinfo', 'z');
         })
         .then(function() {
-            assertHoverText(null, null, '10B');
+            assertHoverText(null, null, '10');
 
             return Plotly.restyle(gd, 'hovertemplate', 'THIS Y -- %{y}<extra></extra>');
         })
         .then(function() {
-            assertHoverText(null, null, null, 'THIS Y -- d');
+            assertHoverText(null, null, null, 'THIS Y -- a');
         })
         .catch(failTest)
         .then(done);
     });
 
-    it('@noCI @gl should display correct hover labels and emit correct event data (surface case)', function(done) {
+    it('@gl should display correct hover labels and emit correct event data (surface case)', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
 
         function _hover() {
@@ -268,7 +394,6 @@ describe('Test gl3d plots', function() {
             });
         })
         .then(_hover)
-        .then(delay(20))
         .then(function() {
             assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
             assertEventData(1, 2, 43, 0, [1, 2]);
@@ -359,16 +484,13 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should emit correct event data on click (scatter3d case)', function(done) {
+    it('@gl should emit correct event data on click (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         // N.B. gl3d click events are 'mouseover' events
         // with button 1 pressed
         function _click() {
-            var x = 605;
-            var y = 271;
-            mouseEvent('mousemove', x, y);
-            mouseEvent('mouseover', x, y, {buttons: 1});
+            mouseEvent('mouseover', 605, 271, {buttons: 1});
             return delay(20)();
         }
 

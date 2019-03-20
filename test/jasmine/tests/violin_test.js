@@ -280,7 +280,7 @@ describe('Test violin calc:', function() {
         });
 
         expect(cd.length).toBe(6, '# of violins');
-        expect(cd.every(function(d) { return d.bandwidth; })).toBe(true, 'bandwidth');
+        expect(cd.every(function(d) { return d.bandwidth; })).toBe(false, 'bandwidth');
     });
 
     it('handle multi-value / single-but-unique-value case', function() {
@@ -289,7 +289,7 @@ describe('Test violin calc:', function() {
         });
 
         expect(cd.length).toBe(1, '# of violins');
-        expect(cd[0].bandwidth).toBe(1, 'bandwidth');
+        expect(cd[0].bandwidth).toBe(0, 'bandwidth');
     });
 });
 
