@@ -31,7 +31,6 @@ test_jasmine () {
 test_image () {
     $root/../orca/bin/orca.js graph \
         $root/test/image/mocks/mapbox_* \
-        $root/test/image/mocks/gl3d_cone* \
         --plotly $root/build/plotly.js \
         --mapbox-access-token "pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ" \
         --output-dir $root/test/image/baselines/ \
