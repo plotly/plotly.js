@@ -55,6 +55,11 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
             var x2, y2;
             var x3, y3;
 
+            var delta = 0;
+            if(i + 1 < len && Array.isArray(trace.offset)) {
+                delta -= trace.offset[i + 1] - trace.offset[i];
+            }
+
             if(isHorizontal) {
                 x0 = xa.c2p(di.s1, true);
                 y0 = ya.c2p(di.p1, true);
@@ -65,9 +70,9 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 x2 = xa.c2p(di.s1, true);
                 y2 = ya.c2p(di.p1, true);
 
-                if(i < len - 1) {
-                    x3 = xa.c2p(di.s0 + 1, true);
-                    y3 = ya.c2p(di.p0 + 1, true);
+                if(i + 1 < len) {
+                    x3 = xa.c2p(di.s0 + 1 - delta, true);
+                    y3 = ya.c2p(di.p0 + 1 - delta, true);
                 }
             } else {
                 x0 = xa.c2p(di.p1, true);
@@ -79,9 +84,9 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 x2 = xa.c2p(di.p1, true);
                 y2 = ya.c2p(di.s1, true);
 
-                if(i < len - 1) {
-                    x3 = xa.c2p(di.p0 + 1, true);
-                    y3 = ya.c2p(di.s0 + 1, true);
+                if(i + 1 < len) {
+                    x3 = xa.c2p(di.p0 + 1 - delta, true);
+                    y3 = ya.c2p(di.s0 + 1 - delta, true);
                 }
             }
 

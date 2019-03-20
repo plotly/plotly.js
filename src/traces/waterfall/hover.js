@@ -39,7 +39,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             point.extraText = '(' + (-size) + ') ' + DIRSYMBOL.decreasing;
         }
         // display initial value
-        point.extraText += '<br>Initial: ' + (size - di.s);
+        point.extraText += '<br>Initial: ' + (di.b + di.s - size);
     } else {
         point[sizeLetter + 'LabelVal'] = size;
     }

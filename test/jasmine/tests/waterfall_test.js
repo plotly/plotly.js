@@ -301,6 +301,129 @@ describe('Waterfall.calc', function() {
 describe('Waterfall.crossTraceCalc', function() {
     'use strict';
 
+    it('should guard against invalid offset items', function() {
+        var gd = mockWaterfallPlot([{
+            offset: [null, 0, 1],
+            y: [1, 2, 3]
+        }, {
+            offset: [null, 1],
+            y: [1, 2, 3]
+        }, {
+            offset: null,
+            y: [1]
+        }], {
+            bargap: 0.2,
+            barmode: 'overlay'
+        });
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.poffset', [-0.4, 0, 1]);
+        assertArrayField(cd[1][0], 't.poffset', [-0.4, 1, -0.4]);
+        assertArrayField(cd[2][0], 't.poffset', [-0.4]);
+    });
+
+    it('should work with *width* typed arrays', function() {
+        var w = [0.1, 0.4, 0.7];
+
+        var gd = mockWaterfallPlot([{
+            width: w,
+            y: [1, 2, 3]
+        }, {
+            width: new Float32Array(w),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', w);
+        assertArrayField(cd[1][0], 't.barwidth', w);
+        assertPointField(cd, 'x', [
+            [-0.2, 0.8, 1.8],
+            [0.2, 1.2, 2.2]
+        ]);
+    });
+
+    it('should work with *offset* typed arrays', function() {
+        var o = [0.1, 0.4, 0.7];
+
+        var gd = mockWaterfallPlot([{
+            offset: o,
+            y: [1, 2, 3]
+        }, {
+            offset: new Float32Array(o),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.poffset', o);
+        assertArrayField(cd[1][0], 't.poffset', o);
+        assertPointField(cd, 'x', [
+            [0.5, 1.8, 3.1],
+            [0.5, 1.8, 3.099]
+        ]);
+    });
+
+    it('should guard against invalid width items', function() {
+        var gd = mockWaterfallPlot([{
+            width: [null, 1, 0.8],
+            y: [1, 2, 3]
+        }, {
+            width: [null, 1],
+            y: [1, 2, 3]
+        }, {
+            width: null,
+            y: [1]
+        }], {
+            bargap: 0.2,
+            barmode: 'overlay'
+        });
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', [0.8, 1, 0.8]);
+        assertArrayField(cd[1][0], 't.barwidth', [0.8, 1, 0.8]);
+        assertArrayField(cd[2][0], 't.barwidth', [0.8]);
+    });
+
+    it('should guard against invalid width items (group case)', function() {
+        var gd = mockWaterfallPlot([{
+            width: [null, 0.1, 0.2],
+            y: [1, 2, 3]
+        }, {
+            width: [null, 0.1],
+            y: [1, 2, 3]
+        }, {
+            width: null,
+            y: [1]
+        }], {
+            bargap: 0,
+            barmode: 'group'
+        });
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', [0.33, 0.1, 0.2]);
+        assertArrayField(cd[1][0], 't.barwidth', [0.33, 0.1, 0.33]);
+        assertArrayField(cd[2][0], 't.barwidth', [0.33]);
+    });
+
+    it('should not group traces that set offset', function() {
+        var gd = mockWaterfallPlot([{
+            y: [1, 2, 3]
+        }, {
+            y: [10, 20, 30]
+        }, {
+            offset: -1,
+            y: [-1, -2, -3]
+        }], {
+            bargap: 0,
+            barmode: 'group'
+        });
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0], [0, 0, 0]]);
+        assertPointField(cd, 's', [[1, 3, 6], [10, 30, 60], [-1, -3, -6]]);
+        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25], [-0.5, 0.5, 1.5]]);
+        assertPointField(cd, 'y', [[1, 3, 6], [10, 30, 60], [-1, -3, -6]]);
+    });
+
     it('should draw traces separately in overlay mode', function() {
         var gd = mockWaterfallPlot([{
             y: [1, 2, 3]
@@ -747,13 +870,21 @@ describe('A waterfall plot', function() {
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            assertArrayField(cd[0][0], 't.poffset', [-0.5, -0.4, -0.3, -0.2]);
+            assertArrayField(cd[1][0], 't.poffset', [-0.2, -0.3, -0.4, -0.5]);
+            expect(cd[2][0].t.poffset).toBe(-0.5);
+            expect(cd[3][0].t.poffset).toBe(-0.4);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
             return Plotly.restyle(gd, 'offset', 0);
         }).then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
-                [1.4, 2.4, 3.4, 4.4], [1.4, 2.4, 3.4, 4.4],
+                [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
                 [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
             assertPointField(cd, 'y', [
                 [1, 3, 6, 10], [3, 5, 6, 6],
@@ -764,6 +895,14 @@ describe('A waterfall plot', function() {
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            expect(cd[0][0].t.poffset).toBe(0);
+            expect(cd[1][0].t.poffset).toBe(0);
+            expect(cd[2][0].t.poffset).toBe(0);
+            expect(cd[3][0].t.poffset).toBe(0);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
             var traceNodes = getAllTraceNodes(gd);
@@ -805,7 +944,7 @@ describe('A waterfall plot', function() {
         }).then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
-                [1.4, 2.4, 3.4, 4.4], [1.4, 2.4, 3.4, 4.4],
+                [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
                 [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
             assertPointField(cd, 'y', [
                 [1, 3, 6, 10], [3, 5, 6, 6],
@@ -816,6 +955,14 @@ describe('A waterfall plot', function() {
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            expect(cd[0][0].t.poffset).toBe(0);
+            expect(cd[1][0].t.poffset).toBe(0);
+            expect(cd[2][0].t.poffset).toBe(0);
+            expect(cd[3][0].t.poffset).toBe(0);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
             var traceNodes = getAllTraceNodes(gd);
@@ -1239,6 +1386,44 @@ describe('waterfall hover', function() {
             .then(done);
         });
 
+        it('should return correct hover data (two waterfalls, array width)', function(done) {
+            Plotly.plot(gd, [{
+                type: 'waterfall',
+                x: [1, 200],
+                y: [2, 1],
+                width: [10, 20],
+                marker: { color: 'red' }
+            }, {
+                type: 'waterfall',
+                x: [1, 200],
+                y: [1, 2],
+                width: [20, 10],
+                marker: { color: 'green' }
+            }], {
+                xaxis: { range: [-200, 300] },
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                var out = _hover(gd, -36, 1.5, 'closest');
+
+                expect(out.style).toEqual([0, 'red', 1, 2]);
+                assertPos(out.pos, [99, 106, 117.33, 117.33]);
+
+                out = _hover(gd, 164, 0.8, 'closest');
+
+                expect(out.style).toEqual([1, 'red', 200, 3]);
+                assertPos(out.pos, [222, 235, 16, 16]);
+
+                out = _hover(gd, 125, 0.8, 'x');
+
+                expect(out.style).toEqual([1, 'red', 200, 3]);
+                assertPos(out.pos, [222, 280, 16, 16]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('positions labels correctly w.r.t. narrow waterfalls', function(done) {
             Plotly.newPlot(gd, [{
                 x: [0, 10, 20],
@@ -1289,6 +1474,13 @@ function mockWaterfallPlot(dataWithoutTraceType, layout) {
     Plots.doCalcdata(gd);
 
     return gd;
+}
+
+function assertArrayField(calcData, prop, expectation) {
+    var values = Lib.nestedProperty(calcData, prop).get();
+    if(!Array.isArray(values)) values = [values];
+
+    expect(values).toBeCloseToArray(expectation, undefined, '(field ' + prop + ')');
 }
 
 function assertPointField(calcData, prop, expectation) {

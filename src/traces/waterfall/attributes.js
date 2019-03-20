@@ -10,7 +10,6 @@
 
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
-var extendFlat = require('../../lib/extend').extendFlat;
 
 function directionAttrs() {
     return {
@@ -80,9 +79,9 @@ module.exports = {
 
     orientation: barAttrs.orientation,
 
-    offset: extendFlat({}, barAttrs.offset, { arrayOk: false }),
+    offset: barAttrs.offset,
 
-    width: extendFlat({}, barAttrs.width, { arrayOk: false }),
+    width: barAttrs.width,
 
     marker: directionAttrs(),
     increasing: directionAttrs(),
