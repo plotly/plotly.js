@@ -703,6 +703,34 @@ describe('legend relayout update', function() {
             .then(done);
         });
     });
+
+    describe('with legendgroup', function() {
+        var mock = require('@mocks/legendgroup_horizontal_wrapping.json');
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        it('changes the margin size to fit tracegroupgap', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+            Plotly.newPlot(gd, mockCopy)
+            .then(function() {
+                expect(gd._fullLayout._size.b).toBe(130);
+                return Plotly.relayout(gd, 'legend.tracegroupgap', 70);
+            })
+            .then(function() {
+                expect(gd._fullLayout._size.b).toBe(185);
+                return Plotly.relayout(gd, 'legend.tracegroupgap', 10);
+            })
+            .then(function() {
+                expect(gd._fullLayout._size.b).toBe(130);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('legend orientation change:', function() {
