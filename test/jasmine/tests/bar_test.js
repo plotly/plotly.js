@@ -226,6 +226,20 @@ describe('Bar.supplyDefaults', function() {
         expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
         expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
     });
+
+    it('should have a barmode only if it contains bars', function() {
+        var gd = {
+            data: [{type: 'histogram', y: [1], visible: false}],
+            layout: {}
+        };
+
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.barmode).toBe(undefined, '`barmode` should be undefined');
+
+        gd.data[0].visible = true;
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.barmode).toBe('group', '`barmode` should be set to its default ');
+    });
 });
 
 describe('bar calc / crossTraceCalc (formerly known as setPositions)', function() {

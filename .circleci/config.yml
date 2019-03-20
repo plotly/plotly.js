@@ -14,14 +14,10 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-master-{{ checksum "package-lock.json" }}
       - run:
           name: Install dependencies
           command: |
-            npm install
+            npm ci
       - run:
           name: List dependency versions
           command: |
@@ -33,16 +29,12 @@ jobs:
           command: |
             npm run pretest
             npm run cibuild
-      - save_cache:
-          paths:
-            - node_modules
-          key: v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ checksum "package.json" }}
+      - run:
+          command: rm -rf .git
       - persist_to_workspace:
-          root: .
+          root: /home/circleci
           paths:
-            - node_modules
-            - build
-            - dist
+            - plotly.js
 
   test-jasmine:
     docker:
@@ -50,9 +42,8 @@ jobs:
       - image: circleci/node:10.9.0-browsers
     working_directory: ~/plotly.js
     steps:
-      - checkout
       - attach_workspace:
-          at: ~/plotly.js
+          at: ~/
       - run:
           name: Run jasmine tests (batch 1)
           command: ./.circleci/test.sh jasmine
@@ -63,9 +54,8 @@ jobs:
       - image: circleci/node:10.9.0-browsers
     working_directory: ~/plotly.js
     steps:
-      - checkout
       - attach_workspace:
-          at: ~/plotly.js
+          at: ~/
       - run:
           name: Run jasmine tests (batch 2)
           command: ./.circleci/test.sh jasmine2
@@ -76,9 +66,8 @@ jobs:
       - image: circleci/node:10.9.0-browsers
     working_directory: ~/plotly.js
     steps:
-      - checkout
       - attach_workspace:
-          at: ~/plotly.js
+          at: ~/
       - run:
           name: Run jasmine tests (batch 3)
           command: ./.circleci/test.sh jasmine3
@@ -88,9 +77,8 @@ jobs:
       - image: plotly/testbed:latest
     working_directory: /var/www/streambed/image_server/plotly.js/
     steps:
-      - checkout
       - attach_workspace:
-          at: /var/www/streambed/image_server/plotly.js/
+          at: /var/www/streambed/image_server/
       - run:
           name: Run and setup container
           command: |
@@ -108,9 +96,8 @@ jobs:
       - image: plotly/testbed:latest
     working_directory: /var/www/streambed/image_server/plotly.js/
     steps:
-      - checkout
       - attach_workspace:
-          at: /var/www/streambed/image_server/plotly.js/
+          at: /var/www/streambed/image_server/
       - run:
           name: Run and setup container
           command: |
@@ -128,9 +115,8 @@ jobs:
       - image: circleci/node:10.9.0
     working_directory: ~/plotly.js
     steps:
-      - checkout
       - attach_workspace:
-          at: ~/plotly.js
+          at: ~/
       - run:
           name: Run syntax tests
           command: ./.circleci/test.sh syntax
@@ -140,9 +126,8 @@ jobs:
       - image: circleci/node:10.9.0
     working_directory: ~/plotly.js
     steps:
-      - checkout
       - attach_workspace:
-          at: ~/plotly.js
+          at: ~/
       - run:
           name: Build dist/
           command: npm run build
