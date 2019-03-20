@@ -10,6 +10,7 @@
 
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 function directionAttrs() {
     return {
@@ -27,15 +28,16 @@ function directionAttrs() {
 module.exports = {
 
     measure: {
-        valType: 'enumerated',
-        values: ['relative', 'absolute', 'total'],
+        valType: 'data_array',
         dflt: [],
-        arrayOk: true,
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the type of value. It could generally be \'relative\' or \'total\'.',
-            'Also \'absolute\' could be applied to reset the computed total or to declare an initial value.'
+            'An array containing types of values.',
+            'By default the values are considered as \'relative\'.',
+            'However; it is possible to use \'total\' to compute the sums.',
+            'Also \'absolute\' could be applied to reset the computed total',
+            'or to declare an initial value where needed.'
         ].join(' ')
     },
 
@@ -78,9 +80,9 @@ module.exports = {
 
     orientation: barAttrs.orientation,
 
-    offset: barAttrs.offset,
+    offset: extendFlat({}, barAttrs.offset, { arrayOk: false }),
 
-    width: barAttrs.width,
+    width: extendFlat({}, barAttrs.width, { arrayOk: false }),
 
     marker: directionAttrs(),
     increasing: directionAttrs(),
@@ -92,8 +94,8 @@ module.exports = {
         dash: lineAttrs.dash,
         mode: {
             valType: 'enumerated',
-            values: ['begin+end', 'steps', false],
-            dflt: 'begin+end',
+            values: ['steps', 'spanning', 'between', false],
+            dflt: 'spanning',
             role: 'info',
             editType: 'plot',
             description: [

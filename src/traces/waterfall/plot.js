@@ -93,8 +93,8 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                         shape += 'M' + x1 + ',' + y0 + 'V' + y1;
                     }
                 }
-            } else if(mode === 'begin+end') {
-                if(!di.isSum) {
+            } else if(mode === 'spanning') {
+                if(!di.isSum && i > 0) {
                     if(isHorizontal) {
                         shape += 'M' + x1 + ',' + y0 + 'V' + y1;
                     } else {
@@ -103,10 +103,14 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 }
             }
 
-            if(isHorizontal) {
-                shape += 'M' + x2 + ',' + y1 + 'V' + y2;
-            } else {
-                shape += 'M' + x1 + ',' + y2 + 'H' + x2;
+            if(mode !== 'between') {
+                if(mode === 'steps' || di.isSum || i < len - 1) {
+                    if(isHorizontal) {
+                        shape += 'M' + x2 + ',' + y1 + 'V' + y2;
+                    } else {
+                        shape += 'M' + x1 + ',' + y2 + 'H' + x2;
+                    }
+                }
             }
 
             if(x3 !== undefined && y3 !== undefined) {
