@@ -192,7 +192,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
+function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
 
     var glplotOptions = {
         canvas: canvas,
@@ -204,7 +204,7 @@ function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
         snapToData: true,
         autoScale: true,
         autoBounds: false,
-        camera: camera,
+        cameraObject: cameraObject,
         pixelRatio: pixelRatio
     };
 
@@ -238,9 +238,11 @@ function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
     return true;
 }
 
-function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
+function initializeGLPlot(scene, pixelRatio, canvas, gl) {
 
-    var success = tryCreatePlot(scene, camera, pixelRatio, canvas, gl);
+    scene.initializeGLCamera();
+
+    var success = tryCreatePlot(scene, scene.camera, pixelRatio, canvas, gl);
     /*
     * createPlot will throw when webgl is not enabled in the client.
     * Lets return an instance of the module with all functions noop'd.
@@ -280,8 +282,6 @@ function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
             }
         }, false);
     }
-
-    if(!scene.camera) scene.initializeGLCamera();
 
     scene.glplot.camera = scene.camera;
 
@@ -351,9 +351,7 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    var camera = fullLayout.scene.camera;
-
-    initializeGLPlot(this, camera, this.pixelRatio);
+    initializeGLPlot(this, this.pixelRatio);
 }
 
 var proto = Scene.prototype;
@@ -796,7 +794,7 @@ proto.setCamera = function setCamera(cameraData) {
 
         this.glplot.dispose();
 
-        initializeGLPlot(this, cameraData, pixelRatio);
+        initializeGLPlot(this, pixelRatio);
         this.glplot.camera._ortho = newOrtho;
     }
 };
@@ -851,7 +849,6 @@ proto.saveCamera = function saveCamera(layout) {
 
 proto.updateFx = function(dragmode, hovermode) {
     var camera = this.camera;
-
     if(camera) {
         // rotate and orbital are synonymous
         if(dragmode === 'orbit') {
@@ -873,16 +870,16 @@ proto.updateFx = function(dragmode, hovermode) {
             var y = fullCamera.up.y;
             var z = fullCamera.up.z;
             // only push `up` back to (full)layout if it's going to change
-            if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) return;
-
-            var attr = this.id + '.camera.up';
-            var zUp = {x: 0, y: 0, z: 1};
-            var edits = {};
-            edits[attr] = zUp;
-            var layout = gd.layout;
-            Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
-            fullCamera.up = zUp;
-            Lib.nestedProperty(layout, attr).set(zUp);
+            if(z / Math.sqrt(x * x + y * y + z * z) < 0.999) {
+                var attr = this.id + '.camera.up';
+                var zUp = {x: 0, y: 0, z: 1};
+                var edits = {};
+                edits[attr] = zUp;
+                var layout = gd.layout;
+                Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
+                fullCamera.up = zUp;
+                Lib.nestedProperty(layout, attr).set(zUp);
+            }
         } else {
             // none rotation modes [pan or zoom]
             camera.keyBindingMode = dragmode;

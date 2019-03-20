@@ -269,7 +269,7 @@ describe('Test isosurface', function() {
             destroyGraphDiv();
         });
 
-        it('should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
+        it('@gl should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
 
             function _assert(user, full) {
                 var trace = gd.data[0];
@@ -313,7 +313,7 @@ describe('Test isosurface', function() {
         });
     });
 
-    describe('@noCI hover', function() {
+    describe('hover', function() {
 
         var gd;
 
