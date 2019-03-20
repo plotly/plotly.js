@@ -23,7 +23,7 @@ var repeat = gup.repeat;
 var unwrap = gup.unwrap;
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
-var Plotly = require('../../plot_api/plot_api');
+var Registry = require('../../registry');
 
 // view models
 
@@ -233,7 +233,7 @@ function sankeyModel(layout, d, traceIndex) {
     }
 
     // Force node position
-    if(trace.node.x.length !== 0 && trace.node.y.length !== 0) {
+    if(trace.node.x.length && trace.node.y.length) {
         for(i = 0; i < Math.min(trace.node.x.length, trace.node.y.length, graph.nodes.length); i++) {
             if(trace.node.x[i] && trace.node.y[i]) {
                 var pos = [trace.node.x[i] * width, trace.node.y[i] * height];
@@ -663,6 +663,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
         })
 
         .on('dragend', function(d) {
+            if(d.arrangement === 'fixed') return;
             d.interactionState.dragInProgress = false;
             for(var i = 0; i < d.node.childrenNodes.length; i++) {
                 d.node.childrenNodes[i].x = d.node.x;
@@ -751,7 +752,7 @@ function persistFinalNodePositions(d, gd) {
         x.push(nodeX / d.figure.width);
         y.push(nodeY / d.figure.height);
     }
-    Plotly._guiRestyle(gd, {
+    Registry.call('_guiRestyle', gd, {
         'node.x': [x],
         'node.y': [y]
     }, d.trace.index)
@@ -814,7 +815,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
     });
 
     // To prevent animation on dragging
-    var dragcover = gd.querySelector('.dragcover');
+    var dragcover = gd._fullLayout._dragCover;
 
     var styledData = calcData
             .filter(function(d) {return unwrap(d).trace.visible;})
