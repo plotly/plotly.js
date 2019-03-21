@@ -360,11 +360,22 @@ drawing.pointStyle = function(s, trace, gd) {
     });
 };
 
+drawing.waterfallStyle = function(d, trace) {
+    var marker = trace.marker;
+
+    if(d.isSum) {
+        return trace.totals || marker;
+    } else {
+        if(d.rawS > 0) return trace.increasing || marker;
+        if(d.rawS < 0) return trace.decreasing || marker;
+    }
+    return marker;
+};
+
 drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
     var marker = trace.marker;
-    if(trace.type === 'waterfall' && !d.isSum) {
-        if(d.rawS > 0) marker = trace.increasing;
-        if(d.rawS < 0) marker = trace.decreasing;
+    if(trace.type === 'waterfall') {
+        marker = this.waterfallStyle(d, trace);
     }
     var markerLine = marker.line;
 

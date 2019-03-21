@@ -18,6 +18,7 @@ var Color = require('../../components/color');
 
 var INCREASING_COLOR = '#3D9970';
 var DECREASING_COLOR = '#FF4136';
+var TOTALS_COLOR = '#4499FF';
 
 function handleDirection(coerce, direction, defaultColor) {
     coerce(direction + '.color', defaultColor);
@@ -52,6 +53,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     handleDirection(coerce, 'increasing', INCREASING_COLOR);
     handleDirection(coerce, 'decreasing', DECREASING_COLOR);
+    handleDirection(coerce, 'totals', TOTALS_COLOR);
     handleDirection(coerce, 'marker', defaultColor);
 
     coerce('selected.marker.color');

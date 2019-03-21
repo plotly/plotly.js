@@ -8,6 +8,8 @@
 
 'use strict';
 
+var Color = require('../../components/color');
+var waterfallStyle = require('../../components/drawing').waterfallStyle;
 var barHoverPoints = require('../bar/hover').hoverPoints;
 
 var DIRSYMBOL = {
@@ -44,5 +46,19 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         point[sizeLetter + 'LabelVal'] = size;
     }
 
+    point.color = getTraceColor(trace, di);
+
     return [point];
 };
+
+function getTraceColor(trace, di) {
+
+    var marker = waterfallStyle(di, trace);
+
+    var mc = di.mcc || marker.color;
+    var mlc = di.mlcc || marker.line.color;
+    var mlw = di.mlw || marker.line.width;
+
+    if(Color.opacity(mc)) return mc;
+    else if(Color.opacity(mlc) && mlw) return mlc;
+}

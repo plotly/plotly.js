@@ -8,6 +8,7 @@
 
 'use strict';
 
+var waterfallStyle = require('../../components/drawing').waterfallStyle;
 var mergeArray = require('../../lib').mergeArray;
 
 // arrayOk attributes, merge them into calcdata array
@@ -17,7 +18,8 @@ module.exports = function arraysToCalcdata(cd, trace) {
     mergeArray(trace.text, cd, 'tx');
     mergeArray(trace.hovertext, cd, 'htx');
 
-    var marker = trace.marker;
+    var marker = waterfallStyle(cd, trace);
+
     if(marker) {
         mergeArray(marker.opacity, cd, 'mo');
         mergeArray(marker.color, cd, 'mc');

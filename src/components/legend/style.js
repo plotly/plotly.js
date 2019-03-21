@@ -263,8 +263,8 @@ module.exports = function style(s, gd) {
 
             var container = trace[
                 (i % 3 === 0) ? 'increasing' :
-                (i % 3 === 1) ? 'decreasing' : 'marker'
-            ];
+                (i % 3 === 1) ? 'decreasing' : 'totals'
+            ] || trace.marker;
 
             var line = container.line || {};
 

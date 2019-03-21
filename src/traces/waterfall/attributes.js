@@ -84,6 +84,7 @@ module.exports = {
     width: barAttrs.width,
 
     marker: directionAttrs(),
+    totals: directionAttrs(),
     increasing: directionAttrs(),
     decreasing: directionAttrs(),
 
