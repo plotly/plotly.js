@@ -1262,14 +1262,14 @@ describe('waterfall hover', function() {
         it('should return the correct hover point data (case x)', function() {
             var out = _hover(gd, 0, 0, 'x');
 
-            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
+            expect(out.style).toEqual([0, '#3D9970', 0, 13.23]);
             assertPos(out.pos, [11.87, 106.8, 52.71, 52.71]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
             var out = _hover(gd, -0.2, 12, 'closest');
 
-            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
+            expect(out.style).toEqual([0, '#3D9970', 0, 13.23]);
             assertPos(out.pos, [11.87, 59.33, 52.71, 52.71]);
         });
     });
@@ -1364,7 +1364,7 @@ describe('waterfall hover', function() {
                 ].forEach(function(hoverSpec) {
                     var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
 
-                    expect(out.style).toEqual([0, 'red', 1, 2], hoverSpec);
+                    expect(out.style).toEqual([0, '#3D9970', 1, 2], hoverSpec);
                     assertPos(out.pos, [264, 278, 14, 14], hoverSpec);
                 });
 
@@ -1407,17 +1407,17 @@ describe('waterfall hover', function() {
             .then(function() {
                 var out = _hover(gd, -36, 1.5, 'closest');
 
-                expect(out.style).toEqual([0, 'red', 1, 2]);
+                expect(out.style).toEqual([0, '#3D9970', 1, 2]);
                 assertPos(out.pos, [99, 106, 117.33, 117.33]);
 
                 out = _hover(gd, 164, 0.8, 'closest');
 
-                expect(out.style).toEqual([1, 'red', 200, 3]);
+                expect(out.style).toEqual([1, '#3D9970', 200, 3]);
                 assertPos(out.pos, [222, 235, 16, 16]);
 
                 out = _hover(gd, 125, 0.8, 'x');
 
-                expect(out.style).toEqual([1, 'red', 200, 3]);
+                expect(out.style).toEqual([1, '#3D9970', 200, 3]);
                 assertPos(out.pos, [222, 280, 16, 16]);
             })
             .catch(failTest)
