@@ -91,6 +91,7 @@ var attrs = module.exports = overrideAll({
         },
         groups: {
             valType: 'info_array',
+            impliedEdits: {'x': [], 'y': []},
             dimensions: 2,
             freeLength: true,
             dflt: [],
@@ -101,6 +102,18 @@ var attrs = module.exports = overrideAll({
                 'Each group is defined by an array with the indices of the nodes it contains.',
                 'Multiple groups can be specified.'
             ].join(' ')
+        },
+        x: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'info',
+            description: 'The normalized horizontal position of the node.'
+        },
+        y: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'info',
+            description: 'The normalized vertical position of the node.'
         },
         color: {
             valType: 'color',

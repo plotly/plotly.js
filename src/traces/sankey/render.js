@@ -23,6 +23,8 @@ var repeat = gup.repeat;
 var unwrap = gup.unwrap;
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
+var Registry = require('../../registry');
+
 // view models
 
 function sankeyModel(layout, d, traceIndex) {
@@ -67,13 +69,17 @@ function sankeyModel(layout, d, traceIndex) {
         Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
+    // Counters for nested loops
+    var i, j, k;
+
     // Create transient nodes for animations
     for(var nodePointNumber in calcData._groupLookup) {
         var groupIndex = parseInt(calcData._groupLookup[nodePointNumber]);
 
         // Find node representing groupIndex
         var groupingNode;
-        for(var i = 0; i < graph.nodes.length; i++) {
+
+        for(i = 0; i < graph.nodes.length; i++) {
             if(graph.nodes[i].pointNumber === groupIndex) {
                 groupingNode = graph.nodes[i];
                 break;
@@ -98,7 +104,6 @@ function sankeyModel(layout, d, traceIndex) {
     }
 
     function computeLinkConcentrations() {
-        var i, j, k;
         for(i = 0; i < graph.nodes.length; i++) {
             var node = graph.nodes[i];
             // Links connecting the same two nodes are part of a flow
@@ -162,6 +167,93 @@ function sankeyModel(layout, d, traceIndex) {
         }
     }
     computeLinkConcentrations();
+
+    // Push any overlapping nodes down.
+    function resolveCollisionsTopToBottom(columns) {
+        columns.forEach(function(nodes) {
+            var node;
+            var dy;
+            var y = 0;
+            var n = nodes.length;
+            var i;
+            nodes.sort(function(a, b) {
+                return a.y0 - b.y0;
+            });
+            for(i = 0; i < n; ++i) {
+                node = nodes[i];
+                if(node.y0 >= y) {
+                    // No overlap
+                } else {
+                    dy = (y - node.y0);
+                    if(dy > 1e-6) node.y0 += dy, node.y1 += dy;
+                }
+                y = node.y1 + nodePad;
+            }
+        });
+    }
+
+    // Group nodes into columns based on their x position
+    function snapToColumns(nodes) {
+        // Sort nodes by x position
+        var orderedNodes = nodes.map(function(n, i) {
+            return {
+                x0: n.x0,
+                index: i
+            };
+        })
+        .sort(function(a, b) {
+            return a.x0 - b.x0;
+        });
+
+        var columns = [];
+        var colNumber = -1;
+        var colX; // Position of column
+        var lastX = -Infinity; // Position of last node
+        var dx;
+        for(i = 0; i < orderedNodes.length; i++) {
+            var node = nodes[orderedNodes[i].index];
+            // If the node does not overlap with the last one
+            if(node.x0 > lastX + nodeThickness) {
+                // Start a new column
+                colNumber += 1;
+                colX = node.x0;
+            }
+            lastX = node.x0;
+
+            // Add node to its associated column
+            if(!columns[colNumber]) columns[colNumber] = [];
+            columns[colNumber].push(node);
+
+            // Change node's x position to align it with its column
+            dx = colX - node.x0;
+            node.x0 += dx, node.x1 += dx;
+
+        }
+        return columns;
+    }
+
+    // Force node position
+    if(trace.node.x.length && trace.node.y.length) {
+        for(i = 0; i < Math.min(trace.node.x.length, trace.node.y.length, graph.nodes.length); i++) {
+            if(trace.node.x[i] && trace.node.y[i]) {
+                var pos = [trace.node.x[i] * width, trace.node.y[i] * height];
+                graph.nodes[i].x0 = pos[0] - nodeThickness / 2;
+                graph.nodes[i].x1 = pos[0] + nodeThickness / 2;
+
+                var nodeHeight = graph.nodes[i].y1 - graph.nodes[i].y0;
+                graph.nodes[i].y0 = pos[1] - nodeHeight / 2;
+                graph.nodes[i].y1 = pos[1] + nodeHeight / 2;
+            }
+        }
+        if(trace.arrangement === 'snap') {
+            nodes = graph.nodes;
+            var columns = snapToColumns(nodes);
+            resolveCollisionsTopToBottom(columns);
+        }
+        // Update links
+        sankey.update(graph);
+    }
+
 
     return {
         circular: circular,
@@ -399,6 +491,7 @@ function nodeModel(d, n) {
         partOfGroup: n.partOfGroup || false,
         group: n.group,
         traceId: d.key,
+        trace: d.trace,
         node: n,
         nodePad: d.nodePad,
         nodeLineColor: d.nodeLineColor,
@@ -425,7 +518,8 @@ function nodeModel(d, n) {
         graph: d.graph,
         arrangement: d.arrangement,
         uniqueNodeLabelPathId: [d.guid, d.key, key].join('_'),
-        interactionState: d.interactionState
+        interactionState: d.interactionState,
+        figure: d
     };
 }
 
@@ -509,7 +603,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
         });
 }
 
-function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
+function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
     var dragBehavior = d3.behavior.drag()
         .origin(function(d) {
             return {
@@ -520,6 +614,9 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('dragstart', function(d) {
             if(d.arrangement === 'fixed') return;
+            Lib.ensureSingle(gd._fullLayout._infolayer, 'g', 'dragcover', function(s) {
+                gd._fullLayout._dragCover = s;
+            });
             Lib.raiseToTop(this);
             d.interactionState.dragInProgress = d.node;
 
@@ -533,9 +630,9 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 if(d.forceLayouts[forceKey]) {
                     d.forceLayouts[forceKey].alpha(1);
                 } else { // make a forceLayout if needed
-                    attachForce(sankeyNode, forceKey, d);
+                    attachForce(sankeyNode, forceKey, d, gd);
                 }
-                startForce(sankeyNode, sankeyLink, d, forceKey);
+                startForce(sankeyNode, sankeyLink, d, forceKey, gd);
             }
         })
 
@@ -553,8 +650,9 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                     d.node.x0 = x - d.visibleWidth / 2;
                     d.node.x1 = x + d.visibleWidth / 2;
                 }
-                d.node.y0 = Math.max(0, Math.min(d.size - d.visibleHeight, y));
-                d.node.y1 = d.node.y0 + d.visibleHeight;
+                y = Math.max(0, Math.min(d.size - d.visibleHeight / 2, y));
+                d.node.y0 = y - d.visibleHeight / 2;
+                d.node.y1 = y + d.visibleHeight / 2;
             }
 
             saveCurrentDragPosition(d.node);
@@ -565,11 +663,13 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
         })
 
         .on('dragend', function(d) {
+            if(d.arrangement === 'fixed') return;
             d.interactionState.dragInProgress = false;
             for(var i = 0; i < d.node.childrenNodes.length; i++) {
                 d.node.childrenNodes[i].x = d.node.x;
                 d.node.childrenNodes[i].y = d.node.y;
             }
+            if(d.arrangement !== 'snap') persistFinalNodePositions(d, gd);
         });
 
     sankeyNode
@@ -577,7 +677,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
         .call(dragBehavior);
 }
 
-function attachForce(sankeyNode, forceKey, d) {
+function attachForce(sankeyNode, forceKey, d, gd) {
     // Attach force to nodes in the same column (same x coordinate)
     switchToForceFormat(d.graph.nodes);
     var nodes = d.graph.nodes
@@ -590,11 +690,11 @@ function attachForce(sankeyNode, forceKey, d) {
             .radius(function(n) {return n.dy / 2 + d.nodePad / 2;})
             .strength(1)
             .iterations(c.forceIterations))
-        .force('constrain', snappingForce(sankeyNode, forceKey, nodes, d))
+        .force('constrain', snappingForce(sankeyNode, forceKey, nodes, d, gd))
         .stop();
 }
 
-function startForce(sankeyNode, sankeyLink, d, forceKey) {
+function startForce(sankeyNode, sankeyLink, d, forceKey, gd) {
     window.requestAnimationFrame(function faster() {
         var i;
         for(i = 0; i < c.forceTicksPerFrame; i++) {
@@ -609,6 +709,14 @@ function startForce(sankeyNode, sankeyLink, d, forceKey) {
 
         if(d.forceLayouts[forceKey].alpha() > 0) {
             window.requestAnimationFrame(faster);
+        } else {
+            // Make sure the final x position is equal to its original value
+            // because the force simulation will have numerical error
+            var x = d.node.originalX;
+            d.node.x0 = x - d.visibleWidth / 2;
+            d.node.x1 = x + d.visibleWidth / 2;
+
+            persistFinalNodePositions(d, gd);
         }
     });
 }
@@ -628,12 +736,30 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
         }
         if(!d.interactionState.dragInProgress && maxVelocity < 0.1 && d.forceLayouts[forceKey].alpha() > 0) {
-            d.forceLayouts[forceKey].alpha(0);
+            d.forceLayouts[forceKey].alpha(0); // This will stop the animation loop
         }
     };
 }
 
 // basic data utilities
+
+function persistFinalNodePositions(d, gd) {
+    var x = [];
+    var y = [];
+    for(var i = 0; i < d.graph.nodes.length; i++) {
+        var nodeX = (d.graph.nodes[i].x0 + d.graph.nodes[i].x1) / 2;
+        var nodeY = (d.graph.nodes[i].y0 + d.graph.nodes[i].y1) / 2;
+        x.push(nodeX / d.figure.width);
+        y.push(nodeY / d.figure.height);
+    }
+    Registry.call('_guiRestyle', gd, {
+        'node.x': [x],
+        'node.y': [y]
+    }, d.trace.index)
+    .then(function() {
+        if(gd._fullLayout._dragCover) gd._fullLayout._dragCover.remove();
+    });
+}
 
 function persistOriginalPlace(nodes) {
     var distinctLayerPositions = [];
@@ -664,8 +790,8 @@ function sameLayer(d) {
 function switchToForceFormat(nodes) {
     // force uses x, y as centers
     for(var i = 0; i < nodes.length; i++) {
-        nodes[i].y = nodes[i].y0 + nodes[i].dy / 2;
-        nodes[i].x = nodes[i].x0 + nodes[i].dx / 2;
+        nodes[i].y = (nodes[i].y0 + nodes[i].y1) / 2;
+        nodes[i].x = (nodes[i].x0 + nodes[i].x1) / 2;
     }
 }
 
@@ -687,6 +813,9 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
     Lib.ensureSingle(gd._fullLayout._infolayer, 'g', 'first-render', function() {
         firstRender = true;
     });
+
+    // To prevent animation on dragging
+    var dragcover = gd._fullLayout._dragCover;
 
     var styledData = calcData
             .filter(function(d) {return unwrap(d).trace.visible;})
@@ -752,7 +881,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .attr('d', linkPath());
 
     sankeyLink
-        .style('opacity', function() { return (gd._context.staticPlot || firstRender) ? 1 : 0;})
+        .style('opacity', function() { return (gd._context.staticPlot || firstRender || dragcover) ? 1 : 0;})
         .transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 1);
@@ -795,7 +924,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     sankeyNode
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
-        .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
+        .call(attachDragHandler, sankeyLink, callbacks, gd); // has to be here as it binds sankeyLink
 
     sankeyNode.transition()
         .ease(c.ease).duration(c.duration)
