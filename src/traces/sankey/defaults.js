@@ -84,7 +84,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('orientation');
     coerce('valueformat');
     coerce('valuesuffix');
-    coerce('arrangement');
+
+    var dfltArrangement;
+    if(nodeOut.x.length && nodeOut.y.length) {
+        dfltArrangement = 'freeform';
+    }
+    coerce('arrangement', dfltArrangement);
 
     Lib.coerceFont(coerce, 'textfont', Lib.extendFlat({}, layout.font));
 

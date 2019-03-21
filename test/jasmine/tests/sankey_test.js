@@ -250,6 +250,32 @@ describe('sankey tests', function() {
             expect(Array.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
             expect(fullTrace.link.label).toEqual(['a', 'b'], 'an array of the supplied values');
         });
+
+        it('defaults to `snap` arrangement', function() {
+            var fullTrace = _supply({
+                link: {
+                    source: [0],
+                    target: [1],
+                    value: [1]
+                }
+            });
+            expect(fullTrace.arrangement).toBe('snap');
+        });
+
+        it('defaults to `freeform` arrangement if node.(x|y) is specified', function() {
+            var fullTrace = _supply({
+                node: {
+                    x: [0, 0.5],
+                    y: [0, 0.5]
+                },
+                link: {
+                    source: [0],
+                    target: [1],
+                    value: [1]
+                }
+            });
+            expect(fullTrace.arrangement).toBe('freeform');
+        });
     });
 
     describe('sankey calc', function() {
