@@ -133,6 +133,18 @@ var attrs = module.exports = overrideAll(extendFlat({
     },
     hovertemplate: hovertemplateAttrs(),
 
+    connectgaps: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data are filled in.'
+        ].join(' ')
+    },
+
     surfacecolor: {
         valType: 'data_array',
         description: [
