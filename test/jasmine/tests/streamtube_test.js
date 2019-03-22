@@ -316,12 +316,12 @@ describe('Test streamtube hover', function() {
 
         function _hover() {
             mouseEvent('mouseover', 188, 199);
-            return delay(20)();
         }
 
         Plotly.plot(gd, fig)
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({
                 nums: [
@@ -336,6 +336,7 @@ describe('Test streamtube hover', function() {
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({
                 nums: [
@@ -348,6 +349,7 @@ describe('Test streamtube hover', function() {
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({nums: 'divergence: 0.465'});
             return Plotly.restyle(gd, {
@@ -357,12 +359,14 @@ describe('Test streamtube hover', function() {
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({nums: '!SCALAR TX!'});
             return Plotly.restyle(gd, 'hovertext', 'SCALAR HOVERTEXT !!');
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({nums: 'SCALAR HOVERTEXT !!'});
         })
@@ -385,12 +389,12 @@ describe('Test streamtube hover', function() {
 
         function _hover() {
             mouseEvent('mouseover', 193, 177);
-            return delay(20)();
         }
 
         Plotly.plot(gd, fig)
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({
                 nums: [
@@ -426,7 +430,6 @@ describe('Test streamtube hover', function() {
 
         function _hover() {
             mouseEvent('mouseover', 188, 199);
-            return delay(20)();
         }
 
         Plotly.plot(gd, fig)
@@ -435,6 +438,7 @@ describe('Test streamtube hover', function() {
             gd.on('plotly_hover', function(d) { ptData = d.points[0]; });
         })
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             if(ptData) {
                 expect(Object.keys(ptData).length).toBe(12, 'key cnt');

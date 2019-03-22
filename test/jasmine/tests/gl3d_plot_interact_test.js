@@ -194,7 +194,7 @@ describe('Test gl3d plots', function() {
         gd = createGraphDiv();
         ptData = {};
 
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 4000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000;
     });
 
     afterEach(function() {
@@ -207,7 +207,6 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEvent('mouseover', 300, 200);
-            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
@@ -217,7 +216,9 @@ describe('Test gl3d plots', function() {
                 ptData = eventData.points[0];
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent(
                 {
@@ -236,7 +237,6 @@ describe('Test gl3d plots', function() {
         function _hover() {
             mouseEvent('mouseover', 0, 0);
             mouseEvent('mouseover', 655, 221);
-            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
@@ -246,7 +246,9 @@ describe('Test gl3d plots', function() {
                 ptData = eventData.points[0];
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 100.75', 'y: −102.63', 'z: −102.63');
             assertEventData(100.75, -102.63, -102.63, 0, 0, {
@@ -267,7 +269,9 @@ describe('Test gl3d plots', function() {
                 x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02-01']]
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: Jan 11, 2016', 'y: −102.63', 'z: −102.63');
 
@@ -275,7 +279,9 @@ describe('Test gl3d plots', function() {
                 x: [[new Date(2017, 2, 1), new Date(2017, 2, 2), new Date(2017, 2, 3), new Date(2017, 2, 4)]]
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: Mar 1, 2017', 'y: −102.63', 'z: −102.63');
 
@@ -286,25 +292,33 @@ describe('Test gl3d plots', function() {
                 'scene.zaxis.type': 'log'
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: Mar 1, 2017', 'y: a', 'z: 10');
 
             return Plotly.relayout(gd, 'scene.xaxis.calendar', 'chinese');
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10');
 
             return Plotly.restyle(gd, 'text', [['A', 'B', 'C', 'D']]);
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'A');
 
             return Plotly.restyle(gd, 'hovertext', [['Apple', 'Banana', 'Clementine', 'Dragon fruit']]);
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'Apple');
 
@@ -313,7 +327,9 @@ describe('Test gl3d plots', function() {
                 'hoverlabel.font.size': 20
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
                 bgcolor: 'rgb(255, 0, 0)',
@@ -329,7 +345,9 @@ describe('Test gl3d plots', function() {
                 'hoverlabel.font.family': 'Roboto'
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
                 bgcolor: 'rgb(255, 0, 0)',
@@ -341,7 +359,9 @@ describe('Test gl3d plots', function() {
 
             return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'y', null]]);
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             var label = d3.selectAll('g.hovertext');
 
@@ -350,27 +370,33 @@ describe('Test gl3d plots', function() {
 
             return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'dont+know', null]]);
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 二 4, 2017', 'y: a', 'z: 10', 'Apple');
 
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, 'Apple');
 
             return Plotly.restyle(gd, 'hovertext', 'HEY');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, 'HEY');
 
             return Plotly.restyle(gd, 'hoverinfo', 'z');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, '10');
 
             return Plotly.restyle(gd, 'hovertemplate', 'THIS Y -- %{y}<extra></extra>');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, 'THIS Y -- a');
         })
@@ -384,7 +410,6 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEvent('mouseover', 300, 200);
-            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
@@ -394,7 +419,9 @@ describe('Test gl3d plots', function() {
                 ptData = eventData.points[0];
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 0.2', 'y: 2', 'z: 1,001.25');
             assertEventData(0.2, 2, 1001.25, 0, [1, 2]);
@@ -414,7 +441,6 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEvent('mouseover', 605, 271);
-            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
@@ -424,7 +450,9 @@ describe('Test gl3d plots', function() {
                 ptData = eventData.points[0];
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
             assertEventData(1, 2, 43, 0, [1, 2]);
@@ -436,7 +464,7 @@ describe('Test gl3d plots', function() {
                 fontColor: 'rgb(255, 255, 255)'
             }, 'initial');
 
-            Plotly.restyle(gd, {
+            return Plotly.restyle(gd, {
                 'hoverinfo': [[
                     ['all', 'all', 'all'],
                     ['all', 'all', 'y'],
@@ -451,7 +479,9 @@ describe('Test gl3d plots', function() {
                 ]]
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertEventData(1, 2, 43, 0, [1, 2], {
                 'hoverinfo': 'y',
@@ -475,7 +505,9 @@ describe('Test gl3d plots', function() {
                 'colorbar.ticktext': [['single tick!']]
             });
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertEventData(1, 2, 43, 0, [1, 2], {
                 'hoverinfo': 'y',
@@ -486,29 +518,37 @@ describe('Test gl3d plots', function() {
 
             return Plotly.restyle(gd, 'hoverinfo', 'z');
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, '43');
 
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, 'one two');
 
             return Plotly.restyle(gd, 'text', 'yo!');
         })
+        .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, 'yo!');
 
             return Plotly.restyle(gd, 'hovertext', 'ONE TWO');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, 'ONE TWO');
 
             return Plotly.restyle(gd, 'hovertemplate', '!!! %{z} !!!<extra></extra>');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, '!!! 43 !!!');
         })
@@ -522,7 +562,6 @@ describe('Test gl3d plots', function() {
         // with button 1 pressed
         function _click() {
             mouseEvent('mouseover', 605, 271, {buttons: 1});
-            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
@@ -532,6 +571,7 @@ describe('Test gl3d plots', function() {
                 ptData = eventData.points[0];
             });
         })
+        .then(delay(20))
         .then(_click)
         .then(delay(20))
         .then(function() {
@@ -554,7 +594,6 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEvent('mouseover', 250, 250);
-            return delay(20)();
         }
 
         Plotly.newPlot(gd, [{
@@ -569,24 +608,28 @@ describe('Test gl3d plots', function() {
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 4', 'y: 5', 'z: 3.5', 'ts: 4\nhz: 5\nftt:3.5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'x+y');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText('(4, 5)');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText('ts: 4\nhz: 5\nftt:3.5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'text', 'yo!');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, 'yo!');
         })
@@ -595,12 +638,14 @@ describe('Test gl3d plots', function() {
                 text.map(function(tx) { return tx + ' !!'; })
             ]);
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, 'ts: 4\nhz: 5\nftt:3.5 !!');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hovertemplate', '%{x}-%{y}-%{z}<extra></extra>');
         })
+        .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, '4-5-3.5');
         })

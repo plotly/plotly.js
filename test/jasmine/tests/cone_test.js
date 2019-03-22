@@ -266,12 +266,12 @@ describe('Test cone interactions', function() {
 
         function _hover() {
             mouseEvent('mouseover', 200, 200);
-            return delay(20)();
         }
 
         Plotly.plot(gd, fig)
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({
                 nums: ['x: 2', 'y: 2', 'z: 2', 'norm: 3.00'].join('\n')
@@ -281,6 +281,7 @@ describe('Test cone interactions', function() {
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({
                 nums: ['u: 0', 'v: 3', 'w: 0'].join('\n')
@@ -302,6 +303,7 @@ describe('Test cone interactions', function() {
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({
                 name: 'trace 0',
@@ -317,6 +319,7 @@ describe('Test cone interactions', function() {
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({
                 name: 'LOOKOUT',
@@ -330,7 +333,6 @@ describe('Test cone interactions', function() {
     it('@gl should display hover labels (multi-trace case)', function(done) {
         function _hover() {
             mouseEvent('mouseover', 282, 240);
-            return delay(20)();
         }
 
         Plotly.plot(gd, [{
@@ -359,6 +361,7 @@ describe('Test cone interactions', function() {
         })
         .then(delay(20))
         .then(_hover)
+        .then(delay(20))
         .then(function() {
             assertHoverLabelContent({
                 nums: ['x: 1', 'y: 1', 'z: 1', 'norm: 1.41'].join('\n'),
