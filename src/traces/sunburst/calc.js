@@ -165,7 +165,7 @@ exports.calc = function(gd, trace) {
         hierarchy.count();
     }
 
-    // TODO sort by height also?
+    // TODO add way to sort by height also?
     hierarchy.sort(function(a, b) { return b.value - a.value; });
 
     var colors = trace.marker.colors || [];

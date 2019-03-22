@@ -141,11 +141,5 @@ module.exports = {
     insidetextfont: pieAtts.insidetextfont,
     outsidetextfont: pieAtts.outsidetextfont,
 
-    domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'}),
-
-    // TODO Might want the same defaults as for pie traces?
-    // TODO maybe drop for v1 release
-    sort: pieAtts.sort,
-    direction: pieAtts.direction,
-    rotation: pieAtts.rotation
+    domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
 };

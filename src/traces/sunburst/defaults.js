@@ -38,12 +38,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('marker.colors');
 
-    coerce('sort');
-    coerce('direction');
-    coerce('rotation');
-
-    handleDomainDefaults(traceOut, layout, coerce);
-
     coerce('leaf.opacity');
 
     var text = coerce('text');
@@ -61,6 +55,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
     coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
     coerceFont(coerce, 'outsidetextfont', dfltFont);
+
+    handleDomainDefaults(traceOut, layout, coerce);
 
     // do not support transforms for now
     traceOut._length = null;
