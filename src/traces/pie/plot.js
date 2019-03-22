@@ -894,9 +894,5 @@ function setCoords(cd) {
 
 module.exports = {
     plot: plot,
-    plotTextLines: plotTextLines,
-
-    transformInsideText: transformInsideText,
-    transformOutsideText: transformOutsideText,
-    scootLabels: scootLabels
+    transformInsideText: transformInsideText
 };

@@ -28,7 +28,9 @@ module.exports = {
 
     meta: {
         description: [
-            'TODO'
+            'Visualize hierarchal data spanning outward radially from root to leaves.',
+            'The sunburst sectors are determined by the entries in *labels* or *ids*',
+            'and in *parents*.'
         ].join(' ')
     }
 };

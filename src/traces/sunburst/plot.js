@@ -22,9 +22,6 @@ var setCursor = require('../../lib/setcursor');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
 var transformInsideText = require('../pie/plot').transformInsideText;
-var transformOutsideText = require('../pie/plot').transformOutsideText;
-var scootLabels = require('../pie/plot').scootLabels;
-var plotTextLines = require('../pie/plot').plotTextLines;
 var formatPieValue = require('../pie/helpers').formatPieValue;
 var styleOne = require('./style').styleOne;
 
@@ -180,10 +177,6 @@ function plotOne(gd, cd, element, transitionOpts) {
 
                 var sliceTextGroup = sliceTop.select('g.slicetext');
                 sliceTextGroup.attr('opacity', 0);
-
-                // for outside text - TODO maybe remove?
-                var sliceTextLine = sliceTop.select('path.textline');
-                sliceTextLine.attr('opacity', 0);
             })
             .remove();
     } else {
@@ -202,13 +195,6 @@ function plotOne(gd, cd, element, transitionOpts) {
             }
         });
     }
-
-    // used to scoot outside labels
-    var hasOutsideText = false;
-    var quadrants = [
-        [[], []], // y<0: x<0, x>=0
-        [[], []]  // y>=0: x<0, x>=0
-    ];
 
     var updateSlices = slices;
     if(hasTransition) {
@@ -235,7 +221,6 @@ function plotOne(gd, cd, element, transitionOpts) {
         pt.halfangle = 0.5 * Math.min(Lib.angleDelta(pt.x0, pt.x1) || Math.PI, Math.PI);
         pt.ring = 1 - (pt.rpx0 / pt.rpx1);
         pt.rInscribed = getInscribedRadiusFraction(pt, trace);
-        quadrants[pt.pxmid[1] < 0 ? 0 : 1][pt.pxmid[0] < 0 ? 0 : 1].push(pt);
 
         if(hasTransition) {
             slicePath.transition().attrTween('d', function(pt2) {
@@ -259,51 +244,19 @@ function plotOne(gd, cd, element, transitionOpts) {
             s.attr('data-notex', 1);
         });
 
-        var textPosition = isLeaf(pt) ? trace.leaf.textposition : 'inside';
-
         sliceText.text(formatSliceLabel(pt, trace, fullLayout))
             .classed('slicetext', true)
             .attr('text-anchor', 'middle')
-            .call(Drawing.font, isHierachyRoot(pt) || textPosition === 'outside' ?
+            .call(Drawing.font, isHierachyRoot(pt) ?
               determineOutsideTextFont(trace, pt, fullLayout.font) :
               determineInsideTextFont(trace, pt, fullLayout.font))
             .call(svgTextUtils.convertToTspans, gd);
 
         // position the text relative to the slice
         var textBB = Drawing.bBox(sliceText.node());
-        var transform;
-
-        if(textPosition === 'outside') {
-            transform = transformOutsideText(textBB, pt);
-        } else {
-            transform = transformInsideText(textBB, pt, cd0);
-            if(textPosition === 'auto' && transform.scale < 1) {
-                sliceText.call(Drawing.font, trace.outsidetextfont);
-                if(trace.outsidetextfont.family !== trace.insidetextfont.family ||
-                        trace.outsidetextfont.size !== trace.insidetextfont.size) {
-                    textBB = Drawing.bBox(sliceText.node());
-                }
-                transform = transformOutsideText(textBB, pt);
-            }
-        }
-
-        pt.transform = transform;
+        pt.transform = transformInsideText(textBB, pt, cd0);
         pt.translateX = transTextX(pt);
         pt.translateY = transTextY(pt);
-
-        // save some stuff to use later ensure no labels overlap
-        if(transform.outside) {
-            pt.px0 = rx2px(pt.rpx0, pt.x0);
-            pt.px1 = rx2px(pt.rpx1, pt.x1);
-            pt.cxFinal = cx;
-            pt.cyFinal = cy;
-            pt.yLabelMin = pt.translateY - textBB.height / 2;
-            pt.yLabelMid = pt.translateY;
-            pt.yLabelMax = pt.translateY + textBB.height / 2;
-            pt.labelExtraX = 0;
-            pt.labelExtraY = 0;
-            hasOutsideText = true;
-        }
 
         var strTransform = function(d, textBB) {
             return 'translate(' + d.translateX + ',' + d.translateY + ')' +
@@ -324,12 +277,6 @@ function plotOne(gd, cd, element, transitionOpts) {
             sliceText.attr('transform', strTransform(pt, textBB));
         }
     });
-
-    if(hasOutsideText) {
-        scootLabels(quadrants, trace);
-    }
-
-    plotTextLines(slices, trace);
 
     function makeExitSliceInterpolator(pt) {
         var id = getPtId(pt);
@@ -481,8 +428,6 @@ function plotOne(gd, cd, element, transitionOpts) {
                     y: transform.y
                 }
             };
-
-            // TODO need to consider labelExtraX and labelExtraY ... at first (?)
 
             var out = {
                 rpx1: rpx1Fn(t),

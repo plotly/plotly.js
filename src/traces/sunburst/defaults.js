@@ -45,7 +45,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleDomainDefaults(traceOut, layout, coerce);
 
     coerce('leaf.opacity');
-    coerce('leaf.textposition');
 
     var text = coerce('text');
     coerce('textinfo', Array.isArray(text) ? 'text+label' : 'label');
