@@ -818,6 +818,26 @@ describe('Pie traces', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to toggle visibility', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/pie_title_multiple.json'));
+
+        function _assert(msg, exp) {
+            return function() {
+                var layer = d3.select(gd).select('.pielayer');
+                expect(layer.selectAll('.trace').size()).toBe(exp, msg);
+            };
+        }
+
+        Plotly.plot(gd, mock)
+        .then(_assert('base', 4))
+        .then(function() { return Plotly.restyle(gd, 'visible', false); })
+        .then(_assert('both visible:false', 0))
+        .then(function() { return Plotly.restyle(gd, 'visible', true); })
+        .then(_assert('back to visible:true', 4))
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {
