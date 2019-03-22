@@ -1031,3 +1031,70 @@ describe('Test sunburst tweening:', function() {
         .then(done);
     });
 });
+
+describe('Test sunburst interactions edge cases', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
+        var mock = Lib.extendFlat({}, require('@mocks/sunburst_first.json'));
+        var hoverCnt = 0;
+        var unhoverCnt = 0;
+
+        // see https://github.com/plotly/plotly.js/issues/3618
+
+        function _assert(msg, exp) {
+            expect(hoverCnt).toBe(exp.hoverCnt, msg + ' - hover cnt');
+            expect(unhoverCnt).toBe(exp.unhoverCnt, msg + ' - unhover cnt');
+
+            var label = d3.select(gd).select('g.hovertext');
+            expect(label.size()).toBe(exp.hoverLabel, msg + ' - hover label cnt');
+
+            hoverCnt = 0;
+            unhoverCnt = 0;
+        }
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            gd.on('plotly_hover', function() {
+                hoverCnt++;
+                // N.B. trigger a 'plot' edit
+                Plotly.restyle(gd, 'textinfo', 'none');
+            });
+            gd.on('plotly_unhover', function() {
+                unhoverCnt++;
+                // N.B. trigger a 'plot' edit
+                Plotly.restyle(gd, 'textinfo', null);
+            });
+        })
+        .then(hover(gd, 1))
+        .then(function() {
+            _assert('after hovering on first sector', {
+                hoverCnt: 1,
+                unhoverCnt: 0,
+                hoverLabel: 1
+            });
+        })
+        .then(unhover(gd, 1))
+        .then(function() {
+            _assert('after un-hovering from first sector', {
+                hoverCnt: 0,
+                unhoverCnt: 1,
+                hoverLabel: 0
+            });
+        })
+        .then(hover(gd, 2))
+        .then(function() {
+            _assert('after hovering onto second sector', {
+                hoverCnt: 1,
+                unhoverCnt: 0,
+                hoverLabel: 1
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
