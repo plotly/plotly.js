@@ -1,0 +1,21 @@
+{
+    "data": [
+      {
+        "type": "surface",
+        "connectgaps": true,
+        "x": [0.1, 0.2, 0.3, 0.4],
+        "y": [0, 1, 2, 3, 4],
+        "z": [
+          [1001, 1002, 1001, null, null],
+          [1002, 1001, null, 1002, null],
+          [1002, null, 1001, 1001],
+          [null, null, 1000, null]
+        ]
+      }
+    ],
+    "layout": {
+        "title": "Surface plot with interpolated gaps<br>(connectgaps: true)",
+        "width": 600,
+        "height": 400
+    }
+}

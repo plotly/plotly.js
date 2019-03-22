@@ -118,10 +118,13 @@ module.exports = function draw(gd) {
     })
     .each(function() {
         d3.select(this)
-            .call(drawTexts, gd, maxLength)
-            .call(setupTraceToggle, gd);
+            .call(drawTexts, gd, maxLength);
     })
-    .call(style, gd);
+    .call(style, gd)
+    .each(function() {
+        d3.select(this)
+            .call(setupTraceToggle, gd);
+    });
 
     Lib.syncOrAsync([Plots.previousPromises,
         function() {
@@ -553,6 +556,8 @@ function computeLegendDimensions(gd, groups, traces) {
 
     var extraWidth = 0;
 
+    var traceGap = 5;
+
     opts._width = 0;
     opts._height = 0;
 
@@ -586,23 +591,53 @@ function computeLegendDimensions(gd, groups, traces) {
         extraWidth = 40;
     }
     else if(isGrouped) {
-        var groupXOffsets = [opts._width];
+        var maxHeight = 0;
+        var maxWidth = 0;
         var groupData = groups.data();
 
-        for(var i = 0, n = groupData.length; i < n; i++) {
-            var textWidths = groupData[i].map(function(legendItemArray) {
+        var maxItems = 0;
+
+        var i;
+        for(i = 0; i < groupData.length; i++) {
+            var group = groupData[i];
+            var groupWidths = group.map(function(legendItemArray) {
                 return legendItemArray[0].width;
             });
 
-            var groupWidth = 40 + Math.max.apply(null, textWidths);
+            var groupWidth = Lib.aggNums(Math.max, null, groupWidths);
+            var groupHeight = group.reduce(function(a, b) {
+                return a + b[0].height;
+            }, 0);
 
-            opts._width += opts.tracegroupgap + groupWidth;
+            maxWidth = Math.max(maxWidth, groupWidth);
+            maxHeight = Math.max(maxHeight, groupHeight);
+            maxItems = Math.max(maxItems, group.length);
+        }
 
+        maxWidth += traceGap;
+        maxWidth += 40;
+
+        var groupXOffsets = [opts._width];
+        var groupYOffsets = [];
+        var rowNum = 0;
+        for(i = 0; i < groupData.length; i++) {
+            if(fullLayout._size.w < (borderwidth + opts._width + traceGap + maxWidth)) {
+                groupXOffsets[groupXOffsets.length - 1] = groupXOffsets[0];
+                opts._width = maxWidth;
+                rowNum++;
+            } else {
+                opts._width += maxWidth + borderwidth;
+            }
+
+            var rowYOffset = (rowNum * maxHeight);
+            rowYOffset += rowNum > 0 ? opts.tracegroupgap : 0;
+
+            groupYOffsets.push(rowYOffset);
             groupXOffsets.push(opts._width);
         }
 
         groups.each(function(d, i) {
-            Drawing.setTranslate(this, groupXOffsets[i], 0);
+            Drawing.setTranslate(this, groupXOffsets[i], groupYOffsets[i]);
         });
 
         groups.each(function() {
@@ -620,11 +655,13 @@ function computeLegendDimensions(gd, groups, traces) {
 
                 groupHeight += textHeight;
             });
-
-            opts._height = Math.max(opts._height, groupHeight);
         });
 
-        opts._height += 10 + borderwidth * 2;
+        var maxYLegend = groupYOffsets[groupYOffsets.length - 1] + maxHeight;
+        opts._height = 10 + (borderwidth * 2) + maxYLegend;
+
+        var maxOffset = Math.max.apply(null, groupXOffsets);
+        opts._width = maxOffset + maxWidth + 40;
         opts._width += borderwidth * 2;
     }
     else {
@@ -633,7 +670,6 @@ function computeLegendDimensions(gd, groups, traces) {
         var maxTraceWidth = 0;
         var offsetX = 0;
         var fullTracesWidth = 0;
-        var traceGap = opts.tracegroupgap || 5;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {

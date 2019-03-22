@@ -2306,6 +2306,9 @@ function _relayout(gd, aobj) {
             ) {
                 flags.plot = true;
             }
+            else if(fullLayout._has('gl2d')) {
+                flags.plot = true;
+            }
             else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
 
@@ -2524,7 +2527,8 @@ var traceUIControlPatterns = [
     // "visible" includes trace.transforms[i].styles[j].value.visible
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
-    {pattern: /^level$/},
+    {pattern: /^node\.(x|y)/}, // for Sankey nodes
+    {pattern: /^level$/}, // for Sunburst traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -3806,6 +3810,11 @@ function makePlotFramework(gd) {
     fullLayout._toppaper = fullLayout._paperdiv.append('svg')
         .classed('main-svg', true);
 
+    fullLayout._modebardiv = fullLayout._paperdiv.append('div');
+
+    fullLayout._hoverpaper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
     if(!fullLayout._uid) {
         var otherUids = {};
         d3.selectAll('defs').each(function() {
@@ -3885,11 +3894,10 @@ function makePlotFramework(gd) {
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
-    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+    fullLayout._hoverlayer = fullLayout._hoverpaper.append('g').classed('hoverlayer', true);
 
     // Make the modebar container
-    fullLayout._modebardiv = fullLayout._paperdiv.selectAll('.modebar-container').data([0]);
-    fullLayout._modebardiv.enter().append('div')
+    fullLayout._modebardiv
         .classed('modebar-container', true)
         .style('position', 'absolute')
         .style('top', '0px')

@@ -1,6 +1,7 @@
 var isNumeric = require('fast-isnumeric');
 var mouseEvent = require('./mouse_event');
 var getNodeCoords = require('./get_node_coords');
+var delay = require('./delay');
 
 function makeFns(node, dx, dy, opts) {
     opts = opts || {};
@@ -49,7 +50,8 @@ function makeFns(node, dx, dy, opts) {
  * optionally specify an edge ('n', 'se', 'w' etc)
  * to grab it by an edge or corner (otherwise the middle is used)
  */
-function drag(node, dx, dy, edge, x0, y0, nsteps, noCover) {
+function drag(node, dx, dy, edge, x0, y0, nsteps, noCover, timeDelay) {
+    if(!timeDelay) timeDelay = 0;
     var fns = makeFns(node, dx, dy, {
         edge: edge,
         x0: x0,
@@ -58,7 +60,7 @@ function drag(node, dx, dy, edge, x0, y0, nsteps, noCover) {
         noCover: noCover
     });
 
-    return fns.start().then(fns.end);
+    return fns.start().then(delay(timeDelay)).then(fns.end);
 }
 
 function waitForDragCover() {

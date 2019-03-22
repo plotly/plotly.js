@@ -1,0 +1,22 @@
+{
+  "data": [{
+    "type": "violin",
+    "y": [0, 0, 0, 0],
+    "points": "all",
+    "pointpos": 0,
+    "meanline": {
+      "visible": true
+    }
+  }, {
+    "type": "violin",
+    "y": [0, 0, 0, 0],
+    "points": "all",
+    "bandwidth": 0.25,
+    "pointpos": 0
+  }, {
+    "type": "violin",
+    "y": [0, 1, 1.5, 2],
+    "points": "all",
+    "pointpos": 0
+  }]
+}
