@@ -41,11 +41,11 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
     join = layer.selectAll('g.trace.sunburst')
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
 
+    // using same 'stroke-linejoin' as pie traces
     join.enter().append('g')
         .classed('trace', true)
-        .classed('sunburst', true);
-
-    // TODO add 'stroke-linejoin': 'round' or 'stroke-miterlimit' ???
+        .classed('sunburst', true)
+        .attr('stroke-linejoin', 'round');
 
     join.order();
 
