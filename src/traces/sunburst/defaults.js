@@ -22,7 +22,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var labels = coerce('labels');
     var parents = coerce('parents');
 
-    if(!labels.length || !parents.length) {
+    if(!labels || !labels.length || !parents || !parents.length) {
         traceOut.visible = false;
         return;
     }

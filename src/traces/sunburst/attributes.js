@@ -136,13 +136,15 @@ module.exports = {
     },
 
     text: pieAtts.text,
-    textinfo: extendFlat({}, pieAtts.textinfo, {editType: 'plot'}),
+    textinfo: extendFlat({}, pieAtts.textinfo, {
+        editType: 'plot',
+        flags: ['label', 'text', 'value']
+    }),
     textfont: pieAtts.textfont,
 
     hovertext: pieAtts.hovertext,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'name'],
-        dflt: 'label+name'
+        flags: ['label', 'text', 'value', 'name']
     }),
     hovertemplate: hovertemplateAttrs(),
 

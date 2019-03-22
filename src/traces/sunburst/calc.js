@@ -152,7 +152,7 @@ exports.calc = function(gd, trace) {
                             d.value = partialSum;
                             return Lib.warn([
                                 'Total value for node', d.data.data.id,
-                                'is smaller than the sum of its childrens\'.'
+                                'is smaller than the sum of its children.'
                             ].join(' '));
                         }
                     }

@@ -16,10 +16,7 @@ var name = exports.name = 'sunburst';
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var _module = Registry.getModule(name);
     var cdmodule = getModuleCalcData(gd.calcdata, _module)[0];
-
-    if(cdmodule.length) {
-        _module.plot(gd, cdmodule, transitionOpts, makeOnCompleteCallback);
-    }
+    _module.plot(gd, cdmodule, transitionOpts, makeOnCompleteCallback);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
