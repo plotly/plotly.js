@@ -561,7 +561,7 @@ describe('Test hover and click interactions', function() {
     });
 });
 
-describe('@noCI Test gl2d lasso/select:', function() {
+describe('Test gl2d lasso/select:', function() {
     var mockFancy = require('@mocks/gl2d_14.json');
     delete mockFancy.layout.xaxis.autorange;
     delete mockFancy.layout.yaxis.autorange;
@@ -613,7 +613,7 @@ describe('@noCI Test gl2d lasso/select:', function() {
     function select(path) {
         return new Promise(function(resolve, reject) {
             gd.once('plotly_selected', resolve);
-            setTimeout(function() { reject('did not trigger *plotly_selected*');}, 200);
+            setTimeout(function() { reject('did not trigger *plotly_selected*');}, 300);
             drag(path);
         });
     }

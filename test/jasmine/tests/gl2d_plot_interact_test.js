@@ -215,7 +215,7 @@ describe('Test gl plot side effects', function() {
         .then(done);
     });
 
-    it('@noCI @gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
+    it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
         var _mock = Lib.extendDeep({}, require('@mocks/gl2d_12.json'));
 
         function _trigger(name) {
@@ -551,7 +551,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should display selection of big number of regular points', function(done) {
+    it('@gl should display selection of big number of regular points', function(done) {
         // generate large number of points
         var x = [];
         var y = [];
@@ -582,7 +582,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should display selection of big number of miscellaneous points', function(done) {
+    it('@gl should display selection of big number of miscellaneous points', function(done) {
         var colorList = [
             '#006385', '#F06E75', '#90ed7d', '#f7a35c', '#8085e9',
             '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1',

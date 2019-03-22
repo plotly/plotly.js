@@ -943,7 +943,7 @@ describe('Test splom interactions:', function() {
         .then(done);
     });
 
-    it('@noCI @gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
+    it('@gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
 
         function assertDims(msg, w, h) {
@@ -1737,7 +1737,7 @@ describe('Test splom select:', function() {
         .then(done);
     });
 
-    it('@noCI @gl should behave correctly during select->dblclick->pan scenarios', function(done) {
+    it('@gl should behave correctly during select->dblclick->pan scenarios', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
         fig.layout = {
             width: 400,
