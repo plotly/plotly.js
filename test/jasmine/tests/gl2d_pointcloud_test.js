@@ -230,6 +230,7 @@ describe('pointcloud traces', function() {
         .then(function() {
             _assertRange('base', [-0.548, 9.548], [-1.415, 10.415]);
         })
+        .then(delay(40))
         .then(function() { _drag([200, 200], [350, 350]); })
         .then(delay(40))
         .then(function() {
@@ -247,6 +248,7 @@ describe('pointcloud traces', function() {
         .then(function() {
             return Plotly.relayout(gd, 'dragmode', 'pan');
         })
+        .then(delay(40))
         .then(function() { _drag([200, 200], [350, 350]); })
         .then(delay(40))
         .then(function() {

@@ -183,7 +183,7 @@ describe('Test hover and click interactions', function() {
     afterEach(function(done) {
         Plotly.purge(gd);
         destroyGraphDiv();
-        setTimeout(done, 1000);
+        setTimeout(done, 1500);
     });
 
     it('@gl should output correct event data for scattergl', function(done) {
