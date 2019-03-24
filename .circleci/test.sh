@@ -44,7 +44,7 @@ case $1 in
     jasmine)
         set_tz
 
-        npm run test-jasmine -- --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
+        npm run test-jasmine -- --skip-tags=noCI,gl,flaky || EXIT_STATE=$?
         npm run test-bundle || EXIT_STATE=$?
 
         exit $EXIT_STATE
@@ -54,7 +54,7 @@ case $1 in
         set_tz
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=gl))
-        MAX_AUTO_RETRY=2
+        MAX_AUTO_RETRY=3
         for s in ${SHARDS[@]}; do
             retry npm run test-jasmine -- "${s}" --tags=gl --skip-tags=noCI
         done
