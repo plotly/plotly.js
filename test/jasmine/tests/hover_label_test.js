@@ -3221,6 +3221,36 @@ describe('hovermode defaults to', function() {
     });
 });
 
+describe('hover labels z-position', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+    var mock = require('@mocks/14.json');
+
+    it('is above the modebar', function(done) {
+        Plotly.plot(gd, mock).then(function() {
+            var infolayer = document.getElementsByClassName('infolayer');
+            var modebar = document.getElementsByClassName('modebar-container');
+            var hoverlayer = document.getElementsByClassName('hoverlayer');
+
+            expect(infolayer.length).toBe(1);
+            expect(modebar.length).toBe(1);
+            expect(hoverlayer.length).toBe(1);
+
+            var compareMask = infolayer[0].compareDocumentPosition(modebar[0]);
+            expect(compareMask).toBe(Node.DOCUMENT_POSITION_FOLLOWING, '.modebar-container appears after the .infolayer');
+
+            compareMask = modebar[0].compareDocumentPosition(hoverlayer[0]);
+            expect(compareMask).toBe(Node.DOCUMENT_POSITION_FOLLOWING, '.hoverlayer appears after the .modebar');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
 
 describe('touch devices', function() {
     afterEach(destroyGraphDiv);
