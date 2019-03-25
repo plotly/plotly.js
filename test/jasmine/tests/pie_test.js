@@ -1066,7 +1066,7 @@ describe('pie hovering', function() {
                     'garbage hoverinfo'
                 );
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
