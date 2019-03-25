@@ -198,6 +198,10 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
     // set bar offsets and widths, and update position axis
     setOffsetAndWidthInGroupMode(gd, pa, sieve);
 
+    // relative-stack bars within the same trace that would otherwise
+    // be hidden
+    unhideBarsWithinTrace(gd, sa, sieve);
+
     // set bar bases and sizes, and update size axis
     if(barnorm) {
         sieveBars(gd, sa, sieve);
@@ -573,6 +577,36 @@ function sieveBars(gd, sa, sieve) {
 
             if(bar.s !== BADNUM) {
                 sieve.put(bar.p, bar.b + bar.s);
+            }
+        }
+    }
+}
+
+function unhideBarsWithinTrace(gd, sa, sieve) {
+    var calcTraces = sieve.traces;
+
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+
+        if(fullTrace.base === undefined) {
+            var inTraceSieve = new Sieve([calcTrace], {
+                separateNegativeValues: true,
+                dontMergeOverlappingData: true
+            });
+
+            for(var j = 0; j < calcTrace.length; j++) {
+                var bar = calcTrace[j];
+
+                if(bar.p !== BADNUM) {
+                    // stack current bar and get previous sum
+                    var barBase = inTraceSieve.put(bar.p, bar.b + bar.s);
+
+                    // if previous sum if non-zero, this means:
+                    // multiple bars have same starting point are potentially hidden,
+                    // shift them vertically so that all bars are visible by default
+                    if(barBase) bar.b = barBase;
+                }
             }
         }
     }
