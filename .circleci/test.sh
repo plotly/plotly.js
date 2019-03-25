@@ -82,7 +82,6 @@ case $1 in
 
     image2)
         npm run test-export     || EXIT_STATE=$?
-        npm run test-image-gl2d || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 

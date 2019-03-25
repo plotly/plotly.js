@@ -69,16 +69,6 @@ argv._.forEach(function(pattern) {
         throw new Error('No mocks found with pattern ' + pattern);
     }
 
-    // gl2d have limited image-test support
-    if(pattern === 'gl2d_*') {
-        if(!isInQueue) {
-            console.log('WARN: Running gl2d image tests in batch may lead to unwanted results\n');
-        }
-        console.log('\nSorting gl2d mocks to avoid gl-shader conflicts');
-        sortGl2dMockList(mockList);
-        console.log('');
-    }
-
     allMockList = allMockList.concat(mockList);
 });
 
@@ -120,41 +110,13 @@ else {
 function untestableFilter(mockName) {
     var cond = !(
         mockName === 'font-wishlist' ||
-        mockName.indexOf('gl2d_') !== -1 ||
+        // mockName.indexOf('gl2d_') !== -1 ||
         mockName.indexOf('mapbox_') !== -1
     );
 
     if(!cond) console.log(' -', mockName);
 
     return cond;
-}
-
-/* gl2d pointcloud and other non-regl gl2d mock(s)
- * must be tested first on in order to work;
- * sort them here.
- *
- * gl-shader appears to conflict with regl.
- * We suspect that the lone gl context on CircleCI is
- * having issues with dealing with the two different
- * program binding algorithm.
- *
- * The problem will be solved by switching all our
- * WebGL-based trace types to regl.
- *
- * More info here:
- * https://github.com/plotly/plotly.js/pull/1037
- */
-function sortGl2dMockList(mockList) {
-    var mockNames = ['gl2d_pointcloud-basic', 'gl2d_heatmapgl'];
-    var pos = 0;
-
-    mockNames.forEach(function(m) {
-        var ind = mockList.indexOf(m);
-        var tmp = mockList[pos];
-        mockList[pos] = m;
-        mockList[ind] = tmp;
-        pos++;
-    });
 }
 
 function runInBatch(mockList) {
