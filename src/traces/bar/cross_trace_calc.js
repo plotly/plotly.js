@@ -57,52 +57,57 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
     if(!calcTraces.length) return;
 
     var barmode = gd._fullLayout.barmode;
-    var overlay = (barmode === 'overlay');
-    var group = (barmode === 'group');
     var excluded;
     var included;
     var i, calcTrace, fullTrace;
 
     initBase(gd, pa, sa, calcTraces);
 
-    if(overlay) {
-        setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
-    } else if(group) {
-        // exclude from the group those traces for which the user set an offset
-        excluded = [];
-        included = [];
-        for(i = 0; i < calcTraces.length; i++) {
-            calcTrace = calcTraces[i];
-            fullTrace = calcTrace[0].trace;
+    switch(barmode) {
+        case 'overlay':
+            setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
+            break;
 
-            if(fullTrace.offset === undefined) included.push(calcTrace);
-            else excluded.push(calcTrace);
-        }
+        case 'group':
+            // exclude from the group those traces for which the user set an offset
+            excluded = [];
+            included = [];
+            for(i = 0; i < calcTraces.length; i++) {
+                calcTrace = calcTraces[i];
+                fullTrace = calcTrace[0].trace;
 
-        if(included.length) {
-            setGroupPositionsInGroupMode(gd, pa, sa, included);
-        }
-        if(excluded.length) {
-            setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
-        }
-    } else {
-        // exclude from the stack those traces for which the user set a base
-        excluded = [];
-        included = [];
-        for(i = 0; i < calcTraces.length; i++) {
-            calcTrace = calcTraces[i];
-            fullTrace = calcTrace[0].trace;
+                if(fullTrace.offset === undefined) included.push(calcTrace);
+                else excluded.push(calcTrace);
+            }
 
-            if(fullTrace.base === undefined) included.push(calcTrace);
-            else excluded.push(calcTrace);
-        }
+            if(included.length) {
+                setGroupPositionsInGroupMode(gd, pa, sa, included);
+            }
+            if(excluded.length) {
+                setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
+            }
+            break;
 
-        if(included.length) {
-            setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included);
-        }
-        if(excluded.length) {
-            setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
-        }
+        case 'stack':
+        case 'relative':
+            // exclude from the stack those traces for which the user set a base
+            excluded = [];
+            included = [];
+            for(i = 0; i < calcTraces.length; i++) {
+                calcTrace = calcTraces[i];
+                fullTrace = calcTrace[0].trace;
+
+                if(fullTrace.base === undefined) included.push(calcTrace);
+                else excluded.push(calcTrace);
+            }
+
+            if(included.length) {
+                setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included);
+            }
+            if(excluded.length) {
+                setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
+            }
+            break;
     }
 
     collectExtents(calcTraces, pa);
@@ -154,13 +159,15 @@ function initBase(gd, pa, sa, calcTraces) {
 
 function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
     var barnorm = gd._fullLayout.barnorm;
-    var separateNegativeValues = false;
-    var dontMergeOverlappingData = !barnorm;
 
     // update position axis and set bar offsets and widths
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-        var sieve = new Sieve([calcTrace], separateNegativeValues, dontMergeOverlappingData);
+
+        var sieve = new Sieve([calcTrace], {
+            separateNegativeValues: false,
+            dontMergeOverlappingData: !barnorm
+        });
 
         // set bar offsets and widths, and update position axis
         setOffsetAndWidth(gd, pa, sieve);
@@ -182,9 +189,11 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
 function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
     var fullLayout = gd._fullLayout;
     var barnorm = fullLayout.barnorm;
-    var separateNegativeValues = false;
-    var dontMergeOverlappingData = !barnorm;
-    var sieve = new Sieve(calcTraces, separateNegativeValues, dontMergeOverlappingData);
+
+    var sieve = new Sieve(calcTraces, {
+        separateNegativeValues: false,
+        dontMergeOverlappingData: !barnorm
+    });
 
     // set bar offsets and widths, and update position axis
     setOffsetAndWidthInGroupMode(gd, pa, sieve);
@@ -201,12 +210,12 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
 function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
     var fullLayout = gd._fullLayout;
     var barmode = fullLayout.barmode;
-    var stack = barmode === 'stack';
-    var relative = barmode === 'relative';
     var barnorm = fullLayout.barnorm;
-    var separateNegativeValues = relative;
-    var dontMergeOverlappingData = !(barnorm || stack || relative);
-    var sieve = new Sieve(calcTraces, separateNegativeValues, dontMergeOverlappingData);
+
+    var sieve = new Sieve(calcTraces, {
+        separateNegativeValues: barmode === 'relative',
+        dontMergeOverlappingData: !(barnorm || barmode === 'stack' || barmode === 'relative')
+    });
 
     // set bar offsets and widths, and update position axis
     setOffsetAndWidth(gd, pa, sieve);
@@ -562,7 +571,9 @@ function sieveBars(gd, sa, sieve) {
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
-            if(bar.s !== BADNUM) sieve.put(bar.p, bar.b + bar.s);
+            if(bar.s !== BADNUM) {
+                sieve.put(bar.p, bar.b + bar.s);
+            }
         }
     }
 }

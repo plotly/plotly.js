@@ -17,18 +17,20 @@ var BADNUM = require('../../constants/numerical').BADNUM;
  * Helper class to sieve data from traces into bins
  *
  * @class
- * @param {Array}   traces
- *                  Array of calculated traces
- * @param {boolean} [separateNegativeValues]
- *                  If true, then split data at the same position into a bar
- *                  for positive values and another for negative values
- * @param {boolean} [dontMergeOverlappingData]
- *                  If true, then don't merge overlapping bars into a single bar
+ *
+ * @param {Array} traces
+*   Array of calculated traces
+ * @param {object} opts
+ *  - @param {boolean} [separateNegativeValues]
+ *      If true, then split data at the same position into a bar
+ *      for positive values and another for negative values
+ *  - @param {boolean} [dontMergeOverlappingData]
+ *     If true, then don't merge overlapping bars into a single bar
  */
-function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
+function Sieve(traces, opts) {
     this.traces = traces;
-    this.separateNegativeValues = separateNegativeValues;
-    this.dontMergeOverlappingData = dontMergeOverlappingData;
+    this.separateNegativeValues = opts.separateNegativeValues;
+    this.dontMergeOverlappingData = opts.dontMergeOverlappingData;
 
     // for single-bin histograms - see histogram/calc
     var width1 = Infinity;
