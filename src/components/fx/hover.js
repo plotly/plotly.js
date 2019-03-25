@@ -1062,13 +1062,22 @@ function createHoverText(hoverData, opts, gd) {
             d.pos = hty;
             anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
             anchorEndOK = htx - dx / 2 - txTotalWidth >= 0;
+
             if((d.idealAlign === 'left' || !anchorStartOK) && anchorEndOK) {
                 htx -= dx / 2;
                 d.anchor = 'end';
             } else if(anchorStartOK) {
                 htx += dx / 2;
                 d.anchor = 'start';
-            } else d.anchor = 'middle';
+            } else {
+                d.anchor = 'middle';
+
+                var txHalfWidth = txTotalWidth / 2;
+                var overflowR = htx + txHalfWidth - outerWidth;
+                var overflowL = htx - txHalfWidth;
+                if(overflowR > 0) htx -= overflowR;
+                if(overflowL < 0) htx += -overflowL;
+            }
         }
 
         tx.attr('text-anchor', d.anchor);
