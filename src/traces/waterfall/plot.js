@@ -15,7 +15,6 @@ var barPlot = require('../bar/plot');
 
 module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     barPlot(gd, plotinfo, cdModule, traceLayer);
-
     plotConnectors(gd, plotinfo, cdModule, traceLayer);
 };
 
@@ -127,8 +126,8 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
             }
 
             Lib.ensureSingle(connector, 'path')
-            .attr('d', shape)
-            .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
+                .attr('d', shape)
+                .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
         });
     });
 }
