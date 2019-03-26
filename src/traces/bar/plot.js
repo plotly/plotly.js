@@ -33,9 +33,6 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
 
-    var bargap = (fullLayout.bargap !== undefined) ? fullLayout.bargap : fullLayout.waterfallgap;
-    var bargroupgap = (fullLayout.bargroupgap !== undefined) ? fullLayout.bargroupgap : fullLayout.waterfallgroupgap;
-
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
@@ -90,6 +87,9 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
             var lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
                     (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
             var offset = d3.round((lw / 2) % 1, 2);
+            var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
+            var bargap = fullLayout[prefix + 'gap'];
+            var bargroupgap = fullLayout[prefix + 'groupgap'];
 
             function roundWithLine(v) {
                 // if there are explicit gaps, don't round,
@@ -148,6 +148,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
+    var fullLayout = gd._fullLayout;
     var textPosition;
 
     function appendTextNode(bar, text, textFont) {
@@ -179,13 +180,14 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         return;
     }
 
-    var layoutFont = gd._fullLayout.font;
+    var layoutFont = fullLayout.font;
     var barColor = style.getBarColor(calcTrace[i], trace);
     var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
 
     // compute text position
-    var barmode = (gd._fullLayout.barmode !== undefined) ? gd._fullLayout.barmode : gd._fullLayout.waterfallmode;
+    var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
+    var barmode = fullLayout[prefix + 'mode'];
     var inStackMode = (barmode === 'stack');
     var inRelativeMode = (barmode === 'relative');
     var inStackOrRelativeMode = inStackMode || inRelativeMode;

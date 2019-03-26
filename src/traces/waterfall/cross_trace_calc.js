@@ -8,34 +8,56 @@
 
 'use strict';
 
-var barCrossTraceCalc = require('../bar/cross_trace_calc').crossTraceCalc;
+var setGroupPositions = require('../bar/cross_trace_calc').setGroupPositions;
 
 module.exports = function crossTraceCalc(gd, plotinfo) {
-
-    barCrossTraceCalc(gd, plotinfo);
-
+    var fullLayout = gd._fullLayout;
+    var fullData = gd._fullData;
+    var calcdata = gd.calcdata;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-
-    var fullTraces = gd._fullData;
-    var calcTraces = gd.calcdata;
     var waterfalls = [];
-    var i;
+    var waterfallsVert = [];
+    var waterfallsHorz = [];
+    var cd, i;
 
-    for(i = 0; i < fullTraces.length; i++) {
-        var fullTrace = fullTraces[i];
+    for(i = 0; i < fullData.length; i++) {
+        var fullTrace = fullData[i];
+
         if(
             fullTrace.visible === true &&
             fullTrace.xaxis === xa._id &&
             fullTrace.yaxis === ya._id &&
             fullTrace.type === 'waterfall'
         ) {
-            waterfalls.push(calcTraces[i]);
+            cd = calcdata[i];
+
+            if(fullTrace.orientation === 'h') {
+                waterfallsHorz.push(cd);
+            } else {
+                waterfallsVert.push(cd);
+            }
+
+            waterfalls.push(cd);
         }
     }
 
+    // waterfall version of 'barmode', 'bargap' and 'bargroupgap'
+    var mockGd = {
+        _fullLayout: {
+            _axisMatchGroups: fullLayout._axisMatchGroups,
+            _alignmentOpts: fullLayout._alignmentOpts,
+            barmode: fullLayout.waterfallmode,
+            bargap: fullLayout.waterfallgap,
+            bargroupgap: fullLayout.waterfallgroupgap
+        }
+    };
+
+    setGroupPositions(mockGd, xa, ya, waterfallsVert);
+    setGroupPositions(mockGd, ya, xa, waterfallsHorz);
+
     for(i = 0; i < waterfalls.length; i++) {
-        var cd = waterfalls[i];
+        cd = waterfalls[i];
 
         for(var j = 0; j < cd.length; j++) {
             var di = cd[j];

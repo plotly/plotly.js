@@ -8,6 +8,8 @@
   "layout": {
     "yaxis": { "domain": [0,0.49] },
     "yaxis2": { "domain": [0.51, 1] },
-    "showlegend": false
+    "showlegend": false,
+    "bargap": 0.4,
+    "waterfallgap": 0
   }
 }

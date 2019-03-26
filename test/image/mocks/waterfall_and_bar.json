@@ -115,6 +115,8 @@
         },
         "height": 600,
         "width": 600,
-        "showlegend": true
+        "showlegend": true,
+        "bargap": 0,
+        "waterfallgap": 0.4
     }
 }
