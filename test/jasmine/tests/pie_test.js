@@ -1066,7 +1066,7 @@ describe('pie hovering', function() {
                     'garbage hoverinfo'
                 );
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1146,7 +1146,57 @@ describe('pie hovering', function() {
                     'hovertemplate arrayOK'
                 );
             })
-            .catch(fail)
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('should fit labels within graph div', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        it('- when labels overflow left and right', function(done) {
+            Plotly.plot(gd, [{
+                hole: 0.33,
+                hoverinfo: 'label+text+percent',
+                values: ['22238.58', '3145.82', '2865.21', '1664.58'],
+                labels: ['label 1 - another long text label', 'label 2', 'label 3 - 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16', 'label 4'],
+                hovertext: ['$22,238.58', '$3,145.82', '$2,865.21', '$1,664.58'],
+                type: 'pie'
+            }], {
+                showlegend: false,
+                width: 220,
+                height: 220,
+                margin: {l: 0, r: 0, t: 0, b: 0}
+            })
+            .then(function() { mouseEvent('mouseover', 50, 50); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'label 3 - 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16\n$2,865.21\n9.58%'
+                }, 'long label to the left');
+
+                var label = d3.select('g.hovertext');
+                var bbox = label.node().getBoundingClientRect();
+
+                expect(bbox.left).toBeWithin(1, 10, 'bbox left bound');
+                expect(bbox.right).toBeWithin(275, 10, 'bbox right bound (beyond graph)');
+            })
+            .then(function() { mouseEvent('mouseover', 150, 150); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'label 1 - another long text label\n$22,238.58\n74.3%'
+                }, 'long label to the right');
+
+                var label = d3.select('g.hovertext');
+                var bbox = label.node().getBoundingClientRect();
+
+                expect(bbox.left).toBeWithin(30, 10, 'bbox left bound');
+                expect(bbox.right).toBeWithin(220, 10, 'bbox right bound');
+            })
+            .catch(failTest)
             .then(done);
         });
     });
