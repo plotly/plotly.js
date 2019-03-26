@@ -35,7 +35,7 @@ module.exports = {
             'adjacent location coordinates.'
         ].join(' ')
     },
-    bargroupgap: {
+    waterfallgroupgap: {
         valType: 'number',
         min: 0,
         max: 1,

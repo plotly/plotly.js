@@ -294,7 +294,7 @@
         "dragmode": "zoom",
         "waterfallmode": "group",
         "waterfallgap": 0.2,
-        "bargroupgap": 0,
+        "waterfallgroupgap": 0.1,
         "boxmode": "overlay",
         "separators": ".,",
         "hidesources": false

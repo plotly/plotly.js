@@ -237,7 +237,7 @@ describe('waterfall calc / crossTraceCalc', function() {
         }], {
             waterfallmode: 'group',
             // asumming default waterfallgap is 0.2
-            bargroupgap: 0.1
+            waterfallgroupgap: 0.1
         });
 
         var cd = gd.calcdata;

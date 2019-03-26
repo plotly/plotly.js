@@ -93,7 +93,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 // it can make the gaps look crappy
 
                 var gap = fullLayout.bargap || fullLayout.waterfallgap;
-                var groupgap = fullLayout.bargroupgap;
+                var groupgap = fullLayout.bargroupgap || fullLayout.waterfallgroupgap;
 
                 return (gap === 0 && groupgap === 0) ?
                     d3.round(Math.round(v) - offset, 2) : v;

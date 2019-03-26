@@ -34,7 +34,7 @@ function style(gd, cd) {
     // isn't introduced.
     .each(function(d) {
         var gap = fullLayout.bargap || fullLayout.waterfallgap;
-        var groupgap = fullLayout.bargroupgap;
+        var groupgap = fullLayout.bargroupgap || fullLayout.waterfallgroupgap;
 
         if((fullLayout.barmode === 'stack' && barcount > 1) ||
                 (gap === 0 && groupgap === 0 &&

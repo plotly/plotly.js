@@ -236,7 +236,8 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
 function setOffsetAndWidth(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
     var bargap = fullLayout.bargap || fullLayout.waterfallgap;
-    var bargroupgap = fullLayout.bargroupgap || 0;
+    var bargroupgap = fullLayout.bargroupgap || fullLayout.waterfallgroupgap || 0;
+
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
 
@@ -275,7 +276,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
 function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
     var bargap = fullLayout.bargap || fullLayout.waterfallgap;
-    var bargroupgap = fullLayout.bargroupgap || 0;
+    var bargroupgap = fullLayout.bargroupgap || fullLayout.waterfallgroupgap || 0;
     var positions = sieve.positions;
     var distinctPositions = sieve.distinctPositions;
     var minDiff = sieve.minDiff;
