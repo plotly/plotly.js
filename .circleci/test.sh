@@ -44,8 +44,8 @@ case $1 in
     jasmine)
         set_tz
 
-        npm run test-jasmine -- --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
-        npm run test-bundle || EXIT_STATE=$?
+        SUITE=$(circleci tests glob "$ROOT/test/jasmine/tests/*" | circleci tests split)
+        npm run test-jasmine -- $SUITE --skip-tags=gl,noCI,flaky --showSkipped || EXIT_STATE=$?
 
         exit $EXIT_STATE
         ;;
@@ -53,10 +53,10 @@ case $1 in
     jasmine2)
         set_tz
 
-        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=gl))
+        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=gl | circleci tests split))
 
         for s in ${SHARDS[@]}; do
-            retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI
+            retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI --showSkipped
         done
 
         exit $EXIT_STATE
@@ -65,23 +65,29 @@ case $1 in
     jasmine3)
         set_tz
 
-        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=flaky))
+        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=flaky | circleci tests split))
 
         for s in ${SHARDS[@]}; do
-            retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI
+            retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI --showSkipped
         done
 
         exit $EXIT_STATE
         ;;
 
     image)
-        npm run test-image      || EXIT_STATE=$?
+        SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | circleci tests split)
+        npm run test-image -- $SUITE --filter || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     image2)
         npm run test-export     || EXIT_STATE=$?
-        npm run test-image-gl2d || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
+    bundle)
+        set_tz
+        npm run test-bundle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
