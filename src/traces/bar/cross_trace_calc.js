@@ -56,7 +56,7 @@ function crossTraceCalc(gd, plotinfo) {
 function setGroupPositions(gd, pa, sa, calcTraces) {
     if(!calcTraces.length) return;
 
-    var barmode = gd._fullLayout.barmode || gd._fullLayout.waterfallmode;
+    var barmode = (gd._fullLayout.barmode !== undefined) ? gd._fullLayout.barmode : gd._fullLayout.waterfallmode;
     var overlay = (barmode === 'overlay');
     var group = (barmode === 'group');
     var excluded;
@@ -235,8 +235,8 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
 
 function setOffsetAndWidth(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
-    var bargap = fullLayout.bargap || fullLayout.waterfallgap;
-    var bargroupgap = fullLayout.bargroupgap || fullLayout.waterfallgroupgap || 0;
+    var bargap = (fullLayout.bargap !== undefined) ? fullLayout.bargap : fullLayout.waterfallgap;
+    var bargroupgap = (fullLayout.bargroupgap !== undefined) ? fullLayout.bargroupgap : fullLayout.waterfallgroupgap || 0;
 
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
@@ -275,8 +275,8 @@ function setOffsetAndWidth(gd, pa, sieve) {
 
 function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
-    var bargap = fullLayout.bargap || fullLayout.waterfallgap;
-    var bargroupgap = fullLayout.bargroupgap || fullLayout.waterfallgroupgap || 0;
+    var bargap = (fullLayout.bargap !== undefined) ? fullLayout.bargap : fullLayout.waterfallgap;
+    var bargroupgap = (fullLayout.bargroupgap !== undefined) ? fullLayout.bargroupgap : fullLayout.waterfallgroupgap || 0;
     var positions = sieve.positions;
     var distinctPositions = sieve.distinctPositions;
     var minDiff = sieve.minDiff;

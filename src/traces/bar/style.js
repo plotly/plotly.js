@@ -26,6 +26,9 @@ function style(gd, cd) {
     var barcount = s.size();
     var fullLayout = gd._fullLayout;
 
+    var bargap = (fullLayout.bargap !== undefined) ? fullLayout.bargap : fullLayout.waterfallgap;
+    var bargroupgap = (fullLayout.bargroupgap !== undefined) ? fullLayout.bargroupgap : fullLayout.waterfallgroupgap;
+
     // trace styling
     s.style('opacity', function(d) { return d[0].trace.opacity; })
 
@@ -33,11 +36,8 @@ function style(gd, cd) {
     // crispEdges to turn off antialiasing so an artificial gap
     // isn't introduced.
     .each(function(d) {
-        var gap = fullLayout.bargap || fullLayout.waterfallgap;
-        var groupgap = fullLayout.bargroupgap || fullLayout.waterfallgroupgap;
-
         if((fullLayout.barmode === 'stack' && barcount > 1) ||
-                (gap === 0 && groupgap === 0 &&
+                (bargap === 0 && bargroupgap === 0 &&
                  !d[0].trace.marker.line.width)) {
             d3.select(this).attr('shape-rendering', 'crispEdges');
         }

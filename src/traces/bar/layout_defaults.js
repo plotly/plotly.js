@@ -31,8 +31,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
         // if we have at least 2 grouped bar traces on the same subplot,
         // we should default to a gap anyway, even if the data is histograms
-        if((layoutIn.barmode !== 'overlay' && layoutIn.barmode !== 'stack') ||
-            (layoutIn.waterfallmode !== 'overlay')) {
+        if(layoutIn.barmode !== 'overlay' && layoutIn.barmode !== 'stack') {
             var subploti = trace.xaxis + trace.yaxis;
             if(usedSubplots[subploti]) gappedAnyway = true;
             usedSubplots[subploti] = true;

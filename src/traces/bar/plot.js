@@ -33,6 +33,9 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
 
+    var bargap = (fullLayout.bargap !== undefined) ? fullLayout.bargap : fullLayout.waterfallgap;
+    var bargroupgap = (fullLayout.bargroupgap !== undefined) ? fullLayout.bargroupgap : fullLayout.waterfallgroupgap;
+
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
@@ -92,10 +95,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 // if there are explicit gaps, don't round,
                 // it can make the gaps look crappy
 
-                var gap = fullLayout.bargap || fullLayout.waterfallgap;
-                var groupgap = fullLayout.bargroupgap || fullLayout.waterfallgroupgap;
-
-                return (gap === 0 && groupgap === 0) ?
+                return (bargap === 0 && bargroupgap === 0) ?
                     d3.round(Math.round(v) - offset, 2) : v;
             }
 
@@ -185,7 +185,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
 
     // compute text position
-    var barmode = gd._fullLayout.barmode || gd._fullLayout.waterfallmode;
+    var barmode = (gd._fullLayout.barmode !== undefined) ? gd._fullLayout.barmode : gd._fullLayout.waterfallmode;
     var inStackMode = (barmode === 'stack');
     var inRelativeMode = (barmode === 'relative');
     var inStackOrRelativeMode = inStackMode || inRelativeMode;
