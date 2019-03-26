@@ -31,6 +31,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleDirection(traceIn, traceOut, coerce, 'decreasing');
 
     coerce('text');
+    coerce('hovertext');
     coerce('tickwidth');
 
     layout._requestRangeslider[traceOut.xaxis] = true;

@@ -43,6 +43,7 @@ function calc(gd, trace) {
     var ya = AxisIDs.getFromId(gd, trace.yaxis);
     var subplot = fullLayout._plots[trace.xaxis + trace.yaxis];
     var len = trace._length;
+    var hasTooManyPoints = len >= TOO_MANY_POINTS;
     var len2 = len * 2;
     var stash = {};
     var i, xx, yy;
@@ -73,7 +74,7 @@ function calc(gd, trace) {
 
     // we don't build a tree for log axes since it takes long to convert log2px
     // and it is also
-    if(xa.type !== 'log' && ya.type !== 'log') {
+    if(hasTooManyPoints && (xa.type !== 'log' && ya.type !== 'log')) {
         // FIXME: delegate this to webworker
         stash.tree = cluster(positions);
     } else {
@@ -93,7 +94,7 @@ function calc(gd, trace) {
     // use average marker size instead to speed things up.
     setFirstScatter(fullLayout, trace);
     var ppad;
-    if(len < TOO_MANY_POINTS) {
+    if(!hasTooManyPoints) {
         ppad = calcMarkerSize(trace, len);
     } else if(opts.marker) {
         ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
@@ -111,8 +112,8 @@ function calc(gd, trace) {
 
     // FIXME: organize it in a more appropriate manner, probably in sceneOptions
     // put point-cluster instance for optimized regl calc
-    if(opts.marker && len >= TOO_MANY_POINTS) {
-        opts.marker.cluster = stash.tree;
+    if(opts.marker) {
+        opts.marker.snap = stash.tree || TOO_MANY_POINTS;
     }
 
     // save scene opts batch
@@ -390,6 +391,19 @@ function plot(gd, subplot, cdata) {
 
         // update main marker options
         if(scene.glText) {
+            if(scene.count > scene.glText.length) {
+                // add gl text marker
+                var textsToAdd = scene.count - scene.glText.length;
+                for(i = 0; i < textsToAdd; i++) {
+                    scene.glText.push(new Text(regl));
+                }
+            } else if(scene.count < scene.glText.length) {
+                // remove gl text marker
+                var textsToRemove = scene.glText.length - scene.count;
+                var removedTexts = scene.glText.splice(scene.count, textsToRemove);
+                removedTexts.forEach(function(text) { text.destroy(); });
+            }
+
             for(i = 0; i < scene.count; i++) {
                 scene.glText[i].update(scene.textOptions[i]);
             }
@@ -621,7 +635,8 @@ function plot(gd, subplot, cdata) {
 
         if(scene.glText) {
             cdata.forEach(function(cdscatter) {
-                if(cdscatter && cdscatter[0] && cdscatter[0].trace) {
+                var trace = ((cdscatter || [])[0] || {}).trace || {};
+                if(subTypes.hasText(trace)) {
                     styleTextSelection(cdscatter);
                 }
             });

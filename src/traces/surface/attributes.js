@@ -11,6 +11,7 @@
 var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -179,6 +180,26 @@ var attrs = module.exports = overrideAll(extendFlat({
             'these elements will be seen in the hover labels.'
         ].join(' ')
     },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: 'Same as `text`.'
+    },
+    hovertemplate: hovertemplateAttrs(),
+
+    connectgaps: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data are filled in.'
+        ].join(' ')
+    },
 
     surfacecolor: {
         valType: 'data_array',
@@ -293,7 +314,13 @@ colorscaleAttrs('', {
         min: 0,
         max: 1,
         dflt: 1,
-        description: 'Sets the opacity of the surface.'
+        description: [
+            'Sets the opacity of the surface.',
+            'Please note that in the case of using high `opacity` values for example a value',
+            'greater than or equal to 0.5 on two surfaces (and 0.25 with four surfaces), an',
+            'overlay of multiple transparent surfaces may not perfectly be sorted in depth by the',
+            'webgl API. This behavior may be improved in the near future and is subject to change.'
+        ].join(' ')
     },
 
     _deprecated: {

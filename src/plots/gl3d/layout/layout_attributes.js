@@ -72,6 +72,21 @@ module.exports = {
                 'of this scene.'
             ].join(' ')
         }),
+        projection: {
+            type: {
+                valType: 'enumerated',
+                role: 'info',
+                values: ['perspective', 'orthographic'],
+                dflt: 'perspective',
+                editType: 'calc',
+                description: [
+                    'Sets the projection type. The projection type could be',
+                    'either *perspective* or *orthographic*. The default is',
+                    '*perspective*.'
+                ].join(' ')
+            },
+            editType: 'calc'
+        },
         editType: 'camera'
     },
     domain: domainAttrs({name: 'scene', editType: 'plot'}),

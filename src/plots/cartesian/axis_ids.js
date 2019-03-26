@@ -114,3 +114,13 @@ exports.idSort = function(id1, id2) {
     if(letter1 !== letter2) return letter1 > letter2 ? 1 : -1;
     return +(id1.substr(1) || 1) - +(id2.substr(1) || 1);
 };
+
+exports.getAxisGroup = function getAxisGroup(fullLayout, axId) {
+    var matchGroups = fullLayout._axisMatchGroups;
+
+    for(var i = 0; i < matchGroups.length; i++) {
+        var group = matchGroups[i];
+        if(group[axId]) return 'g' + i;
+    }
+    return axId;
+};

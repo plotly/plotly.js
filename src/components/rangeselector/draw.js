@@ -26,7 +26,6 @@ var FROM_BR = alignmentConstants.FROM_BR;
 var constants = require('./constants');
 var getUpdateObject = require('./get_update_object');
 
-
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
 
@@ -152,12 +151,16 @@ function drawButtonText(button, selectorLayout, d, gd) {
     });
 
     text.call(Drawing.font, selectorLayout.font)
-        .text(getLabel(d))
+        .text(getLabel(d, gd._fullLayout.meta))
         .call(textLayout);
 }
 
-function getLabel(opts) {
-    if(opts.label) return opts.label;
+function getLabel(opts, meta) {
+    if(opts.label) {
+        return meta ?
+            Lib.templateString(opts.label, {meta: meta}) :
+            opts.label;
+    }
 
     if(opts.step === 'all') return 'all';
 

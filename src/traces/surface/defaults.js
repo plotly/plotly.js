@@ -40,6 +40,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     coerce('text');
+    coerce('hovertext');
+    coerce('hovertemplate');
 
     // Coerce remaining properties
     [
@@ -52,6 +54,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lightposition.y',
         'lightposition.z',
         'hidesurface',
+        'connectgaps',
         'opacity'
     ].forEach(function(x) { coerce(x); });
 

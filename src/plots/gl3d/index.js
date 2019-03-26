@@ -48,6 +48,7 @@ exports.plot = function plotGl3d(gd) {
         var sceneId = sceneIds[i];
         var fullSceneData = getSubplotData(fullData, GL3D, sceneId);
         var sceneLayout = fullLayout[sceneId];
+        var camera = sceneLayout.camera;
         var scene = sceneLayout._scene;
 
         if(!scene) {
@@ -56,7 +57,8 @@ exports.plot = function plotGl3d(gd) {
                 graphDiv: gd,
                 container: gd.querySelector('.gl-container'),
                 staticPlot: gd._context.staticPlot,
-                plotGlPixelRatio: gd._context.plotGlPixelRatio
+                plotGlPixelRatio: gd._context.plotGlPixelRatio,
+                camera: camera
             },
                 fullLayout
             );
@@ -65,9 +67,25 @@ exports.plot = function plotGl3d(gd) {
             sceneLayout._scene = scene;
         }
 
-        // save 'initial' camera settings for modebar button
-        if(!scene.cameraInitial) {
-            scene.cameraInitial = Lib.extendDeep({}, sceneLayout.camera);
+        // save 'initial' camera view settings for modebar button
+        if(!scene.viewInitial) {
+            scene.viewInitial = {
+                up: {
+                    x: camera.up.x,
+                    y: camera.up.y,
+                    z: camera.up.z
+                },
+                eye: {
+                    x: camera.eye.x,
+                    y: camera.eye.y,
+                    z: camera.eye.z
+                },
+                center: {
+                    x: camera.center.x,
+                    y: camera.center.y,
+                    z: camera.center.z
+                }
+            };
         }
 
         scene.plot(fullSceneData, fullLayout, gd.layout);

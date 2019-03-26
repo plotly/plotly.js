@@ -93,6 +93,7 @@ module.exports = overrideAll({
         cauto: markerAttrs.cauto,
         cmax: markerAttrs.cmax,
         cmin: markerAttrs.cmin,
+        cmid: markerAttrs.cmid,
         autocolorscale: markerAttrs.autocolorscale,
         reversescale: markerAttrs.reversescale,
         showscale: markerAttrs.showscale,

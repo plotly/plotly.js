@@ -1,0 +1,84 @@
+{
+  "data": [
+    {
+      "type": "histogram",
+      "name": "sample A - <b>matched</b>",
+      "x": [1, 2, 3, 1, 1, 2, 3, 3],
+      "hoverlabel": {
+        "namelength": -1
+      }
+    },
+    {
+      "type": "histogram",
+      "name": "sample B - <b>matched</b>",
+      "x": [2.1, 2.1, 3.4, 1.3, 2.2, 2.1, 3.2, 4.1, 3.1],
+      "hoverlabel": {
+        "namelength": -1
+      },
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "histogram",
+      "name": "sample A - <b>not</b> on matching axes",
+      "x": [1, 2, 3, 1, 1, 2, 3, 3],
+      "hoverlabel": {
+        "namelength": -1
+      },
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "histogram",
+      "name": "sample B - <b>not</b> on matching axes",
+      "x": [2.1, 2.1, 3.4, 1.3, 2.2, 2.1, 3.2, 4.1, 3.1],
+      "hoverlabel": {
+        "namelength": -1
+      },
+      "xaxis": "x4",
+      "yaxis": "y4"
+    }
+  ],
+  "layout": {
+    "margin": {"t": 20, "b": 20},
+    "showlegend": false,
+    "xaxis": {
+      "domain": [0, 0.4]
+    },
+    "yaxis": {
+      "domain": [0.45, 1],
+      "title": {
+        "text": "Matched Axes"
+      }
+    },
+    "xaxis2": {
+      "domain": [0.45, 1],
+      "anchor": "y2",
+      "matches": "x"
+    },
+    "yaxis2": {
+      "domain": [0.45, 1],
+      "anchor": "x2",
+      "matches": "y"
+    },
+    "xaxis3": {
+      "domain": [0, 0.4],
+      "anchor": "y3"
+    },
+    "yaxis3": {
+      "domain": [0, 0.4],
+      "anchor": "x3",
+      "title": {
+        "text": "<b>NOT</b> Matched Axes"
+      }
+    },
+    "xaxis4": {
+      "domain": [0.45, 1],
+      "anchor": "y4"
+    },
+    "yaxis4": {
+      "domain": [0, 0.4],
+      "anchor": "x4"
+    }
+  }
+}

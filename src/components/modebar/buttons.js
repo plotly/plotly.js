@@ -347,11 +347,14 @@ function handleCamera3d(gd, ev) {
         var key = sceneId + '.camera';
         var scene = fullLayout[sceneId]._scene;
 
-        if(attr === 'resetDefault') {
-            aobj[key] = null;
-        }
-        else if(attr === 'resetLastSave') {
-            aobj[key] = Lib.extendDeep({}, scene.cameraInitial);
+        if(attr === 'resetLastSave') {
+            aobj[key + '.up'] = scene.viewInitial.up;
+            aobj[key + '.eye'] = scene.viewInitial.eye;
+            aobj[key + '.center'] = scene.viewInitial.center;
+        } else if(attr === 'resetDefault') {
+            aobj[key + '.up'] = null;
+            aobj[key + '.eye'] = null;
+            aobj[key + '.center'] = null;
         }
     }
 

@@ -10,7 +10,130 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
-## [1.44.4] -- 2019-01-22
+## [1.45.3] -- 2019-03-19
+
+### Fixed
+- Fix legend click dispatch on legend item symbols (bug introduced in 1.44.0) [#3635]
+- Fix overlapping of "very close" hover labels [#3645]
+- Fix `hovermode` default logic for stacked `scatter` traces [#3646]
+- Fix `glPixelRatio` handling in `surface` contour lines [#3641]
+- Fix `gl2d` subplot zoombox appearance (bug introduced in 1.32.0) [#3647]
+- Fix axis label updates on `gl2d` subplots on scroll (bug introduced in 1.32.0) [#3647]
+- Fix `dragmode` relayout calls on `gl2d` subplots [#3647]
+- Improve info about `<extra>` in `hovertemplate` description [#3623]
+
+
+## [1.45.2] -- 2019-03-07
+
+### Fixed
+- Fix webpack builds that include `sankey` by upgrading d3-sankey-circular to 0.33.0 (bug introduced in 1.45.0) [#3611]
+
+## [1.45.1] -- 2019-03-05
+
+### Fixed
+- Fix axis automargin pushes for rotated tick labels [#3605]
+- Fix automargin logic on (very) small graphs [#3605]
+- Fix locales support in `hovertemplate` strings [#3586]
+- Fix gl3d reset camera buttons for scenes with orthographic projection [#3597]
+- Fix typed array support for `parcoords` dimensions values and `line.color` [#3598]
+- Fix `cone` rendering on some older browsers [#3591]
+- Fix `lightposition` behavior for `cone` traces [#3591]
+- Fix `lightposition` behavior for `streamtube` trace [#3593]
+- Remove unused files from `gl-cone3d` dependency [#3591]
+- Remove unused files from `gl-streamtube3d` dependency [#3593]
+
+
+## [1.45.0] -- 2019-02-26
+
+### Added
+- Add support for circular networks in `sankey` traces [#3406, #3535, #3564]
+- Add matching axes behavior to cartesian axes via new axis attribute and
+  new splom attribute dimensions attribute `matches` [#3506, #3565]
+- Add attributes `alignmentgroup` and `offsetgroup` to `bar`, `histogram`, `box`
+  and `violin` traces to make cross-trace positioning easier [#3529]
+- Add support for orthographic projections in gl3d subplots via new attribute
+  `scene.camera.projection.type` [#3550]
+- Add `cmid` and `zmid` colorscale attributes to pick the middle of the color
+  range during the auto-colorscale computations [#3549]
+- Add support for `sankey` grouping via new attribute `groups` [#3556]
+- Add support for `sankey` concentration `colorscales` [#3501]
+- Add support for `hovertemplate` for all `gl3d` traces, `contour`,
+  `heatmap`, `histogram*`, `parcats`, `scattercarpet` and `splom` traces [#3530]
+- Add `hovertext` attribute to all traces that support hover 'text',
+  for consistency with traces that already have an `hovertext` attribute [#3553]
+- Add support for layout `meta` templating in trace `name`,
+  `rangeselector`, `updatemenus` and `sliders` labels as well as
+  within `hovertemplate` [#3548]
+- Add support for `opacity` to `isosurface` traces [#3545]
+- Add `mapbox.layers` attributes: `minzoom`, `maxzoom`, `line.dash` and `symbol.placement` [#3399]
+
+### Changed
+- More consistency pass down WebGL pixel ratio to gl3d renderers,
+  this leads to better axis line and error bar rendering on some hardwares [#3573]
+- Performance boost for `isosurface` trace generation [#3521]
+- Export template string regex of `Lib` [#3548]
+- Do no cluster points in  `scattergl` trace with less than 1e5 data pts,
+  this fixes reported "missing data points" scenarios [#3578]
+
+### Fixed
+- Fix selection outline clearing during cartesian axis-range relayout calls
+  (bug introduced in 1.42.0) [#3577]
+- Fix modebar interactions on graphs with `scatter3d` traces with
+  marker colorscales (bug introduced in 1.44.0) [#3554]
+- Fix axis `automargin` for superimposed subplots (bug introduced in 1.44.3) [#3566]
+- Fix polar angular tick labels placement [#3538]
+- Fix `scattergl` updates after selections for trace with on-graph text [#3575]
+- Fix `responsive: true` config option for graph with WebGL traces [#3500]
+- Fix `modebar.bgcolor` for vertical modebars with wrapped buttons [#3500]
+- Fix `ohlc` and `candlestick` auto-range computations [#3544]
+
+
+## [1.44.4] -- 2019-02-12
+
+### Fixed
+- Fix `Plotly.react` used with `uirevision` when removing traces [#3527]
+- Fix `scattergl` update calls that change the number of on-graph text elements [#3536]
+- Fix annotations SVG errors on trace-less subplots [#3534]
+- Fix `ohlc` and `candlestick` hover on blank coordinates (bug introduced in 1.43.2) [#3537]
+
+
+## [1.44.3] -- 2019-02-06
+
+### Fixed
+- Fix axis `automargin` push offset which resulted in clipped
+  tick labels in some scenarios [#3510]
+- Fix handling of alpha channel in marker, line and error bar `rgba`
+  coloring in `scatter3d` traces [#3496]
+- Fix subplots with multiple `carpet` traces each with a `scattercarpet`
+  trace on top of them [#3512]
+- Fix MathJax placement in ternary `aaxis` titles [#3513]
+
+
+## [1.44.2] -- 2019-02-04
+
+### Fixed
+- Fix vertical modebars in IE11 [@3491]
+- Fix `hovertemplate` for traces with blank `name` [#3480]
+- Fix 3D grid lines and tick labels colored by rgba color
+  with full transparency [#3494]
+- Fix white highlights rendering problems for `mesh3d` trace on
+  some devices (bug introduced in 1.44.0) [#3483]
+- Fix `fill.color` description for `table` traces [#3481]
+
+
+## [1.44.1] -- 2019-01-24
+
+### Fixed
+- Fix `mesh3d` rendering on (some) mobile devices (bug introduced in 1.44.0) [#3463]
+- Fix scene camera update when changing to `turntable` mode when `up.z` is zero
+  (bug introduced in 1.43.0) [#3465, #3475]
+- Fix `react` when cartesian axis `scaleanchor` patterns change [#3461]
+- Fix "days" entries in polish (`pl`) locales [#3464]
+- Remove inner function declarations in our `vectorize-text` that caused
+  bundling errors for some (bug introduced in 1.43.0) [#3474]
+
+
+## [1.44.0] -- 2019-01-22
 
 ### Added
 - Add `isosurface` gl3d trace type [#3438]

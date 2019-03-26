@@ -28,7 +28,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         } else {
             // flag for 'horizontal' plots:
             // determines the state of the mode bar 'compare' hovermode button
-            layoutOut._isHoriz = isHoriz(fullData);
+            layoutOut._isHoriz = isHoriz(fullData, layoutOut);
             hovermodeDflt = layoutOut._isHoriz ? 'y' : 'x';
         }
     }
@@ -55,17 +55,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-function isHoriz(fullData) {
-    var out = true;
+function isHoriz(fullData, fullLayout) {
+    var stackOpts = fullLayout._scatterStackOpts || {};
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
+        var subplot = trace.xaxis + trace.yaxis;
+        var subplotStackOpts = stackOpts[subplot] || {};
+        var groupOpts = subplotStackOpts[trace.stackgroup] || {};
 
-        if(trace.orientation !== 'h') {
-            out = false;
-            break;
+        if(trace.orientation !== 'h' && groupOpts.orientation !== 'h') {
+            return false;
         }
     }
 
-    return out;
+    return true;
 }

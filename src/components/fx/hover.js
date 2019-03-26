@@ -704,7 +704,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     var hoverLabels = createHoverText(hoverData, labelOpts, gd);
 
-    hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya', fullLayout);
+    hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
 
     alignHoverText(hoverLabels, rotateLabels);
 
@@ -738,6 +738,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
 function createHoverText(hoverData, opts, gd) {
+    var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
     var bgColor = opts.bgColor;
@@ -878,6 +879,7 @@ function createHoverText(hoverData, opts, gd) {
 
     // show all the individual labels
 
+
     // first create the objects
     var hoverLabels = container.selectAll('g.hovertext')
         .data(hoverData, function(d) {
@@ -925,6 +927,10 @@ function createHoverText(hoverData, opts, gd) {
         if(d.nameOverride !== undefined) d.name = d.nameOverride;
 
         if(d.name) {
+            if(fullLayout.meta) {
+                d.name = Lib.templateString(d.name, {meta: fullLayout.meta});
+            }
+
             name = svgTextUtils.plainText(d.name || '', {
                 len: d.nameLength,
                 allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
@@ -940,7 +946,7 @@ function createHoverText(hoverData, opts, gd) {
             text = d[(hovermode === 'x' ? 'y' : 'x') + 'Label'] || '';
         }
         else if(d.xLabel === undefined) {
-            if(d.yLabel !== undefined) text = d.yLabel;
+            if(d.yLabel !== undefined && d.trace.type !== 'scattercarpet') text = d.yLabel;
         }
         else if(d.yLabel === undefined) text = d.xLabel;
         else text = '(' + d.xLabel + ', ' + d.yLabel + ')';
@@ -957,19 +963,27 @@ function createHoverText(hoverData, opts, gd) {
         if(d.extraText !== undefined) text += (text ? '<br>' : '') + d.extraText;
 
         // if 'text' is empty at this point,
+        // and hovertemplate is not defined,
         // put 'name' in main label and don't show secondary label
-        if(text === '') {
+        if(text === '' && !d.hovertemplate) {
             // if 'name' is also empty, remove entire label
             if(name === '') g.remove();
             text = name;
         }
 
         // hovertemplate
+        var d3locale = gd._fullLayout._d3locale;
         var hovertemplate = d.hovertemplate || false;
         var hovertemplateLabels = d.hovertemplateLabels || d;
         var eventData = d.eventData[0] || {};
         if(hovertemplate) {
-            text = Lib.hovertemplateString(hovertemplate, hovertemplateLabels, eventData);
+            text = Lib.hovertemplateString(
+                hovertemplate,
+                hovertemplateLabels,
+                d3locale,
+                eventData,
+                {meta: fullLayout.meta}
+            );
 
             text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {
                 name = extra; // Assign name for secondary text label
@@ -1078,17 +1092,21 @@ function createHoverText(hoverData, opts, gd) {
 // know what happens if the group spans all the way from one edge to
 // the other, though it hardly matters - there's just too much
 // information then.
-function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
+function hoverAvoidOverlaps(hoverLabels, ax, fullLayout) {
     var nummoves = 0;
     var axSign = 1;
+    var nLabels = hoverLabels.size();
 
     // make groups of touching points
-    var pointgroups = hoverData.map(function(d, i) {
+    var pointgroups = new Array(nLabels);
+
+    hoverLabels.each(function(d, i) {
         var axis = d[ax];
         var axIsX = axis._id.charAt(0) === 'x';
         var rng = axis.range;
         if(!i && rng && ((rng[0] > rng[1]) !== axIsX)) axSign = -1;
-        return [{
+        pointgroups[i] = [{
+            datum: d,
             i: i,
             traceIndex: d.trace.index,
             dp: 0,
@@ -1098,8 +1116,9 @@ function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
             pmin: 0,
             pmax: (axIsX ? fullLayout.width : fullLayout.height)
         }];
-    })
-    .sort(function(a, b) {
+    });
+
+    pointgroups.sort(function(a, b) {
         return (a[0].posref - b[0].posref) ||
             // for equal positions, sort trace indices increasing or decreasing
             // depending on whether the axis is reversed or not... so stacked
@@ -1185,7 +1204,7 @@ function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
 
     // loop through groups, combining them if they overlap,
     // until nothing moves
-    while(!donepositioning && nummoves <= hoverData.length) {
+    while(!donepositioning && nummoves <= nLabels) {
         // to avoid infinite loops, don't move more times
         // than there are traces
         nummoves++;
@@ -1233,7 +1252,7 @@ function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
         var grp = pointgroups[i];
         for(j = grp.length - 1; j >= 0; j--) {
             var pt = grp[j];
-            var hoverPt = hoverData[pt.i];
+            var hoverPt = pt.datum;
             hoverPt.offset = pt.dp;
             hoverPt.del = pt.del;
         }

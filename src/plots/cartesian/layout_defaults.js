@@ -17,7 +17,7 @@ var basePlotLayoutAttributes = require('../layout_attributes');
 var layoutAttributes = require('./layout_attributes');
 var handleTypeDefaults = require('./type_defaults');
 var handleAxisDefaults = require('./axis_defaults');
-var handleConstraintDefaults = require('./constraint_defaults');
+var handleConstraintDefaults = require('./constraints').handleConstraintDefaults;
 var handlePositionDefaults = require('./position_defaults');
 
 var axisIds = require('./axis_ids');
@@ -124,6 +124,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     var counterAxes = {x: getCounterAxes('x'), y: getCounterAxes('y')};
+    var allAxisIds = counterAxes.x.concat(counterAxes.y);
 
     function getOverlayableAxes(axLetter, axName) {
         var list = (axLetter === 'x') ? xNames : yNames;
@@ -199,14 +200,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             delete axLayoutOut.spikesnap;
         }
 
-        var positioningOptions = {
+        handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],
             overlayableAxes: overlayableAxes,
             grid: layoutOut.grid
-        };
-
-        handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
+        });
 
         axLayoutOut._input = axLayoutIn;
     }
@@ -247,22 +246,80 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         coerce('fixedrange', fixedRangeDflt);
     }
 
-    // Finally, handle scale constraints. We need to do this after all axes have
-    // coerced both `type` (so we link only axes of the same type) and
+    // Finally, handle scale constraints and matching axes.
+    //
+    // We need to do this after all axes have coerced both `type`
+    // (so we link only axes of the same type) and
     // `fixedrange` (so we can avoid linking from OR TO a fixed axis).
 
     // sets of axes linked by `scaleanchor` along with the scaleratios compounded
     // together, populated in handleConstraintDefaults
-    layoutOut._axisConstraintGroups = [];
-    var allAxisIds = counterAxes.x.concat(counterAxes.y);
+    var constraintGroups = layoutOut._axisConstraintGroups = [];
+    // similar to _axisConstraintGroups, but for matching axes
+    var matchGroups = layoutOut._axisMatchGroups = [];
 
     for(i = 0; i < axNames.length; i++) {
         axName = axNames[i];
         axLetter = axName.charAt(0);
-
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
         handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, allAxisIds, layoutOut);
+    }
+
+    for(i = 0; i < matchGroups.length; i++) {
+        var group = matchGroups[i];
+        var rng = null;
+        var autorange = null;
+        var axId;
+
+        // find 'matching' range attrs
+        for(axId in group) {
+            axLayoutOut = layoutOut[id2name(axId)];
+            if(!axLayoutOut.matches) {
+                rng = axLayoutOut.range;
+                autorange = axLayoutOut.autorange;
+            }
+        }
+        // if `ax.matches` values are reciprocal,
+        // pick values of first axis in group
+        if(rng === null || autorange === null) {
+            for(axId in group) {
+                axLayoutOut = layoutOut[id2name(axId)];
+                rng = axLayoutOut.range;
+                autorange = axLayoutOut.autorange;
+                break;
+            }
+        }
+        // apply matching range attrs
+        for(axId in group) {
+            axLayoutOut = layoutOut[id2name(axId)];
+            if(axLayoutOut.matches) {
+                axLayoutOut.range = rng.slice();
+                axLayoutOut.autorange = autorange;
+            }
+            axLayoutOut._matchGroup = group;
+        }
+
+        // remove matching axis from scaleanchor constraint groups (for now)
+        if(constraintGroups.length) {
+            for(axId in group) {
+                for(j = 0; j < constraintGroups.length; j++) {
+                    var group2 = constraintGroups[j];
+                    for(var axId2 in group2) {
+                        if(axId === axId2) {
+                            Lib.warn('Axis ' + axId2 + ' is set with both ' +
+                                'a *scaleanchor* and *matches* constraint; ' +
+                                'ignoring the scale constraint.');
+
+                            delete group2[axId2];
+                            if(Object.keys(group2).length < 2) {
+                                constraintGroups.splice(j, 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 };

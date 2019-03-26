@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -14,7 +13,6 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 var layoutAttributes = require('./layout_attributes');
-
 
 module.exports = function(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
@@ -26,6 +24,8 @@ module.exports = function(layoutIn, layoutOut, fullData) {
     var gappedAnyway = false;
     var usedSubplots = {};
 
+    var mode = coerce('barmode');
+
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
         if(Registry.traceIs(trace, 'bar') && trace.visible) hasBars = true;
@@ -33,7 +33,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
         // if we have at least 2 grouped bar traces on the same subplot,
         // we should default to a gap anyway, even if the data is histograms
-        if(layoutIn.barmode !== 'overlay' && layoutIn.barmode !== 'stack') {
+        if(mode === 'group') {
             var subploti = trace.xaxis + trace.yaxis;
             if(usedSubplots[subploti]) gappedAnyway = true;
             usedSubplots[subploti] = true;
@@ -46,9 +46,11 @@ module.exports = function(layoutIn, layoutOut, fullData) {
         }
     }
 
-    if(!hasBars) return;
+    if(!hasBars) {
+        delete layoutOut.barmode;
+        return;
+    }
 
-    var mode = coerce('barmode');
     if(mode !== 'overlay') coerce('barnorm');
 
     coerce('bargap', (shouldBeGapless && !gappedAnyway) ? 0 : 0.2);

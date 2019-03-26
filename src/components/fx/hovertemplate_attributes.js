@@ -31,8 +31,7 @@ module.exports = function(opts, extra) {
         valType: 'string',
         role: 'info',
         dflt: '',
-        arrayOk: true,
-        editType: 'none',
+        editType: opts.editType || 'none',
         description: [
             'Template string used for rendering the information that appear on hover box.',
             'Note that this will override `hoverinfo`.',
@@ -42,9 +41,14 @@ module.exports = function(opts, extra) {
             'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plot.ly/javascript/plotlyjs-events/#event-data.',
             'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
             descPart,
-            'Anything contained in tag `<extra>` is displayed in the secondary box, for example "<extra>{fullData.name}</extra>".'
+            'Anything contained in tag `<extra>` is displayed in the secondary box, for example "<extra>{fullData.name}</extra>".',
+            'To hide the secondary box completely, use an empty tag `<extra></extra>`.'
         ].join(' ')
     };
+
+    if(opts.arrayOk !== false) {
+        hovertemplate.arrayOk = true;
+    }
 
     return hovertemplate;
 };

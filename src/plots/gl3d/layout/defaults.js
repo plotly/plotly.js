@@ -69,6 +69,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         coerce('camera.' + cameraKeys[j] + '.z');
     }
 
+    coerce('camera.projection.type');
+
     /*
      * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)
      * note that 0's go false with the !! call
@@ -128,10 +130,12 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
                 var y = sceneLayoutIn.camera.up.y;
                 var z = sceneLayoutIn.camera.up.z;
 
-                if(!x || !y || !z) {
-                    dragmode = 'turntable';
-                } else if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) {
-                    dragmode = 'turntable';
+                if(z !== 0) {
+                    if(!x || !y || !z) {
+                        dragmode = 'turntable';
+                    } else if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) {
+                        dragmode = 'turntable';
+                    }
                 }
             } else {
                 dragmode = 'turntable';

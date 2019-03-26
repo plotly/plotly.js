@@ -18,6 +18,8 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     var col2 = ax2.makeCalcdata(trace, var2Name);
     var textCol = trace.text;
     var hasColumnText = (textCol !== undefined && Lib.isArray1D(textCol));
+    var hoverTextCol = trace.hovertext;
+    var hasColumnHoverText = (hoverTextCol !== undefined && Lib.isArray1D(hoverTextCol));
     var i, j;
 
     var col1dv = Lib.distinctVals(col1);
@@ -26,6 +28,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     var col2vals = col2dv.vals;
     var newArrays = [];
     var text;
+    var hovertext;
 
     for(i = 0; i < arrayVarNames.length; i++) {
         newArrays[i] = Lib.init2dArray(col2vals.length, col1vals.length);
@@ -33,6 +36,9 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
 
     if(hasColumnText) {
         text = Lib.init2dArray(col2vals.length, col1vals.length);
+    }
+    if(hasColumnHoverText) {
+        hovertext = Lib.init2dArray(col2vals.length, col1vals.length);
     }
 
     for(i = 0; i < colLen; i++) {
@@ -48,6 +54,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
             }
 
             if(hasColumnText) text[i2][i1] = textCol[i];
+            if(hasColumnHoverText) hovertext[i2][i1] = hoverTextCol[i];
         }
     }
 
@@ -57,4 +64,5 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
         trace['_' + arrayVarNames[j]] = newArrays[j];
     }
     if(hasColumnText) trace._text = text;
+    if(hasColumnHoverText) trace._hovertext = hovertext;
 };

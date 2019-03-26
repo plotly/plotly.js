@@ -9,6 +9,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
+var barAttrs = require('../bar/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -71,6 +72,9 @@ module.exports = {
             'this trace\'s (x,y) coordinates.',
             'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
+    }),
+    hovertext: extendFlat({}, scatterAttrs.hovertext, {
+        description: 'Same as `text`.'
     }),
     whiskerwidth: {
         valType: 'number',
@@ -249,6 +253,9 @@ module.exports = {
         editType: 'plot'
     },
     fillcolor: scatterAttrs.fillcolor,
+
+    offsetgroup: barAttrs.offsetgroup,
+    alignmentgroup: barAttrs.alignmentgroup,
 
     selected: {
         marker: scatterAttrs.selected.marker,
