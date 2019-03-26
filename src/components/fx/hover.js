@@ -672,11 +672,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var pt = hoverData[itemnum];
         var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
 
-        var ht = false;
-        if(pt.cd[pt.index] && pt.cd[pt.index].ht) ht = pt.cd[pt.index].ht;
-        hoverData[itemnum].hovertemplate = ht || pt.trace.hovertemplate || false;
-        hoverData[itemnum].eventData = [eventData];
+        if(pt.hovertemplate !== false) {
+            var ht = false;
+            if(pt.cd[pt.index] && pt.cd[pt.index].ht) {
+                ht = pt.cd[pt.index].ht;
+            }
+            pt.hovertemplate = ht || pt.trace.hovertemplate || false;
+        }
 
+        pt.eventData = [eventData];
         newhoverdata.push(eventData);
     }
 
