@@ -73,12 +73,10 @@ argv._.forEach(function(pattern) {
 });
 
 // To get rid of duplicates
-Array.prototype.unique = function() {
-    return this.filter(function(value, index, self) {
-        return self.indexOf(value) === index;
-    });
-};
-allMockList = allMockList.unique();
+function unique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+allMockList = allMockList.filter(unique);
 
 // filter out untestable mocks if no pattern is specified (ie. we're testing all mocks)
 // or if flag '--filter' is provided
@@ -87,6 +85,8 @@ if(allMock || filter) {
     allMockList = allMockList.filter(untestableFilter);
     console.log('\n');
 }
+
+sortGl2dMockList(allMockList);
 
 // main
 if(isInQueue) {
@@ -99,9 +99,7 @@ else {
 /* Test cases:
  *
  * - font-wishlist
- * - all gl2d
  * - all mapbox
- * - gl3d_cone-*
  *
  * don't behave consistently from run-to-run and/or
  * machine-to-machine; skip over them for now.
@@ -110,13 +108,40 @@ else {
 function untestableFilter(mockName) {
     var cond = !(
         mockName === 'font-wishlist' ||
-        // mockName.indexOf('gl2d_') !== -1 ||
         mockName.indexOf('mapbox_') !== -1
     );
 
     if(!cond) console.log(' -', mockName);
 
     return cond;
+}
+
+/* gl2d pointcloud and other non-regl gl2d mock(s)
+ * must be tested first on in order to work;
+ * sort them here.
+ *
+ * gl-shader appears to conflict with regl.
+ * We suspect that the lone gl context on CircleCI is
+ * having issues with dealing with the two different
+ * program binding algorithm.
+ *
+ * The problem will be solved by switching all our
+ * WebGL-based trace types to regl.
+ *
+ * More info here:
+ * https://github.com/plotly/plotly.js/pull/1037
+ */
+function sortGl2dMockList(mockList) {
+    var mockNames = ['gl2d_pointcloud-basic', 'gl2d_heatmapgl'];
+    var pos = 0;
+
+    mockNames.forEach(function(m) {
+        var ind = mockList.indexOf(m);
+        var tmp = mockList[pos];
+        mockList[pos] = m;
+        mockList[ind] = tmp;
+        pos++;
+    });
 }
 
 function runInBatch(mockList) {
