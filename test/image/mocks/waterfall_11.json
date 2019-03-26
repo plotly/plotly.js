@@ -292,7 +292,7 @@
         "plot_bgcolor": "rgb(217, 217, 217)",
         "hovermode": "x",
         "dragmode": "zoom",
-        "barmode": "group",
+        "waterfallmode": "group",
         "bargap": 0.2,
         "bargroupgap": 0,
         "boxmode": "overlay",

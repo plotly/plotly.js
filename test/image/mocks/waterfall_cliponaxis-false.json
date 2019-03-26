@@ -62,7 +62,7 @@
     }
   ],
   "layout": {
-	"barmode": "overlay",
+	"waterfallmode": "overlay",
 	"legend": {
       "x": 0.5,
       "xanchor": "center",

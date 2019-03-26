@@ -181,7 +181,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
 
     // compute text position
-    var barmode = gd._fullLayout.barmode;
+    var barmode = gd._fullLayout.barmode || gd._fullLayout.waterfallmode;
     var inStackMode = (barmode === 'stack');
     var inRelativeMode = (barmode === 'relative');
     var inStackOrRelativeMode = inStackMode || inRelativeMode;

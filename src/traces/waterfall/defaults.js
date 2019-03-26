@@ -78,7 +78,7 @@ function crossTraceDefaults(fullData, fullLayout) {
         traceOut = fullData[i];
 
         traceIn = traceOut._input;
-        if(fullLayout.barmode === 'group') {
+        if(fullLayout.waterfallmode === 'group') {
             handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
         }
     }

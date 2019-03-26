@@ -9,7 +9,7 @@
 'use strict';
 
 module.exports = {
-    barmode: {
+    waterfallmode: {
         valType: 'enumerated',
         values: ['group', 'overlay'],
         dflt: 'group',

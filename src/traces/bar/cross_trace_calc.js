@@ -56,7 +56,7 @@ function crossTraceCalc(gd, plotinfo) {
 function setGroupPositions(gd, pa, sa, calcTraces) {
     if(!calcTraces.length) return;
 
-    var barmode = gd._fullLayout.barmode;
+    var barmode = gd._fullLayout.barmode || gd._fullLayout.waterfallmode;
     var overlay = (barmode === 'overlay');
     var group = (barmode === 'group');
     var excluded;

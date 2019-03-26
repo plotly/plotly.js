@@ -132,7 +132,7 @@
         }
     ],
     "layout": {
-        "barmode": "overlay",
+        "waterfallmode": "overlay",
         "title": {
             "text": "Profit and loss statement 2018 vs 2019<br>overlaid waterfall chart"
         },

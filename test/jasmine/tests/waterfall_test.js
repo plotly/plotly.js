@@ -215,7 +215,7 @@ describe('waterfall calc / crossTraceCalc', function() {
         }, {
             y: [3, 1, 2]
         }], {
-            barmode: 'overlay'
+            waterfallmode: 'overlay'
         });
 
         var cd = gd.calcdata;
@@ -235,7 +235,7 @@ describe('waterfall calc / crossTraceCalc', function() {
         }, {
             y: [3, 1, 2]
         }], {
-            barmode: 'group',
+            waterfallmode: 'group',
             // asumming default bargap is 0.2
             bargroupgap: 0.1
         });
@@ -313,7 +313,7 @@ describe('Waterfall.crossTraceCalc', function() {
             y: [1]
         }], {
             bargap: 0.2,
-            barmode: 'overlay'
+            waterfallmode: 'overlay'
         });
 
         var cd = gd.calcdata;
@@ -374,7 +374,7 @@ describe('Waterfall.crossTraceCalc', function() {
             y: [1]
         }], {
             bargap: 0.2,
-            barmode: 'overlay'
+            waterfallmode: 'overlay'
         });
 
         var cd = gd.calcdata;
@@ -395,7 +395,7 @@ describe('Waterfall.crossTraceCalc', function() {
             y: [1]
         }], {
             bargap: 0,
-            barmode: 'group'
+            waterfallmode: 'group'
         });
 
         var cd = gd.calcdata;
@@ -414,7 +414,7 @@ describe('Waterfall.crossTraceCalc', function() {
             y: [-1, -2, -3]
         }], {
             bargap: 0,
-            barmode: 'group'
+            waterfallmode: 'group'
         });
 
         var cd = gd.calcdata;
@@ -431,7 +431,7 @@ describe('Waterfall.crossTraceCalc', function() {
             y: [10, 20, 30]
         }], {
             bargap: 0,
-            barmode: 'overlay'
+            waterfallmode: 'overlay'
         });
 
         var cd = gd.calcdata;
@@ -452,7 +452,7 @@ describe('Waterfall.crossTraceCalc', function() {
             y: [-0.5, -1, -1.5]
         }], {
             bargap: 0,
-            barmode: 'overlay'
+            waterfallmode: 'overlay'
         });
 
         var xa = gd._fullLayout.xaxis;
@@ -476,7 +476,7 @@ describe('Waterfall.crossTraceCalc', function() {
             y: [-1, -2, -3]
         }], {
             bargap: 0,
-            barmode: 'overlay'
+            waterfallmode: 'overlay'
         });
 
         var xa = gd._fullLayout.xaxis;
@@ -486,12 +486,12 @@ describe('Waterfall.crossTraceCalc', function() {
     });
 
     it('should include explicit base in size axis range', function() {
-        var barmodes = ['group', 'overlay'];
-        barmodes.forEach(function(barmode) {
+        var waterfallmodes = ['group', 'overlay'];
+        waterfallmodes.forEach(function(waterfallmode) {
             var gd = mockWaterfallPlot([
                 {y: [3, 4, -5], base: 10}
             ], {
-                barmode: barmode
+                waterfallmode: waterfallmode
             });
 
             var ya = gd._fullLayout.yaxis;
@@ -505,7 +505,7 @@ describe('Waterfall.crossTraceCalc', function() {
             {y: [2, 20, 2e10, -2]}
         ], {
             yaxis: {type: 'log'},
-            barmode: 'group'
+            waterfallmode: 'group'
         });
 
         var ya = gd._fullLayout.yaxis;
@@ -756,7 +756,7 @@ describe('A waterfall plot', function() {
         };
         var trace2 = Lib.extendDeep({}, trace1, {textposition: 'outside'});
         var layout = {
-            barmode: 'group',
+            waterfallmode: 'group',
             font: {
                 family: 'Roboto',
                 size: 12
@@ -852,7 +852,7 @@ describe('A waterfall plot', function() {
                 yaxis: { range: [-6, 6] },
                 height: 400,
                 width: 400,
-                barmode: 'overlay'
+                waterfallmode: 'overlay'
             }
         };
 
