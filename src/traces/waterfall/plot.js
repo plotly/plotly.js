@@ -37,10 +37,10 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
 
         var group = Lib.ensureSingle(plotGroup, 'g', 'lines');
 
-        var connectors = group.selectAll('g.lines').data(Lib.identity);
+        var connectors = group.selectAll('g.line').data(Lib.identity);
 
         connectors.enter().append('g')
-            .classed('lines', true);
+            .classed('line', true);
 
         connectors.exit().remove();
 

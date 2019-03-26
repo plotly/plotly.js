@@ -18,17 +18,14 @@ function style(gd, cd) {
 
     var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.bars');
 
-    s.selectAll('g.lines').each(function(d, i) {
-        if(i === 0) {
-            var sel = d3.select(this);
-            var trace = d[0].trace;
-
-            var l = sel.selectAll('path');
-            var lw = trace.connector.width;
-            var lc = trace.connector.color;
-            var ld = trace.connector.dash;
-            lineGroupStyle(l, lw, lc, ld);
-        }
+    s.selectAll('g.lines').each(function(d) {
+        var sel = d3.select(this);
+        var connector = d[0].trace.connector;
+        lineGroupStyle(sel.selectAll('path'),
+            connector.width,
+            connector.color,
+            connector.dash
+        );
     });
 }
 
