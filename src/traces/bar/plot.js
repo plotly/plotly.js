@@ -91,7 +91,11 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
             function roundWithLine(v) {
                 // if there are explicit gaps, don't round,
                 // it can make the gaps look crappy
-                return (fullLayout.bargap === 0 && fullLayout.bargroupgap === 0) ?
+
+                var gap = fullLayout.bargap || fullLayout.waterfallgap;
+                var groupgap = fullLayout.bargroupgap;
+
+                return (gap === 0 && groupgap === 0) ?
                     d3.round(Math.round(v) - offset, 2) : v;
             }
 

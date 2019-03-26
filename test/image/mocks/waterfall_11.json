@@ -293,7 +293,7 @@
         "hovermode": "x",
         "dragmode": "zoom",
         "waterfallmode": "group",
-        "bargap": 0.2,
+        "waterfallgap": 0.2,
         "bargroupgap": 0,
         "boxmode": "overlay",
         "separators": ".,",

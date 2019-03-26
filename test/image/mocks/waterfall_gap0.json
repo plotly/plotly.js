@@ -17,7 +17,7 @@
     }
   ],
   "layout": {
-    "bargap": 0,
+    "waterfallgap": 0,
     "xaxis": {
       "type": "category",
       "range": [

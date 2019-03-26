@@ -33,9 +33,11 @@ function style(gd, cd) {
     // crispEdges to turn off antialiasing so an artificial gap
     // isn't introduced.
     .each(function(d) {
+        var gap = fullLayout.bargap || fullLayout.waterfallgap;
+        var groupgap = fullLayout.bargroupgap;
+
         if((fullLayout.barmode === 'stack' && barcount > 1) ||
-                (fullLayout.bargap === 0 &&
-                 fullLayout.bargroupgap === 0 &&
+                (gap === 0 && groupgap === 0 &&
                  !d[0].trace.marker.line.width)) {
             d3.select(this).attr('shape-rendering', 'crispEdges');
         }

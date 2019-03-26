@@ -236,7 +236,7 @@ describe('waterfall calc / crossTraceCalc', function() {
             y: [3, 1, 2]
         }], {
             waterfallmode: 'group',
-            // asumming default bargap is 0.2
+            // asumming default waterfallgap is 0.2
             bargroupgap: 0.1
         });
 
@@ -312,7 +312,7 @@ describe('Waterfall.crossTraceCalc', function() {
             offset: null,
             y: [1]
         }], {
-            bargap: 0.2,
+            waterfallgap: 0.2,
             waterfallmode: 'overlay'
         });
 
@@ -373,7 +373,7 @@ describe('Waterfall.crossTraceCalc', function() {
             width: null,
             y: [1]
         }], {
-            bargap: 0.2,
+            waterfallgap: 0.2,
             waterfallmode: 'overlay'
         });
 
@@ -394,7 +394,7 @@ describe('Waterfall.crossTraceCalc', function() {
             width: null,
             y: [1]
         }], {
-            bargap: 0,
+            waterfallgap: 0,
             waterfallmode: 'group'
         });
 
@@ -413,7 +413,7 @@ describe('Waterfall.crossTraceCalc', function() {
             offset: -1,
             y: [-1, -2, -3]
         }], {
-            bargap: 0,
+            waterfallgap: 0,
             waterfallmode: 'group'
         });
 
@@ -430,7 +430,7 @@ describe('Waterfall.crossTraceCalc', function() {
         }, {
             y: [10, 20, 30]
         }], {
-            bargap: 0,
+            waterfallgap: 0,
             waterfallmode: 'overlay'
         });
 
@@ -451,7 +451,7 @@ describe('Waterfall.crossTraceCalc', function() {
             width: 2,
             y: [-0.5, -1, -1.5]
         }], {
-            bargap: 0,
+            waterfallgap: 0,
             waterfallmode: 'overlay'
         });
 
@@ -475,7 +475,7 @@ describe('Waterfall.crossTraceCalc', function() {
             base: -7,
             y: [-1, -2, -3]
         }], {
-            bargap: 0,
+            waterfallgap: 0,
             waterfallmode: 'overlay'
         });
 

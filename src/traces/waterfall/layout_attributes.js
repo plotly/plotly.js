@@ -24,7 +24,7 @@ module.exports = {
             'you might need to an *opacity* to see multiple bars.'
         ].join(' ')
     },
-    bargap: {
+    waterfallgap: {
         valType: 'number',
         min: 0,
         max: 1,

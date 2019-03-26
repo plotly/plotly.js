@@ -49,6 +49,6 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
     coerce('waterfallmode');
 
-    coerce('bargap', (shouldBeGapless && !gappedAnyway) ? 0 : 0.2);
+    coerce('waterfallgap', (shouldBeGapless && !gappedAnyway) ? 0 : 0.2);
     coerce('bargroupgap');
 };
