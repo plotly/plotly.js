@@ -71,6 +71,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
                 closeBoxData[0].spikeDistance = undefined;
                 closeBoxData[0][spikePosAttr] = undefined;
 
+                // no hovertemplate support yet
+                kdePointData.hovertemplate = false;
+
                 closeData.push(kdePointData);
 
                 violinLineAttrs = {stroke: pointData.color};

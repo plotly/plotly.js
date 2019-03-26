@@ -160,6 +160,38 @@ describe('Test violin defaults', function() {
         expect(traceOut.scalegroup).toBe('');
     });
 
+    it('should not coerce hovertemplate when *hoveron* does not contains *points* flag', function() {
+        var ht = '--- %{y} ---';
+
+        _supply({
+            y: [1, 2, 1],
+            hoveron: 'points',
+            hovertemplate: ht
+        });
+        expect(traceOut.hovertemplate).toBe(ht, 'hoveron:points');
+
+        _supply({
+            y: [1, 2, 1],
+            hoveron: 'kde',
+            hovertemplate: ht
+        });
+        expect(traceOut.hovertemplate).toBe(undefined, 'hoveron:kde');
+
+        _supply({
+            y: [1, 2, 1],
+            hoveron: 'all',
+            hovertemplate: ht
+        });
+        expect(traceOut.hovertemplate).toBe(ht, 'hoveron:all');
+
+        _supply({
+            y: [1, 2, 1],
+            hoveron: 'violins+points',
+            hovertemplate: ht
+        });
+        expect(traceOut.hovertemplate).toBe(ht, 'hoveron:violins+points');
+    });
+
     it('should not include alignementgroup/offsetgroup when violinmode is not *group*', function() {
         var gd = {
             data: [{type: 'violin', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
@@ -590,6 +622,20 @@ describe('Test violin hover:', function() {
         },
         pos: [417, 309],
         nums: '(14, 2)',
+        name: ''
+    }, {
+        desc: 'with hovertemplate for points',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.points = 'all';
+                trace.hoveron = 'points';
+                trace.hovertemplate = 'Sample pt %{pointNumber}: %{y:.3f}<extra></extra>';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        pos: [220, 200],
+        nums: 'Sample pt 3: 0.900',
         name: ''
     }]
     .forEach(function(specs) {

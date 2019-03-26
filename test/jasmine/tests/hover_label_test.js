@@ -1938,6 +1938,38 @@ describe('hover info', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should fallback to regular hover content when hoveron does not support hovertemplate', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
+
+        fig.data.forEach(function(trace) {
+            trace.hoveron = 'points+fills';
+            trace.hovertemplate = '%{x} | %{y}';
+        });
+
+        fig.layout.hovermode = 'closest';
+        fig.layout.showlegend = false;
+        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
+
+        Plotly.plot(gd, fig)
+        .then(function() { _hoverNatural(gd, 180, 200); })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: 'trace 1',
+                name: ''
+            }, 'hovering on a fill');
+        })
+        .then(function() { _hoverNatural(gd, 50, 95); })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: '0 | 5',
+                name: 'trace 1'
+            }, 'hovering on a pt');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('hover info on stacked subplots', function() {
