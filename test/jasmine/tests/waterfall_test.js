@@ -993,6 +993,38 @@ describe('A waterfall plot', function() {
         .then(done);
     });
 
+    it('should be able to add/remove connector nodes on restyle', function(done) {
+        function _assertNumberOfWaterfallConnectorNodes(cnt) {
+            var sel = d3.select(gd).select('.waterfalllayer').selectAll('.line');
+            expect(sel.size()).toBe(cnt);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'waterfall',
+            x: ['Initial', 'A', 'B', 'C', 'Total'],
+            y: [10, 2, 3, 5],
+            measure: ['absolute', 'relative', 'relative', 'relative', 'total'],
+            connector: { visible: false }
+        }])
+        .then(function() {
+            _assertNumberOfWaterfallConnectorNodes(0);
+            return Plotly.restyle(gd, 'connector.visible', true);
+        })
+        .then(function() {
+            _assertNumberOfWaterfallConnectorNodes(4);
+            return Plotly.restyle(gd, 'connector.visible', false);
+        })
+        .then(function() {
+            _assertNumberOfWaterfallConnectorNodes(0);
+            return Plotly.restyle(gd, 'connector.visible', true);
+        })
+        .then(function() {
+            _assertNumberOfWaterfallConnectorNodes(4);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should coerce text-related attributes', function(done) {
         var data = [{
             y: [10, 20, 30, 40],
