@@ -24,7 +24,7 @@ function style(gd, cd) {
         var gTrace = d3.select(this);
         var trace = d[0].trace;
 
-        gTrace.selectAll('.point').each(function(di) {
+        gTrace.selectAll('.point > path').each(function(di) {
             var cont = trace[di.dir].marker;
 
             d3.select(this)
