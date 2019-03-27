@@ -27,14 +27,17 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
         var cd0 = cd[0];
         var trace = cd0.trace;
 
-        if(!trace.connector || !trace.connector.visible || !trace.connector.line.width) return;
+        var group = Lib.ensureSingle(plotGroup, 'g', 'lines');
+
+        if(!trace.connector || !trace.connector.visible) {
+            group.remove();
+            return;
+        }
 
         var isHorizontal = (trace.orientation === 'h');
         var mode = trace.connector.mode;
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
-
-        var group = Lib.ensureSingle(plotGroup, 'g', 'lines');
 
         var connectors = group.selectAll('g.line').data(Lib.identity);
 

@@ -20,7 +20,7 @@ function style(gd, cd) {
 
     s.selectAll('g.lines').each(function(d) {
         var sel = d3.select(this);
-        var connectorLine = (d[0].trace.connector.line || {});
+        var connectorLine = d[0].trace.connector.line;
 
         lineGroupStyle(sel.selectAll('path'),
             connectorLine.width,
