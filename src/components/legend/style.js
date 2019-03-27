@@ -283,8 +283,6 @@ module.exports = function style(s, gd) {
 
     function styleBars(d) {
         var trace = d[0].trace;
-        if(trace.type === 'waterfall') return d;
-
         var marker = trace.marker || {};
         var markerLine = marker.line || {};
 

@@ -27,7 +27,7 @@ Waterfall.selectPoints = require('../bar/select');
 Waterfall.moduleType = 'trace';
 Waterfall.name = 'waterfall';
 Waterfall.basePlotModule = require('../../plots/cartesian');
-Waterfall.categories = ['cartesian', 'svg', 'bar', 'oriented', 'showLegend', 'zoomScale'];
+Waterfall.categories = ['cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'];
 Waterfall.meta = {
     description: [
         'Draws waterfall trace which is useful graph to displays the',
