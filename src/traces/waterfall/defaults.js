@@ -64,11 +64,13 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 
-    coerce('connector.visible'); // TODO: should we coerce other connector attributes if connector.visible === false ?
-    coerce('connector.color');
-    coerce('connector.width');
-    coerce('connector.dash');
-    coerce('connector.mode');
+    var connectorVisible = coerce('connector.visible');
+    if(connectorVisible) {
+        coerce('connector.color');
+        coerce('connector.width');
+        coerce('connector.dash');
+        coerce('connector.mode');
+    }
 }
 
 function crossTraceDefaults(fullData, fullLayout) {
