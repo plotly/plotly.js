@@ -82,11 +82,11 @@ function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
 
-    for(var i = 0; i < fullData.length; i++) {
-        traceOut = fullData[i];
+    if(fullLayout.waterfallmode === 'group') {
+        for(var i = 0; i < fullData.length; i++) {
+            traceOut = fullData[i];
+            traceIn = traceOut._input;
 
-        traceIn = traceOut._input;
-        if(fullLayout.waterfallmode === 'group') {
             handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
         }
     }
