@@ -142,9 +142,9 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 }
 
 function getTraceColor(trace, di) {
-    var mc = di.mcc || trace.marker.color;
-    var mlc = di.mlcc || trace.marker.line.color;
-    var mlw = di.mlw || trace.marker.line.width;
+    var mc = (di.mc !== undefined) ? di.mc : trace.marker.color;
+    var mlc = (di.mlc !== undefined) ? di.mlc : trace.marker.line.color;
+    var mlw = (di.mlw !== undefined) ? di.mlw : trace.marker.line.width;
 
     if(Color.opacity(mc)) return mc;
     else if(Color.opacity(mlc) && mlw) return mlc;

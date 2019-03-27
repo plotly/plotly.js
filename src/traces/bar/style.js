@@ -39,7 +39,7 @@ function style(gd, cd) {
         if((fullLayout.barmode === 'stack' && barcount > 1) || (
             fullLayout[prefix + 'gap'] === 0 &&
             fullLayout[prefix + 'groupgap'] === 0 &&
-            !trace.marker.line.width)
+            !((d[0].trace.marker || {}).line || {}).width)
         ) {
             d3.select(this).attr('shape-rendering', 'crispEdges');
         }

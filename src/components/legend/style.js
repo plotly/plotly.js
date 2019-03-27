@@ -261,10 +261,10 @@ module.exports = function style(s, gd) {
 
         barpath.each(function(d, i) {
 
-            var container = trace[
+            var container = trace.marker || trace[
                 (i % 3 === 0) ? 'increasing' :
                 (i % 3 === 1) ? 'decreasing' : 'totals'
-            ] || trace.marker;
+            ];
 
             var line = container.line || {};
 
@@ -273,10 +273,10 @@ module.exports = function style(s, gd) {
             var w = (d0.mlw + 1 || line.width + 1) - 1;
 
             p.style('stroke-width', w + 'px')
-                .call(Color.fill, d0.mc || container.color);
+                .call(Color.fill, container.color);
 
             if(w) {
-                p.call(Color.stroke, d0.mlc || container.color);
+                p.call(Color.stroke, container.color);
             }
         });
     }

@@ -1262,14 +1262,14 @@ describe('waterfall hover', function() {
         it('should return the correct hover point data (case x)', function() {
             var out = _hover(gd, 0, 0, 'x');
 
-            expect(out.style).toEqual([0, '#3D9970', 0, 13.23]);
+            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
             assertPos(out.pos, [11.87, 106.8, 52.71, 52.71]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
             var out = _hover(gd, -0.2, 12, 'closest');
 
-            expect(out.style).toEqual([0, '#3D9970', 0, 13.23]);
+            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
             assertPos(out.pos, [11.87, 59.33, 52.71, 52.71]);
         });
     });

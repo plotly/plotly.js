@@ -364,14 +364,12 @@ drawing.pointStyle = function(s, trace, gd) {
 
 drawing.waterfallStyle = function(d, trace) {
     var marker = trace.marker;
-
-    if(d.isSum) {
-        return trace.totals || marker;
-    } else {
-        if(d.rawS > 0) return trace.increasing || marker;
-        if(d.rawS < 0) return trace.decreasing || marker;
+    if(marker) return marker;
+    if(!d.isSum) {
+        if(d.rawS > 0) return trace.increasing;
+        return trace.decreasing; // Note here by default we return RED for zero and null
     }
-    return marker;
+    return trace.totals;
 };
 
 drawing.singlePointStyle = function(d, sel, trace, fns, gd) {

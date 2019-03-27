@@ -51,10 +51,13 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     handleText(traceIn, traceOut, layout, coerce);
 
-    handleDirection(coerce, 'increasing', INCREASING_COLOR);
-    handleDirection(coerce, 'decreasing', DECREASING_COLOR);
-    handleDirection(coerce, 'totals', TOTALS_COLOR);
-    handleDirection(coerce, 'marker', defaultColor);
+    if('marker' in traceIn) {
+        handleDirection(coerce, 'marker', defaultColor);
+    } else {
+        handleDirection(coerce, 'increasing', INCREASING_COLOR);
+        handleDirection(coerce, 'decreasing', DECREASING_COLOR);
+        handleDirection(coerce, 'totals', TOTALS_COLOR);
+    }
 
     coerce('selected.marker.color');
     coerce('unselected.marker.color');

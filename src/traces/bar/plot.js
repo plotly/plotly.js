@@ -84,8 +84,9 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 return;
             }
 
-            var lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
-                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
+            var lw = (di.mlw + 1 ||
+                    (((trace.marker || {}).line) || {}).width + 1 ||
+                    (di.trace ? ((di.trace.marker || {}).line || {}).width : 0) + 1) - 1;
             var offset = d3.round((lw / 2) % 1, 2);
             var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
             var bargap = fullLayout[prefix + 'gap'];
