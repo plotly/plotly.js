@@ -94,12 +94,21 @@ module.exports = {
         dash: lineAttrs.dash,
         mode: {
             valType: 'enumerated',
-            values: ['spanning', 'between', false],
+            values: ['spanning', 'between'],
             dflt: 'spanning',
             role: 'info',
             editType: 'plot',
             description: [
                 'Sets the shape of connector lines.'
+            ].join(' ')
+        },
+        visible: {
+            valType: 'boolean',
+            dflt: true,
+            role: 'info',
+            editType: 'plot',
+            description: [
+                'Determines if connector lines are drawn. '
             ].join(' ')
         },
         editType: 'plot'

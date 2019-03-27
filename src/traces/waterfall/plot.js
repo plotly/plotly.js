@@ -27,7 +27,7 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
         var cd0 = cd[0];
         var trace = cd0.trace;
 
-        if(!trace.connector || !trace.connector.width || !trace.connector.mode) return;
+        if(!trace.connector || !trace.connector.width || !trace.connector.visible) return;
 
         var isHorizontal = (trace.orientation === 'h');
         var mode = trace.connector.mode;

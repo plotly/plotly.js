@@ -10,7 +10,7 @@
             "increasing": { "color": "Blue" },
             "marker": { "color": "Blue" },
             "opacity": 0.5,
-            "connector": { "mode": false },
+            "connector": { "visible": false },
             "type": "waterfall"
         }, {
             "width": [0.4, 0.6, 0.8, 1],
@@ -23,7 +23,7 @@
             "increasing": { "color": "Orange" },
             "marker": { "color": "Orange" },
             "opacity": 0.5,
-            "connector": { "mode": false },
+            "connector": { "visible": false },
             "type": "waterfall"
         }, {
             "width": 1,
@@ -35,7 +35,7 @@
             "increasing": { "color": "Green" },
             "marker": { "color": "Green" },
             "opacity": 0.5,
-            "connector": { "mode": false },
+            "connector": { "visible": false },
             "type": "waterfall"
         }, {
             "text": [2, "outside text", -3, -2],
@@ -46,7 +46,7 @@
             "increasing": { "color": "Red" },
             "marker": { "color": "Red" },
             "opacity": 0.5,
-            "connector": { "mode": false },
+            "connector": { "visible": false },
             "type": "waterfall"
         }
     ],
