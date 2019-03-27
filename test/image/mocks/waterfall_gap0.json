@@ -12,8 +12,7 @@
         23
       ],
       "name": "SF Zoo",
-      "type": "waterfall",
-      "connector": { "mode": "steps" }
+      "type": "waterfall"
     }
   ],
   "layout": {

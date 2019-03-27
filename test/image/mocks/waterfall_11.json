@@ -29,7 +29,6 @@
             "marker": {
                 "color": "rgb(255, 102, 97)"
             },
-            "connector": { "mode": "steps" },
             "type": "waterfall"
         },
         {
@@ -61,7 +60,6 @@
             "marker": {
                 "color": "rgb(0, 196, 200)"
             },
-            "connector": { "mode": "steps" },
             "type": "waterfall"
         },
         {
@@ -84,7 +82,6 @@
                 "visible": true
             },
             "visible": false,
-            "connector": { "mode": "steps" },
             "type": "waterfall"
         },
         {
@@ -114,7 +111,6 @@
                 "traceref": "3"
             },
             "visible": false,
-            "connector": { "mode": "steps" },
             "type": "waterfall"
         }
     ],

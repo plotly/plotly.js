@@ -2,7 +2,6 @@
   "data": [
     {
       "type": "waterfall",
-      "connector": { "mode": "steps" },
       "x": [ "A", "B", "C", "D" ],
       "y": [ 1, -2, 3, 4 ],
       "offsetgroup": 1,
@@ -10,7 +9,6 @@
     },
     {
       "type": "waterfall",
-      "connector": { "mode": "steps" },
       "x": [ "A", "B", "C", "D" ],
       "y": [ 2, -3, 1, 5 ],
       "offsetgroup": 2,
@@ -18,7 +16,6 @@
     },
     {
       "type": "waterfall",
-      "connector": { "mode": "steps" },
       "x": [ "A", "B", "C", "D" ],
       "y": [ 1, -2, 3, 4 ],
       "yaxis": "y2",
@@ -27,7 +24,6 @@
     },
     {
       "type": "waterfall",
-      "connector": { "mode": "steps" },
       "x": [ "A", "B", "C", "D" ],
       "y": [ 2, -3, 1, 5 ],
       "yaxis": "y2",
@@ -36,7 +32,6 @@
     },
     {
       "type": "waterfall",
-      "connector": { "mode": "steps" },
       "x": [ "A", "B", "C", "D" ],
       "y": [ 1, -2, 3, 4 ],
       "offsetgroup": 1,
@@ -45,7 +40,6 @@
     },
     {
       "type": "waterfall",
-      "connector": { "mode": "steps" },
       "x": [ "A", "B", "C", "D" ],
       "y": [ 2, -3, 1, 5 ],
       "offsetgroup": 2,
@@ -54,7 +48,6 @@
     },
     {
       "type": "waterfall",
-      "connector": { "mode": "steps" },
       "x": [ "A", "B", "C", "D" ],
       "y": [ 1, -2, 3, 4 ],
       "yaxis": "y2",
@@ -64,7 +57,6 @@
     },
     {
       "type": "waterfall",
-      "connector": { "mode": "steps" },
       "x": [ "A", "B", "C", "D" ],
       "y": [ 2, -3, 1, 5 ],
       "yaxis": "y2",

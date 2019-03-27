@@ -94,7 +94,7 @@ module.exports = {
         dash: lineAttrs.dash,
         mode: {
             valType: 'enumerated',
-            values: ['steps', 'spanning', 'between', false],
+            values: ['spanning', 'between', false],
             dflt: 'spanning',
             role: 'info',
             editType: 'plot',
