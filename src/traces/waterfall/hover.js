@@ -30,12 +30,15 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var sizeLetter = (trace.orientation === 'h') ? 'x' : 'y';
 
     var size = (di.isSum) ? di.b + di.s : di.rawS;
+
     if(!di.isSum) {
         // format delta numbers:
         if(size > 0) {
             point.extraText = size + ' ' + DIRSYMBOL.increasing;
         } else if(size < 0) {
             point.extraText = '(' + (-size) + ') ' + DIRSYMBOL.decreasing;
+        } else {
+            return;
         }
         // display initial value
         point.extraText += '<br>Initial: ' + (di.b + di.s - size);
