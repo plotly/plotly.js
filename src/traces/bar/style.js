@@ -21,7 +21,7 @@ var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = require('./helpers');
 
 function style(gd, cd) {
-    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.bars');
+    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
     var barcount = s.size();
     var fullLayout = gd._fullLayout;
 

@@ -40,6 +40,8 @@ module.exports = function calc(gd, trace) {
     // set position and size (as well as for waterfall total size)
     var previousSum = 0;
     var newSize;
+    // trace-wide flags
+    var hasTotals = false;
 
     for(var i = 0; i < serieslen; i++) {
         var amount = size[i] || 0;
@@ -70,11 +72,16 @@ module.exports = function calc(gd, trace) {
             previousSum += newSize;
         }
 
+        if(cdi.dir === 'totals') {
+            hasTotals = true;
+        }
+
         if(trace.ids) {
             cdi.id = String(trace.ids[i]);
         }
     }
 
+    cd[0].hasTotals = hasTotals;
 
     mergeArray(trace.text, cd, 'tx');
     mergeArray(trace.hovertext, cd, 'htx');

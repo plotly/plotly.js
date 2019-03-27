@@ -244,39 +244,32 @@ module.exports = function style(s, gd) {
 
     function styleWaterfalls(d) {
         var trace = d[0].trace;
-        if(trace.type !== 'waterfall') return d;
 
-        var barpath = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legendbar')
-            .data(Registry.traceIs(trace, 'bar') ? [d, d, d] : []);
-        barpath.enter().append('path').classed('legendbar', true)
-            .attr('d', function(_, i) {
-                return (
-                    (i === 0) ? 'M-6,-6V6H0Z' :
-                    (i === 1) ? 'M6,6V-6H0Z' : 'M6,6H0L-6,-6H-0Z'
-                );
-            })
-            .attr('transform', 'translate(20,0)');
-        barpath.exit().remove();
+        var ptsData = [];
+        if(trace.type === 'waterfall' && trace.visible) {
+            ptsData = d[0].hasTotals ?
+                [['increasing', 'M-6,-6V6H0Z'], ['totals', 'M6,6H0L-6,-6H-0Z'], ['decreasing', 'M6,6V-6H0Z']] :
+                [['increasing', 'M-6,-6V6H6Z'], ['decreasing', 'M6,6V-6H-6Z']];
+        }
 
-        barpath.each(function(d, i) {
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendwaterfall')
+            .data(ptsData);
+        pts.enter().append('path').classed('legendwaterfall', true)
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
 
-            var container = trace.marker || trace[
-                (i % 3 === 0) ? 'increasing' :
-                (i % 3 === 1) ? 'decreasing' : 'totals'
-            ];
+        pts.each(function(dd) {
+            var pt = d3.select(this);
+            var cont = trace[dd[0]].marker;
 
-            var line = container.line || {};
+            pt.attr('d', dd[1])
+                .style('stroke-width', cont.line.width + 'px')
+                .call(Color.fill, cont.color);
 
-            var p = d3.select(this);
-            var d0 = d[0];
-            var w = (d0.mlw + 1 || line.width + 1) - 1;
-
-            p.style('stroke-width', w + 'px')
-                .call(Color.fill, container.color);
-
-            if(w) {
-                p.call(Color.stroke, container.color);
+            if(cont.line.width) {
+                pt.call(Color.stroke, cont.line.color);
             }
         });
     }
