@@ -16,10 +16,11 @@ var Registry = require('../registry');
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
 var AxisIds = require('../plots/cartesian/axis_ids');
-var cleanId = AxisIds.cleanId;
-var getFromTrace = AxisIds.getFromTrace;
 var Color = require('../components/color');
 
+var cleanId = AxisIds.cleanId;
+var getFromTrace = AxisIds.getFromTrace;
+var traceIs = Registry.traceIs;
 
 // clear the promise queue if one of them got rejected
 exports.clearPromiseQueue = function(gd) {
@@ -290,7 +291,7 @@ exports.cleanData = function(data) {
         // error_y.opacity is obsolete - merge into color
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Color.defaults;
-            var yeColor = trace.error_y.color || (Registry.traceIs(trace, 'bar') ?
+            var yeColor = trace.error_y.color || (traceIs(trace, 'bar') ?
                 Color.defaultLine :
                 dc[tracei % dc.length]);
             trace.error_y.color = Color.addOpacity(
@@ -302,7 +303,7 @@ exports.cleanData = function(data) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir === 'h' && (Registry.traceIs(trace, 'bar') ||
+            if(trace.bardir === 'h' && (traceIs(trace, 'bar') ||
                 trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
                 exports.swapXYData(trace);
@@ -332,11 +333,11 @@ exports.cleanData = function(data) {
         if(trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(Registry.traceIs(trace, 'gl3d') && trace.scene) {
+        if(traceIs(trace, 'gl3d') && trace.scene) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!Registry.traceIs(trace, 'pie') && !Registry.traceIs(trace, 'bar')) {
+        if(!traceIs(trace, 'pie') && !traceIs(trace, 'bar') && trace.type !== 'waterfall') {
             if(Array.isArray(trace.textposition)) {
                 for(i = 0; i < trace.textposition.length; i++) {
                     trace.textposition[i] = cleanTextPosition(trace.textposition[i]);

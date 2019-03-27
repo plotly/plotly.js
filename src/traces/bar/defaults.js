@@ -17,6 +17,8 @@ var handleStyleDefaults = require('./style_defaults');
 var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 var attributes = require('./attributes');
 
+var coerceFont = Lib.coerceFont;
+
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -97,12 +99,12 @@ function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
 
-    for(var i = 0; i < fullData.length; i++) {
-        traceOut = fullData[i];
+    if(fullLayout.barmode === 'group') {
+        for(var i = 0; i < fullData.length; i++) {
+            traceOut = fullData[i];
 
-        if(traceOut.type === 'bar') {
-            traceIn = traceOut._input;
-            if(fullLayout.barmode === 'group') {
+            if(traceOut.type === 'bar') {
+                traceIn = traceOut._input;
                 handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
             }
         }
@@ -110,15 +112,12 @@ function crossTraceDefaults(fullData, fullLayout) {
 }
 
 function handleText(traceIn, traceOut, layout, coerce, moduleHasSelUnselected) {
-
     var textPosition = coerce('textposition');
     var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
     var hasInside = hasBoth || textPosition === 'inside';
     var hasOutside = hasBoth || textPosition === 'outside';
 
     if(hasInside || hasOutside) {
-        var coerceFont = Lib.coerceFont;
-
         var textFont = coerceFont(coerce, 'textfont', layout.font);
 
         // Note that coercing `insidetextfont` is always needed –
