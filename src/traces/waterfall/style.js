@@ -20,11 +20,12 @@ function style(gd, cd) {
 
     s.selectAll('g.lines').each(function(d) {
         var sel = d3.select(this);
-        var connector = d[0].trace.connector;
+        var connectorLine = (d[0].trace.connector.line || {});
+
         lineGroupStyle(sel.selectAll('path'),
-            connector.line.width,
-            connector.line.color,
-            connector.line.dash
+            connectorLine.width,
+            connectorLine.color,
+            connectorLine.dash
         );
     });
 }
