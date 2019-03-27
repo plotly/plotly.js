@@ -7,8 +7,6 @@ var Drawing = require('@src/components/drawing');
 
 var Axes = require('@src/plots/cartesian/axes');
 
-var click = require('../assets/click');
-var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -213,17 +211,27 @@ describe('waterfall calc / crossTraceCalc', function() {
         var gd = mockWaterfallPlot([{
             y: [2, 1, 2]
         }, {
-            y: [3, 1, 2]
+            y: [3, 1, null, 2, null],
+            measure: ['absolute', 'relative', 'total', 'relative', 'total']
         }], {
             waterfallmode: 'overlay'
         });
 
         var cd = gd.calcdata;
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[2, 3, 5], [3, 4, 6]]);
-        assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0]]);
-        assertPointField(cd, 's', [[2, 3, 5], [3, 4, 6]]);
-        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertPointField(cd, 'w', [[0.8, 0.8, 0.8], [0.8, 0.8, 0.8, 0.8, 0.8]]);
+        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2, 3, 4]]);
+        assertPointField(cd, 'y', [[2, 3, 5], [3, 4, 4, 6, 6]]);
+        assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0, 0, 0]]);
+        assertPointField(cd, 's', [[2, 3, 5], [3, 4, 4, 6, 6]]);
+        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2, 3, 4]]);
+        assertPointField(cd, 'p0', [[-0.4, 0.6, 1.6], [-0.4, 0.6, 1.6, 2.6, 3.6]]);
+        assertPointField(cd, 'p1', [[0.4, 1.4, 2.4], [0.4, 1.4, 2.4, 3.4, 4.4]]);
+        assertPointField(cd, 's0', [[0, 2, 3], [0, 3, 0, 4, 0]]);
+        assertPointField(cd, 's1', [[2, 3, 5], [3, 4, 4, 6, 6]]);
+        assertPointField(cd, 'isSum', [[false, false, false], [true, false, true, false, true]]);
+        assertPointField(cd, 'rawS', [[2, 1, 2], [3, 1, 0, 2, 0]]);
+        assertPointField(cd, 'dir', [['increasing', 'increasing', 'increasing'], ['totals', 'increasing', 'totals', 'increasing', 'totals']]);
+        assertPointField(cd, 'hasTotals', [[false, undefined, undefined], [true, undefined, undefined, undefined, undefined]]);
         assertTraceField(cd, 't.barwidth', [0.8, 0.8]);
         assertTraceField(cd, 't.poffset', [-0.4, -0.4]);
         assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8]);
@@ -233,7 +241,8 @@ describe('waterfall calc / crossTraceCalc', function() {
         var gd = mockWaterfallPlot([{
             y: [2, 1, 2]
         }, {
-            y: [3, 1, 2]
+            y: [3, 1, null, 2, null],
+            measure: ['absolute', null, 'total', null, 'total']
         }], {
             waterfallmode: 'group',
             // asumming default waterfallgap is 0.2
@@ -241,11 +250,20 @@ describe('waterfall calc / crossTraceCalc', function() {
         });
 
         var cd = gd.calcdata;
-        assertPointField(cd, 'x', [[-0.2, 0.8, 1.8], [0.2, 1.2, 2.2]]);
-        assertPointField(cd, 'y', [[2, 3, 5], [3, 4, 6]]);
-        assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0]]);
-        assertPointField(cd, 's', [[2, 3, 5], [3, 4, 6]]);
-        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertPointField(cd, 'w', [[0.36, 0.36, 0.36], [0.36, 0.36, 0.36, 0.36, 0.36]]);
+        assertPointField(cd, 'x', [[-0.2, 0.8, 1.8], [0.2, 1.2, 2.2, 3.2, 4.2]]);
+        assertPointField(cd, 'y', [[2, 3, 5], [3, 4, 4, 6, 6]]);
+        assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0, 0, 0]]);
+        assertPointField(cd, 's', [[2, 3, 5], [3, 4, 4, 6, 6]]);
+        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2, 3, 4]]);
+        assertPointField(cd, 'p0', [[-0.38, 0.62, 1.62], [0.02, 1.02, 2.02, 3.02, 4.02]]);
+        assertPointField(cd, 'p1', [[-0.02, 0.98, 1.98], [0.38, 1.38, 2.38, 3.38, 4.38]]);
+        assertPointField(cd, 's0', [[0, 2, 3], [0, 3, 0, 4, 0]]);
+        assertPointField(cd, 's1', [[2, 3, 5], [3, 4, 4, 6, 6]]);
+        assertPointField(cd, 'isSum', [[false, false, false], [true, false, true, false, true]]);
+        assertPointField(cd, 'rawS', [[2, 1, 2], [3, 1, 0, 2, 0]]);
+        assertPointField(cd, 'dir', [['increasing', 'increasing', 'increasing'], ['totals', 'increasing', 'totals', 'increasing', 'totals']]);
+        assertPointField(cd, 'hasTotals', [[false, undefined, undefined], [true, undefined, undefined, undefined, undefined]]);
         assertTraceField(cd, 't.barwidth', [0.36, 0.36]);
         assertTraceField(cd, 't.poffset', [-0.38, 0.02]);
         assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8]);
@@ -617,31 +635,11 @@ describe('A waterfall plot', function() {
         };
     }
 
-    function assertTextFontFamilies(expFontFamilies) {
-        return function() {
-            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
-            expect(selection.size()).toBe(expFontFamilies.length);
-            selection.each(function(d, i) {
-                expect(this.style.fontFamily).toBe(expFontFamilies[i]);
-            });
-        };
-    }
-
-    function assertTextFontSizes(expFontSizes) {
-        return function() {
-            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
-            expect(selection.size()).toBe(expFontSizes.length);
-            selection.each(function(d, i) {
-                expect(this.style.fontSize).toBe(expFontSizes[i] + 'px');
-            });
-        };
-    }
-
-    it('should show waterfall texts (inside case)', function(done) {
+    it('should show texts (inside case)', function(done) {
         var data = [{
             y: [10, 20, 30],
             type: 'waterfall',
-            text: ['1', 'Very very very very very long waterfall text'],
+            text: ['1', 'Very very very very very long text'],
             textposition: 'inside',
         }];
         var layout = {};
@@ -667,11 +665,11 @@ describe('A waterfall plot', function() {
         .then(done);
     });
 
-    it('should show waterfall texts (horizontal case)', function(done) {
+    it('should show texts (horizontal case)', function(done) {
         var data = [{
             x: [10, -20, 30],
             type: 'waterfall',
-            text: ['Very very very very very long waterfall text', -20],
+            text: ['Very very very very very long text', -20],
             textposition: 'outside',
         }];
         var layout = {};
@@ -709,16 +707,15 @@ describe('A waterfall plot', function() {
         }
     };
 
-    it('should take waterfall fill opacities into account when calculating contrasting inside text colors', function(done) {
+    it('should take fill opacities into account when calculating contrasting inside text colors', function(done) {
         var trace = {
             x: [5, 10],
-            y: [5, 15],
+            y: [5, -15],
             text: ['Giraffes', 'Zebras'],
             type: 'waterfall',
             textposition: 'inside',
-            marker: {
-                color: ['rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.8)']
-            }
+            increasing: { marker: { color: 'rgba(0, 0, 0, 0.2)' } },
+            decreasing: { marker: { color: 'rgba(0, 0, 0, 0.8)' } }
         };
 
         Plotly.plot(gd, [trace])
@@ -734,84 +731,6 @@ describe('A waterfall plot', function() {
           .then(assertTextFontColors(Lib.repeat('#09f', 6)))
           .catch(failTest)
           .then(done);
-    });
-
-    it('should retain text styles throughout selecting and deselecting data points', function(done) {
-        var trace1 = {
-            x: ['giraffes', 'orangutans', 'monkeys'],
-            y: [12, 18, 29],
-            text: [12, 18, 29],
-            type: 'waterfall',
-            textposition: 'inside',
-            textfont: {
-                color: ['red', 'orange'],
-                family: ['Arial', 'serif'],
-                size: [8, 24]
-            },
-            insidetextfont: {
-                color: ['blue'],
-                family: ['Arial'],
-                size: [16]
-            }
-        };
-        var trace2 = Lib.extendDeep({}, trace1, {textposition: 'outside'});
-        var layout = {
-            waterfallmode: 'group',
-            font: {
-                family: 'Roboto',
-                size: 12
-            },
-            clickmode: 'event+select'
-        };
-
-        Plotly.plot(gd, [trace1, trace2], layout)
-          .then(function() {
-              assertNonSelectionModeStyle('before selection');
-          })
-          .then(function() {
-              return select1stWaterfall2ndTrace();
-          })
-          .then(function() {
-              assertSelectionModeStyle('in selection mode');
-          })
-          .then(function() {
-              return deselect1stWaterfall2ndTrace();
-          })
-          .then(function() {
-              assertNonSelectionModeStyle('after selection');
-          })
-          .catch(failTest)
-          .then(done);
-
-        function assertSelectionModeStyle(label) {
-            var unselColor = ['black', '0.2'];
-            assertTextFontColors([unselColor, unselColor, unselColor, 'red', unselColor, unselColor], label)();
-            assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
-            assertTextFontSizes([16, 24, 12, 8, 24, 12])();
-        }
-
-        function assertNonSelectionModeStyle(label) {
-            assertTextFontColors(['blue', 'orange', LIGHT, 'red', 'orange', DARK], label)();
-            assertTextFontFamilies(['Arial', 'serif', 'Roboto', 'Arial', 'serif', 'Roboto'])();
-            assertTextFontSizes([16, 24, 12, 8, 24, 12])();
-        }
-
-        function select1stWaterfall2ndTrace() {
-            return new Promise(function(resolve) {
-                click(176, 354);
-                resolve();
-            });
-        }
-
-        function deselect1stWaterfall2ndTrace() {
-            return new Promise(function(resolve) {
-                var delayAvoidingDblClick = DBLCLICKDELAY * 1.01;
-                setTimeout(function() {
-                    click(176, 354);
-                    resolve();
-                }, delayAvoidingDblClick);
-            });
-        }
     });
 
     it('should be able to restyle', function(done) {
@@ -1294,14 +1213,14 @@ describe('waterfall hover', function() {
         it('should return the correct hover point data (case x)', function() {
             var out = _hover(gd, 0, 0, 'x');
 
-            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
+            expect(out.style).toEqual([0, '#3D9970', 0, 13.23]);
             assertPos(out.pos, [11.87, 106.8, 52.71, 52.71]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
             var out = _hover(gd, -0.2, 12, 'closest');
 
-            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
+            expect(out.style).toEqual([0, '#3D9970', 0, 13.23]);
             assertPos(out.pos, [11.87, 59.33, 52.71, 52.71]);
         });
     });
@@ -1469,11 +1388,11 @@ describe('waterfall hover', function() {
             })
             .then(function() {
                 // you can still hover over the gap (14) but the label will
-                // get pushed in to the waterfall
+                // get pushed in to the bar
                 var out = _hover(gd, 14, 2, 'x');
                 assertPos(out.pos, [145, 155, 110, 110]);
 
-                // in closest mode you must be over the waterfall though
+                // in closest mode you must be over the bar though
                 out = _hover(gd, 14, 2, 'closest');
                 expect(out).toBe(false);
 
