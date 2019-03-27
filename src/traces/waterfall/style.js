@@ -22,9 +22,9 @@ function style(gd, cd) {
         var sel = d3.select(this);
         var connector = d[0].trace.connector;
         lineGroupStyle(sel.selectAll('path'),
-            connector.width,
-            connector.color,
-            connector.dash
+            connector.line.width,
+            connector.line.color,
+            connector.line.dash
         );
     });
 }

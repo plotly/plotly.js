@@ -56,10 +56,13 @@
                 null
             ],
             "connector": {
-                "width": 4,
+
                 "mode": "between",
-                "color": "rgb(0, 0, 0)",
-                "dash": 0
+                "line": {
+                    "width": 4,
+                    "color": "rgb(0, 0, 0)",
+                    "dash": 0
+                }
             }
         }
     ],

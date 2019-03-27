@@ -66,10 +66,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     var connectorVisible = coerce('connector.visible');
     if(connectorVisible) {
-        coerce('connector.color');
-        coerce('connector.width');
-        coerce('connector.dash');
         coerce('connector.mode');
+        coerce('connector.line.color');
+        coerce('connector.line.width');
+        coerce('connector.line.dash');
     }
 }
 

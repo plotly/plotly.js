@@ -96,9 +96,11 @@
                 null
             ],
             "connector": {
-                "width": 2,
-                "color": "rgb(0, 0, 0)",
-                "dash": 0
+                "line": {
+                    "width": 2,
+                    "color": "rgb(0, 0, 0)",
+                    "dash": 0
+                }
             }
         }
     ],

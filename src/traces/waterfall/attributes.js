@@ -89,9 +89,12 @@ module.exports = {
     decreasing: directionAttrs(),
 
     connector: {
-        color: lineAttrs.color,
-        width: lineAttrs.width,
-        dash: lineAttrs.dash,
+        line: {
+            color: lineAttrs.color,
+            width: lineAttrs.width,
+            dash: lineAttrs.dash,
+            editType: 'plot'
+        },
         mode: {
             valType: 'enumerated',
             values: ['spanning', 'between'],

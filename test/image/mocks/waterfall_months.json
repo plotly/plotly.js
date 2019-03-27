@@ -4,9 +4,11 @@
         "type": "waterfall",
         "connector": {
             "mode": "between",
-            "width": 2,
-            "color": "rgb(0, 0, 0)",
-            "dash": 0
+            "line": {
+                "width": 2,
+                "color": "rgb(0, 0, 0)",
+                "dash": 0
+            }
         },
         "decreasing": { "color": "rgb(255, 0, 0)" },
         "increasing": { "color": "rgb(0, 255, 0)" },
@@ -18,9 +20,11 @@
         "type": "waterfall",
         "connector": {
             "mode": "between",
-            "width": 2,
-            "color": "rgb(63, 63, 63)",
-            "dash": 2
+            "line": {
+                "width": 2,
+                "color": "rgb(63, 63, 63)",
+                "dash": 2
+            }
         },
         "decreasing": { "color": "rgb(255, 63, 63)" },
         "increasing": { "color": "rgb(63, 255, 63)" },
@@ -32,9 +36,11 @@
         "type": "waterfall",
         "connector": {
             "mode": "between",
-            "width": 4,
-            "color": "rgb(127, 127, 127)",
-            "dash": 4
+            "line": {
+                "width": 4,
+                "color": "rgb(127, 127, 127)",
+                "dash": 4
+            }
         },
         "decreasing": { "color": "rgb(255, 127, 127)" },
         "increasing": { "color": "rgb(127, 255, 127)" },
@@ -46,9 +52,11 @@
         "type": "waterfall",
         "connector": {
             "mode": "between",
-            "width": 4,
-            "color": "rgb(191, 191, 191)",
-            "dash": 6
+            "line": {
+                "width": 4,
+                "color": "rgb(191, 191, 191)",
+                "dash": 6
+            }
         },
         "decreasing": { "color": "rgb(255, 191, 191)" },
         "increasing": { "color": "rgb(191, 255, 191)" },

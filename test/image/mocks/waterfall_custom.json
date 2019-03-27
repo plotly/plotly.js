@@ -33,8 +33,10 @@
             "base": 1000,
             "connector": {
               "mode": "between",
-              "width": 5,
-              "color": "rgb(63, 63, 63)"
+              "line": {
+                "width": 5,
+                "color": "rgb(63, 63, 63)"
+              }
             },
             "marker": {
               "color": [

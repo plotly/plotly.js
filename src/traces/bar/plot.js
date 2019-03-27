@@ -41,7 +41,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
         var adjustDir;
         var adjustPixel = 0;
         if(trace.type === 'waterfall' && trace.connector.visible && trace.connector.mode === 'between') {
-            adjustPixel = trace.connector.width / 2;
+            adjustPixel = trace.connector.line.width / 2;
         }
 
         var isHorizontal = (trace.orientation === 'h');
