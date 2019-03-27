@@ -11,9 +11,8 @@
       "textfont": {
         "size": [60, 40, 20]
       },
-      "increasing": { "color": "blue" },
-      "decreasing": { "color": "blue" },
-      "marker": { "color": "blue" }
+      "increasing": { "marker": {"color": "blue"} },
+      "decreasing": { "marker": {"color": "blue"} }
     },
     {
       "type": "waterfall",
@@ -28,9 +27,8 @@
       },
 	  "xaxis": "x2",
 	  "yaxis": "y2",
-      "increasing": { "color": "orange" },
-      "decreasing": { "color": "orange" },
-      "marker": { "color": "orange" }
+      "increasing": { "marker": {"color": "orange"} },
+      "decreasing": { "marker": {"color": "orange"} }
     },
     {
       "type": "waterfall",
@@ -41,9 +39,8 @@
       "textposition": "outside",
       "cliponaxis": true,
       "textfont": {"size": [20]},
-      "increasing": { "color": "green" },
-      "decreasing": { "color": "green" },
-      "marker": { "color": "green", "opacity": 0.3 }
+      "increasing": { "marker": {"color": "green"} },
+      "decreasing": { "marker": {"color": "green"} }
     },
     {
       "type": "waterfall",
@@ -56,9 +53,8 @@
       "textfont": {"size": [20]},
       "xaxis": "x3",
       "yaxis": "y3",
-      "increasing": { "color": "red" },
-      "decreasing": { "color": "red" },
-      "marker": { "color": "red" }
+      "increasing": { "marker": {"color": "red"} },
+      "decreasing": { "marker": {"color": "red"} }
     }
   ],
   "layout": {

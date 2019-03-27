@@ -37,22 +37,12 @@
                 "width": 5,
                 "color": "rgb(63, 63, 63)"
               }
-            },
-            "marker": {
-              "color": [
-                "rgb(127, 255, 127)",
-                "rgb(63, 255, 63)",
-                "rgb(127, 127, 255)",
-                "rgb(255, 63, 63)",
-                "rgb(255, 127, 127)",
-                "rgb(0, 0, 255)"
-              ]
             }
         }
     ],
     "layout": {
         "title": {
-            "text": "Waterfall chart with custom bar widths, offsets and colors!"
+            "text": "Waterfall chart with custom bar widths and offsets"
         },
         "xaxis": {
             "type": "category"
