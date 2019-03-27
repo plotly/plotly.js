@@ -38,6 +38,12 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
         var cd0 = cd[0];
         var trace = cd0.trace;
 
+        var adjustDir;
+        var adjustPixel = 0;
+        if(trace.type === 'waterfall' && trace.connector.visible && trace.connector.mode === 'between') {
+            adjustPixel = trace.connector.width / 2;
+        }
+
         var isHorizontal = (trace.orientation === 'h');
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
@@ -82,6 +88,19 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                     x0 === x1 || y0 === y1) {
                 bar.remove();
                 return;
+            }
+
+            // in waterfall mode `between` we need to adjust bar end points to match the connector width
+            if(adjustPixel) {
+                if(isHorizontal) {
+                    adjustDir = (x1 < x0) ? -1 : 1;
+                    x0 -= adjustDir * adjustPixel;
+                    x1 += adjustDir * adjustPixel;
+                } else {
+                    adjustDir = (y1 < y0) ? -1 : 1;
+                    y0 -= adjustDir * adjustPixel;
+                    y1 += adjustDir * adjustPixel;
+                }
             }
 
             var lw = (di.mlw + 1 ||
