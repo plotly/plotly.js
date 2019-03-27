@@ -19,7 +19,6 @@ Waterfall.calc = require('./calc');
 Waterfall.crossTraceCalc = require('./cross_trace_calc');
 Waterfall.plot = require('./plot');
 Waterfall.style = require('./style').style;
-Waterfall.styleOnSelect = require('./style').styleOnSelect;
 Waterfall.hoverPoints = require('./hover');
 Waterfall.selectPoints = require('../bar/select');
 

@@ -122,8 +122,5 @@ module.exports = {
     },
 
     offsetgroup: barAttrs.offsetgroup,
-    alignmentgroup: barAttrs.offsetgroup,
-
-    selected: barAttrs.selected,
-    unselected: barAttrs.unselected
+    alignmentgroup: barAttrs.offsetgroup
 };

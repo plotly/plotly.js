@@ -31,6 +31,7 @@ function style(gd, cd) {
                 .call(Color.fill, cont.color)
                 .call(Color.stroke, cont.line.color)
                 .call(Drawing.dashLine, cont.line.dash, cont.line.width)
+                .style('opacity', trace.selectedpoints && !di.selected ? 0.3 : 1);
         });
 
         styleTextPoints(gTrace, trace, gd);
@@ -49,6 +50,5 @@ function style(gd, cd) {
 }
 
 module.exports = {
-    style: style,
-    styleOnSelect: styleOnSelect
+    style: style
 };

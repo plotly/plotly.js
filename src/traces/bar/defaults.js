@@ -37,7 +37,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('hovertext');
     coerce('hovertemplate');
 
-    handleText(traceIn, traceOut, layout, coerce);
+    handleText(traceIn, traceOut, layout, coerce, true);
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
@@ -109,10 +109,9 @@ function crossTraceDefaults(fullData, fullLayout) {
     }
 }
 
-function handleText(traceIn, traceOut, layout, coerce) {
+function handleText(traceIn, traceOut, layout, coerce, moduleHasSelUnselected) {
 
     var textPosition = coerce('textposition');
-
     var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
     var hasInside = hasBoth || textPosition === 'inside';
     var hasOutside = hasBoth || textPosition === 'outside';
@@ -137,8 +136,12 @@ function handleText(traceIn, traceOut, layout, coerce) {
         if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
 
         coerce('constraintext');
-        coerce('selected.textfont.color');
-        coerce('unselected.textfont.color');
+
+        if(moduleHasSelUnselected) {
+            coerce('selected.textfont.color');
+            coerce('unselected.textfont.color');
+        }
+
         coerce('cliponaxis');
     }
 }

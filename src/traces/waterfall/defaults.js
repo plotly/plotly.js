@@ -48,7 +48,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('hovertext');
     coerce('hovertemplate');
 
-    handleText(traceIn, traceOut, layout, coerce);
+    handleText(traceIn, traceOut, layout, coerce, false);
 
     handleDirection(coerce, 'increasing', INCREASING_COLOR);
     handleDirection(coerce, 'decreasing', DECREASING_COLOR);
