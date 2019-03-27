@@ -9,7 +9,7 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
-var arraysToCalcdata = require('./arrays_to_calcdata');
+var mergeArray = require('../../lib').mergeArray;
 var calcSelection = require('../scatter/calc_selection');
 
 function isAbsolute(a) {
@@ -40,37 +40,44 @@ module.exports = function calc(gd, trace) {
     // set position and size (as well as for waterfall total size)
     var previousSum = 0;
     var newSize;
-    var i;
 
-    for(i = 0; i < serieslen; i++) {
+    for(var i = 0; i < serieslen; i++) {
         var amount = size[i] || 0;
-        cd[i] = {
+
+        var cdi = cd[i] = {
+            i: i,
             p: pos[i],
             s: amount,
             rawS: amount
         };
 
         if(isAbsolute(trace.measure[i])) {
-            previousSum = cd[i].s;
+            previousSum = cdi.s;
 
-            cd[i].isSum = true;
-            cd[i].s = previousSum;
+            cdi.isSum = true;
+            cdi.dir = 'totals';
+            cdi.s = previousSum;
         } else if(isTotal(trace.measure[i])) {
-            cd[i].isSum = true;
-            cd[i].s = previousSum;
-        } else { // default: relative
-            cd[i].isSum = false;
-            newSize = cd[i].s;
-            cd[i].s = previousSum + newSize;
+            cdi.isSum = true;
+            cdi.dir = 'totals';
+            cdi.s = previousSum;
+        } else {
+            // default: relative
+            cdi.isSum = false;
+            cdi.dir = cdi.rawS < 0 ? 'decreasing' : 'increasing';
+            newSize = cdi.s;
+            cdi.s = previousSum + newSize;
             previousSum += newSize;
         }
 
         if(trace.ids) {
-            cd[i].id = String(trace.ids[i]);
+            cdi.id = String(trace.ids[i]);
         }
     }
 
-    arraysToCalcdata(cd, trace);
+
+    mergeArray(trace.text, cd, 'tx');
+    mergeArray(trace.hovertext, cd, 'htx');
     calcSelection(cd, trace);
 
     return cd;

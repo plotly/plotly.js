@@ -15,6 +15,21 @@ var Color = require('../../components/color');
 var fillHoverText = require('../scatter/fill_hover_text');
 
 function hoverPoints(pointData, xval, yval, hovermode) {
+    var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
+
+    if(barPointData) {
+        var cd = barPointData.cd;
+        var trace = cd[0].trace;
+        var di = cd[barPointData.index];
+
+        barPointData.color = getTraceColor(trace, di);
+        Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, barPointData);
+
+        return [barPointData];
+    }
+}
+
+function hoverOnBars(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var t = cd[0].t;
@@ -133,18 +148,16 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     // in case of bars shifted within groups
     pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);
 
-    pointData.color = getTraceColor(trace, di);
     fillHoverText(di, trace, pointData);
-    Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
-
     pointData.hovertemplate = trace.hovertemplate;
-    return [pointData];
+
+    return pointData;
 }
 
 function getTraceColor(trace, di) {
-    var mc = (di.mc !== undefined) ? di.mc : trace.marker.color;
-    var mlc = (di.mlc !== undefined) ? di.mlc : trace.marker.line.color;
-    var mlw = (di.mlw !== undefined) ? di.mlw : trace.marker.line.width;
+    var mc = di.mcc || trace.marker.color;
+    var mlc = di.mlcc || trace.marker.line.color;
+    var mlw = di.mlw || trace.marker.line.width;
 
     if(Color.opacity(mc)) return mc;
     else if(Color.opacity(mlc) && mlw) return mlc;
@@ -152,5 +165,6 @@ function getTraceColor(trace, di) {
 
 module.exports = {
     hoverPoints: hoverPoints,
+    hoverOnBars: hoverOnBars,
     getTraceColor: getTraceColor
 };

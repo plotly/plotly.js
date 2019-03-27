@@ -21,10 +21,9 @@ var DECREASING_COLOR = '#FF4136';
 var TOTALS_COLOR = '#4499FF';
 
 function handleDirection(coerce, direction, defaultColor) {
-    coerce(direction + '.color', defaultColor);
-    coerce(direction + '.line.color', Color.defaultLine);
-    coerce(direction + '.line.width');
-    coerce(direction + '.opacity');
+    coerce(direction + '.marker.color', defaultColor);
+    coerce(direction + '.marker.line.color', Color.defaultLine);
+    coerce(direction + '.marker.line.width');
 }
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -51,18 +50,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     handleText(traceIn, traceOut, layout, coerce);
 
-    if('marker' in traceIn) {
-        handleDirection(coerce, 'marker', defaultColor);
-    } else {
-        handleDirection(coerce, 'increasing', INCREASING_COLOR);
-        handleDirection(coerce, 'decreasing', DECREASING_COLOR);
-        handleDirection(coerce, 'totals', TOTALS_COLOR);
-    }
-
-    coerce('selected.marker.color');
-    coerce('unselected.marker.color');
-
-    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
+    handleDirection(coerce, 'increasing', INCREASING_COLOR);
+    handleDirection(coerce, 'decreasing', DECREASING_COLOR);
+    handleDirection(coerce, 'totals', TOTALS_COLOR);
 
     var connectorVisible = coerce('connector.visible');
     if(connectorVisible) {

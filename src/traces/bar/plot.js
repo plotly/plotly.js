@@ -103,18 +103,29 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 }
             }
 
-            var lw = (di.mlw + 1 ||
-                    (((trace.marker || {}).line) || {}).width + 1 ||
-                    (di.trace ? ((di.trace.marker || {}).line || {}).width : 0) + 1) - 1;
+            var lw;
+            var mc;
+            var prefix;
+
+            if(trace.type === 'waterfall') {
+                var cont = trace[di.dir].marker;
+                lw = cont.line.width;
+                mc = cont.color;
+                prefix = 'waterfall';
+            } else {
+                lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
+                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
+                mc = di.mc || trace.marker.color;
+                prefix = 'bar';
+            }
+
             var offset = d3.round((lw / 2) % 1, 2);
-            var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
             var bargap = fullLayout[prefix + 'gap'];
             var bargroupgap = fullLayout[prefix + 'groupgap'];
 
             function roundWithLine(v) {
                 // if there are explicit gaps, don't round,
                 // it can make the gaps look crappy
-
                 return (bargap === 0 && bargroupgap === 0) ?
                     d3.round(Math.round(v) - offset, 2) : v;
             }
@@ -137,7 +148,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 // no line, expand to a full pixel to make sure we
                 // can see them
 
-                var op = Color.opacity(di.mc || trace.marker.color);
+                var op = Color.opacity(mc);
                 var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
                 x0 = fixpx(x0, x1);
                 x1 = fixpx(x1, x0);
@@ -146,9 +157,9 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
             }
 
             Lib.ensureSingle(bar, 'path')
-            .style('vector-effect', 'non-scaling-stroke')
-            .attr('d', 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
-            .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
+                .style('vector-effect', 'non-scaling-stroke')
+                .attr('d', 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
             appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
 

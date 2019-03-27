@@ -362,21 +362,8 @@ drawing.pointStyle = function(s, trace, gd) {
     });
 };
 
-drawing.waterfallStyle = function(d, trace) {
-    var marker = trace.marker;
-    if(marker) return marker;
-    if(!d.isSum) {
-        if(d.rawS > 0) return trace.increasing;
-        return trace.decreasing; // Note here by default we return RED for zero and null
-    }
-    return trace.totals;
-};
-
 drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
     var marker = trace.marker;
-    if(trace.type === 'waterfall') {
-        marker = this.waterfallStyle(d, trace);
-    }
     var markerLine = marker.line;
 
     sel.style('opacity',
@@ -512,6 +499,7 @@ drawing.makePointStyleFns = function(trace) {
     if(trace.selectedpoints) {
         Lib.extendFlat(out, drawing.makeSelectedPointStyleFns(trace));
     }
+
     return out;
 };
 

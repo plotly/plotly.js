@@ -9,29 +9,43 @@
 'use strict';
 
 var d3 = require('d3');
-var lineGroupStyle = require('../../components/drawing').lineGroupStyle;
-var barStyle = require('../bar/style').style;
-var barStyleOnSelect = require('../bar/style').styleOnSelect;
+
+var Drawing = require('../../components/drawing');
+var Color = require('../../components/color');
+
+var styleTextPoints = require('../bar/style').styleTextPoints;
 
 function style(gd, cd) {
-    barStyle(gd, cd);
+    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.waterfalllayer').selectAll('g.trace');
 
-    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.bars');
+    s.style('opacity', function(d) { return d[0].trace.opacity; });
 
-    s.selectAll('g.lines').each(function(d) {
-        var sel = d3.select(this);
-        var connectorLine = d[0].trace.connector.line;
+    s.each(function(d) {
+        var gTrace = d3.select(this);
+        var trace = d[0].trace;
 
-        lineGroupStyle(sel.selectAll('path'),
-            connectorLine.width,
-            connectorLine.color,
-            connectorLine.dash
-        );
+        gTrace.selectAll('.point').each(function(di) {
+            var cont = trace[di.dir].marker;
+
+            d3.select(this)
+                .call(Color.fill, cont.color)
+                .call(Color.stroke, cont.line.color)
+                .call(Drawing.dashLine, cont.line.dash, cont.line.width)
+        });
+
+        styleTextPoints(gTrace, trace, gd);
+
+        gTrace.selectAll('.lines').each(function() {
+            var sel = d3.select(this);
+            var connectorLine = trace.connector.line;
+
+            Drawing.lineGroupStyle(sel.selectAll('path'),
+                connectorLine.width,
+                connectorLine.color,
+                connectorLine.dash
+            );
+        });
     });
-}
-
-function styleOnSelect(gd, cd) {
-    barStyleOnSelect(gd, cd);
 }
 
 module.exports = {

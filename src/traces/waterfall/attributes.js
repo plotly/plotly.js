@@ -10,22 +10,36 @@
 
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 function directionAttrs() {
     return {
-        editType: 'style',
-        color: barAttrs.marker.color,
-        opacity: barAttrs.marker.opacity,
-        line: {
-            editType: 'style',
-            color: barAttrs.marker.line.color,
-            width: barAttrs.marker.line.width
-        }
+        marker: {
+            color: extendFlat({}, barAttrs.marker.color, {
+                arrayOk: false,
+                editType: 'style',
+                description: ''
+            }),
+            line: {
+                color: extendFlat({}, barAttrs.marker.line.color, {
+                    arrayOk: false,
+                    editType: 'style',
+                    description: ''
+                }),
+                width: extendFlat({}, barAttrs.marker.line.width, {
+                    arrayOk: false,
+                    editType: 'style',
+                    description: ''
+                }),
+                editType: 'style',
+            },
+            editType: 'style'
+        },
+        editType: 'style'
     };
 }
 
 module.exports = {
-
     measure: {
         valType: 'data_array',
         dflt: [],
@@ -58,35 +72,25 @@ module.exports = {
     y0: barAttrs.y0,
     dy: barAttrs.dy,
 
-    r: barAttrs.r,
-    t: barAttrs.t,
-
-    text: barAttrs.text,
     hovertext: barAttrs.hovertext,
     hovertemplate: barAttrs.hovertemplate,
 
+    text: barAttrs.text,
     textposition: barAttrs.textposition,
-
     textfont: barAttrs.textfont,
-
     insidetextfont: barAttrs.insidetextfont,
-
     outsidetextfont: barAttrs.outsidetextfont,
-
     constraintext: barAttrs.constraintext,
 
     cliponaxis: barAttrs.cliponaxis,
-
     orientation: barAttrs.orientation,
 
     offset: barAttrs.offset,
-
     width: barAttrs.width,
 
-    marker: directionAttrs(),
-    totals: directionAttrs(),
     increasing: directionAttrs(),
     decreasing: directionAttrs(),
+    totals: directionAttrs(),
 
     connector: {
         line: {

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
@@ -33,14 +32,10 @@ function style(gd, cd) {
     // crispEdges to turn off antialiasing so an artificial gap
     // isn't introduced.
     .each(function(d) {
-        var trace = d[0].trace;
-        var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
-
-        if((fullLayout.barmode === 'stack' && barcount > 1) || (
-            fullLayout[prefix + 'gap'] === 0 &&
-            fullLayout[prefix + 'groupgap'] === 0 &&
-            !((d[0].trace.marker || {}).line || {}).width)
-        ) {
+        if((fullLayout.barmode === 'stack' && barcount > 1) ||
+                (fullLayout.bargap === 0 &&
+                 fullLayout.bargroupgap === 0 &&
+                 !d[0].trace.marker.line.width)) {
             d3.select(this).attr('shape-rendering', 'crispEdges');
         }
     });
@@ -55,12 +50,12 @@ function style(gd, cd) {
 }
 
 function stylePoints(sel, trace, gd) {
-    var pts = sel.selectAll('path');
-    var txs = sel.selectAll('text');
+    Drawing.pointStyle(sel.selectAll('path'), trace, gd);
+    styleTextPoints(sel, trace, gd);
+}
 
-    Drawing.pointStyle(pts, trace, gd);
-
-    txs.each(function(d) {
+function styleTextPoints(sel, trace, gd) {
+    sel.selectAll('text').each(function(d) {
         var tx = d3.select(this);
         var font = determineFont(tx, d, trace, gd);
         Drawing.font(tx, font);
@@ -164,11 +159,15 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
 }
 
 function getBarColor(cd, trace) {
+    if(trace.type === 'waterfall') {
+        return trace[cd.dir].marker.color;
+    }
     return cd.mc || trace.marker.color;
 }
 
 module.exports = {
     style: style,
+    styleTextPoints: styleTextPoints,
     styleOnSelect: styleOnSelect,
     getInsideTextFont: getInsideTextFont,
     getOutsideTextFont: getOutsideTextFont,

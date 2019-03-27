@@ -17,7 +17,6 @@ Waterfall.crossTraceDefaults = require('./defaults').crossTraceDefaults;
 Waterfall.supplyLayoutDefaults = require('./layout_defaults');
 Waterfall.calc = require('./calc');
 Waterfall.crossTraceCalc = require('./cross_trace_calc');
-Waterfall.arraysToCalcdata = require('./arrays_to_calcdata');
 Waterfall.plot = require('./plot');
 Waterfall.style = require('./style').style;
 Waterfall.styleOnSelect = require('./style').styleOnSelect;
