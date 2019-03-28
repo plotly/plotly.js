@@ -130,10 +130,11 @@ exports.calc = function(gd, trace) {
             .id(function(d) { return d.id; })
             .parentId(function(d) { return d.pid; })(cd);
     } catch(e) {
-        return Lib.warn('Failed to build sunburst hierarchy.');
+        return Lib.warn('Failed to build sunburst hierarchy. Error: ' + e.message);
     }
 
     var hierarchy = d3Hierarchy.hierarchy(root);
+    var failed = false;
 
     if(hasVals) {
         switch(trace.branchvalues) {
@@ -149,7 +150,7 @@ exports.calc = function(gd, trace) {
                             return a + c.data.data.v;
                         }, 0);
                         if(v < partialSum) {
-                            d.value = partialSum;
+                            failed = true;
                             return Lib.warn([
                                 'Total value for node', d.data.data.id,
                                 'is smaller than the sum of its children.'
@@ -164,6 +165,8 @@ exports.calc = function(gd, trace) {
     } else {
         hierarchy.count();
     }
+
+    if(failed) return;
 
     // TODO add way to sort by height also?
     hierarchy.sort(function(a, b) { return b.value - a.value; });

@@ -233,7 +233,7 @@ describe('Test sunburst calc:', function() {
         expect(Lib.warn).toHaveBeenCalledTimes(0);
     });
 
-    it('should warn when values under *branchvalues:total* do not add up', function() {
+    it('should warn when values under *branchvalues:total* do not add up and not show trace', function() {
         _calc({
             labels: ['Root', 'A', 'B', 'b'],
             parents: ['', 'Root', 'Root', 'B'],
@@ -241,11 +241,32 @@ describe('Test sunburst calc:', function() {
             branchvalues: 'total'
         });
 
-        expect(extractPt('value')).toEqual([3, 3, 1, 3]);
+        expect(gd.calcdata[0][0].hierarchy).toBe(undefined, 'no computed hierarchy');
 
         expect(Lib.warn).toHaveBeenCalledTimes(2);
         expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root is smaller than the sum of its children.');
         expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B is smaller than the sum of its children.');
+    });
+
+    it('should warn labels/parents lead to ambiguous hierarchy', function() {
+        _calc({
+            labels: ['Root', 'A', 'A', 'B'],
+            parents: ['', 'Root', 'Root', 'A']
+        });
+
+        expect(Lib.warn).toHaveBeenCalledTimes(1);
+        expect(Lib.warn).toHaveBeenCalledWith('Failed to build sunburst hierarchy. Error: ambiguous: A');
+    });
+
+    it('should warn ids/parents lead to ambiguous hierarchy', function() {
+        _calc({
+            labels: ['label 1', 'label 2', 'label 3', 'label 4'],
+            ids: ['a', 'b', 'b', 'c'],
+            parents: ['', 'a', 'a', 'b']
+        });
+
+        expect(Lib.warn).toHaveBeenCalledTimes(1);
+        expect(Lib.warn).toHaveBeenCalledWith('Failed to build sunburst hierarchy. Error: ambiguous: b');
     });
 });
 
