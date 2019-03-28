@@ -231,6 +231,7 @@ describe('waterfall calc / crossTraceCalc', function() {
         assertPointField(cd, 'isSum', [[false, false, false], [true, false, true, false, true]]);
         assertPointField(cd, 'rawS', [[2, 1, 2], [3, 1, 0, 2, 0]]);
         assertPointField(cd, 'dir', [['increasing', 'increasing', 'increasing'], ['totals', 'increasing', 'totals', 'increasing', 'totals']]);
+        assertPointField(cd, 'cNext', [[true, true, false], [true, true, true, true, false]]);
         assertPointField(cd, 'hasTotals', [[false, undefined, undefined], [true, undefined, undefined, undefined, undefined]]);
         assertTraceField(cd, 't.barwidth', [0.8, 0.8]);
         assertTraceField(cd, 't.poffset', [-0.4, -0.4]);
@@ -263,6 +264,7 @@ describe('waterfall calc / crossTraceCalc', function() {
         assertPointField(cd, 'isSum', [[false, false, false], [true, false, true, false, true]]);
         assertPointField(cd, 'rawS', [[2, 1, 2], [3, 1, 0, 2, 0]]);
         assertPointField(cd, 'dir', [['increasing', 'increasing', 'increasing'], ['totals', 'increasing', 'totals', 'increasing', 'totals']]);
+        assertPointField(cd, 'cNext', [[true, true, false], [true, true, true, true, false]]);
         assertPointField(cd, 'hasTotals', [[false, undefined, undefined], [true, undefined, undefined, undefined, undefined]]);
         assertTraceField(cd, 't.barwidth', [0.36, 0.36]);
         assertTraceField(cd, 't.poffset', [-0.38, 0.02]);

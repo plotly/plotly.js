@@ -11,6 +11,7 @@
 var Axes = require('../../plots/cartesian/axes');
 var mergeArray = require('../../lib').mergeArray;
 var calcSelection = require('../scatter/calc_selection');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 function isAbsolute(a) {
     return (a === 'a' || a === 'absolute');
@@ -44,13 +45,22 @@ module.exports = function calc(gd, trace) {
     var hasTotals = false;
 
     for(var i = 0; i < serieslen; i++) {
+
         var amount = size[i] || 0;
+
+        var connectToNext = false;
+        if(size[i] !== BADNUM || isTotal(trace.measure[i]) || isAbsolute(trace.measure[i])) {
+            if(i + 1 < serieslen && (size[i + 1] !== BADNUM || isTotal(trace.measure[i + 1]) || isAbsolute(trace.measure[i + 1]))) {
+                connectToNext = true;
+            }
+        }
 
         var cdi = cd[i] = {
             i: i,
             p: pos[i],
             s: amount,
-            rawS: amount
+            rawS: amount,
+            cNext: connectToNext
         };
 
         if(isAbsolute(trace.measure[i])) {

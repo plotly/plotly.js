@@ -5,13 +5,17 @@
         "a",
         "b",
         "c",
-        "d"
+        "d",
+        "e",
+        "f"
       ],
       "y": [
         1,
         null,
         "nonsense",
-        15
+        14,
+        0,
+        1
       ],
       "type": "waterfall"
     }

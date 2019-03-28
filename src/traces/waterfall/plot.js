@@ -46,9 +46,12 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
 
         connectors.exit().remove();
 
-        var len = connectors[0].length;
+        var len = connectors.size();
 
         connectors.each(function(di, i) {
+            // don't draw lines between nulls
+            if(i !== len - 1 && !di.cNext) return;
+
             var connector = d3.select(this);
             var shape = '';
 
