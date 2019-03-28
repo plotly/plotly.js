@@ -10,6 +10,38 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.46.0] -- 2019-04-01
+
+### Added
+- New `waterfall` trace type [#3531]
+- New `sunburst` trace type [#3594]
+- Add attributes `node.x` and `node.y` to `sankey` traces [#3583]
+- Implement `connectgaps` on `surface` traces [#3638]
+- Implement `hovertemplate` for `box` and `violin` points [#3685]
+
+### Changed
+- Display hover labels above modebar, ensuring that the hover labels
+  are always visible within the graph div [#3589, #3678]
+
+### Fixed
+- Fix horizontal legend item wrapping by pushing overflowed items to newline [#3628]
+- Fix erroneous gap for histogram under relative `barmode` [#3652]
+- Fix position of overlapping grouped bars within trace [#3680]
+- Fix `violin` `bandwidth` logic for traces with identical values in sample [#3626]
+- Fix `violin` trace `scalegroup` description [#3687]
+- Fix stacked scatter for groupby traces [#3692]
+- Fix outside text on empty items in `bar` traces under `textposition: 'outside'` [#3701]
+- Fix `pie` un-hover event emission after updates [#3662, 3690]
+- Fix `scatter` line decimation algo for filled trace with far-away data points [#3696]
+- Fix `heatmap` and `contour` computation for traces with category coordinates containing `0` [#3691]
+- Fix zoom interactions on gl3d subplots using an orthographic projection [#3601]
+- Fix miscellaneous gl3d camera on-initialization bugs [#3585]
+- Fix `surface` contour line rendering in some Firefox versions [#3670]
+- Fix rendering of marker points and gl3d subplots on date axes (or with coordinates close to 64K floating limits)
+  for WebGL-based traces on some iOS devices [#3666, #3672, #3674, #3676]
+- Fix center-aligned hover labels positioning [#3681]
+
+
 ## [1.45.3] -- 2019-03-19
 
 ### Fixed
