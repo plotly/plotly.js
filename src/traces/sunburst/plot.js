@@ -529,12 +529,12 @@ function attachFxHandlers(sliceTop, gd, cd) {
 
     // hover state vars
     // have we drawn a hover label, so it should be cleared later
-    var hasHoverLabel = false;
+    if(!('_hasHoverLabel' in trace)) trace._hasHoverLabel = false;
     // have we emitted a hover event, so later an unhover event should be emitted
     // note that click events do not depend on this - you can still get them
     // with hovermode: false or if you were earlier dragging, then clicked
     // in the same slice that you moused up in
-    var hasHoverEvent = false;
+    if(!('_hasHoverEvent' in trace)) trace._hasHoverEvent = false;
 
     sliceTop.on('mouseover', function(pt) {
         var fullLayoutNow = gd._fullLayout;
@@ -602,14 +602,14 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 gd: gd
             });
 
-            hasHoverLabel = true;
+            trace._hasHoverLabel = true;
         }
 
+        trace._hasHoverEvent = true;
         gd.emit('plotly_hover', {
             points: [makeEventData(pt, traceNow)],
             event: d3.event
         });
-        hasHoverEvent = true;
     });
 
     sliceTop.on('mouseout', function(evt) {
@@ -617,18 +617,18 @@ function attachFxHandlers(sliceTop, gd, cd) {
         var traceNow = gd._fullData[trace.index];
         var pt = d3.select(this).datum();
 
-        if(hasHoverEvent) {
+        if(trace._hasHoverEvent) {
             evt.originalEvent = d3.event;
             gd.emit('plotly_unhover', {
                 points: [makeEventData(pt, traceNow)],
                 event: d3.event
             });
-            hasHoverEvent = false;
+            trace._hasHoverEvent = false;
         }
 
-        if(hasHoverLabel) {
+        if(trace._hasHoverLabel) {
             Fx.loneUnhover(fullLayoutNow._hoverlayer.node());
-            hasHoverLabel = false;
+            trace._hasHoverLabel = false;
         }
     });
 
