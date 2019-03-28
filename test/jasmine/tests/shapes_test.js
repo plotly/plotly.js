@@ -1037,7 +1037,7 @@ describe('A fixed size shape', function() {
             });
       });
 
-    it('being sized relative to data vertically is getting lower ' +
+    it('@flaky being sized relative to data vertically is getting lower ' +
       'when being dragged to expand the y-axis',
       function(done) {
           layout.shapes[0].ysizemode = 'data';
