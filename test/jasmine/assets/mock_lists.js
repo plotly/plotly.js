@@ -28,6 +28,7 @@ var svgMockList = [
     ['range_selector_style', require('@mocks/range_selector_style.json')],
     ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
     ['sankey_energy', require('@mocks/sankey_energy.json')],
+    ['sunburst_coffee', require('@mocks/sunburst_coffee.json')],
     ['parcats_bad-displayindex', require('@mocks/parcats_bad-displayindex.json')],
     ['scattercarpet', require('@mocks/scattercarpet.json')],
     ['shapes', require('@mocks/shapes.json')],

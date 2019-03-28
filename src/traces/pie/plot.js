@@ -19,7 +19,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var helpers = require('./helpers');
 var eventData = require('./event_data');
 
-module.exports = function plot(gd, cdpie) {
+function plot(gd, cdpie) {
     var fullLayout = gd._fullLayout;
 
     prerenderTitles(cdpie, gd);
@@ -66,139 +66,11 @@ module.exports = function plot(gd, cdpie) {
                 var sliceTop = d3.select(this);
                 var slicePath = sliceTop.selectAll('path.surface').data([pt]);
 
-                // hover state vars
-                // have we drawn a hover label, so it should be cleared later
-                var hasHoverLabel = false;
-                // have we emitted a hover event, so later an unhover event should be emitted
-                // note that click events do not depend on this - you can still get them
-                // with hovermode: false or if you were earlier dragging, then clicked
-                // in the same slice that you moused up in
-                var hasHoverEvent = false;
-
-                function handleMouseOver() {
-                    // in case fullLayout or fullData has changed without a replot
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(gd._dragging || fullLayout2.hovermode === false) return;
-
-                    var hoverinfo = trace2.hoverinfo;
-                    if(Array.isArray(hoverinfo)) {
-                        // super hacky: we need to pull out the *first* hoverinfo from
-                        // pt.pts, then put it back into an array in a dummy trace
-                        // and call castHoverinfo on that.
-                        // TODO: do we want to have Fx.castHoverinfo somehow handle this?
-                        // it already takes an array for index, for 2D, so this seems tricky.
-                        hoverinfo = Fx.castHoverinfo({
-                            hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
-                            _module: trace._module
-                        }, fullLayout2, 0);
-                    }
-
-                    if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
-
-                    // in case we dragged over the pie from another subplot,
-                    // or if hover is turned off
-                    if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
-                        var rInscribed = getInscribedRadiusFraction(pt, cd0);
-                        var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
-                        var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
-                        var separators = fullLayout.separators;
-                        var thisText = [];
-
-                        if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
-                        pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
-                        if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
-                            var texti = pt.text;
-                            if(texti) thisText.push(texti);
-                        }
-                        pt.value = pt.v;
-                        pt.valueLabel = helpers.formatPieValue(pt.v, separators);
-                        if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
-                        pt.percent = pt.v / cd0.vTotal;
-                        pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
-                        if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
-
-                        var hoverLabel = trace.hoverlabel;
-                        var hoverFont = hoverLabel.font;
-
-                        Fx.loneHover({
-                            x0: hoverCenterX - rInscribed * cd0.r,
-                            x1: hoverCenterX + rInscribed * cd0.r,
-                            y: hoverCenterY,
-                            text: thisText.join('<br>'),
-                            name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
-                            idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
-                            color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
-                            borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
-                            fontFamily: helpers.castOption(hoverFont.family, pt.pts),
-                            fontSize: helpers.castOption(hoverFont.size, pt.pts),
-                            fontColor: helpers.castOption(hoverFont.color, pt.pts),
-
-                            trace: trace2,
-                            hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
-                            hovertemplateLabels: pt,
-                            eventData: [eventData(pt, trace2)]
-                        }, {
-                            container: fullLayout2._hoverlayer.node(),
-                            outerContainer: fullLayout2._paper.node(),
-                            gd: gd
-                        });
-
-                        hasHoverLabel = true;
-                    }
-
-                    gd.emit('plotly_hover', {
-                        points: [eventData(pt, trace2)],
-                        event: d3.event
-                    });
-                    hasHoverEvent = true;
-                }
-
-                function handleMouseOut(evt) {
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(hasHoverEvent) {
-                        evt.originalEvent = d3.event;
-                        gd.emit('plotly_unhover', {
-                            points: [eventData(pt, trace2)],
-                            event: d3.event
-                        });
-                        hasHoverEvent = false;
-                    }
-
-                    if(hasHoverLabel) {
-                        Fx.loneUnhover(fullLayout2._hoverlayer.node());
-                        hasHoverLabel = false;
-                    }
-                }
-
-                function handleClick() {
-                    // TODO: this does not support right-click. If we want to support it, we
-                    // would likely need to change pie to use dragElement instead of straight
-                    // mapbox event binding. Or perhaps better, make a simple wrapper with the
-                    // right mousedown, mousemove, and mouseup handlers just for a left/right click
-                    // mapbox would use this too.
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(gd._dragging || fullLayout2.hovermode === false) return;
-
-                    gd._hoverdata = [eventData(pt, trace2)];
-                    Fx.click(gd, d3.event);
-                }
-
                 slicePath.enter().append('path')
                     .classed('surface', true)
                     .style({'pointer-events': 'all'});
 
-                sliceTop.select('path.textline').remove();
-
-                sliceTop
-                    .on('mouseover', handleMouseOver)
-                    .on('mouseout', handleMouseOut)
-                    .on('click', handleClick);
+                sliceTop.call(attachFxHandlers, gd, cd);
 
                 if(trace.pull) {
                     var pull = +helpers.castOption(trace.pull, pt.pts) || 0;
@@ -363,50 +235,8 @@ module.exports = function plot(gd, cdpie) {
 
             // now make sure no labels overlap (at least within one pie)
             if(hasOutsideText) scootLabels(quadrants, trace);
-            slices.each(function(pt) {
-                if(pt.labelExtraX || pt.labelExtraY) {
-                    // first move the text to its new location
-                    var sliceTop = d3.select(this);
-                    var sliceText = sliceTop.select('g.slicetext text');
 
-                    sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
-                        sliceText.attr('transform'));
-
-                    // then add a line to the new location
-                    var lineStartX = pt.cxFinal + pt.pxmid[0];
-                    var lineStartY = pt.cyFinal + pt.pxmid[1];
-                    var textLinePath = 'M' + lineStartX + ',' + lineStartY;
-                    var finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
-
-                    if(pt.labelExtraX) {
-                        var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0];
-                        var yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
-
-                        if(Math.abs(yFromX) > Math.abs(yNet)) {
-                            textLinePath +=
-                                'l' + (yNet * pt.pxmid[0] / pt.pxmid[1]) + ',' + yNet +
-                                'H' + (lineStartX + pt.labelExtraX + finalX);
-                        } else {
-                            textLinePath += 'l' + pt.labelExtraX + ',' + yFromX +
-                                'v' + (yNet - yFromX) +
-                                'h' + finalX;
-                        }
-                    } else {
-                        textLinePath +=
-                            'V' + (pt.yLabelMid + pt.labelExtraY) +
-                            'h' + finalX;
-                    }
-
-                    sliceTop.append('path')
-                        .classed('textline', true)
-                        .call(Color.stroke, trace.outsidetextfont.color)
-                        .attr({
-                            'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
-                            d: textLinePath,
-                            fill: 'none'
-                        });
-                }
-            });
+            plotTextLines(slices, trace);
         });
     });
 
@@ -422,7 +252,189 @@ module.exports = function plot(gd, cdpie) {
             if(s.attr('dy')) s.attr('dy', s.attr('dy'));
         });
     }, 0);
-};
+}
+
+// TODO add support for transition
+function plotTextLines(slices, trace) {
+    slices.each(function(pt) {
+        var sliceTop = d3.select(this);
+
+        if(!pt.labelExtraX && !pt.labelExtraY) {
+            sliceTop.select('path.textline').remove();
+            return;
+        }
+
+        // first move the text to its new location
+        var sliceText = sliceTop.select('g.slicetext text');
+
+        sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
+            sliceText.attr('transform'));
+
+        // then add a line to the new location
+        var lineStartX = pt.cxFinal + pt.pxmid[0];
+        var lineStartY = pt.cyFinal + pt.pxmid[1];
+        var textLinePath = 'M' + lineStartX + ',' + lineStartY;
+        var finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
+
+        if(pt.labelExtraX) {
+            var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0];
+            var yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
+
+            if(Math.abs(yFromX) > Math.abs(yNet)) {
+                textLinePath +=
+                    'l' + (yNet * pt.pxmid[0] / pt.pxmid[1]) + ',' + yNet +
+                    'H' + (lineStartX + pt.labelExtraX + finalX);
+            } else {
+                textLinePath += 'l' + pt.labelExtraX + ',' + yFromX +
+                    'v' + (yNet - yFromX) +
+                    'h' + finalX;
+            }
+        } else {
+            textLinePath +=
+                'V' + (pt.yLabelMid + pt.labelExtraY) +
+                'h' + finalX;
+        }
+
+        Lib.ensureSingle(sliceTop, 'path', 'textline')
+            .call(Color.stroke, trace.outsidetextfont.color)
+            .attr({
+                'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
+                d: textLinePath,
+                fill: 'none'
+            });
+    });
+}
+
+function attachFxHandlers(sliceTop, gd, cd) {
+    var cd0 = cd[0];
+    var trace = cd0.trace;
+    var cx = cd0.cx;
+    var cy = cd0.cy;
+
+    // hover state vars
+    // have we drawn a hover label, so it should be cleared later
+    var hasHoverLabel = false;
+    // have we emitted a hover event, so later an unhover event should be emitted
+    // note that click events do not depend on this - you can still get them
+    // with hovermode: false or if you were earlier dragging, then clicked
+    // in the same slice that you moused up in
+    var hasHoverEvent = false;
+
+    sliceTop.on('mouseover', function(pt) {
+        // in case fullLayout or fullData has changed without a replot
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+
+        if(gd._dragging || fullLayout2.hovermode === false) return;
+
+        var hoverinfo = trace2.hoverinfo;
+        if(Array.isArray(hoverinfo)) {
+            // super hacky: we need to pull out the *first* hoverinfo from
+            // pt.pts, then put it back into an array in a dummy trace
+            // and call castHoverinfo on that.
+            // TODO: do we want to have Fx.castHoverinfo somehow handle this?
+            // it already takes an array for index, for 2D, so this seems tricky.
+            hoverinfo = Fx.castHoverinfo({
+                hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
+                _module: trace._module
+            }, fullLayout2, 0);
+        }
+
+        if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
+
+        // in case we dragged over the pie from another subplot,
+        // or if hover is turned off
+        if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
+            var rInscribed = pt.rInscribed;
+            var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
+            var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
+            var separators = fullLayout2.separators;
+            var thisText = [];
+
+            if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+            pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+            if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
+                var texti = pt.text;
+                if(texti) thisText.push(texti);
+            }
+            pt.value = pt.v;
+            pt.valueLabel = helpers.formatPieValue(pt.v, separators);
+            if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
+            pt.percent = pt.v / cd0.vTotal;
+            pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
+            if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
+
+            var hoverLabel = trace.hoverlabel;
+            var hoverFont = hoverLabel.font;
+
+            Fx.loneHover({
+                x0: hoverCenterX - rInscribed * cd0.r,
+                x1: hoverCenterX + rInscribed * cd0.r,
+                y: hoverCenterY,
+                text: thisText.join('<br>'),
+                name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
+                idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
+                color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
+                borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
+                fontFamily: helpers.castOption(hoverFont.family, pt.pts),
+                fontSize: helpers.castOption(hoverFont.size, pt.pts),
+                fontColor: helpers.castOption(hoverFont.color, pt.pts),
+
+                trace: trace2,
+                hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
+                hovertemplateLabels: pt,
+                eventData: [eventData(pt, trace2)]
+            }, {
+                container: fullLayout2._hoverlayer.node(),
+                outerContainer: fullLayout2._paper.node(),
+                gd: gd
+            });
+
+            hasHoverLabel = true;
+        }
+
+        gd.emit('plotly_hover', {
+            points: [eventData(pt, trace2)],
+            event: d3.event
+        });
+        hasHoverEvent = true;
+    });
+
+    sliceTop.on('mouseout', function(evt) {
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+        var pt = d3.select(this).datum();
+
+        if(hasHoverEvent) {
+            evt.originalEvent = d3.event;
+            gd.emit('plotly_unhover', {
+                points: [eventData(pt, trace2)],
+                event: d3.event
+            });
+            hasHoverEvent = false;
+        }
+
+        if(hasHoverLabel) {
+            Fx.loneUnhover(fullLayout2._hoverlayer.node());
+            hasHoverLabel = false;
+        }
+    });
+
+    sliceTop.on('click', function(pt) {
+        // TODO: this does not support right-click. If we want to support it, we
+        // would likely need to change pie to use dragElement instead of straight
+        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // right mousedown, mousemove, and mouseup handlers just for a left/right click
+        // mapbox would use this too.
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+
+        if(gd._dragging || fullLayout2.hovermode === false) return;
+
+        gd._hoverdata = [eventData(pt, trace2)];
+        Fx.click(gd, d3.event);
+    });
+}
 
 function determineOutsideTextFont(trace, pt, layoutFont) {
     var color = helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
@@ -502,16 +514,17 @@ function prerenderTitles(cdpie, gd) {
 function transformInsideText(textBB, pt, cd0) {
     var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
     var textAspect = textBB.width / textBB.height;
-    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
-    var ring = 1 - cd0.trace.hole;
-    var rInscribed = getInscribedRadiusFraction(pt, cd0);
+    var halfAngle = pt.halfangle;
+    var ring = pt.ring;
+    var rInscribed = pt.rInscribed;
+    var r = cd0.r || pt.rpx1;
 
     // max size text can be inserted inside without rotating it
     // this inscribes the text rectangle in a circle, which is then inscribed
     // in the slice, so it will be an underestimate, which some day we may want
     // to improve so this case can get more use
     var transform = {
-        scale: rInscribed * cd0.r * 2 / textDiameter,
+        scale: rInscribed * r * 2 / textDiameter,
 
         // and the center position and rotation in this case
         rCenter: 1 - rInscribed,
@@ -520,30 +533,30 @@ function transformInsideText(textBB, pt, cd0) {
 
     if(transform.scale >= 1) return transform;
 
-        // max size if text is rotated radially
+    // max size if text is rotated radially
     var Qr = textAspect + 1 / (2 * Math.tan(halfAngle));
-    var maxHalfHeightRotRadial = cd0.r * Math.min(
+    var maxHalfHeightRotRadial = r * Math.min(
         1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
         ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
     );
     var radialTransform = {
         scale: maxHalfHeightRotRadial * 2 / textBB.height,
-        rCenter: Math.cos(maxHalfHeightRotRadial / cd0.r) -
-            maxHalfHeightRotRadial * textAspect / cd0.r,
+        rCenter: Math.cos(maxHalfHeightRotRadial / r) -
+            maxHalfHeightRotRadial * textAspect / r,
         rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
     };
 
-        // max size if text is rotated tangentially
+    // max size if text is rotated tangentially
     var aspectInv = 1 / textAspect;
     var Qt = aspectInv + 1 / (2 * Math.tan(halfAngle));
-    var maxHalfWidthTangential = cd0.r * Math.min(
+    var maxHalfWidthTangential = r * Math.min(
         1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
         ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
     );
     var tangentialTransform = {
         scale: maxHalfWidthTangential * 2 / textBB.width,
-        rCenter: Math.cos(maxHalfWidthTangential / cd0.r) -
-            maxHalfWidthTangential / textAspect / cd0.r,
+        rCenter: Math.cos(maxHalfWidthTangential / r) -
+            maxHalfWidthTangential / textAspect / r,
         rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
     };
     // if we need a rotated transform, pick the biggest one
@@ -558,8 +571,7 @@ function transformInsideText(textBB, pt, cd0) {
 function getInscribedRadiusFraction(pt, cd0) {
     if(pt.v === cd0.vTotal && !cd0.trace.hole) return 1;// special case of 100% with no hole
 
-    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
-    return Math.min(1 / (1 + 1 / Math.sin(halfAngle)), (1 - cd0.trace.hole) / 2);
+    return Math.min(1 / (1 + 1 / Math.sin(pt.halfangle)), pt.ring / 2);
 }
 
 function transformOutsideText(textBB, pt) {
@@ -827,7 +839,6 @@ function scalePies(cdpie, plotSize) {
             }
         }
     }
-
 }
 
 function setCoords(cd) {
@@ -874,5 +885,14 @@ function setCoords(cd) {
         cdi[lastPt] = currentCoords;
 
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
+
+        cdi.halfangle = Math.PI * Math.min(cdi.v / cd0.vTotal, 0.5);
+        cdi.ring = 1 - trace.hole;
+        cdi.rInscribed = getInscribedRadiusFraction(cdi, cd0);
     }
 }
+
+module.exports = {
+    plot: plot,
+    transformInsideText: transformInsideText
+};

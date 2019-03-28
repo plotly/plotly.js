@@ -223,7 +223,8 @@ var pointKeyMap = {
     locations: 'location',
     labels: 'label',
     values: 'value',
-    'marker.colors': 'color'
+    'marker.colors': 'color',
+    parents: 'parent'
 };
 
 function getPointKey(astr) {
