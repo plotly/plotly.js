@@ -179,7 +179,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 y0: yAvg,
                 y1: yAvg,
                 color: color,
-                hovertemplate: '%{name}'
+                hovertemplate: false
             });
 
             delete pointData.index;

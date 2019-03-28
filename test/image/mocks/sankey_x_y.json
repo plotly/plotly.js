@@ -1,0 +1,28 @@
+{
+    "data": [
+        {
+            "type": "sankey",
+            "arrangement": "freeform",
+            "node": {
+                "label": ["0", "1", "2", "3", "4", "5"],
+                "x": [0.128, 0.128, 0.559, 0.785, 0.352, 0.559],
+                "y": [0.738, 0.165, 0.205, 0.390, 0.165, 0.256]
+            },
+            "link": {
+                "source": [
+                    0, 0, 1, 2, 5, 4, 3, 5
+                ],
+                "target": [
+                    5, 3, 4, 3, 0, 2, 2, 3
+                ],
+                "value": [
+                    1, 2, 1, 1, 1, 1, 1, 2
+                ]
+            }
+        }],
+    "layout": {
+        "title": "Sankey with manually positioned node",
+        "width": 800,
+        "height": 800
+    }
+}

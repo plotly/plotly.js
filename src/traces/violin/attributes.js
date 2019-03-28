@@ -16,7 +16,17 @@ module.exports = {
     x: boxAttrs.x,
     x0: boxAttrs.x0,
     y0: boxAttrs.y0,
-    name: boxAttrs.name,
+    name: extendFlat({}, boxAttrs.name, {
+        description: [
+            'Sets the trace name.',
+            'The trace name appear as the legend item and on hover.',
+            'For violin traces, the name will also be used for the position',
+            'coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are',
+            'missing and the position axis is categorical.',
+            'Note that the trace name is also used as a default value',
+            'for attribute `scalegroup` (please see its description for details).'
+        ].join(' ')
+    }),
     orientation: extendFlat({}, boxAttrs.orientation, {
         description: [
             'Sets the orientation of the violin(s).',
@@ -44,7 +54,9 @@ module.exports = {
         description: [
             'If there are multiple violins that should be sized according to',
             'to some metric (see `scalemode`), link them by providing a non-empty group id here',
-            'shared by every trace in the same group.'
+            'shared by every trace in the same group.',
+            'If a violin\'s `width` is undefined, `scalegroup` will default to the trace\'s name.',
+            'In this case, violins with the same names will be linked together'
         ].join(' ')
     },
     scalemode: {
@@ -147,6 +159,7 @@ module.exports = {
     marker: boxAttrs.marker,
     text: boxAttrs.text,
     hovertext: boxAttrs.hovertext,
+    hovertemplate: boxAttrs.hovertemplate,
 
     box: {
         visible: {

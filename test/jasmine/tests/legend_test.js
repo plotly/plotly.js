@@ -15,6 +15,8 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
+var mock = require('@mocks/legend_horizontal.json');
+
 var Drawing = require('@src/components/drawing');
 
 describe('legend defaults', function() {
@@ -698,6 +700,34 @@ describe('legend relayout update', function() {
             .then(function() {
                 bottom = markerOffsetY();
                 expect(bottom).toBeGreaterThan(middle);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('with legendgroup', function() {
+        var mock = require('@mocks/legendgroup_horizontal_wrapping.json');
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        it('changes the margin size to fit tracegroupgap', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+            Plotly.newPlot(gd, mockCopy)
+            .then(function() {
+                expect(gd._fullLayout._size.b).toBe(130);
+                return Plotly.relayout(gd, 'legend.tracegroupgap', 70);
+            })
+            .then(function() {
+                expect(gd._fullLayout._size.b).toBe(185);
+                return Plotly.relayout(gd, 'legend.tracegroupgap', 10);
+            })
+            .then(function() {
+                expect(gd._fullLayout._size.b).toBe(130);
             })
             .catch(failTest)
             .then(done);
@@ -1637,5 +1667,30 @@ describe('legend interaction', function() {
                 .then(done);
             });
         });
+    });
+});
+
+describe('legend DOM', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('draws `legendtoggle` last to make sure it is unobstructed', function(done) {
+        var gd = createGraphDiv();
+        Plotly.newPlot(gd, mock)
+        .then(function() {
+            // Find legend in figure
+            var legend = document.getElementsByClassName('legend')[0];
+
+            // For each legend item
+            var legendItems = legend.getElementsByClassName('traces');
+            Array.prototype.slice.call(legendItems).forEach(function(legendItem) {
+                // Check that the last element is our `legendtoggle`
+                var lastEl = legendItem.children[legendItem.children.length - 1];
+                expect(lastEl.getAttribute('class')).toBe('legendtoggle');
+            });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

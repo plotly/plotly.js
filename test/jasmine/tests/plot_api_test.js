@@ -2683,6 +2683,23 @@ describe('Test plot api', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should only have one modebar-container', function(done) {
+            var data = [{y: [1, 2]}];
+
+            Plotly.plot(gd, data).then(function() {
+                var modebars = document.getElementsByClassName('modebar-container');
+                expect(modebars.length).toBe(1);
+
+                return Plotly.newPlot(gd, data);
+            })
+            .then(function() {
+                var modebars = document.getElementsByClassName('modebar-container');
+                expect(modebars.length).toBe(1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('Plotly.update should', function() {
