@@ -2847,14 +2847,16 @@ function hasBarsOrFill(gd, ax) {
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
 
-        if(trace.visible === true &&
-            (trace.xaxis + trace.yaxis) === subplot &&
-            (
-                Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter] ||
-                trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter
-            )
-        ) {
-            return true;
+        if(trace.visible === true && (trace.xaxis + trace.yaxis) === subplot) {
+            if(
+                (Registry.traceIs(trace, 'bar') || trace.type === 'waterfall') &&
+                trace.orientation === {x: 'h', y: 'v'}[axLetter]
+            ) return true;
+
+            if(
+                trace.fill &&
+                trace.fill.charAt(trace.fill.length - 1) === axLetter
+            ) return true;
         }
     }
     return false;

@@ -1,0 +1,59 @@
+{
+    "data": [
+        {
+            "name": "2018",
+            "type": "waterfall",
+            "orientation": "v",
+            "measure": [
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "total"
+            ],
+            "width": [1.0, 0.6, 0.5, 0.7, 0.9, 0.8],
+            "offset": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
+            "x": [
+                "Sales",
+                "Consulting",
+                "Net revenue",
+                "Purchases",
+                "Other expenses",
+                "Cash"
+            ],
+            "y": [
+                60,
+                80,
+                0,
+                -40,
+                -20,
+                0
+            ],
+            "base": 1000,
+            "connector": {
+              "mode": "between",
+              "line": {
+                "width": 5,
+                "color": "rgb(63, 63, 63)"
+              }
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "Waterfall chart with custom bar widths and offsets"
+        },
+        "xaxis": {
+            "type": "category"
+        },
+        "yaxis": {
+            "type": "linear"
+        },
+        "margin": { "l": 150 },
+        "height": 800,
+        "width": 800,
+        "autosize": true,
+        "showlegend": true
+    }
+}
