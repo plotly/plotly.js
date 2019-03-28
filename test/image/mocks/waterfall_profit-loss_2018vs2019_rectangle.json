@@ -60,6 +60,7 @@
                 null
             ],
             "connector": {
+                "mode": "spanning",
                 "line": {
                     "width": 2,
                     "color": "rgb(0, 0, 0)",
@@ -126,6 +127,7 @@
                 null
             ],
             "connector": {
+                "mode": "spanning",
                 "line": {
                     "width": 2,
                     "color": "rgb(0, 0, 0)",

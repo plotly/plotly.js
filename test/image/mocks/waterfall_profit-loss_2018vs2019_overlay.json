@@ -60,6 +60,7 @@
             ],
             "opacity": 0.5,
             "connector": {
+                "mode": "spanning",
                 "line": {
                     "width": 2,
                     "color": "rgb(0, 0, 0)",
@@ -127,6 +128,7 @@
             ],
             "opacity": 0.5,
             "connector": {
+                "mode": "spanning",
                 "line": {
                     "width": 2,
                     "color": "rgb(0, 0, 0)",

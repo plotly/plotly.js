@@ -56,7 +56,6 @@
                 null
             ],
             "connector": {
-
                 "mode": "between",
                 "line": {
                     "width": 4,

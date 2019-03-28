@@ -12,24 +12,24 @@ var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var extendFlat = require('../../lib/extend').extendFlat;
 
-function directionAttrs() {
+function directionAttrs(dirTxt) {
     return {
         marker: {
             color: extendFlat({}, barAttrs.marker.color, {
                 arrayOk: false,
                 editType: 'style',
-                description: ''
+                description: 'Sets the marker color of all ' + dirTxt + ' values.'
             }),
             line: {
                 color: extendFlat({}, barAttrs.marker.line.color, {
                     arrayOk: false,
                     editType: 'style',
-                    description: ''
+                    description: 'Sets the line color of all ' + dirTxt + ' values.'
                 }),
                 width: extendFlat({}, barAttrs.marker.line.width, {
                     arrayOk: false,
                     editType: 'style',
-                    description: ''
+                    description: 'Sets the line width of all ' + dirTxt + ' values.'
                 }),
                 editType: 'style',
             },
@@ -88,9 +88,9 @@ module.exports = {
     offset: barAttrs.offset,
     width: barAttrs.width,
 
-    increasing: directionAttrs(),
-    decreasing: directionAttrs(),
-    totals: directionAttrs(),
+    increasing: directionAttrs('increasing'),
+    decreasing: directionAttrs('decreasing'),
+    totals: directionAttrs('intermediate sums and total'),
 
     connector: {
         line: {
@@ -102,7 +102,7 @@ module.exports = {
         mode: {
             valType: 'enumerated',
             values: ['spanning', 'between'],
-            dflt: 'spanning',
+            dflt: 'between',
             role: 'info',
             editType: 'plot',
             description: [
