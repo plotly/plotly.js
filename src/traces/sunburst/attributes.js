@@ -15,8 +15,6 @@ var pieAtts = require('../pie/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-// TODO should we use singular `label`, `parent` and `value`?
-
 module.exports = {
     labels: {
         valType: 'data_array',
@@ -34,7 +32,7 @@ module.exports = {
             'the root node in the hierarchy.',
             'If `ids` is filled, `parents` items are understood to be "ids" themselves.',
             'When `ids` is not set, plotly attempts to find matching items in `labels`,',
-            'but beware there must be unique.'
+            'but beware they must be unique.'
         ].join(' ')
     },
 
@@ -48,14 +46,14 @@ module.exports = {
     },
     branchvalues: {
         valType: 'enumerated',
-        values: ['total', 'extra'],
-        dflt: 'extra',
+        values: ['remainder', 'total'],
+        dflt: 'remainder',
         editType: 'calc',
         role: 'info',
         description: [
             'Determines how the items in `values` are summed.',
             'When set to *total*, items in `values` are taken to be value of all its descendants.',
-            'When set to *extra*, items in `values` corresponding to the root and the branches sectors',
+            'When set to *remainder*, items in `values` corresponding to the root and the branches sectors',
             'are taken to be the extra part not part of the sum of the values at their leaves.'
         ].join(' ')
     },

@@ -137,7 +137,7 @@ exports.calc = function(gd, trace) {
 
     if(hasVals) {
         switch(trace.branchvalues) {
-            case 'extra':
+            case 'remainder':
                 hierarchy.sum(function(d) { return d.data.v; });
                 break;
             case 'total':

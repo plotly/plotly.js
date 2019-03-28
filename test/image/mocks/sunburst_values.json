@@ -2,7 +2,7 @@
   "data": [
     {
       "type": "sunburst",
-      "name": "with branchvalues:extra",
+      "name": "with branchvalues:remainder",
       "labels": ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
       "parents": ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
       "values":  [10, 14, 12, 10, 2, 6, 6, 1, 4],
@@ -27,7 +27,7 @@
   "layout": {
     "annotations": [{
       "showarrow": false,
-      "text": "branchvalues: <b>extra</b>",
+      "text": "branchvalues: <b>remainder</b>",
       "x": 0.25,
       "xanchor": "center",
       "y": 1.1,

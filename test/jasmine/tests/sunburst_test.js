@@ -75,7 +75,7 @@ describe('Test sunburst defaults:', function() {
             {labels: [1], parents: ['']},
         ]);
 
-        expect(fullData[0].branchvalues).toBe('extra', 'base');
+        expect(fullData[0].branchvalues).toBe('remainder', 'base');
         expect(fullData[1].branchvalues).toBe(undefined, 'no values');
     });
 
