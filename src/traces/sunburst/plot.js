@@ -25,8 +25,7 @@ var transformInsideText = require('../pie/plot').transformInsideText;
 var formatPieValue = require('../pie/helpers').formatPieValue;
 var styleOne = require('./style').styleOne;
 
-var CLICK_TRANSITION_TIME = 1000;
-var CLICK_TRANSITION_EASING = 'linear'; // TODO or something else?
+var constants = require('./constants');
 
 module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
@@ -682,11 +681,11 @@ function attachFxHandlers(sliceTop, gd, cd) {
         var animOpts = {
             frame: {
                 redraw: false,
-                duration: CLICK_TRANSITION_TIME
+                duration: constants.CLICK_TRANSITION_TIME
             },
             transition: {
-                duration: CLICK_TRANSITION_TIME,
-                easing: CLICK_TRANSITION_EASING
+                duration: constants.CLICK_TRANSITION_TIME,
+                easing: constants.CLICK_TRANSITION_EASING
             },
             mode: 'immediate',
             fromcurrent: true

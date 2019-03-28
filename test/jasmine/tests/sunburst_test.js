@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var constants = require('@src/traces/sunburst/constants');
 
 var d3 = require('d3');
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -888,7 +889,7 @@ describe('Test sunburst tweening:', function() {
         click(gd, v)();
 
         // 1 second more than the click transition duration
-        return delay(1001);
+        return delay(constants.CLICK_TRANSITION_TIME + 1);
     }
 
     function trim(s) {
