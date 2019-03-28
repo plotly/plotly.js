@@ -2121,7 +2121,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@flaky should work for waterfall traces', function(done) {
+    it('@noCI @flaky should work for waterfall traces', function(done) {
         var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
         var assertSelectedPoints = makeAssertSelectedPoints();
         var assertRanges = makeAssertRanges();
