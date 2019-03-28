@@ -163,7 +163,10 @@ module.exports = extendFlat({
         editType: 'calc',
         description: [
             'Sets the color of each vertex',
-            'Overrides *color*.'
+            'Overrides *color*. While Red, green and blue colors',
+            'are in the range of 0 and 255; in the case of having',
+            'vertex color data in RGBA format, the alpha color',
+            'should be normalized to be between 0 and 1.'
         ].join(' ')
     },
     facecolor: {
