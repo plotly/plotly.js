@@ -67,10 +67,10 @@ module.exports = function calc(gd, trace) {
             y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
         }
 
-        x0 = trace.x0 || 0;
-        dx = trace.dx || 1;
-        y0 = trace.y0 || 0;
-        dy = trace.dy || 1;
+        x0 = trace.x0;
+        dx = trace.dx;
+        y0 = trace.y0;
+        dy = trace.dy;
 
         z = clean2dArray(zIn, trace.transpose);
 

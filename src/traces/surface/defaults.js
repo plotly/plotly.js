@@ -56,6 +56,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lightposition.y',
         'lightposition.z',
         'hidesurface',
+        'connectgaps',
         'opacity'
     ].forEach(function(x) { coerce(x); });
 

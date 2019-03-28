@@ -237,6 +237,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
     var bargap = fullLayout.bargap;
     var bargroupgap = fullLayout.bargroupgap || 0;
+
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
 

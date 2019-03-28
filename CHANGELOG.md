@@ -10,6 +10,24 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.45.3] -- 2019-03-19
+
+### Fixed
+- Fix legend click dispatch on legend item symbols (bug introduced in 1.44.0) [#3635]
+- Fix overlapping of "very close" hover labels [#3645]
+- Fix `hovermode` default logic for stacked `scatter` traces [#3646]
+- Fix `glPixelRatio` handling in `surface` contour lines [#3641]
+- Fix `gl2d` subplot zoombox appearance (bug introduced in 1.32.0) [#3647]
+- Fix axis label updates on `gl2d` subplots on scroll (bug introduced in 1.32.0) [#3647]
+- Fix `dragmode` relayout calls on `gl2d` subplots [#3647]
+- Improve info about `<extra>` in `hovertemplate` description [#3623]
+
+
+## [1.45.2] -- 2019-03-07
+
+### Fixed
+- Fix webpack builds that include `sankey` by upgrading d3-sankey-circular to 0.33.0 (bug introduced in 1.45.0) [#3611]
+
 ## [1.45.1] -- 2019-03-05
 
 ### Fixed

@@ -61,6 +61,7 @@ module.exports = function style(s, gd) {
           .enter().append('g')
             .classed('legendpoints', true);
     })
+    .each(styleWaterfalls)
     .each(styleBars)
     .each(styleBoxes)
     .each(stylePies)
@@ -239,6 +240,38 @@ module.exports = function style(s, gd) {
                 .append('text').attr('transform', 'translate(20,0)');
         txt.exit().remove();
         txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
+    }
+
+    function styleWaterfalls(d) {
+        var trace = d[0].trace;
+
+        var ptsData = [];
+        if(trace.type === 'waterfall' && trace.visible) {
+            ptsData = d[0].hasTotals ?
+                [['increasing', 'M-6,-6V6H0Z'], ['totals', 'M6,6H0L-6,-6H-0Z'], ['decreasing', 'M6,6V-6H0Z']] :
+                [['increasing', 'M-6,-6V6H6Z'], ['decreasing', 'M6,6V-6H-6Z']];
+        }
+
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendwaterfall')
+            .data(ptsData);
+        pts.enter().append('path').classed('legendwaterfall', true)
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
+
+        pts.each(function(dd) {
+            var pt = d3.select(this);
+            var cont = trace[dd[0]].marker;
+
+            pt.attr('d', dd[1])
+                .style('stroke-width', cont.line.width + 'px')
+                .call(Color.fill, cont.color);
+
+            if(cont.line.width) {
+                pt.call(Color.stroke, cont.line.color);
+            }
+        });
     }
 
     function styleBars(d) {

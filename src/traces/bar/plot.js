@@ -28,15 +28,23 @@ var style = require('./style');
 // padding in pixels around text
 var TEXTPAD = 3;
 
-module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
+module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
 
-    var bartraces = Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function(cd) {
+    var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
+
+        var adjustDir;
+        var adjustPixel = 0;
+        if(trace.type === 'waterfall' && trace.connector.visible && trace.connector.mode === 'between') {
+            adjustPixel = trace.connector.line.width / 2;
+        }
+
+        var isHorizontal = (trace.orientation === 'h');
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
@@ -57,7 +65,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
             // log values go off-screen by plotwidth
             // so you see them continue if you drag the plot
             var x0, x1, y0, y1;
-            if(trace.orientation === 'h') {
+            if(isHorizontal) {
                 y0 = ya.c2p(di.p0, true);
                 y1 = ya.c2p(di.p1, true);
                 x0 = xa.c2p(di.s0, true);
@@ -65,8 +73,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 
                 // for selections
                 di.ct = [x1, (y0 + y1) / 2];
-            }
-            else {
+            } else {
                 x0 = xa.c2p(di.p0, true);
                 x1 = xa.c2p(di.p1, true);
                 y0 = ya.c2p(di.s0, true);
@@ -83,14 +90,43 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 return;
             }
 
-            var lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
+            // in waterfall mode `between` we need to adjust bar end points to match the connector width
+            if(adjustPixel) {
+                if(isHorizontal) {
+                    adjustDir = (x1 < x0) ? -1 : 1;
+                    x0 -= adjustDir * adjustPixel;
+                    x1 += adjustDir * adjustPixel;
+                } else {
+                    adjustDir = (y1 < y0) ? -1 : 1;
+                    y0 -= adjustDir * adjustPixel;
+                    y1 += adjustDir * adjustPixel;
+                }
+            }
+
+            var lw;
+            var mc;
+            var prefix;
+
+            if(trace.type === 'waterfall') {
+                var cont = trace[di.dir].marker;
+                lw = cont.line.width;
+                mc = cont.color;
+                prefix = 'waterfall';
+            } else {
+                lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
                     (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
+                mc = di.mc || trace.marker.color;
+                prefix = 'bar';
+            }
+
             var offset = d3.round((lw / 2) % 1, 2);
+            var bargap = fullLayout[prefix + 'gap'];
+            var bargroupgap = fullLayout[prefix + 'groupgap'];
 
             function roundWithLine(v) {
                 // if there are explicit gaps, don't round,
                 // it can make the gaps look crappy
-                return (fullLayout.bargap === 0 && fullLayout.bargroupgap === 0) ?
+                return (bargap === 0 && bargroupgap === 0) ?
                     d3.round(Math.round(v) - offset, 2) : v;
             }
 
@@ -111,7 +147,8 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 // pixelation. if the bars ARE fully opaque and have
                 // no line, expand to a full pixel to make sure we
                 // can see them
-                var op = Color.opacity(di.mc || trace.marker.color);
+
+                var op = Color.opacity(mc);
                 var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
                 x0 = fixpx(x0, x1);
                 x1 = fixpx(x1, x0);
@@ -121,8 +158,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 
             Lib.ensureSingle(bar, 'path')
                 .style('vector-effect', 'non-scaling-stroke')
-                .attr('d',
-                    'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                .attr('d', 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
             appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
@@ -143,6 +179,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
+    var fullLayout = gd._fullLayout;
     var textPosition;
 
     function appendTextNode(bar, text, textFont) {
@@ -174,13 +211,14 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         return;
     }
 
-    var layoutFont = gd._fullLayout.font;
+    var layoutFont = fullLayout.font;
     var barColor = style.getBarColor(calcTrace[i], trace);
     var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
 
     // compute text position
-    var barmode = gd._fullLayout.barmode;
+    var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
+    var barmode = fullLayout[prefix + 'mode'];
     var inStackMode = (barmode === 'stack');
     var inRelativeMode = (barmode === 'relative');
     var inStackOrRelativeMode = inStackMode || inRelativeMode;
@@ -220,14 +258,12 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
             if(textHasSize &&
                     (fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk)) {
                 textPosition = 'inside';
-            }
-            else {
+            } else {
                 textPosition = 'outside';
                 textSelection.remove();
                 textSelection = null;
             }
-        }
-        else textPosition = 'inside';
+        } else textPosition = 'inside';
     }
 
     if(!textSelection) {
@@ -251,8 +287,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'outside';
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
             orientation, constrained);
-    }
-    else {
+    } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
             orientation, constrained);
@@ -280,8 +315,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
         textpad = TEXTPAD;
         barWidth -= 2 * textpad;
         barHeight -= 2 * textpad;
-    }
-    else textpad = 0;
+    } else textpad = 0;
 
     // compute rotation and scale
     var rotate,
@@ -291,18 +325,15 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
         // no scale or rotation is required
         rotate = false;
         scale = 1;
-    }
-    else if(textWidth <= barHeight && textHeight <= barWidth) {
+    } else if(textWidth <= barHeight && textHeight <= barWidth) {
         // only rotation is required
         rotate = true;
         scale = 1;
-    }
-    else if((textWidth < textHeight) === (barWidth < barHeight)) {
+    } else if((textWidth < textHeight) === (barWidth < barHeight)) {
         // only scale is required
         rotate = false;
         scale = constrained ? Math.min(barWidth / textWidth, barHeight / textHeight) : 1;
-    }
-    else {
+    } else {
         // both scale and rotation are required
         rotate = true;
         scale = constrained ? Math.min(barHeight / textWidth, barWidth / textHeight) : 1;
@@ -314,8 +345,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
     if(rotate) {
         targetWidth = scale * textHeight;
         targetHeight = scale * textWidth;
-    }
-    else {
+    } else {
         targetWidth = scale * textWidth;
         targetHeight = scale * textHeight;
     }
@@ -325,19 +355,16 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
             // bar end is on the left hand side
             targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
-        }
-        else {
+        } else {
             targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
-    }
-    else {
+    } else {
         if(y1 > y0) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
             targetY = y1 - textpad - targetHeight / 2;
-        }
-        else {
+        } else {
             targetX = (x0 + x1) / 2;
             targetY = y1 + textpad + targetHeight / 2;
         }
@@ -382,19 +409,16 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
             // bar end is on the left hand side
             targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
-        }
-        else {
+        } else {
             targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
-    }
-    else {
+    } else {
         if(y1 > y0) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
             targetY = y1 + textpad + targetHeight / 2;
-        }
-        else {
+        } else {
             targetX = (x0 + x1) / 2;
             targetY = y1 - textpad - targetHeight / 2;
         }
