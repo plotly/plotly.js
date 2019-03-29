@@ -122,7 +122,6 @@ function checkParcatsSvg(gd) {
 
     // Check category transforms
     dimensionSelection.each(function(dimension, dimDisplayInd) {
-
         var categorySelection = d3.select(this).selectAll('g.category');
         var nextY = (3 - categorySelection.size()) * catSpacing / 2;
 
@@ -160,7 +159,6 @@ function makeTranslate(x, y) {
 // Test cases
 // ==========
 describe('Basic parcats trace', function() {
-
     // Variable declarations
     // ---------------------
     // ### Trace level ###
@@ -194,7 +192,6 @@ describe('Basic parcats trace', function() {
     it('should compute initial model properly', function(done) {
         Plotly.newPlot(gd, basicMock)
             .then(function() {
-
                 // Var check calc data
                 /** @type {ParcatsModel} */
                 var calcdata = gd.calcdata[0][0];
@@ -274,7 +271,6 @@ describe('Basic parcats trace', function() {
     it('should compute initial data properly', function(done) {
         Plotly.newPlot(gd, mock)
             .then(function() {
-
                 // Check that trace data matches input
                 expect(gd.data[0]).toEqual(mock.data[0]);
             })
@@ -296,7 +292,6 @@ describe('Basic parcats trace', function() {
     });
 
     it('should compute initial model views properly', function(done) {
-
         Plotly.newPlot(gd, basicMock)
             .then(function() {
                 checkParcatsModelView(gd);
@@ -317,7 +312,6 @@ describe('Basic parcats trace', function() {
 });
 
 describe('Dimension reordered parcats trace', function() {
-
     // Variable declarations
     // ---------------------
     // ### Trace level ###
@@ -338,7 +332,6 @@ describe('Dimension reordered parcats trace', function() {
     it('should compute initial model properly', function(done) {
         Plotly.newPlot(gd, mock)
             .then(function() {
-
                 // Var check calc data
                 /** @type {ParcatsModel} */
                 var calcdata = gd.calcdata[0][0];
@@ -404,13 +397,11 @@ describe('Dimension reordered parcats trace', function() {
     });
 
     it('should recover from bad display order specification', function(done) {
-
         // Define bad display indexes [0, 2, 0]
         mock.data[0].dimensions[2].displayindex = 0;
 
         Plotly.newPlot(gd, mock)
             .then(function() {
-
                 // Var check calc data
                 /** @type {ParcatsModel} */
                 var calcdata = gd.calcdata[0][0];
@@ -471,7 +462,6 @@ describe('Dimension reordered parcats trace', function() {
     });
 
     it('should compute initial model views properly', function(done) {
-
         Plotly.newPlot(gd, mock)
             .then(function() {
                 checkParcatsModelView(gd);
@@ -492,7 +482,6 @@ describe('Dimension reordered parcats trace', function() {
 });
 
 describe('Drag to reordered dimensions', function() {
-
     // Variable declarations
     // ---------------------
     // ### Trace level ###
@@ -567,7 +556,6 @@ describe('Drag to reordered dimensions', function() {
     }
 
     it('should support dragging dimension label to reorder dimensions in freeform arrangement', function(done) {
-
         // Set arrangement
         mock.data[0].arrangement = 'freeform';
 
@@ -642,7 +630,6 @@ describe('Drag to reordered dimensions', function() {
     });
 
     it('should support dragging dimension label to reorder dimensions in perpendicular arrangement', function(done) {
-
         // Set arrangement
         mock.data[0].arrangement = 'perpendicular';
 
@@ -718,7 +705,6 @@ describe('Drag to reordered dimensions', function() {
     });
 
     it('should NOT support dragging dimension label to reorder dimensions in fixed arrangement', function(done) {
-
         // Set arrangement
         mock.data[0].arrangement = 'fixed';
 
@@ -781,7 +767,6 @@ describe('Drag to reordered dimensions', function() {
 });
 
 describe('Drag to reordered categories', function() {
-
     // Variable declarations
     // ---------------------
     // ### Trace level ###
@@ -914,13 +899,11 @@ describe('Drag to reordered categories', function() {
     }
 
     it('should support dragging category to reorder categories and dimensions in freeform arrangement', function(done) {
-
         // Set arrangement
         mock.data[0].arrangement = 'freeform';
 
         Plotly.newPlot(gd, mock)
             .then(function() {
-
                 restyleCallback = jasmine.createSpy('restyleCallback');
                 gd.on('plotly_restyle', restyleCallback);
 
@@ -981,7 +964,6 @@ describe('Drag to reordered categories', function() {
 
                 // Make sure categories in dimension 1 have changed already
                 checkFinalCategories();
-
             })
             .then(delay(CALLBACK_DELAY))
             .then(function() {
@@ -1004,13 +986,11 @@ describe('Drag to reordered categories', function() {
     });
 
     it('should support dragging category to reorder categories only in perpendicular arrangement', function(done) {
-
         // Set arrangement
         mock.data[0].arrangement = 'perpendicular';
 
         Plotly.newPlot(gd, mock)
             .then(function() {
-
                 restyleCallback = jasmine.createSpy('restyleCallback');
                 gd.on('plotly_restyle', restyleCallback);
 
@@ -1089,13 +1069,11 @@ describe('Drag to reordered categories', function() {
     });
 
     it('should NOT support dragging category to reorder categories or dimensions in fixed arrangement', function(done) {
-
         // Set arrangement
         mock.data[0].arrangement = 'fixed';
 
         Plotly.newPlot(gd, mock)
             .then(function() {
-
                 restyleCallback = jasmine.createSpy('restyleCallback');
                 gd.on('plotly_restyle', restyleCallback);
 
@@ -1162,7 +1140,6 @@ describe('Drag to reordered categories', function() {
 
 
 describe('Click events', function() {
-
     // Variable declarations
     // ---------------------
     // ### Trace level ###
@@ -1179,7 +1156,6 @@ describe('Click events', function() {
     afterEach(destroyGraphDiv);
 
     it('should fire on category click', function(done) {
-
         var clickData;
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -1220,7 +1196,6 @@ describe('Click events', function() {
     });
 
     it('should NOT fire on category click if hoverinfo is skip', function(done) {
-
         var clickData;
         mock.data[0].hoverinfo = 'skip';
 
@@ -1252,7 +1227,6 @@ describe('Click events', function() {
     });
 
     it('should fire on path click', function(done) {
-
         var clickData;
 
         Plotly.newPlot(gd, mock)
@@ -1293,7 +1267,6 @@ describe('Click events', function() {
     });
 
     it('should NOT fire on path click if hoverinfo is skip', function(done) {
-
         var clickData;
         mock.data[0].hoverinfo = 'skip';
 
@@ -1326,7 +1299,6 @@ describe('Click events', function() {
 });
 
 describe('Click events with hoveron color', function() {
-
     // Variable declarations
     // ---------------------
     // ### Trace level ###
@@ -1343,7 +1315,6 @@ describe('Click events with hoveron color', function() {
     afterEach(destroyGraphDiv);
 
     it('should fire on category click', function(done) {
-
         var clickData;
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -1383,7 +1354,6 @@ describe('Click events with hoveron color', function() {
 
 
     it('should fire on path click', function(done) {
-
         var clickData;
 
         Plotly.newPlot(gd, mock)
@@ -1424,7 +1394,6 @@ describe('Click events with hoveron color', function() {
 });
 
 describe('Hover events', function() {
-
     // Variable declarations
     // ---------------------
     // ### Trace level ###
@@ -1441,7 +1410,6 @@ describe('Hover events', function() {
     afterEach(destroyGraphDiv);
 
     it('hover and unhover should fire on category', function(done) {
-
         var hoverData;
         var unhoverData;
         var mouseY0;
@@ -1512,7 +1480,6 @@ describe('Hover events', function() {
     });
 
     it('hover and unhover should fire on path', function(done) {
-
         var hoverData;
         var unhoverData;
         var mouseY0;
@@ -1581,7 +1548,6 @@ describe('Hover events', function() {
 });
 
 describe('Hover events with hoveron color', function() {
-
     // Variable declarations
     // ---------------------
     // ### Trace level ###
@@ -1598,7 +1564,6 @@ describe('Hover events with hoveron color', function() {
     afterEach(destroyGraphDiv);
 
     it('hover and unhover should fire on category hoveron color', function(done) {
-
         var hoverData;
         var unhoverData;
         var mouseY0;
@@ -1665,7 +1630,6 @@ describe('Hover events with hoveron color', function() {
     });
 
     it('hover and unhover should fire on path hoveron color', function(done) {
-
         var hoverData;
         var unhoverData;
         var mouseY0;
@@ -1752,7 +1716,6 @@ describe('Parcats hover:', function() {
                 assertHoverLabelContent(s);
                 done();
             }, CALLBACK_DELAY);
-
         })
         .catch(failTest);
     }

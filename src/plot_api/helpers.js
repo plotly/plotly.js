@@ -237,7 +237,6 @@ function cleanAxRef(container, attr) {
  */
 function cleanTitle(titleContainer) {
     if(titleContainer) {
-
         // title -> title.text
         // (although title used to be a string attribute,
         // numbers are accepted as well)
@@ -258,7 +257,6 @@ function cleanTitle(titleContainer) {
         var newAttrSet = titleContainer.title && titleContainer.title[newAttrName];
 
         if(oldAttrSet && !newAttrSet) {
-
             // Ensure title object exists
             if(!titleContainer.title) {
                 titleContainer.title = {};
@@ -613,7 +611,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
 
     // delete item
     if(pLastIsNumber && newVal === null) {
-
         // Clear item in array container when new value is null
         var contPath = parts.slice(0, pLength - 1).join('.');
         var cont = Lib.nestedProperty(obj, contPath).get();
@@ -624,7 +621,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
     // create item
     else if(pLastIsNumber && np.get() === undefined) {
-
         // When adding a new item, make sure undo command will remove it
         if(np.get() === undefined) undoit[np.astr] = null;
 
@@ -632,7 +628,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
     // update item
     else {
-
         // If the last part of attribute string isn't a number,
         // np.set is all we need.
         np.set(newVal);

@@ -88,7 +88,6 @@ describe('Test scattergeo defaults', function() {
 });
 
 describe('Test scattergeo calc', function() {
-
     function _calc(opts) {
         var base = { type: 'scattergeo' };
         var trace = Lib.extendFlat({}, base, opts);

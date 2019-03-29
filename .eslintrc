@@ -46,6 +46,7 @@
     "space-in-parens": [2, "never"],
     "space-before-function-paren": [2, "never"],
     "space-before-blocks": [2],
+    "padded-blocks": [2, "never"],
     "spaced-comment": [2, "always"],
     "no-tabs": [2],
     "no-multi-spaces": [2, {"ignoreEOLComments": true}],

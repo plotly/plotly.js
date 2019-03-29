@@ -153,7 +153,6 @@ describe('Plot title', function() {
     // y 'auto' value
     it('provides a y \'auto\' value putting title baseline in middle ' +
       'of top margin irrespective of `yref`', function() {
-
         // yref: 'container'
         Plotly.plot(gd, data, extendLayout({
             yref: 'container',
@@ -1166,5 +1165,4 @@ describe('Editable titles', function() {
         })
         .then(done);
     });
-
 });

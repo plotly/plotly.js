@@ -193,7 +193,6 @@ function debounce(func, wait, immediate) {
 }
 
 function searchMocks(e) {
-
     // Clear results.
     while(mocksList.firstChild) {
         mocksList.removeChild(mocksList.firstChild);

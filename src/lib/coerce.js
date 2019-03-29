@@ -267,7 +267,6 @@ exports.valObjectMeta = {
         // either be a matching 1D array or an array of such matching 1D arrays
         otherOpts: ['dflt', 'freeLength', 'dimensions'],
         coerceFunction: function(v, propOut, dflt, opts) {
-
             // simplified coerce function just for array items
             function coercePart(v, opts, dflt) {
                 var out;

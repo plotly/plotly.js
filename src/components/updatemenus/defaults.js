@@ -28,7 +28,6 @@ module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
 };
 
 function menuDefaults(menuIn, menuOut, layoutOut) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
     }

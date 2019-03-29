@@ -307,7 +307,6 @@ describe('ModeBar', function() {
             modeBar.destroy();
 
             expect(modeBarParent.querySelector('.modebar')).toBeNull();
-
         });
     });
 
@@ -315,7 +314,6 @@ describe('ModeBar', function() {
         function getButtons(list) {
             for(var i = 0; i < list.length; i++) {
                 for(var j = 0; j < list[i].length; j++) {
-
                     // minimal button config object
                     list[i][j] = { name: list[i][j], click: noop };
                 }
@@ -920,7 +918,6 @@ describe('ModeBar', function() {
 
             expect(function() { manageModeBar(gd); }).toThrowError();
         });
-
     });
 
     describe('modebar on clicks', function() {
@@ -984,11 +981,9 @@ describe('ModeBar', function() {
                     done();
                 });
             });
-
         });
 
         describe('cartesian handlers', function() {
-
             beforeEach(function(done) {
                 var mockData = [{
                     type: 'scatter',
@@ -1106,7 +1101,6 @@ describe('ModeBar', function() {
             });
 
             describe('buttons hoverCompareCartesian and hoverClosestCartesian ', function() {
-
                 it('should update layout hovermode', function() {
                     expect(gd._fullLayout.hovermode).toBe('x');
                     assertActive(hovermodeButtons, buttonCompare);
@@ -1161,7 +1155,6 @@ describe('ModeBar', function() {
         });
 
         describe('pie handlers', function() {
-
             beforeEach(function(done) {
                 var mockData = [{
                     type: 'pie',
@@ -1195,7 +1188,6 @@ describe('ModeBar', function() {
         });
 
         describe('geo handlers', function() {
-
             beforeEach(function(done) {
                 var mockData = [{
                     type: 'scattergeo',
@@ -1226,7 +1218,6 @@ describe('ModeBar', function() {
                     expect(button.isActive()).toBe(true);
                 });
             });
-
         });
 
         describe('@noCI mapbox handlers', function() {

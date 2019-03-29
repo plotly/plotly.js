@@ -145,7 +145,6 @@ describe('Test gl3d before/after plot', function() {
         })
         .then(done);
     });
-
 });
 
 describe('Test gl3d plots', function() {
@@ -916,7 +915,6 @@ describe('Test gl3d plots', function() {
             expect(gd.layout.yaxis).toBeDefined();
             expect(gd._fullLayout._has('gl3d')).toBe(true);
             expect(gd._fullLayout.scene._scene).toBeDefined();
-
         })
         .then(done);
     });

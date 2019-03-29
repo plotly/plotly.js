@@ -26,7 +26,6 @@ module.exports = function slidersDefaults(layoutIn, layoutOut) {
 };
 
 function sliderDefaults(sliderIn, sliderOut, layoutOut) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(sliderIn, sliderOut, attributes, attr, dflt);
     }

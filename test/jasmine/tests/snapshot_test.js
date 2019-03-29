@@ -13,7 +13,6 @@ describe('Plotly.Snapshot', function() {
     'use strict';
 
     describe('clone', function() {
-
         var data,
             layout,
             dummyTrace1, dummyTrace2,
@@ -121,7 +120,6 @@ describe('Plotly.Snapshot', function() {
         });
 
         it('should create a 3D thumbnail with limited attributes', function() {
-
             var figure = {
                 data: [{
                     type: 'scatter',
@@ -230,7 +228,6 @@ describe('Plotly.Snapshot', function() {
             d3.select(gd).style('visibility', 'inherit');
 
             Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
-
                 d3.select(gd).selectAll('text').each(function() {
                     var thisStyle = window.getComputedStyle(this);
                     expect(thisStyle.visibility).toEqual('visible');

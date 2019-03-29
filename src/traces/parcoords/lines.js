@@ -62,11 +62,9 @@ function clear(regl, x, y, width, height) {
 }
 
 function renderBlock(regl, glAes, renderState, blockLineCount, sampleCount, item) {
-
     var rafKey = item.key;
 
     function render(blockNumber) {
-
         var count;
 
         count = Math.min(blockLineCount, sampleCount - blockNumber * blockLineCount);

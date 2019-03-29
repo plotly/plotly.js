@@ -554,7 +554,6 @@ describe('Test animate API', function() {
             }).then(function() {
                 expect(frames).toEqual(['frame0', 'frame1', null, null]);
             }).catch(failTest).then(done);
-
         });
     });
 
@@ -569,7 +568,6 @@ describe('Test animate API', function() {
 
                 // Transition timing:
                 expect(Plots.transition.calls.argsFor(0)[5].duration).toEqual(50);
-
             }).catch(failTest).then(done);
         });
 
@@ -585,7 +583,6 @@ describe('Test animate API', function() {
                 // Transition timing:
                 expect(Plots.transition.calls.argsFor(0)[5].duration).toEqual(50);
                 expect(Plots.transition.calls.argsFor(1)[5].duration).toEqual(40);
-
             }).catch(failTest).then(done);
         });
     });
@@ -782,7 +779,6 @@ describe('non-animatable fallback', function() {
         }).then(function() {
             expect(gd.data[0].y).toEqual([6, 4, 5]);
         }).catch(failTest).then(done);
-
     });
 });
 

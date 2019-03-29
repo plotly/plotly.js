@@ -31,7 +31,6 @@ var proto = VolumeTrace.prototype;
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
-
         var rawId = selection.data.index;
 
         var x = this.data._x[rawId];
@@ -118,7 +117,6 @@ proto.dispose = function() {
 };
 
 function createVolumeTrace(scene, data) {
-
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
     var result = new VolumeTrace(scene, mesh, data.uid);

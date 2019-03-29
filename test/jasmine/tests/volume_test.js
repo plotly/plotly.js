@@ -105,11 +105,9 @@ function createvolumeFig() {
 }
 
 describe('Test volume', function() {
-
     var gd;
 
     describe('defaults', function() {
-
         function assertVisibility(exp, msg) {
             expect(gd._fullData[0]).not.toBe(undefined, 'no visibility!');
             expect(gd._fullData[0].visible).toBe(exp, msg);
@@ -189,11 +187,9 @@ describe('Test volume', function() {
             expect(gd._fullData[0].isomin).not.toBe(null, 'isomin not set');
             expect(gd._fullData[0].isomax).not.toBe(null, 'isomax not set');
         });
-
     });
 
     describe('mesh_generation', function() {
-
         var gd;
 
         beforeEach(function() {
@@ -254,11 +250,9 @@ describe('Test volume', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 
     describe('restyle', function() {
-
         var gd;
 
         beforeEach(function() {
@@ -271,7 +265,6 @@ describe('Test volume', function() {
         });
 
         it('should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
-
             function _assert(user, full) {
                 var trace = gd.data[0];
                 var fullTrace = gd._fullData[0];
@@ -315,7 +308,6 @@ describe('Test volume', function() {
     });
 
     describe('hover', function() {
-
         var gd;
 
         beforeEach(function() {

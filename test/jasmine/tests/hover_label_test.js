@@ -498,7 +498,6 @@ describe('hover info', function() {
         });
 
         it('render only non-hoverinfo \'none\' hover labels', function(done) {
-
             Plotly.restyle(gd, 'hoverinfo', ['none', 'name']).then(function() {
                 Fx.hover('graph', evt, 'xy');
 
@@ -2159,7 +2158,6 @@ describe('hover info on overlaid subplots', function() {
 });
 
 describe('hover after resizing', function() {
-
     var gd;
     afterEach(destroyGraphDiv);
 
@@ -2530,7 +2528,6 @@ describe('hover updates', function() {
             }
         }], { width: 700, height: 450 })
         .then(function() {
-
             gd.on('plotly_hover', function(eventData) {
                 hoverCnt++;
 
@@ -2557,7 +2554,6 @@ describe('hover updates', function() {
             expect(unHoverCnt).toEqual(2);
         })
         .then(done);
-
     });
 });
 

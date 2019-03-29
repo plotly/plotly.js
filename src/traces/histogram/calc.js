@@ -493,7 +493,6 @@ function cdf(size, direction, currentBin) {
     }
 
     if(currentBin === 'half') {
-
         if(direction === 'increasing') {
             firstHalfPoint(0);
             for(i = 1; i < size.length; i++) {

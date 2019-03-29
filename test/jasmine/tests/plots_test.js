@@ -238,7 +238,6 @@ describe('Test Plots', function() {
             supplyLayoutDefaults(layoutIn, layoutOut);
             expect(layoutOut.margin).toEqual(expected);
         });
-
     });
 
     describe('Plots.supplyTraceDefaults', function() {
@@ -441,7 +440,6 @@ describe('Test Plots', function() {
     });
 
     describe('extendObjectWithContainers', function() {
-
         function assert(dest, src, expected) {
             Plots.extendObjectWithContainers(dest, src, ['container']);
             expect(dest).toEqual(expected);
@@ -632,7 +630,6 @@ describe('Test Plots', function() {
     });
 
     describe('Plots.generalUpdatePerTraceModule', function() {
-
         function _update(subplotCalcData, traceHashOld) {
             var gd = {};
             var subplot = { traceHash: traceHashOld || {} };

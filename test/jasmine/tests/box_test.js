@@ -85,7 +85,6 @@ describe('Test boxes supplyDefaults', function() {
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.orientation).toBe('h');
-
     });
 
     it('should inherit layout.calendar', function() {

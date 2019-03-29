@@ -1295,7 +1295,6 @@ describe('Test axes', function() {
     });
 
     describe('categoryorder', function() {
-
         var gd;
 
         beforeEach(function() {
@@ -1305,7 +1304,6 @@ describe('Test axes', function() {
         afterEach(destroyGraphDiv);
 
         describe('setting, or not setting categoryorder if it is not explicitly declared', function() {
-
             it('should set categoryorder to default if categoryorder and categoryarray are not supplied', function() {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {xaxis: {type: 'category'}});
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
@@ -1331,11 +1329,9 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.yaxis.categoryorder).toBe('trace');
                 expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
             });
-
         });
 
         describe('setting categoryorder to "array"', function() {
-
             it('should leave categoryorder on "array" if it is supplied', function() {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'array', categoryarray: ['b', 'a', 'd', 'e', 'c']}
@@ -1359,11 +1355,9 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                 expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
             });
-
         });
 
         describe('do not set categoryorder to "array" if list exists but empty', function() {
-
             it('should switch categoryorder to default if list is not supplied', function() {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'array', categoryarray: []}
@@ -1382,7 +1376,6 @@ describe('Test axes', function() {
         });
 
         describe('do NOT set categoryorder to "array" if it has some other proper value', function() {
-
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function() {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'trace', categoryarray: ['b', 'a', 'd', 'e', 'c']}
@@ -1406,11 +1399,9 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('category descending');
                 expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
             });
-
         });
 
         describe('setting categoryorder to the default if the value is unexpected', function() {
-
             it('should switch categoryorder to "trace" if mode is supplied but invalid', function() {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'invalid value'}
@@ -1426,9 +1417,7 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
                 expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
             });
-
         });
-
     });
 
     describe('handleTickDefaults', function() {
@@ -1678,7 +1667,6 @@ describe('Test axes', function() {
                 expect(axOut.tick0).toBe(0);
                 expect(axOut.dtick).toBe(1);
             });
-
         });
 
         it('should set tickvals and ticktext iff tickmode=array', function() {
@@ -1847,7 +1835,6 @@ describe('Test axes', function() {
             expect(listFunc(gd, 'x'))
                 .toEqual([{ _id: 'x2' }, { _id: 'x', _thisIs3d: true }]);
         });
-
     });
 
     describe('getSubplots', function() {
@@ -2901,7 +2888,6 @@ describe('Test axes', function() {
     });
 
     describe('autoBin', function() {
-
         function _autoBin(x, ax, nbins) {
             ax._categories = [];
             ax._categoriesMap = {};

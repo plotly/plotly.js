@@ -38,8 +38,9 @@ function calc(gd, trace) {
     var yAttr = 'y';
     var posAttr;
     if(stackGroupOpts) {
-        stackGroupOpts.traceIndices.push(trace.index);
+        Lib.pushUnique(stackGroupOpts.traceIndices, trace._expandedIndex);
         isV = stackGroupOpts.orientation === 'v';
+
         // size, like we use for bar
         if(isV) {
             yAttr = 's';
@@ -243,7 +244,6 @@ function calcMarkerSize(trace, serieslen) {
             sizeOut[i] = markerTrans(s[i]);
         }
         return sizeOut;
-
     } else {
         return markerTrans(marker.size);
     }

@@ -103,7 +103,6 @@ function plot(gd, cdpie) {
                     }
                     else slicePath.attr('d', outerCircle);
                 } else {
-
                     var outerArc = arc(pt.px0, pt.px1, true, 1);
 
                     if(hole) {
@@ -459,7 +458,6 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
 function determineInsideTextFont(trace, pt, layoutFont) {
     var customColor = helpers.castOption(trace.insidetextfont.color, pt.pts);
     if(!customColor && trace._input.textfont) {
-
         // Why not simply using trace.textfont? Because if not set, it
         // defaults to layout.font which has a default color. But if
         // textfont.color and insidetextfont.color don't supply a value,
@@ -724,7 +722,6 @@ function scootLabels(quadrants, trace) {
                 newExtraY = otherOuterY - thisInnerY - thisPt.labelExtraY;
 
                 if(newExtraY * yDiffSign > 0) thisPt.labelExtraY += newExtraY;
-
             } else if((thisOuterY + thisPt.labelExtraY - thisSliceOuterY) * yDiffSign > 0) {
                 // farther from the equator - happens after we've done all the
                 // vertical moving we're going to do

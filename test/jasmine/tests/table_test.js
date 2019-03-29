@@ -30,11 +30,9 @@ mock0.data[0].cells.values = [];
 var mock = require('@mocks/table_plain_birds.json');
 
 describe('table initialization tests', function() {
-
     'use strict';
 
     describe('table global defaults', function() {
-
         it('should not coerce trace opacity', function() {
             var gd = Lib.extendDeep({}, mock1);
 
@@ -67,7 +65,6 @@ describe('table initialization tests', function() {
     });
 
     describe('table defaults', function() {
-
         function _supply(traceIn) {
             var traceOut = { visible: true };
             var defaultColor = '#777';
@@ -144,13 +141,10 @@ describe('table initialization tests', function() {
 });
 
 describe('table', function() {
-
     afterEach(destroyGraphDiv);
 
     describe('edge cases', function() {
-
         it('Works with more than one column', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock2);
             var gd = createGraphDiv();
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
@@ -163,7 +157,6 @@ describe('table', function() {
         });
 
         it('Works with one column', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock1);
             var gd = createGraphDiv();
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
@@ -176,7 +169,6 @@ describe('table', function() {
         });
 
         it('Does not error with zero columns', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock0);
             var gd = createGraphDiv();
 
@@ -190,7 +182,6 @@ describe('table', function() {
         });
 
         it('Does not raise an error with zero lines', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock2);
 
             mockCopy.layout.width = 320;
@@ -199,7 +190,6 @@ describe('table', function() {
 
             var gd = createGraphDiv();
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(2);
                 expect(gd.data[0].cells.values.length).toEqual(2);
@@ -304,7 +294,6 @@ describe('table', function() {
         });
 
         it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
-
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].header.values.length).toEqual(7);
             expect(gd.data[0].cells.values.length).toEqual(7);
@@ -312,7 +301,6 @@ describe('table', function() {
         });
 
         it('Calling `Plotly.plot` again should add the new table trace', function(done) {
-
             var reversedMockCopy = Lib.extendDeep({}, mockCopy);
             reversedMockCopy.data[0].header.values = reversedMockCopy.data[0].header.values.slice().reverse();
             reversedMockCopy.data[0].cells.values = reversedMockCopy.data[0].cells.values.slice().reverse();
@@ -323,15 +311,12 @@ describe('table', function() {
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7 * 2);
                 done();
             });
-
         });
 
         it('Calling `Plotly.restyle` with a string path should amend the preexisting table', function(done) {
-
             expect(gd.data.length).toEqual(1);
 
             Plotly.restyle(gd, 'header.fill.color', 'magenta').then(function() {
-
                 expect(gd.data.length).toEqual(1);
 
                 expect(gd.data[0].header.fill.color).toEqual('magenta');
@@ -342,13 +327,10 @@ describe('table', function() {
 
                 done();
             });
-
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
-
             function restyleValues(what, key, setterValue) {
-
                 // array values need to be wrapped in an array; unwrapping here for value comparison
                 var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
 
@@ -395,9 +377,7 @@ describe('table', function() {
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
-
             function restyleValues(what, fun, setterValue) {
-
                 var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
 
                 return function() {

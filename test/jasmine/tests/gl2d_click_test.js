@@ -652,7 +652,6 @@ describe('@noCI Test gl2d lasso/select:', function() {
                     {pointNumber: 27, x: 2.22, y: 0.45}
                 ]
             });
-
         })
         .catch(failTest)
         .then(done);

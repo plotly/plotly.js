@@ -22,7 +22,6 @@ describe('Test annotations', function() {
     'use strict';
 
     describe('supplyLayoutDefaults', function() {
-
         function _supply(layoutIn, layoutOut) {
             layoutOut = layoutOut || {};
             layoutOut._has = Plots._hasPlotType.bind(layoutOut);
@@ -356,7 +355,6 @@ describe('annotations relayout', function() {
         })
         .catch(failTest)
         .then(done);
-
     });
 
     it('can update several annotations and add and delete in one call', function(done) {
@@ -414,7 +412,6 @@ describe('annotations relayout', function() {
             expect(fullStr.indexOf('the cat')).toBe(-1);
 
             expect(Loggers.warn).not.toHaveBeenCalled();
-
         })
         .catch(failTest)
         .then(done);
@@ -605,7 +602,6 @@ describe('annotations log/linear axis changes', function() {
         .catch(failTest)
         .then(done);
     });
-
 });
 
 describe('annotations autorange', function() {
@@ -1384,7 +1380,6 @@ describe('annotation effects', function() {
     }
 
     it('should register clicks and show hover effects on the text box only', function(done) {
-
         function assertHoverLabel(pos, text, msg) {
             return new Promise(function(resolve) {
                 mouseEvent('mousemove', pos[0], pos[1]);
@@ -1590,7 +1585,6 @@ describe('animating annotations', function() {
     afterEach(destroyGraphDiv);
 
     it('updates annotations when no axis update present', function(done) {
-
         function assertAnnotations(expected) {
             var texts = Plotly.d3.select(gd).selectAll('.annotation .annotation-text');
             expect(expected.length).toEqual(texts.size());
@@ -1651,7 +1645,6 @@ describe('animating annotations', function() {
                 'rgb(172, 172, 172)'
             ]);
             assertImages([img2]);
-
         }).catch(failTest).then(done);
     });
 });

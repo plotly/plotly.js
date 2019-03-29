@@ -45,7 +45,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     } else if(!isValidScaleArray(opacityscale)) {
         traceOut.opacityscale = undefined;
     }
-
 };
 
 function isValidScaleArray(scl) {

@@ -170,7 +170,6 @@ function makePlot(gd, mock, done) {
 }
 
 describe('contourgl plots', function() {
-
     var gd;
 
     beforeEach(function() {

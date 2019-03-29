@@ -453,7 +453,6 @@ describe('Test Geo layout defaults', function() {
                     .toEqual(s.latRange, 'lataxis.range');
                 expect(layoutOut.geo.center.lat)
                     .toEqual(s.centerLat, 'computed center lat');
-
             });
         });
     });
@@ -500,7 +499,6 @@ describe('geojson / topojson utils', function() {
     });
 
     describe('should distinguish between US and US Virgin Island', function() {
-
         // N.B. Virgin Island don't appear at the 'world_110m' resolution
         var topojsonName = 'world_50m';
         var topojson = GeoAssets.topojson[topojsonName];
@@ -801,7 +799,6 @@ describe('Test geo interactions', function() {
                     done();
                 });
             });
-
         });
 
         describe('deleting traces and geos', function() {

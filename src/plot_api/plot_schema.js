@@ -602,7 +602,6 @@ function formatAttributes(attrs) {
 }
 
 function mergeValTypeAndRole(attrs) {
-
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
@@ -638,7 +637,6 @@ function mergeValTypeAndRole(attrs) {
 }
 
 function formatArrayContainers(attrs) {
-
     function callback(attr, attrName, attrs) {
         if(!attr) return;
 

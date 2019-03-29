@@ -45,7 +45,6 @@ module.exports = function calc(gd, trace) {
     var hasTotals = false;
 
     for(var i = 0; i < serieslen; i++) {
-
         var amount = size[i] || 0;
 
         var connectToNext = false;

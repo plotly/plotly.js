@@ -193,7 +193,6 @@ function render(scene) {
 }
 
 function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
-
     var glplotOptions = {
         canvas: canvas,
         gl: gl,
@@ -239,7 +238,6 @@ function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
 }
 
 function initializeGLPlot(scene, pixelRatio, canvas, gl) {
-
     scene.initializeGLCamera();
 
     var success = tryCreatePlot(scene, scene.camera, pixelRatio, canvas, gl);
@@ -300,7 +298,6 @@ function initializeGLPlot(scene, pixelRatio, canvas, gl) {
 }
 
 function Scene(options, fullLayout) {
-
     // create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
@@ -357,7 +354,6 @@ function Scene(options, fullLayout) {
 var proto = Scene.prototype;
 
 proto.initializeGLCamera = function() {
-
     var cameraData = this.fullSceneLayout.camera;
     var isOrtho = (cameraData.projection.type === 'orthographic');
 
@@ -671,32 +667,25 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var aspectRatio;
 
     if(fullSceneLayout.aspectmode === 'auto') {
-
         if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
-
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
              */
 
             aspectRatio = axesScaleRatio;
         } else {
-
             /*
              * USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
              */
             aspectRatio = [1, 1, 1];
         }
-
     } else if(fullSceneLayout.aspectmode === 'cube') {
         aspectRatio = [1, 1, 1];
-
     } else if(fullSceneLayout.aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
-
     } else if(fullSceneLayout.aspectmode === 'manual') {
         var userRatio = fullSceneLayout.aspectratio;
         aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
-
     } else {
         throw new Error('scene.js aspectRatio was not one of the enumerated types');
     }
@@ -828,7 +817,6 @@ proto.saveCamera = function saveCamera(layout) {
         if(!cameraDataLastSave.projection || (
             cameraData.projection &&
             cameraData.projection.type !== cameraDataLastSave.projection.type)) {
-
             hasChanged = true;
         }
     }
@@ -854,7 +842,6 @@ proto.updateFx = function(dragmode, hovermode) {
         if(dragmode === 'orbit') {
             camera.mode = 'orbit';
             camera.keyBindingMode = 'rotate';
-
         } else if(dragmode === 'turntable') {
             camera.up = [0, 0, 1];
             camera.mode = 'turntable';
@@ -954,7 +941,6 @@ proto.setConvert = function() {
 };
 
 proto.make4thDimension = function() {
-
     var _this = this;
     var gd = _this.graphDiv;
     var fullLayout = gd._fullLayout;

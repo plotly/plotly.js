@@ -296,7 +296,6 @@ describe('scatterternary calc', function() {
             return obj[k];
         });
     }
-
 });
 
 describe('scatterternary plot and hover', function() {
@@ -446,7 +445,6 @@ describe('scatterternary hover', function() {
         .catch(failTest)
         .then(done);
     });
-
 });
 
 describe('Test scatterternary *cliponaxis*', function() {

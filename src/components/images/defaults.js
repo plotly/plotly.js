@@ -26,7 +26,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
 
 function imageDefaults(imageIn, imageOut, fullLayout) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(imageIn, imageOut, attributes, attr, dflt);
     }

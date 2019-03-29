@@ -769,7 +769,6 @@ function determineInsideTextFont(trace, pt, layoutFont) {
 
     var customColor = Lib.castOption(trace, ptNumber, 'insidetextfont.color');
     if(!customColor && trace._input.textfont) {
-
         // Why not simply using trace.textfont? Because if not set, it
         // defaults to layout.font which has a default color. But if
         // textfont.color and insidetextfont.color don't supply a value,

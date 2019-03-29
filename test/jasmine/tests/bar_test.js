@@ -926,6 +926,67 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         expect(gd._fullLayout.xaxis.type).toBe('multicategory');
         assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0]]);
     });
+
+    describe('should relative-stack bar within the same trace that overlap under barmode=group', function() {
+        it('- base case', function() {
+            var gd = mockBarPlot([{
+                x: [0, 0, 0],
+                y: [1, -2, -1]
+            }]);
+
+            assertPointField(gd.calcdata, 'b', [[0, 0, -2]]);
+            assertPointField(gd.calcdata, 'y', [[1, -2, -3]]);
+        });
+
+        it('- with blank positions', function() {
+            var gd = mockBarPlot([{
+                x: [0, null, 0, null, 0],
+                y: [1, null, -2, null, -1]
+            }]);
+
+            assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0, -2]]);
+            assertPointField(gd.calcdata, 'y', [[1, NaN, -2, NaN, -3]]);
+        });
+
+        it('- with barnorm set', function() {
+            var gd = mockBarPlot([{
+                x: [0, 0, 0],
+                y: [1, -2, -1],
+            }], {
+                barnorm: 'fraction'
+            });
+
+            assertPointField(gd.calcdata, 'b', [[0, 0, -0.5]]);
+            assertPointField(gd.calcdata, 'y', [[0.25, -0.5, -0.75]]);
+        });
+
+        it('- skipped when base is set', function() {
+            var gd = mockBarPlot([{
+                x: [0, 0, 0],
+                y: [1, -2, -1],
+                base: 10
+            }, {
+                x: [0, 0, 0],
+                y: [1, -2, -1],
+                base: [1, 2, 1]
+            }]);
+
+            assertPointField(gd.calcdata, 'b', [[10, 10, 10], [1, 2, 1]]);
+            assertPointField(gd.calcdata, 'y', [[11, 8, 9], [2, 0, 0]]);
+        });
+
+        it('- skipped when barmode=overlay', function() {
+            var gd = mockBarPlot([{
+                x: [0, 0, 0],
+                y: [1, -2, -1]
+            }], {
+                barmode: 'overlay'
+            });
+
+            assertPointField(gd.calcdata, 'b', [[0, 0, 0]]);
+            assertPointField(gd.calcdata, 'y', [[1, -2, -1]]);
+        });
+    });
 });
 
 describe('A bar plot', function() {
@@ -2062,7 +2123,6 @@ describe('bar hover', function() {
     });
 
     describe('text labels', function() {
-
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
 
@@ -2125,7 +2185,6 @@ describe('bar hover', function() {
     });
 
     describe('with special width/offset combinations', function() {
-
         beforeEach(function() {
             gd = createGraphDiv();
         });

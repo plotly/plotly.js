@@ -660,7 +660,6 @@ describe('axis zoom/pan and main plot zoom', function() {
                 var rotate = (t.split('rotate(')[1] || '').split(')')[0];
                 var angle = rotate.split(',')[0];
                 expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
-
             });
 
             var tickLabels2 = d3.select(gd).selectAll('.xtick2 > text');

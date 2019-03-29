@@ -83,7 +83,6 @@ module.exports = function draw(gd) {
 
         reposition(gd, buttons, selectorLayout, axisLayout._name, selector);
     });
-
 };
 
 function makeSelectorData(gd) {

@@ -52,7 +52,6 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('standoff');
         coerce('startstandoff');
-
     }
 
     var hoverText = coerce('hovertext');
