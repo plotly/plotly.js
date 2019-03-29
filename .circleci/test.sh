@@ -54,7 +54,7 @@ case $1 in
         set_tz
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=gl | circleci tests split))
-        MAX_AUTO_RETRY=3
+        MAX_AUTO_RETRY=2
         for s in ${SHARDS[@]}; do
             retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI --showSkipped
         done
@@ -66,7 +66,7 @@ case $1 in
         set_tz
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=flaky | circleci tests split))
-        MAX_AUTO_RETRY=5
+        MAX_AUTO_RETRY=3
         for s in ${SHARDS[@]}; do
             retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI --showSkipped
         done
