@@ -314,7 +314,7 @@ describe('Test volume', function() {
         });
     });
 
-    describe('@noCI hover', function() {
+    describe('hover', function() {
 
         var gd;
 
@@ -358,8 +358,8 @@ describe('Test volume', function() {
                     nums: [
                         'x: 0.4',
                         'y: 100μ',
-                        'z: −16',
-                        'value: −1.32'
+                        'z: −8',
+                        'value: −1.31'
                     ].join('\n')
                 });
             })
@@ -368,10 +368,10 @@ describe('Test volume', function() {
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
-                        'x: 0.3',
+                        'x: 0.4',
                         'y: 0.001',
                         'z: −16',
-                        'value: −0.27'
+                        'value: −0.32'
                     ].join('\n')
                 });
             })
@@ -382,8 +382,8 @@ describe('Test volume', function() {
                     nums: [
                         'x: 0.3',
                         'y: 100μ',
-                        'z: −16',
-                        'value: −1.2'
+                        'z: −8',
+                        'value: −1.19'
                     ].join('\n')
                 });
             })
@@ -393,9 +393,9 @@ describe('Test volume', function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 100μ',
-                        'z: −4',
-                        'value: −1.3'
+                        'y: 0.001',
+                        'z: −2',
+                        'value: −1.26'
                     ].join('\n')
                 });
             })
