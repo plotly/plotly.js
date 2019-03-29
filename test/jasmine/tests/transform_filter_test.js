@@ -14,7 +14,6 @@ var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
 
 describe('filter transforms defaults:', function() {
-
     var fullLayout = {
         _transformModules: [],
         _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
@@ -650,7 +649,6 @@ describe('filter transforms calc:', function() {
 
             _assert(out, [-2, -3], [3, 1], [0.3, 0.4]);
         });
-
     });
 
     describe('filters should handle categories', function() {
@@ -718,7 +716,6 @@ describe('filter transforms calc:', function() {
 
             _assert(out, ['a', 'c'], [1, 3], ['0', '2']);
         });
-
     });
 
     describe('filters should handle dates', function() {
@@ -845,7 +842,6 @@ describe('filter transforms calc:', function() {
 
             _assert(out, ['2015-07-20'], [1], [0.1]);
         });
-
     });
 
     it('filters should handle ids', function() {
@@ -1176,7 +1172,6 @@ describe('filter transforms interactions', function() {
         })
         .catch(failTest)
         .then(done);
-
     });
 
     it('toggling trace visibility should work', function(done) {
@@ -1296,5 +1291,4 @@ describe('filter transforms interactions', function() {
         .catch(failTest)
         .then(done);
     });
-
 });

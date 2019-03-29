@@ -211,5 +211,4 @@ describe('polygon.filter', function() {
         for(i = 6; i < pts.length; i++) p.addPt(pts[i]);
         expect(p.filtered).toEqual(ptsOut);
     });
-
 });

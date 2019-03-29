@@ -1228,7 +1228,6 @@ describe('waterfall hover', function() {
     });
 
     describe('text labels', function() {
-
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
 
@@ -1291,7 +1290,6 @@ describe('waterfall hover', function() {
     });
 
     describe('with special width/offset combinations', function() {
-
         beforeEach(function() {
             gd = createGraphDiv();
         });

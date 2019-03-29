@@ -69,7 +69,6 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-
     var label = sankeyLink.datum().link.label;
 
     sankeyLink.style('fill-opacity', function(l) {
@@ -98,7 +97,6 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 }
 
 function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-
     var label = sankeyLink.datum().link.label;
 
     sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
@@ -146,7 +144,6 @@ module.exports = function plot(gd, calcData) {
                 points: [d.link]
             });
         }
-
     };
 
     var sourceLabel = _(gd, 'source:') + ' ';

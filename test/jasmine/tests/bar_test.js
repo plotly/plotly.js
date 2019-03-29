@@ -2123,7 +2123,6 @@ describe('bar hover', function() {
     });
 
     describe('text labels', function() {
-
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
 
@@ -2186,7 +2185,6 @@ describe('bar hover', function() {
     });
 
     describe('with special width/offset combinations', function() {
-
         beforeEach(function() {
             gd = createGraphDiv();
         });

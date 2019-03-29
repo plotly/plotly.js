@@ -13,9 +13,7 @@ var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
 describe('Layout images', function() {
-
     describe('supplyLayoutDefaults', function() {
-
         var layoutIn,
             layoutOut;
 
@@ -79,11 +77,9 @@ describe('Layout images', function() {
 
             expect(layoutOut.images[0]).toEqual(jasmine.objectContaining(expected));
         });
-
     });
 
     describe('drawing', function() {
-
         var gd;
         var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
@@ -108,7 +104,6 @@ describe('Layout images', function() {
         }
 
         it('should draw images on the right layers', function() {
-
             Plotly.plot(gd, data, { images: [{
                 source: jsLogo,
                 layer: 'above'
@@ -163,7 +158,6 @@ describe('Layout images', function() {
         });
 
         describe('with anchors and sizing', function() {
-
             function testAspectRatio(xAnchor, yAnchor, sizing, expected) {
                 Plotly.plot(gd, data, { images: [{
                     source: jsLogo,
@@ -197,9 +191,7 @@ describe('Layout images', function() {
             it('should work for fill sizing', function() {
                 testAspectRatio('invalid', 'invalid', 'fill', 'xMinYMin slice');
             });
-
         });
-
     });
 
     describe('when the plot is dragged', function() {
@@ -275,11 +267,9 @@ describe('Layout images', function() {
                 mouseEvent('mouseup', 300, 250);
             }).then(done);
         });
-
     });
 
     describe('when relayout', function() {
-
         var gd;
         var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
@@ -328,7 +318,6 @@ describe('Layout images', function() {
         });
 
         it('should remove the image tag if an invalid source', function(done) {
-
             var selection = Plotly.d3.select('image');
             expect(selection.size()).toBe(1);
 
@@ -340,7 +329,6 @@ describe('Layout images', function() {
     });
 
     describe('when adding/removing images', function() {
-
         afterEach(destroyGraphDiv);
 
         it('should properly add and remove image', function(done) {
@@ -417,9 +405,7 @@ describe('Layout images', function() {
                 done();
             });
         });
-
     });
-
 });
 
 describe('images log/linear axis changes', function() {

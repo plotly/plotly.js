@@ -183,7 +183,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
-
         if(tonext) {
             // This tells .style which trace to use for fill information:
             tonext.datum(cdscatter);

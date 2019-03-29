@@ -157,7 +157,6 @@ exports.loneHover = function loneHover(hoverItem, opts) {
 };
 
 exports.multiHovers = function multiHovers(hoverItems, opts) {
-
     if(!Array.isArray(hoverItems)) {
         hoverItems = [hoverItems];
     }

@@ -624,7 +624,6 @@ describe('dates', function() {
                 .toBe('1969-12-31 23:59:59.9999');
             expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, utcFormat, 'coptic'))
                 .toBe('1686-04-22 23:59:59.9999');
-
         });
 
         it('should remove extra fractional second zeros', function() {
@@ -646,6 +645,5 @@ describe('dates', function() {
             expect(Lib.formatDate(0.1, '%S.%f', null, utcFormat, null, extraFormat)).toBe('00.0001');
             expect(Lib.formatDate(0.1, '%S.%3f', null, utcFormat, null, extraFormat)).toBe('00.0');
         });
-
     });
 });

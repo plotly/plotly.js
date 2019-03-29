@@ -146,7 +146,6 @@ var plotData = {
 };
 
 describe('pointcloud traces', function() {
-
     var gd;
 
     beforeEach(function() {

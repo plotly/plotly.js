@@ -39,5 +39,4 @@ describe('Bundle with IE9 supported trace types:', function() {
 
         Plotly.plot(gd, data).then(done);
     });
-
 });

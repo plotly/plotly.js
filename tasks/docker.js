@@ -8,7 +8,6 @@ var arg = process.argv[2];
 var msg, cmd, cb, errorCb;
 
 switch(arg) {
-
     case 'pull':
         msg = 'Pulling latest docker image';
         cmd = 'docker pull ' + constants.testContainerImage;

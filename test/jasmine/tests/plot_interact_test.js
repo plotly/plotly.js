@@ -24,7 +24,6 @@ describe('Test plot structure', function() {
     afterEach(destroyGraphDiv);
 
     describe('cartesian plots', function() {
-
         function countSubplots() {
             return d3.selectAll('g.subplot').size();
         }
@@ -384,9 +383,7 @@ describe('Test plot structure', function() {
                     .catch(failTest)
                     .then(done);
                 });
-
             });
-
         });
 
         describe('pie traces', function() {
@@ -463,7 +460,6 @@ describe('Test plot structure', function() {
                 })
                 .catch(failTest)
                 .then(done);
-
             });
         });
     });
@@ -518,7 +514,6 @@ describe('Test plot structure', function() {
 });
 
 describe('plot svg clip paths', function() {
-
     // plot with all features that rely on clip paths
     function plot() {
         return Plotly.plot(createGraphDiv(), [{
@@ -547,7 +542,6 @@ describe('plot svg clip paths', function() {
 
     it('should set clip path url to ids (base case)', function(done) {
         plot().then(function() {
-
             d3.selectAll('[clip-path]').each(function() {
                 var cp = d3.select(this).attr('clip-path');
 
@@ -572,7 +566,6 @@ describe('plot svg clip paths', function() {
         var href = window.location.href.split('#')[0];
 
         plot().then(function() {
-
             d3.selectAll('[clip-path]').each(function() {
                 var cp = d3.select(this).attr('clip-path');
 
