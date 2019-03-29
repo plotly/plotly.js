@@ -20,6 +20,8 @@ function countCanvases() {
     return d3.selectAll('canvas').size();
 }
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+
 describe('Test removal of gl contexts', function() {
     var gd;
 
@@ -319,7 +321,6 @@ describe('Test gl2d plots', function() {
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
         gd = createGraphDiv();
     });
 
