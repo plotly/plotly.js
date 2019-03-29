@@ -7,7 +7,6 @@ describe('svg+text utils', function() {
     'use strict';
 
     describe('convertToTspans', function() {
-
         var stringFromCodePoint;
 
         beforeAll(function() {
@@ -70,7 +69,6 @@ describe('svg+text utils', function() {
             expect(a.attr('style')).toBe(fullStyle, msg);
 
             expect(a.attr('onclick')).toBe(expectedAttrs.onclick || null, msg);
-
         }
 
         function listAttributes(node) {

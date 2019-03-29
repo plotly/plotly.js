@@ -264,7 +264,6 @@ function flatData(selection) {
 }
 
 function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
-
     function calcTotalHeight(d) {
         var blocks = d.rowBlocks;
         return firstRowAnchor(blocks, blocks.length - 1) + (blocks.length ? rowsHeight(blocks[blocks.length - 1], Infinity) : 1);
@@ -418,7 +417,6 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
 }
 
 function renderColumnCells(columnBlock) {
-
     var columnCells = columnBlock.selectAll('.' + c.cn.columnCells)
         .data(gup.repeat, gup.keyFun);
 
@@ -433,7 +431,6 @@ function renderColumnCells(columnBlock) {
 }
 
 function renderColumnCell(columnCells) {
-
     var columnCell = columnCells.selectAll('.' + c.cn.columnCell)
         .data(splitData.splitToCells, function(d) {return d.keyWithinBlock;});
 
@@ -448,7 +445,6 @@ function renderColumnCell(columnCells) {
 }
 
 function renderCellRect(columnCell) {
-
     var cellRect = columnCell.selectAll('.' + c.cn.cellRect)
         .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
@@ -460,7 +456,6 @@ function renderCellRect(columnCell) {
 }
 
 function renderCellText(cellTextHolder) {
-
     var cellText = cellTextHolder.selectAll('.' + c.cn.cellText)
         .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
@@ -474,7 +469,6 @@ function renderCellText(cellTextHolder) {
 }
 
 function renderCellTextHolder(columnCell) {
-
     var cellTextHolder = columnCell.selectAll('.' + c.cn.cellTextHolder)
         .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
@@ -524,7 +518,6 @@ function sizeAndStyleRect(cellRect) {
 function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
     cellText
         .text(function(d) {
-
             var col = d.column.specIndex;
             var row = d.rowNumber;
 
@@ -567,7 +560,6 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             return d.needsConvertToTspans ? 0 : '0.75em';
         })
         .each(function(d) {
-
             var element = this;
             var selection = d3.select(element);
 
@@ -645,12 +637,10 @@ function headerHeight(d) {
 }
 
 function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
-
     var pages = [];
     var pTop = 0;
 
     for(var blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
-
         var block = blocks[blockIndex];
         var blockRows = block.rows;
         var rowsHeight = 0;
@@ -814,7 +804,6 @@ function updateYPositionMaker(columnBlock, element, tableControlView, gd, d) {
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
         if(increase) {
-
             // current row height increased
             l.rows[rowIndex].rowHeight = finalHeight;
 

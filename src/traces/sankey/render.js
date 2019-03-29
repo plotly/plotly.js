@@ -227,7 +227,6 @@ function sankeyModel(layout, d, traceIndex) {
             // Change node's x position to align it with its column
             dx = colX - node.x0;
             node.x0 += dx, node.x1 += dx;
-
         }
         return columns;
     }

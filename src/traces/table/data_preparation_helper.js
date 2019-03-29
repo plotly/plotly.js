@@ -155,7 +155,6 @@ function makeRowBlock(anchorToRowBlock, auxiliary) {
 }
 
 function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
-
     var anchorToRowBlock = {};
     var currentRowHeight;
     var currentAnchor = 0;

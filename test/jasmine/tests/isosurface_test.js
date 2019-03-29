@@ -104,11 +104,9 @@ function createIsosurfaceFig() {
 }
 
 describe('Test isosurface', function() {
-
     var gd;
 
     describe('defaults', function() {
-
         function assertVisibility(exp, msg) {
             expect(gd._fullData[0]).not.toBe(undefined, 'no visibility!');
             expect(gd._fullData[0].visible).toBe(exp, msg);
@@ -188,11 +186,9 @@ describe('Test isosurface', function() {
             expect(gd._fullData[0].isomin).not.toBe(null, 'isomin not set');
             expect(gd._fullData[0].isomax).not.toBe(null, 'isomax not set');
         });
-
     });
 
     describe('mesh_generation', function() {
-
         var gd;
 
         beforeEach(function() {
@@ -253,11 +249,9 @@ describe('Test isosurface', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 
     describe('restyle', function() {
-
         var gd;
 
         beforeEach(function() {
@@ -270,7 +264,6 @@ describe('Test isosurface', function() {
         });
 
         it('@gl should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
-
             function _assert(user, full) {
                 var trace = gd.data[0];
                 var fullTrace = gd._fullData[0];
@@ -314,7 +307,6 @@ describe('Test isosurface', function() {
     });
 
     describe('hover', function() {
-
         var gd;
 
         beforeEach(function() {

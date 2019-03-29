@@ -206,7 +206,6 @@ function comparePixels(mockName, cb) {
     }
 
     function checkImage() {
-
         // baseline image must be generated first
         if(!common.doesFileExist(imagePaths.baseline)) {
             var err = new Error('baseline image not found');

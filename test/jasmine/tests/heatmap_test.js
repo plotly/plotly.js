@@ -704,7 +704,6 @@ describe('heatmap hover', function() {
     }
 
     describe('for `heatmap_multi-trace`', function() {
-
         beforeAll(function(done) {
             gd = createGraphDiv();
 
@@ -732,7 +731,6 @@ describe('heatmap hover', function() {
     });
 
     describe('for xyz-column traces', function() {
-
         beforeAll(function(done) {
             gd = createGraphDiv();
 
@@ -763,11 +761,9 @@ describe('heatmap hover', function() {
             })
             .then(done);
         });
-
     });
 
     describe('nonuniform bricks', function() {
-
         beforeAll(function(done) {
             gd = createGraphDiv();
 
@@ -798,6 +794,5 @@ describe('heatmap hover', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 });

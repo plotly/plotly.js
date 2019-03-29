@@ -64,7 +64,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var dims = ['x', 'y', 'z'];
     for(i = 0; i < 3; ++i) {
-
         var contourDim = 'contours.' + dims[i];
         var show = coerce(contourDim + '.show');
         var highlight = coerce(contourDim + '.highlight');

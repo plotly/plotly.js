@@ -120,12 +120,10 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
 
     if(dragmode !== false) {
         if(!dragmode) {
-
             dragmode = 'orbit';
 
             if(sceneLayoutIn.camera &&
                 sceneLayoutIn.camera.up) {
-
                 var x = sceneLayoutIn.camera.up.x;
                 var y = sceneLayoutIn.camera.up.y;
                 var z = sceneLayoutIn.camera.up.z;

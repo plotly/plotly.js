@@ -28,7 +28,6 @@ describe('Bundle with finance trace type', function() {
     });
 
     it('should graph ohlc and candlestick traces', function(done) {
-
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
             var gSubplot = d3.select('g.cartesianlayer');
 
@@ -38,6 +37,5 @@ describe('Bundle with finance trace type', function() {
             destroyGraphDiv();
             done();
         });
-
     });
 });

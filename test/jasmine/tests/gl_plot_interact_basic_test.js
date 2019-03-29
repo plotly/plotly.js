@@ -28,7 +28,6 @@ function addEventCallback(graphDiv) {
 }
 
 function verifyInteractionEffects(tuple) {
-
     // One 'drag': simulating fairly thoroughly as the mouseup event is also needed here
     mouseEvent('mousemove', 400, 200);
     mouseEvent('mousedown', 400, 200);
@@ -57,7 +56,6 @@ function testEvents(plot) {
 }
 
 describe('gl3d plots', function() {
-
     var gd;
 
     beforeEach(function() {

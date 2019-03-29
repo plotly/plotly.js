@@ -303,5 +303,4 @@ describe('Gl3d layout edge cases', function() {
         .catch(failTest)
         .then(done);
     });
-
 });

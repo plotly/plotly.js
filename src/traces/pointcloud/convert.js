@@ -94,23 +94,18 @@ proto.updateFast = function(options) {
     var xx, yy, i;
 
     if(xy) {
-
         positions = xy;
 
         // dividing xy.length by 2 and truncating to integer if xy.length was not even
         len = xy.length >>> 1;
 
         if(userBounds) {
-
             bounds[0] = options.xbounds[0];
             bounds[2] = options.xbounds[1];
             bounds[1] = options.ybounds[0];
             bounds[3] = options.ybounds[1];
-
         } else {
-
             for(i = 0; i < len; i++) {
-
                 xx = positions[i * 2];
                 yy = positions[i * 2 + 1];
 
@@ -119,27 +114,18 @@ proto.updateFast = function(options) {
                 if(yy < bounds[1]) bounds[1] = yy;
                 if(yy > bounds[3]) bounds[3] = yy;
             }
-
         }
 
         if(index) {
-
             idToIndex = index;
-
         } else {
-
             idToIndex = new Int32Array(len);
 
             for(i = 0; i < len; i++) {
-
                 idToIndex[i] = i;
-
             }
-
         }
-
     } else {
-
         len = x.length;
 
         positions = new Float32Array(2 * len);
@@ -159,7 +145,6 @@ proto.updateFast = function(options) {
             if(yy < bounds[1]) bounds[1] = yy;
             if(yy > bounds[3]) bounds[3] = yy;
         }
-
     }
 
     this.idToIndex = idToIndex;

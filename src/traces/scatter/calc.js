@@ -244,7 +244,6 @@ function calcMarkerSize(trace, serieslen) {
             sizeOut[i] = markerTrans(s[i]);
         }
         return sizeOut;
-
     } else {
         return markerTrans(marker.size);
     }

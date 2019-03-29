@@ -20,7 +20,6 @@ describe('Events', function() {
     });
 
     describe('init', function() {
-
         it('instantiates an emitter on incoming plot object', function() {
             expect(plotObj._ev).not.toBeDefined();
             expect(Events.init(plotObj)._ev).toBeDefined();
@@ -86,7 +85,6 @@ describe('Events', function() {
     });
 
     describe('triggerHandler', function() {
-
         it('triggers node handlers and returns last value', function() {
             var eventBaton = 0;
 
@@ -251,7 +249,6 @@ describe('Events', function() {
     });
 
     describe('when jQuery.noConflict is set, ', function() {
-
         beforeEach(function() {
             $.noConflict();
         });
@@ -261,7 +258,6 @@ describe('Events', function() {
         });
 
         it('triggers jquery events', function(done) {
-
             Events.init(plotDiv);
 
             jQuery(plotDiv).bind('ping', function(event, data) {

@@ -458,7 +458,6 @@ describe('shapes axis reference changes', function() {
     }
 
     it('draws the right number of objects and updates clip-path correctly', function(done) {
-
         expect(getShape(0).attr('clip-path') || '').toMatch(/x\)$/);
 
         Plotly.relayout(gd, {
@@ -1109,7 +1108,6 @@ describe('A fixed size shape', function() {
         beforeEach(function() {
             layout.shapes[0].type = 'line';
             layout.shapes[0].yanchor = 3;
-
         });
 
         it('@flaky can be moved by dragging the middle', function(done) {

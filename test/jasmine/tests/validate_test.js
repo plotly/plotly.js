@@ -3,7 +3,6 @@ var Lib = require('@src/lib');
 
 
 describe('Plotly.validate', function() {
-
     function assertErrorContent(obj, code, cont, trace, path, astr, msg) {
         expect(obj.code).toEqual(code);
         expect(obj.container).toEqual(cont);

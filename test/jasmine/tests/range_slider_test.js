@@ -347,7 +347,6 @@ describe('Visible rangesliders', function() {
 
             expect(+maskMin.getAttribute('width')).toBeWithin(9.22, TOL);
             expect(+maskMax.getAttribute('width')).toBeWithin(71.95, TOL);
-
         })
         .catch(failTest)
         .then(done);
@@ -562,7 +561,6 @@ describe('Rangeslider visibility property', function() {
 });
 
 describe('Rangeslider handleDefaults function', function() {
-
     function _supply(layoutIn, layoutOut, axName) {
         setConvert(layoutOut[axName]);
         layoutOut[axName]._id = name2id(axName);
@@ -710,7 +708,6 @@ describe('Rangeslider handleDefaults function', function() {
 });
 
 describe('Rangeslider yaxis options', function() {
-
     it('should be set one yaxis is present', function() {
         var mock = {
             layout: {
@@ -773,7 +770,6 @@ describe('Rangeslider yaxis options', function() {
 });
 
 describe('Rangeslider anchored axes fixedrange', function() {
-
     it('should default to *true* when range slider is visible', function() {
         var mock = {
             data: [
@@ -819,7 +815,6 @@ describe('Rangeslider anchored axes fixedrange', function() {
         expect(mock._fullLayout.yaxis2.fixedrange).toBe(false);
         expect(mock._fullLayout.yaxis3.fixedrange).toBe(false);
     });
-
 });
 
 describe('rangesliders in general', function() {

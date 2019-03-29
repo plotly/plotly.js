@@ -37,7 +37,6 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 }
 
 function makeHoverPointText(cdi, trace, subplot, pointData) {
-
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
     radialAxis._hovertitle = 'r';

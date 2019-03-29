@@ -9,7 +9,6 @@
 'use strict';
 
 module.exports = function eventData(out, pt) {
-
     // Note: hoverOnBox property is needed for click-to-select
     // to ignore when a box was clicked. This is the reason box
     // implements this custom eventData function.

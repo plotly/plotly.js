@@ -253,7 +253,6 @@ describe('Test click interactions:', function() {
         var futureData = null;
 
         beforeEach(function(done) {
-
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'skip';
             Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
@@ -274,7 +273,6 @@ describe('Test click interactions:', function() {
         var futureData = null;
 
         beforeEach(function(done) {
-
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'skip';
             Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
@@ -295,7 +293,6 @@ describe('Test click interactions:', function() {
         var futureData;
 
         beforeEach(function(done) {
-
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'none';
             Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
@@ -326,7 +323,6 @@ describe('Test click interactions:', function() {
         var futureData;
 
         beforeEach(function(done) {
-
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'none';
             Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
@@ -361,7 +357,6 @@ describe('Test click interactions:', function() {
         var futureData;
 
         beforeEach(function(done) {
-
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'none';
             Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
@@ -402,7 +397,6 @@ describe('Test click interactions:', function() {
             gd.on('plotly_doubleclick', function(data) {
                 futureData = data;
             });
-
         });
 
         it('should return null', function(done) {
@@ -643,7 +637,6 @@ describe('Test click interactions:', function() {
                 done();
             });
         });
-
     });
 
     describe('double click interactions', function() {
@@ -1017,13 +1010,11 @@ describe('Test click interactions:', function() {
     });
 
     describe('scroll zoom interactions', function() {
-
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout, { scrollZoom: true }).then(done);
         });
 
         it('zooms in on scroll up', function() {
-
             var plot = gd._fullLayout._plots.xy.plot;
 
             mouseEvent('mousemove', 393, 243);
@@ -1088,7 +1079,6 @@ describe('Test click interactions:', function() {
 
 
 describe('dragbox', function() {
-
     afterEach(destroyGraphDiv);
 
     it('should scale subplot and inverse scale scatter points', function(done) {
@@ -1129,5 +1119,4 @@ describe('dragbox', function() {
             }, DBLCLICKDELAY / 4);
         });
     });
-
 });

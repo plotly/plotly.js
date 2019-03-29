@@ -400,7 +400,6 @@ describe('The legend', function() {
 
                 done();
             });
-
         });
     });
 });

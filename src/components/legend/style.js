@@ -146,7 +146,6 @@ module.exports = function style(s, gd) {
                     trace.colorscale, 'stroke');
             }
         }
-
     }
 
     function stylePoints(d) {

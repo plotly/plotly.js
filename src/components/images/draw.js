@@ -81,7 +81,6 @@ module.exports = function draw(gd) {
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
         var imagePromise = new Promise(function(resolve) {
-
             var img = new Image();
             this.img = img;
 

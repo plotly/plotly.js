@@ -453,6 +453,5 @@ describe('Test mesh3d', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 });

@@ -125,7 +125,6 @@ exports.assertHoverLabelContent = function(expectation, msg) {
             expect(g.attr('transform').match(reRotate))
                 .negateIf(expectation.isRotated)
                 .toBe(null, ptMsg + ' should be rotated');
-
         }
     } else if(ptCnt > 1) {
         if(!Array.isArray(expectation.nums) || !Array.isArray(expectation.name)) {
@@ -234,7 +233,6 @@ exports.assertClip = function(sel, isClipped, size, msg) {
                 .toBe(null, msg + ' clip path ' + '(item ' + i + ')');
         }
     });
-
 };
 
 exports.assertNodeDisplay = function(sel, expectation, msg) {

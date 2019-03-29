@@ -180,7 +180,6 @@ describe('Test surface', function() {
             expect(traceOut.ycalendar).toBe('ethiopian');
             expect(traceOut.zcalendar).toBe('mayan');
         });
-
     });
 
     describe('Test dimension and expected visibility tests', function() {
@@ -292,6 +291,5 @@ describe('Test surface', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 });

@@ -71,7 +71,6 @@ describe('plot schema', function() {
                 }
             }
         );
-
     });
 
     it('all attributes should only have valid `role`', function() {
@@ -371,7 +370,6 @@ describe('plot schema', function() {
     it('should prune unsupported global-level trace attributes', function() {
         expect(Plotly.PlotSchema.get().traces.sankey.attributes.hoverinfo.flags.length).toBe(0);
     });
-
 });
 
 describe('getTraceValObject', function() {

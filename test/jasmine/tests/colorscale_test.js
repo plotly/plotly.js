@@ -92,7 +92,6 @@ describe('Test colorscale:', function() {
             expect(flipScale(scl)).toEqual(
                 [[0, 'rgb(200, 0, 0)'], [0.5, 'rgb(0, 0, 0)'], [1, 'rgb(0, 0, 200)']]
             );
-
         });
     });
 
@@ -367,7 +366,6 @@ describe('Test colorscale:', function() {
             handleDefaults(traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.showscale).toBe(true);
         });
-
     });
 
     describe('calc', function() {

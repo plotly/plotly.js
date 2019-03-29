@@ -54,7 +54,6 @@ module.exports = function smoothFill2dArray(data, a, b) {
             sum += val;
         }
         return sum / Math.max(1, cnt);
-
     }
 
     // This loop iterates over all cells. Any cells that are null will be noted and those

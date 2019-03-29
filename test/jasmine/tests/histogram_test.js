@@ -114,7 +114,6 @@ describe('Test histogram', function() {
             };
             supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('h');
-
         });
 
         // coercing bin attributes got moved to calc because it needs
@@ -653,7 +652,6 @@ describe('Test histogram', function() {
                 });
             });
         });
-
     });
 
     describe('plot / restyle', function() {

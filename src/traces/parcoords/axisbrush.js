@@ -365,7 +365,6 @@ function attachDragBehavior(selection) {
 function startAsc(a, b) { return a[0] - b[0]; }
 
 function renderAxisBrush(axisBrush) {
-
     var background = axisBrush.selectAll('.background').data(repeat);
 
     background.enter()

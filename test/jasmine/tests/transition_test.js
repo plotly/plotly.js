@@ -91,7 +91,6 @@ function runTests(transitionDuration) {
                 // Ensure both coordinates have moved, i.e. that the annotation has transitioned:
                 expect(p1[0]).not.toEqual(p2[0]);
                 expect(p1[1]).not.toEqual(p2[1]);
-
             }).catch(failTest).then(done);
         });
 
@@ -126,7 +125,6 @@ function runTests(transitionDuration) {
 
                 // Test that the image element identity has not:
                 expect(e1).toBe(e2);
-
             }).catch(failTest).then(done);
         });
 

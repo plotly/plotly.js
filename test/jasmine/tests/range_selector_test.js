@@ -452,7 +452,6 @@ describe('range selector getUpdateObject:', function() {
             'xaxis5.range[0]': '2015-10-30',
             'xaxis5.range[1]': '2015-11-30'
         });
-
     });
 });
 
@@ -603,13 +602,11 @@ describe('range selector interactions:', function() {
         };
 
         Plotly.relayout(gd, update).then(function() {
-
             // '1m' should be active after the relayout
             checkActiveButton(0, '1m');
 
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
-
             // 'all' should be after an autoscale
             checkActiveButton(buttons.size() - 1, 'back to all');
         })
@@ -663,5 +660,4 @@ describe('range selector automargin', function() {
         .catch(failTest)
         .then(done);
     });
-
 });
