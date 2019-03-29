@@ -9,7 +9,7 @@
 'use strict';
 
 var isosurfaceDefaults = require('../isosurface/defaults');
-var opacityscaleDefaults = require('../../components/opacityscale/defaults');
+var opacityscaleDefaults = require('./opacityscale').defaults;
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 

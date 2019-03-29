@@ -8,7 +8,7 @@
 
 'use strict';
 
-var opacityscaleAttrs = require('../../components/opacityscale/attributes');
+var opacityscaleAttrs = require('./opacityscale').attributes;
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var isosurfaceAttrs = require('../isosurface/attributes');
 var baseAttrs = require('../../plots/attributes');

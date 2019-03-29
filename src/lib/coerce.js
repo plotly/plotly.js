@@ -13,7 +13,7 @@ var tinycolor = require('tinycolor2');
 
 var baseTraceAttrs = require('../plots/attributes');
 var colorscales = require('../components/colorscale/scales');
-var opacityscales = require('../components/opacityscale/scales');
+var opacityscales = require('../traces/volume/opacityscale');
 var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 
 var nestedProperty = require('./nested_property');
