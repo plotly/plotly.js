@@ -8,23 +8,35 @@
 
 'use strict';
 
-var min = 0.2;
-
+var MIN = 0.1; // Note: often we don't want the data cube to be disappeared
 var scales = {
+    'uniform': [
+        [0, 1], [1, 1]
+    ],
     'max': [
-        [0, min], [1, 1]
+        [0, MIN], [1, 1]
     ],
-
     'min': [
-        [0, 1], [1, min]
+        [0, 1], [1, MIN]
     ],
-
-    'extremes': createWave(1, min)
+    'extremes': createWave(1, MIN)
 };
 
+function createWave(n, minOpacity) {
+    var arr = [];
+    var steps = 32; // Max: 256
+    for(var i = 0; i < steps; i++) {
+        var u = i / (steps - 1);
+        var v = minOpacity + (1 - minOpacity) * (1 - Math.pow(Math.sin(n * u * Math.PI), 2));
+        arr.push([
+            u,
+            Math.max(1, Math.min(0, v))
+        ]);
+    }
+    return arr;
+}
 var defaultScale = scales.uniform;
-
-var paletteStr = Object.keys(scales);
+var scaleKeys = Object.keys(scales);
 
 /**
  * Make opacityscale attribute declarations for
@@ -67,7 +79,7 @@ function attributes(context, opts) {
             ' `[[0, 1], [0.5, 0.2], [1, 1]]` means that higher/lower values would have',
             ' higher opacity values and those in the middle would be more transparent',
             ' Alternatively, `opacityscale` may be a palette name string',
-            ' of the following list: ' + paletteStr + '.'
+            ' of the following list: ' + scaleKeys + '.'
         ].join('')
     };
 
@@ -80,27 +92,13 @@ function defaults(traceIn, traceOut, layout, coerce, opts) {
     coerce(prefix + 'opacityscale');
 }
 
-function createWave(n, minOpacity) {
-    var arr = [];
-    var steps = 32; // Max: 256
-    for(var i = 0; i < steps; i++) {
-        var u = i / (steps - 1);
-        var v = minOpacity + (1 - minOpacity) * (1 - Math.pow(Math.sin(n * u * Math.PI), 2));
-        arr.push([
-            u,
-            Math.max(1, Math.min(0, v))
-        ]);
-    }
-    return arr;
-}
-
 function getScale(scl, dflt) {
     if(!dflt) dflt = defaultScale;
     if(!scl) return dflt;
 
     function parseScale() {
         try {
-            scl = palette[scl] || JSON.parse(scl);
+            scl = scales[scl] || JSON.parse(scl);
         } catch(e) {
             scl = dflt;
         }
@@ -138,9 +136,15 @@ function isValidScaleArray(scl) {
     return true;
 }
 
+function isValidScale(scl) {
+    if(scales[scl] !== undefined) return true;
+    else return isValidScaleArray(scl);
+}
+
 module.exports = {
     attributes: attributes,
     defaults: defaults,
     scales: scales,
-    get: getScale
+    get: getScale,
+    isValid: isValidScale
 };

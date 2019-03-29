@@ -7,7 +7,7 @@
         },
         "colorscale": "Blackbody",
         "reversescale": true,
-        "opacityscale": "max",
+        "opacityscale": [[0, 0.2], [1, 1]],
         "opacity": 0.5,
         "surface": { "show": true, "fill": 1.0, "pattern": "all", "count": 33 },
         "spaceframe": { "show": true, "fill": 1.0 },

@@ -8,7 +8,7 @@
         "colorscale": [[ 0.0, "rgb(0,0,255)" ], [ 0.5, "rgb(255,255,255)" ], [ 0.75, "rgb(255,255,0)" ], [ 0.875, "rgb(255,0,0)" ], [ 1.0, "rgb(0,0,0)" ]],
         "reversescale": false,
         "opacityscale": "max",
-        "opacity": 0.2,
+        "opacity": 0.1,
         "surface": { "show": true, "fill": 1.0, "pattern": "all", "count": 64 },
         "spaceframe": { "show": true, "fill": 1.0 },
         "slices": {
