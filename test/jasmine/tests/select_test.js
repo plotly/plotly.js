@@ -2121,6 +2121,74 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('@noCI @flaky should work for waterfall traces', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+        var assertRanges = makeAssertRanges();
+        var assertLassoPoints = makeAssertLassoPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/waterfall_profit-loss_2018_positive-negative'));
+        fig.layout.dragmode = 'lasso';
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[400, 300], [200, 400], [400, 500], [600, 400], [500, 350]],
+                function() {
+                    assertPoints([
+                        [0, 281, 'Purchases'],
+                        [0, 269, 'Material expenses'],
+                        [0, 191, 'Personnel expenses'],
+                        [0, 179, 'Other expenses']
+                    ]);
+                    assertSelectedPoints({
+                        0: [5, 6, 7, 8]
+                    });
+                    assertLassoPoints([
+                        [289.8550724637681, 57.97101449275362, 289.8550724637681, 521.7391304347826, 405.7971014492753],
+                        ['Net revenue', 'Personnel expenses', 'Operating profit', 'Personnel expenses', 'Material expenses']
+                    ]);
+                },
+                null, LASSOEVENTS, 'waterfall lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            // For some reason we need this to make the following tests pass
+            // on CI consistently. It appears that a double-click action
+            // is being confused with a mere click. See
+            // https://github.com/plotly/plotly.js/pull/2135#discussion_r148897529
+            // for more info.
+            return new Promise(function(resolve) {
+                setTimeout(resolve, 100);
+            });
+        })
+        .then(function() {
+            return _run(
+                [[300, 300], [400, 400]],
+                function() {
+                    assertPoints([
+                        [0, 281, 'Purchases', 269],
+                        [0, 269, 'Material expenses', 269]
+                    ]);
+                    assertSelectedPoints({
+                        0: [5, 6]
+                    });
+                    assertRanges([
+                        [173.91304347826087, 289.8550724637681],
+                        ['Net revenue', 'Personnel expenses']
+                    ]);
+                },
+                null, BOXEVENTS, 'waterfall select'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@flaky should work for bar traces', function(done) {
         var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
         var assertSelectedPoints = makeAssertSelectedPoints();

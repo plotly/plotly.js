@@ -176,10 +176,14 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
             pointData2[vLetter + 'err'] = di.sd;
         }
+
         // only keep name and spikes on the first item (median)
         pointData.name = '';
         pointData.spikeDistance = undefined;
         pointData[spikePosAttr] = undefined;
+
+        // no hovertemplate support yet
+        pointData2.hovertemplate = false;
 
         closeBoxData.push(pointData2);
     }
@@ -242,7 +246,8 @@ function hoverOnPoints(pointData, xval, yval) {
         x1: xc + rad,
         y0: yc - rad,
         y1: yc + rad,
-        spikeDistance: pointData.distance
+        spikeDistance: pointData.distance,
+        hovertemplate: trace.hovertemplate
     });
 
     var pa;
