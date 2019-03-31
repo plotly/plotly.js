@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "x": [ "textposition:outside" ],
+      "y": [ 0 ],
+      "text": [ "Text" ],
+      "textposition": [ "outside" ]
+    },
+    {
+      "type": "bar",
+      "x": [ "textpostion:auto" ],
+      "y": [ 0 ],
+      "text": [ "should not see" ],
+      "textposition": [ "auto" ]
+    },
+    {
+      "type": "bar",
+      "x": [ "textpostion:inside" ],
+      "y": [ 0 ],
+      "text": [ "should not see" ],
+      "textposition": [ "inside" ]
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "width": 600
+  }
+}
