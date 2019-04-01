@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.45.3
+* plotly.js (gl3d) v1.46.0
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var rules = {
     "X .cursor-n-resize": "cursor:n-resize;",
     "X .cursor-ne-resize": "cursor:ne-resize;",
     "X .cursor-grab": "cursor:-webkit-grab;cursor:grab;",
-    "X .modebar": "position:absolute;top:2px;right:2px;z-index:1001;",
+    "X .modebar": "position:absolute;top:2px;right:2px;",
     "X .ease-bg": "-webkit-transition:background-color 0.3s ease 0s;-moz-transition:background-color 0.3s ease 0s;-ms-transition:background-color 0.3s ease 0s;-o-transition:background-color 0.3s ease 0s;transition:background-color 0.3s ease 0s;",
     "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity 0.3s ease 0s;-moz-transition:opacity 0.3s ease 0s;-ms-transition:opacity 0.3s ease 0s;-o-transition:opacity 0.3s ease 0s;transition:opacity 0.3s ease 0s;",
     "X:hover .modebar--hover .modebar-group": "opacity:1;",
@@ -264,7 +264,7 @@ module.exports = Plotly;
 
 module.exports = _dereq_('../src/traces/mesh3d');
 
-},{"../src/traces/mesh3d":610}],7:[function(_dereq_,module,exports){
+},{"../src/traces/mesh3d":612}],7:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -277,7 +277,7 @@ module.exports = _dereq_('../src/traces/mesh3d');
 
 module.exports = _dereq_('../src/traces/scatter3d');
 
-},{"../src/traces/scatter3d":646}],8:[function(_dereq_,module,exports){
+},{"../src/traces/scatter3d":648}],8:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -290,7 +290,7 @@ module.exports = _dereq_('../src/traces/scatter3d');
 
 module.exports = _dereq_('../src/traces/streamtube');
 
-},{"../src/traces/streamtube":651}],9:[function(_dereq_,module,exports){
+},{"../src/traces/streamtube":653}],9:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -303,7 +303,7 @@ module.exports = _dereq_('../src/traces/streamtube');
 
 module.exports = _dereq_('../src/traces/surface');
 
-},{"../src/traces/surface":656}],10:[function(_dereq_,module,exports){
+},{"../src/traces/surface":658}],10:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createViewController
@@ -25393,24 +25393,24 @@ function createLines(gl, bounds, ticks) {
 var glslify = _dereq_('glslify')
 var createShader = _dereq_('gl-shader')
 
-var lineVert = glslify(["#define GLSLIFY 1\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, majorAxis, minorAxis, screenAxis;\nuniform float lineWidth;\nuniform vec2 screenShape;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nvoid main() {\n  vec3 major = position.x * majorAxis;\n  vec3 minor = position.y * minorAxis;\n\n  vec3 vPosition = major + minor + offset;\n  vec3 pPosition = project(vPosition);\n  vec3 offset = project(vPosition + screenAxis * position.z);\n\n  vec2 screen = normalize((offset - pPosition).xy * screenShape) / screenShape;\n\n  gl_Position = vec4(pPosition + vec3(0.5 * screen * lineWidth, 0), 1.0);\n}\n"])
-var lineFrag = glslify(["precision mediump float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
+var lineVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, majorAxis, minorAxis, screenAxis;\nuniform float lineWidth;\nuniform vec2 screenShape;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nvoid main() {\n  vec3 major = position.x * majorAxis;\n  vec3 minor = position.y * minorAxis;\n\n  vec3 vPosition = major + minor + offset;\n  vec3 pPosition = project(vPosition);\n  vec3 offset = project(vPosition + screenAxis * position.z);\n\n  vec2 screen = normalize((offset - pPosition).xy * screenShape) / screenShape;\n\n  gl_Position = vec4(pPosition + vec3(0.5 * screen * lineWidth, 0), 1.0);\n}\n"])
+var lineFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
 exports.line = function(gl) {
   return createShader(gl, lineVert, lineFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
 }
 
-var textVert = glslify(["#define GLSLIFY 1\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, axis, alignDir, alignOpt;\nuniform float scale, angle, pixelScale;\nuniform vec2 resolution;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nfloat computeViewAngle(vec3 a, vec3 b) {\n  vec3 A = project(a);\n  vec3 B = project(b);\n\n  return atan(\n    (B.y - A.y) * resolution.y,\n    (B.x - A.x) * resolution.x\n  );\n}\n\nconst float PI = 3.141592;\nconst float TWO_PI = 2.0 * PI;\nconst float HALF_PI = 0.5 * PI;\nconst float ONE_AND_HALF_PI = 1.5 * PI;\n\nint option = int(floor(alignOpt.x + 0.001));\nfloat hv_ratio =       alignOpt.y;\nbool enableAlign =    (alignOpt.z != 0.0);\n\nfloat mod_angle(float a) {\n  return mod(a, PI);\n}\n\nfloat positive_angle(float a) {\n  return mod_angle((a < 0.0) ?\n    a + TWO_PI :\n    a\n  );\n}\n\nfloat look_upwards(float a) {\n  float b = positive_angle(a);\n  return ((b > HALF_PI) && (b <= ONE_AND_HALF_PI)) ?\n    b - PI :\n    b;\n}\n\nfloat look_horizontal_or_vertical(float a, float ratio) {\n  // ratio controls the ratio between being horizontal to (vertical + horizontal)\n  // if ratio is set to 0.5 then it is 50%, 50%.\n  // when using a higher ratio e.g. 0.75 the result would\n  // likely be more horizontal than vertical.\n\n  float b = positive_angle(a);\n\n  return\n    (b < (      ratio) * HALF_PI) ? 0.0 :\n    (b < (2.0 - ratio) * HALF_PI) ? -HALF_PI :\n    (b < (2.0 + ratio) * HALF_PI) ? 0.0 :\n    (b < (4.0 - ratio) * HALF_PI) ? HALF_PI :\n                                    0.0;\n}\n\nfloat roundTo(float a, float b) {\n  return float(b * floor((a + 0.5 * b) / b));\n}\n\nfloat look_round_n_directions(float a, int n) {\n  float b = positive_angle(a);\n  float div = TWO_PI / float(n);\n  float c = roundTo(b, div);\n  return look_upwards(c);\n}\n\nfloat applyAlignOption(float rawAngle, float delta) {\n  return\n    (option >  2) ? look_round_n_directions(rawAngle + delta, option) :       // option 3-n: round to n directions\n    (option == 2) ? look_horizontal_or_vertical(rawAngle + delta, hv_ratio) : // horizontal or vertical\n    (option == 1) ? rawAngle + delta :       // use free angle, and flip to align with one direction of the axis\n    (option == 0) ? look_upwards(rawAngle) : // use free angle, and stay upwards\n    (option ==-1) ? 0.0 :                    // useful for backward compatibility, all texts remains horizontal\n                    rawAngle;                // otherwise return back raw input angle\n}\n\nbool isAxisTitle = (axis.x == 0.0) &&\n                   (axis.y == 0.0) &&\n                   (axis.z == 0.0);\n\nvoid main() {\n  //Compute world offset\n  float axisDistance = position.z;\n  vec3 dataPosition = axisDistance * axis + offset;\n\n  float beta = angle; // i.e. user defined attributes for each tick\n\n  float axisAngle;\n  float clipAngle;\n  float flip;\n\n  if (enableAlign) {\n    axisAngle = (isAxisTitle) ? HALF_PI :\n                      computeViewAngle(dataPosition, dataPosition + axis);\n    clipAngle = computeViewAngle(dataPosition, dataPosition + alignDir);\n\n    axisAngle += (sin(axisAngle) < 0.0) ? PI : 0.0;\n    clipAngle += (sin(clipAngle) < 0.0) ? PI : 0.0;\n\n    flip = (dot(vec2(cos(axisAngle), sin(axisAngle)),\n                vec2(sin(clipAngle),-cos(clipAngle))) > 0.0) ? 1.0 : 0.0;\n\n    beta += applyAlignOption(clipAngle, flip * PI);\n  }\n\n  //Compute plane offset\n  vec2 planeCoord = position.xy * pixelScale;\n\n  mat2 planeXform = scale * mat2(\n     cos(beta), sin(beta),\n    -sin(beta), cos(beta)\n  );\n\n  vec2 viewOffset = 2.0 * planeXform * planeCoord / resolution;\n\n  //Compute clip position\n  vec3 clipPosition = project(dataPosition);\n\n  //Apply text offset in clip coordinates\n  clipPosition += vec3(viewOffset, 0.0);\n\n  //Done\n  gl_Position = vec4(clipPosition, 1.0);\n}"])
-var textFrag = glslify(["precision mediump float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
+var textVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, axis, alignDir, alignOpt;\nuniform float scale, angle, pixelScale;\nuniform vec2 resolution;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nfloat computeViewAngle(vec3 a, vec3 b) {\n  vec3 A = project(a);\n  vec3 B = project(b);\n\n  return atan(\n    (B.y - A.y) * resolution.y,\n    (B.x - A.x) * resolution.x\n  );\n}\n\nconst float PI = 3.141592;\nconst float TWO_PI = 2.0 * PI;\nconst float HALF_PI = 0.5 * PI;\nconst float ONE_AND_HALF_PI = 1.5 * PI;\n\nint option = int(floor(alignOpt.x + 0.001));\nfloat hv_ratio =       alignOpt.y;\nbool enableAlign =    (alignOpt.z != 0.0);\n\nfloat mod_angle(float a) {\n  return mod(a, PI);\n}\n\nfloat positive_angle(float a) {\n  return mod_angle((a < 0.0) ?\n    a + TWO_PI :\n    a\n  );\n}\n\nfloat look_upwards(float a) {\n  float b = positive_angle(a);\n  return ((b > HALF_PI) && (b <= ONE_AND_HALF_PI)) ?\n    b - PI :\n    b;\n}\n\nfloat look_horizontal_or_vertical(float a, float ratio) {\n  // ratio controls the ratio between being horizontal to (vertical + horizontal)\n  // if ratio is set to 0.5 then it is 50%, 50%.\n  // when using a higher ratio e.g. 0.75 the result would\n  // likely be more horizontal than vertical.\n\n  float b = positive_angle(a);\n\n  return\n    (b < (      ratio) * HALF_PI) ? 0.0 :\n    (b < (2.0 - ratio) * HALF_PI) ? -HALF_PI :\n    (b < (2.0 + ratio) * HALF_PI) ? 0.0 :\n    (b < (4.0 - ratio) * HALF_PI) ? HALF_PI :\n                                    0.0;\n}\n\nfloat roundTo(float a, float b) {\n  return float(b * floor((a + 0.5 * b) / b));\n}\n\nfloat look_round_n_directions(float a, int n) {\n  float b = positive_angle(a);\n  float div = TWO_PI / float(n);\n  float c = roundTo(b, div);\n  return look_upwards(c);\n}\n\nfloat applyAlignOption(float rawAngle, float delta) {\n  return\n    (option >  2) ? look_round_n_directions(rawAngle + delta, option) :       // option 3-n: round to n directions\n    (option == 2) ? look_horizontal_or_vertical(rawAngle + delta, hv_ratio) : // horizontal or vertical\n    (option == 1) ? rawAngle + delta :       // use free angle, and flip to align with one direction of the axis\n    (option == 0) ? look_upwards(rawAngle) : // use free angle, and stay upwards\n    (option ==-1) ? 0.0 :                    // useful for backward compatibility, all texts remains horizontal\n                    rawAngle;                // otherwise return back raw input angle\n}\n\nbool isAxisTitle = (axis.x == 0.0) &&\n                   (axis.y == 0.0) &&\n                   (axis.z == 0.0);\n\nvoid main() {\n  //Compute world offset\n  float axisDistance = position.z;\n  vec3 dataPosition = axisDistance * axis + offset;\n\n  float beta = angle; // i.e. user defined attributes for each tick\n\n  float axisAngle;\n  float clipAngle;\n  float flip;\n\n  if (enableAlign) {\n    axisAngle = (isAxisTitle) ? HALF_PI :\n                      computeViewAngle(dataPosition, dataPosition + axis);\n    clipAngle = computeViewAngle(dataPosition, dataPosition + alignDir);\n\n    axisAngle += (sin(axisAngle) < 0.0) ? PI : 0.0;\n    clipAngle += (sin(clipAngle) < 0.0) ? PI : 0.0;\n\n    flip = (dot(vec2(cos(axisAngle), sin(axisAngle)),\n                vec2(sin(clipAngle),-cos(clipAngle))) > 0.0) ? 1.0 : 0.0;\n\n    beta += applyAlignOption(clipAngle, flip * PI);\n  }\n\n  //Compute plane offset\n  vec2 planeCoord = position.xy * pixelScale;\n\n  mat2 planeXform = scale * mat2(\n     cos(beta), sin(beta),\n    -sin(beta), cos(beta)\n  );\n\n  vec2 viewOffset = 2.0 * planeXform * planeCoord / resolution;\n\n  //Compute clip position\n  vec3 clipPosition = project(dataPosition);\n\n  //Apply text offset in clip coordinates\n  clipPosition += vec3(viewOffset, 0.0);\n\n  //Done\n  gl_Position = vec4(clipPosition, 1.0);\n}"])
+var textFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
 exports.text = function(gl) {
   return createShader(gl, textVert, textFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
 }
 
-var bgVert = glslify(["#define GLSLIFY 1\nattribute vec3 position;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection;\nuniform vec3 enable;\nuniform vec3 bounds[2];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n\n  vec3 signAxis = sign(bounds[1] - bounds[0]);\n\n  vec3 realNormal = signAxis * normal;\n\n  if(dot(realNormal, enable) > 0.0) {\n    vec3 minRange = min(bounds[0], bounds[1]);\n    vec3 maxRange = max(bounds[0], bounds[1]);\n    vec3 nPosition = mix(minRange, maxRange, 0.5 * (position + 1.0));\n    gl_Position = projection * view * model * vec4(nPosition, 1.0);\n  } else {\n    gl_Position = vec4(0,0,0,0);\n  }\n\n  colorChannel = abs(realNormal);\n}"])
-var bgFrag = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 colors[3];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n  gl_FragColor = colorChannel.x * colors[0] +\n                 colorChannel.y * colors[1] +\n                 colorChannel.z * colors[2];\n}"])
+var bgVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection;\nuniform vec3 enable;\nuniform vec3 bounds[2];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n\n  vec3 signAxis = sign(bounds[1] - bounds[0]);\n\n  vec3 realNormal = signAxis * normal;\n\n  if(dot(realNormal, enable) > 0.0) {\n    vec3 minRange = min(bounds[0], bounds[1]);\n    vec3 maxRange = max(bounds[0], bounds[1]);\n    vec3 nPosition = mix(minRange, maxRange, 0.5 * (position + 1.0));\n    gl_Position = projection * view * model * vec4(nPosition, 1.0);\n  } else {\n    gl_Position = vec4(0,0,0,0);\n  }\n\n  colorChannel = abs(realNormal);\n}"])
+var bgFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 colors[3];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n  gl_FragColor = colorChannel.x * colors[0] +\n                 colorChannel.y * colors[1] +\n                 colorChannel.z * colors[2];\n}"])
 exports.bg = function(gl) {
   return createShader(gl, bgVert, bgFrag, null, [
     {name: 'position', type: 'vec3'},
@@ -27244,10 +27244,10 @@ module.exports = createSimplicialMesh
 },{"./shaders":106,"colormap":68,"gl-buffer":103,"gl-mat4/invert":124,"gl-mat4/multiply":126,"gl-shader":149,"gl-texture2d":164,"gl-vao":168,"ndarray":286,"normals":288,"simplicial-complex-contour":330,"typedarray-pool":348}],106:[function(_dereq_,module,exports){
 var glslify       = _dereq_('glslify')
 
-var triVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\nuniform float vectorScale;\nuniform float coneScale;\n\nuniform float coneOffset;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data\n           , f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * conePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal,0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = conePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
-var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data\n           , f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
-var pickVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nuniform float vectorScale;\nuniform float coneScale;\nuniform float coneOffset;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n  gl_Position = projection * view * conePosition;\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
-var pickFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
+var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\nuniform float vectorScale;\nuniform float coneScale;\n\nuniform float coneOffset;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data\n           , f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * conePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal,0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = conePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
+var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data\n           , f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
+var pickVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nuniform float vectorScale;\nuniform float coneScale;\nuniform float coneOffset;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n  gl_Position = projection * view * conePosition;\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
+var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
 
 exports.meshShader = {
   vertex:   triVertSrc,
@@ -27834,8 +27834,8 @@ function createErrorBars(options) {
 var glslify = _dereq_('glslify')
 var createShader = _dereq_('gl-shader')
 
-var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"])
-var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], fragPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  gl_FragColor = opacity * fragColor;\n}"])
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"])
+var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], fragPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  gl_FragColor = opacity * fragColor;\n}"])
 
 module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [
@@ -28371,9 +28371,9 @@ function formatCompilerError(errLog, src, type) {
 var glslify       = _dereq_('glslify')
 var createShader  = _dereq_('gl-shader')
 
-var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"])
-var forwardFrag = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], worldPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"])
-var pickFrag = glslify(["precision mediump float;\n#define GLSLIFY 1\n\n#define FLOAT_MAX  1.70141184e38\n#define FLOAT_MIN  1.17549435e-38\n\nlowp vec4 encode_float_1540259130(highp float v) {\n  highp float av = abs(v);\n\n  //Handle special cases\n  if(av < FLOAT_MIN) {\n    return vec4(0.0, 0.0, 0.0, 0.0);\n  } else if(v > FLOAT_MAX) {\n    return vec4(127.0, 128.0, 0.0, 0.0) / 255.0;\n  } else if(v < -FLOAT_MAX) {\n    return vec4(255.0, 128.0, 0.0, 0.0) / 255.0;\n  }\n\n  highp vec4 c = vec4(0,0,0,0);\n\n  //Compute exponent and mantissa\n  highp float e = floor(log2(av));\n  highp float m = av * pow(2.0, -e) - 1.0;\n  \n  //Unpack mantissa\n  c[1] = floor(128.0 * m);\n  m -= c[1] / 128.0;\n  c[2] = floor(32768.0 * m);\n  m -= c[2] / 32768.0;\n  c[3] = floor(8388608.0 * m);\n  \n  //Unpack exponent\n  highp float ebias = e + 127.0;\n  c[0] = floor(ebias / 2.0);\n  ebias -= c[0] * 2.0;\n  c[1] += floor(ebias) * 128.0; \n\n  //Unpack sign bit\n  c[0] += 128.0 * step(0.0, -v);\n\n  //Scale back to range\n  return c / 255.0;\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform float pickId;\nuniform vec3 clipBounds[2];\n\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], worldPosition)) discard;\n\n  gl_FragColor = vec4(pickId/255.0, encode_float_1540259130(pixelArcLength).xyz);\n}"])
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"])
+var forwardFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], worldPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"])
+var pickFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\n#define FLOAT_MAX  1.70141184e38\n#define FLOAT_MIN  1.17549435e-38\n\nlowp vec4 encode_float_1540259130(highp float v) {\n  highp float av = abs(v);\n\n  //Handle special cases\n  if(av < FLOAT_MIN) {\n    return vec4(0.0, 0.0, 0.0, 0.0);\n  } else if(v > FLOAT_MAX) {\n    return vec4(127.0, 128.0, 0.0, 0.0) / 255.0;\n  } else if(v < -FLOAT_MAX) {\n    return vec4(255.0, 128.0, 0.0, 0.0) / 255.0;\n  }\n\n  highp vec4 c = vec4(0,0,0,0);\n\n  //Compute exponent and mantissa\n  highp float e = floor(log2(av));\n  highp float m = av * pow(2.0, -e) - 1.0;\n  \n  //Unpack mantissa\n  c[1] = floor(128.0 * m);\n  m -= c[1] / 128.0;\n  c[2] = floor(32768.0 * m);\n  m -= c[2] / 32768.0;\n  c[3] = floor(8388608.0 * m);\n  \n  //Unpack exponent\n  highp float ebias = e + 127.0;\n  c[0] = floor(ebias / 2.0);\n  ebias -= c[0] * 2.0;\n  c[1] += floor(ebias) * 128.0; \n\n  //Unpack sign bit\n  c[0] += 128.0 * step(0.0, -v);\n\n  //Scale back to range\n  return c / 255.0;\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform float pickId;\nuniform vec3 clipBounds[2];\n\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], worldPosition)) discard;\n\n  gl_FragColor = vec4(pickId/255.0, encode_float_1540259130(pixelArcLength).xyz);\n}"])
 
 var ATTRIBUTES = [
   {name: 'position', type: 'vec3'},
@@ -29783,17 +29783,17 @@ function closestPointToPickLocation(simplex, pixelCoord, model, view, projection
 },{"barycentric":17,"polytope-closest-point/lib/closest_point_2d.js":307}],138:[function(_dereq_,module,exports){
 var glslify       = _dereq_('glslify')
 
-var triVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal,0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"])
-var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n//#pragma glslify: beckmann = require(glsl-specular-beckmann) // used in gl-surface3d\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_data)) discard;\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  //float specular = max(0.0, beckmann(L, V, N, roughness)); // used in gl-surface3d\n\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
-var edgeVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model, view, projection;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_color = color;\n  f_data  = position;\n  f_uv    = uv;\n}"])
-var edgeFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_data)) discard;\n\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"])
-var pointVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\nattribute float pointSize;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position = projection * view * model * vec4(position, 1.0);\n  }\n  gl_PointSize = pointSize;\n  f_color = color;\n  f_uv = uv;\n}"])
-var pointFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec2 pointR = gl_PointCoord.xy - vec2(0.5,0.5);\n  if(dot(pointR, pointR) > 0.25) {\n    discard;\n  }\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"])
-var pickVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_id        = id;\n  f_position  = position;\n}"])
-var pickFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
-var pickPointVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3  position;\nattribute float pointSize;\nattribute vec4  id;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position  = projection * view * model * vec4(position, 1.0);\n    gl_PointSize = pointSize;\n  }\n  f_id         = id;\n  f_position   = position;\n}"])
-var contourVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n}"])
-var contourFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 contourColor;\n\nvoid main() {\n  gl_FragColor = vec4(contourColor,1);\n}\n"])
+var triVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal,0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"])
+var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n//#pragma glslify: beckmann = require(glsl-specular-beckmann) // used in gl-surface3d\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_data)) discard;\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  //float specular = max(0.0, beckmann(L, V, N, roughness)); // used in gl-surface3d\n\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
+var edgeVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model, view, projection;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_color = color;\n  f_data  = position;\n  f_uv    = uv;\n}"])
+var edgeFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_data)) discard;\n\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"])
+var pointVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\nattribute float pointSize;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position = projection * view * model * vec4(position, 1.0);\n  }\n  gl_PointSize = pointSize;\n  f_color = color;\n  f_uv = uv;\n}"])
+var pointFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec2 pointR = gl_PointCoord.xy - vec2(0.5,0.5);\n  if(dot(pointR, pointR) > 0.25) {\n    discard;\n  }\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"])
+var pickVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_id        = id;\n  f_position  = position;\n}"])
+var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
+var pickPointVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3  position;\nattribute float pointSize;\nattribute vec4  id;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position  = projection * view * model * vec4(position, 1.0);\n    gl_PointSize = pointSize;\n  }\n  f_id         = id;\n  f_position   = position;\n}"])
+var contourVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n}"])
+var contourFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec3 contourColor;\n\nvoid main() {\n  gl_FragColor = vec4(contourColor,1);\n}\n"])
 
 exports.meshShader = {
   vertex:   triVertSrc,
@@ -31064,97 +31064,109 @@ function createCamera(element, options) {
     return false
   })
 
-  var lastX = 0, lastY = 0, lastMods = {shift: false, control: false, alt: false, meta: false}
-  camera.mouseListener = mouseChange(element, handleInteraction)
+  camera._lastX = -1
+  camera._lastY = -1
+  camera._lastMods = {shift: false, control: false, alt: false, meta: false}
 
-  //enable simple touch interactions
-  element.addEventListener('touchstart', function (ev) {
-    var xy = mouseOffset(ev.changedTouches[0], element)
-    handleInteraction(0, xy[0], xy[1], lastMods)
-    handleInteraction(1, xy[0], xy[1], lastMods)
+  camera.enableMouseListeners = function() {
 
-    ev.preventDefault()
-  }, hasPassive ? {passive: false} : false)
+    camera.mouseListener = mouseChange(element, handleInteraction)
 
-  element.addEventListener('touchmove', function (ev) {
-    var xy = mouseOffset(ev.changedTouches[0], element)
-    handleInteraction(1, xy[0], xy[1], lastMods)
+    //enable simple touch interactions
+    element.addEventListener('touchstart', function (ev) {
+      var xy = mouseOffset(ev.changedTouches[0], element)
+      handleInteraction(0, xy[0], xy[1], camera._lastMods)
+      handleInteraction(1, xy[0], xy[1], camera._lastMods)
 
-    ev.preventDefault()
-  }, hasPassive ? {passive: false} : false)
+      ev.preventDefault()
+    }, hasPassive ? {passive: false} : false)
 
-  element.addEventListener('touchend', function (ev) {
+    element.addEventListener('touchmove', function (ev) {
+      var xy = mouseOffset(ev.changedTouches[0], element)
+      handleInteraction(1, xy[0], xy[1], camera._lastMods)
 
-    handleInteraction(0, lastX, lastY, lastMods)
+      ev.preventDefault()
+    }, hasPassive ? {passive: false} : false)
 
-    ev.preventDefault()
-  }, hasPassive ? {passive: false} : false)
+    element.addEventListener('touchend', function (ev) {
 
-  function handleInteraction (buttons, x, y, mods) {
-    var keyBindingMode = camera.keyBindingMode
+      handleInteraction(0, camera._lastX, camera._lastY, camera._lastMods)
 
-    if(keyBindingMode === false) return
+      ev.preventDefault()
+    }, hasPassive ? {passive: false} : false)
 
-    var rotate = keyBindingMode === 'rotate'
-    var pan = keyBindingMode === 'pan'
-    var zoom = keyBindingMode === 'zoom'
+    function handleInteraction (buttons, x, y, mods) {
+      var keyBindingMode = camera.keyBindingMode
 
-    var ctrl = !!mods.control
-    var alt = !!mods.alt
-    var shift = !!mods.shift
-    var left = !!(buttons & 1)
-    var right = !!(buttons & 2)
-    var middle = !!(buttons & 4)
+      if(keyBindingMode === false) return
 
-    var scale = 1.0 / element.clientHeight
-    var dx    = scale * (x - lastX)
-    var dy    = scale * (y - lastY)
+      var rotate = keyBindingMode === 'rotate'
+      var pan = keyBindingMode === 'pan'
+      var zoom = keyBindingMode === 'zoom'
 
-    var flipX = camera.flipX ? 1 : -1
-    var flipY = camera.flipY ? 1 : -1
+      var ctrl = !!mods.control
+      var alt = !!mods.alt
+      var shift = !!mods.shift
+      var left = !!(buttons & 1)
+      var right = !!(buttons & 2)
+      var middle = !!(buttons & 4)
 
-    var drot  = Math.PI * camera.rotateSpeed
+      var scale = 1.0 / element.clientHeight
+      var dx    = scale * (x - camera._lastX)
+      var dy    = scale * (y - camera._lastY)
 
-    var t = now()
+      var flipX = camera.flipX ? 1 : -1
+      var flipY = camera.flipY ? 1 : -1
 
-    if((rotate && left && !ctrl && !alt && !shift) || (left && !ctrl && !alt && shift)) {
-      // Rotate
-      view.rotate(t, flipX * drot * dx, -flipY * drot * dy, 0)
+      var drot  = Math.PI * camera.rotateSpeed
+
+      var t = now()
+
+      if(camera._lastX !== -1 && camera._lastY !== -1) {
+        if((rotate && left && !ctrl && !alt && !shift) || (left && !ctrl && !alt && shift)) {
+          // Rotate
+          view.rotate(t, flipX * drot * dx, -flipY * drot * dy, 0)
+        }
+
+        if((pan && left && !ctrl && !alt && !shift) || right || (left && ctrl && !alt && !shift)) {
+          // Pan
+          view.pan(t, -camera.translateSpeed * dx * distance, camera.translateSpeed * dy * distance, 0)
+        }
+
+        if((zoom && left && !ctrl && !alt && !shift) || middle || (left && !ctrl && alt && !shift)) {
+          // Zoom
+          var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100
+          view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1))
+        }
+      }
+
+      camera._lastX = x
+      camera._lastY = y
+      camera._lastMods = mods
+
+      return true
     }
 
-    if((pan && left && !ctrl && !alt && !shift) || right || (left && ctrl && !alt && !shift)) {
-      // Pan
-      view.pan(t, -camera.translateSpeed * dx * distance, camera.translateSpeed * dy * distance, 0)
-    }
+    camera.wheelListener = mouseWheel(element, function(dx, dy) {
+      // TODO remove now that we can disable scroll via scrollZoom?
+      if(camera.keyBindingMode === false) return
+      if(!camera.enableWheel) return
 
-    if((zoom && left && !ctrl && !alt && !shift) || middle || (left && !ctrl && alt && !shift)) {
-      // Zoom
-      var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100
-      view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1))
-    }
-
-    lastX = x
-    lastY = y
-    lastMods = mods
-
-    return true
+      var flipX = camera.flipX ? 1 : -1
+      var flipY = camera.flipY ? 1 : -1
+      var t = now()
+      if(Math.abs(dx) > Math.abs(dy)) {
+        view.rotate(t, 0, 0, -dx * flipX * Math.PI * camera.rotateSpeed / window.innerWidth)
+      } else {
+        if(!camera._ortho) {
+          var kzoom = -camera.zoomSpeed * flipY * dy / window.innerHeight * (t - view.lastT()) / 20.0
+          view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1))
+        }
+      }
+    }, true)
   }
 
-  camera.wheelListener = mouseWheel(element, function(dx, dy) {
-    // TODO remove now that we can disable scroll via scrollZoom?
-    if(camera.keyBindingMode === false) return
-    if(!camera.enableWheel) return
-
-    var flipX = camera.flipX ? 1 : -1
-    var flipY = camera.flipY ? 1 : -1
-    var t = now()
-    if(Math.abs(dx) > Math.abs(dy)) {
-      view.rotate(t, 0, 0, -dx * flipX * Math.PI * camera.rotateSpeed / window.innerWidth)
-    } else {
-      var kzoom = -camera.zoomSpeed * flipY * dy / window.innerHeight * (t - view.lastT()) / 20.0
-      view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1))
-    }
-  }, true)
+  camera.enableMouseListeners()
 
   return camera
 }
@@ -31181,6 +31193,7 @@ var createSelect = _dereq_('gl-select-static')
 var createFBO    = _dereq_('gl-fbo')
 var drawTriangle = _dereq_('a-big-triangle')
 var mouseChange  = _dereq_('mouse-change')
+var mouseWheel   = _dereq_('mouse-wheel')
 var perspective  = _dereq_('gl-mat4/perspective')
 var ortho        = _dereq_('gl-mat4/ortho')
 var createShader = _dereq_('./lib/shader')
@@ -31236,8 +31249,7 @@ function defaultBool(x) {
 
 function createScene(options) {
   options = options || {}
-
-  var stopped = false
+  options.camera = options.camera || {}
 
   var canvas = options.canvas
   if(!canvas) {
@@ -31277,6 +31289,11 @@ function createScene(options) {
 
   var accumShader = createShader(gl)
 
+  var isOrtho =
+    (options.cameraObject && options.cameraObject._ortho === true) ||
+    (options.camera.projection && options.camera.projection.type === 'orthographic') ||
+    false
+
   //Create a camera
   var cameraOptions = {
     eye:     options.camera.eye     || [2,0,0],
@@ -31285,7 +31302,7 @@ function createScene(options) {
     zoomMin: options.camera.zoomMax || 0.1,
     zoomMax: options.camera.zoomMin || 100,
     mode:    options.camera.mode    || 'turntable',
-    _ortho:   (options.camera.projection && options.camera.projection.type === 'orthographic') || false
+    _ortho:  isOrtho
   }
 
   //Create axes
@@ -31321,7 +31338,7 @@ function createScene(options) {
 
   var viewShape = [ gl.drawingBufferWidth, gl.drawingBufferHeight ]
 
-  var camera = createCamera(canvas, cameraOptions)
+  var camera = options.cameraObject || createCamera(canvas, cameraOptions)
 
   //Create scene object
   var scene = {
@@ -31354,13 +31371,14 @@ function createScene(options) {
     onclick:      options.onclick  || null,
     cameraParams: cameraParams,
     oncontextloss: null,
-    mouseListener: null
+    mouseListener: null,
+    _stopped: false
   }
 
   var pickShape = [ (gl.drawingBufferWidth/scene.pixelRatio)|0, (gl.drawingBufferHeight/scene.pixelRatio)|0 ]
 
   function resizeListener() {
-    if(stopped) {
+    if(scene._stopped) {
       return
     }
     if(!scene.autoResize) {
@@ -31433,7 +31451,7 @@ function createScene(options) {
 
   scene.update = function(options) {
 
-    if(stopped) {
+    if(scene._stopped) {
       return
     }
     options = options || {}
@@ -31442,7 +31460,7 @@ function createScene(options) {
   }
 
   scene.add = function(obj) {
-    if(stopped) {
+    if(scene._stopped) {
       return
     }
     obj.axes = axes
@@ -31454,7 +31472,7 @@ function createScene(options) {
   }
 
   scene.remove = function(obj) {
-    if(stopped) {
+    if(scene._stopped) {
       return
     }
     var idx = objects.indexOf(obj)
@@ -31469,11 +31487,11 @@ function createScene(options) {
   }
 
   scene.dispose = function() {
-    if(stopped) {
+    if(scene._stopped) {
       return
     }
 
-    stopped = true
+    scene._stopped = true
 
     window.removeEventListener('resize', resizeListener)
     canvas.removeEventListener('webglcontextlost', checkContextLoss)
@@ -31506,88 +31524,105 @@ function createScene(options) {
     objects = []
   }
 
-  //Update mouse position
-  var mouseRotating = false
+  scene.wheelListener = mouseWheel(canvas, function(dx, dy) {
+    // TODO remove now that we can disable scroll via scrollZoom?
+    if(camera.keyBindingMode === false) return
+    if(!camera.enableWheel) return
 
-  var prevButtons = 0
+    if(camera._ortho) {
+      var s = (dx > dy) ? 1.1 : 1.0 / 1.1
 
-  scene.mouseListener = mouseChange(canvas, function(buttons, x, y) {
-    if(stopped) {
-      return
+      scene.aspect[0] *= s
+      scene.aspect[1] *= s
+      scene.aspect[2] *= s
+      scene.redraw()
     }
+  }, true)
 
-    var numPick = pickBuffers.length
-    var numObjs = objects.length
-    var prevObj = selection.object
+  //Update mouse position
+  scene._mouseRotating = false
+  scene._prevButtons = 0
 
-    selection.distance = Infinity
-    selection.mouse[0] = x
-    selection.mouse[1] = y
-    selection.object = null
-    selection.screen = null
-    selection.dataCoordinate = selection.dataPosition = null
+  scene.enableMouseListeners = function() {
 
-    var change = false
-
-    if(buttons && prevButtons) {
-      mouseRotating = true
-    } else {
-      if(mouseRotating) {
-        pickDirty = true
+    scene.mouseListener = mouseChange(canvas, function(buttons, x, y) {
+      if(scene._stopped) {
+        return
       }
-      mouseRotating = false
 
-      for(var i=0; i<numPick; ++i) {
-        var result = pickBuffers[i].query(x, pickShape[1] - y - 1, scene.pickRadius)
-        if(result) {
-          if(result.distance > selection.distance) {
-            continue
-          }
-          for(var j=0; j<numObjs; ++j) {
-            var obj = objects[j]
-            if(pickBufferIds[j] !== i) {
+      var numPick = pickBuffers.length
+      var numObjs = objects.length
+      var prevObj = selection.object
+
+      selection.distance = Infinity
+      selection.mouse[0] = x
+      selection.mouse[1] = y
+      selection.object = null
+      selection.screen = null
+      selection.dataCoordinate = selection.dataPosition = null
+
+      var change = false
+
+      if(buttons && scene._prevButtons) {
+        scene._mouseRotating = true
+      } else {
+        if(scene._mouseRotating) {
+          pickDirty = true
+        }
+        scene._mouseRotating = false
+
+        for(var i=0; i<numPick; ++i) {
+          var result = pickBuffers[i].query(x, pickShape[1] - y - 1, scene.pickRadius)
+          if(result) {
+            if(result.distance > selection.distance) {
               continue
             }
-            var objPick = obj.pick(result)
-            if(objPick) {
-              selection.buttons        = buttons
-              selection.screen         = result.coord
-              selection.distance       = result.distance
-              selection.object         = obj
-              selection.index          = objPick.distance
-              selection.dataPosition   = objPick.position
-              selection.dataCoordinate = objPick.dataCoordinate
-              selection.data           = objPick
-              change = true
+            for(var j=0; j<numObjs; ++j) {
+              var obj = objects[j]
+              if(pickBufferIds[j] !== i) {
+                continue
+              }
+              var objPick = obj.pick(result)
+              if(objPick) {
+                selection.buttons        = buttons
+                selection.screen         = result.coord
+                selection.distance       = result.distance
+                selection.object         = obj
+                selection.index          = objPick.distance
+                selection.dataPosition   = objPick.position
+                selection.dataCoordinate = objPick.dataCoordinate
+                selection.data           = objPick
+                change = true
+              }
             }
           }
         }
       }
-    }
 
-    if(prevObj && prevObj !== selection.object) {
-      if(prevObj.highlight) {
-        prevObj.highlight(null)
+      if(prevObj && prevObj !== selection.object) {
+        if(prevObj.highlight) {
+          prevObj.highlight(null)
+        }
+        dirty = true
       }
-      dirty = true
-    }
-    if(selection.object) {
-      if(selection.object.highlight) {
-        selection.object.highlight(selection.data)
+      if(selection.object) {
+        if(selection.object.highlight) {
+          selection.object.highlight(selection.data)
+        }
+        dirty = true
       }
-      dirty = true
-    }
 
-    change = change || (selection.object !== prevObj)
-    if(change && scene.onselect) {
-      scene.onselect(selection)
-    }
+      change = change || (selection.object !== prevObj)
+      if(change && scene.onselect) {
+        scene.onselect(selection)
+      }
 
-    if((buttons & 1) && !(prevButtons & 1) && scene.onclick) {
-      scene.onclick(selection)
-    }
-    prevButtons = buttons
-  })
+      if((buttons & 1) && !(scene._prevButtons & 1) && scene.onclick) {
+        scene.onclick(selection)
+      }
+      scene._prevButtons = buttons
+    })
+  }
 
   function checkContextLoss() {
     if(scene.contextLost) {
@@ -31750,7 +31785,7 @@ function createScene(options) {
 
     //Compute camera parameters
 
-    if(cameraOptions._ortho === true) {
+    if(isOrtho) {
       ortho(projection,
         -width/height,
         width/height,
@@ -31935,21 +31970,22 @@ function createScene(options) {
     }
   }
 
-
   //Draw the whole scene
   function render() {
-    if(stopped || scene.contextLost) {
+    if(scene._stopped || scene.contextLost) {
       return
     }
     // this order is important: ios safari sometimes has sync raf
     redraw()
     requestAnimationFrame(render)
   }
+
+  scene.enableMouseListeners()
   render()
 
   //Force redraw of whole scene
   scene.redraw = function() {
-    if(stopped) {
+    if(scene._stopped) {
       return
     }
     dirty = true
@@ -31959,7 +31995,7 @@ function createScene(options) {
   return scene
 }
 
-},{"./camera.js":140,"./lib/shader":141,"a-big-triangle":11,"gl-axes3d":95,"gl-axes3d/properties":102,"gl-fbo":111,"gl-mat4/ortho":127,"gl-mat4/perspective":128,"gl-select-static":148,"gl-spikes3d":157,"is-mobile":260,"mouse-change":271}],143:[function(_dereq_,module,exports){
+},{"./camera.js":140,"./lib/shader":141,"a-big-triangle":11,"gl-axes3d":95,"gl-axes3d/properties":102,"gl-fbo":111,"gl-mat4/ortho":127,"gl-mat4/perspective":128,"gl-select-static":148,"gl-spikes3d":157,"is-mobile":260,"mouse-change":271,"mouse-wheel":274}],143:[function(_dereq_,module,exports){
 module.exports = slerp
 
 /**
@@ -32092,11 +32128,11 @@ function getGlyph(symbol, font, pixelRatio) {
 var createShaderWrapper = _dereq_('gl-shader')
 var glslify = _dereq_('glslify')
 
-var perspectiveVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
-var orthographicVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n\n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
-var projectionVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform float highlightScale;\nuniform vec4 highlightId;\nuniform vec3 axes[2];\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float scale, pixelRatio;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float lscale = pixelRatio * scale;\n    if(distance(highlightId, id) < 0.0001) {\n      lscale *= highlightScale;\n    }\n\n    vec4 clipCenter   = projection * view * model * vec4(position, 1);\n    vec3 dataPosition = position + 0.5*lscale*(axes[0] * glyph.x + axes[1] * glyph.y) * clipCenter.w * screenSize.y;\n    vec4 clipPosition = projection * view * model * vec4(dataPosition, 1);\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = dataPosition;\n  }\n}\n"])
-var drawFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 fragClipBounds[2];\nuniform float opacity;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (\n    outOfRange(fragClipBounds[0], fragClipBounds[1], dataCoordinate) ||\n    interpColor.a * opacity == 0.\n  ) discard;\n  gl_FragColor = interpColor * opacity;\n}\n"])
-var pickFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 fragClipBounds[2];\nuniform float pickGroup;\n\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(fragClipBounds[0], fragClipBounds[1], dataCoordinate)) discard;\n\n  gl_FragColor = vec4(pickGroup, pickId.bgr);\n}"])
+var perspectiveVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
+var orthographicVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n\n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
+var projectionVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform float highlightScale;\nuniform vec4 highlightId;\nuniform vec3 axes[2];\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float scale, pixelRatio;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float lscale = pixelRatio * scale;\n    if(distance(highlightId, id) < 0.0001) {\n      lscale *= highlightScale;\n    }\n\n    vec4 clipCenter   = projection * view * model * vec4(position, 1);\n    vec3 dataPosition = position + 0.5*lscale*(axes[0] * glyph.x + axes[1] * glyph.y) * clipCenter.w * screenSize.y;\n    vec4 clipPosition = projection * view * model * vec4(dataPosition, 1);\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = dataPosition;\n  }\n}\n"])
+var drawFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 fragClipBounds[2];\nuniform float opacity;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (\n    outOfRange(fragClipBounds[0], fragClipBounds[1], dataCoordinate) ||\n    interpColor.a * opacity == 0.\n  ) discard;\n  gl_FragColor = interpColor * opacity;\n}\n"])
+var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 fragClipBounds[2];\nuniform float pickGroup;\n\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(fragClipBounds[0], fragClipBounds[1], dataCoordinate)) discard;\n\n  gl_FragColor = vec4(pickGroup, pickId.bgr);\n}"])
 
 var ATTRIBUTES = [
   {name: 'position', type: 'vec3'},
@@ -34423,10 +34459,10 @@ function createSpikes(gl, options) {
 },{"./shaders/index":156,"gl-buffer":103,"gl-vao":168}],158:[function(_dereq_,module,exports){
 var glslify       = _dereq_('glslify')
 
-var triVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\nuniform float vectorScale;\nuniform float tubeScale;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data\n           , f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * tubePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal,0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(tubePosition, 1.0);\n  vec4 t_position  = view * tubePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = tubePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
-var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data\n           , f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
-var pickVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform float tubeScale;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  gl_Position = projection * view * tubePosition;\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
-var pickFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
+var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\nuniform float vectorScale;\nuniform float tubeScale;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data\n           , f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * tubePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal,0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(tubePosition, 1.0);\n  vec4 t_position  = view * tubePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = tubePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
+var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data\n           , f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
+var pickVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform float tubeScale;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  gl_Position = projection * view * tubePosition;\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
+var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
 
 exports.meshShader = {
   vertex:   triVertSrc,
@@ -35885,10 +35921,10 @@ module.exports.createTubeMesh = _dereq_('./lib/tubemesh');
 var createShader = _dereq_('gl-shader')
 var glslify = _dereq_('glslify')
 
-var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"])
-var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat beckmannSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform float vertexColor;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  if ((kill > 0.0) ||\n      (outOfRange(clipBounds[0], clipBounds[1], worldCoordinate))) discard;\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = max(beckmannSpecular(L, V, N, roughness), 0.);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  //decide how to interpolate color — in vertex or in fragment\n  vec4 surfaceColor =\n    step(vertexColor, .5) * texture2D(colormap, vec2(value, value)) +\n    step(.5, vertexColor) * vColor;\n\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"])
-var contourVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform vec3 objectOffset;\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  worldCoordinate = objectOffset + dataCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z += zOffset;\n\n  gl_Position = clipPosition;\n  value = f + objectOffset.z;\n  kill = -1.0;\n  planeCoordinate = uv.zw;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"])
-var pickSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if ((kill > 0.0) ||\n      (outOfRange(clipBounds[0], clipBounds[1], worldCoordinate))) discard;\n\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}\n"])
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"])
+var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat beckmannSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform float vertexColor;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  if ((kill > 0.0) ||\n      (outOfRange(clipBounds[0], clipBounds[1], worldCoordinate))) discard;\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = max(beckmannSpecular(L, V, N, roughness), 0.);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  //decide how to interpolate color — in vertex or in fragment\n  vec4 surfaceColor =\n    step(vertexColor, .5) * texture2D(colormap, vec2(value, value)) +\n    step(.5, vertexColor) * vColor;\n\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"])
+var contourVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform vec3 objectOffset;\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  worldCoordinate = objectOffset + dataCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z += zOffset;\n\n  gl_Position = clipPosition;\n  value = f + objectOffset.z;\n  kill = -1.0;\n  planeCoordinate = uv.zw;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"])
+var pickSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if ((kill > 0.0) ||\n      (outOfRange(clipBounds[0], clipBounds[1], worldCoordinate))) discard;\n\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}\n"])
 
 exports.createShader = function (gl) {
   var shader = createShader(gl, vertSrc, fragSrc, null, [
@@ -36344,7 +36380,6 @@ function drawCore (params, transparent) {
         }
 
         shader.uniforms.height = this.contourLevels[i][j]
-
         vao.draw(gl.LINES, this._contourCounts[i][j], this._contourOffsets[i][j])
       }
     }
@@ -36367,6 +36402,10 @@ function drawCore (params, transparent) {
             shader.uniforms.contourColor = this.contourColor[j]
             shader.uniforms.contourTint = this.contourTint[j]
           }
+          if (!this._contourCounts[j][k]) {
+            continue
+          }
+
           shader.uniforms.height = this.contourLevels[j][k]
           vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
         }
@@ -36950,7 +36989,7 @@ proto.update = function (params) {
     }
     for (i = 0; i < 3; ++i) {
       levels[i] = levels[i].slice()
-      levels.sort(function (a, b) {
+      levels[i].sort(function (a, b) {
         return a - b
       })
     }
@@ -36983,14 +37022,15 @@ proto.update = function (params) {
     var contourVerts = []
 
     for (var dim = 0; dim < 3; ++dim) {
-      levels = this.contourLevels[dim]
+      var contourLevel = this.contourLevels[dim]
+
       var levelOffsets = []
       var levelCounts = []
 
       var parts = [0, 0, 0]
 
-      for (i = 0; i < levels.length; ++i) {
-        var graph = surfaceNets(this._field[dim], levels[i])
+      for (i = 0; i < contourLevel.length; ++i) {
+        var graph = surfaceNets(this._field[dim], contourLevel[i])
 
         levelOffsets.push((contourVerts.length / 5) | 0)
         vertexCount = 0
@@ -55446,7 +55486,6 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('standoff');
         coerce('startstandoff');
-
     }
 
     var hoverText = coerce('hovertext');
@@ -56278,7 +56317,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         var xUpdate, yUpdate;
                         if(xa) {
                             xUpdate = xa.p2r(xa.r2p(options.x) + dx);
-
                         } else {
                             var widthFraction = options._xsize / gs.w;
                             var xLeft = options.x + (options._xshift - options.xshift) / gs.w - widthFraction / 2;
@@ -56425,7 +56463,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
             end.x += backOffX;
             end.y += backOffY;
             el3.attr({x2: end.x, y2: end.y});
-
         }
 
         if(startBackOff) {
@@ -56439,7 +56476,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
             start.x -= startBackOffX;
             start.y -= startbackOffY;
             el3.attr({x1: start.x, y1: start.y});
-
         }
     }
     else if(el.nodeName === 'path') {
@@ -59597,7 +59633,9 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
         var trace = d[0].trace;
         var xcalendar = trace.xcalendar;
         var ycalendar = trace.ycalendar;
-        var selector = trace.type === 'bar' ? '.bartext' : '.point,.textpoint';
+        var selector = trace.type === 'bar' ? '.bartext' :
+            trace.type === 'waterfall' ? '.bartext,.line' :
+                '.point,.textpoint';
 
         traceGroups.selectAll(selector).each(function(d) {
             drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya, xcalendar, ycalendar);
@@ -60642,7 +60680,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
-},{"../../constants/alignment":471,"../../constants/interactions":474,"../../constants/xmlns_namespaces":476,"../../lib":495,"../../lib/svg_text_utils":518,"../../registry":592,"../../traces/scatter/make_bubble_size_func":631,"../../traces/scatter/subtypes":638,"../color":376,"../colorscale":388,"./symbol_defs":398,"d3":81,"fast-isnumeric":90,"tinycolor2":342}],398:[function(_dereq_,module,exports){
+},{"../../constants/alignment":471,"../../constants/interactions":474,"../../constants/xmlns_namespaces":476,"../../lib":495,"../../lib/svg_text_utils":518,"../../registry":592,"../../traces/scatter/make_bubble_size_func":633,"../../traces/scatter/subtypes":640,"../color":376,"../colorscale":388,"./symbol_defs":398,"d3":81,"fast-isnumeric":90,"tinycolor2":342}],398:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -61754,7 +61792,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":638,"../drawing":397,"d3":81,"fast-isnumeric":90}],405:[function(_dereq_,module,exports){
+},{"../../traces/scatter/subtypes":640,"../drawing":397,"d3":81,"fast-isnumeric":90}],405:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -62214,7 +62252,8 @@ var pointKeyMap = {
     locations: 'location',
     labels: 'label',
     values: 'value',
-    'marker.colors': 'color'
+    'marker.colors': 'color',
+    parents: 'parent'
 };
 
 function getPointKey(astr) {
@@ -62391,7 +62430,6 @@ exports.loneHover = function loneHover(hoverItem, opts) {
 };
 
 exports.multiHovers = function multiHovers(hoverItems, opts) {
-
     if(!Array.isArray(hoverItems)) {
         hoverItems = [hoverItems];
     }
@@ -62906,11 +62944,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var pt = hoverData[itemnum];
         var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
 
-        var ht = false;
-        if(pt.cd[pt.index] && pt.cd[pt.index].ht) ht = pt.cd[pt.index].ht;
-        hoverData[itemnum].hovertemplate = ht || pt.trace.hovertemplate || false;
-        hoverData[itemnum].eventData = [eventData];
+        if(pt.hovertemplate !== false) {
+            var ht = false;
+            if(pt.cd[pt.index] && pt.cd[pt.index].ht) {
+                ht = pt.cd[pt.index].ht;
+            }
+            pt.hovertemplate = ht || pt.trace.hovertemplate || false;
+        }
 
+        pt.eventData = [eventData];
         newhoverdata.push(eventData);
     }
 
@@ -63296,13 +63338,22 @@ function createHoverText(hoverData, opts, gd) {
             d.pos = hty;
             anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
             anchorEndOK = htx - dx / 2 - txTotalWidth >= 0;
+
             if((d.idealAlign === 'left' || !anchorStartOK) && anchorEndOK) {
                 htx -= dx / 2;
                 d.anchor = 'end';
             } else if(anchorStartOK) {
                 htx += dx / 2;
                 d.anchor = 'start';
-            } else d.anchor = 'middle';
+            } else {
+                d.anchor = 'middle';
+
+                var txHalfWidth = txTotalWidth / 2;
+                var overflowR = htx + txHalfWidth - outerWidth;
+                var overflowL = htx - txHalfWidth;
+                if(overflowR > 0) htx -= overflowR;
+                if(overflowL < 0) htx += -overflowL;
+            }
         }
 
         tx.attr('text-anchor', d.anchor);
@@ -64808,7 +64859,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
 
 function imageDefaults(imageIn, imageOut, fullLayout) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(imageIn, imageOut, attributes, attr, dflt);
     }
@@ -64929,7 +64979,6 @@ module.exports = function draw(gd) {
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
         var imagePromise = new Promise(function(resolve) {
-
             var img = new Image();
             this.img = img;
 
@@ -65898,6 +65947,8 @@ function computeLegendDimensions(gd, groups, traces) {
 
     var extraWidth = 0;
 
+    var traceGap = 5;
+
     opts._width = 0;
     opts._height = 0;
 
@@ -65931,23 +65982,53 @@ function computeLegendDimensions(gd, groups, traces) {
         extraWidth = 40;
     }
     else if(isGrouped) {
-        var groupXOffsets = [opts._width];
+        var maxHeight = 0;
+        var maxWidth = 0;
         var groupData = groups.data();
 
-        for(var i = 0, n = groupData.length; i < n; i++) {
-            var textWidths = groupData[i].map(function(legendItemArray) {
+        var maxItems = 0;
+
+        var i;
+        for(i = 0; i < groupData.length; i++) {
+            var group = groupData[i];
+            var groupWidths = group.map(function(legendItemArray) {
                 return legendItemArray[0].width;
             });
 
-            var groupWidth = 40 + Math.max.apply(null, textWidths);
+            var groupWidth = Lib.aggNums(Math.max, null, groupWidths);
+            var groupHeight = group.reduce(function(a, b) {
+                return a + b[0].height;
+            }, 0);
 
-            opts._width += opts.tracegroupgap + groupWidth;
+            maxWidth = Math.max(maxWidth, groupWidth);
+            maxHeight = Math.max(maxHeight, groupHeight);
+            maxItems = Math.max(maxItems, group.length);
+        }
 
+        maxWidth += traceGap;
+        maxWidth += 40;
+
+        var groupXOffsets = [opts._width];
+        var groupYOffsets = [];
+        var rowNum = 0;
+        for(i = 0; i < groupData.length; i++) {
+            if(fullLayout._size.w < (borderwidth + opts._width + traceGap + maxWidth)) {
+                groupXOffsets[groupXOffsets.length - 1] = groupXOffsets[0];
+                opts._width = maxWidth;
+                rowNum++;
+            } else {
+                opts._width += maxWidth + borderwidth;
+            }
+
+            var rowYOffset = (rowNum * maxHeight);
+            rowYOffset += rowNum > 0 ? opts.tracegroupgap : 0;
+
+            groupYOffsets.push(rowYOffset);
             groupXOffsets.push(opts._width);
         }
 
         groups.each(function(d, i) {
-            Drawing.setTranslate(this, groupXOffsets[i], 0);
+            Drawing.setTranslate(this, groupXOffsets[i], groupYOffsets[i]);
         });
 
         groups.each(function() {
@@ -65965,11 +66046,13 @@ function computeLegendDimensions(gd, groups, traces) {
 
                 groupHeight += textHeight;
             });
-
-            opts._height = Math.max(opts._height, groupHeight);
         });
 
-        opts._height += 10 + borderwidth * 2;
+        var maxYLegend = groupYOffsets[groupYOffsets.length - 1] + maxHeight;
+        opts._height = 10 + (borderwidth * 2) + maxYLegend;
+
+        var maxOffset = Math.max.apply(null, groupXOffsets);
+        opts._width = maxOffset + maxWidth + 40;
         opts._width += borderwidth * 2;
     }
     else {
@@ -65978,7 +66061,6 @@ function computeLegendDimensions(gd, groups, traces) {
         var maxTraceWidth = 0;
         var offsetX = 0;
         var fullTracesWidth = 0;
-        var traceGap = opts.tracegroupgap || 5;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
@@ -66539,6 +66621,7 @@ module.exports = function style(s, gd) {
           .enter().append('g')
             .classed('legendpoints', true);
     })
+    .each(styleWaterfalls)
     .each(styleBars)
     .each(styleBoxes)
     .each(stylePies)
@@ -66623,7 +66706,6 @@ module.exports = function style(s, gd) {
                     trace.colorscale, 'stroke');
             }
         }
-
     }
 
     function stylePoints(d) {
@@ -66717,6 +66799,38 @@ module.exports = function style(s, gd) {
                 .append('text').attr('transform', 'translate(20,0)');
         txt.exit().remove();
         txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
+    }
+
+    function styleWaterfalls(d) {
+        var trace = d[0].trace;
+
+        var ptsData = [];
+        if(trace.type === 'waterfall' && trace.visible) {
+            ptsData = d[0].hasTotals ?
+                [['increasing', 'M-6,-6V6H0Z'], ['totals', 'M6,6H0L-6,-6H-0Z'], ['decreasing', 'M6,6V-6H0Z']] :
+                [['increasing', 'M-6,-6V6H6Z'], ['decreasing', 'M6,6V-6H-6Z']];
+        }
+
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendwaterfall')
+            .data(ptsData);
+        pts.enter().append('path').classed('legendwaterfall', true)
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
+
+        pts.each(function(dd) {
+            var pt = d3.select(this);
+            var cont = trace[dd[0]].marker;
+
+            pt.attr('d', dd[1])
+                .style('stroke-width', cont.line.width + 'px')
+                .call(Color.fill, cont.color);
+
+            if(cont.line.width) {
+                pt.call(Color.stroke, cont.line.color);
+            }
+        });
     }
 
     function styleBars(d) {
@@ -66844,7 +66958,7 @@ module.exports = function style(s, gd) {
     }
 };
 
-},{"../../lib":495,"../../registry":592,"../../traces/pie/style_one":612,"../../traces/scatter/subtypes":638,"../color":376,"../drawing":397,"d3":81}],434:[function(_dereq_,module,exports){
+},{"../../lib":495,"../../registry":592,"../../traces/pie/style_one":614,"../../traces/scatter/subtypes":640,"../color":376,"../drawing":397,"d3":81}],434:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -67735,7 +67849,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axis_ids":544,"../../registry":592,"../../traces/scatter/subtypes":638,"./buttons":434,"./modebar":437}],437:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axis_ids":544,"../../registry":592,"../../traces/scatter/subtypes":640,"./buttons":434,"./modebar":437}],437:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -68008,7 +68122,6 @@ proto.updateActiveButton = function(buttonClicked) {
 
             button3.classed('active', val === thisval);
         }
-
     });
 };
 
@@ -68430,7 +68543,6 @@ module.exports = function draw(gd) {
 
         reposition(gd, buttons, selectorLayout, axisLayout._name, selector);
     });
-
 };
 
 function makeSelectorData(gd) {
@@ -69192,7 +69304,6 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
 }
 
 function setDataRange(rangeSlider, gd, axisOpts, opts) {
-
     function clamp(v) {
         return axisOpts.l2r(Lib.constrain(v, opts._rl[0], opts._rl[1]));
     }
@@ -69799,7 +69910,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../lib/extend":488,"../../plot_api/plot_template":531,"../../traces/scatter/attributes":614,"../annotations/attributes":361,"../drawing/attributes":396}],453:[function(_dereq_,module,exports){
+},{"../../lib/extend":488,"../../plot_api/plot_template":531,"../../traces/scatter/attributes":616,"../annotations/attributes":361,"../drawing/attributes":396}],453:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -71254,7 +71365,6 @@ module.exports = function slidersDefaults(layoutIn, layoutOut) {
 };
 
 function sliderDefaults(sliderIn, sliderOut, layoutOut) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(sliderIn, sliderOut, attributes, attr, dflt);
     }
@@ -71622,7 +71732,6 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
 
     sliderGroup.call(setGripPosition, sliderOpts, false);
     sliderGroup.call(drawCurrentValue, sliderOpts);
-
 }
 
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
@@ -71754,7 +71863,6 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
                 dims.currentValueTotalHeight
         );
     });
-
 }
 
 function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransition) {
@@ -71885,7 +71993,6 @@ function drawTicks(sliderGroup, sliderOpts) {
             (isMajor ? constants.tickOffset : constants.minorTickOffset) + dims.currentValueTotalHeight
         );
     });
-
 }
 
 function computeLabelSteps(sliderOpts) {
@@ -72540,7 +72647,6 @@ module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
 };
 
 function menuDefaults(menuIn, menuOut, layoutOut) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
     }
@@ -72728,7 +72834,6 @@ module.exports = function draw(gd) {
         } else {
             drawButtons(gd, gHeader, null, null, menuOpts);
         }
-
     });
 };
 
@@ -73957,7 +74062,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.45.3';
+exports.version = '1.46.0';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -74025,7 +74130,7 @@ exports.Queue = _dereq_('./lib/queue');
 // export d3 used in the bundle
 exports.d3 = _dereq_('d3');
 
-},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":369,"./components/annotations3d":374,"./components/colorscale":388,"./components/errorbars":403,"./components/fx":415,"./components/grid":419,"./components/images":424,"./components/legend":432,"./components/rangeselector":443,"./components/rangeslider":450,"./components/shapes":458,"./components/sliders":463,"./components/updatemenus":469,"./fonts/mathjax_config":478,"./lib/queue":509,"./locale-en":522,"./locale-en-us":521,"./plot_api":526,"./plot_api/plot_schema":530,"./plots/plots":584,"./registry":592,"./snapshot":597,"./traces/scatter":626,"d3":81,"es6-promise":88}],478:[function(_dereq_,module,exports){
+},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":369,"./components/annotations3d":374,"./components/colorscale":388,"./components/errorbars":403,"./components/fx":415,"./components/grid":419,"./components/images":424,"./components/legend":432,"./components/rangeselector":443,"./components/rangeslider":450,"./components/shapes":458,"./components/sliders":463,"./components/updatemenus":469,"./fonts/mathjax_config":478,"./lib/queue":509,"./locale-en":522,"./locale-en-us":521,"./plot_api":526,"./plot_api/plot_schema":530,"./plots/plots":584,"./registry":592,"./snapshot":597,"./traces/scatter":628,"d3":81,"es6-promise":88}],478:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -74152,7 +74257,7 @@ function rad2deg(rad) { return rad / PI * 180; }
  * @return {boolean}
  */
 function isFullCircle(aBnds) {
-    return Math.abs(aBnds[1] - aBnds[0]) > twoPI - 1e-15;
+    return Math.abs(aBnds[1] - aBnds[0]) > twoPI - 1e-14;
 }
 
 /**
@@ -74821,7 +74926,6 @@ exports.valObjectMeta = {
         // either be a matching 1D array or an array of such matching 1D arrays
         
         coerceFunction: function(v, propOut, dflt, opts) {
-
             // simplified coerce function just for array items
             function coercePart(v, opts, dflt) {
                 var out;
@@ -75455,7 +75559,6 @@ exports.cleanDate = function(v, dflt, calendar) {
  */
 var fracMatch = /%\d?f/g;
 function modDateFormat(fmt, x, formatter, calendar) {
-
     fmt = fmt.replace(fracMatch, function(match) {
         var digits = Math.min(+(match.charAt(1)) || 6, 6);
         var fracSecs = ((x / 1000 % 1) + 2)
@@ -75694,7 +75797,6 @@ var EventEmitter = _dereq_('events').EventEmitter;
 var Events = {
 
     init: function(plotObj) {
-
         /*
          * If we have already instantiated an emitter for this plot
          * return early.
@@ -75920,7 +76022,6 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     // TODO does this do the right thing for typed arrays?
 
     if(length === 2 && isArray(target) && isArray(inputs[1]) && target.length === 0) {
-
         allPrimitives = primitivesLoopSplice(inputs[1], target);
 
         if(allPrimitives) {
@@ -77317,7 +77418,6 @@ lib.objectFromPath = function(path, value) {
 
             tmpObj = tmpObj[el];
         } else {
-
             if(i === keys.length - 1) {
                 tmpObj[key] = value;
             } else {
@@ -77621,7 +77721,6 @@ lib.pseudoRandom = function() {
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
 module.exports = function isPlainObject(obj) {
-
     // We need to be a little less strict in the `imagetest` container because
     // of how async image requests are handled.
     //
@@ -79161,7 +79260,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             continue;
         }
         if(k.charAt(0) === '_' || typeof fromVal === 'function') {
-
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
             if(k in toContainer) continue;
@@ -79169,7 +79267,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             toContainer[k] = fromVal;
         }
         else if(isArrayOrTypedArray(fromVal) && isArrayOrTypedArray(toVal) && isPlainObject(fromVal[0])) {
-
             // filter out data_array items that can contain user objects
             // most of the time the toVal === fromVal check will catch these early
             // but if the user makes new ones we also don't want to recurse in.
@@ -79184,7 +79281,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             }
         }
         else if(isPlainObject(fromVal) && isPlainObject(toVal)) {
-
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toVal, fromVal);
 
@@ -79756,7 +79852,6 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
-
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
@@ -80819,10 +80914,11 @@ var Registry = _dereq_('../registry');
 var Lib = _dereq_('../lib');
 var Plots = _dereq_('../plots/plots');
 var AxisIds = _dereq_('../plots/cartesian/axis_ids');
-var cleanId = AxisIds.cleanId;
-var getFromTrace = AxisIds.getFromTrace;
 var Color = _dereq_('../components/color');
 
+var cleanId = AxisIds.cleanId;
+var getFromTrace = AxisIds.getFromTrace;
+var traceIs = Registry.traceIs;
 
 // clear the promise queue if one of them got rejected
 exports.clearPromiseQueue = function(gd) {
@@ -81039,7 +81135,6 @@ function cleanAxRef(container, attr) {
  */
 function cleanTitle(titleContainer) {
     if(titleContainer) {
-
         // title -> title.text
         // (although title used to be a string attribute,
         // numbers are accepted as well)
@@ -81060,7 +81155,6 @@ function cleanTitle(titleContainer) {
         var newAttrSet = titleContainer.title && titleContainer.title[newAttrName];
 
         if(oldAttrSet && !newAttrSet) {
-
             // Ensure title object exists
             if(!titleContainer.title) {
                 titleContainer.title = {};
@@ -81093,7 +81187,7 @@ exports.cleanData = function(data) {
         // error_y.opacity is obsolete - merge into color
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Color.defaults;
-            var yeColor = trace.error_y.color || (Registry.traceIs(trace, 'bar') ?
+            var yeColor = trace.error_y.color || (traceIs(trace, 'bar') ?
                 Color.defaultLine :
                 dc[tracei % dc.length]);
             trace.error_y.color = Color.addOpacity(
@@ -81105,8 +81199,8 @@ exports.cleanData = function(data) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir === 'h' && (Registry.traceIs(trace, 'bar') ||
-                     trace.type.substr(0, 9) === 'histogram')) {
+            if(trace.bardir === 'h' && (traceIs(trace, 'bar') ||
+                trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
                 exports.swapXYData(trace);
             }
@@ -81135,11 +81229,11 @@ exports.cleanData = function(data) {
         if(trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(Registry.traceIs(trace, 'gl3d') && trace.scene) {
+        if(traceIs(trace, 'gl3d') && trace.scene) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!Registry.traceIs(trace, 'pie') && !Registry.traceIs(trace, 'bar')) {
+        if(!traceIs(trace, 'pie') && !traceIs(trace, 'bar') && trace.type !== 'waterfall') {
             if(Array.isArray(trace.textposition)) {
                 for(i = 0; i < trace.textposition.length; i++) {
                     trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
@@ -81415,7 +81509,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
 
     // delete item
     if(pLastIsNumber && newVal === null) {
-
         // Clear item in array container when new value is null
         var contPath = parts.slice(0, pLength - 1).join('.');
         var cont = Lib.nestedProperty(obj, contPath).get();
@@ -81426,7 +81519,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
     // create item
     else if(pLastIsNumber && np.get() === undefined) {
-
         // When adding a new item, make sure undo command will remove it
         if(np.get() === undefined) undoit[np.astr] = null;
 
@@ -81434,7 +81526,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
     // update item
     else {
-
         // If the last part of attribute string isn't a number,
         // np.set is all we need.
         np.set(newVal);
@@ -82504,7 +82595,6 @@ function assertIndexArray(gd, indices, arrayName) {
  * @param newIndices
  */
 function checkMoveTracesArgs(gd, currentIndices, newIndices) {
-
     // check that gd has attribute 'data' and 'data' is array
     if(!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array.');
@@ -82530,7 +82620,6 @@ function checkMoveTracesArgs(gd, currentIndices, newIndices) {
     if(typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
         throw new Error('current and new indices must be of equal length.');
     }
-
 }
 /**
  * A private function to reduce the type checking clutter in addTraces.
@@ -82587,7 +82676,6 @@ function checkAddTracesArgs(gd, traces, newIndices) {
  * @param maxPoints
  */
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
-
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
 
     if(!Array.isArray(gd.data)) {
@@ -82604,7 +82692,6 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
     assertIndexArray(gd, indices, 'indices');
 
     for(var key in update) {
-
         /*
          * Verify that the attribute to be updated contains as many trace updates
          * as indices. Failure must result in throw and no-op
@@ -82635,7 +82722,6 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  * @return {Object[]}
  */
 function getExtendProperties(gd, update, indices, maxPoints) {
-
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
     var updateProps = [];
     var trace, target, prop, insert, maxp;
@@ -82648,9 +82734,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
 
     // loop through all update keys and traces and harvest validated data.
     for(var key in update) {
-
         for(var j = 0; j < indices.length; j++) {
-
             /*
              * Choose the trace indexed by the indices map argument and get the prop setter-getter
              * instance that references the key and value for this particular trace.
@@ -82937,12 +83021,10 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
     }
 
     try {
-
         // this is redundant, but necessary to not catch later possible errors!
         checkMoveTracesArgs(gd, currentIndices, newIndices);
     }
     catch(error) {
-
         // something went wrong, reset gd to be safe and rethrow error
         gd.data.splice(gd.data.length - traces.length, traces.length);
         throw error;
@@ -83067,7 +83149,6 @@ exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     // get the traces that aren't being moved around
     for(i = 0; i < gd.data.length; i++) {
-
         // if index isn't in currentIndices, include it in ignored!
         if(currentIndices.indexOf(i) === -1) {
             newData.push(gd.data[i]);
@@ -84298,6 +84379,8 @@ var traceUIControlPatterns = [
     // "visible" includes trace.transforms[i].styles[j].value.visible
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
+    {pattern: /^node\.(x|y)/}, // for Sankey nodes
+    {pattern: /^level$/}, // for Sunburst traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -84516,7 +84599,6 @@ exports.react = function(gd, data, layout, config) {
         plotDone = exports.newPlot(gd, data, layout, config);
     }
     else {
-
         if(Lib.isPlainObject(data)) {
             var obj = data;
             data = obj.data;
@@ -84646,7 +84728,6 @@ exports.react = function(gd, data, layout, config) {
 
         return gd;
     });
-
 };
 
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
@@ -84868,7 +84949,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         }
         else if(canBeDataArray) {
             if(wasArray && nowArray) {
-
                 // don't try to diff two data arrays. If immutable we know the data changed,
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
                 if(immutable) {
@@ -85163,7 +85243,6 @@ exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     if(newFrame.onComplete) {
                         newFrame.onComplete();
                     }
-
                 });
 
                 gd.emit('plotly_animatingframe', {
@@ -85427,7 +85506,6 @@ exports.addFrames = function(gd, frameList, indices) {
         if(typeof frame.name === 'number') {
             Lib.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
                 'implicitly cast to strings');
-
         }
 
         if(!frame.name) {
@@ -85572,11 +85650,17 @@ function makePlotFramework(gd) {
         .classed('gl-container', true);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
+    fullLayout._paperdiv.select('.modebar-container').remove();
 
     fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
         .classed('main-svg', true);
 
     fullLayout._toppaper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
+    fullLayout._modebardiv = fullLayout._paperdiv.append('div');
+
+    fullLayout._hoverpaper = fullLayout._paperdiv.append('svg')
         .classed('main-svg', true);
 
     if(!fullLayout._uid) {
@@ -85638,6 +85722,9 @@ function makePlotFramework(gd) {
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
+    // single sunbursrt layer for the whole plot
+    fullLayout._sunburstlayer = fullLayout._paper.append('g').classed('sunburstlayer', true);
+
     // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
 
@@ -85655,11 +85742,10 @@ function makePlotFramework(gd) {
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
-    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+    fullLayout._hoverlayer = fullLayout._hoverpaper.append('g').classed('hoverlayer', true);
 
     // Make the modebar container
-    fullLayout._modebardiv = fullLayout._paperdiv.selectAll('.modebar-container').data([0]);
-    fullLayout._modebardiv.enter().append('div')
+    fullLayout._modebardiv
         .classed('modebar-container', true)
         .style('position', 'absolute')
         .style('top', '0px')
@@ -86552,7 +86638,6 @@ function formatAttributes(attrs) {
 }
 
 function mergeValTypeAndRole(attrs) {
-
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
@@ -86585,7 +86670,6 @@ function mergeValTypeAndRole(attrs) {
 }
 
 function formatArrayContainers(attrs) {
-
     function callback(attr, attrName, attrs) {
         if(!attr) return;
 
@@ -92564,14 +92648,16 @@ function hasBarsOrFill(gd, ax) {
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
 
-        if(trace.visible === true &&
-            (trace.xaxis + trace.yaxis) === subplot &&
-            (
-                Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter] ||
-                trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter
-            )
-        ) {
-            return true;
+        if(trace.visible === true && (trace.xaxis + trace.yaxis) === subplot) {
+            if(
+                (Registry.traceIs(trace, 'bar') || trace.type === 'waterfall') &&
+                trace.orientation === {x: 'h', y: 'v'}[axLetter]
+            ) return true;
+
+            if(
+                trace.fill &&
+                trace.fill.charAt(trace.fill.length - 1) === axLetter
+            ) return true;
         }
     }
     return false;
@@ -93345,7 +93431,7 @@ module.exports = {
     traceLayerClasses: [
         'heatmaplayer',
         'contourcarpetlayer', 'contourlayer',
-        'barlayer',
+        'waterfalllayer', 'barlayer',
         'carpetlayer',
         'violinlayer',
         'boxlayer',
@@ -94443,7 +94529,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // doubleClickConfig === 'reset' below), we reset.
         // If they are *all* at their initial ranges, then we autosize.
         if(doubleClickConfig === 'reset+autosize') {
-
             doubleClickConfig = 'autosize';
 
             for(i = 0; i < axList.length; i++) {
@@ -95484,7 +95569,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         );
 
         // layers that allow `cliponaxis: false`
-        if(className !== 'scatterlayer' && className !== 'barlayer') {
+        if(className !== 'scatterlayer' && className !== 'barlayer' && className !== 'waterfalllayer') {
             Drawing.setClipUrl(sel, plotinfo.layerClipId, gd);
         }
     });
@@ -95500,7 +95585,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     if(!gd._context.staticPlot) {
         if(plotinfo._hasClipOnAxisFalse) {
             plotinfo.clipOnAxisFalseTraces = plotinfo.plot
-                .selectAll('.scatterlayer, .barlayer')
+                .selectAll('.scatterlayer, .barlayer, .waterfalllayer')
                 .selectAll('.trace');
         }
 
@@ -97094,7 +97179,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
                     'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
-
             }
             else if(direction === 'v') {
                 // vertical motion: make a horizontal box
@@ -97512,7 +97596,6 @@ function extractClickedPtInfo(hoverData, searchTraces) {
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
         if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
-
             // Special case for box (and violin)
             if(hoverDatum.hoverOnBox === true) {
                 break;
@@ -98958,8 +99041,6 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
             // table should have been updated and check is already attached,
             // so there's nothing to be done:
             return ret;
-
-
         }
     }
 
@@ -100332,12 +100413,10 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
 
     if(dragmode !== false) {
         if(!dragmode) {
-
             dragmode = 'orbit';
 
             if(sceneLayoutIn.camera &&
                 sceneLayoutIn.camera.up) {
-
                 var x = sceneLayoutIn.camera.up.x;
                 var y = sceneLayoutIn.camera.up.y;
                 var z = sceneLayoutIn.camera.up.z;
@@ -100892,8 +100971,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
-
+function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
     var glplotOptions = {
         canvas: canvas,
         gl: gl,
@@ -100904,7 +100982,7 @@ function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
         snapToData: true,
         autoScale: true,
         autoBounds: false,
-        camera: camera,
+        cameraObject: cameraObject,
         pixelRatio: pixelRatio
     };
 
@@ -100938,9 +101016,10 @@ function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
     return true;
 }
 
-function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
+function initializeGLPlot(scene, pixelRatio, canvas, gl) {
+    scene.initializeGLCamera();
 
-    var success = tryCreatePlot(scene, camera, pixelRatio, canvas, gl);
+    var success = tryCreatePlot(scene, scene.camera, pixelRatio, canvas, gl);
     /*
     * createPlot will throw when webgl is not enabled in the client.
     * Lets return an instance of the module with all functions noop'd.
@@ -100981,8 +101060,6 @@ function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
         }, false);
     }
 
-    if(!scene.camera) scene.initializeGLCamera();
-
     scene.glplot.camera = scene.camera;
 
     scene.glplot.oncontextloss = function() {
@@ -101000,7 +101077,6 @@ function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
 }
 
 function Scene(options, fullLayout) {
-
     // create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
@@ -101051,15 +101127,12 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    var camera = fullLayout.scene.camera;
-
-    initializeGLPlot(this, camera, this.pixelRatio);
+    initializeGLPlot(this, this.pixelRatio);
 }
 
 var proto = Scene.prototype;
 
 proto.initializeGLCamera = function() {
-
     var cameraData = this.fullSceneLayout.camera;
     var isOrtho = (cameraData.projection.type === 'orthographic');
 
@@ -101373,32 +101446,25 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var aspectRatio;
 
     if(fullSceneLayout.aspectmode === 'auto') {
-
         if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
-
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
              */
 
             aspectRatio = axesScaleRatio;
         } else {
-
             /*
              * USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
              */
             aspectRatio = [1, 1, 1];
         }
-
     } else if(fullSceneLayout.aspectmode === 'cube') {
         aspectRatio = [1, 1, 1];
-
     } else if(fullSceneLayout.aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
-
     } else if(fullSceneLayout.aspectmode === 'manual') {
         var userRatio = fullSceneLayout.aspectratio;
         aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
-
     } else {
         throw new Error('scene.js aspectRatio was not one of the enumerated types');
     }
@@ -101496,7 +101562,7 @@ proto.setCamera = function setCamera(cameraData) {
 
         this.glplot.dispose();
 
-        initializeGLPlot(this, cameraData, pixelRatio);
+        initializeGLPlot(this, pixelRatio);
         this.glplot.camera._ortho = newOrtho;
     }
 };
@@ -101530,7 +101596,6 @@ proto.saveCamera = function saveCamera(layout) {
         if(!cameraDataLastSave.projection || (
             cameraData.projection &&
             cameraData.projection.type !== cameraDataLastSave.projection.type)) {
-
             hasChanged = true;
         }
     }
@@ -101551,13 +101616,11 @@ proto.saveCamera = function saveCamera(layout) {
 
 proto.updateFx = function(dragmode, hovermode) {
     var camera = this.camera;
-
     if(camera) {
         // rotate and orbital are synonymous
         if(dragmode === 'orbit') {
             camera.mode = 'orbit';
             camera.keyBindingMode = 'rotate';
-
         } else if(dragmode === 'turntable') {
             camera.up = [0, 0, 1];
             camera.mode = 'turntable';
@@ -101573,16 +101636,16 @@ proto.updateFx = function(dragmode, hovermode) {
             var y = fullCamera.up.y;
             var z = fullCamera.up.z;
             // only push `up` back to (full)layout if it's going to change
-            if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) return;
-
-            var attr = this.id + '.camera.up';
-            var zUp = {x: 0, y: 0, z: 1};
-            var edits = {};
-            edits[attr] = zUp;
-            var layout = gd.layout;
-            Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
-            fullCamera.up = zUp;
-            Lib.nestedProperty(layout, attr).set(zUp);
+            if(z / Math.sqrt(x * x + y * y + z * z) < 0.999) {
+                var attr = this.id + '.camera.up';
+                var zUp = {x: 0, y: 0, z: 1};
+                var edits = {};
+                edits[attr] = zUp;
+                var layout = gd.layout;
+                Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
+                fullCamera.up = zUp;
+                Lib.nestedProperty(layout, attr).set(zUp);
+            }
         } else {
             // none rotation modes [pan or zoom]
             camera.keyBindingMode = dragmode;
@@ -101657,7 +101720,6 @@ proto.setConvert = function() {
 };
 
 proto.make4thDimension = function() {
-
     var _this = this;
     var gd = _this.graphDiv;
     var fullLayout = gd._fullLayout;
@@ -102132,7 +102194,6 @@ plots.resize = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
     return new Promise(function(resolve, reject) {
-
         function isHidden(gd) {
             var display = window.getComputedStyle(gd).display;
             return !display || display === 'none';
@@ -102395,7 +102456,6 @@ plots.supplyDefaults = function(gd, opts) {
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
     if(oldFullLayout._initialAutoSizeIsDone) {
-
         // coerce the updated layout while preserving width and height
         var oldWidth = oldFullLayout.width;
         var oldHeight = oldFullLayout.height;
@@ -102407,7 +102467,6 @@ plots.supplyDefaults = function(gd, opts) {
         plots.sanitizeMargins(newFullLayout);
     }
     else {
-
         // coerce the updated layout and autosize if needed
         plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout, formatObj);
 
@@ -103903,7 +103962,6 @@ plots.doAutoMargin = function(gd) {
     var pushMarginIds = fullLayout._pushmarginIds;
 
     if(fullLayout.margin.autoexpand !== false) {
-
         for(var k in pushMargin) {
             if(!pushMarginIds[k]) delete pushMargin[k];
         }
@@ -103920,7 +103978,6 @@ plots.doAutoMargin = function(gd) {
         // (and t and b) to find the required margins
 
         for(var k1 in pushMargin) {
-
             var pushleft = pushMargin[k1].l || {};
             var pushbottom = pushMargin[k1].b || {};
             var fl = pushleft.val;
@@ -104779,8 +104836,9 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies (and for legend)
+    // for sharing colors across pies / sunbursts (and for legend)
     fullLayout._piecolormap = {};
+    fullLayout._sunburstcolormap = {};
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
@@ -104858,7 +104916,6 @@ plots.doCalcdata = function(gd, traces) {
         var cd = [];
 
         if(trace.visible === true) {
-
             // clear existing ref in case it got relinked
             delete trace._indexToPoints;
             // keep ref of index-to-points map object of the *last* enabled transform,
@@ -105055,7 +105112,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":488,"../../../traces/scatter/attributes":614}],586:[function(_dereq_,module,exports){
+},{"../../../lib/extend":488,"../../../traces/scatter/attributes":616}],586:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -107355,7 +107412,6 @@ function keyIsAxis(keyName) {
 
 
 module.exports = function clonePlot(graphObj, options) {
-
     // Polar plot compatibility
     if(graphObj.framework && graphObj.framework.isPolar) {
         graphObj = graphObj.framework.getConfig();
@@ -107814,7 +107870,6 @@ var svgToImg = _dereq_('./svgtoimg');
  * @param opts.format 'jpeg' | 'png' | 'webp' | 'svg'
  */
 function toImage(gd, opts) {
-
     // first clone the GD so we can operate in a clean environment
     var ev = new EventEmitter();
 
@@ -107847,7 +107902,6 @@ function toImage(gd, opts) {
             ev.clean = function() {
                 if(clonedGd) document.body.removeChild(clonedGd);
             };
-
         }, delay);
     }
 
@@ -108212,7 +108266,7 @@ attrs.transforms = undefined;
 
 module.exports = attrs;
 
-},{"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plots/attributes":538,"../mesh3d/attributes":606}],602:[function(_dereq_,module,exports){
+},{"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plots/attributes":538,"../mesh3d/attributes":608}],602:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -108509,6 +108563,247 @@ module.exports = {
 
 'use strict';
 
+var maxRowLength = _dereq_('../../lib').maxRowLength;
+
+/* Return a list of empty points in 2D array z
+ * each empty point z[i][j] gives an array [i, j, neighborCount]
+ * neighborCount is the count of 4 nearest neighbors that DO exist
+ * this is to give us an order of points to evaluate for interpolation.
+ * if no neighbors exist, we iteratively look for neighbors that HAVE
+ * neighbors, and add a fractional neighborCount
+ */
+module.exports = function findEmpties(z) {
+    var empties = [];
+    var neighborHash = {};
+    var noNeighborList = [];
+    var nextRow = z[0];
+    var row = [];
+    var blank = [0, 0, 0];
+    var rowLength = maxRowLength(z);
+    var prevRow;
+    var i;
+    var j;
+    var thisPt;
+    var p;
+    var neighborCount;
+    var newNeighborHash;
+    var foundNewNeighbors;
+
+    for(i = 0; i < z.length; i++) {
+        prevRow = row;
+        row = nextRow;
+        nextRow = z[i + 1] || [];
+        for(j = 0; j < rowLength; j++) {
+            if(row[j] === undefined) {
+                neighborCount = (row[j - 1] !== undefined ? 1 : 0) +
+                    (row[j + 1] !== undefined ? 1 : 0) +
+                    (prevRow[j] !== undefined ? 1 : 0) +
+                    (nextRow[j] !== undefined ? 1 : 0);
+
+                if(neighborCount) {
+                    // for this purpose, don't count off-the-edge points
+                    // as undefined neighbors
+                    if(i === 0) neighborCount++;
+                    if(j === 0) neighborCount++;
+                    if(i === z.length - 1) neighborCount++;
+                    if(j === row.length - 1) neighborCount++;
+
+                    // if all neighbors that could exist do, we don't
+                    // need this for finding farther neighbors
+                    if(neighborCount < 4) {
+                        neighborHash[[i, j]] = [i, j, neighborCount];
+                    }
+
+                    empties.push([i, j, neighborCount]);
+                }
+                else noNeighborList.push([i, j]);
+            }
+        }
+    }
+
+    while(noNeighborList.length) {
+        newNeighborHash = {};
+        foundNewNeighbors = false;
+
+        // look for cells that now have neighbors but didn't before
+        for(p = noNeighborList.length - 1; p >= 0; p--) {
+            thisPt = noNeighborList[p];
+            i = thisPt[0];
+            j = thisPt[1];
+
+            neighborCount = ((neighborHash[[i - 1, j]] || blank)[2] +
+                (neighborHash[[i + 1, j]] || blank)[2] +
+                (neighborHash[[i, j - 1]] || blank)[2] +
+                (neighborHash[[i, j + 1]] || blank)[2]) / 20;
+
+            if(neighborCount) {
+                newNeighborHash[thisPt] = [i, j, neighborCount];
+                noNeighborList.splice(p, 1);
+                foundNewNeighbors = true;
+            }
+        }
+
+        if(!foundNewNeighbors) {
+            throw 'findEmpties iterated with no new neighbors';
+        }
+
+        // put these new cells into the main neighbor list
+        for(thisPt in newNeighborHash) {
+            neighborHash[thisPt] = newNeighborHash[thisPt];
+            empties.push(newNeighborHash[thisPt]);
+        }
+    }
+
+    // sort the full list in descending order of neighbor count
+    return empties.sort(function(a, b) { return b[2] - a[2]; });
+};
+
+},{"../../lib":495}],607:[function(_dereq_,module,exports){
+/**
+* Copyright 2012-2019, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+var Lib = _dereq_('../../lib');
+
+var INTERPTHRESHOLD = 1e-2;
+var NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+function correctionOvershoot(maxFractionalChange) {
+    // start with less overshoot, until we know it's converging,
+    // then ramp up the overshoot for faster convergence
+    return 0.5 - 0.25 * Math.min(1, maxFractionalChange * 0.5);
+}
+
+/*
+ * interp2d: Fill in missing data from a 2D array using an iterative
+ *   poisson equation solver with zero-derivative BC at edges.
+ *   Amazingly, this just amounts to repeatedly averaging all the existing
+ *   nearest neighbors, at least if we don't take x/y scaling into account,
+ *   which is the right approach here where x and y may not even have the
+ *   same units.
+ *
+ * @param {array of arrays} z
+ *      The 2D array to fill in. Will be mutated here. Assumed to already be
+ *      cleaned, so all entries are numbers except gaps, which are `undefined`.
+ * @param {array of arrays} emptyPoints
+ *      Each entry [i, j, neighborCount] for empty points z[i][j] and the number
+ *      of neighbors that are *not* missing. Assumed to be sorted from most to
+ *      least neighbors, as produced by heatmap/find_empties.
+ */
+module.exports = function interp2d(z, emptyPoints) {
+    var maxFractionalChange = 1;
+    var i;
+
+    // one pass to fill in a starting value for all the empties
+    iterateInterp2d(z, emptyPoints);
+
+    // we're don't need to iterate lone empties - remove them
+    for(i = 0; i < emptyPoints.length; i++) {
+        if(emptyPoints[i][2] < 4) break;
+    }
+    // but don't remove these points from the original array,
+    // we'll use them for masking, so make a copy.
+    emptyPoints = emptyPoints.slice(i);
+
+    for(i = 0; i < 100 && maxFractionalChange > INTERPTHRESHOLD; i++) {
+        maxFractionalChange = iterateInterp2d(z, emptyPoints,
+            correctionOvershoot(maxFractionalChange));
+    }
+    if(maxFractionalChange > INTERPTHRESHOLD) {
+        Lib.log('interp2d didn\'t converge quickly', maxFractionalChange);
+    }
+
+    return z;
+};
+
+function iterateInterp2d(z, emptyPoints, overshoot) {
+    var maxFractionalChange = 0;
+    var thisPt;
+    var i;
+    var j;
+    var p;
+    var q;
+    var neighborShift;
+    var neighborRow;
+    var neighborVal;
+    var neighborCount;
+    var neighborSum;
+    var initialVal;
+    var minNeighbor;
+    var maxNeighbor;
+
+    for(p = 0; p < emptyPoints.length; p++) {
+        thisPt = emptyPoints[p];
+        i = thisPt[0];
+        j = thisPt[1];
+        initialVal = z[i][j];
+        neighborSum = 0;
+        neighborCount = 0;
+
+        for(q = 0; q < 4; q++) {
+            neighborShift = NEIGHBORSHIFTS[q];
+            neighborRow = z[i + neighborShift[0]];
+            if(!neighborRow) continue;
+            neighborVal = neighborRow[j + neighborShift[1]];
+            if(neighborVal !== undefined) {
+                if(neighborSum === 0) {
+                    minNeighbor = maxNeighbor = neighborVal;
+                }
+                else {
+                    minNeighbor = Math.min(minNeighbor, neighborVal);
+                    maxNeighbor = Math.max(maxNeighbor, neighborVal);
+                }
+                neighborCount++;
+                neighborSum += neighborVal;
+            }
+        }
+
+        if(neighborCount === 0) {
+            throw 'iterateInterp2d order is wrong: no defined neighbors';
+        }
+
+        // this is the laplace equation interpolation:
+        // each point is just the average of its neighbors
+        // note that this ignores differential x/y scaling
+        // which I think is the right approach, since we
+        // don't know what that scaling means
+        z[i][j] = neighborSum / neighborCount;
+
+        if(initialVal === undefined) {
+            if(neighborCount < 4) maxFractionalChange = 1;
+        }
+        else {
+            // we can make large empty regions converge faster
+            // if we overshoot the change vs the previous value
+            z[i][j] = (1 + overshoot) * z[i][j] - overshoot * initialVal;
+
+            if(maxNeighbor > minNeighbor) {
+                maxFractionalChange = Math.max(maxFractionalChange,
+                    Math.abs(z[i][j] - initialVal) / (maxNeighbor - minNeighbor));
+            }
+        }
+    }
+
+    return maxFractionalChange;
+}
+
+},{"../../lib":495}],608:[function(_dereq_,module,exports){
+/**
+* Copyright 2012-2019, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
 var colorscaleAttrs = _dereq_('../../components/colorscale/attributes');
 var colorbarAttrs = _dereq_('../../components/colorbar/attributes');
 var hovertemplateAttrs = _dereq_('../../components/fx/hovertemplate_attributes');
@@ -108674,7 +108969,7 @@ colorscaleAttrs('', {
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'})
 });
 
-},{"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plots/attributes":538,"../surface/attributes":652}],607:[function(_dereq_,module,exports){
+},{"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plots/attributes":538,"../surface/attributes":654}],609:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -108697,7 +108992,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":384}],608:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":384}],610:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -108817,7 +109112,6 @@ proto.update = function(data) {
 
     var cells;
     if(data.i && data.j && data.k) {
-
         if(
             data.i.length !== data.j.length ||
             data.j.length !== data.k.length ||
@@ -108895,7 +109189,7 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../lib/gl_format_color":493,"../../lib/str2rgbarray":517,"../../plots/gl3d/zip3":581,"alpha-shape":15,"convex-hull":72,"delaunay-triangulate":83,"gl-mesh3d":139}],609:[function(_dereq_,module,exports){
+},{"../../lib/gl_format_color":493,"../../lib/str2rgbarray":517,"../../plots/gl3d/zip3":581,"alpha-shape":15,"convex-hull":72,"delaunay-triangulate":83,"gl-mesh3d":139}],611:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -108995,7 +109289,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":386,"../../lib":495,"../../registry":592,"./attributes":606}],610:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":386,"../../lib":495,"../../registry":592,"./attributes":608}],612:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109028,7 +109322,7 @@ Mesh3D.meta = {
 
 module.exports = Mesh3D;
 
-},{"../../plots/gl3d":570,"./attributes":606,"./calc":607,"./convert":608,"./defaults":609}],611:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":570,"./attributes":608,"./calc":609,"./convert":610,"./defaults":611}],613:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109070,7 +109364,7 @@ exports.castOption = function castOption(item, indices) {
     else if(item) return item;
 };
 
-},{"../../lib":495}],612:[function(_dereq_,module,exports){
+},{"../../lib":495}],614:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109094,7 +109388,7 @@ module.exports = function styleOne(s, pt, trace) {
         .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":376,"./helpers":611}],613:[function(_dereq_,module,exports){
+},{"../../components/color":376,"./helpers":613}],615:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109111,7 +109405,6 @@ var Lib = _dereq_('../../lib');
 
 // arrayOk attributes, merge them into calcdata array
 module.exports = function arraysToCalcdata(cd, trace) {
-
     // so each point knows which index it originally came from
     for(var i = 0; i < cd.length; i++) cd[i].i = i;
 
@@ -109146,7 +109439,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":495}],614:[function(_dereq_,module,exports){
+},{"../../lib":495}],616:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109558,7 +109851,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/drawing":397,"../../components/drawing/attributes":396,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plots/font_attributes":567,"./constants":618}],615:[function(_dereq_,module,exports){
+},{"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/drawing":397,"../../components/drawing/attributes":396,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plots/font_attributes":567,"./constants":620}],617:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109599,8 +109892,9 @@ function calc(gd, trace) {
     var yAttr = 'y';
     var posAttr;
     if(stackGroupOpts) {
-        stackGroupOpts.traceIndices.push(trace.index);
+        Lib.pushUnique(stackGroupOpts.traceIndices, trace._expandedIndex);
         isV = stackGroupOpts.orientation === 'v';
+
         // size, like we use for bar
         if(isV) {
             yAttr = 's';
@@ -109804,7 +110098,6 @@ function calcMarkerSize(trace, serieslen) {
             sizeOut[i] = markerTrans(s[i]);
         }
         return sizeOut;
-
     } else {
         return markerTrans(marker.size);
     }
@@ -109848,7 +110141,7 @@ module.exports = {
     getStackOpts: getStackOpts
 };
 
-},{"../../constants/numerical":475,"../../lib":495,"../../plots/cartesian/axes":541,"./arrays_to_calcdata":613,"./calc_selection":616,"./colorscale_calc":617,"./subtypes":638,"fast-isnumeric":90}],616:[function(_dereq_,module,exports){
+},{"../../constants/numerical":475,"../../lib":495,"../../plots/cartesian/axes":541,"./arrays_to_calcdata":615,"./calc_selection":618,"./colorscale_calc":619,"./subtypes":640,"fast-isnumeric":90}],618:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109867,7 +110160,7 @@ module.exports = function calcSelection(cd, trace) {
     }
 };
 
-},{"../../lib":495}],617:[function(_dereq_,module,exports){
+},{"../../lib":495}],619:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109910,7 +110203,7 @@ module.exports = function calcMarkerColorscale(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":384,"../../components/colorscale/helpers":387,"./subtypes":638}],618:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":384,"../../components/colorscale/helpers":387,"./subtypes":640}],620:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -109939,7 +110232,7 @@ module.exports = {
     eventDataKeys: []
 };
 
-},{}],619:[function(_dereq_,module,exports){
+},{}],621:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110122,7 +110415,7 @@ function getInterp(calcTrace, index, position, posAttr) {
     return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
 }
 
-},{"./calc":615}],620:[function(_dereq_,module,exports){
+},{"./calc":617}],622:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110161,7 +110454,7 @@ module.exports = function crossTraceDefaults(fullData) {
     }
 };
 
-},{}],621:[function(_dereq_,module,exports){
+},{}],623:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110250,7 +110543,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":495,"../../registry":592,"./attributes":614,"./constants":618,"./fillcolor_defaults":623,"./line_defaults":627,"./line_shape_defaults":629,"./marker_defaults":633,"./stack_defaults":636,"./subtypes":638,"./text_defaults":639,"./xy_defaults":640}],622:[function(_dereq_,module,exports){
+},{"../../lib":495,"../../registry":592,"./attributes":616,"./constants":620,"./fillcolor_defaults":625,"./line_defaults":629,"./line_shape_defaults":631,"./marker_defaults":635,"./stack_defaults":638,"./subtypes":640,"./text_defaults":641,"./xy_defaults":642}],624:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110293,7 +110586,7 @@ function isValid(v) {
     return v || v === 0;
 }
 
-},{"../../lib":495}],623:[function(_dereq_,module,exports){
+},{"../../lib":495}],625:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110331,7 +110624,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":376,"../../lib":495}],624:[function(_dereq_,module,exports){
+},{"../../components/color":376,"../../lib":495}],626:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110384,7 +110677,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":376,"./subtypes":638}],625:[function(_dereq_,module,exports){
+},{"../../components/color":376,"./subtypes":640}],627:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110448,7 +110741,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         // skip the rest (for this trace) if we didn't find a close point
         if(pointData.index !== false) {
-
             // the closest data point
             var di = cd[pointData.index];
             var xc = xa.c2p(di.x, true);
@@ -110566,7 +110858,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 y0: yAvg,
                 y1: yAvg,
                 color: color,
-                hovertemplate: '%{name}'
+                hovertemplate: false
             });
 
             delete pointData.index;
@@ -110581,7 +110873,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":376,"../../components/fx":415,"../../lib":495,"../../registry":592,"./fill_hover_text":622,"./get_trace_color":624}],626:[function(_dereq_,module,exports){
+},{"../../components/color":376,"../../components/fx":415,"../../lib":495,"../../registry":592,"./fill_hover_text":624,"./get_trace_color":626}],628:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110628,7 +110920,7 @@ Scatter.meta = {
 
 module.exports = Scatter;
 
-},{"../../plots/cartesian":552,"./arrays_to_calcdata":613,"./attributes":614,"./calc":615,"./cross_trace_calc":619,"./cross_trace_defaults":620,"./defaults":621,"./hover":625,"./marker_colorbar":632,"./plot":634,"./select":635,"./style":637,"./subtypes":638}],627:[function(_dereq_,module,exports){
+},{"../../plots/cartesian":552,"./arrays_to_calcdata":615,"./attributes":616,"./calc":617,"./cross_trace_calc":621,"./cross_trace_defaults":622,"./defaults":623,"./hover":627,"./marker_colorbar":634,"./plot":636,"./select":637,"./style":639,"./subtypes":640}],629:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110659,7 +110951,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!(opts || {}).noDash) coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":386,"../../components/colorscale/helpers":387,"../../lib":495}],628:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":386,"../../components/colorscale/helpers":387,"../../lib":495}],630:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -110693,9 +110985,11 @@ module.exports = function linePoints(d, opts) {
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
     var linear = shape === 'linear';
+    var fill = opts.fill && opts.fill !== 'none';
     var segments = [];
     var minTolerance = constants.minTolerance;
-    var pts = new Array(d.length);
+    var len = d.length;
+    var pts = new Array(len);
     var pti = 0;
 
     var i;
@@ -110822,8 +111116,10 @@ module.exports = function linePoints(d, opts) {
         var ptCount = 0;
         for(var i = 0; i < 4; i++) {
             var edge = edges[i];
-            var ptInt = segmentsIntersect(pt1[0], pt1[1], pt2[0], pt2[1],
-                edge[0], edge[1], edge[2], edge[3]);
+            var ptInt = segmentsIntersect(
+                pt1[0], pt1[1], pt2[0], pt2[1],
+                edge[0], edge[1], edge[2], edge[3]
+            );
             if(ptInt && (!ptCount ||
                 Math.abs(ptInt.x - out[0][0]) > 1 ||
                 Math.abs(ptInt.y - out[0][1]) > 1
@@ -111021,7 +111317,7 @@ module.exports = function linePoints(d, opts) {
     }
 
     // loop over ALL points in this trace
-    for(i = 0; i < d.length; i++) {
+    for(i = 0; i < len; i++) {
         clusterStartPt = getPt(i);
         if(!clusterStartPt) continue;
 
@@ -111030,7 +111326,7 @@ module.exports = function linePoints(d, opts) {
         addPt(clusterStartPt);
 
         // loop over one segment of the trace
-        for(i++; i < d.length; i++) {
+        for(i++; i < len; i++) {
             clusterHighPt = getPt(i);
             if(!clusterHighPt) {
                 if(connectGaps) continue;
@@ -111049,7 +111345,9 @@ module.exports = function linePoints(d, opts) {
 
             clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
 
-            if(clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
+            // #3147 - always include the very first and last points for fills
+            if(!(fill && (pti === 0 || pti === len - 1)) &&
+                clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
 
             clusterUnitVector = [
                 (clusterHighPt[0] - clusterStartPt[0]) / clusterRefDist,
@@ -111124,7 +111422,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":475,"../../lib":495,"./constants":618}],629:[function(_dereq_,module,exports){
+},{"../../constants/numerical":475,"../../lib":495,"./constants":620}],631:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -111143,7 +111441,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],630:[function(_dereq_,module,exports){
+},{}],632:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -111236,7 +111534,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     return cdscatterSorted;
 };
 
-},{}],631:[function(_dereq_,module,exports){
+},{}],633:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -111278,7 +111576,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":90}],632:[function(_dereq_,module,exports){
+},{"fast-isnumeric":90}],634:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -111296,7 +111594,7 @@ module.exports = {
     max: 'cmax'
 };
 
-},{}],633:[function(_dereq_,module,exports){
+},{}],635:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -111378,7 +111676,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":376,"../../components/colorscale/defaults":386,"../../components/colorscale/helpers":387,"./subtypes":638}],634:[function(_dereq_,module,exports){
+},{"../../components/color":376,"../../components/colorscale/defaults":386,"../../components/colorscale/helpers":387,"./subtypes":640}],636:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -111564,7 +111862,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
-
         if(tonext) {
             // This tells .style which trace to use for fill information:
             tonext.datum(cdscatter);
@@ -111606,7 +111903,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
             shape: line.shape,
-            simplify: line.simplify
+            simplify: line.simplify,
+            fill: trace.fill
         });
 
         // since we already have the pixel segments here, use them to make
@@ -111950,7 +112248,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":397,"../../lib":495,"../../lib/polygon":507,"../../registry":592,"./line_points":628,"./link_traces":630,"./subtypes":638,"d3":81}],635:[function(_dereq_,module,exports){
+},{"../../components/drawing":397,"../../lib":495,"../../lib/polygon":507,"../../registry":592,"./line_points":630,"./link_traces":632,"./subtypes":640,"d3":81}],637:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112005,7 +112303,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"./subtypes":638}],636:[function(_dereq_,module,exports){
+},{"./subtypes":640}],638:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112111,7 +112409,7 @@ module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce)
     }
 };
 
-},{}],637:[function(_dereq_,module,exports){
+},{}],639:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112183,7 +112481,7 @@ module.exports = {
     styleOnSelect: styleOnSelect
 };
 
-},{"../../components/drawing":397,"../../registry":592,"d3":81}],638:[function(_dereq_,module,exports){
+},{"../../components/drawing":397,"../../registry":592,"d3":81}],640:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112222,7 +112520,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":495}],639:[function(_dereq_,module,exports){
+},{"../../lib":495}],641:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112252,7 +112550,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     }
 };
 
-},{"../../lib":495}],640:[function(_dereq_,module,exports){
+},{"../../lib":495}],642:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112296,7 +112594,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../lib":495,"../../registry":592}],641:[function(_dereq_,module,exports){
+},{"../../lib":495,"../../registry":592}],643:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112438,7 +112736,7 @@ var attrs = module.exports = overrideAll({
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 
-},{"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../constants/gl3d_dashes":472,"../../constants/gl3d_markers":473,"../../lib/extend":488,"../../plot_api/edit_types":524,"../../plots/attributes":538,"../scatter/attributes":614}],642:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../constants/gl3d_dashes":472,"../../constants/gl3d_markers":473,"../../lib/extend":488,"../../plot_api/edit_types":524,"../../plots/attributes":538,"../scatter/attributes":616}],644:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112466,7 +112764,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":613,"../scatter/colorscale_calc":617}],643:[function(_dereq_,module,exports){
+},{"../scatter/arrays_to_calcdata":615,"../scatter/colorscale_calc":619}],645:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112553,7 +112851,7 @@ function calculateErrors(data, scaleFactor, sceneLayout) {
 
 module.exports = calculateErrors;
 
-},{"../../registry":592}],644:[function(_dereq_,module,exports){
+},{"../../registry":592}],646:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -112683,7 +112981,6 @@ function calculateErrorParams(errors) {
         capSize[i] = e.width / 2;  // ballpark rescaling
         color[i] = str2RgbaArray(e.color);
         lineWidth[i] = e.thickness;
-
     }
 
     return {capSize: capSize, color: color, lineWidth: lineWidth};
@@ -112753,7 +113050,6 @@ function formatParam(paramIn, len, calculate, dflt, extraFn) {
             if(paramIn[i] === undefined) paramOut[i] = dflt;
             else paramOut[i] = calculate(paramIn[i], extraFn);
         }
-
     }
     else paramOut = calculate(paramIn, Lib.identity);
 
@@ -113063,7 +113359,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../constants/gl3d_dashes":472,"../../constants/gl3d_markers":473,"../../lib":495,"../../lib/gl_format_color":493,"../../lib/str2rgbarray":517,"../scatter/make_bubble_size_func":631,"./calc_errors":643,"delaunay-triangulate":83,"gl-error3d":109,"gl-line3d":114,"gl-mesh3d":139,"gl-scatter3d":147}],645:[function(_dereq_,module,exports){
+},{"../../constants/gl3d_dashes":472,"../../constants/gl3d_markers":473,"../../lib":495,"../../lib/gl_format_color":493,"../../lib/str2rgbarray":517,"../scatter/make_bubble_size_func":633,"./calc_errors":645,"delaunay-triangulate":83,"gl-error3d":109,"gl-line3d":114,"gl-mesh3d":139,"gl-scatter3d":147}],647:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -113086,7 +113382,6 @@ var handleTextDefaults = _dereq_('../scatter/text_defaults');
 var attributes = _dereq_('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -113152,7 +113447,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     return len;
 }
 
-},{"../../lib":495,"../../registry":592,"../scatter/line_defaults":627,"../scatter/marker_defaults":633,"../scatter/subtypes":638,"../scatter/text_defaults":639,"./attributes":641}],646:[function(_dereq_,module,exports){
+},{"../../lib":495,"../../registry":592,"../scatter/line_defaults":629,"../scatter/marker_defaults":635,"../scatter/subtypes":640,"../scatter/text_defaults":641,"./attributes":643}],648:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -113193,7 +113488,7 @@ Scatter3D.meta = {
 
 module.exports = Scatter3D;
 
-},{"../../constants/gl3d_markers":473,"../../plots/gl3d":570,"./attributes":641,"./calc":642,"./convert":644,"./defaults":645}],647:[function(_dereq_,module,exports){
+},{"../../constants/gl3d_markers":473,"../../plots/gl3d":570,"./attributes":643,"./calc":644,"./convert":646,"./defaults":647}],649:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -113348,7 +113643,7 @@ attrs.transforms = undefined;
 
 module.exports = attrs;
 
-},{"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plots/attributes":538,"../mesh3d/attributes":606}],648:[function(_dereq_,module,exports){
+},{"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plots/attributes":538,"../mesh3d/attributes":608}],650:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -113442,7 +113737,7 @@ module.exports = function calc(gd, trace) {
     trace._zbnds = [zMin, zMax];
 };
 
-},{"../../components/colorscale/calc":384}],649:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":384}],651:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -113670,7 +113965,7 @@ function createStreamtubeTrace(scene, data) {
 
 module.exports = createStreamtubeTrace;
 
-},{"../../lib":495,"../../lib/gl_format_color":493,"../../plots/gl3d/zip3":581,"gl-streamtube3d":160}],650:[function(_dereq_,module,exports){
+},{"../../lib":495,"../../lib/gl_format_color":493,"../../plots/gl3d/zip3":581,"gl-streamtube3d":160}],652:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -113735,7 +114030,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":386,"../../lib":495,"./attributes":647}],651:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":386,"../../lib":495,"./attributes":649}],653:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -113785,7 +114080,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":570,"./attributes":647,"./calc":648,"./convert":649,"./defaults":650}],652:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":570,"./attributes":649,"./calc":650,"./convert":651,"./defaults":652}],654:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -113899,6 +114194,14 @@ var attrs = module.exports = overrideAll(extendFlat({
         
     },
     hovertemplate: hovertemplateAttrs(),
+
+    connectgaps: {
+        valType: 'boolean',
+        dflt: false,
+        
+        editType: 'calc',
+        
+    },
 
     surfacecolor: {
         valType: 'data_array',
@@ -114023,7 +114326,7 @@ colorscaleAttrs('', {
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/color":376,"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plot_api/edit_types":524,"../../plots/attributes":538}],653:[function(_dereq_,module,exports){
+},{"../../components/color":376,"../../components/colorbar/attributes":377,"../../components/colorscale/attributes":383,"../../components/fx/hovertemplate_attributes":414,"../../lib/extend":488,"../../plot_api/edit_types":524,"../../plots/attributes":538}],655:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -114055,7 +114358,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":384}],654:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":384}],656:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -114077,6 +114380,9 @@ var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
 var parseColorScale = _dereq_('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = _dereq_('../../lib/str2rgbarray');
 
+var interp2d = _dereq_('../heatmap/interp2d');
+var findEmpties = _dereq_('../heatmap/find_empties');
+
 function SurfaceTrace(scene, surface, uid) {
     this.scene = scene;
     this.uid = uid;
@@ -114088,6 +114394,7 @@ function SurfaceTrace(scene, surface, uid) {
     this.dataScaleX = 1.0;
     this.dataScaleY = 1.0;
     this.refineData = true;
+    this._interpolatedZ = false;
 }
 
 var proto = SurfaceTrace.prototype;
@@ -114117,16 +114424,17 @@ proto.getYat = function(a, b, calendar, axis) {
 };
 
 proto.getZat = function(a, b, calendar, axis) {
-    var v = (
-        this.data.z[b][a]
-    );
+    var v = this.data.z[b][a];
+
+    if(v === null && this.data.connectgaps && this.data._interpolatedZ) {
+        v = this.data._interpolatedZ[b][a];
+    }
 
     return (calendar === undefined) ? v : axis.d2l(v, 0, calendar);
 };
 
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
-
         var xRatio = (selection.data.index[0] - 1) / this.dataScaleX - 1;
         var yRatio = (selection.data.index[1] - 1) / this.dataScaleY - 1;
 
@@ -114370,7 +114678,6 @@ proto.estimateScale = function(resSrc, axis) {
 };
 
 proto.refineCoords = function(coords) {
-
     var scaleW = this.dataScaleX;
     var scaleH = this.dataScaleY;
 
@@ -114386,7 +114693,6 @@ proto.refineCoords = function(coords) {
     var padImg = ndarray(new Float32Array(padWidth * padHeight), [padWidth, padHeight]);
 
     for(var i = 0; i < coords.length; ++i) {
-
         this.surface.padField(padImg, coords[i]);
 
         var scaledImg = ndarray(new Float32Array(newWidth * newHeight), [newWidth, newHeight]);
@@ -114459,6 +114765,19 @@ proto.update = function(data) {
             rawCoords[0][j][k] = this.getXat(j, k, data.xcalendar, sceneLayout.xaxis);
             rawCoords[1][j][k] = this.getYat(j, k, data.ycalendar, sceneLayout.yaxis);
             rawCoords[2][j][k] = this.getZat(j, k, data.zcalendar, sceneLayout.zaxis);
+        }
+    }
+
+    if(data.connectgaps) {
+        data._emptypoints = findEmpties(rawCoords[2]);
+        interp2d(rawCoords[2], data._emptypoints);
+
+        data._interpolatedZ = [];
+        for(j = 0; j < xlen; j++) {
+            data._interpolatedZ[j] = [];
+            for(k = 0; k < ylen; k++) {
+                data._interpolatedZ[j][k] = rawCoords[2][j][k];
+            }
         }
     }
 
@@ -114667,7 +114986,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../lib":495,"../../lib/gl_format_color":493,"../../lib/str2rgbarray":517,"gl-surface3d":163,"ndarray":286,"ndarray-fill":276,"ndarray-homography":278}],655:[function(_dereq_,module,exports){
+},{"../../lib":495,"../../lib/gl_format_color":493,"../../lib/str2rgbarray":517,"../heatmap/find_empties":606,"../heatmap/interp2d":607,"gl-surface3d":163,"ndarray":286,"ndarray-fill":276,"ndarray-homography":278}],657:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -114726,6 +115045,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lightposition.y',
         'lightposition.z',
         'hidesurface',
+        'connectgaps',
         'opacity'
     ].forEach(function(x) { coerce(x); });
 
@@ -114733,7 +115053,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var dims = ['x', 'y', 'z'];
     for(i = 0; i < 3; ++i) {
-
         var contourDim = 'contours.' + dims[i];
         var show = coerce(contourDim + '.show');
         var highlight = coerce(contourDim + '.highlight');
@@ -114781,7 +115100,7 @@ function mapLegacy(traceIn, oldAttr, newAttr) {
     }
 }
 
-},{"../../components/colorscale/defaults":386,"../../lib":495,"../../registry":592,"./attributes":652}],656:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":386,"../../lib":495,"../../registry":592,"./attributes":654}],658:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -114814,5 +115133,5 @@ Surface.meta = {
 
 module.exports = Surface;
 
-},{"../../plots/gl3d":570,"./attributes":652,"./calc":653,"./convert":654,"./defaults":655}]},{},[5])(5)
+},{"../../plots/gl3d":570,"./attributes":654,"./calc":655,"./convert":656,"./defaults":657}]},{},[5])(5)
 });

@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.45.3
+* plotly.js (mapbox) v1.46.0
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var rules = {
     "X .cursor-n-resize": "cursor:n-resize;",
     "X .cursor-ne-resize": "cursor:ne-resize;",
     "X .cursor-grab": "cursor:-webkit-grab;cursor:grab;",
-    "X .modebar": "position:absolute;top:2px;right:2px;z-index:1001;",
+    "X .modebar": "position:absolute;top:2px;right:2px;",
     "X .ease-bg": "-webkit-transition:background-color 0.3s ease 0s;-moz-transition:background-color 0.3s ease 0s;-ms-transition:background-color 0.3s ease 0s;-o-transition:background-color 0.3s ease 0s;transition:background-color 0.3s ease 0s;",
     "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity 0.3s ease 0s;-moz-transition:opacity 0.3s ease 0s;-ms-transition:opacity 0.3s ease 0s;-o-transition:opacity 0.3s ease 0s;transition:opacity 0.3s ease 0s;",
     "X:hover .modebar--hover .modebar-group": "opacity:1;",
@@ -15419,7 +15419,6 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('standoff');
         coerce('startstandoff');
-
     }
 
     var hoverText = coerce('hovertext');
@@ -16251,7 +16250,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         var xUpdate, yUpdate;
                         if(xa) {
                             xUpdate = xa.p2r(xa.r2p(options.x) + dx);
-
                         } else {
                             var widthFraction = options._xsize / gs.w;
                             var xLeft = options.x + (options._xshift - options.xshift) / gs.w - widthFraction / 2;
@@ -16398,7 +16396,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
             end.x += backOffX;
             end.y += backOffY;
             el3.attr({x2: end.x, y2: end.y});
-
         }
 
         if(startBackOff) {
@@ -16412,7 +16409,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
             start.x -= startBackOffX;
             start.y -= startbackOffY;
             el3.attr({x1: start.x, y1: start.y});
-
         }
     }
     else if(el.nodeName === 'path') {
@@ -19570,7 +19566,9 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
         var trace = d[0].trace;
         var xcalendar = trace.xcalendar;
         var ycalendar = trace.ycalendar;
-        var selector = trace.type === 'bar' ? '.bartext' : '.point,.textpoint';
+        var selector = trace.type === 'bar' ? '.bartext' :
+            trace.type === 'waterfall' ? '.bartext,.line' :
+                '.point,.textpoint';
 
         traceGroups.selectAll(selector).each(function(d) {
             drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya, xcalendar, ycalendar);
@@ -22187,7 +22185,8 @@ var pointKeyMap = {
     locations: 'location',
     labels: 'label',
     values: 'value',
-    'marker.colors': 'color'
+    'marker.colors': 'color',
+    parents: 'parent'
 };
 
 function getPointKey(astr) {
@@ -22364,7 +22363,6 @@ exports.loneHover = function loneHover(hoverItem, opts) {
 };
 
 exports.multiHovers = function multiHovers(hoverItems, opts) {
-
     if(!Array.isArray(hoverItems)) {
         hoverItems = [hoverItems];
     }
@@ -22879,11 +22877,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var pt = hoverData[itemnum];
         var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
 
-        var ht = false;
-        if(pt.cd[pt.index] && pt.cd[pt.index].ht) ht = pt.cd[pt.index].ht;
-        hoverData[itemnum].hovertemplate = ht || pt.trace.hovertemplate || false;
-        hoverData[itemnum].eventData = [eventData];
+        if(pt.hovertemplate !== false) {
+            var ht = false;
+            if(pt.cd[pt.index] && pt.cd[pt.index].ht) {
+                ht = pt.cd[pt.index].ht;
+            }
+            pt.hovertemplate = ht || pt.trace.hovertemplate || false;
+        }
 
+        pt.eventData = [eventData];
         newhoverdata.push(eventData);
     }
 
@@ -23269,13 +23271,22 @@ function createHoverText(hoverData, opts, gd) {
             d.pos = hty;
             anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
             anchorEndOK = htx - dx / 2 - txTotalWidth >= 0;
+
             if((d.idealAlign === 'left' || !anchorStartOK) && anchorEndOK) {
                 htx -= dx / 2;
                 d.anchor = 'end';
             } else if(anchorStartOK) {
                 htx += dx / 2;
                 d.anchor = 'start';
-            } else d.anchor = 'middle';
+            } else {
+                d.anchor = 'middle';
+
+                var txHalfWidth = txTotalWidth / 2;
+                var overflowR = htx + txHalfWidth - outerWidth;
+                var overflowL = htx - txHalfWidth;
+                if(overflowR > 0) htx -= overflowR;
+                if(overflowL < 0) htx += -overflowL;
+            }
         }
 
         tx.attr('text-anchor', d.anchor);
@@ -24781,7 +24792,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
 
 function imageDefaults(imageIn, imageOut, fullLayout) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(imageIn, imageOut, attributes, attr, dflt);
     }
@@ -24902,7 +24912,6 @@ module.exports = function draw(gd) {
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
         var imagePromise = new Promise(function(resolve) {
-
             var img = new Image();
             this.img = img;
 
@@ -25871,6 +25880,8 @@ function computeLegendDimensions(gd, groups, traces) {
 
     var extraWidth = 0;
 
+    var traceGap = 5;
+
     opts._width = 0;
     opts._height = 0;
 
@@ -25904,23 +25915,53 @@ function computeLegendDimensions(gd, groups, traces) {
         extraWidth = 40;
     }
     else if(isGrouped) {
-        var groupXOffsets = [opts._width];
+        var maxHeight = 0;
+        var maxWidth = 0;
         var groupData = groups.data();
 
-        for(var i = 0, n = groupData.length; i < n; i++) {
-            var textWidths = groupData[i].map(function(legendItemArray) {
+        var maxItems = 0;
+
+        var i;
+        for(i = 0; i < groupData.length; i++) {
+            var group = groupData[i];
+            var groupWidths = group.map(function(legendItemArray) {
                 return legendItemArray[0].width;
             });
 
-            var groupWidth = 40 + Math.max.apply(null, textWidths);
+            var groupWidth = Lib.aggNums(Math.max, null, groupWidths);
+            var groupHeight = group.reduce(function(a, b) {
+                return a + b[0].height;
+            }, 0);
 
-            opts._width += opts.tracegroupgap + groupWidth;
+            maxWidth = Math.max(maxWidth, groupWidth);
+            maxHeight = Math.max(maxHeight, groupHeight);
+            maxItems = Math.max(maxItems, group.length);
+        }
 
+        maxWidth += traceGap;
+        maxWidth += 40;
+
+        var groupXOffsets = [opts._width];
+        var groupYOffsets = [];
+        var rowNum = 0;
+        for(i = 0; i < groupData.length; i++) {
+            if(fullLayout._size.w < (borderwidth + opts._width + traceGap + maxWidth)) {
+                groupXOffsets[groupXOffsets.length - 1] = groupXOffsets[0];
+                opts._width = maxWidth;
+                rowNum++;
+            } else {
+                opts._width += maxWidth + borderwidth;
+            }
+
+            var rowYOffset = (rowNum * maxHeight);
+            rowYOffset += rowNum > 0 ? opts.tracegroupgap : 0;
+
+            groupYOffsets.push(rowYOffset);
             groupXOffsets.push(opts._width);
         }
 
         groups.each(function(d, i) {
-            Drawing.setTranslate(this, groupXOffsets[i], 0);
+            Drawing.setTranslate(this, groupXOffsets[i], groupYOffsets[i]);
         });
 
         groups.each(function() {
@@ -25938,11 +25979,13 @@ function computeLegendDimensions(gd, groups, traces) {
 
                 groupHeight += textHeight;
             });
-
-            opts._height = Math.max(opts._height, groupHeight);
         });
 
-        opts._height += 10 + borderwidth * 2;
+        var maxYLegend = groupYOffsets[groupYOffsets.length - 1] + maxHeight;
+        opts._height = 10 + (borderwidth * 2) + maxYLegend;
+
+        var maxOffset = Math.max.apply(null, groupXOffsets);
+        opts._width = maxOffset + maxWidth + 40;
         opts._width += borderwidth * 2;
     }
     else {
@@ -25951,7 +25994,6 @@ function computeLegendDimensions(gd, groups, traces) {
         var maxTraceWidth = 0;
         var offsetX = 0;
         var fullTracesWidth = 0;
-        var traceGap = opts.tracegroupgap || 5;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
@@ -26512,6 +26554,7 @@ module.exports = function style(s, gd) {
           .enter().append('g')
             .classed('legendpoints', true);
     })
+    .each(styleWaterfalls)
     .each(styleBars)
     .each(styleBoxes)
     .each(stylePies)
@@ -26596,7 +26639,6 @@ module.exports = function style(s, gd) {
                     trace.colorscale, 'stroke');
             }
         }
-
     }
 
     function stylePoints(d) {
@@ -26690,6 +26732,38 @@ module.exports = function style(s, gd) {
                 .append('text').attr('transform', 'translate(20,0)');
         txt.exit().remove();
         txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
+    }
+
+    function styleWaterfalls(d) {
+        var trace = d[0].trace;
+
+        var ptsData = [];
+        if(trace.type === 'waterfall' && trace.visible) {
+            ptsData = d[0].hasTotals ?
+                [['increasing', 'M-6,-6V6H0Z'], ['totals', 'M6,6H0L-6,-6H-0Z'], ['decreasing', 'M6,6V-6H0Z']] :
+                [['increasing', 'M-6,-6V6H6Z'], ['decreasing', 'M6,6V-6H-6Z']];
+        }
+
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendwaterfall')
+            .data(ptsData);
+        pts.enter().append('path').classed('legendwaterfall', true)
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
+
+        pts.each(function(dd) {
+            var pt = d3.select(this);
+            var cont = trace[dd[0]].marker;
+
+            pt.attr('d', dd[1])
+                .style('stroke-width', cont.line.width + 'px')
+                .call(Color.fill, cont.color);
+
+            if(cont.line.width) {
+                pt.call(Color.stroke, cont.line.color);
+            }
+        });
     }
 
     function styleBars(d) {
@@ -27981,7 +28055,6 @@ proto.updateActiveButton = function(buttonClicked) {
 
             button3.classed('active', val === thisval);
         }
-
     });
 };
 
@@ -28403,7 +28476,6 @@ module.exports = function draw(gd) {
 
         reposition(gd, buttons, selectorLayout, axisLayout._name, selector);
     });
-
 };
 
 function makeSelectorData(gd) {
@@ -29165,7 +29237,6 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
 }
 
 function setDataRange(rangeSlider, gd, axisOpts, opts) {
-
     function clamp(v) {
         return axisOpts.l2r(Lib.constrain(v, opts._rl[0], opts._rl[1]));
     }
@@ -31227,7 +31298,6 @@ module.exports = function slidersDefaults(layoutIn, layoutOut) {
 };
 
 function sliderDefaults(sliderIn, sliderOut, layoutOut) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(sliderIn, sliderOut, attributes, attr, dflt);
     }
@@ -31595,7 +31665,6 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
 
     sliderGroup.call(setGripPosition, sliderOpts, false);
     sliderGroup.call(drawCurrentValue, sliderOpts);
-
 }
 
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
@@ -31727,7 +31796,6 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
                 dims.currentValueTotalHeight
         );
     });
-
 }
 
 function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransition) {
@@ -31858,7 +31926,6 @@ function drawTicks(sliderGroup, sliderOpts) {
             (isMajor ? constants.tickOffset : constants.minorTickOffset) + dims.currentValueTotalHeight
         );
     });
-
 }
 
 function computeLabelSteps(sliderOpts) {
@@ -32513,7 +32580,6 @@ module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
 };
 
 function menuDefaults(menuIn, menuOut, layoutOut) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
     }
@@ -32701,7 +32767,6 @@ module.exports = function draw(gd) {
         } else {
             drawButtons(gd, gHeader, null, null, menuOpts);
         }
-
     });
 };
 
@@ -33886,7 +33951,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.45.3';
+exports.version = '1.46.0';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -34081,7 +34146,7 @@ function rad2deg(rad) { return rad / PI * 180; }
  * @return {boolean}
  */
 function isFullCircle(aBnds) {
-    return Math.abs(aBnds[1] - aBnds[0]) > twoPI - 1e-15;
+    return Math.abs(aBnds[1] - aBnds[0]) > twoPI - 1e-14;
 }
 
 /**
@@ -34750,7 +34815,6 @@ exports.valObjectMeta = {
         // either be a matching 1D array or an array of such matching 1D arrays
         
         coerceFunction: function(v, propOut, dflt, opts) {
-
             // simplified coerce function just for array items
             function coercePart(v, opts, dflt) {
                 var out;
@@ -35384,7 +35448,6 @@ exports.cleanDate = function(v, dflt, calendar) {
  */
 var fracMatch = /%\d?f/g;
 function modDateFormat(fmt, x, formatter, calendar) {
-
     fmt = fmt.replace(fracMatch, function(match) {
         var digits = Math.min(+(match.charAt(1)) || 6, 6);
         var fracSecs = ((x / 1000 % 1) + 2)
@@ -35623,7 +35686,6 @@ var EventEmitter = _dereq_('events').EventEmitter;
 var Events = {
 
     init: function(plotObj) {
-
         /*
          * If we have already instantiated an emitter for this plot
          * return early.
@@ -35849,7 +35911,6 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     // TODO does this do the right thing for typed arrays?
 
     if(length === 2 && isArray(target) && isArray(inputs[1]) && target.length === 0) {
-
         allPrimitives = primitivesLoopSplice(inputs[1], target);
 
         if(allPrimitives) {
@@ -37255,7 +37316,6 @@ lib.objectFromPath = function(path, value) {
 
             tmpObj = tmpObj[el];
         } else {
-
             if(i === keys.length - 1) {
                 tmpObj[key] = value;
             } else {
@@ -37559,7 +37619,6 @@ lib.pseudoRandom = function() {
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
 module.exports = function isPlainObject(obj) {
-
     // We need to be a little less strict in the `imagetest` container because
     // of how async image requests are handled.
     //
@@ -39099,7 +39158,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             continue;
         }
         if(k.charAt(0) === '_' || typeof fromVal === 'function') {
-
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
             if(k in toContainer) continue;
@@ -39107,7 +39165,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             toContainer[k] = fromVal;
         }
         else if(isArrayOrTypedArray(fromVal) && isArrayOrTypedArray(toVal) && isPlainObject(fromVal[0])) {
-
             // filter out data_array items that can contain user objects
             // most of the time the toVal === fromVal check will catch these early
             // but if the user makes new ones we also don't want to recurse in.
@@ -39122,7 +39179,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             }
         }
         else if(isPlainObject(fromVal) && isPlainObject(toVal)) {
-
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toVal, fromVal);
 
@@ -39609,7 +39665,6 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
-
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
@@ -40672,10 +40727,11 @@ var Registry = _dereq_('../registry');
 var Lib = _dereq_('../lib');
 var Plots = _dereq_('../plots/plots');
 var AxisIds = _dereq_('../plots/cartesian/axis_ids');
-var cleanId = AxisIds.cleanId;
-var getFromTrace = AxisIds.getFromTrace;
 var Color = _dereq_('../components/color');
 
+var cleanId = AxisIds.cleanId;
+var getFromTrace = AxisIds.getFromTrace;
+var traceIs = Registry.traceIs;
 
 // clear the promise queue if one of them got rejected
 exports.clearPromiseQueue = function(gd) {
@@ -40892,7 +40948,6 @@ function cleanAxRef(container, attr) {
  */
 function cleanTitle(titleContainer) {
     if(titleContainer) {
-
         // title -> title.text
         // (although title used to be a string attribute,
         // numbers are accepted as well)
@@ -40913,7 +40968,6 @@ function cleanTitle(titleContainer) {
         var newAttrSet = titleContainer.title && titleContainer.title[newAttrName];
 
         if(oldAttrSet && !newAttrSet) {
-
             // Ensure title object exists
             if(!titleContainer.title) {
                 titleContainer.title = {};
@@ -40946,7 +41000,7 @@ exports.cleanData = function(data) {
         // error_y.opacity is obsolete - merge into color
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Color.defaults;
-            var yeColor = trace.error_y.color || (Registry.traceIs(trace, 'bar') ?
+            var yeColor = trace.error_y.color || (traceIs(trace, 'bar') ?
                 Color.defaultLine :
                 dc[tracei % dc.length]);
             trace.error_y.color = Color.addOpacity(
@@ -40958,8 +41012,8 @@ exports.cleanData = function(data) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir === 'h' && (Registry.traceIs(trace, 'bar') ||
-                     trace.type.substr(0, 9) === 'histogram')) {
+            if(trace.bardir === 'h' && (traceIs(trace, 'bar') ||
+                trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
                 exports.swapXYData(trace);
             }
@@ -40988,11 +41042,11 @@ exports.cleanData = function(data) {
         if(trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(Registry.traceIs(trace, 'gl3d') && trace.scene) {
+        if(traceIs(trace, 'gl3d') && trace.scene) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!Registry.traceIs(trace, 'pie') && !Registry.traceIs(trace, 'bar')) {
+        if(!traceIs(trace, 'pie') && !traceIs(trace, 'bar') && trace.type !== 'waterfall') {
             if(Array.isArray(trace.textposition)) {
                 for(i = 0; i < trace.textposition.length; i++) {
                     trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
@@ -41268,7 +41322,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
 
     // delete item
     if(pLastIsNumber && newVal === null) {
-
         // Clear item in array container when new value is null
         var contPath = parts.slice(0, pLength - 1).join('.');
         var cont = Lib.nestedProperty(obj, contPath).get();
@@ -41279,7 +41332,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
     // create item
     else if(pLastIsNumber && np.get() === undefined) {
-
         // When adding a new item, make sure undo command will remove it
         if(np.get() === undefined) undoit[np.astr] = null;
 
@@ -41287,7 +41339,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
     // update item
     else {
-
         // If the last part of attribute string isn't a number,
         // np.set is all we need.
         np.set(newVal);
@@ -42357,7 +42408,6 @@ function assertIndexArray(gd, indices, arrayName) {
  * @param newIndices
  */
 function checkMoveTracesArgs(gd, currentIndices, newIndices) {
-
     // check that gd has attribute 'data' and 'data' is array
     if(!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array.');
@@ -42383,7 +42433,6 @@ function checkMoveTracesArgs(gd, currentIndices, newIndices) {
     if(typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
         throw new Error('current and new indices must be of equal length.');
     }
-
 }
 /**
  * A private function to reduce the type checking clutter in addTraces.
@@ -42440,7 +42489,6 @@ function checkAddTracesArgs(gd, traces, newIndices) {
  * @param maxPoints
  */
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
-
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
 
     if(!Array.isArray(gd.data)) {
@@ -42457,7 +42505,6 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
     assertIndexArray(gd, indices, 'indices');
 
     for(var key in update) {
-
         /*
          * Verify that the attribute to be updated contains as many trace updates
          * as indices. Failure must result in throw and no-op
@@ -42488,7 +42535,6 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  * @return {Object[]}
  */
 function getExtendProperties(gd, update, indices, maxPoints) {
-
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
     var updateProps = [];
     var trace, target, prop, insert, maxp;
@@ -42501,9 +42547,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
 
     // loop through all update keys and traces and harvest validated data.
     for(var key in update) {
-
         for(var j = 0; j < indices.length; j++) {
-
             /*
              * Choose the trace indexed by the indices map argument and get the prop setter-getter
              * instance that references the key and value for this particular trace.
@@ -42790,12 +42834,10 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
     }
 
     try {
-
         // this is redundant, but necessary to not catch later possible errors!
         checkMoveTracesArgs(gd, currentIndices, newIndices);
     }
     catch(error) {
-
         // something went wrong, reset gd to be safe and rethrow error
         gd.data.splice(gd.data.length - traces.length, traces.length);
         throw error;
@@ -42920,7 +42962,6 @@ exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     // get the traces that aren't being moved around
     for(i = 0; i < gd.data.length; i++) {
-
         // if index isn't in currentIndices, include it in ignored!
         if(currentIndices.indexOf(i) === -1) {
             newData.push(gd.data[i]);
@@ -44151,6 +44192,8 @@ var traceUIControlPatterns = [
     // "visible" includes trace.transforms[i].styles[j].value.visible
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
+    {pattern: /^node\.(x|y)/}, // for Sankey nodes
+    {pattern: /^level$/}, // for Sunburst traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -44369,7 +44412,6 @@ exports.react = function(gd, data, layout, config) {
         plotDone = exports.newPlot(gd, data, layout, config);
     }
     else {
-
         if(Lib.isPlainObject(data)) {
             var obj = data;
             data = obj.data;
@@ -44499,7 +44541,6 @@ exports.react = function(gd, data, layout, config) {
 
         return gd;
     });
-
 };
 
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
@@ -44721,7 +44762,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         }
         else if(canBeDataArray) {
             if(wasArray && nowArray) {
-
                 // don't try to diff two data arrays. If immutable we know the data changed,
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
                 if(immutable) {
@@ -45016,7 +45056,6 @@ exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     if(newFrame.onComplete) {
                         newFrame.onComplete();
                     }
-
                 });
 
                 gd.emit('plotly_animatingframe', {
@@ -45280,7 +45319,6 @@ exports.addFrames = function(gd, frameList, indices) {
         if(typeof frame.name === 'number') {
             Lib.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
                 'implicitly cast to strings');
-
         }
 
         if(!frame.name) {
@@ -45425,11 +45463,17 @@ function makePlotFramework(gd) {
         .classed('gl-container', true);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
+    fullLayout._paperdiv.select('.modebar-container').remove();
 
     fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
         .classed('main-svg', true);
 
     fullLayout._toppaper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
+    fullLayout._modebardiv = fullLayout._paperdiv.append('div');
+
+    fullLayout._hoverpaper = fullLayout._paperdiv.append('svg')
         .classed('main-svg', true);
 
     if(!fullLayout._uid) {
@@ -45491,6 +45535,9 @@ function makePlotFramework(gd) {
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
+    // single sunbursrt layer for the whole plot
+    fullLayout._sunburstlayer = fullLayout._paper.append('g').classed('sunburstlayer', true);
+
     // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
 
@@ -45508,11 +45555,10 @@ function makePlotFramework(gd) {
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
-    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+    fullLayout._hoverlayer = fullLayout._hoverpaper.append('g').classed('hoverlayer', true);
 
     // Make the modebar container
-    fullLayout._modebardiv = fullLayout._paperdiv.selectAll('.modebar-container').data([0]);
-    fullLayout._modebardiv.enter().append('div')
+    fullLayout._modebardiv
         .classed('modebar-container', true)
         .style('position', 'absolute')
         .style('top', '0px')
@@ -46405,7 +46451,6 @@ function formatAttributes(attrs) {
 }
 
 function mergeValTypeAndRole(attrs) {
-
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
@@ -46438,7 +46483,6 @@ function mergeValTypeAndRole(attrs) {
 }
 
 function formatArrayContainers(attrs) {
-
     function callback(attr, attrName, attrs) {
         if(!attr) return;
 
@@ -52417,14 +52461,16 @@ function hasBarsOrFill(gd, ax) {
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
 
-        if(trace.visible === true &&
-            (trace.xaxis + trace.yaxis) === subplot &&
-            (
-                Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter] ||
-                trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter
-            )
-        ) {
-            return true;
+        if(trace.visible === true && (trace.xaxis + trace.yaxis) === subplot) {
+            if(
+                (Registry.traceIs(trace, 'bar') || trace.type === 'waterfall') &&
+                trace.orientation === {x: 'h', y: 'v'}[axLetter]
+            ) return true;
+
+            if(
+                trace.fill &&
+                trace.fill.charAt(trace.fill.length - 1) === axLetter
+            ) return true;
         }
     }
     return false;
@@ -53198,7 +53244,7 @@ module.exports = {
     traceLayerClasses: [
         'heatmaplayer',
         'contourcarpetlayer', 'contourlayer',
-        'barlayer',
+        'waterfalllayer', 'barlayer',
         'carpetlayer',
         'violinlayer',
         'boxlayer',
@@ -54296,7 +54342,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // doubleClickConfig === 'reset' below), we reset.
         // If they are *all* at their initial ranges, then we autosize.
         if(doubleClickConfig === 'reset+autosize') {
-
             doubleClickConfig = 'autosize';
 
             for(i = 0; i < axList.length; i++) {
@@ -55337,7 +55382,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         );
 
         // layers that allow `cliponaxis: false`
-        if(className !== 'scatterlayer' && className !== 'barlayer') {
+        if(className !== 'scatterlayer' && className !== 'barlayer' && className !== 'waterfalllayer') {
             Drawing.setClipUrl(sel, plotinfo.layerClipId, gd);
         }
     });
@@ -55353,7 +55398,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     if(!gd._context.staticPlot) {
         if(plotinfo._hasClipOnAxisFalse) {
             plotinfo.clipOnAxisFalseTraces = plotinfo.plot
-                .selectAll('.scatterlayer, .barlayer')
+                .selectAll('.scatterlayer, .barlayer, .waterfalllayer')
                 .selectAll('.trace');
         }
 
@@ -56947,7 +56992,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
                     'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
-
             }
             else if(direction === 'v') {
                 // vertical motion: make a horizontal box
@@ -57365,7 +57409,6 @@ function extractClickedPtInfo(hoverData, searchTraces) {
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
         if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
-
             // Special case for box (and violin)
             if(hoverDatum.hoverOnBox === true) {
                 break;
@@ -58811,8 +58854,6 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
             // table should have been updated and check is already attached,
             // so there's nothing to be done:
             return ret;
-
-
         }
     }
 
@@ -60278,7 +60319,6 @@ function convertOpts(opts) {
     var paint = {};
 
     switch(opts.type) {
-
         case 'circle':
             Lib.extendFlat(paint, {
                 'circle-radius': opts.circle.radius,
@@ -61383,7 +61423,6 @@ plots.resize = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
     return new Promise(function(resolve, reject) {
-
         function isHidden(gd) {
             var display = window.getComputedStyle(gd).display;
             return !display || display === 'none';
@@ -61646,7 +61685,6 @@ plots.supplyDefaults = function(gd, opts) {
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
     if(oldFullLayout._initialAutoSizeIsDone) {
-
         // coerce the updated layout while preserving width and height
         var oldWidth = oldFullLayout.width;
         var oldHeight = oldFullLayout.height;
@@ -61658,7 +61696,6 @@ plots.supplyDefaults = function(gd, opts) {
         plots.sanitizeMargins(newFullLayout);
     }
     else {
-
         // coerce the updated layout and autosize if needed
         plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout, formatObj);
 
@@ -63154,7 +63191,6 @@ plots.doAutoMargin = function(gd) {
     var pushMarginIds = fullLayout._pushmarginIds;
 
     if(fullLayout.margin.autoexpand !== false) {
-
         for(var k in pushMargin) {
             if(!pushMarginIds[k]) delete pushMargin[k];
         }
@@ -63171,7 +63207,6 @@ plots.doAutoMargin = function(gd) {
         // (and t and b) to find the required margins
 
         for(var k1 in pushMargin) {
-
             var pushleft = pushMargin[k1].l || {};
             var pushbottom = pushMargin[k1].b || {};
             var fl = pushleft.val;
@@ -64030,8 +64065,9 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies (and for legend)
+    // for sharing colors across pies / sunbursts (and for legend)
     fullLayout._piecolormap = {};
+    fullLayout._sunburstcolormap = {};
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
@@ -64109,7 +64145,6 @@ plots.doCalcdata = function(gd, traces) {
         var cd = [];
 
         if(trace.visible === true) {
-
             // clear existing ref in case it got relinked
             delete trace._indexToPoints;
             // keep ref of index-to-points map object of the *last* enabled transform,
@@ -66606,7 +66641,6 @@ function keyIsAxis(keyName) {
 
 
 module.exports = function clonePlot(graphObj, options) {
-
     // Polar plot compatibility
     if(graphObj.framework && graphObj.framework.isPolar) {
         graphObj = graphObj.framework.getConfig();
@@ -67065,7 +67099,6 @@ var svgToImg = _dereq_('./svgtoimg');
  * @param opts.format 'jpeg' | 'png' | 'webp' | 'svg'
  */
 function toImage(gd, opts) {
-
     // first clone the GD so we can operate in a clean environment
     var ev = new EventEmitter();
 
@@ -67098,7 +67131,6 @@ function toImage(gd, opts) {
             ev.clean = function() {
                 if(clonedGd) document.body.removeChild(clonedGd);
             };
-
         }, delay);
     }
 
@@ -67382,7 +67414,6 @@ var Lib = _dereq_('../../lib');
 
 // arrayOk attributes, merge them into calcdata array
 module.exports = function arraysToCalcdata(cd, trace) {
-
     // so each point knows which index it originally came from
     for(var i = 0; i < cd.length; i++) cd[i].i = i;
 
@@ -67870,8 +67901,9 @@ function calc(gd, trace) {
     var yAttr = 'y';
     var posAttr;
     if(stackGroupOpts) {
-        stackGroupOpts.traceIndices.push(trace.index);
+        Lib.pushUnique(stackGroupOpts.traceIndices, trace._expandedIndex);
         isV = stackGroupOpts.orientation === 'v';
+
         // size, like we use for bar
         if(isV) {
             yAttr = 's';
@@ -68075,7 +68107,6 @@ function calcMarkerSize(trace, serieslen) {
             sizeOut[i] = markerTrans(s[i]);
         }
         return sizeOut;
-
     } else {
         return markerTrans(marker.size);
     }
@@ -68719,7 +68750,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         // skip the rest (for this trace) if we didn't find a close point
         if(pointData.index !== false) {
-
             // the closest data point
             var di = cd[pointData.index];
             var xc = xa.c2p(di.x, true);
@@ -68837,7 +68867,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 y0: yAvg,
                 y1: yAvg,
                 color: color,
-                hovertemplate: '%{name}'
+                hovertemplate: false
             });
 
             delete pointData.index;
@@ -68964,9 +68994,11 @@ module.exports = function linePoints(d, opts) {
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
     var linear = shape === 'linear';
+    var fill = opts.fill && opts.fill !== 'none';
     var segments = [];
     var minTolerance = constants.minTolerance;
-    var pts = new Array(d.length);
+    var len = d.length;
+    var pts = new Array(len);
     var pti = 0;
 
     var i;
@@ -69093,8 +69125,10 @@ module.exports = function linePoints(d, opts) {
         var ptCount = 0;
         for(var i = 0; i < 4; i++) {
             var edge = edges[i];
-            var ptInt = segmentsIntersect(pt1[0], pt1[1], pt2[0], pt2[1],
-                edge[0], edge[1], edge[2], edge[3]);
+            var ptInt = segmentsIntersect(
+                pt1[0], pt1[1], pt2[0], pt2[1],
+                edge[0], edge[1], edge[2], edge[3]
+            );
             if(ptInt && (!ptCount ||
                 Math.abs(ptInt.x - out[0][0]) > 1 ||
                 Math.abs(ptInt.y - out[0][1]) > 1
@@ -69292,7 +69326,7 @@ module.exports = function linePoints(d, opts) {
     }
 
     // loop over ALL points in this trace
-    for(i = 0; i < d.length; i++) {
+    for(i = 0; i < len; i++) {
         clusterStartPt = getPt(i);
         if(!clusterStartPt) continue;
 
@@ -69301,7 +69335,7 @@ module.exports = function linePoints(d, opts) {
         addPt(clusterStartPt);
 
         // loop over one segment of the trace
-        for(i++; i < d.length; i++) {
+        for(i++; i < len; i++) {
             clusterHighPt = getPt(i);
             if(!clusterHighPt) {
                 if(connectGaps) continue;
@@ -69320,7 +69354,9 @@ module.exports = function linePoints(d, opts) {
 
             clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
 
-            if(clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
+            // #3147 - always include the very first and last points for fills
+            if(!(fill && (pti === 0 || pti === len - 1)) &&
+                clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
 
             clusterUnitVector = [
                 (clusterHighPt[0] - clusterStartPt[0]) / clusterRefDist,
@@ -69835,7 +69871,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
-
         if(tonext) {
             // This tells .style which trace to use for fill information:
             tonext.datum(cdscatter);
@@ -69877,7 +69912,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
             shape: line.shape,
-            simplify: line.simplify
+            simplify: line.simplify,
+            fill: trace.fill
         });
 
         // since we already have the pixel segments here, use them to make

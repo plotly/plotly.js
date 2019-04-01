@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v1.45.3
+* plotly.js (basic) v1.46.0
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var rules = {
     "X .cursor-n-resize": "cursor:n-resize;",
     "X .cursor-ne-resize": "cursor:ne-resize;",
     "X .cursor-grab": "cursor:-webkit-grab;cursor:grab;",
-    "X .modebar": "position:absolute;top:2px;right:2px;z-index:1001;",
+    "X .modebar": "position:absolute;top:2px;right:2px;",
     "X .ease-bg": "-webkit-transition:background-color 0.3s ease 0s;-moz-transition:background-color 0.3s ease 0s;-ms-transition:background-color 0.3s ease 0s;-o-transition:background-color 0.3s ease 0s;transition:background-color 0.3s ease 0s;",
     "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity 0.3s ease 0s;-moz-transition:opacity 0.3s ease 0s;-ms-transition:opacity 0.3s ease 0s;-o-transition:opacity 0.3s ease 0s;transition:opacity 0.3s ease 0s;",
     "X:hover .modebar--hover .modebar-group": "opacity:1;",
@@ -15390,7 +15390,6 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('standoff');
         coerce('startstandoff');
-
     }
 
     var hoverText = coerce('hovertext');
@@ -16222,7 +16221,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         var xUpdate, yUpdate;
                         if(xa) {
                             xUpdate = xa.p2r(xa.r2p(options.x) + dx);
-
                         } else {
                             var widthFraction = options._xsize / gs.w;
                             var xLeft = options.x + (options._xshift - options.xshift) / gs.w - widthFraction / 2;
@@ -16369,7 +16367,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
             end.x += backOffX;
             end.y += backOffY;
             el3.attr({x2: end.x, y2: end.y});
-
         }
 
         if(startBackOff) {
@@ -16383,7 +16380,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
             start.x -= startBackOffX;
             start.y -= startbackOffY;
             el3.attr({x1: start.x, y1: start.y});
-
         }
     }
     else if(el.nodeName === 'path') {
@@ -19541,7 +19537,9 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
         var trace = d[0].trace;
         var xcalendar = trace.xcalendar;
         var ycalendar = trace.ycalendar;
-        var selector = trace.type === 'bar' ? '.bartext' : '.point,.textpoint';
+        var selector = trace.type === 'bar' ? '.bartext' :
+            trace.type === 'waterfall' ? '.bartext,.line' :
+                '.point,.textpoint';
 
         traceGroups.selectAll(selector).each(function(d) {
             drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya, xcalendar, ycalendar);
@@ -22158,7 +22156,8 @@ var pointKeyMap = {
     locations: 'location',
     labels: 'label',
     values: 'value',
-    'marker.colors': 'color'
+    'marker.colors': 'color',
+    parents: 'parent'
 };
 
 function getPointKey(astr) {
@@ -22335,7 +22334,6 @@ exports.loneHover = function loneHover(hoverItem, opts) {
 };
 
 exports.multiHovers = function multiHovers(hoverItems, opts) {
-
     if(!Array.isArray(hoverItems)) {
         hoverItems = [hoverItems];
     }
@@ -22850,11 +22848,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var pt = hoverData[itemnum];
         var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
 
-        var ht = false;
-        if(pt.cd[pt.index] && pt.cd[pt.index].ht) ht = pt.cd[pt.index].ht;
-        hoverData[itemnum].hovertemplate = ht || pt.trace.hovertemplate || false;
-        hoverData[itemnum].eventData = [eventData];
+        if(pt.hovertemplate !== false) {
+            var ht = false;
+            if(pt.cd[pt.index] && pt.cd[pt.index].ht) {
+                ht = pt.cd[pt.index].ht;
+            }
+            pt.hovertemplate = ht || pt.trace.hovertemplate || false;
+        }
 
+        pt.eventData = [eventData];
         newhoverdata.push(eventData);
     }
 
@@ -23240,13 +23242,22 @@ function createHoverText(hoverData, opts, gd) {
             d.pos = hty;
             anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
             anchorEndOK = htx - dx / 2 - txTotalWidth >= 0;
+
             if((d.idealAlign === 'left' || !anchorStartOK) && anchorEndOK) {
                 htx -= dx / 2;
                 d.anchor = 'end';
             } else if(anchorStartOK) {
                 htx += dx / 2;
                 d.anchor = 'start';
-            } else d.anchor = 'middle';
+            } else {
+                d.anchor = 'middle';
+
+                var txHalfWidth = txTotalWidth / 2;
+                var overflowR = htx + txHalfWidth - outerWidth;
+                var overflowL = htx - txHalfWidth;
+                if(overflowR > 0) htx -= overflowR;
+                if(overflowL < 0) htx += -overflowL;
+            }
         }
 
         tx.attr('text-anchor', d.anchor);
@@ -24752,7 +24763,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
 
 function imageDefaults(imageIn, imageOut, fullLayout) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(imageIn, imageOut, attributes, attr, dflt);
     }
@@ -24873,7 +24883,6 @@ module.exports = function draw(gd) {
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
         var imagePromise = new Promise(function(resolve) {
-
             var img = new Image();
             this.img = img;
 
@@ -25842,6 +25851,8 @@ function computeLegendDimensions(gd, groups, traces) {
 
     var extraWidth = 0;
 
+    var traceGap = 5;
+
     opts._width = 0;
     opts._height = 0;
 
@@ -25875,23 +25886,53 @@ function computeLegendDimensions(gd, groups, traces) {
         extraWidth = 40;
     }
     else if(isGrouped) {
-        var groupXOffsets = [opts._width];
+        var maxHeight = 0;
+        var maxWidth = 0;
         var groupData = groups.data();
 
-        for(var i = 0, n = groupData.length; i < n; i++) {
-            var textWidths = groupData[i].map(function(legendItemArray) {
+        var maxItems = 0;
+
+        var i;
+        for(i = 0; i < groupData.length; i++) {
+            var group = groupData[i];
+            var groupWidths = group.map(function(legendItemArray) {
                 return legendItemArray[0].width;
             });
 
-            var groupWidth = 40 + Math.max.apply(null, textWidths);
+            var groupWidth = Lib.aggNums(Math.max, null, groupWidths);
+            var groupHeight = group.reduce(function(a, b) {
+                return a + b[0].height;
+            }, 0);
 
-            opts._width += opts.tracegroupgap + groupWidth;
+            maxWidth = Math.max(maxWidth, groupWidth);
+            maxHeight = Math.max(maxHeight, groupHeight);
+            maxItems = Math.max(maxItems, group.length);
+        }
 
+        maxWidth += traceGap;
+        maxWidth += 40;
+
+        var groupXOffsets = [opts._width];
+        var groupYOffsets = [];
+        var rowNum = 0;
+        for(i = 0; i < groupData.length; i++) {
+            if(fullLayout._size.w < (borderwidth + opts._width + traceGap + maxWidth)) {
+                groupXOffsets[groupXOffsets.length - 1] = groupXOffsets[0];
+                opts._width = maxWidth;
+                rowNum++;
+            } else {
+                opts._width += maxWidth + borderwidth;
+            }
+
+            var rowYOffset = (rowNum * maxHeight);
+            rowYOffset += rowNum > 0 ? opts.tracegroupgap : 0;
+
+            groupYOffsets.push(rowYOffset);
             groupXOffsets.push(opts._width);
         }
 
         groups.each(function(d, i) {
-            Drawing.setTranslate(this, groupXOffsets[i], 0);
+            Drawing.setTranslate(this, groupXOffsets[i], groupYOffsets[i]);
         });
 
         groups.each(function() {
@@ -25909,11 +25950,13 @@ function computeLegendDimensions(gd, groups, traces) {
 
                 groupHeight += textHeight;
             });
-
-            opts._height = Math.max(opts._height, groupHeight);
         });
 
-        opts._height += 10 + borderwidth * 2;
+        var maxYLegend = groupYOffsets[groupYOffsets.length - 1] + maxHeight;
+        opts._height = 10 + (borderwidth * 2) + maxYLegend;
+
+        var maxOffset = Math.max.apply(null, groupXOffsets);
+        opts._width = maxOffset + maxWidth + 40;
         opts._width += borderwidth * 2;
     }
     else {
@@ -25922,7 +25965,6 @@ function computeLegendDimensions(gd, groups, traces) {
         var maxTraceWidth = 0;
         var offsetX = 0;
         var fullTracesWidth = 0;
-        var traceGap = opts.tracegroupgap || 5;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
@@ -26483,6 +26525,7 @@ module.exports = function style(s, gd) {
           .enter().append('g')
             .classed('legendpoints', true);
     })
+    .each(styleWaterfalls)
     .each(styleBars)
     .each(styleBoxes)
     .each(stylePies)
@@ -26567,7 +26610,6 @@ module.exports = function style(s, gd) {
                     trace.colorscale, 'stroke');
             }
         }
-
     }
 
     function stylePoints(d) {
@@ -26661,6 +26703,38 @@ module.exports = function style(s, gd) {
                 .append('text').attr('transform', 'translate(20,0)');
         txt.exit().remove();
         txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
+    }
+
+    function styleWaterfalls(d) {
+        var trace = d[0].trace;
+
+        var ptsData = [];
+        if(trace.type === 'waterfall' && trace.visible) {
+            ptsData = d[0].hasTotals ?
+                [['increasing', 'M-6,-6V6H0Z'], ['totals', 'M6,6H0L-6,-6H-0Z'], ['decreasing', 'M6,6V-6H0Z']] :
+                [['increasing', 'M-6,-6V6H6Z'], ['decreasing', 'M6,6V-6H-6Z']];
+        }
+
+        var pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendwaterfall')
+            .data(ptsData);
+        pts.enter().append('path').classed('legendwaterfall', true)
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
+
+        pts.each(function(dd) {
+            var pt = d3.select(this);
+            var cont = trace[dd[0]].marker;
+
+            pt.attr('d', dd[1])
+                .style('stroke-width', cont.line.width + 'px')
+                .call(Color.fill, cont.color);
+
+            if(cont.line.width) {
+                pt.call(Color.stroke, cont.line.color);
+            }
+        });
     }
 
     function styleBars(d) {
@@ -27952,7 +28026,6 @@ proto.updateActiveButton = function(buttonClicked) {
 
             button3.classed('active', val === thisval);
         }
-
     });
 };
 
@@ -28374,7 +28447,6 @@ module.exports = function draw(gd) {
 
         reposition(gd, buttons, selectorLayout, axisLayout._name, selector);
     });
-
 };
 
 function makeSelectorData(gd) {
@@ -29136,7 +29208,6 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
 }
 
 function setDataRange(rangeSlider, gd, axisOpts, opts) {
-
     function clamp(v) {
         return axisOpts.l2r(Lib.constrain(v, opts._rl[0], opts._rl[1]));
     }
@@ -31198,7 +31269,6 @@ module.exports = function slidersDefaults(layoutIn, layoutOut) {
 };
 
 function sliderDefaults(sliderIn, sliderOut, layoutOut) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(sliderIn, sliderOut, attributes, attr, dflt);
     }
@@ -31566,7 +31636,6 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
 
     sliderGroup.call(setGripPosition, sliderOpts, false);
     sliderGroup.call(drawCurrentValue, sliderOpts);
-
 }
 
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
@@ -31698,7 +31767,6 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
                 dims.currentValueTotalHeight
         );
     });
-
 }
 
 function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransition) {
@@ -31829,7 +31897,6 @@ function drawTicks(sliderGroup, sliderOpts) {
             (isMajor ? constants.tickOffset : constants.minorTickOffset) + dims.currentValueTotalHeight
         );
     });
-
 }
 
 function computeLabelSteps(sliderOpts) {
@@ -32484,7 +32551,6 @@ module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
 };
 
 function menuDefaults(menuIn, menuOut, layoutOut) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
     }
@@ -32672,7 +32738,6 @@ module.exports = function draw(gd) {
         } else {
             drawButtons(gd, gHeader, null, null, menuOpts);
         }
-
     });
 };
 
@@ -33857,7 +33922,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.45.3';
+exports.version = '1.46.0';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -34052,7 +34117,7 @@ function rad2deg(rad) { return rad / PI * 180; }
  * @return {boolean}
  */
 function isFullCircle(aBnds) {
-    return Math.abs(aBnds[1] - aBnds[0]) > twoPI - 1e-15;
+    return Math.abs(aBnds[1] - aBnds[0]) > twoPI - 1e-14;
 }
 
 /**
@@ -34721,7 +34786,6 @@ exports.valObjectMeta = {
         // either be a matching 1D array or an array of such matching 1D arrays
         
         coerceFunction: function(v, propOut, dflt, opts) {
-
             // simplified coerce function just for array items
             function coercePart(v, opts, dflt) {
                 var out;
@@ -35355,7 +35419,6 @@ exports.cleanDate = function(v, dflt, calendar) {
  */
 var fracMatch = /%\d?f/g;
 function modDateFormat(fmt, x, formatter, calendar) {
-
     fmt = fmt.replace(fracMatch, function(match) {
         var digits = Math.min(+(match.charAt(1)) || 6, 6);
         var fracSecs = ((x / 1000 % 1) + 2)
@@ -35594,7 +35657,6 @@ var EventEmitter = _dereq_('events').EventEmitter;
 var Events = {
 
     init: function(plotObj) {
-
         /*
          * If we have already instantiated an emitter for this plot
          * return early.
@@ -35820,7 +35882,6 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     // TODO does this do the right thing for typed arrays?
 
     if(length === 2 && isArray(target) && isArray(inputs[1]) && target.length === 0) {
-
         allPrimitives = primitivesLoopSplice(inputs[1], target);
 
         if(allPrimitives) {
@@ -37109,7 +37170,6 @@ lib.objectFromPath = function(path, value) {
 
             tmpObj = tmpObj[el];
         } else {
-
             if(i === keys.length - 1) {
                 tmpObj[key] = value;
             } else {
@@ -37413,7 +37473,6 @@ lib.pseudoRandom = function() {
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
 module.exports = function isPlainObject(obj) {
-
     // We need to be a little less strict in the `imagetest` container because
     // of how async image requests are handled.
     //
@@ -38953,7 +39012,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             continue;
         }
         if(k.charAt(0) === '_' || typeof fromVal === 'function') {
-
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
             if(k in toContainer) continue;
@@ -38961,7 +39019,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             toContainer[k] = fromVal;
         }
         else if(isArrayOrTypedArray(fromVal) && isArrayOrTypedArray(toVal) && isPlainObject(fromVal[0])) {
-
             // filter out data_array items that can contain user objects
             // most of the time the toVal === fromVal check will catch these early
             // but if the user makes new ones we also don't want to recurse in.
@@ -38976,7 +39033,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             }
         }
         else if(isPlainObject(fromVal) && isPlainObject(toVal)) {
-
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toVal, fromVal);
 
@@ -39463,7 +39519,6 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
-
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
@@ -40526,10 +40581,11 @@ var Registry = _dereq_('../registry');
 var Lib = _dereq_('../lib');
 var Plots = _dereq_('../plots/plots');
 var AxisIds = _dereq_('../plots/cartesian/axis_ids');
-var cleanId = AxisIds.cleanId;
-var getFromTrace = AxisIds.getFromTrace;
 var Color = _dereq_('../components/color');
 
+var cleanId = AxisIds.cleanId;
+var getFromTrace = AxisIds.getFromTrace;
+var traceIs = Registry.traceIs;
 
 // clear the promise queue if one of them got rejected
 exports.clearPromiseQueue = function(gd) {
@@ -40746,7 +40802,6 @@ function cleanAxRef(container, attr) {
  */
 function cleanTitle(titleContainer) {
     if(titleContainer) {
-
         // title -> title.text
         // (although title used to be a string attribute,
         // numbers are accepted as well)
@@ -40767,7 +40822,6 @@ function cleanTitle(titleContainer) {
         var newAttrSet = titleContainer.title && titleContainer.title[newAttrName];
 
         if(oldAttrSet && !newAttrSet) {
-
             // Ensure title object exists
             if(!titleContainer.title) {
                 titleContainer.title = {};
@@ -40800,7 +40854,7 @@ exports.cleanData = function(data) {
         // error_y.opacity is obsolete - merge into color
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Color.defaults;
-            var yeColor = trace.error_y.color || (Registry.traceIs(trace, 'bar') ?
+            var yeColor = trace.error_y.color || (traceIs(trace, 'bar') ?
                 Color.defaultLine :
                 dc[tracei % dc.length]);
             trace.error_y.color = Color.addOpacity(
@@ -40812,8 +40866,8 @@ exports.cleanData = function(data) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir === 'h' && (Registry.traceIs(trace, 'bar') ||
-                     trace.type.substr(0, 9) === 'histogram')) {
+            if(trace.bardir === 'h' && (traceIs(trace, 'bar') ||
+                trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
                 exports.swapXYData(trace);
             }
@@ -40842,11 +40896,11 @@ exports.cleanData = function(data) {
         if(trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(Registry.traceIs(trace, 'gl3d') && trace.scene) {
+        if(traceIs(trace, 'gl3d') && trace.scene) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!Registry.traceIs(trace, 'pie') && !Registry.traceIs(trace, 'bar')) {
+        if(!traceIs(trace, 'pie') && !traceIs(trace, 'bar') && trace.type !== 'waterfall') {
             if(Array.isArray(trace.textposition)) {
                 for(i = 0; i < trace.textposition.length; i++) {
                     trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
@@ -41122,7 +41176,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
 
     // delete item
     if(pLastIsNumber && newVal === null) {
-
         // Clear item in array container when new value is null
         var contPath = parts.slice(0, pLength - 1).join('.');
         var cont = Lib.nestedProperty(obj, contPath).get();
@@ -41133,7 +41186,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
     // create item
     else if(pLastIsNumber && np.get() === undefined) {
-
         // When adding a new item, make sure undo command will remove it
         if(np.get() === undefined) undoit[np.astr] = null;
 
@@ -41141,7 +41193,6 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
     // update item
     else {
-
         // If the last part of attribute string isn't a number,
         // np.set is all we need.
         np.set(newVal);
@@ -42211,7 +42262,6 @@ function assertIndexArray(gd, indices, arrayName) {
  * @param newIndices
  */
 function checkMoveTracesArgs(gd, currentIndices, newIndices) {
-
     // check that gd has attribute 'data' and 'data' is array
     if(!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array.');
@@ -42237,7 +42287,6 @@ function checkMoveTracesArgs(gd, currentIndices, newIndices) {
     if(typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
         throw new Error('current and new indices must be of equal length.');
     }
-
 }
 /**
  * A private function to reduce the type checking clutter in addTraces.
@@ -42294,7 +42343,6 @@ function checkAddTracesArgs(gd, traces, newIndices) {
  * @param maxPoints
  */
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
-
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
 
     if(!Array.isArray(gd.data)) {
@@ -42311,7 +42359,6 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
     assertIndexArray(gd, indices, 'indices');
 
     for(var key in update) {
-
         /*
          * Verify that the attribute to be updated contains as many trace updates
          * as indices. Failure must result in throw and no-op
@@ -42342,7 +42389,6 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  * @return {Object[]}
  */
 function getExtendProperties(gd, update, indices, maxPoints) {
-
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
     var updateProps = [];
     var trace, target, prop, insert, maxp;
@@ -42355,9 +42401,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
 
     // loop through all update keys and traces and harvest validated data.
     for(var key in update) {
-
         for(var j = 0; j < indices.length; j++) {
-
             /*
              * Choose the trace indexed by the indices map argument and get the prop setter-getter
              * instance that references the key and value for this particular trace.
@@ -42644,12 +42688,10 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
     }
 
     try {
-
         // this is redundant, but necessary to not catch later possible errors!
         checkMoveTracesArgs(gd, currentIndices, newIndices);
     }
     catch(error) {
-
         // something went wrong, reset gd to be safe and rethrow error
         gd.data.splice(gd.data.length - traces.length, traces.length);
         throw error;
@@ -42774,7 +42816,6 @@ exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     // get the traces that aren't being moved around
     for(i = 0; i < gd.data.length; i++) {
-
         // if index isn't in currentIndices, include it in ignored!
         if(currentIndices.indexOf(i) === -1) {
             newData.push(gd.data[i]);
@@ -44005,6 +44046,8 @@ var traceUIControlPatterns = [
     // "visible" includes trace.transforms[i].styles[j].value.visible
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
+    {pattern: /^node\.(x|y)/}, // for Sankey nodes
+    {pattern: /^level$/}, // for Sunburst traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -44223,7 +44266,6 @@ exports.react = function(gd, data, layout, config) {
         plotDone = exports.newPlot(gd, data, layout, config);
     }
     else {
-
         if(Lib.isPlainObject(data)) {
             var obj = data;
             data = obj.data;
@@ -44353,7 +44395,6 @@ exports.react = function(gd, data, layout, config) {
 
         return gd;
     });
-
 };
 
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
@@ -44575,7 +44616,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         }
         else if(canBeDataArray) {
             if(wasArray && nowArray) {
-
                 // don't try to diff two data arrays. If immutable we know the data changed,
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
                 if(immutable) {
@@ -44870,7 +44910,6 @@ exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     if(newFrame.onComplete) {
                         newFrame.onComplete();
                     }
-
                 });
 
                 gd.emit('plotly_animatingframe', {
@@ -45134,7 +45173,6 @@ exports.addFrames = function(gd, frameList, indices) {
         if(typeof frame.name === 'number') {
             Lib.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
                 'implicitly cast to strings');
-
         }
 
         if(!frame.name) {
@@ -45279,11 +45317,17 @@ function makePlotFramework(gd) {
         .classed('gl-container', true);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
+    fullLayout._paperdiv.select('.modebar-container').remove();
 
     fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
         .classed('main-svg', true);
 
     fullLayout._toppaper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
+    fullLayout._modebardiv = fullLayout._paperdiv.append('div');
+
+    fullLayout._hoverpaper = fullLayout._paperdiv.append('svg')
         .classed('main-svg', true);
 
     if(!fullLayout._uid) {
@@ -45345,6 +45389,9 @@ function makePlotFramework(gd) {
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
+    // single sunbursrt layer for the whole plot
+    fullLayout._sunburstlayer = fullLayout._paper.append('g').classed('sunburstlayer', true);
+
     // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
 
@@ -45362,11 +45409,10 @@ function makePlotFramework(gd) {
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
-    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+    fullLayout._hoverlayer = fullLayout._hoverpaper.append('g').classed('hoverlayer', true);
 
     // Make the modebar container
-    fullLayout._modebardiv = fullLayout._paperdiv.selectAll('.modebar-container').data([0]);
-    fullLayout._modebardiv.enter().append('div')
+    fullLayout._modebardiv
         .classed('modebar-container', true)
         .style('position', 'absolute')
         .style('top', '0px')
@@ -46259,7 +46305,6 @@ function formatAttributes(attrs) {
 }
 
 function mergeValTypeAndRole(attrs) {
-
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
@@ -46292,7 +46337,6 @@ function mergeValTypeAndRole(attrs) {
 }
 
 function formatArrayContainers(attrs) {
-
     function callback(attr, attrName, attrs) {
         if(!attr) return;
 
@@ -52271,14 +52315,16 @@ function hasBarsOrFill(gd, ax) {
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
 
-        if(trace.visible === true &&
-            (trace.xaxis + trace.yaxis) === subplot &&
-            (
-                Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter] ||
-                trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter
-            )
-        ) {
-            return true;
+        if(trace.visible === true && (trace.xaxis + trace.yaxis) === subplot) {
+            if(
+                (Registry.traceIs(trace, 'bar') || trace.type === 'waterfall') &&
+                trace.orientation === {x: 'h', y: 'v'}[axLetter]
+            ) return true;
+
+            if(
+                trace.fill &&
+                trace.fill.charAt(trace.fill.length - 1) === axLetter
+            ) return true;
         }
     }
     return false;
@@ -53052,7 +53098,7 @@ module.exports = {
     traceLayerClasses: [
         'heatmaplayer',
         'contourcarpetlayer', 'contourlayer',
-        'barlayer',
+        'waterfalllayer', 'barlayer',
         'carpetlayer',
         'violinlayer',
         'boxlayer',
@@ -54150,7 +54196,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // doubleClickConfig === 'reset' below), we reset.
         // If they are *all* at their initial ranges, then we autosize.
         if(doubleClickConfig === 'reset+autosize') {
-
             doubleClickConfig = 'autosize';
 
             for(i = 0; i < axList.length; i++) {
@@ -55191,7 +55236,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         );
 
         // layers that allow `cliponaxis: false`
-        if(className !== 'scatterlayer' && className !== 'barlayer') {
+        if(className !== 'scatterlayer' && className !== 'barlayer' && className !== 'waterfalllayer') {
             Drawing.setClipUrl(sel, plotinfo.layerClipId, gd);
         }
     });
@@ -55207,7 +55252,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     if(!gd._context.staticPlot) {
         if(plotinfo._hasClipOnAxisFalse) {
             plotinfo.clipOnAxisFalseTraces = plotinfo.plot
-                .selectAll('.scatterlayer, .barlayer')
+                .selectAll('.scatterlayer, .barlayer, .waterfalllayer')
                 .selectAll('.trace');
         }
 
@@ -56801,7 +56846,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
                     'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
-
             }
             else if(direction === 'v') {
                 // vertical motion: make a horizontal box
@@ -57219,7 +57263,6 @@ function extractClickedPtInfo(hoverData, searchTraces) {
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
         if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
-
             // Special case for box (and violin)
             if(hoverDatum.hoverOnBox === true) {
                 break;
@@ -58665,8 +58708,6 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
             // table should have been updated and check is already attached,
             // so there's nothing to be done:
             return ret;
-
-
         }
     }
 
@@ -59847,7 +59888,6 @@ plots.resize = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
     return new Promise(function(resolve, reject) {
-
         function isHidden(gd) {
             var display = window.getComputedStyle(gd).display;
             return !display || display === 'none';
@@ -60110,7 +60150,6 @@ plots.supplyDefaults = function(gd, opts) {
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
     if(oldFullLayout._initialAutoSizeIsDone) {
-
         // coerce the updated layout while preserving width and height
         var oldWidth = oldFullLayout.width;
         var oldHeight = oldFullLayout.height;
@@ -60122,7 +60161,6 @@ plots.supplyDefaults = function(gd, opts) {
         plots.sanitizeMargins(newFullLayout);
     }
     else {
-
         // coerce the updated layout and autosize if needed
         plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout, formatObj);
 
@@ -61618,7 +61656,6 @@ plots.doAutoMargin = function(gd) {
     var pushMarginIds = fullLayout._pushmarginIds;
 
     if(fullLayout.margin.autoexpand !== false) {
-
         for(var k in pushMargin) {
             if(!pushMarginIds[k]) delete pushMargin[k];
         }
@@ -61635,7 +61672,6 @@ plots.doAutoMargin = function(gd) {
         // (and t and b) to find the required margins
 
         for(var k1 in pushMargin) {
-
             var pushleft = pushMargin[k1].l || {};
             var pushbottom = pushMargin[k1].b || {};
             var fl = pushleft.val;
@@ -62494,8 +62530,9 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies (and for legend)
+    // for sharing colors across pies / sunbursts (and for legend)
     fullLayout._piecolormap = {};
+    fullLayout._sunburstcolormap = {};
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
@@ -62573,7 +62610,6 @@ plots.doCalcdata = function(gd, traces) {
         var cd = [];
 
         if(trace.visible === true) {
-
             // clear existing ref in case it got relinked
             delete trace._indexToPoints;
             // keep ref of index-to-points map object of the *last* enabled transform,
@@ -64985,7 +65021,6 @@ function keyIsAxis(keyName) {
 
 
 module.exports = function clonePlot(graphObj, options) {
-
     // Polar plot compatibility
     if(graphObj.framework && graphObj.framework.isPolar) {
         graphObj = graphObj.framework.getConfig();
@@ -65444,7 +65479,6 @@ var svgToImg = _dereq_('./svgtoimg');
  * @param opts.format 'jpeg' | 'png' | 'webp' | 'svg'
  */
 function toImage(gd, opts) {
-
     // first clone the GD so we can operate in a clean environment
     var ev = new EventEmitter();
 
@@ -65477,7 +65511,6 @@ function toImage(gd, opts) {
             ev.clean = function() {
                 if(clonedGd) document.body.removeChild(clonedGd);
             };
-
         }, delay);
     }
 
@@ -65687,11 +65720,9 @@ module.exports = function toSVG(gd, format, scale) {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var mergeArray = _dereq_('../../lib').mergeArray;
-
 
 // arrayOk attributes, merge them into calcdata array
 module.exports = function arraysToCalcdata(cd, trace) {
@@ -66044,52 +66075,57 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
     if(!calcTraces.length) return;
 
     var barmode = gd._fullLayout.barmode;
-    var overlay = (barmode === 'overlay');
-    var group = (barmode === 'group');
     var excluded;
     var included;
     var i, calcTrace, fullTrace;
 
     initBase(gd, pa, sa, calcTraces);
 
-    if(overlay) {
-        setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
-    } else if(group) {
-        // exclude from the group those traces for which the user set an offset
-        excluded = [];
-        included = [];
-        for(i = 0; i < calcTraces.length; i++) {
-            calcTrace = calcTraces[i];
-            fullTrace = calcTrace[0].trace;
+    switch(barmode) {
+        case 'overlay':
+            setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
+            break;
 
-            if(fullTrace.offset === undefined) included.push(calcTrace);
-            else excluded.push(calcTrace);
-        }
+        case 'group':
+            // exclude from the group those traces for which the user set an offset
+            excluded = [];
+            included = [];
+            for(i = 0; i < calcTraces.length; i++) {
+                calcTrace = calcTraces[i];
+                fullTrace = calcTrace[0].trace;
 
-        if(included.length) {
-            setGroupPositionsInGroupMode(gd, pa, sa, included);
-        }
-        if(excluded.length) {
-            setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
-        }
-    } else {
-        // exclude from the stack those traces for which the user set a base
-        excluded = [];
-        included = [];
-        for(i = 0; i < calcTraces.length; i++) {
-            calcTrace = calcTraces[i];
-            fullTrace = calcTrace[0].trace;
+                if(fullTrace.offset === undefined) included.push(calcTrace);
+                else excluded.push(calcTrace);
+            }
 
-            if(fullTrace.base === undefined) included.push(calcTrace);
-            else excluded.push(calcTrace);
-        }
+            if(included.length) {
+                setGroupPositionsInGroupMode(gd, pa, sa, included);
+            }
+            if(excluded.length) {
+                setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
+            }
+            break;
 
-        if(included.length) {
-            setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included);
-        }
-        if(excluded.length) {
-            setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
-        }
+        case 'stack':
+        case 'relative':
+            // exclude from the stack those traces for which the user set a base
+            excluded = [];
+            included = [];
+            for(i = 0; i < calcTraces.length; i++) {
+                calcTrace = calcTraces[i];
+                fullTrace = calcTrace[0].trace;
+
+                if(fullTrace.base === undefined) included.push(calcTrace);
+                else excluded.push(calcTrace);
+            }
+
+            if(included.length) {
+                setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included);
+            }
+            if(excluded.length) {
+                setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
+            }
+            break;
     }
 
     collectExtents(calcTraces, pa);
@@ -66141,13 +66177,15 @@ function initBase(gd, pa, sa, calcTraces) {
 
 function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
     var barnorm = gd._fullLayout.barnorm;
-    var separateNegativeValues = false;
-    var dontMergeOverlappingData = !barnorm;
 
     // update position axis and set bar offsets and widths
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-        var sieve = new Sieve([calcTrace], separateNegativeValues, dontMergeOverlappingData);
+
+        var sieve = new Sieve([calcTrace], {
+            sepNegVal: false,
+            overlapNoMerge: !barnorm
+        });
 
         // set bar offsets and widths, and update position axis
         setOffsetAndWidth(gd, pa, sieve);
@@ -66169,12 +66207,18 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
 function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
     var fullLayout = gd._fullLayout;
     var barnorm = fullLayout.barnorm;
-    var separateNegativeValues = false;
-    var dontMergeOverlappingData = !barnorm;
-    var sieve = new Sieve(calcTraces, separateNegativeValues, dontMergeOverlappingData);
+
+    var sieve = new Sieve(calcTraces, {
+        sepNegVal: false,
+        overlapNoMerge: !barnorm
+    });
 
     // set bar offsets and widths, and update position axis
     setOffsetAndWidthInGroupMode(gd, pa, sieve);
+
+    // relative-stack bars within the same trace that would otherwise
+    // be hidden
+    unhideBarsWithinTrace(gd, sa, sieve);
 
     // set bar bases and sizes, and update size axis
     if(barnorm) {
@@ -66188,12 +66232,12 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
 function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
     var fullLayout = gd._fullLayout;
     var barmode = fullLayout.barmode;
-    var stack = barmode === 'stack';
-    var relative = barmode === 'relative';
     var barnorm = fullLayout.barnorm;
-    var separateNegativeValues = relative;
-    var dontMergeOverlappingData = !(barnorm || stack || relative);
-    var sieve = new Sieve(calcTraces, separateNegativeValues, dontMergeOverlappingData);
+
+    var sieve = new Sieve(calcTraces, {
+        sepNegVal: barmode === 'relative',
+        overlapNoMerge: !(barnorm || barmode === 'stack' || barmode === 'relative')
+    });
 
     // set bar offsets and widths, and update position axis
     setOffsetAndWidth(gd, pa, sieve);
@@ -66224,6 +66268,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
     var fullLayout = gd._fullLayout;
     var bargap = fullLayout.bargap;
     var bargroupgap = fullLayout.bargroupgap || 0;
+
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
 
@@ -66549,7 +66594,39 @@ function sieveBars(gd, sa, sieve) {
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
-            if(bar.s !== BADNUM) sieve.put(bar.p, bar.b + bar.s);
+            if(bar.s !== BADNUM) {
+                sieve.put(bar.p, bar.b + bar.s);
+            }
+        }
+    }
+}
+
+function unhideBarsWithinTrace(gd, sa, sieve) {
+    var calcTraces = sieve.traces;
+
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+
+        if(fullTrace.base === undefined) {
+            var inTraceSieve = new Sieve([calcTrace], {
+                sepNegVal: true,
+                overlapNoMerge: true
+            });
+
+            for(var j = 0; j < calcTrace.length; j++) {
+                var bar = calcTrace[j];
+
+                if(bar.p !== BADNUM) {
+                    // stack current bar and get previous sum
+                    var barBase = inTraceSieve.put(bar.p, bar.b + bar.s);
+
+                    // if previous sum if non-zero, this means:
+                    // multiple bars have same starting point are potentially hidden,
+                    // shift them vertically so that all bars are visible by default
+                    if(barBase) bar.b = barBase;
+                }
+            }
         }
     }
 }
@@ -66700,16 +66777,16 @@ var Color = _dereq_('../../components/color');
 var Registry = _dereq_('../../registry');
 
 var handleXYDefaults = _dereq_('../scatter/xy_defaults');
-var handleStyleDefaults = _dereq_('../bar/style_defaults');
+var handleStyleDefaults = _dereq_('./style_defaults');
 var getAxisGroup = _dereq_('../../plots/cartesian/axis_ids').getAxisGroup;
 var attributes = _dereq_('./attributes');
+
+var coerceFont = Lib.coerceFont;
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
-
-    var coerceFont = Lib.coerceFont;
 
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
@@ -66726,34 +66803,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('hovertext');
     coerce('hovertemplate');
 
-    var textPosition = coerce('textposition');
-
-    var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
-    var hasInside = hasBoth || textPosition === 'inside';
-    var hasOutside = hasBoth || textPosition === 'outside';
-
-    if(hasInside || hasOutside) {
-        var textFont = coerceFont(coerce, 'textfont', layout.font);
-
-        // Note that coercing `insidetextfont` is always needed –
-        // even if `textposition` is `outside` for each trace – since
-        // an outside label can become an inside one, for example because
-        // of a bar being stacked on top of it.
-        var insideTextFontDefault = Lib.extendFlat({}, textFont);
-        var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
-        var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
-        if(isColorInheritedFromLayoutFont) {
-            delete insideTextFontDefault.color;
-        }
-        coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
-
-        if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
-
-        coerce('constraintext');
-        coerce('selected.textfont.color');
-        coerce('unselected.textfont.color');
-        coerce('cliponaxis');
-    }
+    handleText(traceIn, traceOut, layout, coerce, true);
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
@@ -66813,25 +66863,60 @@ function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
 
-    for(var i = 0; i < fullData.length; i++) {
-        traceOut = fullData[i];
+    if(fullLayout.barmode === 'group') {
+        for(var i = 0; i < fullData.length; i++) {
+            traceOut = fullData[i];
 
-        if(traceOut.type === 'bar') {
-            traceIn = traceOut._input;
-            if(fullLayout.barmode === 'group') {
+            if(traceOut.type === 'bar') {
+                traceIn = traceOut._input;
                 handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
             }
         }
     }
 }
 
+function handleText(traceIn, traceOut, layout, coerce, moduleHasSelUnselected) {
+    var textPosition = coerce('textposition');
+    var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
+    var hasInside = hasBoth || textPosition === 'inside';
+    var hasOutside = hasBoth || textPosition === 'outside';
+
+    if(hasInside || hasOutside) {
+        var textFont = coerceFont(coerce, 'textfont', layout.font);
+
+        // Note that coercing `insidetextfont` is always needed –
+        // even if `textposition` is `outside` for each trace – since
+        // an outside label can become an inside one, for example because
+        // of a bar being stacked on top of it.
+        var insideTextFontDefault = Lib.extendFlat({}, textFont);
+        var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
+        var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
+        if(isColorInheritedFromLayoutFont) {
+            delete insideTextFontDefault.color;
+        }
+        coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
+
+        if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
+
+        coerce('constraintext');
+
+        if(moduleHasSelUnselected) {
+            coerce('selected.textfont.color');
+            coerce('unselected.textfont.color');
+        }
+
+        coerce('cliponaxis');
+    }
+}
+
 module.exports = {
     supplyDefaults: supplyDefaults,
     crossTraceDefaults: crossTraceDefaults,
-    handleGroupingDefaults: handleGroupingDefaults
+    handleGroupingDefaults: handleGroupingDefaults,
+    handleText: handleText
 };
 
-},{"../../components/color":43,"../../lib":159,"../../plots/cartesian/axis_ids":206,"../../registry":242,"../bar/style_defaults":266,"../scatter/xy_defaults":306,"./attributes":252}],257:[function(_dereq_,module,exports){
+},{"../../components/color":43,"../../lib":159,"../../plots/cartesian/axis_ids":206,"../../registry":242,"../scatter/xy_defaults":306,"./attributes":252,"./style_defaults":266}],257:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -66917,6 +67002,21 @@ var Color = _dereq_('../../components/color');
 var fillHoverText = _dereq_('../scatter/fill_hover_text');
 
 function hoverPoints(pointData, xval, yval, hovermode) {
+    var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
+
+    if(barPointData) {
+        var cd = barPointData.cd;
+        var trace = cd[0].trace;
+        var di = cd[barPointData.index];
+
+        barPointData.color = getTraceColor(trace, di);
+        Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, barPointData);
+
+        return [barPointData];
+    }
+}
+
+function hoverOnBars(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var t = cd[0].t;
@@ -67035,12 +67135,10 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     // in case of bars shifted within groups
     pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);
 
-    pointData.color = getTraceColor(trace, di);
     fillHoverText(di, trace, pointData);
-    Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
-
     pointData.hovertemplate = trace.hovertemplate;
-    return [pointData];
+
+    return pointData;
 }
 
 function getTraceColor(trace, di) {
@@ -67054,6 +67152,7 @@ function getTraceColor(trace, di) {
 
 module.exports = {
     hoverPoints: hoverPoints,
+    hoverOnBars: hoverOnBars,
     getTraceColor: getTraceColor
 };
 
@@ -67170,6 +67269,8 @@ module.exports = function(layoutIn, layoutOut, fullData) {
     var gappedAnyway = false;
     var usedSubplots = {};
 
+    var mode = coerce('barmode');
+
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
         if(Registry.traceIs(trace, 'bar') && trace.visible) hasBars = true;
@@ -67177,7 +67278,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
         // if we have at least 2 grouped bar traces on the same subplot,
         // we should default to a gap anyway, even if the data is histograms
-        if(layoutIn.barmode !== 'overlay' && layoutIn.barmode !== 'stack') {
+        if(mode === 'group') {
             var subploti = trace.xaxis + trace.yaxis;
             if(usedSubplots[subploti]) gappedAnyway = true;
             usedSubplots[subploti] = true;
@@ -67190,9 +67291,11 @@ module.exports = function(layoutIn, layoutOut, fullData) {
         }
     }
 
-    if(!hasBars) return;
+    if(!hasBars) {
+        delete layoutOut.barmode;
+        return;
+    }
 
-    var mode = coerce('barmode');
     if(mode !== 'overlay') coerce('barnorm');
 
     coerce('bargap', (shouldBeGapless && !gappedAnyway) ? 0 : 0.2);
@@ -67230,15 +67333,23 @@ var style = _dereq_('./style');
 // padding in pixels around text
 var TEXTPAD = 3;
 
-module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
+module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
 
-    var bartraces = Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function(cd) {
+    var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
+
+        var adjustDir;
+        var adjustPixel = 0;
+        if(trace.type === 'waterfall' && trace.connector.visible && trace.connector.mode === 'between') {
+            adjustPixel = trace.connector.line.width / 2;
+        }
+
+        var isHorizontal = (trace.orientation === 'h');
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
@@ -67259,7 +67370,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
             // log values go off-screen by plotwidth
             // so you see them continue if you drag the plot
             var x0, x1, y0, y1;
-            if(trace.orientation === 'h') {
+            if(isHorizontal) {
                 y0 = ya.c2p(di.p0, true);
                 y1 = ya.c2p(di.p1, true);
                 x0 = xa.c2p(di.s0, true);
@@ -67267,8 +67378,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 
                 // for selections
                 di.ct = [x1, (y0 + y1) / 2];
-            }
-            else {
+            } else {
                 x0 = xa.c2p(di.p0, true);
                 x1 = xa.c2p(di.p1, true);
                 y0 = ya.c2p(di.s0, true);
@@ -67278,21 +67388,49 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 di.ct = [(x0 + x1) / 2, y1];
             }
 
-            if(!isNumeric(x0) || !isNumeric(x1) ||
-                    !isNumeric(y0) || !isNumeric(y1) ||
-                    x0 === x1 || y0 === y1) {
-                bar.remove();
-                return;
+            var isBlank = di.isBlank = (
+                !isNumeric(x0) || !isNumeric(x1) ||
+                !isNumeric(y0) || !isNumeric(y1) ||
+                x0 === x1 || y0 === y1
+            );
+
+            // in waterfall mode `between` we need to adjust bar end points to match the connector width
+            if(adjustPixel) {
+                if(isHorizontal) {
+                    adjustDir = (x1 < x0) ? -1 : 1;
+                    x0 -= adjustDir * adjustPixel;
+                    x1 += adjustDir * adjustPixel;
+                } else {
+                    adjustDir = (y1 < y0) ? -1 : 1;
+                    y0 -= adjustDir * adjustPixel;
+                    y1 += adjustDir * adjustPixel;
+                }
             }
 
-            var lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
+            var lw;
+            var mc;
+            var prefix;
+
+            if(trace.type === 'waterfall') {
+                var cont = trace[di.dir].marker;
+                lw = cont.line.width;
+                mc = cont.color;
+                prefix = 'waterfall';
+            } else {
+                lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
                     (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
+                mc = di.mc || trace.marker.color;
+                prefix = 'bar';
+            }
+
             var offset = d3.round((lw / 2) % 1, 2);
+            var bargap = fullLayout[prefix + 'gap'];
+            var bargroupgap = fullLayout[prefix + 'groupgap'];
 
             function roundWithLine(v) {
                 // if there are explicit gaps, don't round,
                 // it can make the gaps look crappy
-                return (fullLayout.bargap === 0 && fullLayout.bargroupgap === 0) ?
+                return (bargap === 0 && bargroupgap === 0) ?
                     d3.round(Math.round(v) - offset, 2) : v;
             }
 
@@ -67313,7 +67451,8 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                 // pixelation. if the bars ARE fully opaque and have
                 // no line, expand to a full pixel to make sure we
                 // can see them
-                var op = Color.opacity(di.mc || trace.marker.color);
+
+                var op = Color.opacity(mc);
                 var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
                 x0 = fixpx(x0, x1);
                 x1 = fixpx(x1, x0);
@@ -67323,8 +67462,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 
             Lib.ensureSingle(bar, 'path')
                 .style('vector-effect', 'non-scaling-stroke')
-                .attr('d',
-                    'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                .attr('d', isBlank ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
             appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
@@ -67345,6 +67483,7 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
+    var fullLayout = gd._fullLayout;
     var textPosition;
 
     function appendTextNode(bar, text, textFont) {
@@ -67371,27 +67510,28 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var text = getText(trace, i);
     textPosition = getTextPosition(trace, i);
 
-    if(!text || textPosition === 'none') {
-        bar.select('text').remove();
-        return;
-    }
-
-    var layoutFont = gd._fullLayout.font;
+    var layoutFont = fullLayout.font;
     var barColor = style.getBarColor(calcTrace[i], trace);
     var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
 
     // compute text position
-    var barmode = gd._fullLayout.barmode;
-    var inStackMode = (barmode === 'stack');
-    var inRelativeMode = (barmode === 'relative');
-    var inStackOrRelativeMode = inStackMode || inRelativeMode;
+    var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
+    var barmode = fullLayout[prefix + 'mode'];
+    var inStackOrRelativeMode = barmode === 'stack' || barmode === 'relative';
 
     var calcBar = calcTrace[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
 
-    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;  // padding excluded
-    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;  // padding excluded
+    // padding excluded
+    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
+    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
+
+    if(!text || textPosition === 'none' ||
+        (calcBar.isBlank && (textPosition === 'auto' || textPosition === 'inside'))) {
+        bar.select('text').remove();
+        return;
+    }
 
     var textSelection;
     var textBB;
@@ -67422,14 +67562,14 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
             if(textHasSize &&
                     (fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk)) {
                 textPosition = 'inside';
-            }
-            else {
+            } else {
                 textPosition = 'outside';
                 textSelection.remove();
                 textSelection = null;
             }
+        } else {
+            textPosition = 'inside';
         }
-        else textPosition = 'inside';
     }
 
     if(!textSelection) {
@@ -67453,8 +67593,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'outside';
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
             orientation, constrained);
-    }
-    else {
+    } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
             orientation, constrained);
@@ -67482,8 +67621,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
         textpad = TEXTPAD;
         barWidth -= 2 * textpad;
         barHeight -= 2 * textpad;
-    }
-    else textpad = 0;
+    } else textpad = 0;
 
     // compute rotation and scale
     var rotate,
@@ -67493,18 +67631,15 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
         // no scale or rotation is required
         rotate = false;
         scale = 1;
-    }
-    else if(textWidth <= barHeight && textHeight <= barWidth) {
+    } else if(textWidth <= barHeight && textHeight <= barWidth) {
         // only rotation is required
         rotate = true;
         scale = 1;
-    }
-    else if((textWidth < textHeight) === (barWidth < barHeight)) {
+    } else if((textWidth < textHeight) === (barWidth < barHeight)) {
         // only scale is required
         rotate = false;
         scale = constrained ? Math.min(barWidth / textWidth, barHeight / textHeight) : 1;
-    }
-    else {
+    } else {
         // both scale and rotation are required
         rotate = true;
         scale = constrained ? Math.min(barHeight / textWidth, barWidth / textHeight) : 1;
@@ -67516,8 +67651,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
     if(rotate) {
         targetWidth = scale * textHeight;
         targetHeight = scale * textWidth;
-    }
-    else {
+    } else {
         targetWidth = scale * textWidth;
         targetHeight = scale * textHeight;
     }
@@ -67527,19 +67661,16 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
             // bar end is on the left hand side
             targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
-        }
-        else {
+        } else {
             targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
-    }
-    else {
+    } else {
         if(y1 > y0) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
             targetY = y1 - textpad - targetHeight / 2;
-        }
-        else {
+        } else {
             targetX = (x0 + x1) / 2;
             targetY = y1 + textpad + targetHeight / 2;
         }
@@ -67584,19 +67715,16 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
             // bar end is on the left hand side
             targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
-        }
-        else {
+        } else {
             targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
-    }
-    else {
+    } else {
         if(y1 > y0) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
             targetY = y1 + textpad + targetHeight / 2;
-        }
-        else {
+        } else {
             targetX = (x0 + x1) / 2;
             targetY = y1 - textpad - targetHeight / 2;
         }
@@ -67700,18 +67828,20 @@ var BADNUM = _dereq_('../../constants/numerical').BADNUM;
  * Helper class to sieve data from traces into bins
  *
  * @class
- * @param {Array}   traces
- *                  Array of calculated traces
- * @param {boolean} [separateNegativeValues]
- *                  If true, then split data at the same position into a bar
- *                  for positive values and another for negative values
- * @param {boolean} [dontMergeOverlappingData]
- *                  If true, then don't merge overlapping bars into a single bar
+ *
+ * @param {Array} traces
+*   Array of calculated traces
+ * @param {object} opts
+ *  - @param {boolean} [sepNegVal]
+ *      If true, then split data at the same position into a bar
+ *      for positive values and another for negative values
+ *  - @param {boolean} [overlapNoMerge]
+ *     If true, then don't merge overlapping bars into a single bar
  */
-function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
+function Sieve(traces, opts) {
     this.traces = traces;
-    this.separateNegativeValues = separateNegativeValues;
-    this.dontMergeOverlappingData = dontMergeOverlappingData;
+    this.sepNegVal = opts.sepNegVal;
+    this.overlapNoMerge = opts.overlapNoMerge;
 
     // for single-bin histograms - see histogram/calc
     var width1 = Infinity;
@@ -67762,7 +67892,7 @@ Sieve.prototype.put = function put(position, value) {
  * @method
  * @param {number} position  Position of datum
  * @param {number} [value]   Value of datum
- *                           (required if this.separateNegativeValues is true)
+ *                           (required if this.sepNegVal is true)
  * @returns {number} Current bin value
  */
 Sieve.prototype.get = function put(position, value) {
@@ -67776,14 +67906,14 @@ Sieve.prototype.get = function put(position, value) {
  * @method
  * @param {number} position  Position of datum
  * @param {number} [value]   Value of datum
- *                           (required if this.separateNegativeValues is true)
+ *                           (required if this.sepNegVal is true)
  * @returns {string} Bin label
- * (prefixed with a 'v' if value is negative and this.separateNegativeValues is
+ * (prefixed with a 'v' if value is negative and this.sepNegVal is
  * true; otherwise prefixed with '^')
  */
 Sieve.prototype.getLabel = function getLabel(position, value) {
-    var prefix = (value < 0 && this.separateNegativeValues) ? 'v' : '^';
-    var label = (this.dontMergeOverlappingData) ?
+    var prefix = (value < 0 && this.sepNegVal) ? 'v' : '^';
+    var label = (this.overlapNoMerge) ?
         position :
         Math.round(position / this.binWidth);
     return prefix + label;
@@ -67797,7 +67927,6 @@ Sieve.prototype.getLabel = function getLabel(position, value) {
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -67814,7 +67943,7 @@ var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = _dereq_('./helpers');
 
 function style(gd, cd) {
-    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.bars');
+    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
     var barcount = s.size();
     var fullLayout = gd._fullLayout;
 
@@ -67843,12 +67972,12 @@ function style(gd, cd) {
 }
 
 function stylePoints(sel, trace, gd) {
-    var pts = sel.selectAll('path');
-    var txs = sel.selectAll('text');
+    Drawing.pointStyle(sel.selectAll('path'), trace, gd);
+    styleTextPoints(sel, trace, gd);
+}
 
-    Drawing.pointStyle(pts, trace, gd);
-
-    txs.each(function(d) {
+function styleTextPoints(sel, trace, gd) {
+    sel.selectAll('text').each(function(d) {
         var tx = d3.select(this);
         var font = determineFont(tx, d, trace, gd);
         Drawing.font(tx, font);
@@ -67952,11 +68081,15 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
 }
 
 function getBarColor(cd, trace) {
+    if(trace.type === 'waterfall') {
+        return trace[cd.dir].marker.color;
+    }
     return cd.mc || trace.marker.color;
 }
 
 module.exports = {
     style: style,
+    styleTextPoints: styleTextPoints,
     styleOnSelect: styleOnSelect,
     getInsideTextFont: getInsideTextFont,
     getOutsideTextFont: getOutsideTextFont,
@@ -68272,8 +68405,7 @@ exports.name = 'pie';
 exports.plot = function(gd) {
     var Pie = Registry.getModule('pie');
     var cdPie = getModuleCalcData(gd.calcdata, Pie)[0];
-
-    if(cdPie.length) Pie.plot(gd, cdPie);
+    Pie.plot(gd, cdPie);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
@@ -68303,14 +68435,15 @@ var tinycolor = _dereq_('tinycolor2');
 var Color = _dereq_('../../components/color');
 var helpers = _dereq_('./helpers');
 
-exports.calc = function calc(gd, trace) {
+var pieExtendedColorWays = {};
+
+function calc(gd, trace) {
     var vals = trace.values;
     var hasVals = isArrayOrTypedArray(vals) && vals.length;
     var labels = trace.labels;
     var colors = trace.marker.colors || [];
     var cd = [];
     var fullLayout = gd._fullLayout;
-    var colorMap = fullLayout._piecolormap;
     var allThisTraceLabels = {};
     var vTotal = 0;
     var hiddenLabels = fullLayout.hiddenlabels || [];
@@ -68324,18 +68457,7 @@ exports.calc = function calc(gd, trace) {
         }
     }
 
-    function pullColor(color, label) {
-        if(!color) return false;
-
-        color = tinycolor(color);
-        if(!color.isValid()) return false;
-
-        color = Color.addOpacity(color, color.getAlpha());
-        if(!colorMap[label]) colorMap[label] = color;
-
-        return color;
-    }
-
+    var pullColor = makePullColorFn(fullLayout._piecolormap);
     var seriesLen = (hasVals ? vals : labels).length;
 
     for(i = 0; i < seriesLen; i++) {
@@ -68409,7 +68531,21 @@ exports.calc = function calc(gd, trace) {
     }
 
     return cd;
-};
+}
+
+function makePullColorFn(colorMap) {
+    return function pullColor(color, id) {
+        if(!color) return false;
+
+        color = tinycolor(color);
+        if(!color.isValid()) return false;
+
+        color = Color.addOpacity(color, color.getAlpha());
+        if(!colorMap[id]) colorMap[id] = color;
+
+        return color;
+    };
+}
 
 /*
  * `calc` filled in (and collated) explicit colors.
@@ -68418,45 +68554,41 @@ exports.calc = function calc(gd, trace) {
  * This is done after sorting, so we pick defaults
  * in the order slices will be displayed
  */
-exports.crossTraceCalc = function(gd) {
+function crossTraceCalc(gd) {
     var fullLayout = gd._fullLayout;
     var calcdata = gd.calcdata;
     var pieColorWay = fullLayout.piecolorway;
     var colorMap = fullLayout._piecolormap;
 
     if(fullLayout.extendpiecolors) {
-        pieColorWay = generateExtendedColors(pieColorWay);
+        pieColorWay = generateExtendedColors(pieColorWay, pieExtendedColorWays);
     }
     var dfltColorCount = 0;
 
-    var i, j, cd, pt;
-    for(i = 0; i < calcdata.length; i++) {
-        cd = calcdata[i];
+    for(var i = 0; i < calcdata.length; i++) {
+        var cd = calcdata[i];
         if(cd[0].trace.type !== 'pie') continue;
 
-        for(j = 0; j < cd.length; j++) {
-            pt = cd[j];
+        for(var j = 0; j < cd.length; j++) {
+            var pt = cd[j];
             if(pt.color === false) {
                 // have we seen this label and assigned a color to it in a previous trace?
                 if(colorMap[pt.label]) {
                     pt.color = colorMap[pt.label];
-                }
-                else {
+                } else {
                     colorMap[pt.label] = pt.color = pieColorWay[dfltColorCount % pieColorWay.length];
                     dfltColorCount++;
                 }
             }
         }
     }
-};
+}
 
 /**
  * pick a default color from the main default set, augmented by
  * itself lighter then darker before repeating
  */
-var extendedColorWays = {};
-
-function generateExtendedColors(colorList) {
+function generateExtendedColors(colorList, extendedColorWays) {
     var i;
     var colorString = JSON.stringify(colorList);
     var pieColors = extendedColorWays[colorString];
@@ -68475,6 +68607,14 @@ function generateExtendedColors(colorList) {
 
     return pieColors;
 }
+
+module.exports = {
+    calc: calc,
+    crossTraceCalc: crossTraceCalc,
+
+    makePullColorFn: makePullColorFn,
+    generateExtendedColors: generateExtendedColors
+};
 
 },{"../../components/color":43,"../../lib":159,"./helpers":272,"fast-isnumeric":10,"tinycolor2":26}],270:[function(_dereq_,module,exports){
 /**
@@ -68679,7 +68819,7 @@ var calcModule = _dereq_('./calc');
 Pie.calc = calcModule.calc;
 Pie.crossTraceCalc = calcModule.crossTraceCalc;
 
-Pie.plot = _dereq_('./plot');
+Pie.plot = _dereq_('./plot').plot;
 Pie.style = _dereq_('./style');
 Pie.styleOne = _dereq_('./style_one');
 
@@ -68775,7 +68915,7 @@ var svgTextUtils = _dereq_('../../lib/svg_text_utils');
 var helpers = _dereq_('./helpers');
 var eventData = _dereq_('./event_data');
 
-module.exports = function plot(gd, cdpie) {
+function plot(gd, cdpie) {
     var fullLayout = gd._fullLayout;
 
     prerenderTitles(cdpie, gd);
@@ -68822,139 +68962,11 @@ module.exports = function plot(gd, cdpie) {
                 var sliceTop = d3.select(this);
                 var slicePath = sliceTop.selectAll('path.surface').data([pt]);
 
-                // hover state vars
-                // have we drawn a hover label, so it should be cleared later
-                var hasHoverLabel = false;
-                // have we emitted a hover event, so later an unhover event should be emitted
-                // note that click events do not depend on this - you can still get them
-                // with hovermode: false or if you were earlier dragging, then clicked
-                // in the same slice that you moused up in
-                var hasHoverEvent = false;
-
-                function handleMouseOver() {
-                    // in case fullLayout or fullData has changed without a replot
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(gd._dragging || fullLayout2.hovermode === false) return;
-
-                    var hoverinfo = trace2.hoverinfo;
-                    if(Array.isArray(hoverinfo)) {
-                        // super hacky: we need to pull out the *first* hoverinfo from
-                        // pt.pts, then put it back into an array in a dummy trace
-                        // and call castHoverinfo on that.
-                        // TODO: do we want to have Fx.castHoverinfo somehow handle this?
-                        // it already takes an array for index, for 2D, so this seems tricky.
-                        hoverinfo = Fx.castHoverinfo({
-                            hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
-                            _module: trace._module
-                        }, fullLayout2, 0);
-                    }
-
-                    if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
-
-                    // in case we dragged over the pie from another subplot,
-                    // or if hover is turned off
-                    if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
-                        var rInscribed = getInscribedRadiusFraction(pt, cd0);
-                        var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
-                        var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
-                        var separators = fullLayout.separators;
-                        var thisText = [];
-
-                        if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
-                        pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
-                        if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
-                            var texti = pt.text;
-                            if(texti) thisText.push(texti);
-                        }
-                        pt.value = pt.v;
-                        pt.valueLabel = helpers.formatPieValue(pt.v, separators);
-                        if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
-                        pt.percent = pt.v / cd0.vTotal;
-                        pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
-                        if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
-
-                        var hoverLabel = trace.hoverlabel;
-                        var hoverFont = hoverLabel.font;
-
-                        Fx.loneHover({
-                            x0: hoverCenterX - rInscribed * cd0.r,
-                            x1: hoverCenterX + rInscribed * cd0.r,
-                            y: hoverCenterY,
-                            text: thisText.join('<br>'),
-                            name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
-                            idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
-                            color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
-                            borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
-                            fontFamily: helpers.castOption(hoverFont.family, pt.pts),
-                            fontSize: helpers.castOption(hoverFont.size, pt.pts),
-                            fontColor: helpers.castOption(hoverFont.color, pt.pts),
-
-                            trace: trace2,
-                            hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
-                            hovertemplateLabels: pt,
-                            eventData: [eventData(pt, trace2)]
-                        }, {
-                            container: fullLayout2._hoverlayer.node(),
-                            outerContainer: fullLayout2._paper.node(),
-                            gd: gd
-                        });
-
-                        hasHoverLabel = true;
-                    }
-
-                    gd.emit('plotly_hover', {
-                        points: [eventData(pt, trace2)],
-                        event: d3.event
-                    });
-                    hasHoverEvent = true;
-                }
-
-                function handleMouseOut(evt) {
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(hasHoverEvent) {
-                        evt.originalEvent = d3.event;
-                        gd.emit('plotly_unhover', {
-                            points: [eventData(pt, trace2)],
-                            event: d3.event
-                        });
-                        hasHoverEvent = false;
-                    }
-
-                    if(hasHoverLabel) {
-                        Fx.loneUnhover(fullLayout2._hoverlayer.node());
-                        hasHoverLabel = false;
-                    }
-                }
-
-                function handleClick() {
-                    // TODO: this does not support right-click. If we want to support it, we
-                    // would likely need to change pie to use dragElement instead of straight
-                    // mapbox event binding. Or perhaps better, make a simple wrapper with the
-                    // right mousedown, mousemove, and mouseup handlers just for a left/right click
-                    // mapbox would use this too.
-                    var fullLayout2 = gd._fullLayout;
-                    var trace2 = gd._fullData[trace.index];
-
-                    if(gd._dragging || fullLayout2.hovermode === false) return;
-
-                    gd._hoverdata = [eventData(pt, trace2)];
-                    Fx.click(gd, d3.event);
-                }
-
                 slicePath.enter().append('path')
                     .classed('surface', true)
                     .style({'pointer-events': 'all'});
 
-                sliceTop.select('path.textline').remove();
-
-                sliceTop
-                    .on('mouseover', handleMouseOver)
-                    .on('mouseout', handleMouseOut)
-                    .on('click', handleClick);
+                sliceTop.call(attachFxHandlers, gd, cd);
 
                 if(trace.pull) {
                     var pull = +helpers.castOption(trace.pull, pt.pts) || 0;
@@ -68987,7 +68999,6 @@ module.exports = function plot(gd, cdpie) {
                     }
                     else slicePath.attr('d', outerCircle);
                 } else {
-
                     var outerArc = arc(pt.px0, pt.px1, true, 1);
 
                     if(hole) {
@@ -69119,50 +69130,8 @@ module.exports = function plot(gd, cdpie) {
 
             // now make sure no labels overlap (at least within one pie)
             if(hasOutsideText) scootLabels(quadrants, trace);
-            slices.each(function(pt) {
-                if(pt.labelExtraX || pt.labelExtraY) {
-                    // first move the text to its new location
-                    var sliceTop = d3.select(this);
-                    var sliceText = sliceTop.select('g.slicetext text');
 
-                    sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
-                        sliceText.attr('transform'));
-
-                    // then add a line to the new location
-                    var lineStartX = pt.cxFinal + pt.pxmid[0];
-                    var lineStartY = pt.cyFinal + pt.pxmid[1];
-                    var textLinePath = 'M' + lineStartX + ',' + lineStartY;
-                    var finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
-
-                    if(pt.labelExtraX) {
-                        var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0];
-                        var yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
-
-                        if(Math.abs(yFromX) > Math.abs(yNet)) {
-                            textLinePath +=
-                                'l' + (yNet * pt.pxmid[0] / pt.pxmid[1]) + ',' + yNet +
-                                'H' + (lineStartX + pt.labelExtraX + finalX);
-                        } else {
-                            textLinePath += 'l' + pt.labelExtraX + ',' + yFromX +
-                                'v' + (yNet - yFromX) +
-                                'h' + finalX;
-                        }
-                    } else {
-                        textLinePath +=
-                            'V' + (pt.yLabelMid + pt.labelExtraY) +
-                            'h' + finalX;
-                    }
-
-                    sliceTop.append('path')
-                        .classed('textline', true)
-                        .call(Color.stroke, trace.outsidetextfont.color)
-                        .attr({
-                            'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
-                            d: textLinePath,
-                            fill: 'none'
-                        });
-                }
-            });
+            plotTextLines(slices, trace);
         });
     });
 
@@ -69178,7 +69147,189 @@ module.exports = function plot(gd, cdpie) {
             if(s.attr('dy')) s.attr('dy', s.attr('dy'));
         });
     }, 0);
-};
+}
+
+// TODO add support for transition
+function plotTextLines(slices, trace) {
+    slices.each(function(pt) {
+        var sliceTop = d3.select(this);
+
+        if(!pt.labelExtraX && !pt.labelExtraY) {
+            sliceTop.select('path.textline').remove();
+            return;
+        }
+
+        // first move the text to its new location
+        var sliceText = sliceTop.select('g.slicetext text');
+
+        sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
+            sliceText.attr('transform'));
+
+        // then add a line to the new location
+        var lineStartX = pt.cxFinal + pt.pxmid[0];
+        var lineStartY = pt.cyFinal + pt.pxmid[1];
+        var textLinePath = 'M' + lineStartX + ',' + lineStartY;
+        var finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
+
+        if(pt.labelExtraX) {
+            var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0];
+            var yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
+
+            if(Math.abs(yFromX) > Math.abs(yNet)) {
+                textLinePath +=
+                    'l' + (yNet * pt.pxmid[0] / pt.pxmid[1]) + ',' + yNet +
+                    'H' + (lineStartX + pt.labelExtraX + finalX);
+            } else {
+                textLinePath += 'l' + pt.labelExtraX + ',' + yFromX +
+                    'v' + (yNet - yFromX) +
+                    'h' + finalX;
+            }
+        } else {
+            textLinePath +=
+                'V' + (pt.yLabelMid + pt.labelExtraY) +
+                'h' + finalX;
+        }
+
+        Lib.ensureSingle(sliceTop, 'path', 'textline')
+            .call(Color.stroke, trace.outsidetextfont.color)
+            .attr({
+                'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
+                d: textLinePath,
+                fill: 'none'
+            });
+    });
+}
+
+function attachFxHandlers(sliceTop, gd, cd) {
+    var cd0 = cd[0];
+    var trace = cd0.trace;
+    var cx = cd0.cx;
+    var cy = cd0.cy;
+
+    // hover state vars
+    // have we drawn a hover label, so it should be cleared later
+    if(!('_hasHoverLabel' in trace)) trace._hasHoverLabel = false;
+    // have we emitted a hover event, so later an unhover event should be emitted
+    // note that click events do not depend on this - you can still get them
+    // with hovermode: false or if you were earlier dragging, then clicked
+    // in the same slice that you moused up in
+    if(!('_hasHoverEvent' in trace)) trace._hasHoverEvent = false;
+
+    sliceTop.on('mouseover', function(pt) {
+        // in case fullLayout or fullData has changed without a replot
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+
+        if(gd._dragging || fullLayout2.hovermode === false) return;
+
+        var hoverinfo = trace2.hoverinfo;
+        if(Array.isArray(hoverinfo)) {
+            // super hacky: we need to pull out the *first* hoverinfo from
+            // pt.pts, then put it back into an array in a dummy trace
+            // and call castHoverinfo on that.
+            // TODO: do we want to have Fx.castHoverinfo somehow handle this?
+            // it already takes an array for index, for 2D, so this seems tricky.
+            hoverinfo = Fx.castHoverinfo({
+                hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
+                _module: trace._module
+            }, fullLayout2, 0);
+        }
+
+        if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
+
+        // in case we dragged over the pie from another subplot,
+        // or if hover is turned off
+        if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
+            var rInscribed = pt.rInscribed;
+            var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
+            var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
+            var separators = fullLayout2.separators;
+            var thisText = [];
+
+            if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+            pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+            if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
+                var texti = pt.text;
+                if(texti) thisText.push(texti);
+            }
+            pt.value = pt.v;
+            pt.valueLabel = helpers.formatPieValue(pt.v, separators);
+            if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
+            pt.percent = pt.v / cd0.vTotal;
+            pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
+            if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
+
+            var hoverLabel = trace.hoverlabel;
+            var hoverFont = hoverLabel.font;
+
+            Fx.loneHover({
+                x0: hoverCenterX - rInscribed * cd0.r,
+                x1: hoverCenterX + rInscribed * cd0.r,
+                y: hoverCenterY,
+                text: thisText.join('<br>'),
+                name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
+                idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
+                color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
+                borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
+                fontFamily: helpers.castOption(hoverFont.family, pt.pts),
+                fontSize: helpers.castOption(hoverFont.size, pt.pts),
+                fontColor: helpers.castOption(hoverFont.color, pt.pts),
+
+                trace: trace2,
+                hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
+                hovertemplateLabels: pt,
+                eventData: [eventData(pt, trace2)]
+            }, {
+                container: fullLayout2._hoverlayer.node(),
+                outerContainer: fullLayout2._paper.node(),
+                gd: gd
+            });
+
+            trace._hasHoverLabel = true;
+        }
+
+        trace._hasHoverEvent = true;
+        gd.emit('plotly_hover', {
+            points: [eventData(pt, trace2)],
+            event: d3.event
+        });
+    });
+
+    sliceTop.on('mouseout', function(evt) {
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+        var pt = d3.select(this).datum();
+
+        if(trace._hasHoverEvent) {
+            evt.originalEvent = d3.event;
+            gd.emit('plotly_unhover', {
+                points: [eventData(pt, trace2)],
+                event: d3.event
+            });
+            trace._hasHoverEvent = false;
+        }
+
+        if(trace._hasHoverLabel) {
+            Fx.loneUnhover(fullLayout2._hoverlayer.node());
+            trace._hasHoverLabel = false;
+        }
+    });
+
+    sliceTop.on('click', function(pt) {
+        // TODO: this does not support right-click. If we want to support it, we
+        // would likely need to change pie to use dragElement instead of straight
+        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // right mousedown, mousemove, and mouseup handlers just for a left/right click
+        // mapbox would use this too.
+        var fullLayout2 = gd._fullLayout;
+        var trace2 = gd._fullData[trace.index];
+
+        if(gd._dragging || fullLayout2.hovermode === false) return;
+
+        gd._hoverdata = [eventData(pt, trace2)];
+        Fx.click(gd, d3.event);
+    });
+}
 
 function determineOutsideTextFont(trace, pt, layoutFont) {
     var color = helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
@@ -69203,7 +69354,6 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
 function determineInsideTextFont(trace, pt, layoutFont) {
     var customColor = helpers.castOption(trace.insidetextfont.color, pt.pts);
     if(!customColor && trace._input.textfont) {
-
         // Why not simply using trace.textfont? Because if not set, it
         // defaults to layout.font which has a default color. But if
         // textfont.color and insidetextfont.color don't supply a value,
@@ -69258,16 +69408,17 @@ function prerenderTitles(cdpie, gd) {
 function transformInsideText(textBB, pt, cd0) {
     var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
     var textAspect = textBB.width / textBB.height;
-    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
-    var ring = 1 - cd0.trace.hole;
-    var rInscribed = getInscribedRadiusFraction(pt, cd0);
+    var halfAngle = pt.halfangle;
+    var ring = pt.ring;
+    var rInscribed = pt.rInscribed;
+    var r = cd0.r || pt.rpx1;
 
     // max size text can be inserted inside without rotating it
     // this inscribes the text rectangle in a circle, which is then inscribed
     // in the slice, so it will be an underestimate, which some day we may want
     // to improve so this case can get more use
     var transform = {
-        scale: rInscribed * cd0.r * 2 / textDiameter,
+        scale: rInscribed * r * 2 / textDiameter,
 
         // and the center position and rotation in this case
         rCenter: 1 - rInscribed,
@@ -69276,30 +69427,30 @@ function transformInsideText(textBB, pt, cd0) {
 
     if(transform.scale >= 1) return transform;
 
-        // max size if text is rotated radially
+    // max size if text is rotated radially
     var Qr = textAspect + 1 / (2 * Math.tan(halfAngle));
-    var maxHalfHeightRotRadial = cd0.r * Math.min(
+    var maxHalfHeightRotRadial = r * Math.min(
         1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
         ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
     );
     var radialTransform = {
         scale: maxHalfHeightRotRadial * 2 / textBB.height,
-        rCenter: Math.cos(maxHalfHeightRotRadial / cd0.r) -
-            maxHalfHeightRotRadial * textAspect / cd0.r,
+        rCenter: Math.cos(maxHalfHeightRotRadial / r) -
+            maxHalfHeightRotRadial * textAspect / r,
         rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
     };
 
-        // max size if text is rotated tangentially
+    // max size if text is rotated tangentially
     var aspectInv = 1 / textAspect;
     var Qt = aspectInv + 1 / (2 * Math.tan(halfAngle));
-    var maxHalfWidthTangential = cd0.r * Math.min(
+    var maxHalfWidthTangential = r * Math.min(
         1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
         ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
     );
     var tangentialTransform = {
         scale: maxHalfWidthTangential * 2 / textBB.width,
-        rCenter: Math.cos(maxHalfWidthTangential / cd0.r) -
-            maxHalfWidthTangential / textAspect / cd0.r,
+        rCenter: Math.cos(maxHalfWidthTangential / r) -
+            maxHalfWidthTangential / textAspect / r,
         rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
     };
     // if we need a rotated transform, pick the biggest one
@@ -69314,8 +69465,7 @@ function transformInsideText(textBB, pt, cd0) {
 function getInscribedRadiusFraction(pt, cd0) {
     if(pt.v === cd0.vTotal && !cd0.trace.hole) return 1;// special case of 100% with no hole
 
-    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
-    return Math.min(1 / (1 + 1 / Math.sin(halfAngle)), (1 - cd0.trace.hole) / 2);
+    return Math.min(1 / (1 + 1 / Math.sin(pt.halfangle)), pt.ring / 2);
 }
 
 function transformOutsideText(textBB, pt) {
@@ -69468,7 +69618,6 @@ function scootLabels(quadrants, trace) {
                 newExtraY = otherOuterY - thisInnerY - thisPt.labelExtraY;
 
                 if(newExtraY * yDiffSign > 0) thisPt.labelExtraY += newExtraY;
-
             } else if((thisOuterY + thisPt.labelExtraY - thisSliceOuterY) * yDiffSign > 0) {
                 // farther from the equator - happens after we've done all the
                 // vertical moving we're going to do
@@ -69583,7 +69732,6 @@ function scalePies(cdpie, plotSize) {
             }
         }
     }
-
 }
 
 function setCoords(cd) {
@@ -69630,8 +69778,17 @@ function setCoords(cd) {
         cdi[lastPt] = currentCoords;
 
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
+
+        cdi.halfangle = Math.PI * Math.min(cdi.v / cd0.vTotal, 0.5);
+        cdi.ring = 1 - trace.hole;
+        cdi.rInscribed = getInscribedRadiusFraction(cdi, cd0);
     }
 }
+
+module.exports = {
+    plot: plot,
+    transformInsideText: transformInsideText
+};
 
 },{"../../components/color":43,"../../components/drawing":64,"../../components/fx":82,"../../lib":159,"../../lib/svg_text_utils":180,"./event_data":271,"./helpers":272,"d3":8}],277:[function(_dereq_,module,exports){
 /**
@@ -69703,7 +69860,6 @@ var Lib = _dereq_('../../lib');
 
 // arrayOk attributes, merge them into calcdata array
 module.exports = function arraysToCalcdata(cd, trace) {
-
     // so each point knows which index it originally came from
     for(var i = 0; i < cd.length; i++) cd[i].i = i;
 
@@ -70191,8 +70347,9 @@ function calc(gd, trace) {
     var yAttr = 'y';
     var posAttr;
     if(stackGroupOpts) {
-        stackGroupOpts.traceIndices.push(trace.index);
+        Lib.pushUnique(stackGroupOpts.traceIndices, trace._expandedIndex);
         isV = stackGroupOpts.orientation === 'v';
+
         // size, like we use for bar
         if(isV) {
             yAttr = 's';
@@ -70396,7 +70553,6 @@ function calcMarkerSize(trace, serieslen) {
             sizeOut[i] = markerTrans(s[i]);
         }
         return sizeOut;
-
     } else {
         return markerTrans(marker.size);
     }
@@ -71040,7 +71196,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         // skip the rest (for this trace) if we didn't find a close point
         if(pointData.index !== false) {
-
             // the closest data point
             var di = cd[pointData.index];
             var xc = xa.c2p(di.x, true);
@@ -71158,7 +71313,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 y0: yAvg,
                 y1: yAvg,
                 color: color,
-                hovertemplate: '%{name}'
+                hovertemplate: false
             });
 
             delete pointData.index;
@@ -71285,9 +71440,11 @@ module.exports = function linePoints(d, opts) {
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
     var linear = shape === 'linear';
+    var fill = opts.fill && opts.fill !== 'none';
     var segments = [];
     var minTolerance = constants.minTolerance;
-    var pts = new Array(d.length);
+    var len = d.length;
+    var pts = new Array(len);
     var pti = 0;
 
     var i;
@@ -71414,8 +71571,10 @@ module.exports = function linePoints(d, opts) {
         var ptCount = 0;
         for(var i = 0; i < 4; i++) {
             var edge = edges[i];
-            var ptInt = segmentsIntersect(pt1[0], pt1[1], pt2[0], pt2[1],
-                edge[0], edge[1], edge[2], edge[3]);
+            var ptInt = segmentsIntersect(
+                pt1[0], pt1[1], pt2[0], pt2[1],
+                edge[0], edge[1], edge[2], edge[3]
+            );
             if(ptInt && (!ptCount ||
                 Math.abs(ptInt.x - out[0][0]) > 1 ||
                 Math.abs(ptInt.y - out[0][1]) > 1
@@ -71613,7 +71772,7 @@ module.exports = function linePoints(d, opts) {
     }
 
     // loop over ALL points in this trace
-    for(i = 0; i < d.length; i++) {
+    for(i = 0; i < len; i++) {
         clusterStartPt = getPt(i);
         if(!clusterStartPt) continue;
 
@@ -71622,7 +71781,7 @@ module.exports = function linePoints(d, opts) {
         addPt(clusterStartPt);
 
         // loop over one segment of the trace
-        for(i++; i < d.length; i++) {
+        for(i++; i < len; i++) {
             clusterHighPt = getPt(i);
             if(!clusterHighPt) {
                 if(connectGaps) continue;
@@ -71641,7 +71800,9 @@ module.exports = function linePoints(d, opts) {
 
             clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
 
-            if(clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
+            // #3147 - always include the very first and last points for fills
+            if(!(fill && (pti === 0 || pti === len - 1)) &&
+                clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
 
             clusterUnitVector = [
                 (clusterHighPt[0] - clusterStartPt[0]) / clusterRefDist,
@@ -72156,7 +72317,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
-
         if(tonext) {
             // This tells .style which trace to use for fill information:
             tonext.datum(cdscatter);
@@ -72198,7 +72358,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
             shape: line.shape,
-            simplify: line.simplify
+            simplify: line.simplify,
+            fill: trace.fill
         });
 
         // since we already have the pixel segments here, use them to make
