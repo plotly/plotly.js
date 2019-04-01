@@ -66,7 +66,7 @@ case $1 in
         set_tz
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=flaky | circleci tests split))
-        MAX_AUTO_RETRY=5
+        MAX_AUTO_RETRY=4
         for s in ${SHARDS[@]}; do
             retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI --showSkipped
         done
