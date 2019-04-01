@@ -1459,11 +1459,13 @@ describe('Test event property of interactions on a geo plot:', function() {
 });
 
 describe('Test geo base layers', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
     afterEach(destroyGraphDiv);
 
     it('should clear obsolete features and layers on *geo.scope* relayout calls', function(done) {
-        var gd = createGraphDiv();
-
         function _assert(geojson, layers) {
             var cd0 = gd.calcdata[0];
             var subplot = gd._fullLayout.geo._subplot;
@@ -1514,6 +1516,63 @@ describe('Test geo base layers', function() {
                 [true, true],
                 ['bg', 'coastlines', 'frame', 'backplot', 'frontplot']
             );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to relayout axis grid *tick0* / *dtick*', function(done) {
+        function findGridPath(axisName) {
+            return d3.select(gd).select(axisName + ' > path').attr('d');
+        }
+
+        function first(parts) {
+            return parts[1].split('L')[0].split(',').map(Number);
+        }
+
+        function _assert(msg, exp) {
+            var lonParts = findGridPath('.lonaxis').split('M');
+            var latParts = findGridPath('.lataxis').split('M');
+
+            expect(lonParts.length).toBe(exp.lonCnt, msg + ' - lonaxis grid segments');
+            expect(latParts.length).toBe(exp.latCnt, msg + ' - lataxis grid segments');
+
+            expect(first(lonParts)).toBeCloseToArray(exp.lon0, 1, msg + ' - first lonaxis grid pt');
+            expect(first(latParts)).toBeCloseToArray(exp.lat0, 1, msg + ' - first lataxis grid pt');
+        }
+
+        Plotly.plot(gd, [{type: 'scattergeo'}], {
+            geo: {
+                lonaxis: {showgrid: true},
+                lataxis: {showgrid: true}
+            }
+        })
+        .then(function() {
+            _assert('base', {
+                lonCnt: 12, lon0: [124.99, 369.99],
+                latCnt: 18, lat0: [80, 355]
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'geo.lonaxis.tick0', 25); })
+        .then(function() {
+            _assert('w/ lonaxis.tick0:25', {
+                lonCnt: 12, lon0: [117.49, 369.99],
+                latCnt: 18, lat0: [80, 355]
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'geo.lataxis.tick0', 41); })
+        .then(function() {
+            _assert('w/ lataxis.tick0:41', {
+                lonCnt: 12, lon0: [117.49, 369.99],
+                latCnt: 19, lat0: [80, 368.5]
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'geo.lataxis.dtick', 45); })
+        .then(function() {
+            _assert('w/ lataxis.dtick0:45', {
+                lonCnt: 12, lon0: [117.49, 369.99],
+                latCnt: 5, lat0: [80, 308.5]
+            });
         })
         .catch(failTest)
         .then(done);
