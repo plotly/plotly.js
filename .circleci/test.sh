@@ -6,13 +6,13 @@ set +o pipefail
 
 ROOT=$(dirname $0)/..
 EXIT_STATE=0
+MAX_AUTO_RETRY=5
 
 log () {
     echo -e "\n$1"
 }
 
 # inspired by https://unix.stackexchange.com/a/82602
-MAX_AUTO_RETRY=1
 retry () {
     local n=1
 
@@ -54,7 +54,6 @@ case $1 in
         set_tz
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=gl | circleci tests split))
-        MAX_AUTO_RETRY=2
         for s in ${SHARDS[@]}; do
             retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI --showSkipped
         done
@@ -65,8 +64,8 @@ case $1 in
     jasmine3)
         set_tz
 
-        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=flaky | circleci tests split))
-        MAX_AUTO_RETRY=4
+        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=flaky | circleci tests split))
+
         for s in ${SHARDS[@]}; do
             retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI --showSkipped
         done

@@ -15,7 +15,7 @@ var argv = minimist(process.argv.slice(2), {
         limit: ['l'],
     },
     default: {
-        limit: 1
+        limit: 20
     }
 });
 
