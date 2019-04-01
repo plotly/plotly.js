@@ -50,7 +50,6 @@ function findNearestOnAxis(w, arr) {
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
-
         var rawId = selection.data.index;
 
         var x = this.data._x[rawId];
@@ -136,7 +135,6 @@ proto.dispose = function() {
 };
 
 function generateIsosurfaceMesh(data) {
-
     data._i = [];
     data._j = [];
     data._k = [];
@@ -287,7 +285,6 @@ function generateIsosurfaceMesh(data) {
     }
 
     function drawTri(style, xyzv, abc) {
-
         beginGroup();
 
         var allXYZVs = [xyzv];
@@ -302,13 +299,11 @@ function generateIsosurfaceMesh(data) {
         }
 
         for(var f = 0; f < allXYZVs.length; f++) {
-
             xyzv = allXYZVs[f];
             abc = allABCs[f];
 
             var pnts = [];
             for(var i = 0; i < 3; i++) {
-
                 var x = xyzv[i][0];
                 var y = xyzv[i][1];
                 var z = xyzv[i][2];
@@ -396,7 +391,6 @@ function generateIsosurfaceMesh(data) {
     var MAX_PASS = 3;
 
     function tryCreateTri(style, xyzv, abc, min, max, nPass) {
-
         if(!nPass) nPass = 1;
 
         abc = [-1, -1, -1]; // Note: for the moment we override indices
@@ -478,7 +472,6 @@ function generateIsosurfaceMesh(data) {
     }
 
     function tryCreateTetra(style, abcd, min, max) {
-
         var result = false;
 
         var xyzv = getXYZV(abcd);
@@ -886,7 +879,6 @@ function generateIsosurfaceMesh(data) {
     }
 
     function drawAll() {
-
         emptyVertices();
 
         // insert grid points
@@ -943,9 +935,7 @@ function generateIsosurfaceMesh(data) {
                     var ceilIndices = [];
                     var distRatios = [];
                     if(slice.locations.length) {
-
                         for(var q = 0; q < slice.locations.length; q++) {
-
                             var near = findNearestOnAxis(
                                 slice.locations[q],
                                 (e === 'x') ? Xs :
@@ -1035,7 +1025,6 @@ function generateIsosurfaceMesh(data) {
 }
 
 function createIsosurfaceTrace(scene, data) {
-
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
     var result = new IsosurfaceTrace(scene, mesh, data.uid);

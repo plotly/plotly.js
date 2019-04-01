@@ -25,7 +25,6 @@ var checkOverlap = require('../assets/check_overlap');
 var delay = require('../assets/delay');
 
 describe('sankey tests', function() {
-
     'use strict';
 
     function _supply(traceIn) {
@@ -48,7 +47,6 @@ describe('sankey tests', function() {
     }
 
     describe('don\'t remove nodes if encountering no circularity', function() {
-
         it('removing a single self-pointing node', function() {
             var fullTrace = _supply({
                 node: {
@@ -73,7 +71,6 @@ describe('sankey tests', function() {
         // not doing that anymore, it's not really consistent with
         // the rest of our data processing.
         it('some nodes are not linked', function() {
-
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
                 warnings.push(msg);
@@ -95,7 +92,6 @@ describe('sankey tests', function() {
     });
 
     describe('sankey global defaults', function() {
-
         it('should not coerce trace opacity', function() {
             var gd = Lib.extendDeep({}, mock);
 
@@ -103,14 +99,11 @@ describe('sankey tests', function() {
 
             expect(gd._fullData[0].opacity).toBeUndefined();
         });
-
     });
 
     describe('sankey defaults', function() {
-
         it('\'Sankey\' specification should have proper arrays where mandatory',
             function() {
-
                 var fullTrace = _supply({});
 
                 expect(fullTrace.node.label)
@@ -134,7 +127,6 @@ describe('sankey tests', function() {
 
         it('\'Sankey\' specification should have proper types',
             function() {
-
                 var fullTrace = _supply({});
 
                 expect(fullTrace.orientation)
@@ -158,7 +150,6 @@ describe('sankey tests', function() {
 
         it('\'Sankey\' layout dependent specification should have proper types',
             function() {
-
                 var fullTrace = _supplyWithLayout({}, {font: {family: 'Arial'}});
                 expect(fullTrace.textfont)
                     .toEqual({family: 'Arial'}, 'textfont is defined');
@@ -166,7 +157,6 @@ describe('sankey tests', function() {
 
         it('\'line\' specifications should yield the default values',
             function() {
-
                 var fullTrace = _supply({});
 
                 expect(fullTrace.node.line.color)
@@ -181,7 +171,6 @@ describe('sankey tests', function() {
             });
 
         it('fills \'node\' colors if not specified', function() {
-
             var fullTrace = _supply({
                 node: {
                     label: ['a', 'b']
@@ -195,11 +184,9 @@ describe('sankey tests', function() {
 
             expect(Array.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
             expect(fullTrace.node.color).toEqual(['rgba(31, 119, 180, 0.8)', 'rgba(255, 127, 14, 0.8)']);
-
         });
 
         it('respects layout.colorway', function() {
-
             var fullTrace = _supplyWithLayout({
                 node: {
                     label: ['a', 'b']
@@ -213,11 +200,9 @@ describe('sankey tests', function() {
 
             expect(Array.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
             expect(fullTrace.node.color).toEqual(['rgba(255, 0, 0, 0.8)', 'rgba(0, 0, 255, 0.8)']);
-
         });
 
         it('does not fill \'link\' labels even if not specified', function() {
-
             var fullTrace = _supply({
                 node: {
                     label: ['a', 'b']
@@ -234,7 +219,6 @@ describe('sankey tests', function() {
         });
 
         it('preserves \'link\' labels if  specified', function() {
-
             var fullTrace = _supply({
                 node: {
                     label: ['a', 'b']
@@ -369,7 +353,6 @@ describe('sankey tests', function() {
         afterEach(destroyGraphDiv);
 
         it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mockDark);
 
@@ -397,7 +380,6 @@ describe('sankey tests', function() {
         });
 
         it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy)
@@ -419,7 +401,6 @@ describe('sankey tests', function() {
         });
 
         it('\'node\' remains visible even if \'value\' is very low', function(done) {
-
             var minimock = [{
                 type: 'sankey',
                 node: {

@@ -66,7 +66,6 @@ describe('extendFlat', function() {
         expect(ori).toEqual([1, 'what', new Date(81, 8, 4), 4, 5, 6]);
         expect(arr).toEqual([1, 'what', new Date(81, 8, 4)]);
         expect(target).toEqual([1, 'what', new Date(81, 8, 4), 4, 5, 6]);
-
     });
 
     it('extends an array with an array into a clone', function() {
@@ -520,5 +519,4 @@ describe('array by reference vs deep-copy', function() {
         expect(ext.foo.baz).toBe(src.foo.baz);
         expect(ext.foo.bop).toBe(tar.foo.bop);
     });
-
 });

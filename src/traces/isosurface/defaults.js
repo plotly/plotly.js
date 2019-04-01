@@ -48,7 +48,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     ['x', 'y', 'z'].forEach(function(dim) {
-
         var capDim = 'caps.' + dim;
         var showCap = coerce(capDim + '.show');
         if(showCap) {

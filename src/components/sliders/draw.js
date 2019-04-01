@@ -277,7 +277,6 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
 
     sliderGroup.call(setGripPosition, sliderOpts, false);
     sliderGroup.call(drawCurrentValue, sliderOpts);
-
 }
 
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
@@ -409,7 +408,6 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
                 dims.currentValueTotalHeight
         );
     });
-
 }
 
 function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransition) {
@@ -540,7 +538,6 @@ function drawTicks(sliderGroup, sliderOpts) {
             (isMajor ? constants.tickOffset : constants.minorTickOffset) + dims.currentValueTotalHeight
         );
     });
-
 }
 
 function computeLabelSteps(sliderOpts) {

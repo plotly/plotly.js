@@ -83,12 +83,11 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 di.ct = [(x0 + x1) / 2, y1];
             }
 
-            if(!isNumeric(x0) || !isNumeric(x1) ||
-                    !isNumeric(y0) || !isNumeric(y1) ||
-                    x0 === x1 || y0 === y1) {
-                bar.remove();
-                return;
-            }
+            var isBlank = di.isBlank = (
+                !isNumeric(x0) || !isNumeric(x1) ||
+                !isNumeric(y0) || !isNumeric(y1) ||
+                x0 === x1 || y0 === y1
+            );
 
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
             if(adjustPixel) {
@@ -158,7 +157,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
 
             Lib.ensureSingle(bar, 'path')
                 .style('vector-effect', 'non-scaling-stroke')
-                .attr('d', 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                .attr('d', isBlank ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
             appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
@@ -206,11 +205,6 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var text = getText(trace, i);
     textPosition = getTextPosition(trace, i);
 
-    if(!text || textPosition === 'none') {
-        bar.select('text').remove();
-        return;
-    }
-
     var layoutFont = fullLayout.font;
     var barColor = style.getBarColor(calcTrace[i], trace);
     var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
@@ -219,15 +213,20 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     // compute text position
     var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
     var barmode = fullLayout[prefix + 'mode'];
-    var inStackMode = (barmode === 'stack');
-    var inRelativeMode = (barmode === 'relative');
-    var inStackOrRelativeMode = inStackMode || inRelativeMode;
+    var inStackOrRelativeMode = barmode === 'stack' || barmode === 'relative';
 
     var calcBar = calcTrace[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
 
-    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;  // padding excluded
-    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;  // padding excluded
+    // padding excluded
+    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
+    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
+
+    if(!text || textPosition === 'none' ||
+        (calcBar.isBlank && (textPosition === 'auto' || textPosition === 'inside'))) {
+        bar.select('text').remove();
+        return;
+    }
 
     var textSelection;
     var textBB;
@@ -263,7 +262,9 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
                 textSelection.remove();
                 textSelection = null;
             }
-        } else textPosition = 'inside';
+        } else {
+            textPosition = 'inside';
+        }
     }
 
     if(!textSelection) {

@@ -131,7 +131,6 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should be able to replot from a blank graph', function(done) {
-
         function countCanvases(cnt) {
             var nodes = d3.selectAll('canvas');
             expect(nodes.size()).toEqual(cnt);
@@ -877,7 +876,6 @@ describe('Test gl2d plots', function() {
         })
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
-
         })
         .catch(failTest)
         .then(done);

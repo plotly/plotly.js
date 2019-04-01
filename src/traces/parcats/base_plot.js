@@ -15,7 +15,6 @@ var PARCATS = 'parcats';
 exports.name = PARCATS;
 
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
-
     var cdModuleAndOthers = getModuleCalcData(gd.calcdata, PARCATS);
 
     if(cdModuleAndOthers.length) {

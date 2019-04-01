@@ -523,5 +523,4 @@ describe('Plotly.___ methods', function() {
                 .toThrow(new Error('DOM element provided is null or undefined'));
         });
     });
-
 });

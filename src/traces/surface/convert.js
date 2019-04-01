@@ -74,7 +74,6 @@ proto.getZat = function(a, b, calendar, axis) {
 
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
-
         var xRatio = (selection.data.index[0] - 1) / this.dataScaleX - 1;
         var yRatio = (selection.data.index[1] - 1) / this.dataScaleY - 1;
 
@@ -318,7 +317,6 @@ proto.estimateScale = function(resSrc, axis) {
 };
 
 proto.refineCoords = function(coords) {
-
     var scaleW = this.dataScaleX;
     var scaleH = this.dataScaleY;
 
@@ -334,7 +332,6 @@ proto.refineCoords = function(coords) {
     var padImg = ndarray(new Float32Array(padWidth * padHeight), [padWidth, padHeight]);
 
     for(var i = 0; i < coords.length; ++i) {
-
         this.surface.padField(padImg, coords[i]);
 
         var scaledImg = ndarray(new Float32Array(newWidth * newHeight), [newWidth, newHeight]);

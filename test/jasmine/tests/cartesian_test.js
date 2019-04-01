@@ -150,7 +150,6 @@ describe('restyle', function() {
             })
             .catch(failTest)
             .then(done);
-
         });
 
         it('can legend-hide the second and only scatter trace', function(done) {
@@ -208,7 +207,6 @@ describe('restyle', function() {
 });
 
 describe('relayout', function() {
-
     describe('axis category attributes', function() {
         var mock = require('@mocks/basic_bar.json');
 
@@ -257,7 +255,6 @@ describe('relayout', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 
     describe('axis ranges', function() {
@@ -391,7 +388,6 @@ describe('subplot creation / deletion:', function() {
     afterEach(destroyGraphDiv);
 
     it('should clear orphan subplot when adding traces to blank graph', function(done) {
-
         function assertOrphanSubplot(len) {
             expect(d3.select('.subplot.xy').size()).toEqual(len);
             expect(d3.select('.ytitle').size()).toEqual(len);

@@ -10,7 +10,6 @@ describe('Drawing', function() {
     'use strict';
 
     describe('setClipUrl', function() {
-
         beforeEach(function() {
             this.svg = d3.select('body').append('svg');
             this.g = this.svg.append('g');
@@ -75,7 +74,6 @@ describe('Drawing', function() {
     });
 
     describe('getTranslate', function() {
-
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
 
@@ -157,7 +155,6 @@ describe('Drawing', function() {
     });
 
     describe('setTranslate', function() {
-
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
 
@@ -194,7 +191,6 @@ describe('Drawing', function() {
     });
 
     describe('getScale', function() {
-
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
 
@@ -240,7 +236,6 @@ describe('Drawing', function() {
     });
 
     describe('setScale', function() {
-
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
 

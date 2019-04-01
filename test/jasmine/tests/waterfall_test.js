@@ -802,7 +802,8 @@ describe('A waterfall plot', function() {
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
             return Plotly.restyle(gd, 'offset', 0);
-        }).then(function() {
+        })
+        .then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
                 [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
@@ -836,7 +837,7 @@ describe('A waterfall plot', function() {
             var trace2Waterfall0 = getAllWaterfallNodes(traceNodes[2])[0];
             var path20 = trace2Waterfall0.querySelector('path');
             var text20 = trace2Waterfall0.querySelector('text');
-            var trace3Waterfall0 = getAllWaterfallNodes(traceNodes[3])[0];
+            var trace3Waterfall0 = getAllWaterfallNodes(traceNodes[3])[1];
             var path30 = trace3Waterfall0.querySelector('path');
             var text30 = trace3Waterfall0.querySelector('text');
 
@@ -862,7 +863,8 @@ describe('A waterfall plot', function() {
             Drawing.savedBBoxes = {};
 
             return Plotly.restyle(gd, 'textposition', 'inside');
-        }).then(function() {
+        })
+        .then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
                 [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
@@ -896,7 +898,7 @@ describe('A waterfall plot', function() {
             var trace2Waterfall0 = getAllWaterfallNodes(traceNodes[2])[0];
             var path20 = trace2Waterfall0.querySelector('path');
             var text20 = trace2Waterfall0.querySelector('text');
-            var trace3Waterfall0 = getAllWaterfallNodes(traceNodes[3])[0];
+            var trace3Waterfall0 = getAllWaterfallNodes(traceNodes[3])[1];
             var path30 = trace3Waterfall0.querySelector('path');
             var text30 = trace3Waterfall0.querySelector('text');
 
@@ -1228,7 +1230,6 @@ describe('waterfall hover', function() {
     });
 
     describe('text labels', function() {
-
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
 
@@ -1291,7 +1292,6 @@ describe('waterfall hover', function() {
     });
 
     describe('with special width/offset combinations', function() {
-
         beforeEach(function() {
             gd = createGraphDiv();
         });

@@ -17,7 +17,6 @@ var tinycolor = require('tinycolor2');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 function performPlot(parcatsModels, graphDiv, layout, svg) {
-
     var viewModels = parcatsModels.map(createParcatsViewModel.bind(0, graphDiv, layout));
 
     // Get (potentially empty) parcatslayer selection with bound data to single element array
@@ -388,7 +387,6 @@ function compareRawColor(a, b) {
  * @param {PathViewModel} d
  */
 function mouseoverPath(d) {
-
     if(!d.parcatsViewModel.dragDimension) {
         // We're not currently dragging
 
@@ -596,7 +594,6 @@ function styleBandsNoHover(bandsSelection) {
  * @param {CategoryBandViewModel} catBandViewModel
  */
 function selectPathsThroughCategoryBandColor(catBandViewModel) {
-
     var allPaths = catBandViewModel.parcatsViewModel.pathSelection;
     var dimInd = catBandViewModel.categoryViewModel.model.dimensionInd;
     var catInd = catBandViewModel.categoryViewModel.model.categoryInd;
@@ -619,7 +616,6 @@ function selectPathsThroughCategoryBandColor(catBandViewModel) {
  *
  */
 function styleForCategoryHovermode(bandElement) {
-
     // Get all bands in the current category
     var bandSel = d3.select(bandElement.parentNode).selectAll('rect.bandrect');
 
@@ -741,7 +737,6 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
 
     if(parcatsViewModel.dimensions.length > 1 &&
         dimensionModel.displayInd === parcatsViewModel.dimensions.length - 1) {
-
         // right most dimension
         hoverCenterX = rectBoundingBox.left;
         hoverLabelIdealAlign = 'left';
@@ -802,7 +797,6 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
  *
  */
 function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
-
     var allHoverlabels = [];
 
     d3.select(bandElement.parentNode.parentNode)
@@ -826,7 +820,6 @@ function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
  *
  */
 function createHoverLabelForColorHovermode(rootBBox, bandElement) {
-
     var bandBoundingBox = bandElement.getBoundingClientRect();
 
     // Models
@@ -993,7 +986,6 @@ function mouseoverCategoryBand(bandViewModel) {
  * @param {CategoryBandViewModel} bandViewModel
  */
 function mouseoutCategory(bandViewModel) {
-
     var parcatsViewModel = bandViewModel.parcatsViewModel;
 
     if(!parcatsViewModel.dragDimension) {
@@ -1012,7 +1004,6 @@ function mouseoutCategory(bandViewModel) {
 
         // Emit unhover event
         if(parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
-
             var hoveron = bandViewModel.parcatsViewModel.hoveron;
             var bandElement = this;
 
@@ -1032,7 +1023,6 @@ function mouseoutCategory(bandViewModel) {
  * @param {DimensionViewModel} d
  */
 function dragDimensionStart(d) {
-
     // Check if dragging is supported
     if(d.parcatsViewModel.arrangement === 'fixed') {
         return;
@@ -1057,7 +1047,6 @@ function dragDimensionStart(d) {
 
                 if(-2 <= catMouseX && catMouseX <= catViewModel.width + 2 &&
                     -2 <= catMouseY && catMouseY <= catViewModel.height + 2) {
-
                     // Save off initial drag indexes for categories
                     d.dragCategoryDisplayInd = catViewModel.model.displayInd;
                     d.initialDragCategoryDisplayInds = d.model.categories.map(function(c) {
@@ -1094,7 +1083,6 @@ function dragDimensionStart(d) {
  * @param {DimensionViewModel} d
  */
 function dragDimension(d) {
-
     // Check if dragging is supported
     if(d.parcatsViewModel.arrangement === 'fixed') {
         return;
@@ -1115,7 +1103,6 @@ function dragDimension(d) {
 
     // Update category
     if(d.dragCategoryDisplayInd !== null) {
-
         var dragCategory = dragDimension.categories[d.dragCategoryDisplayInd];
 
         // Update dragY by dy
@@ -1131,9 +1118,7 @@ function dragDimension(d) {
 
         // Check for overlap above
         if(catAbove !== undefined) {
-
             if(categoryY < (catAbove.y + catAbove.height / 2.0)) {
-
                 // Swap display inds
                 dragCategory.model.displayInd = catAbove.model.displayInd;
                 catAbove.model.displayInd = catDisplayInd;
@@ -1141,9 +1126,7 @@ function dragDimension(d) {
         }
 
         if(catBelow !== undefined) {
-
             if((categoryY + dragCategory.height) > (catBelow.y + catBelow.height / 2.0)) {
-
                 // Swap display inds
                 dragCategory.model.displayInd = catBelow.model.displayInd;
                 catBelow.model.displayInd = catDisplayInd;
@@ -1164,7 +1147,6 @@ function dragDimension(d) {
 
         if(prevDimension !== undefined) {
             if(dragDimension.model.dragX < (prevDimension.x + prevDimension.width)) {
-
                 // Swap display inds
                 dragDimension.model.displayInd = prevDimension.model.displayInd;
                 prevDimension.model.displayInd = dragDimInd;
@@ -1173,7 +1155,6 @@ function dragDimension(d) {
 
         if(nextDimension !== undefined) {
             if((dragDimension.model.dragX + dragDimension.width) > nextDimension.x) {
-
                 // Swap display inds
                 dragDimension.model.displayInd = nextDimension.model.displayInd;
                 nextDimension.model.displayInd = d.dragDimensionDisplayInd;
@@ -1199,7 +1180,6 @@ function dragDimension(d) {
  * @param {DimensionViewModel} d
  */
 function dragDimensionEnd(d) {
-
     // Check if dragging is supported
     if(d.parcatsViewModel.arrangement === 'fixed') {
         return;
@@ -1241,7 +1221,6 @@ function dragDimensionEnd(d) {
         });
 
         if(anyCatsReordered) {
-
             // Sort a shallow copy of the category models by display index
             var sortedCategoryModels = d.model.categories.slice().sort(
                 function(a, b) { return a.displayInd - b.displayInd; });
@@ -1330,7 +1309,6 @@ function getTraceIndex(parcatsViewModel) {
  * @param {boolean} hasTransition Whether to update element with transition
  */
 function updateSvgPaths(parcatsViewModel, hasTransition) {
-
     if(hasTransition === undefined) {
         hasTransition = false;
     }
@@ -1355,7 +1333,6 @@ function updateSvgPaths(parcatsViewModel, hasTransition) {
  * @param {boolean} hasTransition Whether to update element with transition
  */
 function updateSvgCategories(parcatsViewModel, hasTransition) {
-
     if(hasTransition === undefined) {
         hasTransition = false;
     }
@@ -1580,7 +1557,6 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
  * @return {string}
  */
 function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) {
-
     // Compute the x midpoint of each path segment
     var xRefPoints1 = [];
     var xRefPoints2 = [];
@@ -1601,7 +1577,6 @@ function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) 
 
     // Horizontal line to right edge
     for(d = 1; d < dimWidths.length; d++) {
-
         // Curve to left edge of category
         svgD += 'C' + xRefPoints1[d - 1] + ',' + pathYs[d - 1] +
               ' ' + xRefPoints2[d - 1] + ',' + pathYs[d] +
@@ -1620,7 +1595,6 @@ function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) 
     svgD += 'l -' + dimWidths[dimWidths.length - 1] + ',0 ';
 
     for(d = dimWidths.length - 2; d >= 0; d--) {
-
         // Curve to right edge of category
         svgD += 'C' + xRefPoints2[d] + ',' + (pathYs[d + 1] + pathHeight) +
              ' ' + xRefPoints1[d] + ',' + (pathYs[d] + pathHeight) +
@@ -1644,7 +1618,6 @@ function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) 
  *  View model for trace
  */
 function updatePathViewModels(parcatsViewModel) {
-
     // Initialize an array of the y position of the top of the next path to be added to each category.
     //
     // nextYPositions[d][c] is the y position of the next path through category with index c of dimension with index d
@@ -1696,7 +1669,6 @@ function updatePathViewModels(parcatsViewModel) {
 
     // Sort in ascending order by display index array
     pathModels.sort(function(v1, v2) {
-
         // Build display inds for each path
         var sortArray1 = pathDisplayCategoryInds(v1);
         var sortArray2 = pathDisplayCategoryInds(v2);
@@ -1824,7 +1796,6 @@ function updatePathViewModels(parcatsViewModel) {
  *  View model for trace
  */
 function updateDimensionViewModels(parcatsViewModel) {
-
     // Compute dimension ordering
     var dimensionsIndInfo = parcatsViewModel.model.dimensions.map(function(d) {
         return {displayInd: d.displayInd, dimensionInd: d.dimensionInd};
@@ -1853,7 +1824,6 @@ function updateDimensionViewModels(parcatsViewModel) {
  * @return {DimensionViewModel}
  */
 function createDimensionViewModel(parcatsViewModel, dimensionModel) {
-
     // Compute dimension x position
     var categoryLabelPad = 40;
     var dimWidth = 16;

@@ -160,7 +160,6 @@ describe('Test histogram2d', function() {
     });
 
     describe('restyle / relayout interaction', function() {
-
         var gd;
 
         beforeEach(function() {
@@ -261,5 +260,4 @@ describe('Test histogram2d', function() {
             _assert(binSpec, binSpec, binSpec, binSpec);
         });
     });
-
 });

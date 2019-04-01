@@ -270,7 +270,6 @@ proto.updateActiveButton = function(buttonClicked) {
 
             button3.classed('active', val === thisval);
         }
-
     });
 };
 

@@ -469,7 +469,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('objectFromPath', function() {
-
         it('should return an object', function() {
             var obj = Lib.objectFromPath('test', 'object');
 
@@ -1097,7 +1096,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('validate', function() {
-
         function assert(shouldPass, shouldFail, valObject) {
             shouldPass.forEach(function(v) {
                 var res = Lib.validate(v, valObject);
@@ -1351,7 +1349,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('setCursor', function() {
-
         beforeEach(function() {
             this.el3 = d3.select(createGraphDiv());
         });
@@ -1400,7 +1397,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('overrideCursor', function() {
-
         beforeEach(function() {
             this.el3 = d3.select(createGraphDiv());
         });
@@ -1450,7 +1446,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('pushUnique', function() {
-
         beforeEach(function() {
             this.obj = { a: 'A' };
             this.array = ['a', 'b', 'c', this.obj];
@@ -1486,7 +1481,6 @@ describe('Test lib.js:', function() {
 
             Lib.pushUnique(this.array, this.obj);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
-
         });
 
         it('should recognize matching RegExps', function() {
@@ -1503,7 +1497,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('filterUnique', function() {
-
         it('should return array containing unique values', function() {
             expect(
                 Lib.filterUnique(['a', 'a', 'b', 'b'])
@@ -1530,11 +1523,9 @@ describe('Test lib.js:', function() {
             )
             .toEqual([null, undefined]);
         });
-
     });
 
     describe('numSeparate', function() {
-
         it('should work on numbers and strings', function() {
             expect(Lib.numSeparate(12345.67, '.,')).toBe('12,345.67');
             expect(Lib.numSeparate('12345.67', '.,')).toBe('12,345.67');
@@ -2015,7 +2006,6 @@ describe('Test lib.js:', function() {
                     'styles[1].bar': 'value3',
                     'styles[2]': null
                 });
-
             });
         });
 

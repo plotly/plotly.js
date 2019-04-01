@@ -145,5 +145,4 @@ module.exports = function(arrays, na, nb, asmoothing, bsmoothing) {
             return out;
         };
     }
-
 };

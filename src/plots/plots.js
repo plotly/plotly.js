@@ -76,7 +76,6 @@ plots.resize = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
     return new Promise(function(resolve, reject) {
-
         function isHidden(gd) {
             var display = window.getComputedStyle(gd).display;
             return !display || display === 'none';
@@ -339,7 +338,6 @@ plots.supplyDefaults = function(gd, opts) {
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
     if(oldFullLayout._initialAutoSizeIsDone) {
-
         // coerce the updated layout while preserving width and height
         var oldWidth = oldFullLayout.width;
         var oldHeight = oldFullLayout.height;
@@ -351,7 +349,6 @@ plots.supplyDefaults = function(gd, opts) {
         plots.sanitizeMargins(newFullLayout);
     }
     else {
-
         // coerce the updated layout and autosize if needed
         plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout, formatObj);
 
@@ -1847,7 +1844,6 @@ plots.doAutoMargin = function(gd) {
     var pushMarginIds = fullLayout._pushmarginIds;
 
     if(fullLayout.margin.autoexpand !== false) {
-
         for(var k in pushMargin) {
             if(!pushMarginIds[k]) delete pushMargin[k];
         }
@@ -1864,7 +1860,6 @@ plots.doAutoMargin = function(gd) {
         // (and t and b) to find the required margins
 
         for(var k1 in pushMargin) {
-
             var pushleft = pushMargin[k1].l || {};
             var pushbottom = pushMargin[k1].b || {};
             var fl = pushleft.val;
@@ -2803,7 +2798,6 @@ plots.doCalcdata = function(gd, traces) {
         var cd = [];
 
         if(trace.visible === true) {
-
             // clear existing ref in case it got relinked
             delete trace._indexToPoints;
             // keep ref of index-to-points map object of the *last* enabled transform,

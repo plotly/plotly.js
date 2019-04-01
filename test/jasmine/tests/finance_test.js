@@ -116,7 +116,6 @@ describe('finance charts defaults:', function() {
     });
 
     it('should not slice data arrays but record minimum supplied length', function() {
-
         function assertDataLength(trace, fullTrace, len) {
             expect(fullTrace.visible).toBe(true);
 
@@ -810,7 +809,6 @@ describe('finance charts updates:', function() {
         })
         .catch(failTest)
         .then(done);
-
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -892,7 +890,6 @@ describe('finance charts updates:', function() {
     });
 
     it('Plotly.addTraces + Plotly.relayout should update candlestick box position values', function(done) {
-
         function assertBoxPosFields(bPos) {
             expect(gd.calcdata.length).toEqual(bPos.length);
 
@@ -915,7 +912,6 @@ describe('finance charts updates:', function() {
             assertBoxPosFields([0]);
 
             return Plotly.addTraces(gd, [Lib.extendDeep({}, trace0)]);
-
         })
         .then(function() {
             assertBoxPosFields([-15120000, 15120000]);
@@ -1069,7 +1065,6 @@ describe('finance charts *special* handlers:', function() {
     afterEach(destroyGraphDiv);
 
     it('`editable: true` handlers should work', function(done) {
-
         var gd = createGraphDiv();
 
         function editText(itemNumber, newText) {

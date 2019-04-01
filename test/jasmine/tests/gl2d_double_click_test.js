@@ -88,7 +88,6 @@ describe('Test gl2d lasso/select:', function() {
         });
     }
 
-
     it('@gl should work under fast mode with *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFast);
         _mock.layout.dragmode = 'select';
@@ -110,7 +109,6 @@ describe('Test gl2d lasso/select:', function() {
                     {pointNumber: 27, x: 2.22, y: 0.45}
                 ]
             });
-
         })
         .catch(failTest)
         .then(done);

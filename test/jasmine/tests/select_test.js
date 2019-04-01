@@ -946,7 +946,6 @@ describe('Test select box and lasso in general:', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 
     describe('lasso events', function() {
@@ -1249,7 +1248,6 @@ describe('Test select box and lasso in general:', function() {
     });
 
     it('@flaky should select the right data with the corresponding select direction', function(done) {
-
         var gd = createGraphDiv();
 
         // drag around just the center point, but if we have a selectdirection we may

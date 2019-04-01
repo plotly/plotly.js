@@ -96,7 +96,6 @@ var proto = Axes2DOptions.prototype;
 var AXES = ['xaxis', 'yaxis'];
 
 proto.merge = function(options) {
-
     // titles are rendered in SVG
     this.titleEnable = false;
     this.backgroundColor = str2RGBArray(options.plot_bgcolor);

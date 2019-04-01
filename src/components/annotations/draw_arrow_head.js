@@ -75,7 +75,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
             end.x += backOffX;
             end.y += backOffY;
             el3.attr({x2: end.x, y2: end.y});
-
         }
 
         if(startBackOff) {
@@ -89,7 +88,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
             start.x -= startBackOffX;
             start.y -= startbackOffY;
             el3.attr({x1: start.x, y1: start.y});
-
         }
     }
     else if(el.nodeName === 'path') {

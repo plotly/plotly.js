@@ -132,7 +132,6 @@ describe('Test plot api', function() {
         });
 
         it('should update the plot clipPath if the plot is resized', function(done) {
-
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], { width: 500, height: 500 })
             .then(function() {
                 return Plotly.relayout(gd, { width: 400, height: 400 });
@@ -1556,27 +1555,21 @@ describe('Test plot api', function() {
         });
 
         it('should throw an error when indices are omitted', function() {
-
             expect(function() {
                 Plotly.deleteTraces(gd);
             }).toThrow(new Error('indices must be an integer or array of integers.'));
-
         });
 
         it('should throw an error when indices are out of bounds', function() {
-
             expect(function() {
                 Plotly.deleteTraces(gd, 10);
             }).toThrow(new Error('indices must be valid indices for gd.data.'));
-
         });
 
         it('should throw an error when indices are repeated', function() {
-
             expect(function() {
                 Plotly.deleteTraces(gd, [0, 0]);
             }).toThrow(new Error('each index in indices must be unique.'));
-
         });
 
         it('should work when indices are negative', function() {
@@ -1637,7 +1630,6 @@ describe('Test plot api', function() {
             expect(gd.data).toEqual(expectedData);
             expect(plotApi.redraw).toHaveBeenCalled();
         });
-
     });
 
     describe('Plotly.addTraces', function() {
@@ -1668,11 +1660,9 @@ describe('Test plot api', function() {
         });
 
         it('should throw an error when traces and newIndices arrays are unequal', function() {
-
             expect(function() {
                 Plotly.addTraces(gd, [{}, {}], 2);
             }).toThrowError(Error, 'if indices is specified, traces.length must equal indices.length');
-
         });
 
         it('should throw an error when newIndices are out of bounds', function() {
@@ -1813,7 +1803,6 @@ describe('Test plot api', function() {
             Plotly.moveTraces(gd, 0, 1);
             expect(gd.data).toEqual(expectedData);
             expect(plotApi.redraw).toHaveBeenCalled();
-
         });
 
         it('handle unsorted currentIndices', function() {
@@ -1827,7 +1816,6 @@ describe('Test plot api', function() {
             Plotly.moveTraces(gd, [3, 1], [0, 3]);
             expect(gd.data).toEqual(expectedData);
             expect(plotApi.redraw).toHaveBeenCalled();
-
         });
 
         it('work when newIndices are undefined.', function() {
@@ -1841,7 +1829,6 @@ describe('Test plot api', function() {
             Plotly.moveTraces(gd, [3, 0]);
             expect(gd.data).toEqual(expectedData);
             expect(plotApi.redraw).toHaveBeenCalled();
-
         });
 
         it('accept negative indices.', function() {
@@ -1855,7 +1842,6 @@ describe('Test plot api', function() {
             Plotly.moveTraces(gd, 1, -2);
             expect(gd.data).toEqual(expectedData);
             expect(plotApi.redraw).toHaveBeenCalled();
-
         });
     });
 
@@ -1883,7 +1869,6 @@ describe('Test plot api', function() {
         });
 
         it('should throw an error when gd.data isn\'t an array.', function() {
-
             expect(function() {
                 Plotly.extendTraces({}, {x: [[1]]}, [0]);
             }).toThrow(new Error('gd.data must be an array'));
@@ -1891,11 +1876,9 @@ describe('Test plot api', function() {
             expect(function() {
                 Plotly.extendTraces({data: 'meow'}, {x: [[1]]}, [0]);
             }).toThrow(new Error('gd.data must be an array'));
-
         });
 
         it('should throw an error when update is not an object', function() {
-
             expect(function() {
                 Plotly.extendTraces(gd, undefined, [0], 8);
             }).toThrow(new Error('update must be a key:value object'));
@@ -1903,35 +1886,27 @@ describe('Test plot api', function() {
             expect(function() {
                 Plotly.extendTraces(gd, null, [0]);
             }).toThrow(new Error('update must be a key:value object'));
-
         });
 
         it('should throw an error when indices are omitted', function() {
-
             expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]});
             }).toThrow(new Error('indices must be an integer or array of integers'));
-
         });
 
         it('should throw an error when a current index is out of bounds', function() {
-
             expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [-gd.data.length - 1]);
             }).toThrow(new Error('indices must be valid indices for gd.data.'));
-
         });
 
         it('should not throw an error when negative index wraps to positive', function() {
-
             expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [-1]);
             }).not.toThrow();
-
         });
 
         it('should throw an error when number of Indices does not match Update arrays', function() {
-
             expect(function() {
                 Plotly.extendTraces(gd, {x: [[1, 2], [2, 3]] }, [0]);
             }).toThrow(new Error('attribute x must be an array of length equal to indices array length'));
@@ -1939,11 +1914,9 @@ describe('Test plot api', function() {
             expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0, 1]);
             }).toThrow(new Error('attribute x must be an array of length equal to indices array length'));
-
         });
 
         it('should throw an error when maxPoints is an Object but does not match Update', function() {
-
             expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {y: [1]});
             }).toThrow(new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
@@ -1953,11 +1926,9 @@ describe('Test plot api', function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {x: [1, 2]});
             }).toThrow(new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
                                  'corrispondence with the keys and number of traces in the update object'));
-
         });
 
         it('should throw an error when update keys mismatch trace keys', function() {
-
             // lets update y on both traces, but only 1 trace has "y"
             gd.data[1].y = [1, 2, 3];
 
@@ -1966,11 +1937,9 @@ describe('Test plot api', function() {
                     y: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
                 }, [0, 1]);
             }).toThrow(new Error('cannot extend missing or non-array attribute: y'));
-
         });
 
         it('should extend traces with update keys', function() {
-
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
             }, [0, 1]);
@@ -2023,7 +1992,6 @@ describe('Test plot api', function() {
         });
 
         it('should truncate arrays when maxPoints is zero', function() {
-
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
             }, [0, 1], 0);
@@ -2257,7 +2225,6 @@ describe('Test plot api', function() {
     });
 
     describe('Plotly.purge', function() {
-
         afterEach(destroyGraphDiv);
 
         it('should return the graph div in its original state', function(done) {
@@ -2278,7 +2245,6 @@ describe('Test plot api', function() {
     });
 
     describe('Plotly.redraw', function() {
-
         afterEach(destroyGraphDiv);
 
         it('', function(done) {
@@ -2563,7 +2529,6 @@ describe('Test plot api', function() {
             expect(gd.layout.shapes[1]).toEqual(null);
             expect(gd.layout.shapes[2].xref).toEqual('x3');
             expect(gd.layout.shapes[2].yref).toEqual('y');
-
         });
 
         it('removes direction names and showlegend from finance traces', function() {
@@ -2661,7 +2626,6 @@ describe('Test plot api', function() {
         afterEach(destroyGraphDiv);
 
         it('should respect layout.width and layout.height', function(done) {
-
             // See issue https://github.com/plotly/plotly.js/issues/537
             var data = [{
                 x: [1, 2],
@@ -2670,7 +2634,6 @@ describe('Test plot api', function() {
             var height = 50;
 
             Plotly.plot(gd, data).then(function() {
-
                 return Plotly.newPlot(gd, data, { height: height });
             })
             .then(function() {

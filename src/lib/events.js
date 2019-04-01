@@ -16,7 +16,6 @@ var EventEmitter = require('events').EventEmitter;
 var Events = {
 
     init: function(plotObj) {
-
         /*
          * If we have already instantiated an emitter for this plot
          * return early.

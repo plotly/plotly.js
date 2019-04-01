@@ -298,7 +298,6 @@ describe('template interactions', function() {
 });
 
 describe('validateTemplate', function() {
-
     function compareOutputs(out1, out2, expected, countToCheck) {
         expect(out2).toEqual(out1);
         if(expected) {
@@ -424,5 +423,4 @@ describe('validateTemplate', function() {
             msg: 'The template has no key layout.'
         }], 1).then(done);
     });
-
 });

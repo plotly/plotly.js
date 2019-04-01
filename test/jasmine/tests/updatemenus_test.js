@@ -436,7 +436,6 @@ describe('update menus interactions', function() {
         .then(function() {
             expect(gd.layout.updatemenus).toBeUndefined();
             assertPushMargins([false, false, false]);
-
         })
         .catch(failTest)
         .then(done);
@@ -603,7 +602,6 @@ describe('update menus interactions', function() {
     });
 
     it('should update correctly on failed binding comparisons', function(done) {
-
         // See https://github.com/plotly/plotly.js/issues/1169
         // for more info.
 
@@ -887,7 +885,6 @@ describe('update menus interaction with other components:', function() {
     afterEach(destroyGraphDiv);
 
     it('draws buttons above sliders', function(done) {
-
         Plotly.plot(createGraphDiv(), [{
             x: [1, 2, 3],
             y: [1, 2, 1]
