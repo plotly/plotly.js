@@ -392,7 +392,7 @@ module.exports = function linePoints(d, opts) {
             clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
 
             // #3147 - always include the very first and last points for fills
-            if(!(fill && (pti === 0 || len - pti === 1)) &&
+            if(!(fill && (pti === 0 || pti === len - 1)) &&
                 clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
 
             clusterUnitVector = [
