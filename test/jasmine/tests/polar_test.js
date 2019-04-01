@@ -899,16 +899,12 @@ describe('Test polar interactions:', function() {
         }
 
         function _reset() {
-            return delay(100)()
-                .then(function() { return _doubleClick(mid); })
-                .then(function() {
-                    relayoutNumber++;
-                    resetNumber++;
+            relayoutNumber++;
+            resetNumber++;
 
-                    var extra = '(reset ' + resetNumber + ')';
-                    _assertBase(extra);
-                    expect(eventCnts.plotly_doubleclick).toBe(resetNumber, 'doubleclick event #' + extra);
-                });
+            var extra = '(reset ' + resetNumber + ')';
+            _assertBase(extra);
+            expect(eventCnts.plotly_doubleclick).toBe(resetNumber, 'doubleclick event #' + extra);
         }
 
         _plot(fig)
@@ -917,21 +913,33 @@ describe('Test polar interactions:', function() {
         .then(function() {
             _assertDrag([0, 5.24], 'from center move toward bottom-right');
         })
+        .then(delay(20))
+        .then(function() { return _doubleClick(mid); })
+        .then(delay(20))
         .then(_reset)
         .then(function() { return _drag(mid, [-50, -50]); })
         .then(function() {
             _assertDrag([0, 5.24], 'from center move toward top-left');
         })
+        .then(delay(20))
+        .then(function() { return _doubleClick(mid); })
+        .then(delay(20))
         .then(_reset)
         .then(function() { return _drag([mid[0] + 30, mid[0] - 30], [50, -50]); })
         .then(function() {
             _assertDrag([3.1, 8.4], 'from quadrant #1 move top-right');
         })
+        .then(delay(20))
+        .then(function() { return _doubleClick(mid); })
+        .then(delay(20))
         .then(_reset)
         .then(function() { return _drag([345, 200], [-50, 0]); })
         .then(function() {
             _assertDrag([7.0, 11.1], 'from right edge move left');
         })
+        .then(delay(20))
+        .then(function() { return _doubleClick(mid); })
+        .then(delay(20))
         .then(_reset)
         .then(function() { return _drag(mid, [10, 10]);})
         .then(function() { _assertBase('from center to not far enough'); })
@@ -943,6 +951,9 @@ describe('Test polar interactions:', function() {
             expect(eventCnts.plotly_relayout)
                 .toBe(relayoutNumber, 'no new relayout events after *not far enough* cases');
         })
+        .then(delay(20))
+        .then(function() { return _doubleClick(mid); })
+        .then(delay(20))
         .then(_reset)
         .then(function() { return Plotly.relayout(gd, 'polar.hole', 0.2); })
         .then(function() { relayoutNumber++; })

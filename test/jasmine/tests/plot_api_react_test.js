@@ -700,7 +700,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(done);
     });
 
-    it('can change parcoords aggregations', function(done) {
+    it('@gl can change parcoords aggregations', function(done) {
         Plotly.newPlot(gd, aggregatedParcoords(0))
         .then(checkValues(aggParcoords0Vals))
 
@@ -717,7 +717,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(done);
     });
 
-    it('can change type with aggregations', function(done) {
+    it('@gl can change type with aggregations', function(done) {
         Plotly.newPlot(gd, aggregatedScatter(1))
         .then(checkCalcData(aggScatter1CD))
 
@@ -1766,7 +1766,7 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editEditable, checkAttrs(true), checkAttrs).then(done);
     });
 
-    it('preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
+    it('@gl preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
         function fig(mainRev, traceRev) {
             return {
                 data: [{

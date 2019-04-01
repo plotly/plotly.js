@@ -195,7 +195,7 @@ describe('pointcloud traces', function() {
     it('@gl should not change other traces colors', function(done) {
         var _mock = Lib.extendDeep({}, multipleScatter2dMock);
         Plotly.plot(gd, _mock)
-        .then(delay(40))
+        .then(delay(20))
         .then(function() {
             var canvas = d3.select('.gl-canvas-context').node();
 
@@ -225,13 +225,13 @@ describe('pointcloud traces', function() {
         }
 
         Plotly.plot(gd, Lib.extendDeep({}, plotData))
-        .then(delay(40))
+        .then(delay(20))
         .then(function() {
             _assertRange('base', [-0.548, 9.548], [-1.415, 10.415]);
         })
-        .then(delay(40))
+        .then(delay(20))
         .then(function() { _drag([200, 200], [350, 350]); })
-        .then(delay(40))
+        .then(delay(20))
         .then(function() {
             _assertRange('after zoombox drag', [0.768, 1.591], [5.462, 7.584]);
         })
@@ -247,9 +247,9 @@ describe('pointcloud traces', function() {
         .then(function() {
             return Plotly.relayout(gd, 'dragmode', 'pan');
         })
-        .then(delay(40))
+        .then(delay(20))
         .then(function() { _drag([200, 200], [350, 350]); })
-        .then(delay(40))
+        .then(delay(20))
         .then(function() {
             _assertRange('after pan drag', [0.2743, 10.3719], [-3.537, 8.292]);
         })
