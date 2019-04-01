@@ -91,7 +91,6 @@ module.exports = Scene2D;
 var proto = Scene2D.prototype;
 
 proto.makeFramework = function() {
-
     // create canvas and gl context
     if(this.staticPlot) {
         if(!STATIC_CONTEXT) {
@@ -633,7 +632,6 @@ proto.draw = function() {
         }
 
         if(result && result.object._trace.hoverinfo !== 'skip' && fullLayout.hovermode) {
-
             if(nextSelection && (
                 !this.lastPickResult ||
                 this.lastPickResult.traceUid !== nextSelection.trace.uid ||

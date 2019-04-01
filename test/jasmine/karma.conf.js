@@ -59,6 +59,7 @@ if(argv.info) {
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
         '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
+        '  - `--showSkipped` (dflt: `false`): show tests that are skipped',
         '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
         '  - `--width`(dflt: 1035): set width of the browser window',
         '  - `--height` (dflt: 617): set height of the browser window',
@@ -111,7 +112,7 @@ var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 var pathToMathJax = path.join(constants.pathToDist, 'extras', 'mathjax');
 
-var reporters = (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'];
+var reporters = ((isFullSuite && !argv.tags) || argv.showSkipped) ? ['dots', 'spec'] : ['progress'];
 if(argv.failFast) reporters.push('fail-fast');
 if(argv.verbose) reporters.push('verbose');
 

@@ -147,7 +147,6 @@ describe('Test color:', function() {
     });
 
     describe('fill', function() {
-
         it('should call style with both fill and fill-opacity', function() {
             var mockElement = {
                 style: function(object) {
@@ -158,11 +157,9 @@ describe('Test color:', function() {
 
             Color.fill(mockElement, 'rgba(255,255,0,0.5');
         });
-
     });
 
     describe('stroke', function() {
-
         it('should call style with both fill and fill-opacity', function() {
             var mockElement = {
                 style: function(object) {
@@ -173,11 +170,9 @@ describe('Test color:', function() {
 
             Color.stroke(mockElement, 'rgba(255,255,0,0.5');
         });
-
     });
 
     describe('contrast', function() {
-
         it('should darken light colors', function() {
             var out = Color.contrast('#eee', 10, 20);
 

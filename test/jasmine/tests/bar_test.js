@@ -226,6 +226,20 @@ describe('Bar.supplyDefaults', function() {
         expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
         expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
     });
+
+    it('should have a barmode only if it contains bars', function() {
+        var gd = {
+            data: [{type: 'histogram', y: [1], visible: false}],
+            layout: {}
+        };
+
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.barmode).toBe(undefined, '`barmode` should be undefined');
+
+        gd.data[0].visible = true;
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.barmode).toBe('group', '`barmode` should be set to its default ');
+    });
 });
 
 describe('bar calc / crossTraceCalc (formerly known as setPositions)', function() {
@@ -912,6 +926,67 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         expect(gd._fullLayout.xaxis.type).toBe('multicategory');
         assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0]]);
     });
+
+    describe('should relative-stack bar within the same trace that overlap under barmode=group', function() {
+        it('- base case', function() {
+            var gd = mockBarPlot([{
+                x: [0, 0, 0],
+                y: [1, -2, -1]
+            }]);
+
+            assertPointField(gd.calcdata, 'b', [[0, 0, -2]]);
+            assertPointField(gd.calcdata, 'y', [[1, -2, -3]]);
+        });
+
+        it('- with blank positions', function() {
+            var gd = mockBarPlot([{
+                x: [0, null, 0, null, 0],
+                y: [1, null, -2, null, -1]
+            }]);
+
+            assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0, -2]]);
+            assertPointField(gd.calcdata, 'y', [[1, NaN, -2, NaN, -3]]);
+        });
+
+        it('- with barnorm set', function() {
+            var gd = mockBarPlot([{
+                x: [0, 0, 0],
+                y: [1, -2, -1],
+            }], {
+                barnorm: 'fraction'
+            });
+
+            assertPointField(gd.calcdata, 'b', [[0, 0, -0.5]]);
+            assertPointField(gd.calcdata, 'y', [[0.25, -0.5, -0.75]]);
+        });
+
+        it('- skipped when base is set', function() {
+            var gd = mockBarPlot([{
+                x: [0, 0, 0],
+                y: [1, -2, -1],
+                base: 10
+            }, {
+                x: [0, 0, 0],
+                y: [1, -2, -1],
+                base: [1, 2, 1]
+            }]);
+
+            assertPointField(gd.calcdata, 'b', [[10, 10, 10], [1, 2, 1]]);
+            assertPointField(gd.calcdata, 'y', [[11, 8, 9], [2, 0, 0]]);
+        });
+
+        it('- skipped when barmode=overlay', function() {
+            var gd = mockBarPlot([{
+                x: [0, 0, 0],
+                y: [1, -2, -1]
+            }], {
+                barmode: 'overlay'
+            });
+
+            assertPointField(gd.calcdata, 'b', [[0, 0, 0]]);
+            assertPointField(gd.calcdata, 'y', [[1, -2, -1]]);
+        });
+    });
 });
 
 describe('A bar plot', function() {
@@ -1472,7 +1547,8 @@ describe('A bar plot', function() {
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
 
             return Plotly.restyle(gd, 'offset', 0);
-        }).then(function() {
+        })
+        .then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
                 [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
@@ -1509,7 +1585,7 @@ describe('A bar plot', function() {
             var trace2Bar0 = getAllBarNodes(traceNodes[2])[0];
             var path20 = trace2Bar0.querySelector('path');
             var text20 = trace2Bar0.querySelector('text');
-            var trace3Bar0 = getAllBarNodes(traceNodes[3])[0];
+            var trace3Bar0 = getAllBarNodes(traceNodes[3])[1];
             var path30 = trace3Bar0.querySelector('path');
             var text30 = trace3Bar0.querySelector('text');
 
@@ -1535,7 +1611,8 @@ describe('A bar plot', function() {
             Drawing.savedBBoxes = {};
 
             return Plotly.restyle(gd, 'textposition', 'inside');
-        }).then(function() {
+        })
+        .then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
                 [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
@@ -1572,7 +1649,7 @@ describe('A bar plot', function() {
             var trace2Bar0 = getAllBarNodes(traceNodes[2])[0];
             var path20 = trace2Bar0.querySelector('path');
             var text20 = trace2Bar0.querySelector('text');
-            var trace3Bar0 = getAllBarNodes(traceNodes[3])[0];
+            var trace3Bar0 = getAllBarNodes(traceNodes[3])[1];
             var path30 = trace3Bar0.querySelector('path');
             var text30 = trace3Bar0.querySelector('text');
 
@@ -2048,7 +2125,6 @@ describe('bar hover', function() {
     });
 
     describe('text labels', function() {
-
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
 
@@ -2111,7 +2187,6 @@ describe('bar hover', function() {
     });
 
     describe('with special width/offset combinations', function() {
-
         beforeEach(function() {
             gd = createGraphDiv();
         });

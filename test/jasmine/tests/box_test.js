@@ -85,7 +85,6 @@ describe('Test boxes supplyDefaults', function() {
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.orientation).toBe('h');
-
     });
 
     it('should inherit layout.calendar', function() {
@@ -150,6 +149,40 @@ describe('Test boxes supplyDefaults', function() {
         expect(traceOut.boxpoints).toBe('suspectedoutliers');
         expect(traceOut.marker).toBeDefined();
         expect(traceOut.text).toBeDefined();
+    });
+
+    describe('should not coerce hovertemplate when *hoveron* does not contains *points* flag', function() {
+        var ht = '--- %{y}';
+
+        it('- case hoveron:points', function() {
+            traceIn = {
+                y: [1, 1, 2],
+                hoveron: 'points',
+                hovertemplate: ht
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            expect(traceOut.hovertemplate).toBe(ht);
+        });
+
+        it('- case hoveron:points+boxes', function() {
+            traceIn = {
+                y: [1, 1, 2],
+                hoveron: 'points+boxes',
+                hovertemplate: ht
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            expect(traceOut.hovertemplate).toBe(ht);
+        });
+
+        it('- case hoveron:boxes', function() {
+            traceIn = {
+                y: [1, 1, 2],
+                hoveron: 'boxes',
+                hovertemplate: ht
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            expect(traceOut.hovertemplate).toBe(undefined);
+        });
     });
 
     it('should not include alignementgroup/offsetgroup when boxmode is not *group*', function() {
@@ -391,6 +424,19 @@ describe('Test box hover:', function() {
         pos: [202, 335],
         nums: '(2, 13.1)',
         name: ''
+    }, {
+        desc: 'with hovertemplate for points',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points';
+                trace.hovertemplate = '%{y}<extra>pt #%{pointNumber}</extra>';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: '0.6',
+        name: 'pt #0'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);

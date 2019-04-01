@@ -254,7 +254,6 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
 }
 
 function setDataRange(rangeSlider, gd, axisOpts, opts) {
-
     function clamp(v) {
         return axisOpts.l2r(Lib.constrain(v, opts._rl[0], opts._rl[1]));
     }

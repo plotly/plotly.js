@@ -315,7 +315,6 @@ describe('Test scatter', function() {
 
             expect(isBubble).toBe(false);
         });
-
     });
 
     describe('makeBubbleSizeFn', function() {
@@ -592,7 +591,6 @@ describe('Test scatter', function() {
             ]);
         });
     });
-
 });
 
 describe('end-to-end scatter tests', function() {
@@ -630,7 +628,6 @@ describe('end-to-end scatter tests', function() {
             points.each(function() {
                 expect(d3.select(this).classed('plotly-customdata')).toBe(false);
             });
-
         }).catch(failTest).then(done);
     });
 
@@ -1347,7 +1344,6 @@ describe('stacked area', function() {
 });
 
 describe('scatter hoverPoints', function() {
-
     afterEach(destroyGraphDiv);
 
     function _hover(gd, xval, yval, hovermode) {

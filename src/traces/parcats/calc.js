@@ -114,7 +114,6 @@ module.exports = function calc(gd, trace) {
     var d;
 
     for(valueInd = 0; valueInd < numValues; valueInd++) {
-
         // Category inds for this input value across dimensions
         var categoryIndsPath = [];
         for(d = 0; d < categoryIndsDims.length; d++) {
@@ -148,7 +147,6 @@ module.exports = function calc(gd, trace) {
 
 
     for(valueInd = 0; valueInd < numValues; valueInd++) {
-
         count = counts[valueInd % counts.length];
 
         for(d = 0; d < dimensionModels.length; d++) {
@@ -387,7 +385,6 @@ function updatePathModel(pathModel, valueInd, count) {
  * @return {UniqueInfo}
  */
 function getUniqueInfo(values, uniqueValues) {
-
     // Initialize uniqueValues if not specified
     if(uniqueValues === undefined || uniqueValues === null) {
         uniqueValues = [];
@@ -464,7 +461,6 @@ function validateDimensionDisplayInds(visibleDims) {
  * @param {UniqueInfo} uniqueInfoDim
  */
 function validateCategoryProperties(dim, uniqueInfoDim) {
-
     // Update categoryarray
     dim._categoryarray = uniqueInfoDim.uniqueValues;
 

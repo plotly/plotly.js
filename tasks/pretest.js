@@ -21,7 +21,6 @@ function makeCredentialsFile() {
 
 // Make artifact folders for image tests
 function makeTestImageFolders() {
-
     function makeOne(folderPath, info) {
         if(!common.doesDirExist(folderPath)) {
             fs.mkdirSync(folderPath);

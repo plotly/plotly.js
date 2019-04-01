@@ -13,7 +13,6 @@ var delay = require('../assets/delay');
 var RESIZE_DELAY = 300;
 
 describe('config argument', function() {
-
     describe('attribute layout.autosize', function() {
         var layoutWidth = 1111;
         var relayoutWidth = 555;
@@ -197,7 +196,6 @@ describe('config argument', function() {
     });
 
     describe('showLink attribute', function() {
-
         var gd;
 
         beforeEach(function() {
@@ -229,7 +227,6 @@ describe('config argument', function() {
 
 
     describe('editable attribute', function() {
-
         var gd;
 
         beforeEach(function() {
@@ -410,7 +407,6 @@ describe('config argument', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 
     describe('axis drag handles attribute', function() {
@@ -447,7 +443,6 @@ describe('config argument', function() {
 
             testDraggers(0);
         });
-
     });
 
     describe('axis range entry attribute', function() {
@@ -608,7 +603,6 @@ describe('config argument', function() {
 
                     var canvases = document.getElementsByTagName('canvas');
                     checkElementsSize(canvases, elWidth / 2, elHeight / 2);
-
                 })
                 .catch(failTest);
             }

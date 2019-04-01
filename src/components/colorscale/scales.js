@@ -44,7 +44,7 @@ var scales = {
     ],
 
     // modified RdBu based on
-    // www.sandia.gov/~kmorel/documents/ColorMaps/ColorMapsExpanded.pdf
+    // http://www.kennethmoreland.com/color-maps/
     'RdBu': [
         [0, 'rgb(5,10,172)'], [0.35, 'rgb(106,137,247)'],
         [0.5, 'rgb(190,190,190)'], [0.6, 'rgb(220,170,132)'],

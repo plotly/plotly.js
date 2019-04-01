@@ -818,6 +818,26 @@ describe('Pie traces', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to toggle visibility', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/pie_title_multiple.json'));
+
+        function _assert(msg, exp) {
+            return function() {
+                var layer = d3.select(gd).select('.pielayer');
+                expect(layer.selectAll('.trace').size()).toBe(exp, msg);
+            };
+        }
+
+        Plotly.plot(gd, mock)
+        .then(_assert('base', 4))
+        .then(function() { return Plotly.restyle(gd, 'visible', false); })
+        .then(_assert('both visible:false', 0))
+        .then(function() { return Plotly.restyle(gd, 'visible', true); })
+        .then(_assert('back to visible:true', 4))
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {
@@ -1066,7 +1086,7 @@ describe('pie hovering', function() {
                     'garbage hoverinfo'
                 );
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1146,7 +1166,57 @@ describe('pie hovering', function() {
                     'hovertemplate arrayOK'
                 );
             })
-            .catch(fail)
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('should fit labels within graph div', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        it('- when labels overflow left and right', function(done) {
+            Plotly.plot(gd, [{
+                hole: 0.33,
+                hoverinfo: 'label+text+percent',
+                values: ['22238.58', '3145.82', '2865.21', '1664.58'],
+                labels: ['label 1 - another long text label', 'label 2', 'label 3 - 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16', 'label 4'],
+                hovertext: ['$22,238.58', '$3,145.82', '$2,865.21', '$1,664.58'],
+                type: 'pie'
+            }], {
+                showlegend: false,
+                width: 220,
+                height: 220,
+                margin: {l: 0, r: 0, t: 0, b: 0}
+            })
+            .then(function() { mouseEvent('mouseover', 50, 50); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'label 3 - 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16\n$2,865.21\n9.58%'
+                }, 'long label to the left');
+
+                var label = d3.select('g.hovertext');
+                var bbox = label.node().getBoundingClientRect();
+
+                expect(bbox.left).toBeWithin(1, 10, 'bbox left bound');
+                expect(bbox.right).toBeWithin(275, 10, 'bbox right bound (beyond graph)');
+            })
+            .then(function() { mouseEvent('mouseover', 150, 150); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'label 1 - another long text label\n$22,238.58\n74.3%'
+                }, 'long label to the right');
+
+                var label = d3.select('g.hovertext');
+                var bbox = label.node().getBoundingClientRect();
+
+                expect(bbox.left).toBeWithin(30, 10, 'bbox left bound');
+                expect(bbox.right).toBeWithin(220, 10, 'bbox right bound');
+            })
+            .catch(failTest)
             .then(done);
         });
     });
@@ -1381,6 +1451,88 @@ describe('pie relayout', function() {
             var slices = d3.selectAll(SLICES_SELECTOR);
             slices.each(checkRelayoutColor);
         })
+        .then(done);
+    });
+});
+
+describe('Test pie interactions edge cases:', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    function _mouseEvent(type, v) {
+        return function() {
+            var el = d3.select(gd).select('.slice:nth-child(' + v + ')').node();
+            mouseEvent(type, 0, 0, {element: el});
+        };
+    }
+
+    function hover(v) {
+        return _mouseEvent('mouseover', v);
+    }
+
+    function unhover(v) {
+        return _mouseEvent('mouseout', v);
+    }
+
+    it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
+        var mock = Lib.extendFlat({}, require('@mocks/pie_simple.json'));
+        var hoverCnt = 0;
+        var unhoverCnt = 0;
+
+        // see https://github.com/plotly/plotly.js/issues/3618
+
+        function _assert(msg, exp) {
+            expect(hoverCnt).toBe(exp.hoverCnt, msg + ' - hover cnt');
+            expect(unhoverCnt).toBe(exp.unhoverCnt, msg + ' - unhover cnt');
+
+            var label = d3.select(gd).select('g.hovertext');
+            expect(label.size()).toBe(exp.hoverLabel, msg + ' - hover label cnt');
+
+            hoverCnt = 0;
+            unhoverCnt = 0;
+        }
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            gd.on('plotly_hover', function() {
+                hoverCnt++;
+                // N.B. trigger a 'calc' edit
+                Plotly.restyle(gd, 'textinfo', 'percent');
+            });
+            gd.on('plotly_unhover', function() {
+                unhoverCnt++;
+                // N.B. trigger a 'calc' edit
+                Plotly.restyle(gd, 'textinfo', null);
+            });
+        })
+        .then(hover(1))
+        .then(function() {
+            _assert('after hovering on first sector', {
+                hoverCnt: 1,
+                unhoverCnt: 0,
+                hoverLabel: 1
+            });
+        })
+        .then(unhover(1))
+        .then(function() {
+            _assert('after un-hovering from first sector', {
+                hoverCnt: 0,
+                unhoverCnt: 1,
+                hoverLabel: 0
+            });
+        })
+        .then(hover(2))
+        .then(function() {
+            _assert('after hovering onto second sector', {
+                hoverCnt: 1,
+                unhoverCnt: 0,
+                hoverLabel: 1
+            });
+        })
+        .catch(failTest)
         .then(done);
     });
 });

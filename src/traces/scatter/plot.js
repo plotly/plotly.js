@@ -183,7 +183,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
-
         if(tonext) {
             // This tells .style which trace to use for fill information:
             tonext.datum(cdscatter);
@@ -225,7 +224,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
             shape: line.shape,
-            simplify: line.simplify
+            simplify: line.simplify,
+            fill: trace.fill
         });
 
         // since we already have the pixel segments here, use them to make

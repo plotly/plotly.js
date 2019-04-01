@@ -5,7 +5,6 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 describe('calculated data and points', function() {
-
     var gd;
 
     beforeEach(function() {
@@ -15,7 +14,6 @@ describe('calculated data and points', function() {
     afterEach(destroyGraphDiv);
 
     describe('connectGaps', function() {
-
         it('should exclude null and undefined points when false', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5]}], {});
 
@@ -32,11 +30,8 @@ describe('calculated data and points', function() {
     });
 
     describe('category ordering', function() {
-
         describe('default category ordering reified', function() {
-
             it('should output categories in the given order by default', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category'
                 }});
@@ -49,7 +44,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in the given order if `trace` order is explicitly specified', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'trace'
@@ -68,9 +62,7 @@ describe('calculated data and points', function() {
         });
 
         describe('domain alphanumerical category ordering', function() {
-
             it('should output categories in ascending domain alphanumerical order', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
@@ -84,7 +76,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in descending domain alphanumerical order', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category descending'
@@ -98,7 +89,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in ascending domain alphanumerical order even if categories are all numbers', function() {
-
                 Plotly.plot(gd, [{x: [3, 1, 5, 2, 4], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
@@ -112,7 +102,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in categoryorder order even if category array is defined', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending',
@@ -127,7 +116,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in ascending domain alphanumerical order, excluding undefined', function() {
-
                 Plotly.plot(gd, [{x: ['c', undefined, 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
@@ -174,9 +162,7 @@ describe('calculated data and points', function() {
         });
 
         describe('explicit category ordering', function() {
-
             it('should output categories in explicitly supplied order, independent of trace order', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
@@ -191,7 +177,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if category values are all numbers', function() {
-
                 Plotly.plot(gd, [{x: [3, 1, 5, 2, 4], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
@@ -206,7 +191,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order, independent of trace order, pruned', function() {
-
                 Plotly.plot(gd, [{x: ['c', undefined, 'e', 'b', 'd'], y: [15, 11, 12, null, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
@@ -221,7 +205,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if not all categories are present', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
@@ -236,7 +219,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if some missing categories were at the beginning or end of categoryarray', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
@@ -259,7 +241,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if some missing categories were at the beginning or end of categoryarray', function() {
-
                 // The auto-range feature currently eliminates unutilized category ticks on the left/right edge
                 // BUT keeps it if a data point with null is added; test is almost identical to the one above
                 // except that it explicitly adds an axis tick for y
@@ -283,7 +264,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if not all categories are present, and should interact with a null value orthogonally', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, null, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
@@ -298,7 +278,6 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order first, if not all categories are covered', function() {
-
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
@@ -319,9 +298,7 @@ describe('calculated data and points', function() {
         });
 
         describe('ordering tests in the presence of multiple traces - mutually exclusive', function() {
-
             it('baseline testing for the unordered, disjunct case', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
@@ -348,7 +325,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order follows the trace order (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
@@ -379,7 +355,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order is category ascending (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
@@ -411,7 +386,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order is category descending (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
@@ -443,7 +417,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order follows categoryarray', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
@@ -475,9 +448,7 @@ describe('calculated data and points', function() {
         });
 
         describe('ordering tests in the presence of multiple traces - partially overlapping', function() {
-
             it('baseline testing for the unordered, partially overlapping case', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
@@ -505,7 +476,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order follows the trace order (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
@@ -537,7 +507,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order is category ascending (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
@@ -570,7 +539,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order is category descending (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
@@ -603,7 +571,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order follows categoryarray', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
@@ -636,9 +603,7 @@ describe('calculated data and points', function() {
         });
 
         describe('ordering tests in the presence of multiple traces - fully overlapping', function() {
-
             it('baseline testing for the unordered, fully overlapping case', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
@@ -663,7 +628,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order follows the trace order (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
@@ -692,7 +656,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order is category ascending (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
@@ -722,7 +685,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order is category descending (even if categoryarray is specified)', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
@@ -752,7 +714,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order follows categoryarray', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
@@ -783,7 +744,6 @@ describe('calculated data and points', function() {
             });
 
             it('category order follows categoryarray even if data is sparse', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
@@ -815,9 +775,7 @@ describe('calculated data and points', function() {
         });
 
         describe('ordering and stacking combined', function() {
-
             it('partially overlapping category order follows categoryarray and stacking produces expected results', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
@@ -852,7 +810,6 @@ describe('calculated data and points', function() {
             });
 
             it('fully overlapping - category order follows categoryarray and stacking produces expected results', function() {
-
                 var x1 = ['Gear', 'Bearing', 'Motor'];
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];

@@ -85,7 +85,7 @@ function Axes2DOptions(scene) {
         [0, 0, 0, 1]
     ];
 
-    this.borderColor = false;
+    this.borderColor = [0, 0, 0, 0];
     this.backgroundColor = [0, 0, 0, 0];
 
     this.static = this.scene.staticPlot;
@@ -96,7 +96,6 @@ var proto = Axes2DOptions.prototype;
 var AXES = ['xaxis', 'yaxis'];
 
 proto.merge = function(options) {
-
     // titles are rendered in SVG
     this.titleEnable = false;
     this.backgroundColor = str2RGBArray(options.plot_bgcolor);

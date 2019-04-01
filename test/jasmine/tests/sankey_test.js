@@ -8,6 +8,7 @@ var mock = require('@mocks/sankey_energy.json');
 var mockDark = require('@mocks/sankey_energy_dark.json');
 var mockCircular = require('@mocks/sankey_circular.json');
 var mockCircularLarge = require('@mocks/sankey_circular_large.json');
+var mockXY = require('@mocks/sankey_x_y.json');
 var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -19,8 +20,11 @@ var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLa
 var supplyAllDefaults = require('../assets/supply_defaults');
 var defaultColors = require('@src/components/color/attributes').defaults;
 
-describe('sankey tests', function() {
+var drag = require('../assets/drag');
+var checkOverlap = require('../assets/check_overlap');
+var delay = require('../assets/delay');
 
+describe('sankey tests', function() {
     'use strict';
 
     function _supply(traceIn) {
@@ -43,7 +47,6 @@ describe('sankey tests', function() {
     }
 
     describe('don\'t remove nodes if encountering no circularity', function() {
-
         it('removing a single self-pointing node', function() {
             var fullTrace = _supply({
                 node: {
@@ -68,7 +71,6 @@ describe('sankey tests', function() {
         // not doing that anymore, it's not really consistent with
         // the rest of our data processing.
         it('some nodes are not linked', function() {
-
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
                 warnings.push(msg);
@@ -90,7 +92,6 @@ describe('sankey tests', function() {
     });
 
     describe('sankey global defaults', function() {
-
         it('should not coerce trace opacity', function() {
             var gd = Lib.extendDeep({}, mock);
 
@@ -98,14 +99,11 @@ describe('sankey tests', function() {
 
             expect(gd._fullData[0].opacity).toBeUndefined();
         });
-
     });
 
     describe('sankey defaults', function() {
-
         it('\'Sankey\' specification should have proper arrays where mandatory',
             function() {
-
                 var fullTrace = _supply({});
 
                 expect(fullTrace.node.label)
@@ -129,7 +127,6 @@ describe('sankey tests', function() {
 
         it('\'Sankey\' specification should have proper types',
             function() {
-
                 var fullTrace = _supply({});
 
                 expect(fullTrace.orientation)
@@ -153,7 +150,6 @@ describe('sankey tests', function() {
 
         it('\'Sankey\' layout dependent specification should have proper types',
             function() {
-
                 var fullTrace = _supplyWithLayout({}, {font: {family: 'Arial'}});
                 expect(fullTrace.textfont)
                     .toEqual({family: 'Arial'}, 'textfont is defined');
@@ -161,7 +157,6 @@ describe('sankey tests', function() {
 
         it('\'line\' specifications should yield the default values',
             function() {
-
                 var fullTrace = _supply({});
 
                 expect(fullTrace.node.line.color)
@@ -176,7 +171,6 @@ describe('sankey tests', function() {
             });
 
         it('fills \'node\' colors if not specified', function() {
-
             var fullTrace = _supply({
                 node: {
                     label: ['a', 'b']
@@ -190,11 +184,9 @@ describe('sankey tests', function() {
 
             expect(Array.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
             expect(fullTrace.node.color).toEqual(['rgba(31, 119, 180, 0.8)', 'rgba(255, 127, 14, 0.8)']);
-
         });
 
         it('respects layout.colorway', function() {
-
             var fullTrace = _supplyWithLayout({
                 node: {
                     label: ['a', 'b']
@@ -208,11 +200,9 @@ describe('sankey tests', function() {
 
             expect(Array.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
             expect(fullTrace.node.color).toEqual(['rgba(255, 0, 0, 0.8)', 'rgba(0, 0, 255, 0.8)']);
-
         });
 
         it('does not fill \'link\' labels even if not specified', function() {
-
             var fullTrace = _supply({
                 node: {
                     label: ['a', 'b']
@@ -229,7 +219,6 @@ describe('sankey tests', function() {
         });
 
         it('preserves \'link\' labels if  specified', function() {
-
             var fullTrace = _supply({
                 node: {
                     label: ['a', 'b']
@@ -244,6 +233,32 @@ describe('sankey tests', function() {
 
             expect(Array.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
             expect(fullTrace.link.label).toEqual(['a', 'b'], 'an array of the supplied values');
+        });
+
+        it('defaults to `snap` arrangement', function() {
+            var fullTrace = _supply({
+                link: {
+                    source: [0],
+                    target: [1],
+                    value: [1]
+                }
+            });
+            expect(fullTrace.arrangement).toBe('snap');
+        });
+
+        it('defaults to `freeform` arrangement if node.(x|y) is specified', function() {
+            var fullTrace = _supply({
+                node: {
+                    x: [0, 0.5],
+                    y: [0, 0.5]
+                },
+                link: {
+                    source: [0],
+                    target: [1],
+                    value: [1]
+                }
+            });
+            expect(fullTrace.arrangement).toBe('freeform');
         });
     });
 
@@ -338,7 +353,6 @@ describe('sankey tests', function() {
         afterEach(destroyGraphDiv);
 
         it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mockDark);
 
@@ -366,7 +380,6 @@ describe('sankey tests', function() {
         });
 
         it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy)
@@ -388,7 +401,6 @@ describe('sankey tests', function() {
         });
 
         it('\'node\' remains visible even if \'value\' is very low', function(done) {
-
             var minimock = [{
                 type: 'sankey',
                 node: {
@@ -508,6 +520,32 @@ describe('sankey tests', function() {
               });
         });
 
+        it('prevents nodes from overlapping in snap arrangement', function(done) {
+            function checkElementOverlap(i, j) {
+                var base = document.querySelector('.sankey-node:nth-of-type(' + i + ')');
+                base = base.querySelector('.node-rect');
+                var compare = document.querySelector('.sankey-node:nth-of-type(' + j + ')');
+                compare = compare.querySelector('.node-rect');
+                return checkOverlap(base, compare);
+            }
+
+            var mockCopy = Lib.extendDeep({}, mockXY);
+
+            Plotly.plot(gd, mockCopy)
+            .then(function() {
+                // Nodes overlap
+                expect(checkElementOverlap(3, 6)).toBeTruthy('nodes do not overlap');
+
+                mockCopy.data[0].arrangement = 'snap';
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function() {
+                // Nodes do not overlap in snap
+                expect(checkElementOverlap(3, 6)).not.toBeTruthy('nodes overlap');
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('Test hover/click interactions:', function() {
@@ -996,70 +1034,214 @@ describe('sankey tests', function() {
             .then(done);
         });
 
-        ['node', 'link'].forEach(function(obj) {
-            it('should not output hover/unhover event data when ' + obj + '.hoverinfo is skip', function(done) {
-                var fig = Lib.extendDeep({}, mock);
-
-                Plotly.plot(gd, fig)
-                      .then(function() { return Plotly.restyle(gd, obj + '.hoverinfo', 'skip'); })
-                      .then(assertNoHoverEvents(obj))
-                      .catch(failTest)
-                      .then(done);
-            });
-        });
-    });
-
-    describe('Test drag interactions:', function() {
-        var gd;
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
-
-        afterEach(destroyGraphDiv);
-
-        function _drag(fromX, fromY, dX, dY, delay) {
-            var toX = fromX + dX;
-            var toY = fromY + dY;
-
-            return new Promise(function(resolve) {
-                mouseEvent('mousemove', fromX, fromY);
-                mouseEvent('mousedown', fromX, fromY);
-                mouseEvent('mousemove', toX, toY);
-
-                setTimeout(function() {
-                    mouseEvent('mouseup', toX, toY);
-                    resolve();
-                }, delay);
-            });
-        }
-
-        it('should change the position of a node', function(done) {
+        it('should not output hover/unhover event data when link.hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
-            var nodes;
-            var node;
-            var position;
-            var nodePos = [404, 302];
-            var move = [0, -100];
 
             Plotly.plot(gd, fig)
-              .then(function() {
-                  nodes = document.getElementsByClassName('sankey-node');
-                  node = nodes.item(4); // Selecting node with label 'Solid'
-                  position = getNodeCoords(node);
-                  return _drag(nodePos[0], nodePos[1], move[0], move[1], 500);
-              })
-              .then(function() {
-                  nodes = document.getElementsByClassName('sankey-node');
-                  node = nodes.item(nodes.length - 1); // Dragged node is now the last one
-                  var newPosition = getNodeCoords(node);
-                  expect(newPosition.x).toBeCloseTo(position.x + move[0]);
-                  expect(newPosition.y).toBeCloseTo(position.y + move[1]);
-              })
-              .catch(failTest)
-              .then(done);
+                  .then(function() { return Plotly.restyle(gd, 'link.hoverinfo', 'skip'); })
+                  .then(assertNoHoverEvents('link'))
+                  .catch(failTest)
+                  .then(done);
+        });
+
+        it('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, fig)
+                  .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
+                  .then(assertNoHoverEvents('node'))
+                  .catch(failTest)
+                  .then(done);
         });
     });
+
+    describe('Test drag interactions', function() {
+        ['freeform', 'perpendicular', 'snap'].forEach(function(arrangement) {
+            describe('for arrangement ' + arrangement + ':', function() {
+                var gd;
+                var mockCopy;
+                var nodeId = 4; // Selecting node with label 'Solid'
+
+                beforeEach(function() {
+                    gd = createGraphDiv();
+                    mockCopy = Lib.extendDeep({}, mock);
+                });
+
+                afterEach(function() {
+                    Plotly.purge(gd);
+                    destroyGraphDiv();
+                });
+
+                function testDragNode(move) {
+                    return function() {
+                        var position;
+                        var nodes;
+                        var node;
+
+                        return Promise.resolve()
+                        .then(function() {
+                            nodes = document.getElementsByClassName('sankey-node');
+                            node = nodes.item(nodeId);
+                            position = getNodeCoords(node);
+                            var timeDelay = (arrangement === 'snap') ? 2000 : 0; // Wait for force simulation to finish
+                            return drag(node, move[0], move[1], false, false, false, 10, false, timeDelay);
+                        })
+                        .then(function() {
+                            nodes = document.getElementsByClassName('sankey-node');
+                            node = nodes.item(nodes.length - 1); // Dragged node is now the last one
+                            var newPosition = getNodeCoords(node);
+                            if(arrangement === 'freeform') expect(newPosition.x).toBeCloseTo(position.x + move[0], 2, 'final x position is off');
+                            expect(newPosition.y).toBeCloseTo(position.y + move[1], 2, 'final y position is off');
+                            return Promise.resolve(true);
+                        });
+                    };
+                }
+
+                it('should change the position of a node on drag', function(done) {
+                    mockCopy.data[0].arrangement = arrangement;
+                    var move = [50, -150];
+
+                    Plotly.newPlot(gd, mockCopy)
+                      .then(testDragNode(move))
+                      .catch(failTest)
+                      .then(done);
+                });
+
+                it('should not change the position of a node if the mouse does not move', function(done) {
+                    mockCopy.data[0].arrangement = arrangement;
+                    var move = [0, 0];
+
+                    Plotly.newPlot(gd, mockCopy)
+                      .then(testDragNode(move))
+                      .catch(failTest)
+                      .then(done);
+                });
+
+                it('@noCI should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
+                    mockCopy.data[0].arrangement = arrangement;
+                    var move = [50, -50];
+                    var nodes;
+                    var node;
+                    var x, x1;
+                    var y, y1;
+                    var precision = 3;
+
+                    Plotly.newPlot(gd, mockCopy)
+                      .then(function() {
+                          x = gd._fullData[0].node.x.slice();
+                          y = gd._fullData[0].node.y.slice();
+                          expect(x.length).toBe(0);
+                          expect(y.length).toBe(0);
+
+                          nodes = document.getElementsByClassName('sankey-node');
+                          node = nodes.item(nodeId);
+                          return drag(node, move[0], move[1]);
+                      })
+                      .then(function() {
+                          x = gd._fullData[0].node.x.slice();
+                          y = gd._fullData[0].node.y.slice();
+                          expect(x.length).toBe(mockCopy.data[0].node.label.length);
+                          expect(y.length).toBe(mockCopy.data[0].node.label.length);
+
+                          nodes = document.getElementsByClassName('sankey-node');
+                          node = nodes.item(nodes.length - 1); // Dragged node is now the last one
+                          return drag(node, move[0], move[1]);
+                      })
+                      .then(function() {
+                          x1 = gd._fullData[0].node.x.slice();
+                          y1 = gd._fullData[0].node.y.slice();
+                          if(arrangement === 'freeform') expect(x1[nodeId]).not.toBeCloseTo(x[nodeId], 2, 'node ' + nodeId + ' has not changed x position');
+                          expect(y1[nodeId]).not.toBeCloseTo(y[nodeId], precision, 'node ' + nodeId + ' has not changed y position');
+
+                          // All nodes should have same x, y values after drag
+                          for(var i = 0; i < x.length; i++) {
+                              if(i === nodeId) continue; // except the one was just dragged
+                              if(arrangement === 'freeform') expect(x1[i]).toBeCloseTo(x[i], 3, 'node ' + i + ' has changed x position');
+                              expect(y1[i]).toBeCloseTo(y[i], precision, 'node ' + i + ' has changed y position');
+                          }
+                          return true;
+                      })
+                      .catch(failTest)
+                      .then(done);
+                });
+            });
+        });
+
+        describe('in relation to uirevision', function() {
+            var gd;
+
+            beforeEach(function() {
+                gd = createGraphDiv();
+            });
+
+            afterEach(function() {
+                Plotly.purge(gd);
+                destroyGraphDiv();
+            });
+
+            ['0', '1'].forEach(function(finalUIRevision) {
+                it('on Plotly.react, it preserves the position of nodes depending on layout.uirevision', function(done) {
+                    var nodes, node, positionBeforeDrag, positionAfterDrag;
+                    var move = [-50, 100];
+                    var uirevisions = ['0', finalUIRevision];
+
+                    // Use a freeform arrangement
+                    var mockCircularFreeform = Lib.extendDeep({}, mockCircular);
+                    mockCircularFreeform.data[0].arrangement = 'freeform';
+
+                    var mockCopy = Lib.extendDeep({}, mockCircularFreeform);
+                    mockCopy.layout.uirevision = uirevisions[0];
+
+                    Plotly.plot(gd, mockCopy)
+                      .then(function() {
+                          // move a node around
+                          nodes = document.getElementsByClassName('sankey-node');
+                          node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
+                          positionBeforeDrag = getNodeCoords(node);
+                          positionBeforeDrag = [positionBeforeDrag.x, positionBeforeDrag.y];
+                          positionAfterDrag = [positionBeforeDrag[0] + move[0], positionBeforeDrag[1] + move[1]];
+                          return drag(node, move[0], move[1], false, false, false, 10, false, 1000);
+                      })
+                      .then(function() {
+                          // Check that the node was really moved
+                          nodes = document.getElementsByClassName('sankey-node');
+                          node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
+                          var newPosition = getNodeCoords(node);
+                          expect(newPosition.x).toBeCloseTo(positionAfterDrag[0], 2, 'final x position is off');
+                          expect(newPosition.y).toBeCloseTo(positionAfterDrag[1], 2, 'final y position is off');
+
+                          // Change color of nodes
+                          var mockCopy = Lib.extendDeep({}, mockCircularFreeform);
+                          mockCopy.data[0].node.color = 'orange';
+                          mockCopy.layout.uirevision = uirevisions[1];
+                          return Plotly.react(gd, mockCopy);
+                      })
+                      .then(delay(1000))
+                      .then(function() {
+                          nodes = document.getElementsByClassName('sankey-node');
+                          node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
+                          var newPosition = getNodeCoords(node);
+
+                          var pos, msg;
+                          if(uirevisions[0] === uirevisions[1]) {
+                              // If uirevision is the same, the node should stay where it is
+                              pos = positionAfterDrag;
+                              msg = 'should stay the same because uirevision did not change';
+                          } else {
+                              // If uirevision changed, the node should go back to its default position
+                              pos = positionBeforeDrag;
+                              msg = 'should go back to its default because uirevision changed';
+                          }
+                          expect(newPosition.x).toBeCloseTo(pos[0], 2, 'x position ' + msg);
+                          expect(newPosition.y).toBeCloseTo(pos[1], 2, 'y position ' + msg);
+                      })
+                      .catch(failTest)
+                      .then(done);
+                });
+            });
+        });
+    });
+
     it('emits a warning if node.pad is too large', function(done) {
         var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
@@ -1153,53 +1335,14 @@ describe('sankey layout generators', function() {
     }
 
     describe('d3-sankey', function() {
-        var data = {
-            'nodes': [{
-                'node': 0,
-                'name': 'node0'
-            }, {
-                'node': 1,
-                'name': 'node1'
-            }, {
-                'node': 2,
-                'name': 'node2'
-            }, {
-                'node': 3,
-                'name': 'node3'
-            }, {
-                'node': 4,
-                'name': 'node4'
-            }],
-            'links': [{
-                'source': 0,
-                'target': 2,
-                'value': 2
-            }, {
-                'source': 1,
-                'target': 2,
-                'value': 2
-            }, {
-                'source': 1,
-                'target': 3,
-                'value': 2
-            }, {
-                'source': 0,
-                'target': 4,
-                'value': 2
-            }, {
-                'source': 2,
-                'target': 3,
-                'value': 2
-            }, {
-                'source': 2,
-                'target': 4,
-                'value': 2
-            }, {
-                'source': 3,
-                'target': 4,
-                'value': 4
-            }]
-        };
+        function _calc(trace) {
+            var gd = { data: [trace] };
+
+            supplyAllDefaults(gd);
+            var fullTrace = gd._fullData[0];
+            return Sankey.calc(gd, fullTrace);
+        }
+        var data;
         var sankey;
         var graph;
         var margin = {
@@ -1212,6 +1355,23 @@ describe('sankey layout generators', function() {
         var height = 740 - margin.top - margin.bottom;
 
         beforeEach(function() {
+            data = _calc({
+                type: 'sankey',
+                node: {
+                    label: ['node0', 'node1', 'node2', 'node3', 'node4'],
+                    x: [0, 20, 40, 60, 80, 100, 120, 140],
+                    y: [0, 20, 40, 60, 80, 100, 120, 140]
+                },
+                link: {
+                    source: [0, 1, 1, 0, 2, 2, 3],
+                    target: [2, 2, 3, 4, 3, 4, 4],
+                    value: [2, 2, 2, 2, 2, 2, 4]
+                }
+            });
+            data = {
+                nodes: data[0]._nodes,
+                links: data[0]._links
+            };
             sankey = d3sankey
             .sankey()
             .nodeWidth(36)
@@ -1237,7 +1397,7 @@ describe('sankey layout generators', function() {
         });
 
         it('keep a list of nodes', function() {
-            checkArray(graph.nodes, 'name', ['node0', 'node1', 'node2', 'node3', 'node4']);
+            checkArray(graph.nodes, 'label', ['node0', 'node1', 'node2', 'node3', 'node4']);
         });
 
         it('keep a list of nodes with x and y values', function() {
@@ -1272,7 +1432,7 @@ describe('sankey layout generators', function() {
         });
     });
 
-    describe('d3-sankey-ciruclar', function() {
+    describe('d3-sankey-circular', function() {
         var data, sankey, graph;
 
         describe('implements d3-sankey compatible API', function() {
@@ -1324,16 +1484,15 @@ describe('sankey layout generators', function() {
             });
 
             it('supports column reordering', function() {
-                var reorder = [ 2, 2, 1, 1, 0, 0 ];
-
                 checkArray(graph.nodes, 'column', [0, 0, 2, 3, 1, 1]);
 
                 var a = graph.nodes[0].x0;
+                var reorder = [ 2, 2, 1, 1, 0, 0 ];
                 sankey.nodeAlign(function(node) {
                     return reorder[node.pointNumber];
                 });
                 graph = sankey();
-                checkArray(graph.nodes, 'column', [2, 2, 1, 1, 0, 0]);
+                checkArray(graph.nodes, 'column', reorder);
                 checkArray(graph.nodes, 'height', [1, 3, 1, 0, 2, 0]);
                 var b = graph.nodes[0].x0;
                 expect(a).not.toEqual(b);

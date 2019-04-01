@@ -127,7 +127,6 @@ function calculateErrorParams(errors) {
         capSize[i] = e.width / 2;  // ballpark rescaling
         color[i] = str2RgbaArray(e.color);
         lineWidth[i] = e.thickness;
-
     }
 
     return {capSize: capSize, color: color, lineWidth: lineWidth};
@@ -197,7 +196,6 @@ function formatParam(paramIn, len, calculate, dflt, extraFn) {
             if(paramIn[i] === undefined) paramOut[i] = dflt;
             else paramOut[i] = calculate(paramIn[i], extraFn);
         }
-
     }
     else paramOut = calculate(paramIn, Lib.identity);
 

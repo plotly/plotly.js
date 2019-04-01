@@ -28,7 +28,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             continue;
         }
         if(k.charAt(0) === '_' || typeof fromVal === 'function') {
-
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
             if(k in toContainer) continue;
@@ -36,7 +35,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             toContainer[k] = fromVal;
         }
         else if(isArrayOrTypedArray(fromVal) && isArrayOrTypedArray(toVal) && isPlainObject(fromVal[0])) {
-
             // filter out data_array items that can contain user objects
             // most of the time the toVal === fromVal check will catch these early
             // but if the user makes new ones we also don't want to recurse in.
@@ -51,7 +49,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             }
         }
         else if(isPlainObject(fromVal) && isPlainObject(toVal)) {
-
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toVal, fromVal);
 

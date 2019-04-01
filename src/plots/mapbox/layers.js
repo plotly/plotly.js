@@ -140,7 +140,6 @@ function convertOpts(opts) {
     var paint = {};
 
     switch(opts.type) {
-
         case 'circle':
             Lib.extendFlat(paint, {
                 'circle-radius': opts.circle.radius,

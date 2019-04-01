@@ -19,7 +19,7 @@ var calcModule = require('./calc');
 Pie.calc = calcModule.calc;
 Pie.crossTraceCalc = calcModule.crossTraceCalc;
 
-Pie.plot = require('./plot');
+Pie.plot = require('./plot').plot;
 Pie.style = require('./style');
 Pie.styleOne = require('./style_one');
 

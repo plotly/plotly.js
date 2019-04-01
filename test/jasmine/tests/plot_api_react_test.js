@@ -700,7 +700,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(done);
     });
 
-    it('can change parcoords aggregations', function(done) {
+    it('@gl can change parcoords aggregations', function(done) {
         Plotly.newPlot(gd, aggregatedParcoords(0))
         .then(checkValues(aggParcoords0Vals))
 
@@ -717,7 +717,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(done);
     });
 
-    it('can change type with aggregations', function(done) {
+    it('@gl can change type with aggregations', function(done) {
         Plotly.newPlot(gd, aggregatedScatter(1))
         .then(checkCalcData(aggScatter1CD))
 
@@ -1766,7 +1766,7 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editEditable, checkAttrs(true), checkAttrs).then(done);
     });
 
-    it('preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
+    it('@gl preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
         function fig(mainRev, traceRev) {
             return {
                 data: [{
@@ -1863,6 +1863,42 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkEdited = checkState([], attrs());
 
         _run(fig, editComponents, checkInitial, checkEdited).then(done);
+    });
+
+    it('preserves sunburst level changes', function(done) {
+        function assertLevel(msg, exp) {
+            expect(gd._fullData[0].level).toBe(exp, msg);
+        }
+
+        Plotly.react(gd, [{
+            type: 'sunburst',
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
+            uirevision: 1
+        }])
+        .then(function() {
+            assertLevel('no set level at start', undefined);
+        })
+        .then(function() {
+            var nodeSeth = d3.select('.slice:nth-child(2)').node();
+            mouseEvent('click', 0, 0, {element: nodeSeth});
+        })
+        .then(function() {
+            assertLevel('after clicking on Seth sector', 'Seth');
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'sunburst',
+                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura', 'Joe'],
+                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve', 'Seth'],
+                uirevision: 1
+            }]);
+        })
+        .then(function() {
+            assertLevel('after reacting with new data, but with same uirevision', 'Seth');
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 

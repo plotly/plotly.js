@@ -11,6 +11,7 @@
 var scatterAttrs = require('../scatter/attributes');
 var barAttrs = require('../bar/attributes');
 var colorAttrs = require('../../components/color/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -75,6 +76,11 @@ module.exports = {
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: 'Same as `text`.'
+    }),
+    hovertemplate: hovertemplateAttrs({
+        description: [
+            'N.B. This only has an effect when hovering on points.'
+        ].join(' ')
     }),
     whiskerwidth: {
         valType: 'number',

@@ -498,7 +498,6 @@ describe('hover info', function() {
         });
 
         it('render only non-hoverinfo \'none\' hover labels', function(done) {
-
             Plotly.restyle(gd, 'hoverinfo', ['none', 'name']).then(function() {
                 Fx.hover('graph', evt, 'xy');
 
@@ -1685,6 +1684,40 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should avoid overlaps on *too close* pts are filtered out', function(done) {
+            Plotly.plot(gd, [
+                {name: 'A', x: [9, 10], y: [9, 10]},
+                {name: 'B', x: [8, 9], y: [9, 10]},
+                {name: 'C', x: [9, 10], y: [10, 11]}
+            ], {
+                xaxis: {range: [0, 100]},
+                yaxis: {range: [0, 100]},
+                width: 700,
+                height: 450
+            })
+            .then(function() { _hover(gd, 67, 239); })
+            .then(function() {
+                var nodesA = hoverInfoNodes('A');
+                var nodesC = hoverInfoNodes('C');
+
+                // Ensure layout correct
+                assertLabelsInsideBoxes(nodesA, 'A');
+                assertLabelsInsideBoxes(nodesC, 'C');
+                assertSecondaryRightToPrimaryBox(nodesA, 'A');
+                assertSecondaryRightToPrimaryBox(nodesC, 'C');
+
+                // Ensure stacking, finally
+                var boxA = nodesA.primaryBox.getBoundingClientRect();
+                var boxC = nodesC.primaryBox.getBoundingClientRect();
+
+                // Be robust against floating point arithmetic and subtle future layout changes
+                expect(calcLineOverlap(boxA.top, boxA.bottom, boxC.top, boxC.bottom))
+                  .toBeWithin(0, 1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('hovertemplate', function() {
@@ -1904,6 +1937,38 @@ describe('hover info', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should fallback to regular hover content when hoveron does not support hovertemplate', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
+
+        fig.data.forEach(function(trace) {
+            trace.hoveron = 'points+fills';
+            trace.hovertemplate = '%{x} | %{y}';
+        });
+
+        fig.layout.hovermode = 'closest';
+        fig.layout.showlegend = false;
+        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
+
+        Plotly.plot(gd, fig)
+        .then(function() { _hoverNatural(gd, 180, 200); })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: 'trace 1',
+                name: ''
+            }, 'hovering on a fill');
+        })
+        .then(function() { _hoverNatural(gd, 50, 95); })
+        .then(function() {
+            assertHoverLabelContent({
+                nums: '0 | 5',
+                name: 'trace 1'
+            }, 'hovering on a pt');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('hover info on stacked subplots', function() {
@@ -2093,7 +2158,6 @@ describe('hover info on overlaid subplots', function() {
 });
 
 describe('hover after resizing', function() {
-
     var gd;
     afterEach(destroyGraphDiv);
 
@@ -2464,7 +2528,6 @@ describe('hover updates', function() {
             }
         }], { width: 700, height: 450 })
         .then(function() {
-
             gd.on('plotly_hover', function(eventData) {
                 hoverCnt++;
 
@@ -2491,7 +2554,6 @@ describe('hover updates', function() {
             expect(unHoverCnt).toEqual(2);
         })
         .then(done);
-
     });
 });
 
@@ -3187,6 +3249,36 @@ describe('hovermode defaults to', function() {
     });
 });
 
+describe('hover labels z-position', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+    var mock = require('@mocks/14.json');
+
+    it('is above the modebar', function(done) {
+        Plotly.plot(gd, mock).then(function() {
+            var infolayer = document.getElementsByClassName('infolayer');
+            var modebar = document.getElementsByClassName('modebar-container');
+            var hoverlayer = document.getElementsByClassName('hoverlayer');
+
+            expect(infolayer.length).toBe(1);
+            expect(modebar.length).toBe(1);
+            expect(hoverlayer.length).toBe(1);
+
+            var compareMask = infolayer[0].compareDocumentPosition(modebar[0]);
+            expect(compareMask).toBe(Node.DOCUMENT_POSITION_FOLLOWING, '.modebar-container appears after the .infolayer');
+
+            compareMask = modebar[0].compareDocumentPosition(hoverlayer[0]);
+            expect(compareMask).toBe(Node.DOCUMENT_POSITION_FOLLOWING, '.hoverlayer appears after the .modebar');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
 
 describe('touch devices', function() {
     afterEach(destroyGraphDiv);

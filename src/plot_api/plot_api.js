@@ -733,7 +733,6 @@ function assertIndexArray(gd, indices, arrayName) {
  * @param newIndices
  */
 function checkMoveTracesArgs(gd, currentIndices, newIndices) {
-
     // check that gd has attribute 'data' and 'data' is array
     if(!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array.');
@@ -759,7 +758,6 @@ function checkMoveTracesArgs(gd, currentIndices, newIndices) {
     if(typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
         throw new Error('current and new indices must be of equal length.');
     }
-
 }
 /**
  * A private function to reduce the type checking clutter in addTraces.
@@ -816,7 +814,6 @@ function checkAddTracesArgs(gd, traces, newIndices) {
  * @param maxPoints
  */
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
-
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
 
     if(!Array.isArray(gd.data)) {
@@ -833,7 +830,6 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
     assertIndexArray(gd, indices, 'indices');
 
     for(var key in update) {
-
         /*
          * Verify that the attribute to be updated contains as many trace updates
          * as indices. Failure must result in throw and no-op
@@ -864,7 +860,6 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  * @return {Object[]}
  */
 function getExtendProperties(gd, update, indices, maxPoints) {
-
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
     var updateProps = [];
     var trace, target, prop, insert, maxp;
@@ -877,9 +872,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
 
     // loop through all update keys and traces and harvest validated data.
     for(var key in update) {
-
         for(var j = 0; j < indices.length; j++) {
-
             /*
              * Choose the trace indexed by the indices map argument and get the prop setter-getter
              * instance that references the key and value for this particular trace.
@@ -1166,12 +1159,10 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
     }
 
     try {
-
         // this is redundant, but necessary to not catch later possible errors!
         checkMoveTracesArgs(gd, currentIndices, newIndices);
     }
     catch(error) {
-
         // something went wrong, reset gd to be safe and rethrow error
         gd.data.splice(gd.data.length - traces.length, traces.length);
         throw error;
@@ -1296,7 +1287,6 @@ exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     // get the traces that aren't being moved around
     for(i = 0; i < gd.data.length; i++) {
-
         // if index isn't in currentIndices, include it in ignored!
         if(currentIndices.indexOf(i) === -1) {
             newData.push(gd.data[i]);
@@ -2306,6 +2296,9 @@ function _relayout(gd, aobj) {
             ) {
                 flags.plot = true;
             }
+            else if(fullLayout._has('gl2d')) {
+                flags.plot = true;
+            }
             else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
 
@@ -2524,6 +2517,8 @@ var traceUIControlPatterns = [
     // "visible" includes trace.transforms[i].styles[j].value.visible
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
+    {pattern: /^node\.(x|y)/}, // for Sankey nodes
+    {pattern: /^level$/}, // for Sunburst traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -2742,7 +2737,6 @@ exports.react = function(gd, data, layout, config) {
         plotDone = exports.newPlot(gd, data, layout, config);
     }
     else {
-
         if(Lib.isPlainObject(data)) {
             var obj = data;
             data = obj.data;
@@ -2872,7 +2866,6 @@ exports.react = function(gd, data, layout, config) {
 
         return gd;
     });
-
 };
 
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
@@ -3094,7 +3087,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         }
         else if(canBeDataArray) {
             if(wasArray && nowArray) {
-
                 // don't try to diff two data arrays. If immutable we know the data changed,
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
                 if(immutable) {
@@ -3389,7 +3381,6 @@ exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     if(newFrame.onComplete) {
                         newFrame.onComplete();
                     }
-
                 });
 
                 gd.emit('plotly_animatingframe', {
@@ -3653,7 +3644,6 @@ exports.addFrames = function(gd, frameList, indices) {
         if(typeof frame.name === 'number') {
             Lib.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
                 'implicitly cast to strings');
-
         }
 
         if(!frame.name) {
@@ -3798,11 +3788,17 @@ function makePlotFramework(gd) {
         .classed('gl-container', true);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
+    fullLayout._paperdiv.select('.modebar-container').remove();
 
     fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
         .classed('main-svg', true);
 
     fullLayout._toppaper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
+    fullLayout._modebardiv = fullLayout._paperdiv.append('div');
+
+    fullLayout._hoverpaper = fullLayout._paperdiv.append('svg')
         .classed('main-svg', true);
 
     if(!fullLayout._uid) {
@@ -3864,6 +3860,9 @@ function makePlotFramework(gd) {
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
+    // single sunbursrt layer for the whole plot
+    fullLayout._sunburstlayer = fullLayout._paper.append('g').classed('sunburstlayer', true);
+
     // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
 
@@ -3881,11 +3880,10 @@ function makePlotFramework(gd) {
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
-    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+    fullLayout._hoverlayer = fullLayout._hoverpaper.append('g').classed('hoverlayer', true);
 
     // Make the modebar container
-    fullLayout._modebardiv = fullLayout._paperdiv.selectAll('.modebar-container').data([0]);
-    fullLayout._modebardiv.enter().append('div')
+    fullLayout._modebardiv
         .classed('modebar-container', true)
         .style('position', 'absolute')
         .style('top', '0px')

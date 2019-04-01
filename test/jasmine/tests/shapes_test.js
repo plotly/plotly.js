@@ -458,7 +458,6 @@ describe('shapes axis reference changes', function() {
     }
 
     it('draws the right number of objects and updates clip-path correctly', function(done) {
-
         expect(getShape(0).attr('clip-path') || '').toMatch(/x\)$/);
 
         Plotly.relayout(gd, {
@@ -1037,7 +1036,7 @@ describe('A fixed size shape', function() {
             });
       });
 
-    it('being sized relative to data vertically is getting lower ' +
+    it('@flaky being sized relative to data vertically is getting lower ' +
       'when being dragged to expand the y-axis',
       function(done) {
           layout.shapes[0].ysizemode = 'data';
@@ -1109,7 +1108,6 @@ describe('A fixed size shape', function() {
         beforeEach(function() {
             layout.shapes[0].type = 'line';
             layout.shapes[0].yanchor = 3;
-
         });
 
         it('@flaky can be moved by dragging the middle', function(done) {

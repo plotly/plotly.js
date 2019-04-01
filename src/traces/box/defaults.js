@@ -105,7 +105,10 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
         delete traceOut.marker;
     }
 
-    coerce('hoveron');
+    var hoveron = coerce('hoveron');
+    if(hoveron === 'all' || hoveron.indexOf('points') !== -1) {
+        coerce('hovertemplate');
+    }
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }

@@ -53,7 +53,6 @@ function updateHeadersInSrcFiles() {
     glob('{' + srcGlob + ',' + libGlob + '}', function(err, files) {
         files.forEach(function(file) {
             fs.readFile(file, 'utf-8', function(err, code) {
-
                 // parse through code string while keeping track of comments
                 var comments = [];
                 falafel(code, {onComment: comments, locations: true}, function() {});

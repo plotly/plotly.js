@@ -1,0 +1,124 @@
+{
+    "data": [
+        {
+            "name": "bar",
+            "type": "bar",
+            "orientation": "v",
+            "opacity": 0.5,
+            "x": [
+                "Sales",
+                "Consulting",
+                "Maintenance",
+                "Other revenue",
+                "Net revenue",
+                "Purchases",
+                "Material expenses",
+                "Personnel expenses",
+                "Other expenses",
+                "Operating profit",
+                "Investment income",
+                "Financial income",
+                "Profit before tax",
+                "Income tax (15%)",
+                "Profit after tax"
+            ],
+            "y": [
+                375,
+                128,
+                78,
+                27,
+                null,
+                -327,
+                -12,
+                -78,
+                -12,
+                null,
+                32,
+                89,
+                null,
+                -45,
+                null
+            ]
+        }, {
+            "name": "waterfall",
+            "type": "waterfall",
+            "orientation": "v",
+            "opacity": 0.5,
+            "measure": [
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "total"
+            ],
+            "x": [
+                "Sales",
+                "Consulting",
+                "Maintenance",
+                "Other revenue",
+                "Net revenue",
+                "Purchases",
+                "Material expenses",
+                "Personnel expenses",
+                "Other expenses",
+                "Operating profit",
+                "Investment income",
+                "Financial income",
+                "Profit before tax",
+                "Income tax (15%)",
+                "Profit after tax"
+            ],
+            "y": [
+                375,
+                128,
+                78,
+                27,
+                null,
+                -327,
+                -12,
+                -78,
+                -12,
+                null,
+                32,
+                89,
+                null,
+                -45,
+                null
+            ],
+            "connector": {
+                "mode": "spanning",
+                "line": {
+                    "width": 2,
+                    "color": "rgb(0, 0, 0)",
+                    "dash": 0
+                }
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "waterfall chart with bar chart"
+        },
+        "xaxis": {
+            "type": "category"
+        },
+        "yaxis": {
+            "type": "linear"
+        },
+        "height": 600,
+        "width": 600,
+        "showlegend": true,
+        "bargap": 0,
+        "waterfallgap": 0.4
+    }
+}

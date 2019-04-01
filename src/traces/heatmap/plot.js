@@ -292,7 +292,6 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
 
             context.putImageData(imageData, 0, 0);
         } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
-
             // gaps do not need to be exact integers, but if they *are* we will get
             // cleaner edges by rounding at least one edge
             var xGap = trace.xgap;

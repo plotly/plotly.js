@@ -192,8 +192,7 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
-
+function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
     var glplotOptions = {
         canvas: canvas,
         gl: gl,
@@ -204,7 +203,7 @@ function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
         snapToData: true,
         autoScale: true,
         autoBounds: false,
-        camera: camera,
+        cameraObject: cameraObject,
         pixelRatio: pixelRatio
     };
 
@@ -238,9 +237,10 @@ function tryCreatePlot(scene, camera, pixelRatio, canvas, gl) {
     return true;
 }
 
-function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
+function initializeGLPlot(scene, pixelRatio, canvas, gl) {
+    scene.initializeGLCamera();
 
-    var success = tryCreatePlot(scene, camera, pixelRatio, canvas, gl);
+    var success = tryCreatePlot(scene, scene.camera, pixelRatio, canvas, gl);
     /*
     * createPlot will throw when webgl is not enabled in the client.
     * Lets return an instance of the module with all functions noop'd.
@@ -281,8 +281,6 @@ function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
         }, false);
     }
 
-    if(!scene.camera) scene.initializeGLCamera();
-
     scene.glplot.camera = scene.camera;
 
     scene.glplot.oncontextloss = function() {
@@ -300,7 +298,6 @@ function initializeGLPlot(scene, camera, pixelRatio, canvas, gl) {
 }
 
 function Scene(options, fullLayout) {
-
     // create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
@@ -351,15 +348,12 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    var camera = fullLayout.scene.camera;
-
-    initializeGLPlot(this, camera, this.pixelRatio);
+    initializeGLPlot(this, this.pixelRatio);
 }
 
 var proto = Scene.prototype;
 
 proto.initializeGLCamera = function() {
-
     var cameraData = this.fullSceneLayout.camera;
     var isOrtho = (cameraData.projection.type === 'orthographic');
 
@@ -673,32 +667,25 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var aspectRatio;
 
     if(fullSceneLayout.aspectmode === 'auto') {
-
         if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
-
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
              */
 
             aspectRatio = axesScaleRatio;
         } else {
-
             /*
              * USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
              */
             aspectRatio = [1, 1, 1];
         }
-
     } else if(fullSceneLayout.aspectmode === 'cube') {
         aspectRatio = [1, 1, 1];
-
     } else if(fullSceneLayout.aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
-
     } else if(fullSceneLayout.aspectmode === 'manual') {
         var userRatio = fullSceneLayout.aspectratio;
         aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
-
     } else {
         throw new Error('scene.js aspectRatio was not one of the enumerated types');
     }
@@ -796,7 +783,7 @@ proto.setCamera = function setCamera(cameraData) {
 
         this.glplot.dispose();
 
-        initializeGLPlot(this, cameraData, pixelRatio);
+        initializeGLPlot(this, pixelRatio);
         this.glplot.camera._ortho = newOrtho;
     }
 };
@@ -830,7 +817,6 @@ proto.saveCamera = function saveCamera(layout) {
         if(!cameraDataLastSave.projection || (
             cameraData.projection &&
             cameraData.projection.type !== cameraDataLastSave.projection.type)) {
-
             hasChanged = true;
         }
     }
@@ -851,13 +837,11 @@ proto.saveCamera = function saveCamera(layout) {
 
 proto.updateFx = function(dragmode, hovermode) {
     var camera = this.camera;
-
     if(camera) {
         // rotate and orbital are synonymous
         if(dragmode === 'orbit') {
             camera.mode = 'orbit';
             camera.keyBindingMode = 'rotate';
-
         } else if(dragmode === 'turntable') {
             camera.up = [0, 0, 1];
             camera.mode = 'turntable';
@@ -873,16 +857,16 @@ proto.updateFx = function(dragmode, hovermode) {
             var y = fullCamera.up.y;
             var z = fullCamera.up.z;
             // only push `up` back to (full)layout if it's going to change
-            if(z / Math.sqrt(x * x + y * y + z * z) > 0.999) return;
-
-            var attr = this.id + '.camera.up';
-            var zUp = {x: 0, y: 0, z: 1};
-            var edits = {};
-            edits[attr] = zUp;
-            var layout = gd.layout;
-            Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
-            fullCamera.up = zUp;
-            Lib.nestedProperty(layout, attr).set(zUp);
+            if(z / Math.sqrt(x * x + y * y + z * z) < 0.999) {
+                var attr = this.id + '.camera.up';
+                var zUp = {x: 0, y: 0, z: 1};
+                var edits = {};
+                edits[attr] = zUp;
+                var layout = gd.layout;
+                Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
+                fullCamera.up = zUp;
+                Lib.nestedProperty(layout, attr).set(zUp);
+            }
         } else {
             // none rotation modes [pan or zoom]
             camera.keyBindingMode = dragmode;
@@ -957,7 +941,6 @@ proto.setConvert = function() {
 };
 
 proto.make4thDimension = function() {
-
     var _this = this;
     var gd = _this.graphDiv;
     var fullLayout = gd._fullLayout;

@@ -287,10 +287,11 @@ describe('heatmap convertColumnXYZ', function() {
 describe('heatmap calc', function() {
     'use strict';
 
-    function _calc(opts) {
+    function _calc(opts, layout) {
         var base = { type: 'heatmap' };
         var trace = Lib.extendFlat({}, base, opts);
         var gd = { data: [trace] };
+        if(layout) gd.layout = layout;
 
         supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
@@ -406,6 +407,20 @@ describe('heatmap calc', function() {
         expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
         expect(out.y).toBeCloseToArray([-0.5, 0.5]);
         expect(out.z).toBeCloseTo2DArray([[17, 18, 19]]);
+    });
+
+    it('should handle the category case (edge case with a *0* category)', function() {
+        var out = _calc({
+            x: ['a', 'b', 0],
+            y: ['z', 0, 'y'],
+            z: [[17, 18, 19], [10, 20, 30], [40, 30, 20]]
+        }, {
+            xaxis: {type: 'category'},
+            yaxis: {type: 'category'}
+        });
+
+        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
     });
 
     it('should handle the category x/y/z/ column case', function() {
@@ -689,7 +704,6 @@ describe('heatmap hover', function() {
     }
 
     describe('for `heatmap_multi-trace`', function() {
-
         beforeAll(function(done) {
             gd = createGraphDiv();
 
@@ -717,7 +731,6 @@ describe('heatmap hover', function() {
     });
 
     describe('for xyz-column traces', function() {
-
         beforeAll(function(done) {
             gd = createGraphDiv();
 
@@ -748,11 +761,9 @@ describe('heatmap hover', function() {
             })
             .then(done);
         });
-
     });
 
     describe('nonuniform bricks', function() {
-
         beforeAll(function(done) {
             gd = createGraphDiv();
 
@@ -783,6 +794,5 @@ describe('heatmap hover', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 });

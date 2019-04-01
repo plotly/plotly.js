@@ -38,7 +38,6 @@ describe('Plots.executeAPICommand', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 
     describe('with an unsuccessful command', function() {
@@ -60,7 +59,6 @@ describe('Plots.executeAPICommand', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
 
     describe('with the skip command', function() {

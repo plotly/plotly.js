@@ -26,7 +26,6 @@ var lineLayerMaker = require('./lines');
 function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
 
 function dimensionExtent(dimension) {
-
     var lo = dimension.range ? dimension.range[0] : Lib.aggNums(Math.min, null, dimension.values, dimension._length);
     var hi = dimension.range ? dimension.range[1] : Lib.aggNums(Math.max, null, dimension.values, dimension._length);
 
@@ -102,7 +101,6 @@ function ordinalScale(dimension) {
 }
 
 function unitToColorScale(cscale) {
-
     var colorStops = cscale.map(function(d) { return d[0]; });
     var colorTuples = cscale.map(function(d) { return d3.rgb(d[1]); });
     var prop = function(n) { return function(o) { return o[n]; }; };
@@ -184,7 +182,6 @@ function model(layout, d, i) {
 }
 
 function viewModel(state, callbacks, model) {
-
     var width = model.width;
     var height = model.height;
     var dimensions = model.dimensions;
@@ -338,7 +335,6 @@ function parcoordsInteractionState() {
 }
 
 module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, callbacks) {
-
     var state = parcoordsInteractionState();
 
     var vm = styledData

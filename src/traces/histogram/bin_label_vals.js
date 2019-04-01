@@ -161,7 +161,6 @@ function didDigitChange(digit, v1, v2, isDate, pa, calendar) {
         var dateParts2 = dateParts(v2, pa, calendar);
         var parti = (digit === oneYear) ? 0 : 1;
         return dateParts1[parti] !== dateParts2[parti];
-
     }
     return Math.floor(v2 / digit) - Math.floor(v1 / digit) > 0.1;
 }

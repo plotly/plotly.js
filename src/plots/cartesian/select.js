@@ -153,7 +153,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
                     'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
-
             }
             else if(direction === 'v') {
                 // vertical motion: make a horizontal box
@@ -571,7 +570,6 @@ function extractClickedPtInfo(hoverData, searchTraces) {
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
         if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
-
             // Special case for box (and violin)
             if(hoverDatum.hoverOnBox === true) {
                 break;

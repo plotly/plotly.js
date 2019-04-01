@@ -44,7 +44,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // attribute name to match the property name -- except '_a' !== 'a' so that is not
     // straightforward.
     if(traceIn.a && traceIn.b) {
-
         var len = handleXYZDefaults(traceIn, traceOut, coerce, layout, 'a', 'b');
 
         if(!len) {

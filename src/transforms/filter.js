@@ -254,7 +254,6 @@ function getFilterFunc(opts, d2c, targetCalendar) {
     }
 
     switch(operation) {
-
         case '=':
             return function(v) { return d2cTarget(v) === coercedValue; };
 

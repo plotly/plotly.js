@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "x": [ 0, 0, 0 ],
+      "y": [ 1, 1, -1 ],
+      "marker": {
+        "color": [ "red", "green", "blue" ]
+      }
+    },
+    {
+      "type": "bar",
+      "x": [ 0, 0, 0 ],
+      "y": [ 1, 1, -1 ],
+      "marker": {
+        "color": [ "cyan", "magenta", "yellow" ]
+      }
+    }
+  ],
+  "layout": {
+    "margin": { "t": 30, "b": 30, "l": 30, "r": 30 },
+    "width": 400,
+    "height": 400,
+    "showlegend": false,
+    "hovermode": "closest"
+  }
+}

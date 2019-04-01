@@ -163,7 +163,6 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
-
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,

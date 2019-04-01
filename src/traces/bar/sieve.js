@@ -17,18 +17,20 @@ var BADNUM = require('../../constants/numerical').BADNUM;
  * Helper class to sieve data from traces into bins
  *
  * @class
- * @param {Array}   traces
- *                  Array of calculated traces
- * @param {boolean} [separateNegativeValues]
- *                  If true, then split data at the same position into a bar
- *                  for positive values and another for negative values
- * @param {boolean} [dontMergeOverlappingData]
- *                  If true, then don't merge overlapping bars into a single bar
+ *
+ * @param {Array} traces
+*   Array of calculated traces
+ * @param {object} opts
+ *  - @param {boolean} [sepNegVal]
+ *      If true, then split data at the same position into a bar
+ *      for positive values and another for negative values
+ *  - @param {boolean} [overlapNoMerge]
+ *     If true, then don't merge overlapping bars into a single bar
  */
-function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
+function Sieve(traces, opts) {
     this.traces = traces;
-    this.separateNegativeValues = separateNegativeValues;
-    this.dontMergeOverlappingData = dontMergeOverlappingData;
+    this.sepNegVal = opts.sepNegVal;
+    this.overlapNoMerge = opts.overlapNoMerge;
 
     // for single-bin histograms - see histogram/calc
     var width1 = Infinity;
@@ -79,7 +81,7 @@ Sieve.prototype.put = function put(position, value) {
  * @method
  * @param {number} position  Position of datum
  * @param {number} [value]   Value of datum
- *                           (required if this.separateNegativeValues is true)
+ *                           (required if this.sepNegVal is true)
  * @returns {number} Current bin value
  */
 Sieve.prototype.get = function put(position, value) {
@@ -93,14 +95,14 @@ Sieve.prototype.get = function put(position, value) {
  * @method
  * @param {number} position  Position of datum
  * @param {number} [value]   Value of datum
- *                           (required if this.separateNegativeValues is true)
+ *                           (required if this.sepNegVal is true)
  * @returns {string} Bin label
- * (prefixed with a 'v' if value is negative and this.separateNegativeValues is
+ * (prefixed with a 'v' if value is negative and this.sepNegVal is
  * true; otherwise prefixed with '^')
  */
 Sieve.prototype.getLabel = function getLabel(position, value) {
-    var prefix = (value < 0 && this.separateNegativeValues) ? 'v' : '^';
-    var label = (this.dontMergeOverlappingData) ?
+    var prefix = (value < 0 && this.sepNegVal) ? 'v' : '^';
+    var label = (this.overlapNoMerge) ?
         position :
         Math.round(position / this.binWidth);
     return prefix + label;

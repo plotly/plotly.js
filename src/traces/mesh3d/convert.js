@@ -117,7 +117,6 @@ proto.update = function(data) {
 
     var cells;
     if(data.i && data.j && data.k) {
-
         if(
             data.i.length !== data.j.length ||
             data.j.length !== data.k.length ||

@@ -122,5 +122,4 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             return out;
         };
     }
-
 };

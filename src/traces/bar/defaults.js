@@ -13,16 +13,16 @@ var Color = require('../../components/color');
 var Registry = require('../../registry');
 
 var handleXYDefaults = require('../scatter/xy_defaults');
-var handleStyleDefaults = require('../bar/style_defaults');
+var handleStyleDefaults = require('./style_defaults');
 var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
 var attributes = require('./attributes');
+
+var coerceFont = Lib.coerceFont;
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
-
-    var coerceFont = Lib.coerceFont;
 
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
@@ -39,34 +39,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('hovertext');
     coerce('hovertemplate');
 
-    var textPosition = coerce('textposition');
-
-    var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
-    var hasInside = hasBoth || textPosition === 'inside';
-    var hasOutside = hasBoth || textPosition === 'outside';
-
-    if(hasInside || hasOutside) {
-        var textFont = coerceFont(coerce, 'textfont', layout.font);
-
-        // Note that coercing `insidetextfont` is always needed –
-        // even if `textposition` is `outside` for each trace – since
-        // an outside label can become an inside one, for example because
-        // of a bar being stacked on top of it.
-        var insideTextFontDefault = Lib.extendFlat({}, textFont);
-        var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
-        var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
-        if(isColorInheritedFromLayoutFont) {
-            delete insideTextFontDefault.color;
-        }
-        coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
-
-        if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
-
-        coerce('constraintext');
-        coerce('selected.textfont.color');
-        coerce('unselected.textfont.color');
-        coerce('cliponaxis');
-    }
+    handleText(traceIn, traceOut, layout, coerce, true);
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
@@ -126,20 +99,55 @@ function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
 
-    for(var i = 0; i < fullData.length; i++) {
-        traceOut = fullData[i];
+    if(fullLayout.barmode === 'group') {
+        for(var i = 0; i < fullData.length; i++) {
+            traceOut = fullData[i];
 
-        if(traceOut.type === 'bar') {
-            traceIn = traceOut._input;
-            if(fullLayout.barmode === 'group') {
+            if(traceOut.type === 'bar') {
+                traceIn = traceOut._input;
                 handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
             }
         }
     }
 }
 
+function handleText(traceIn, traceOut, layout, coerce, moduleHasSelUnselected) {
+    var textPosition = coerce('textposition');
+    var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';
+    var hasInside = hasBoth || textPosition === 'inside';
+    var hasOutside = hasBoth || textPosition === 'outside';
+
+    if(hasInside || hasOutside) {
+        var textFont = coerceFont(coerce, 'textfont', layout.font);
+
+        // Note that coercing `insidetextfont` is always needed –
+        // even if `textposition` is `outside` for each trace – since
+        // an outside label can become an inside one, for example because
+        // of a bar being stacked on top of it.
+        var insideTextFontDefault = Lib.extendFlat({}, textFont);
+        var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
+        var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
+        if(isColorInheritedFromLayoutFont) {
+            delete insideTextFontDefault.color;
+        }
+        coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
+
+        if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
+
+        coerce('constraintext');
+
+        if(moduleHasSelUnselected) {
+            coerce('selected.textfont.color');
+            coerce('unselected.textfont.color');
+        }
+
+        coerce('cliponaxis');
+    }
+}
+
 module.exports = {
     supplyDefaults: supplyDefaults,
     crossTraceDefaults: crossTraceDefaults,
-    handleGroupingDefaults: handleGroupingDefaults
+    handleGroupingDefaults: handleGroupingDefaults,
+    handleText: handleText
 };

@@ -19,6 +19,9 @@ var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 
+var interp2d = require('../heatmap/interp2d');
+var findEmpties = require('../heatmap/find_empties');
+
 function SurfaceTrace(scene, surface, uid) {
     this.scene = scene;
     this.uid = uid;
@@ -30,6 +33,7 @@ function SurfaceTrace(scene, surface, uid) {
     this.dataScaleX = 1.0;
     this.dataScaleY = 1.0;
     this.refineData = true;
+    this._interpolatedZ = false;
 }
 
 var proto = SurfaceTrace.prototype;
@@ -59,16 +63,17 @@ proto.getYat = function(a, b, calendar, axis) {
 };
 
 proto.getZat = function(a, b, calendar, axis) {
-    var v = (
-        this.data.z[b][a]
-    );
+    var v = this.data.z[b][a];
+
+    if(v === null && this.data.connectgaps && this.data._interpolatedZ) {
+        v = this.data._interpolatedZ[b][a];
+    }
 
     return (calendar === undefined) ? v : axis.d2l(v, 0, calendar);
 };
 
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
-
         var xRatio = (selection.data.index[0] - 1) / this.dataScaleX - 1;
         var yRatio = (selection.data.index[1] - 1) / this.dataScaleY - 1;
 
@@ -312,7 +317,6 @@ proto.estimateScale = function(resSrc, axis) {
 };
 
 proto.refineCoords = function(coords) {
-
     var scaleW = this.dataScaleX;
     var scaleH = this.dataScaleY;
 
@@ -328,7 +332,6 @@ proto.refineCoords = function(coords) {
     var padImg = ndarray(new Float32Array(padWidth * padHeight), [padWidth, padHeight]);
 
     for(var i = 0; i < coords.length; ++i) {
-
         this.surface.padField(padImg, coords[i]);
 
         var scaledImg = ndarray(new Float32Array(newWidth * newHeight), [newWidth, newHeight]);
@@ -401,6 +404,19 @@ proto.update = function(data) {
             rawCoords[0][j][k] = this.getXat(j, k, data.xcalendar, sceneLayout.xaxis);
             rawCoords[1][j][k] = this.getYat(j, k, data.ycalendar, sceneLayout.yaxis);
             rawCoords[2][j][k] = this.getZat(j, k, data.zcalendar, sceneLayout.zaxis);
+        }
+    }
+
+    if(data.connectgaps) {
+        data._emptypoints = findEmpties(rawCoords[2]);
+        interp2d(rawCoords[2], data._emptypoints);
+
+        data._interpolatedZ = [];
+        for(j = 0; j < xlen; j++) {
+            data._interpolatedZ[j] = [];
+            for(k = 0; k < ylen; k++) {
+                data._interpolatedZ[j][k] = rawCoords[2][j][k];
+            }
         }
     }
 
