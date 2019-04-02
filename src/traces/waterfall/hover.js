@@ -16,6 +16,10 @@ var DIRSYMBOL = {
     decreasing: '▼'
 };
 
+function formatNumber(a) {
+    return parseFloat(a.toPrecision(10));
+}
+
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var point = hoverOnBars(pointData, xval, yval, hovermode);
     if(!point) return;
@@ -34,16 +38,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(!di.isSum) {
         // format delta numbers:
         if(size > 0) {
-            point.extraText = size + ' ' + DIRSYMBOL.increasing;
+            point.extraText = formatNumber(size) + ' ' + DIRSYMBOL.increasing;
         } else if(size < 0) {
-            point.extraText = '(' + (-size) + ') ' + DIRSYMBOL.decreasing;
+            point.extraText = '(' + (formatNumber(-size)) + ') ' + DIRSYMBOL.decreasing;
         } else {
             return;
         }
         // display initial value
-        point.extraText += '<br>Initial: ' + (di.b + di.s - size);
+        point.extraText += '<br>Initial: ' + formatNumber(di.b + di.s - size);
     } else {
-        point[sizeLetter + 'LabelVal'] = size;
+        point[sizeLetter + 'LabelVal'] = formatNumber(size);
     }
 
     point.color = getTraceColor(trace, di);
