@@ -1296,7 +1296,7 @@ describe('waterfall hover', function() {
 
                 Plotly.plot(gd, {
                     data: [{
-                        x: [1, 2, 3, 4, 5],
+                        x: ['A', 'B', 'C', 'D', 'E'],
                         y: [0, -1.1, 2.2, -3.3, 4.4],
                         type: 'waterfall'
                     }],
@@ -1308,9 +1308,9 @@ describe('waterfall hover', function() {
                 })
                 .then(function() {
                     assertHoverLabelContent({
-                        nums: '2.2\n4.4 ▲\nInitial: -2.2',
+                        nums: '2.2\n4.4 ▲\nInitial: −2.2',
                         name: '',
-                        axis: '5'
+                        axis: 'E'
                     });
                 })
                 .catch(failTest)
