@@ -1289,6 +1289,34 @@ describe('waterfall hover', function() {
             .catch(failTest)
             .then(done);
         });
+
+        describe('round hover precision', function() {
+            it('should format numbers', function(done) {
+                gd = createGraphDiv();
+
+                Plotly.plot(gd, {
+                    data: [{
+                        x: ['A', 'B', 'C', 'D', 'E'],
+                        y: [0, -1.1, 2.2, -3.3, 4.4],
+                        type: 'waterfall'
+                    }],
+                    layout: {width: 400, height: 400}
+                })
+                .then(function() {
+                    var evt = { xpx: 200, ypx: 350 };
+                    Fx.hover('graph', evt, 'xy');
+                })
+                .then(function() {
+                    assertHoverLabelContent({
+                        nums: '2.2\n4.4 ▲\nInitial: −2.2',
+                        name: '',
+                        axis: 'E'
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 
     describe('with special width/offset combinations', function() {
