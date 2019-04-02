@@ -10,6 +10,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.46.1] -- 2019-04-02
+
+### Fixed
+- Fix `bar` traces that set `textfont` but don't have `text`
+  (bug introduced in 1.46.0) [#3715]
+- Fix hover text formatting in `waterfall` traces [#3711]
+- Fix `surface` and `mesh3d` color scales with more than 256 items [#3702]
+
+
 ## [1.46.0] -- 2019-04-01
 
 ### Added
