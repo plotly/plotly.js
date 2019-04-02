@@ -20,6 +20,8 @@ var failTest = require('../assets/fail_test');
 var selectButton = require('../assets/modebar_button');
 var supplyDefaults = require('../assets/supply_defaults');
 
+var timeZoneMs = 60000 * (60 + new Date().getTimezoneOffset()); // TODO: find a good way to set CI clock.
+
 describe('Test axes', function() {
     'use strict';
 
@@ -2641,10 +2643,10 @@ describe('Test axes', function() {
                 tickmode: 'array',
                 tickvals: [
                     '2012-01-01',
-                    new Date(2012, 2, 1).getTime(),
+                    (new Date(2012, 2, 1).getTime()) - timeZoneMs,
                     '2012-08-01 00:00:00',
                     '2012-10-01 12:00:00',
-                    new Date(2013, 0, 1, 0, 0, 1).getTime(),
+                    (new Date(2013, 0, 1, 0, 0, 1).getTime()) - timeZoneMs,
                     '2010-01-01', '2014-01-01' // off the axis
                 ],
                 // only the first two have text
@@ -3008,7 +3010,7 @@ describe('Test axes', function() {
             });
 
             it('- date case', function() {
-                var msLocal = new Date(2000, 0, 1).getTime();
+                var msLocal = (new Date(2000, 0, 1).getTime()) - timeZoneMs;
                 var msUTC = 946684800000;
                 var out = _makeCalcdata({
                     x: ['2000-01-01', NaN, null, msLocal],
@@ -3101,7 +3103,7 @@ describe('Test axes', function() {
 
             it('- on a date axis', function() {
                 var dates = [[2000, 0, 1], [2001, 0, 1], [2002, 0, 1]]
-                    .map(function(d) { return new Date(d[0], d[1], d[2]).getTime(); });
+                    .map(function(d) { return (new Date(d[0], d[1], d[2]).getTime()) - timeZoneMs; });
 
                 // We could make this work down the road (in v2),
                 // when address our timezone problems.

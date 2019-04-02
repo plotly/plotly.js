@@ -1,0 +1,16 @@
+{
+    "data": [
+        {
+            "type": "scattergl",
+            "x": ["2020-01-01 01:00:00", "2020-01-01 13:00:00"],
+            "y": ["2020-01-01 01:00:00", "2020-01-01 02:00:00"]
+        }
+    ],
+    "layout": {
+        "title": "Day time period",
+        "width": 800,
+        "height": 600,
+        "xaxis": { "nticks": 12, "type": "date" },
+        "yaxis": { "nticks": 12, "type": "date" }
+    }
+}

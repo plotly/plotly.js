@@ -98,7 +98,9 @@ module.exports = function setConvert(ax, fullLayout) {
                 // same logic as in Lib.ms2DateTime
                 var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
                 var msRounded = Math.round(v - msecTenths / 10);
-                ms = dateTime2ms(new Date(msRounded)) + msecTenths / 10;
+
+                var now = (new Date(msRounded)).getTime();
+                ms = now + msecTenths / 10;
             }
             else return BADNUM;
         }
