@@ -526,7 +526,7 @@ proto.initInteractions = function() {
                 dragOptions.clickFn = clickZoomPan;
                 dragOptions.doneFn = dragDone;
                 panPrep();
-                clearSelect(zoomContainer);
+                clearSelect(gd);
             }
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
@@ -598,7 +598,7 @@ proto.initInteractions = function() {
             })
             .attr('d', 'M0,0Z');
 
-        clearSelect(zoomContainer);
+        clearSelect(gd);
     }
 
     function getAFrac(x, y) { return 1 - (y / _this.h); }

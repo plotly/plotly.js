@@ -222,7 +222,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // clear selection polygon cache (if any)
         dragOptions.plotinfo.selection = false;
         // clear selection outlines
-        clearSelect(zoomlayer);
+        clearSelect(gd);
     }
 
     function clickFn(numClicks, evt) {
