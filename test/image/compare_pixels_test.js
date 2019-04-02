@@ -108,7 +108,6 @@ function untestableFilter(mockName) {
     var cond =
     !(
         mockName === 'font-wishlist' ||
-        mockName.indexOf('gl3d_volume_') !== -1 ||
         mockName.indexOf('mapbox_') !== -1
     );
 
