@@ -30,6 +30,7 @@ exports.baseLayoutAttrOverrides = overrideAll({
 exports.plot = function(gd) {
     var calcData = getModuleCalcData(gd.calcdata, SANKEY)[0];
     plot(gd, calcData);
+    exports.updateFx(gd);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
@@ -38,6 +39,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     if(hadPlot && !hasPlot) {
         oldFullLayout._paperdiv.selectAll('.sankey').remove();
+        oldFullLayout._paperdiv.selectAll('.bgsankey').remove();
     }
 };
 
@@ -47,55 +49,55 @@ exports.updateFx = function(gd) {
     }
 };
 
-var dragOptions = [];
 function subplotUpdateFx(gd, index) {
-    var i = index;
-    var fullData = gd._fullData[i];
+    var trace = gd._fullData[index];
     var fullLayout = gd._fullLayout;
 
     var dragMode = fullLayout.dragmode;
     var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
-    var bgRect = fullData._bgRect;
+    var bgRect = trace._bgRect;
 
     setCursor(bgRect, cursor);
 
     var xaxis = {
         _id: 'x',
-        c2p: function(v) { return v; },
-        _offset: fullData._sankey.translateX,
-        _length: fullData._sankey.width
+        c2p: Lib.identity,
+        _offset: trace._sankey.translateX,
+        _length: trace._sankey.width
     };
     var yaxis = {
         _id: 'y',
-        c2p: function(v) { return v; },
-        _offset: fullData._sankey.translateY,
-        _length: fullData._sankey.height
+        c2p: Lib.identity,
+        _offset: trace._sankey.translateY,
+        _length: trace._sankey.height
     };
 
     // Note: dragOptions is needed to be declared for all dragmodes because
     // it's the object that holds persistent selection state.
-    dragOptions[i] = {
+    var dragOptions = {
         gd: gd,
         element: bgRect.node(),
         plotinfo: {
-            id: i,
+            id: index,
             xaxis: xaxis,
             yaxis: yaxis,
             fillRangeItems: Lib.noop
         },
-        subplot: i,
+        subplot: index,
         // create mock x/y axes for hover routine
         xaxes: [xaxis],
         yaxes: [yaxis],
         doneFnCompleted: function(selection) {
+            var traceNow = gd._fullData[index];
             var newGroups;
-            var oldGroups = gd._fullData[i].node.groups.slice();
+            var oldGroups = traceNow.node.groups.slice();
             var newGroup = [];
 
             function findNode(pt) {
-                return gd._fullData[i]._sankey.graph.nodes.find(function(n) {
-                    return n.pointNumber === pt;
-                });
+                var nodes = traceNow._sankey.graph.nodes;
+                for(var i = 0; i < nodes.length; i++) {
+                    if(nodes[i].pointNumber === pt) return nodes[i];
+                }
             }
 
             for(var j = 0; j < selection.length; j++) {
@@ -109,25 +111,25 @@ function subplotUpdateFx(gd, index) {
                         newGroup.push(node.childrenNodes[k].pointNumber);
                     }
                     // Flag group for removal from existing list of groups
-                    oldGroups[node.pointNumber - fullData.node._count] = false;
+                    oldGroups[node.pointNumber - traceNow.node._count] = false;
                 } else {
                     newGroup.push(node.pointNumber);
                 }
             }
 
             newGroups = oldGroups
-                .filter(function(g) { return g; })
+                .filter(Boolean)
                 .concat([newGroup]);
 
             Registry.call('_guiRestyle', gd, {
                 'node.groups': [ newGroups ]
-            }, i).catch(Lib.noop); // TODO will this ever fail?
+            }, index);
         }
     };
 
-    dragOptions[i].prepFn = function(e, startX, startY) {
-        prepSelect(e, startX, startY, dragOptions[i], dragMode);
+    dragOptions.prepFn = function(e, startX, startY) {
+        prepSelect(e, startX, startY, dragOptions, dragMode);
     };
 
-    dragElement.init(dragOptions[i]);
+    dragElement.init(dragOptions);
 }

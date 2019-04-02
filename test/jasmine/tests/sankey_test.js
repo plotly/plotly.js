@@ -379,6 +379,20 @@ describe('sankey tests', function() {
                 });
         });
 
+        it('Plotly.deleteTraces removes draggers', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+            Plotly.plot(gd, mockCopy)
+                .then(function() {
+                    expect(document.getElementsByClassName('bgsankey').length).toBe(1);
+                    return Plotly.deleteTraces(gd, [0]);
+                })
+                .then(function() {
+                    expect(document.getElementsByClassName('bgsankey').length).toBe(0);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
         it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
 

@@ -838,15 +838,15 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     sankey.each(function(d, i) {
         gd._fullData[i]._sankey = d;
-
         // Draw dragbox
-        Lib.ensureSingle(gd._fullLayout._draggers, 'rect', 'bg-' + i, function(el) {
+        Lib.ensureSingle(gd._fullLayout._draggers, 'rect', 'bgsankey-' + d.guid, function(el) {
             el
               .style('pointer-events', 'all')
               .attr('width', d.width)
               .attr('height', d.height)
               .attr('x', d.translateX)
               .attr('y', d.translateY)
+              .classed('bgsankey', true)
               .style({fill: 'transparent', 'stroke-width': 0});
 
             gd._fullData[i]._bgRect = el;

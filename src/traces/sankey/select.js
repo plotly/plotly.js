@@ -19,13 +19,13 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
         var node = nodes[i];
         if(node.partOfGroup) continue; // Those are invisible
 
-        // TODO: decide on selection criteria, using centroid for now
+        // Position of node's centroid
         var pos = [(node.x0 + node.x1) / 2, (node.y0 + node.y1) / 2];
 
         // Swap x and y if trace is vertical
         if(fullData.orientation === 'v') pos.reverse();
 
-        if(selectionTester.contains(pos, false, i, searchInfo)) {
+        if(selectionTester && selectionTester.contains(pos, false, i, searchInfo)) {
             selection.push({
                 pointNumber: node.pointNumber
                 // TODO: add eventData
