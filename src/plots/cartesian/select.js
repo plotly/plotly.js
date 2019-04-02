@@ -20,6 +20,7 @@ var throttle = require('../../lib/throttle');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
 var getFromId = require('./axis_ids').getFromId;
 var clearGlCanvases = require('../../lib/clear_gl_canvases');
+
 var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 
 var constants = require('./constants');
@@ -669,7 +670,7 @@ function updateSelectedState(gd, searchTraces, eventData) {
     // before anything else, update preGUI if necessary
     for(i = 0; i < searchTraces.length; i++) {
         var fullInputTrace = searchTraces[i].cd[0].trace._fullInput;
-        var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid];
+        var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid] || {};
         if(tracePreGUI.selectedpoints === undefined) {
             tracePreGUI.selectedpoints = fullInputTrace._input.selectedpoints || null;
         }

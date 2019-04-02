@@ -226,6 +226,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     updateSubplots([0, 0, pw, ph]);
                     dragOptions.moveFn(dragDataNow.dx, dragDataNow.dy);
                 }
+
+                // TODO should we try to "re-select" under select/lasso modes?
             }
         };
     };
