@@ -91,8 +91,7 @@ sortGl2dMockList(allMockList);
 // main
 if(isInQueue) {
     runInQueue(allMockList);
-}
-else {
+} else {
     runInBatch(allMockList);
 }
 
@@ -139,6 +138,7 @@ function sortGl2dMockList(mockList) {
 
     mockNames.forEach(function(m) {
         var ind = mockList.indexOf(m);
+        if(ind === -1) return;
         var tmp = mockList[pos];
         mockList[pos] = m;
         mockList[ind] = tmp;

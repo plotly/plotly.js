@@ -488,7 +488,7 @@ describe('parcoords edge cases', function() {
         .then(done);
     });
 
-    it('@noCI @gl Works with 60 dimensions', function(done) {
+    it('@gl Works with 60 dimensions', function(done) {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
@@ -516,7 +516,7 @@ describe('parcoords edge cases', function() {
         .then(done);
     });
 
-    it('@noCI @gl Truncates 60+ dimensions to 60', function(done) {
+    it('@gl Truncates 60+ dimensions to 60', function(done) {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
@@ -542,7 +542,7 @@ describe('parcoords edge cases', function() {
         .then(done);
     });
 
-    it('@noCI @gl Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
+    it('@gl Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
@@ -1156,7 +1156,7 @@ describe('parcoords basic use', function() {
     });
 });
 
-describe('@noCI parcoords constraint interactions', function() {
+describe('parcoords constraint interactions', function() {
     var gd, initialDashArray0, initialDashArray1;
 
     function initialFigure() {
@@ -1240,7 +1240,7 @@ describe('@noCI parcoords constraint interactions', function() {
         expect(dashArray.length).toBe(segmentCount, dashArray);
     }
 
-    it('@gl snaps ordinal constraints', function(done) {
+    it('@noCI @gl snaps ordinal constraints', function(done) {
         // first: drag almost to 2 but not quite - constraint will snap back to [2.75, 4]
         mostOfDrag(105, 165, 105, 190);
         var newDashArray = getDashArray(0);
@@ -1318,7 +1318,7 @@ describe('@noCI parcoords constraint interactions', function() {
         .then(done);
     });
 
-    it('@gl updates continuous constraints with no snap', function(done) {
+    it('@noCI @gl updates continuous constraints with no snap', function(done) {
         // first: extend 7 to 5
         mostOfDrag(295, 160, 295, 200);
         var newDashArray = getDashArray(1);

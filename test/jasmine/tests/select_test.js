@@ -658,7 +658,7 @@ describe('Click-to-select', function() {
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ]
           .forEach(function(testCase) {
-              it('@noCI @gl trace type ' + testCase.label, function(done) {
+              it('@gl trace type ' + testCase.label, function(done) {
                   _run(testCase, done);
               });
           });

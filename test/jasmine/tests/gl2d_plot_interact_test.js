@@ -24,6 +24,7 @@ describe('Test removal of gl contexts', function() {
     var gd;
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
         gd = createGraphDiv();
     });
 
@@ -96,6 +97,7 @@ describe('Test gl plot side effects', function() {
     var gd;
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
         gd = createGraphDiv();
     });
 
@@ -214,7 +216,7 @@ describe('Test gl plot side effects', function() {
         .then(done);
     });
 
-    it('@noCI @gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
+    it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
         var _mock = Lib.extendDeep({}, require('@mocks/gl2d_12.json'));
 
         function _trigger(name) {
@@ -550,7 +552,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should display selection of big number of regular points', function(done) {
+    it('@gl should display selection of big number of regular points', function(done) {
         // generate large number of points
         var x = [];
         var y = [];
@@ -581,7 +583,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@noCI @gl should display selection of big number of miscellaneous points', function(done) {
+    it('@gl should display selection of big number of miscellaneous points', function(done) {
         var colorList = [
             '#006385', '#F06E75', '#90ed7d', '#f7a35c', '#8085e9',
             '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1',
@@ -1273,9 +1275,19 @@ describe('Test gl2d plots', function() {
 });
 
 describe('Test scattergl autorange:', function() {
-    afterEach(destroyGraphDiv);
-
     describe('should return the same value as SVG scatter for ~small~ data', function() {
+        var gd;
+
+        beforeEach(function() {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
+
         var specs = [
             {name: 'lines+markers', fig: require('@mocks/gl2d_10.json')},
             {name: 'bubbles', fig: require('@mocks/gl2d_12.json')},
@@ -1286,7 +1298,6 @@ describe('Test scattergl autorange:', function() {
 
         specs.forEach(function(s) {
             it('@gl - case ' + s.name, function(done) {
-                var gd = createGraphDiv();
                 var glRangeX;
                 var glRangeY;
 
@@ -1319,12 +1330,18 @@ describe('Test scattergl autorange:', function() {
         var gd;
 
         beforeEach(function() {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
             gd = createGraphDiv();
             // to avoid expansive draw calls (which could be problematic on CI)
             spyOn(ScatterGl, 'plot').and.callFake(function(gd) {
                 gd._fullLayout._plots.xy._scene.scatter2d = {draw: function() {}};
                 gd._fullLayout._plots.xy._scene.line2d = {draw: function() {}};
             });
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
         });
 
         // threshold for 'fast' axis expansion routine

@@ -1034,16 +1034,24 @@ describe('sankey tests', function() {
             .then(done);
         });
 
-        ['node', 'link'].forEach(function(obj) {
-            it('@flaky should not output hover/unhover event data when ' + obj + '.hoverinfo is skip', function(done) {
-                var fig = Lib.extendDeep({}, mock);
+        it('should not output hover/unhover event data when link.hoverinfo is skip', function(done) {
+            var fig = Lib.extendDeep({}, mock);
 
-                Plotly.plot(gd, fig)
-                      .then(function() { return Plotly.restyle(gd, obj + '.hoverinfo', 'skip'); })
-                      .then(assertNoHoverEvents(obj))
-                      .catch(failTest)
-                      .then(done);
-            });
+            Plotly.plot(gd, fig)
+                  .then(function() { return Plotly.restyle(gd, 'link.hoverinfo', 'skip'); })
+                  .then(assertNoHoverEvents('link'))
+                  .catch(failTest)
+                  .then(done);
+        });
+
+        it('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, fig)
+                  .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
+                  .then(assertNoHoverEvents('node'))
+                  .catch(failTest)
+                  .then(done);
         });
     });
 
@@ -1109,7 +1117,7 @@ describe('sankey tests', function() {
                       .then(done);
                 });
 
-                it('should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
+                it('@noCI should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
                     mockCopy.data[0].arrangement = arrangement;
                     var move = [50, -50];
                     var nodes;
