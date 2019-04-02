@@ -1679,10 +1679,10 @@ plots.purge = function(gd) {
     // themselves, but may not if there was an error
     delete gd._dragging;
     delete gd._dragged;
+    delete gd._dragdata;
     delete gd._hoverdata;
     delete gd._snapshotInProgress;
     delete gd._editing;
-    delete gd._replotPending;
     delete gd._mouseDownTime;
     delete gd._legendMouseDownTime;
 
@@ -2904,6 +2904,12 @@ function doCrossTraceCalc(gd) {
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {
         gd._fullLayout._rehover();
+    }
+};
+
+plots.redrag = function(gd) {
+    if(gd._fullLayout._redrag) {
+        gd._fullLayout._redrag();
     }
 };
 
