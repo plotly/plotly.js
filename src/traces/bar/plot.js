@@ -205,11 +205,6 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var text = getText(trace, i);
     textPosition = getTextPosition(trace, i);
 
-    var layoutFont = fullLayout.font;
-    var barColor = style.getBarColor(calcTrace[i], trace);
-    var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
-    var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
-
     // compute text position
     var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
     var barmode = fullLayout[prefix + 'mode'];
@@ -218,15 +213,20 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var calcBar = calcTrace[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
 
-    // padding excluded
-    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
-    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
-
     if(!text || textPosition === 'none' ||
         (calcBar.isBlank && (textPosition === 'auto' || textPosition === 'inside'))) {
         bar.select('text').remove();
         return;
     }
+
+    var layoutFont = fullLayout.font;
+    var barColor = style.getBarColor(calcTrace[i], trace);
+    var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
+    var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
+
+    // padding excluded
+    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
+    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
 
     var textSelection;
     var textBB;
