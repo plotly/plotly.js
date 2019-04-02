@@ -1886,6 +1886,20 @@ describe('A bar plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should not error out when *textfont* is set in traces w/o *text*', function(done) {
+        Plotly.plot(gd, [{
+            type: 'bar',
+            x: ['A', 'K', 'M', 'O', 'Q', 'S', 'T', 'V', 'X', 'Z', 'D', 'F', 'H'],
+            y: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25],
+            textfont: {color: 'red'}
+        }])
+        .then(function() {
+            expect(getAllBarNodes(gd).length).toBe(13, '# of bars');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('bar visibility toggling:', function() {
