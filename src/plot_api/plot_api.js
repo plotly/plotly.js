@@ -135,7 +135,9 @@ exports.plot = function(gd, data, layout, config) {
         gd.empty = false;
     }
 
-    if(!gd.layout || graphWasEmpty) gd.layout = helpers.cleanLayout(layout);
+    if(!gd.layout || graphWasEmpty) {
+        gd.layout = helpers.cleanLayout(layout);
+    }
 
     // if the user is trying to drag the axes, allow new data and layout
     // to come in but don't allow a replot.
@@ -195,7 +197,7 @@ exports.plot = function(gd, data, layout, config) {
     if(gd._context.responsive) {
         if(!gd._responsiveChartHandler) {
             // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function() {Plots.resize(gd);};
+            gd._responsiveChartHandler = function() { Plots.resize(gd); };
 
             // Listen to window resize
             window.addEventListener('resize', gd._responsiveChartHandler);
@@ -242,10 +244,10 @@ exports.plot = function(gd, data, layout, config) {
                     return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
                 })
                 .style({
-                    'position': 'absolute',
-                    'top': 0,
-                    'left': 0,
-                    'overflow': 'visible',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    overflow: 'visible',
                     'pointer-events': 'none'
                 });
         }
