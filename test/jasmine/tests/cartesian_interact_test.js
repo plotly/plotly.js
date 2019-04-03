@@ -1397,6 +1397,383 @@ describe('axis zoom/pan and main plot zoom', function() {
             .then(done);
         });
     });
+
+    describe('redrag behavior', function() {
+        function _assertZoombox(msg, exp) {
+            var gd3 = d3.select(gd);
+            var zb = gd3.select('g.zoomlayer').select('.zoombox-corners');
+
+            if(zb.size()) {
+                expect(zb.attr('d')).toBe(exp.zoombox, msg + '| zoombox path');
+            } else {
+                expect(false).toBe(exp.zoombox, msg + '| no zoombox');
+            }
+        }
+
+        function _assertClipRect(msg, exp) {
+            var gd3 = d3.select(gd);
+            var uid = gd._fullLayout._uid;
+            var clipRect = gd3.select('#clip' + uid + 'xyplot > rect');
+            var xy = Drawing.getTranslate(clipRect);
+            expect(xy.x).toBeCloseTo(exp.clipTranslate[0], 2, msg + '| clip rect translate.x');
+            expect(xy.y).toBeCloseTo(exp.clipTranslate[1], 2, msg + '| clip rect translate.y');
+        }
+
+        it('should handle extendTraces redraws during drag interactions', function(done) {
+            var step = 500;
+            var interval;
+            var xrngPrev;
+
+            function _assert(msg, exp) {
+                return function() {
+                    var fullLayout = gd._fullLayout;
+
+                    expect(fullLayout.xaxis.range).toBeCloseToArray(exp.xrng === 'previous' ?
+                        xrngPrev :
+                        exp.xrng, 2, msg + '|xaxis range');
+                    expect(d3.select(gd).selectAll('.point').size()).toBe(exp.nodeCnt, msg + '|pt cnt');
+                    expect(Boolean(gd._dragdata)).toBe(exp.hasDragData, msg + '|has gd._dragdata?');
+                    _assertZoombox(msg, exp);
+                    _assertClipRect(msg, exp);
+
+                    xrngPrev = fullLayout.xaxis.range.slice();
+                };
+            }
+
+            Plotly.plot(gd, [{y: [1, 2, 1]}], {dragmode: 'zoom'})
+            .then(_assert('base', {
+                nodeCnt: 3,
+                xrng: [-0.128, 2.128],
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(function() {
+                interval = setInterval(function() {
+                    Plotly.extendTraces(gd, { y: [[Math.random()]] }, [0]);
+                }, step);
+            })
+            .then(delay(1.5 * step))
+            .then(_assert('after 1st extendTraces trace call', {
+                nodeCnt: 4,
+                xrng: [-0.1927, 3.1927],
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(function() {
+                var drag = makeDragFns('xy', 'nsew', 30, 0);
+                return drag.start()
+                    .then(_assert('just after start of zoombox', {
+                        nodeCnt: 4,
+                        xrng: [-0.1927, 3.1927],
+                        hasDragData: true,
+                        zoombox: 'M269.5,114.5h-3v41h3ZM300.5,114.5h3v41h-3Z',
+                        clipTranslate: [0, 0]
+                    }))
+                    .then(delay(step))
+                    .then(_assert('during zoombox drag', {
+                        nodeCnt: 5,
+                        xrng: [-0.257, 4.257],
+                        hasDragData: true,
+                        zoombox: 'M269.5,114.5h-3v41h3ZM300.5,114.5h3v41h-3Z',
+                        clipTranslate: [0, 0]
+                    }))
+                    .then(drag.end);
+            })
+            .then(_assert('just after zoombox drag', {
+                nodeCnt: 5,
+                xrng: [2, 2.2507],
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(delay(step))
+            .then(function() {
+                return Plotly.relayout(gd, {
+                    dragmode: 'pan',
+                    'xaxis.autorange': true,
+                    'yaxis.autorange': true
+                });
+            })
+            .then(delay(step))
+            .then(_assert('after extendTraces two more steps / back to autorange:true', {
+                nodeCnt: 7,
+                xrng: [-0.385, 6.385],
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(function() {
+                var drag = makeDragFns('xy', 'nsew', 60, 0);
+                return drag.start()
+                    .then(_assert('just after pan start', {
+                        nodeCnt: 7,
+                        xrng: [-1.137, 5.633],
+                        hasDragData: true,
+                        zoombox: false,
+                        clipTranslate: [-60, 0]
+                    }))
+                    .then(delay(step))
+                    .then(_assert('during pan mousedown', {
+                        nodeCnt: 8,
+                        xrng: [-1.327, 6.572],
+                        hasDragData: true,
+                        zoombox: false,
+                        clipTranslate: [-60, 0]
+                    }))
+                    .then(drag.end);
+            })
+            .then(_assert('just after pan end', {
+                nodeCnt: 8,
+                // N.B same xrng as just before on dragend
+                xrng: 'previous',
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(delay(step))
+            .then(_assert('last extendTraces call', {
+                nodeCnt: 9,
+                // N.B. same range as previous assert
+                // as now that xaxis range is set
+                xrng: 'previous',
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .catch(failTest)
+            .then(function() { clearInterval(interval); })
+            .then(done);
+        });
+
+        it('should handle plotly_relayout callback during drag interactions', function(done) {
+            var step = 500;
+            var relayoutTracker = [];
+            var restyleTracker = [];
+            var zCnt = 0;
+            var xrngPrev;
+            var yrngPrev;
+
+            function z() {
+                return [[1, 2, 3], [2, (zCnt++) * 5, 1], [3, 2, 1]];
+            }
+
+            function _assert(msg, exp) {
+                return function() {
+                    var trace = gd._fullData[0];
+                    var fullLayout = gd._fullLayout;
+
+                    expect(fullLayout.xaxis.range).toBeCloseToArray(exp.xrng === 'previous' ?
+                        xrngPrev :
+                        exp.xrng, 2, msg + '|xaxis range');
+                    expect(fullLayout.yaxis.range).toBeCloseToArray(exp.yrng === 'previous' ?
+                        yrngPrev :
+                        exp.yrng, 2, msg + '|yaxis range');
+
+                    expect(trace.zmax).toBe(exp.zmax, msg + '|zmax');
+                    expect(Boolean(gd._dragdata)).toBe(exp.hasDragData, msg + '|has gd._dragdata?');
+                    expect(relayoutTracker.length).toBe(exp.relayoutCnt, msg + '|relayout cnt');
+                    expect(restyleTracker.length).toBe(exp.restyleCnt, msg + '|restyle cnt');
+                    _assertZoombox(msg, exp);
+                    _assertClipRect(msg, exp);
+
+                    xrngPrev = fullLayout.xaxis.range.slice();
+                    yrngPrev = fullLayout.yaxis.range.slice();
+                };
+            }
+
+            Plotly.plot(gd, [{ type: 'heatmap', z: z() }], {dragmode: 'pan'})
+            .then(function() {
+                // inspired by https://github.com/plotly/plotly.js/issues/2687<Paste>
+                gd.on('plotly_relayout', function(d) {
+                    relayoutTracker.unshift(d);
+                    setTimeout(function() {
+                        Plotly.restyle(gd, 'z', [z()]);
+                    }, step);
+                });
+                gd.on('plotly_restyle', function(d) {
+                    restyleTracker.unshift(d);
+                });
+            })
+            .then(_assert('base', {
+                zmax: 3,
+                xrng: [-0.5, 2.5],
+                yrng: [-0.5, 2.5],
+                relayoutCnt: 0,
+                restyleCnt: 0,
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(doDrag('xy', 'nsew', 30, 30))
+            .then(_assert('after drag / before update #1', {
+                zmax: 3,
+                xrng: [-0.6707, 2.329],
+                yrng: [-0.1666, 2.833],
+                relayoutCnt: 1,
+                restyleCnt: 0,
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(delay(step + 10))
+            .then(_assert('after update #1', {
+                zmax: 5,
+                xrng: [-0.6707, 2.329],
+                yrng: [-0.1666, 2.833],
+                relayoutCnt: 1,
+                restyleCnt: 1,
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(doDrag('xy', 'nsew', 30, 30))
+            .then(delay(step / 2))
+            .then(function() {
+                var drag = makeDragFns('xy', 'nsew', 30, 30);
+                return drag.start()
+                    .then(_assert('just after pan start', {
+                        zmax: 5,
+                        xrng: [-1.005, 1.994],
+                        yrng: [0.5, 3.5],
+                        relayoutCnt: 2,
+                        restyleCnt: 1,
+                        hasDragData: true,
+                        zoombox: false,
+                        clipTranslate: [-30, -30]
+                    }))
+                    .then(delay(step))
+                    .then(_assert('after update #2 / during pan mousedown', {
+                        zmax: 10,
+                        xrng: 'previous',
+                        yrng: 'previous',
+                        relayoutCnt: 2,
+                        restyleCnt: 2,
+                        hasDragData: true,
+                        zoombox: false,
+                        clipTranslate: [-30, -30]
+                    }))
+                    .then(drag.end);
+            })
+            .then(_assert('after pan end', {
+                zmax: 10,
+                xrng: 'previous',
+                yrng: 'previous',
+                relayoutCnt: 3,
+                restyleCnt: 2,
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .then(delay(step))
+            .then(_assert('after update #3', {
+                zmax: 15,
+                xrng: 'previous',
+                yrng: 'previous',
+                relayoutCnt: 3,
+                restyleCnt: 3,
+                hasDragData: false,
+                zoombox: false,
+                clipTranslate: [0, 0]
+            }))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should handle react calls in plotly_selecting callback', function(done) {
+            var selectingTracker = [];
+            var selectedTracker = [];
+
+            function _assert(msg, exp) {
+                return function() {
+                    var gd3 = d3.select(gd);
+
+                    expect(gd3.selectAll('.point').size()).toBe(exp.nodeCnt, msg + '|pt cnt');
+                    expect(Boolean(gd._dragdata)).toBe(exp.hasDragData, msg + '|has gd._dragdata?');
+                    expect(selectingTracker.length).toBe(exp.selectingCnt, msg + '| selecting cnt');
+                    expect(selectedTracker.length).toBe(exp.selectedCnt, msg + '| selected cnt');
+
+                    var outline = d3.select('.zoomlayer > .select-outline');
+                    if(outline.size()) {
+                        expect(outline.attr('d')).toBe(exp.selectOutline, msg + '| selection outline path');
+                    } else {
+                        expect(false).toBe(exp.selectOutline, msg + '| no selection outline');
+                    }
+                };
+            }
+
+            var trace0 = {mode: 'markers', x: [1, 2, 3], y: [1, 2, 1], marker: {opacity: 0.5}};
+            var trace1 = {mode: 'markers', x: [], y: [], marker: {size: 20}};
+
+            var layout = {
+                dragmode: 'select',
+                showlegend: false,
+                width: 400,
+                height: 400,
+                margin: {l: 0, r: 0, t: 0, b: 0}
+            };
+
+            Plotly.plot(gd, [trace0], layout)
+            .then(function() {
+                // inspired by https://github.com/plotly/plotly.js-crossfilter.js
+                gd.on('plotly_selecting', function(d) {
+                    selectingTracker.unshift(d);
+
+                    if(d && d.points) {
+                        trace1.x = d.points.map(function(p) { return trace0.x[p.pointNumber]; });
+                        trace1.y = d.points.map(function(p) { return trace0.y[p.pointNumber]; });
+                    } else {
+                        trace1.x = [];
+                        trace1.y = [];
+                    }
+
+                    Plotly.react(gd, [trace0, trace1], layout);
+                });
+
+                gd.on('plotly_selected', function(d) {
+                    selectedTracker.unshift(d);
+                    Plotly.react(gd, [trace0], layout);
+                });
+            })
+            .then(_assert('base', {
+                nodeCnt: 3,
+                hasDragData: false,
+                selectingCnt: 0,
+                selectedCnt: 0,
+                selectOutline: false
+            }))
+            .then(function() {
+                var drag = makeDragFns('xy', 'nsew', 200, 200, 20, 20);
+                return drag.start()
+                    .then(_assert('just after pan start', {
+                        nodeCnt: 4,
+                        hasDragData: true,
+                        selectingCnt: 1,
+                        selectedCnt: 0,
+                        selectOutline: 'M20,20L20,220L220,220L220,20L20,20Z'
+                    }))
+                    .then(delay(100))
+                    .then(_assert('while holding on mouse', {
+                        nodeCnt: 4,
+                        hasDragData: true,
+                        selectingCnt: 1,
+                        selectedCnt: 0,
+                        selectOutline: 'M20,20L20,220L220,220L220,20L20,20Z'
+                    }))
+                    .then(drag.end);
+            })
+            .then(_assert('after drag', {
+                nodeCnt: 3,
+                hasDragData: false,
+                selectingCnt: 1,
+                selectedCnt: 1,
+                selectOutline: false
+            }))
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('Event data:', function() {

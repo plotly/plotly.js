@@ -228,6 +228,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 }
 
                 // TODO should we try to "re-select" under select/lasso modes?
+                // probably best to wait for https://github.com/plotly/plotly.js/issues/1851
             }
         };
     };
