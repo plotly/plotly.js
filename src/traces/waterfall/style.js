@@ -25,13 +25,15 @@ function style(gd, cd) {
         var trace = d[0].trace;
 
         gTrace.selectAll('.point > path').each(function(di) {
-            var cont = trace[di.dir].marker;
+            if(!di.isBlank) {
+                var cont = trace[di.dir].marker;
 
-            d3.select(this)
-                .call(Color.fill, cont.color)
-                .call(Color.stroke, cont.line.color)
-                .call(Drawing.dashLine, cont.line.dash, cont.line.width)
-                .style('opacity', trace.selectedpoints && !di.selected ? 0.3 : 1);
+                d3.select(this)
+                    .call(Color.fill, cont.color)
+                    .call(Color.stroke, cont.line.color)
+                    .call(Drawing.dashLine, cont.line.dash, cont.line.width)
+                    .style('opacity', trace.selectedpoints && !di.selected ? 0.3 : 1);
+            }
         });
 
         styleTextPoints(gTrace, trace, gd);
