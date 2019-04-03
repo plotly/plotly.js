@@ -601,8 +601,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         else if(yActive === 's') dy = dz(yaxes, 0, -dy);
         else if(!yActive) dy = 0;
 
-        var x0 = (xActive === 'w') ? dx : 0;
-        var y0 = (yActive === 'n') ? dy : 0;
+        var xStart = (xActive === 'w') ? dx : 0;
+        var yStart = (yActive === 'n') ? dy : 0;
 
         if(links.isSubplotConstrained) {
             var i;
@@ -614,7 +614,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     scaleZoom(xaxes[i], 1 - dy / ph);
                 }
                 dx = dy * pw / ph;
-                x0 = dx / 2;
+                xStart = dx / 2;
             }
             if(!yActive && xActive.length === 1) {
                 for(i = 0; i < yaxes.length; i++) {
@@ -622,13 +622,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     scaleZoom(yaxes[i], 1 - dx / pw);
                 }
                 dy = dx * ph / pw;
-                y0 = dy / 2;
+                yStart = dy / 2;
             }
         }
 
         updateMatchedAxRange('x');
         updateMatchedAxRange('y');
-        updateSubplots([x0, y0, pw - dx, ph - dy]);
+        updateSubplots([xStart, yStart, pw - dx, ph - dy]);
         ticksAndAnnotations();
     }
 
