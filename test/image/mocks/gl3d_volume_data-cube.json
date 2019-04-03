@@ -10,7 +10,7 @@
         "opacityscale": "max",
         "opacity": 0.1,
         "surface": { "show": true, "fill": 1.0, "pattern": "all", "count": 64 },
-        "spaceframe": { "show": true, "fill": 1.0 },
+        "spaceframe": { "show": true },
         "slices": {
             "x": { "show": false },
             "y": { "show": false },

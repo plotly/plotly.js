@@ -11,7 +11,7 @@
             "colorscale": "Blackbody",
             "reversescale": true,
             "surface": { "show": true, "count": 64 },
-            "spaceframe": { "show": true, "fill": 1 },
+            "spaceframe": { "show": true },
             "slices": {
                 "x": { "show": false },
                 "y": { "show": false },
@@ -776,7 +776,7 @@
             "colorscale": "Blackbody",
             "reversescale": true,
             "surface": { "show": true, "count": 64 },
-            "spaceframe": { "show": true, "fill": 1 },
+            "spaceframe": { "show": true },
             "slices": {
                 "x": { "show": false },
                 "y": { "show": false },

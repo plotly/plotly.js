@@ -8,9 +8,9 @@
 
 'use strict';
 
-var isosurfaceDefaults = require('../isosurface/defaults');
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var supplyIsoDefaults = require('../isosurface/iso_defaults');
 
 var MIN = 0.1; // Note: often we don't want the data cube to be disappeared
 
@@ -33,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    isosurfaceDefaults(traceIn, traceOut, defaultColor, layout);
+    supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
     var opacityscale = coerce('opacityscale');
     if(opacityscale === 'max') {

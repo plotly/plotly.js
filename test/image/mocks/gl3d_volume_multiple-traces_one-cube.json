@@ -17,7 +17,7 @@
                 "yanchor": "bottom"
             },
             "surface": { "show": true, "fill": 1.0, "count": 32 },
-            "spaceframe": { "show": true, "fill": 1.0 },
+            "spaceframe": { "show": true },
             "slices": {
                 "x": { "show": true },
                 "y": { "show": true },
@@ -2862,7 +2862,7 @@
                 "yanchor": "bottom"
             },
             "surface": { "show": true, "fill": 1.0, "count": 32 },
-            "spaceframe": { "show": false, "fill": 1.0 },
+            "spaceframe": { "show": false },
             "slices": {
                 "x": { "show": true },
                 "y": { "show": true },
