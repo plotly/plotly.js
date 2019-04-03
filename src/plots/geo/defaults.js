@@ -9,8 +9,8 @@
 
 'use strict';
 
-var handleSubplotDefaults = require('../../subplot_defaults');
-var constants = require('../constants');
+var handleSubplotDefaults = require('../subplot_defaults');
+var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 
 var axesNames = constants.axesNames;

@@ -23,11 +23,11 @@ exports.idRoot = GEO;
 
 exports.idRegex = exports.attrRegex = counterRegex(GEO);
 
-exports.attributes = require('./layout/attributes');
+exports.attributes = require('./attributes');
 
-exports.layoutAttributes = require('./layout/layout_attributes');
+exports.layoutAttributes = require('./layout_attributes');
 
-exports.supplyLayoutDefaults = require('./layout/defaults');
+exports.supplyLayoutDefaults = require('./defaults');
 
 exports.plot = function plotGeo(gd) {
     var fullLayout = gd._fullLayout;
