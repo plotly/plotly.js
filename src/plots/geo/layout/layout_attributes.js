@@ -35,6 +35,7 @@ var geoAxesAttrs = {
     tick0: {
         valType: 'number',
         role: 'info',
+        dflt: 0,
         description: [
             'Sets the graticule\'s starting tick longitude/latitude.'
         ].join(' ')

@@ -73,7 +73,6 @@
             "lataxis": {
                 "showgrid": true,
                 "range": [ -75, 85 ],
-                "tick0": 0,
                 "gridwidth": 2,
                 "gridcolor": "black"
             }

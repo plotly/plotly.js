@@ -268,8 +268,8 @@ describe('Test Geo layout defaults', function() {
 
                 expect(layoutOut.geo.lonaxis.range).toEqual(dfltLonaxisRange);
                 expect(layoutOut.geo.lataxis.range).toEqual(dfltLataxisRange);
-                expect(layoutOut.geo.lonaxis.tick0).toEqual(dfltLonaxisRange[0]);
-                expect(layoutOut.geo.lataxis.tick0).toEqual(dfltLataxisRange[0]);
+                expect(layoutOut.geo.lonaxis.tick0).toEqual(0);
+                expect(layoutOut.geo.lataxis.tick0).toEqual(0);
             });
 
             it('custom case for ' + s, function() {
@@ -284,8 +284,8 @@ describe('Test Geo layout defaults', function() {
 
                 expect(layoutOut.geo.lonaxis.range).toEqual(customLonaxisRange);
                 expect(layoutOut.geo.lataxis.range).toEqual(customLataxisRange);
-                expect(layoutOut.geo.lonaxis.tick0).toEqual(customLonaxisRange[0]);
-                expect(layoutOut.geo.lataxis.tick0).toEqual(customLataxisRange[0]);
+                expect(layoutOut.geo.lonaxis.tick0).toEqual(0);
+                expect(layoutOut.geo.lataxis.tick0).toEqual(0);
             });
         });
     });

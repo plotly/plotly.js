@@ -60,7 +60,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
 
         var range = coerce(axisName + '.range', rangeDflt);
 
-        coerce(axisName + '.tick0', range[0]);
+        coerce(axisName + '.tick0');
         coerce(axisName + '.dtick', dtickDflt);
 
         show = coerce(axisName + '.showgrid');
