@@ -15,7 +15,7 @@ var gm = require('gm');
 var TOLERANCE = 1e-6;
 
 // wait time between each test batch
-var BATCH_WAIT = 1500;
+var BATCH_WAIT = 500;
 
 // number of tests in each test batch
 var BATCH_SIZE = 5;
