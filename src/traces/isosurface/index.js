@@ -12,7 +12,7 @@
 var Isosurface = {};
 
 Isosurface.attributes = require('./attributes');
-Isosurface.supplyDefaults = require('./defaults');
+Isosurface.supplyDefaults = require('./defaults').supplyDefaults;
 Isosurface.calc = require('./calc');
 Isosurface.colorbar = {
     min: 'cmin',

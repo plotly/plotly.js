@@ -10,7 +10,8 @@
 
 var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
-var createError = require('regl-error2d');
+var createErrorX = require('regl-error2d');
+var createErrorY = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
 var Text = require('gl-text');
@@ -107,7 +108,8 @@ function calc(gd, trace) {
     if(opts.fill && !scene.fill2d) scene.fill2d = true;
     if(opts.marker && !scene.scatter2d) scene.scatter2d = true;
     if(opts.line && !scene.line2d) scene.line2d = true;
-    if((opts.errorX || opts.errorY) && !scene.error2d) scene.error2d = true;
+    if(opts.errorX && !scene.errorX2d) scene.errorX2d = true;
+    if(opts.errorY && !scene.errorY2d) scene.errorY2d = true;
     if(opts.text && !scene.glText) scene.glText = true;
 
     // FIXME: organize it in a more appropriate manner, probably in sceneOptions
@@ -161,12 +163,15 @@ function sceneOptions(gd, subplot, trace, positions, x, y) {
         );
     }
 
-    if(opts.errorX || opts.errorY) {
-        var errors = convert.errorBarPositions(gd, trace, positions, x, y);
-
+    var errors;
+    if(opts.errorX) {
+        errors = convert.errorBarPositions(gd, trace, positions, x, y);
         if(opts.errorX) {
             Lib.extendFlat(opts.errorX, errors.x);
         }
+    }
+    if(opts.errorY) {
+        errors = convert.errorBarPositions(gd, trace, positions, x, y);
         if(opts.errorY) {
             Lib.extendFlat(opts.errorY, errors.y);
         }
@@ -222,7 +227,8 @@ function sceneUpdate(gd, subplot) {
         // regl- component stubs, initialized in dirty plot call
         fill2d: false,
         scatter2d: false,
-        error2d: false,
+        errorX2d: false,
+        errorY2d: false,
         line2d: false,
         glText: false,
         select2d: null
@@ -244,7 +250,8 @@ function sceneUpdate(gd, subplot) {
             if(scene.fill2d) scene.fill2d.update(opts);
             if(scene.scatter2d) scene.scatter2d.update(opts);
             if(scene.line2d) scene.line2d.update(opts);
-            if(scene.error2d) scene.error2d.update(opts.concat(opts));
+            if(scene.errorX2d) scene.errorX2d.update(opts);
+            if(scene.errorY2d) scene.errorY2d.update(opts);
             if(scene.select2d) scene.select2d.update(opts);
             if(scene.glText) {
                 for(var i = 0; i < scene.count; i++) {
@@ -257,7 +264,8 @@ function sceneUpdate(gd, subplot) {
         scene.draw = function draw() {
             var count = scene.count;
             var fill2d = scene.fill2d;
-            var error2d = scene.error2d;
+            var errorX2d = scene.errorX2d;
+            var errorY2d = scene.errorY2d;
             var line2d = scene.line2d;
             var scatter2d = scene.scatter2d;
             var glText = scene.glText;
@@ -272,9 +280,11 @@ function sceneUpdate(gd, subplot) {
                 if(line2d && scene.lineOptions[i]) {
                     line2d.draw(i);
                 }
-                if(error2d) {
-                    if(scene.errorXOptions[i]) error2d.draw(i);
-                    if(scene.errorYOptions[i]) error2d.draw(i + count);
+                if(errorX2d && scene.errorXOptions[i]) {
+                    errorX2d.draw(i);
+                }
+                if(errorY2d && scene.errorYOptions[i]) {
+                    errorY2d.draw(i);
                 }
                 if(scatter2d && scene.markerOptions[i] && (!selectBatch || !selectBatch[i])) {
                     scatter2d.draw(i);
@@ -296,7 +306,8 @@ function sceneUpdate(gd, subplot) {
         scene.destroy = function destroy() {
             if(scene.fill2d && scene.fill2d.destroy) scene.fill2d.destroy();
             if(scene.scatter2d && scene.scatter2d.destroy) scene.scatter2d.destroy();
-            if(scene.error2d && scene.error2d.destroy) scene.error2d.destroy();
+            if(scene.errorX2d && scene.errorX2d.destroy) scene.errorX2d.destroy();
+            if(scene.errorY2d && scene.errorY2d.destroy) scene.errorY2d.destroy();
             if(scene.line2d && scene.line2d.destroy) scene.line2d.destroy();
             if(scene.select2d && scene.select2d.destroy) scene.select2d.destroy();
             if(scene.glText) {
@@ -370,8 +381,11 @@ function plot(gd, subplot, cdata) {
 
     if(scene.dirty) {
         // make sure scenes are created
-        if(scene.error2d === true) {
-            scene.error2d = createError(regl);
+        if(scene.errorX2d === true) {
+            scene.errorX2d = createErrorX(regl);
+        }
+        if(scene.errorY2d === true) {
+            scene.errorY2d = createErrorY(regl);
         }
         if(scene.line2d === true) {
             scene.line2d = createLine(regl);
@@ -428,9 +442,11 @@ function plot(gd, subplot, cdata) {
             });
             scene.line2d.update(scene.lineOptions);
         }
-        if(scene.error2d) {
-            var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || []);
-            scene.error2d.update(errorBatch);
+        if(scene.errorX2d) {
+            scene.errorX2d.update(scene.errorXOptions);
+        }
+        if(scene.errorY2d) {
+            scene.errorY2d.update(scene.errorYOptions);
         }
         if(scene.scatter2d) {
             scene.scatter2d.update(scene.markerOptions);
@@ -669,8 +685,11 @@ function plot(gd, subplot, cdata) {
     if(scene.line2d) {
         scene.line2d.update(vpRange);
     }
-    if(scene.error2d) {
-        scene.error2d.update(vpRange.concat(vpRange));
+    if(scene.errorX2d) {
+        scene.errorX2d.update(vpRange);
+    }
+    if(scene.errorY2d) {
+        scene.errorY2d.update(vpRange);
     }
     if(scene.scatter2d) {
         scene.scatter2d.update(vpRange);

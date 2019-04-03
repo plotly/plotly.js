@@ -10,7 +10,7 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
-var supplyIsoDefaults = require('../isosurface/iso_defaults');
+var supplyIsoDefaults = require('../isosurface/defaults').supplyIsoDefaults;
 
 var MIN = 0.1; // Note: often we don't want the data cube to be disappeared
 
