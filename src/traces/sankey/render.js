@@ -142,6 +142,9 @@ function sankeyModel(layout, d, traceIndex) {
                         concentration: link.value / total,
                         links: flowLinks
                     };
+                    if(link.concentrationscale) {
+                        link.color = tinycolor(link.concentrationscale(link.flow.labelConcentration));
+                    }
                 }
             }
 
@@ -287,9 +290,6 @@ function sankeyModel(layout, d, traceIndex) {
 
 function linkModel(d, l, i) {
     var tc = tinycolor(l.color);
-    if(l.concentrationscale) {
-        tc = tinycolor(l.concentrationscale(l.flow.labelConcentration));
-    }
     var basicKey = l.source.label + '|' + l.target.label;
     var key = basicKey + '__' + i;
 
