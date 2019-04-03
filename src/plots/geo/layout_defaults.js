@@ -58,8 +58,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
             rangeDflt = [rot - hSpan, rot + hSpan];
         }
 
-        var range = coerce(axisName + '.range', rangeDflt);
-
+        coerce(axisName + '.range', rangeDflt);
         coerce(axisName + '.tick0');
         coerce(axisName + '.dtick', dtickDflt);
 
