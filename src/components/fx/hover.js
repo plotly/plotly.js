@@ -230,7 +230,7 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
 
     alignHoverText(hoverLabel, fullOpts.rotateLabels);
 
-    return hoverLabel.node();
+    return hoverLabel;
 };
 
 // The actual implementation is here:

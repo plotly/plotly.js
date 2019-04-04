@@ -162,7 +162,8 @@ module.exports = function plot(gd, calcData) {
         // For each related links, create a hoverItem
         for(var i = 0; i < d.flow.links.length; i++) {
             var link = d.flow.links[i];
-            obj = link;
+            link.fullData = link.trace;
+            obj = d.link.trace.link;
             var hoverCenterX;
             var hoverCenterY;
             if(link.circular) {
@@ -198,16 +199,19 @@ module.exports = function plot(gd, calcData) {
             });
         }
 
-        var tooltip = Fx.multiHovers(hoverItems, {
+        var tooltips = Fx.multiHovers(hoverItems, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
             gd: gd
         });
 
-        if(!d.link.concentrationscale) {
-            makeTranslucent(tooltip, 0.65);
-        }
-        makeTextContrasty(tooltip);
+        tooltips.each(function() {
+            var tooltip = this;
+            if(!d.link.concentrationscale) {
+                makeTranslucent(tooltip, 0.65);
+            }
+            makeTextContrasty(tooltip);
+        });
     };
 
     var linkUnhover = function(element, d, sankey) {
