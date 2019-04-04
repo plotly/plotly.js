@@ -31,8 +31,6 @@ function SurfaceTrace(scene, surface, uid) {
     this.contourStart = [null, null, null];
     this.contourEnd = [null, null, null];
     this.contourSize = [0, 0, 0];
-    this.contourLocations = [[], [], []];
-    this.contourRelative = [0, 0]; // note: only available on x & y not z.
     this.minValues = [Infinity, Infinity, Infinity];
     this.maxValues = [-Infinity, -Infinity, -Infinity];
     this.dataScaleX = 1.0;
@@ -376,51 +374,6 @@ proto.setContourLevels = function() {
         if(this.showContour[i]) {
             needsUpdate = true;
 
-            if(i < 2) {
-                var ratios = Array.isArray(this.contourRelative[i]) ?
-                    this.contourRelative[i] : [this.contourRelative[i]];
-
-                for(var k = 0; k < ratios.length; k++) {
-                    var ratio = ratios[k];
-                    if(ratio !== 0) {
-
-                        var len = (i === 0) ?
-                            this.data.z[0].length :
-                            this.data._ylength;
-
-                        for(var q = (ratio < 1) ? 1 : 0; q < len; q++) {
-
-                            var here = (i === 0) ?
-                                this.getXat(q, 0) * this.scene.dataScale[i] :
-                                this.getYat(0, q) * this.scene.dataScale[i];
-
-                            if(ratio < 1) {
-                                var prev = (i === 0) ?
-                                    this.getXat(q - 1, 0) * this.scene.dataScale[i] :
-                                    this.getYat(0, q - 1) * this.scene.dataScale[i];
-
-                                value = here * ratio + prev * (1 - ratio);
-                            } else {
-                                value = here;
-                            }
-
-                            insertIfNewLevel(newLevels[i], value);
-                            useNewLevels[i] = true;
-                        }
-                    }
-                }
-            }
-
-            var locations = this.contourLocations[i];
-            if(locations !== false) useNewLevels[i] = true;
-            if(locations.length) {
-                for(j = 0; j < locations.length; j++) {
-                    value = locations[j] * this.scene.dataScale[i];
-
-                    insertIfNewLevel(newLevels[i], value);
-                }
-            }
-
             if(
                 this.contourSize[i] > 0 &&
                 this.contourStart[i] !== null &&
@@ -653,18 +606,12 @@ proto.update = function(data) {
             this.contourStart[i] = contourParams.start;
             this.contourEnd[i] = contourParams.end;
             this.contourSize[i] = contourParams.size;
-
-            this.contourLocations[i] = contourParams.locations;
-            if(i < 2) this.contourRelative[i] = contourParams.relative;
         } else {
             this.showContour[i] = false;
 
             this.contourStart[i] = null;
             this.contourEnd[i] = null;
             this.contourSize[i] = 0;
-
-            this.contourLocations[i] = [];
-            if(i < 2) this.contourRelative[i] = 0;
         }
 
         if(contourParams.highlight) {

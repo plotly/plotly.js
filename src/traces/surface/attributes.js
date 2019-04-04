@@ -78,28 +78,6 @@ function makeContourAttr(axLetter) {
                 'Must be positive.'
             ].join(' ')
         },
-        locations: {
-            valType: 'data_array',
-            dflt: false,
-            role: 'info',
-            description: [
-                'Specifies the world location(s) of contours on the', axLetter, 'axis.'
-            ].join(' ')
-        },
-        relative: {
-            valType: 'number',
-            arrayOk: true,
-            role: 'info',
-            dflt: 0,
-            min: 0,
-            max: 1,
-            description: [
-                'Specifies the local location(s) of contours on the', axLetter, 'axis.',
-                'For exampe 1.0 could also be applied to locate contours on data points.',
-                'Or 0.5 could also be applied to locate contours between data points.',
-                'Values less than or equal to zero and greater than one would be ignored.'
-            ].join(' ')
-        },
         project: {
             x: makeContourProjAttr('x'),
             y: makeContourProjAttr('y'),
