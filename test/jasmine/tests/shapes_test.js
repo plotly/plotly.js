@@ -458,7 +458,7 @@ describe('shapes axis reference changes', function() {
     }
 
     it('draws the right number of objects and updates clip-path correctly', function(done) {
-        expect(getShape(0).attr('clip-path') || '').toMatch(/x\)$/);
+        expect(getShape(0).attr('clip-path') || '').toMatch(/x\'\)$/);
 
         Plotly.relayout(gd, {
             'shapes[0].xref': 'paper',
@@ -475,7 +475,7 @@ describe('shapes axis reference changes', function() {
             });
         })
         .then(function() {
-            expect(getShape(0).attr('clip-path') || '').toMatch(/^[^x]+y2\)$/);
+            expect(getShape(0).attr('clip-path') || '').toMatch(/^[^x]+y2\'\)$/);
 
             return Plotly.relayout(gd, {
                 'shapes[0].xref': 'x',
@@ -484,7 +484,7 @@ describe('shapes axis reference changes', function() {
             });
         })
         .then(function() {
-            expect(getShape(0).attr('clip-path') || '').toMatch(/xy2\)$/);
+            expect(getShape(0).attr('clip-path') || '').toMatch(/xy2\'\)$/);
         })
         .catch(failTest)
         .then(done);
