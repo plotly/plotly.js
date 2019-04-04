@@ -162,6 +162,7 @@ module.exports = function plot(gd, calcData) {
         // For each related links, create a hoverItem
         for(var i = 0; i < d.flow.links.length; i++) {
             var link = d.flow.links[i];
+            if(gd._fullLayout.hovermode === 'closest' && d.link.pointNumber !== link.pointNumber) continue;
             link.fullData = link.trace;
             obj = d.link.trace.link;
             var hoverCenterX;
