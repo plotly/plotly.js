@@ -494,11 +494,11 @@ describe('Pie traces', function() {
           .then(function() {
               var expWidths = ['3', '0', '0'];
 
-              d3.selectAll(SLICES_SELECTOR).each(function(d) {
-                  expect(this.style.strokeWidth).toBe(expWidths[d.pointNumber]);
+              d3.selectAll(SLICES_SELECTOR).each(function(d, i) {
+                  expect(this.style.strokeWidth).toBe(expWidths[d.pointNumber], 'sector #' + i);
               });
-              d3.selectAll(LEGEND_ENTRIES_SELECTOR).each(function(d) {
-                  expect(this.style.strokeWidth).toBe(expWidths[d[0].i]);
+              d3.selectAll(LEGEND_ENTRIES_SELECTOR).each(function(d, i) {
+                  expect(this.style.strokeWidth).toBe(expWidths[d[0].i], 'item #' + i);
               });
           })
           .catch(failTest)
