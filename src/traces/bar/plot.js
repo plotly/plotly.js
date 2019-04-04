@@ -111,8 +111,8 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                     var cont = trace[di.dir].marker;
                     lw = cont.line.width;
                     mc = cont.color;
-                    prefix = 'waterfall';
                 }
+                prefix = 'waterfall';
             } else {
                 lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
                     (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
