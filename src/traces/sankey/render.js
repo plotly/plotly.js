@@ -839,9 +839,10 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
     sankey.each(function(d, i) {
         gd._fullData[i]._sankey = d;
         // Create dragbox if missing
-        Lib.ensureSingle(gd._fullLayout._draggers, 'rect', 'bgsankey-' + d.trace.uid, function(el) {
-            gd._fullData[i]._bgRect = el;
-        });
+        var dragboxClassName = 'bgsankey-' + d.trace.uid + '-' + i;
+        Lib.ensureSingle(gd._fullLayout._draggers, 'rect', dragboxClassName);
+
+        gd._fullData[i]._bgRect = d3.select('.' + dragboxClassName);
 
         // Style dragbox
         gd._fullData[i]._bgRect
