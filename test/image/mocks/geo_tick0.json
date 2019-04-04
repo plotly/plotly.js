@@ -7,9 +7,10 @@
   ],
   "layout": {
     "legend": {
-      "orientation": "h",
-      "y": 1.1,
-      "yanchor": "bottom"
+      "x": -0.05,
+      "xanchor": "right",
+      "y": 0.5,
+      "yanchor": "middle"
     },
     "grid": {"columns": 2, "rows": 2},
     "geo": {
@@ -63,6 +64,9 @@
         "gridcolor": "#444",
         "tick0": 45
       }
-    }
+    },
+    "margin": {"t": 10, "b": 10},
+    "width": 1100,
+    "height": 400
   }
 }
