@@ -83,16 +83,13 @@ module.exports = function style(s, gd) {
 
             if(coloring === 'lines') {
                 showGradientLine = true;
-            }
-            else {
-                showLine = coloring === 'none' || coloring === 'heatmap' ||
-                    contours.showlines;
+            } else {
+                showLine = coloring === 'none' || coloring === 'heatmap' || contours.showlines;
             }
 
             if(contours.type === 'constraint') {
                 showFill = contours._operation !== '=';
-            }
-            else if(coloring === 'fill' || coloring === 'heatmap') {
+            } else if(coloring === 'fill' || coloring === 'heatmap') {
                 showGradientFill = true;
             }
         }
@@ -294,9 +291,7 @@ module.exports = function style(s, gd) {
             p.style('stroke-width', w + 'px')
                 .call(Color.fill, d0.mc || marker.color);
 
-            if(w) {
-                p.call(Color.stroke, d0.mlc || markerLine.color);
-            }
+            if(w) Color.stroke(p, d0.mlc || markerLine.color);
         });
     }
 
@@ -319,9 +314,7 @@ module.exports = function style(s, gd) {
             p.style('stroke-width', w + 'px')
                 .call(Color.fill, trace.fillcolor);
 
-            if(w) {
-                Color.stroke(p, trace.line.color);
-            }
+            if(w) Color.stroke(p, trace.line.color);
         });
     }
 
