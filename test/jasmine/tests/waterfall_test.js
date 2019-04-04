@@ -948,6 +948,36 @@ describe('A waterfall plot', function() {
         .then(done);
     });
 
+    it('should be able to deal with blank bars on transform', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'waterfall',
+                x: [1, 2, 3],
+                xsrc: 'ints',
+                transforms: [{
+                    type: 'filter',
+                    target: [1, 2, 3],
+                    targetsrc: 'ints',
+                    operation: '<',
+                    value: 0
+                }]
+            }]
+        })
+        .then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
+            var pathNode = waterfallNodes[0].querySelector('path');
+
+            expect(gd.calcdata[0][0].x).toEqual(NaN);
+            expect(gd.calcdata[0][0].y).toEqual(NaN);
+            expect(gd.calcdata[0][0].isBlank).toBe(true);
+
+            expect(pathNode.outerHTML).toEqual('<path d="M0,0Z" style="vector-effect: non-scaling-stroke;"></path>');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should coerce text-related attributes', function(done) {
         var data = [{
             y: [10, 20, 30, 40],
