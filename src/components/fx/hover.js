@@ -1334,10 +1334,14 @@ function cleanPoint(d, hovermode) {
     var cd0 = d.cd[0];
     var cd = d.cd[index] || {};
 
+    function pass(v) {
+        return v || (isNumeric(v) && v === 0);
+    }
+
     var getVal = Array.isArray(index) ?
         function(calcKey, traceKey) {
-            return Lib.castOption(cd0, index, calcKey) ||
-                Lib.extractOption({}, trace, '', traceKey);
+            var v = Lib.castOption(cd0, index, calcKey);
+            return pass(v) ? v : Lib.extractOption({}, trace, '', traceKey);
         } :
         function(calcKey, traceKey) {
             return Lib.extractOption(cd, trace, calcKey, traceKey);
@@ -1345,7 +1349,7 @@ function cleanPoint(d, hovermode) {
 
     function fill(key, calcKey, traceKey) {
         var val = getVal(calcKey, traceKey);
-        if(val) d[key] = val;
+        if(pass(val)) d[key] = val;
     }
 
     fill('hoverinfo', 'hi', 'hoverinfo');

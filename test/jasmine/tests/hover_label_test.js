@@ -805,6 +805,40 @@ describe('hover info', function() {
                     name: 'trace one'
                 });
             })
+            .then(function() {
+                var nl = [[0, 0, 0], [0, 0, 0]];
+                return Plotly.restyle(gd, 'hoverlabel.namelength', [nl, nl]);
+            })
+            .then(function() {
+                // hoverlabel.namelength has no effect when <extra></extra> is set
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: '(1,3) -- 2',
+                    name: 'trace two'
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: '(1,1) -- 5.56',
+                    name: 'trace one'
+                });
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'hovertemplate', null);
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2\nY',
+                    name: ''
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56\nY',
+                    name: ''
+                });
+            })
             .catch(failTest)
             .then(done);
         });
@@ -927,6 +961,22 @@ describe('hover info', function() {
                 assertHoverLabelContent({
                     nums: 'f(1.000,1.000)=5.56',
                     name: 'one'
+                });
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'hoverlabel.namelength', 0);
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                assertHoverLabelContent({
+                    nums: 'f(1.000,3.000)=2',
+                    name: ''
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'f(1.000,1.000)=5.56',
+                    name: ''
                 });
             })
             .catch(failTest)
