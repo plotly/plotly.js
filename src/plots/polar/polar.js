@@ -795,7 +795,7 @@ proto.updateMainDrag = function(fullLayout) {
         zb = dragBox.makeZoombox(zoomlayer, lum, cx, cy, path0);
         zb.attr('fill-rule', 'evenodd');
         corners = dragBox.makeCorners(zoomlayer, cx, cy);
-        clearSelect(zoomlayer);
+        clearSelect(gd);
     }
 
     // N.B. this sets scoped 'r0' and 'r1'
@@ -1115,7 +1115,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
 
-        clearSelect(fullLayout._zoomlayer);
+        clearSelect(gd);
     };
 
     dragOpts.clampFn = function(dx, dy) {
@@ -1263,7 +1263,7 @@ proto.updateAngularDrag = function(fullLayout) {
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
 
-        clearSelect(fullLayout._zoomlayer);
+        clearSelect(gd);
     };
 
     // I don't what we should do in this case, skip we now
