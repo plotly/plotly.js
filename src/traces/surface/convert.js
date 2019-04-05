@@ -385,7 +385,6 @@ proto.setContourLevels = function() {
                     insertIfNewLevel(newLevels[i], value);
                 }
             }
-
         }
     }
 
