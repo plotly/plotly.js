@@ -8,10 +8,10 @@
 
 'use strict';
 
-var colorAttrs = require('../../../components/color/attributes');
-var domainAttrs = require('../../domain').attributes;
-var constants = require('../constants');
-var overrideAll = require('../../../plot_api/edit_types').overrideAll;
+var colorAttrs = require('../../components/color/attributes');
+var domainAttrs = require('../domain').attributes;
+var constants = require('./constants');
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var geoAxesAttrs = {
     range: {
@@ -35,6 +35,7 @@ var geoAxesAttrs = {
     tick0: {
         valType: 'number',
         role: 'info',
+        dflt: 0,
         description: [
             'Sets the graticule\'s starting tick longitude/latitude.'
         ].join(' ')

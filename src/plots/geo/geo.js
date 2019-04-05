@@ -314,7 +314,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         } else if(isLineLayer(d) || isFillLayer(d)) {
             path.datum(topojsonFeature(topojson, topojson.objects[d]));
         } else if(isAxisLayer(d)) {
-            path.datum(makeGraticule(d, geoLayout))
+            path.datum(makeGraticule(d, geoLayout, fullLayout))
                 .call(Color.stroke, geoLayout[d].gridcolor)
                 .call(Drawing.dashLine, '', geoLayout[d].gridwidth);
         }
@@ -660,20 +660,58 @@ function getProjection(geoLayout) {
     return projection;
 }
 
-function makeGraticule(axisName, geoLayout) {
-    var axisLayout = geoLayout[axisName];
-    var dtick = axisLayout.dtick;
-    var scopeDefaults = constants.scopeDefaults[geoLayout.scope];
-    var lonaxisRange = scopeDefaults.lonaxisRange;
-    var lataxisRange = scopeDefaults.lataxisRange;
-    var step = axisName === 'lonaxis' ? [dtick] : [0, dtick];
+function makeGraticule(axisName, geoLayout, fullLayout) {
+    // equivalent to the d3 "ε"
+    var epsilon = 1e-6;
+    // same as the geoGraticule default
+    var precision = 2.5;
 
-    return d3.geo.graticule()
-        .extent([
-            [lonaxisRange[0], lataxisRange[0]],
-            [lonaxisRange[1], lataxisRange[1]]
-        ])
-        .step(step);
+    var axLayout = geoLayout[axisName];
+    var scopeDefaults = constants.scopeDefaults[geoLayout.scope];
+    var rng;
+    var oppRng;
+    var coordFn;
+
+    if(axisName === 'lonaxis') {
+        rng = scopeDefaults.lonaxisRange;
+        oppRng = scopeDefaults.lataxisRange;
+        coordFn = function(v, l) { return [v, l]; };
+    } else if(axisName === 'lataxis') {
+        rng = scopeDefaults.lataxisRange;
+        oppRng = scopeDefaults.lonaxisRange;
+        coordFn = function(v, l) { return [l, v]; };
+    }
+
+    var dummyAx = {
+        type: 'linear',
+        range: [rng[0], rng[1] - epsilon],
+        tick0: axLayout.tick0,
+        dtick: axLayout.dtick
+    };
+
+    Axes.setConvert(dummyAx, fullLayout);
+    var vals = Axes.calcTicks(dummyAx);
+
+    // remove duplicate on antimeridian
+    if(!geoLayout.isScoped && axisName === 'lonaxis') {
+        vals.pop();
+    }
+
+    var len = vals.length;
+    var coords = new Array(len);
+
+    for(var i = 0; i < len; i++) {
+        var v = vals[i].x;
+        var line = coords[i] = [];
+        for(var l = oppRng[0]; l < oppRng[1] + precision; l += precision) {
+            line.push(coordFn(v, l));
+        }
+    }
+
+    return {
+        type: 'MultiLineString',
+        coordinates: coords
+    };
 }
 
 // Returns polygon GeoJSON corresponding to lon/lat range box
