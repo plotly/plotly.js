@@ -2848,8 +2848,8 @@
         "title": {
             "text": "Plotly volume trace on non-uniform y & z axes presented with opacityscale clips and<br>orthographic scene with double aspect ratio on the x axis"
         },
-        "width": 1200,
-        "height": 900,
+        "width": 1000,
+        "height": 750,
         "scene": {
             "aspectratio": {
                 "x": 2.4,
