@@ -159,14 +159,8 @@ module.exports = function plot(gd, calcData) {
 
         var hoverItems = [];
 
-        // For each related links, create a hoverItem
-        for(var i = 0; i < d.flow.links.length; i++) {
-            var link = d.flow.links[i];
-            if(gd._fullLayout.hovermode === 'closest' && d.link.pointNumber !== link.pointNumber) continue;
-            link.fullData = link.trace;
-            obj = d.link.trace.link;
-            var hoverCenterX;
-            var hoverCenterY;
+        function hoverCenterPosition(link) {
+            var hoverCenterX, hoverCenterY;
             if(link.circular) {
                 hoverCenterX = (link.circularPathData.leftInnerExtent + link.circularPathData.rightInnerExtent) / 2 + d.parent.translateX;
                 hoverCenterY = link.circularPathData.verticalFullExtent + d.parent.translateY;
@@ -174,12 +168,23 @@ module.exports = function plot(gd, calcData) {
                 hoverCenterX = (link.source.x1 + link.target.x0) / 2 + d.parent.translateX;
                 hoverCenterY = (link.y0 + link.y1) / 2 + d.parent.translateY;
             }
+            return [hoverCenterX, hoverCenterY];
+        }
 
+        // For each related links, create a hoverItem
+        var anchorIndex = 0;
+        for(var i = 0; i < d.flow.links.length; i++) {
+            var link = d.flow.links[i];
+            if(gd._fullLayout.hovermode === 'closest' && d.link.pointNumber !== link.pointNumber) continue;
+            if(d.link.pointNumber === link.pointNumber) anchorIndex = i;
+            link.fullData = link.trace;
+            obj = d.link.trace.link;
+            var hoverCenter = hoverCenterPosition(link);
             var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(link.value) + d.valueSuffix};
 
             hoverItems.push({
-                x: hoverCenterX,
-                y: hoverCenterY,
+                x: hoverCenter[0],
+                y: hoverCenter[1],
                 name: hovertemplateLabels.valueLabel,
                 text: [
                     link.label || '',
@@ -192,7 +197,7 @@ module.exports = function plot(gd, calcData) {
                 fontFamily: castHoverOption(obj, 'font.family'),
                 fontSize: castHoverOption(obj, 'font.size'),
                 fontColor: castHoverOption(obj, 'font.color'),
-                idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left',
+                idealAlign: d3.event.x < hoverCenter[0] ? 'right' : 'left',
 
                 hovertemplate: obj.hovertemplate,
                 hovertemplateLabels: hovertemplateLabels,
@@ -203,7 +208,8 @@ module.exports = function plot(gd, calcData) {
         var tooltips = Fx.multiHovers(hoverItems, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
-            gd: gd
+            gd: gd,
+            anchorIndex: anchorIndex
         });
 
         tooltips.each(function() {
