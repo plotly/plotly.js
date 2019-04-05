@@ -15,7 +15,7 @@ module.exports = function getBBox(element) {
     if(!clipPathAttr) return elementBBox;
 
     // only supports 'url(#<id>)' at the moment
-    var clipPathId = clipPathAttr.substring(5, clipPathAttr.length - 1);
+    var clipPathId = clipPathAttr.substring(6, clipPathAttr.length - 2);
     var clipBBox = getClipBBox(clipPathId);
 
     return minBBox(elementBBox, clipBBox);
@@ -28,8 +28,7 @@ function getClipBBox(clipPathId) {
     try {
         // this line throws an error in FF (38 and 45 at least)
         clipBBox = clipPath.node().getBBox();
-    }
-    catch(e) {
+    } catch(e) {
         // use DOM attributes as fallback
         var path = d3.select(clipPath.node().firstChild);
 
