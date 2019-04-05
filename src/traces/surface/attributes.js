@@ -318,4 +318,3 @@ colorscaleAttrs('', {
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
-delete attrs.contours.z.relative;
