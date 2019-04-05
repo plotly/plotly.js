@@ -6,15 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var mouseOffset = require('mouse-event-offset');
 var hasHover = require('has-hover');
 var supportsPassive = require('has-passive-events');
 
-var Lib = require('../../lib');
-
+var removeElement = require('../../lib').removeElement;
 var constants = require('../../plots/cartesian/constants');
 var interactConstants = require('../../constants/interactions');
 
@@ -26,7 +24,6 @@ dragElement.getCursor = require('./cursor');
 var unhover = require('./unhover');
 dragElement.unhover = unhover.wrapped;
 dragElement.unhoverRaw = unhover.raw;
-
 
 /**
  * Abstracts click & drag interactions
@@ -105,8 +102,7 @@ dragElement.init = function init(options) {
 
     if(!supportsPassive) {
         element.ontouchstart = onStart;
-    }
-    else {
+    } else {
         if(element._ontouchstart) {
             element.removeEventListener('touchstart', element._ontouchstart);
         }
@@ -144,8 +140,7 @@ dragElement.init = function init(options) {
         if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
             // in a click train
             numClicks += 1;
-        }
-        else {
+        } else {
             // new click train
             numClicks = 1;
             gd._mouseDownTime = newMouseDownTime;
@@ -156,8 +151,7 @@ dragElement.init = function init(options) {
         if(hasHover && !rightClick) {
             dragCover = coverSlip();
             dragCover.style.cursor = window.getComputedStyle(element).cursor;
-        }
-        else if(!hasHover) {
+        } else if(!hasHover) {
             // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
             dragCover = document;
             cursor = window.getComputedStyle(document.documentElement).cursor;
@@ -215,9 +209,8 @@ dragElement.init = function init(options) {
         document.removeEventListener('touchend', onDone);
 
         if(hasHover) {
-            Lib.removeElement(dragCover);
-        }
-        else if(cursor) {
+            removeElement(dragCover);
+        } else if(cursor) {
             dragCover.documentElement.style.cursor = cursor;
             cursor = null;
         }
@@ -236,8 +229,7 @@ dragElement.init = function init(options) {
 
         if(gd._dragged) {
             if(options.doneFn) options.doneFn();
-        }
-        else {
+        } else {
             if(options.clickFn) options.clickFn(numClicks, initialEvent);
 
             // If we haven't dragged, this should be a click. But because of the
