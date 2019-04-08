@@ -11,7 +11,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
 var failTest = require('../assets/fail_test');
 
-
 describe('ModeBar', function() {
     'use strict';
 
@@ -960,10 +959,11 @@ describe('ModeBar', function() {
                 Plotly.plot(gd, {data: [], layout: {}})
                 .then(function() {
                     selectButton(gd._fullLayout._modeBar, 'toImage').click();
-                    expect(Registry.call).toHaveBeenCalledWith('downloadImage', gd,
-                        {format: 'png'});
-                    done();
-                });
+                    expect(Registry.call)
+                        .toHaveBeenCalledWith('downloadImage', gd, {format: 'png'});
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should accept overriding defaults', function(done) {
@@ -973,13 +973,14 @@ describe('ModeBar', function() {
                         filename: 'x',
                         unsupported: 'should not pass'
                     }
-                } })
+                }})
                 .then(function() {
                     selectButton(gd._fullLayout._modeBar, 'toImage').click();
-                    expect(Registry.call).toHaveBeenCalledWith('downloadImage', gd,
-                        {format: 'svg', filename: 'x'});
-                    done();
-                });
+                    expect(Registry.call)
+                        .toHaveBeenCalledWith('downloadImage', gd, {format: 'svg', filename: 'x'});
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
