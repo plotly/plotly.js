@@ -363,10 +363,11 @@ function attachFxHandlers(sliceTop, gd, cd) {
             pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
             if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
 
-            var hoverLabel = trace.hoverlabel;
+            var hoverLabel = trace2.hoverlabel;
             var hoverFont = hoverLabel.font;
 
             Fx.loneHover({
+                trace: trace,
                 x0: hoverCenterX - rInscribed * cd0.r,
                 x1: hoverCenterX + rInscribed * cd0.r,
                 y: hoverCenterY,
@@ -378,8 +379,7 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 fontFamily: helpers.castOption(hoverFont.family, pt.pts),
                 fontSize: helpers.castOption(hoverFont.size, pt.pts),
                 fontColor: helpers.castOption(hoverFont.color, pt.pts),
-
-                trace: trace2,
+                nameLength: helpers.castOption(hoverLabel.namelength, pt.pts),
                 hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
                 hovertemplateLabels: pt,
                 eventData: [eventData(pt, trace2)]

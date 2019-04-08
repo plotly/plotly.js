@@ -226,6 +226,18 @@ describe('Test gl3d plots', function() {
                 }
             );
         })
+        .then(function() { return Plotly.restyle(gd, 'hoverlabel.namelength', 3); })
+        .then(delay(20))
+        .then(_hover)
+        .then(delay(20))
+        .then(function() {
+            assertHoverLabelContent(
+                {
+                    nums: ['x: 0', 'y: 0', 'z: 0'].join('\n'),
+                    name: 'tra'
+                }
+            );
+        })
         .catch(failTest)
         .then(done);
     });

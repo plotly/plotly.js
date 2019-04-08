@@ -1169,6 +1169,24 @@ describe('pie hovering', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should honor *hoverlabel.namelength*', function(done) {
+            mockCopy.data[0].name = 'loooooooooooooooooooooooong';
+            mockCopy.data[0].hoverinfo = 'all';
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({nums: '4\n5\n33.3%', name: 'looooooooooo...'}, 'base');
+            })
+            .then(function() { return Plotly.restyle(gd, 'hoverlabel.namelength', 2); })
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({nums: '4\n5\n33.3%', name: 'lo'}, 'base');
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('should fit labels within graph div', function() {

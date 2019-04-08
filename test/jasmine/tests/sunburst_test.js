@@ -366,6 +366,25 @@ describe('Test sunburst hover:', function() {
             }
         }
     }, {
+        desc: 'with hoverlabel.namelength set ',
+        traces: [{
+            hoverlabel: {namelength: 4},
+            hoverinfo: 'all'
+        }],
+        pos: 4,
+        exp: {
+            label: {
+                nums: 'Abel',
+                name: 't...'
+            },
+            ptData: {
+                curveNumber: 0,
+                pointNumber: 5,
+                label: 'Abel',
+                parent: 'Eve'
+            }
+        }
+    }, {
         desc: 'with values',
         traces: [{
             values: values0,

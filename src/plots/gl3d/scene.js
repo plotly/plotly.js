@@ -32,6 +32,7 @@ var computeTickMarks = require('./layout/tick_marks');
 var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
+    var gd = scene.graphDiv;
     var trace;
 
     // update size of svg container
@@ -70,6 +71,7 @@ function render(scene) {
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
+        var traceNow = gd._fullData[trace.index];
         var ptNumber = selection.index;
 
         var labels = {
@@ -78,11 +80,11 @@ function render(scene) {
             zLabel: formatter('zaxis', selection.traceCoordinate[2])
         };
 
-        var hoverinfo = Fx.castHoverinfo(trace, scene.fullLayout, ptNumber);
+        var hoverinfo = Fx.castHoverinfo(traceNow, scene.fullLayout, ptNumber);
         var hoverinfoParts = (hoverinfo || '').split('+');
         var isHoverinfoAll = hoverinfo && hoverinfo === 'all';
 
-        if(!trace.hovertemplate && !isHoverinfoAll) {
+        if(!traceNow.hovertemplate && !isHoverinfoAll) {
             if(hoverinfoParts.indexOf('x') === -1) labels.xLabel = undefined;
             if(hoverinfoParts.indexOf('y') === -1) labels.yLabel = undefined;
             if(hoverinfoParts.indexOf('z') === -1) labels.zLabel = undefined;
@@ -138,23 +140,23 @@ function render(scene) {
             x: selection.traceCoordinate[0],
             y: selection.traceCoordinate[1],
             z: selection.traceCoordinate[2],
-            data: trace._input,
-            fullData: trace,
-            curveNumber: trace.index,
+            data: traceNow._input,
+            fullData: traceNow,
+            curveNumber: traceNow.index,
             pointNumber: ptNumber
         };
 
-        Fx.appendArrayPointValue(pointData, trace, ptNumber);
+        Fx.appendArrayPointValue(pointData, traceNow, ptNumber);
 
         if(trace._module.eventData) {
-            pointData = trace._module.eventData(pointData, selection, trace, {}, ptNumber);
+            pointData = traceNow._module.eventData(pointData, selection, traceNow, {}, ptNumber);
         }
 
         var eventData = {points: [pointData]};
 
         if(scene.fullSceneLayout.hovermode) {
             Fx.loneHover({
-                trace: trace,
+                trace: traceNow,
                 x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
                 y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
                 xLabel: labels.xLabel,
@@ -162,31 +164,31 @@ function render(scene) {
                 zLabel: labels.zLabel,
                 text: tx,
                 name: lastPicked.name,
-                color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
-                borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
-                fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
-                fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
-                fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color'),
-                hovertemplate: Lib.castOption(trace, ptNumber, 'hovertemplate'),
+                color: Fx.castHoverOption(traceNow, ptNumber, 'bgcolor') || lastPicked.color,
+                borderColor: Fx.castHoverOption(traceNow, ptNumber, 'bordercolor'),
+                fontFamily: Fx.castHoverOption(traceNow, ptNumber, 'font.family'),
+                fontSize: Fx.castHoverOption(traceNow, ptNumber, 'font.size'),
+                fontColor: Fx.castHoverOption(traceNow, ptNumber, 'font.color'),
+                nameLength: Fx.castHoverOption(traceNow, ptNumber, 'namelength'),
+                hovertemplate: Lib.castOption(traceNow, ptNumber, 'hovertemplate'),
                 hovertemplateLabels: Lib.extendFlat({}, pointData, labels),
                 eventData: [pointData]
             }, {
                 container: svgContainer,
-                gd: scene.graphDiv
+                gd: gd
             });
         }
 
         if(selection.buttons && selection.distance < 5) {
-            scene.graphDiv.emit('plotly_click', eventData);
+            gd.emit('plotly_click', eventData);
         } else {
-            scene.graphDiv.emit('plotly_hover', eventData);
+            gd.emit('plotly_hover', eventData);
         }
 
         oldEventData = eventData;
-    }
-    else {
+    } else {
         Fx.loneUnhover(svgContainer);
-        scene.graphDiv.emit('plotly_unhover', oldEventData);
+        gd.emit('plotly_unhover', oldEventData);
     }
 
     scene.drawAnnotations(scene);

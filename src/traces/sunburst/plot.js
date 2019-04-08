@@ -581,11 +581,11 @@ function attachFxHandlers(sliceTop, gd, cd) {
             if(hasFlag('text') && hoverPt.text) thisText.push(hoverPt.text);
 
             Fx.loneHover({
+                trace: traceNow,
                 x0: hoverCenterX - rInscribed * pt.rpx1,
                 x1: hoverCenterX + rInscribed * pt.rpx1,
                 y: hoverCenterY,
                 idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
-                trace: traceNow,
                 text: thisText.join('<br>'),
                 name: (hovertemplate || hasFlag('name')) ? traceNow.name : undefined,
                 color: _cast('hoverlabel.bgcolor') || cdi.color,
@@ -593,6 +593,7 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 fontFamily: _cast('hoverlabel.font.family'),
                 fontSize: _cast('hoverlabel.font.size'),
                 fontColor: _cast('hoverlabel.font.color'),
+                nameLength: _cast('hoverlabel.namelength'),
                 hovertemplate: hovertemplate,
                 hovertemplateLabels: hoverPt,
                 eventData: [makeEventData(pt, traceNow)]
