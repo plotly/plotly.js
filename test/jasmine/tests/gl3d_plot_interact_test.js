@@ -226,8 +226,20 @@ describe('Test gl3d plots', function() {
                 }
             );
         })
-        .then(function() { return Plotly.restyle(gd, 'hoverlabel.namelength', 3); })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should honor *hoverlabel.namelength*', function(done) {
+        var _mock = Lib.extendDeep({}, multipleScatter3dMock);
+
+        function _hover() {
+            mouseEvent('mouseover', 300, 200);
+        }
+
+        Plotly.plot(gd, _mock)
         .then(delay(20))
+        .then(function() { return Plotly.restyle(gd, 'hoverlabel.namelength', 3); })
         .then(_hover)
         .then(delay(20))
         .then(function() {
