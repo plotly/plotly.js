@@ -518,9 +518,18 @@ modeBarButtons.resetSankeyGroup = {
     title: function(gd) { return _(gd, 'Ungroup all nodes'); },
     icon: Icons.home,
     click: function(gd) {
-        Registry.call('restyle', gd, {
-            'node.groups': [[]],
-        });
+        var aObj = {
+            'node.groups': [],
+            'node.x': [],
+            'node.y': []
+        };
+        for(var i = 0; i < gd._fullData.length; i++) {
+            var viewInitial = gd._fullData[i]._viewInitial;
+            aObj['node.groups'].push(viewInitial.node.groups.slice());
+            aObj['node.x'].push(viewInitial.node.x.slice());
+            aObj['node.y'].push(viewInitial.node.y.slice());
+        }
+        Registry.call('restyle', gd, aObj);
     }
 };
 
