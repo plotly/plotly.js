@@ -23,6 +23,7 @@ var defaultColors = require('@src/components/color/attributes').defaults;
 var drag = require('../assets/drag');
 var checkOverlap = require('../assets/check_overlap');
 var delay = require('../assets/delay');
+var selectButton = require('../assets/modebar_button');
 
 describe('sankey tests', function() {
     'use strict';
@@ -379,6 +380,20 @@ describe('sankey tests', function() {
                 });
         });
 
+        it('Plotly.deleteTraces removes draggers', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+            Plotly.plot(gd, mockCopy)
+                .then(function() {
+                    expect(document.getElementsByClassName('bgsankey').length).toBe(1);
+                    return Plotly.deleteTraces(gd, [0]);
+                })
+                .then(function() {
+                    expect(document.getElementsByClassName('bgsankey').length).toBe(0);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
         it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
 
@@ -542,6 +557,52 @@ describe('sankey tests', function() {
             .then(function() {
                 // Nodes do not overlap in snap
                 expect(checkElementOverlap(3, 6)).not.toBeTruthy('nodes overlap');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('resets each subplot to its initial view (ie. x, y groups) via modebar button', function(done) {
+            var mockCopy = Lib.extendDeep({}, require('@mocks/sankey_subplots_circular'));
+
+            // Set initial view
+            mockCopy.data[0].node.x = [0.25];
+            mockCopy.data[0].node.y = [0.25];
+
+            mockCopy.data[0].node.groups = [];
+            mockCopy.data[1].node.groups = [[2, 3]];
+
+            Plotly.plot(gd, mockCopy)
+            .then(function() {
+                expect(gd._fullData[0].node.groups).toEqual([]);
+                expect(gd._fullData[1].node.groups).toEqual([[2, 3]]);
+
+                // Change groups
+                return Plotly.restyle(gd, {
+                    'node.groups': [[[1, 2]], [[]]],
+                    'node.x': [[0.1]],
+                    'node.y': [[0.1]]
+                });
+            })
+            .then(function() {
+                // Check current state
+                expect(gd._fullData[0].node.x).toEqual([0.1]);
+                expect(gd._fullData[0].node.y).toEqual([0.1]);
+
+                expect(gd._fullData[0].node.groups).toEqual([[1, 2]]);
+                expect(gd._fullData[1].node.groups).toEqual([[]]);
+
+                // Click reset
+                var resetButton = selectButton(gd._fullLayout._modeBar, 'resetViewSankey');
+                resetButton.click();
+            })
+            .then(function() {
+                // Check we are back to initial view
+                expect(gd._fullData[0].node.x).toEqual([0.25]);
+                expect(gd._fullData[0].node.y).toEqual([0.25]);
+
+                expect(gd._fullData[0].node.groups).toEqual([]);
+                expect(gd._fullData[1].node.groups).toEqual([[2, 3]]);
             })
             .catch(failTest)
             .then(done);

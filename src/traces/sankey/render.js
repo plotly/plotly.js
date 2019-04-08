@@ -836,6 +836,25 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('pointer-events', 'auto')
         .attr('transform', sankeyTransform);
 
+    sankey.each(function(d, i) {
+        gd._fullData[i]._sankey = d;
+        // Create dragbox if missing
+        var dragboxClassName = 'bgsankey-' + d.trace.uid + '-' + i;
+        Lib.ensureSingle(gd._fullLayout._draggers, 'rect', dragboxClassName);
+
+        gd._fullData[i]._bgRect = d3.select('.' + dragboxClassName);
+
+        // Style dragbox
+        gd._fullData[i]._bgRect
+          .style('pointer-events', 'all')
+          .attr('width', d.width)
+          .attr('height', d.height)
+          .attr('x', d.translateX)
+          .attr('y', d.translateY)
+          .classed('bgsankey', true)
+          .style({fill: 'transparent', 'stroke-width': 0});
+    });
+
     sankey.transition()
         .ease(c.ease).duration(c.duration)
         .attr('transform', sankeyTransform);
@@ -925,7 +944,8 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(attachDragHandler, sankeyLink, callbacks, gd); // has to be here as it binds sankeyLink
 
-    sankeyNode.transition()
+    sankeyNode
+        .transition()
         .ease(c.ease).duration(c.duration)
         .call(updateNodePositions)
         .style('opacity', function(n) { return n.partOfGroup ? 0 : 1;});

@@ -40,6 +40,7 @@ function convertToD3Sankey(trace) {
         if(linkSpec.target[i] > maxNodeId) maxNodeId = linkSpec.target[i];
     }
     var nodeCount = maxNodeId + 1;
+    trace.node._count = nodeCount;
 
     // Group nodes
     var j;

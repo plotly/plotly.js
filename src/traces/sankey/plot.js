@@ -127,6 +127,20 @@ module.exports = function plot(gd, calcData) {
     var svg = fullLayout._paper;
     var size = fullLayout._size;
 
+    // stash initial view
+    for(var i = 0; i < calcData.length; i++) {
+        if(!gd._fullData[i]._viewInitial) {
+            var node = gd._fullData[i].node;
+            gd._fullData[i]._viewInitial = {
+                node: {
+                    groups: node.groups.slice(),
+                    x: node.x.slice(),
+                    y: node.y.slice()
+                }
+            };
+        }
+    }
+
     var linkSelect = function(element, d) {
         var evt = d.link;
         evt.originalEvent = d3.event;

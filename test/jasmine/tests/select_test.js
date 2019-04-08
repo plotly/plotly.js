@@ -13,6 +13,8 @@ var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
 
 var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
+var delay = require('../assets/delay');
+var sankeyConstants = require('@src/traces/sankey/constants');
 
 function drag(path, options) {
     var len = path.length;
@@ -2665,6 +2667,64 @@ describe('Test select box and lasso per trace:', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    describe('should work on sankey traces', function() {
+        var waitingTime = sankeyConstants.duration * 2;
+
+        it('@flaky select', function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/sankey_circular.json'));
+            fig.layout.dragmode = 'select';
+            var dblClickPos = [250, 400];
+
+            Plotly.plot(gd, fig)
+            .then(function() {
+                // No groups initially
+                expect(gd._fullData[0].node.groups).toEqual([]);
+            })
+            .then(function() {
+                // Grouping the two nodes on the top right
+                return _run(
+                    [[640, 130], [400, 450]],
+                    function() {
+                        expect(gd._fullData[0].node.groups).toEqual([[2, 3]], 'failed to group #2 + #3');
+                    },
+                    dblClickPos, BOXEVENTS, 'for top right nodes #2 and #3'
+                );
+            })
+            .then(delay(waitingTime))
+            .then(function() {
+                // Grouping node #4 and the previous group
+                drag([[715, 400], [300, 110]]);
+            })
+            .then(delay(waitingTime))
+            .then(function() {
+                expect(gd._fullData[0].node.groups).toEqual([[4, 3, 2]], 'failed to group #4 + existing group of #2 and #3');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@flaky should not work when dragmode is undefined', function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/sankey_circular.json'));
+            fig.layout.dragmode = undefined;
+
+            Plotly.plot(gd, fig)
+            .then(function() {
+                // No groups initially
+                expect(gd._fullData[0].node.groups).toEqual([]);
+            })
+            .then(function() {
+                // Grouping the two nodes on the top right
+                drag([[640, 130], [400, 450]]);
+            })
+            .then(delay(waitingTime))
+            .then(function() {
+                expect(gd._fullData[0].node.groups).toEqual([]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 
