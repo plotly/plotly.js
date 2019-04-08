@@ -78,7 +78,7 @@
     "gl-heatmap2d": "^1.0.5",
     "gl-line3d": "^1.1.11",
     "gl-mat4": "^1.2.0",
-    "gl-mesh3d": "^2.1.0",
+    "gl-mesh3d": "git://github.com/gl-vis/gl-mesh3d.git#6651929f5ac2c084ce51a88ff2e40311fab4a46c",
     "gl-plot2d": "^1.4.2",
     "gl-plot3d": "^2.2.1",
     "gl-pointcloud2d": "^1.0.2",
