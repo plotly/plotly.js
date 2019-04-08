@@ -20,18 +20,7 @@ function distinctVals(col) {
     return Lib.distinctVals(col).vals;
 }
 
-function IsosurfaceTrace(scene, mesh, uid) {
-    this.scene = scene;
-    this.uid = uid;
-    this.mesh = mesh;
-    this.name = '';
-    this.data = null;
-    this.showContour = false;
-}
-
-var proto = IsosurfaceTrace.prototype;
-
-function findNearestOnAxis(w, arr) {
+var findNearestOnAxis = function(w, arr) {
     for(var q = arr.length - 1; q > 0; q--) {
         var min = Math.min(arr[q], arr[q - 1]);
         var max = Math.max(arr[q], arr[q - 1]);
@@ -46,7 +35,18 @@ function findNearestOnAxis(w, arr) {
         id: 0,
         distRatio: 0
     };
+};
+
+function IsosurfaceTrace(scene, mesh, uid) {
+    this.scene = scene;
+    this.uid = uid;
+    this.mesh = mesh;
+    this.name = '';
+    this.data = null;
+    this.showContour = false;
 }
+
+var proto = IsosurfaceTrace.prototype;
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
@@ -87,7 +87,7 @@ proto.update = function(data) {
     var scene = this.scene;
     var layout = scene.fullSceneLayout;
 
-    this.data = generateIsosurfaceMesh(data);
+    this.data = generateIsoMeshes(data);
 
     // Unpack position data
     function toDataCoords(axis, coord, scale, calendar) {
@@ -134,7 +134,7 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-function generateIsosurfaceMesh(data) {
+function generateIsoMeshes(data) {
     data._i = [];
     data._j = [];
     data._k = [];
@@ -1035,4 +1035,8 @@ function createIsosurfaceTrace(scene, data) {
     return result;
 }
 
-module.exports = createIsosurfaceTrace;
+module.exports = {
+    findNearestOnAxis: findNearestOnAxis,
+    generateIsoMeshes: generateIsoMeshes,
+    createIsosurfaceTrace: createIsosurfaceTrace,
+};

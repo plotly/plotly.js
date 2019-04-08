@@ -513,9 +513,9 @@ function toggleHover(gd) {
     Registry.call('_guiRelayout', gd, 'hovermode', newHover);
 }
 
-modeBarButtons.resetSankeyGroup = {
+modeBarButtons.resetViewSankey = {
     name: 'resetSankeyGroup',
-    title: function(gd) { return _(gd, 'Ungroup all nodes'); },
+    title: function(gd) { return _(gd, 'Reset view'); },
     icon: Icons.home,
     click: function(gd) {
         var aObj = {

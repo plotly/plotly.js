@@ -258,12 +258,6 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
     }
-
-    if(this.gd._context._scrollZoom.mapbox) {
-        map.scrollZoom.enable();
-    } else {
-        map.scrollZoom.disable();
-    }
 };
 
 proto.updateData = function(calcData) {
@@ -314,6 +308,12 @@ proto.updateLayout = function(fullLayout) {
     this.updateFramework(fullLayout);
     this.updateFx(fullLayout);
     this.map.resize();
+
+    if(this.gd._context._scrollZoom.mapbox) {
+        map.scrollZoom.enable();
+    } else {
+        map.scrollZoom.disable();
+    }
 };
 
 proto.resolveOnRender = function(resolve) {

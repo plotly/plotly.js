@@ -9,8 +9,8 @@
 
 'use strict';
 
-var handleSubplotDefaults = require('../../subplot_defaults');
-var constants = require('../constants');
+var handleSubplotDefaults = require('../subplot_defaults');
+var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 
 var axesNames = constants.axesNames;
@@ -58,9 +58,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
             rangeDflt = [rot - hSpan, rot + hSpan];
         }
 
-        var range = coerce(axisName + '.range', rangeDflt);
-
-        coerce(axisName + '.tick0', range[0]);
+        coerce(axisName + '.range', rangeDflt);
+        coerce(axisName + '.tick0');
         coerce(axisName + '.dtick', dtickDflt);
 
         show = coerce(axisName + '.showgrid');

@@ -20,6 +20,7 @@ var throttle = require('../../lib/throttle');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
 var getFromId = require('./axis_ids').getFromId;
 var clearGlCanvases = require('../../lib/clear_gl_canvases');
+
 var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 
 var constants = require('./constants');
@@ -469,14 +470,14 @@ function multiTester(list) {
 
 function coerceSelectionsCache(evt, gd, dragOptions) {
     var fullLayout = gd._fullLayout;
-    var zoomLayer = fullLayout._zoomlayer;
     var plotinfo = dragOptions.plotinfo;
 
     var selectingOnSameSubplot = (
-      fullLayout._lastSelectedSubplot &&
-      fullLayout._lastSelectedSubplot === plotinfo.id
+        fullLayout._lastSelectedSubplot &&
+        fullLayout._lastSelectedSubplot === plotinfo.id
     );
     var hasModifierKey = evt.shiftKey || evt.altKey;
+
     if(selectingOnSameSubplot && hasModifierKey &&
       (plotinfo.selection && plotinfo.selection.selectionDefs) && !dragOptions.selectionDefs) {
         // take over selection definitions from prev mode, if any
@@ -488,7 +489,7 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
 
     // clear selection outline when selecting a different subplot
     if(!selectingOnSameSubplot) {
-        clearSelect(zoomLayer);
+        clearSelect(gd);
         fullLayout._lastSelectedSubplot = plotinfo.id;
     }
 }
@@ -678,7 +679,7 @@ function updateSelectedState(gd, searchTraces, eventData) {
     // before anything else, update preGUI if necessary
     for(i = 0; i < searchTraces.length; i++) {
         var fullInputTrace = searchTraces[i].cd[0].trace._fullInput;
-        var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid];
+        var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid] || {};
         if(tracePreGUI.selectedpoints === undefined) {
             tracePreGUI.selectedpoints = fullInputTrace._input.selectedpoints || null;
         }
@@ -783,11 +784,15 @@ function fillSelectionItem(selection, searchInfo) {
     return selection;
 }
 
-function clearSelect(zoomlayer) {
-    // until we get around to persistent selections, remove the outline
-    // here. The selection itself will be removed when the plot redraws
-    // at the end.
-    zoomlayer.selectAll('.select-outline').remove();
+// until we get around to persistent selections, remove the outline
+// here. The selection itself will be removed when the plot redraws
+// at the end.
+function clearSelect(gd) {
+    var fullLayout = gd._fullLayout || {};
+    var zoomlayer = fullLayout._zoomlayer;
+    if(zoomlayer) {
+        zoomlayer.selectAll('.select-outline').remove();
+    }
 }
 
 module.exports = {

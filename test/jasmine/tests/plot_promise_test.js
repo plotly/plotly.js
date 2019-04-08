@@ -62,32 +62,6 @@ describe('Plotly.___ methods', function() {
         });
     });
 
-    describe('Plotly.plot promise', function() {
-        var gd;
-        var promise;
-        var promiseRejected = false;
-
-        beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
-
-            gd = createGraphDiv();
-
-            gd._dragging = true;
-
-            promise = Plotly.plot(gd, data, {});
-
-            promise.then(null, function() {
-                promiseRejected = true;
-                done();
-            });
-        });
-
-
-        it('should reject the promise when graph is being dragged', function() {
-            expect(promiseRejected).toBe(true);
-        });
-    });
-
     describe('Plotly.redraw promise', function() {
         var promise;
         var promiseGd;

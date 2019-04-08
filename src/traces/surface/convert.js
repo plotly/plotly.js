@@ -28,12 +28,15 @@ function SurfaceTrace(scene, surface, uid) {
     this.surface = surface;
     this.data = null;
     this.showContour = [false, false, false];
+    this.contourStart = [null, null, null];
+    this.contourEnd = [null, null, null];
+    this.contourSize = [0, 0, 0];
     this.minValues = [Infinity, Infinity, Infinity];
     this.maxValues = [-Infinity, -Infinity, -Infinity];
     this.dataScaleX = 1.0;
     this.dataScaleY = 1.0;
     this.refineData = true;
-    this._interpolatedZ = false;
+    this.objectOffset = [0, 0, 0];
 }
 
 var proto = SurfaceTrace.prototype;
@@ -346,19 +349,53 @@ proto.refineCoords = function(coords) {
     }
 };
 
+function insertIfNewLevel(arr, newValue) {
+    var found = false;
+    for(var k = 0; k < arr.length; k++) {
+        if(newValue === arr[k]) {
+            found = true;
+            break;
+        }
+    }
+    if(found === false) arr.push(newValue);
+}
+
 proto.setContourLevels = function() {
-    var nlevels = [[], [], []];
+    var newLevels = [[], [], []];
+    var useNewLevels = [false, false, false];
     var needsUpdate = false;
 
-    for(var i = 0; i < 3; ++i) {
+    var i, j, value;
+
+    for(i = 0; i < 3; ++i) {
         if(this.showContour[i]) {
             needsUpdate = true;
-            nlevels[i] = this.scene.contourLevels[i];
+
+            if(
+                this.contourSize[i] > 0 &&
+                this.contourStart[i] !== null &&
+                this.contourEnd[i] !== null &&
+                this.contourEnd[i] > this.contourStart[i]
+            ) {
+                useNewLevels[i] = true;
+
+                for(j = this.contourStart[i]; j < this.contourEnd[i]; j += this.contourSize[i]) {
+                    value = j * this.scene.dataScale[i];
+
+                    insertIfNewLevel(newLevels[i], value);
+                }
+            }
         }
     }
 
     if(needsUpdate) {
-        this.surface.update({ levels: nlevels });
+        var allLevels = [[], [], []];
+        for(i = 0; i < 3; ++i) {
+            if(this.showContour[i]) {
+                allLevels[i] = useNewLevels[i] ? newLevels[i] : this.scene.contourLevels[i];
+            }
+        }
+        this.surface.update({ levels: allLevels });
     }
 };
 
@@ -453,7 +490,7 @@ proto.update = function(data) {
     }
 
     for(i = 0; i < 3; i++) {
-        data._objectOffset[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
+        this.objectOffset[i] = 0.5 * (this.minValues[i] + this.maxValues[i]);
     }
 
     for(i = 0; i < 3; i++) {
@@ -461,7 +498,7 @@ proto.update = function(data) {
             for(k = 0; k < ylen; k++) {
                 v = rawCoords[i][j][k];
                 if(v !== null && v !== undefined) {
-                    rawCoords[i][j][k] -= data._objectOffset[i];
+                    rawCoords[i][j][k] -= this.objectOffset[i];
                 }
             }
         }
@@ -561,8 +598,16 @@ proto.update = function(data) {
                 surface.highlightTint[i] = params.contourTint[i] = 1;
             }
             params.contourWidth[i] = contourParams.width;
+
+            this.contourStart[i] = contourParams.start;
+            this.contourEnd[i] = contourParams.end;
+            this.contourSize[i] = contourParams.size;
         } else {
             this.showContour[i] = false;
+
+            this.contourStart[i] = null;
+            this.contourEnd[i] = null;
+            this.contourSize[i] = 0;
         }
 
         if(contourParams.highlight) {
@@ -576,11 +621,7 @@ proto.update = function(data) {
         params.vertexColor = true;
     }
 
-    params.objectOffset = [
-        data._objectOffset[0],
-        data._objectOffset[1],
-        data._objectOffset[2]
-    ];
+    params.objectOffset = this.objectOffset;
 
     params.coords = coords;
     surface.update(params);

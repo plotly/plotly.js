@@ -135,18 +135,8 @@ exports.plot = function(gd, data, layout, config) {
         gd.empty = false;
     }
 
-    if(!gd.layout || graphWasEmpty) gd.layout = helpers.cleanLayout(layout);
-
-    // if the user is trying to drag the axes, allow new data and layout
-    // to come in but don't allow a replot.
-    if(gd._dragging && !gd._transitioning) {
-        // signal to drag handler that after everything else is done
-        // we need to replot, because something has changed
-        gd._replotPending = true;
-        return Promise.reject();
-    } else {
-        // we're going ahead with a replot now
-        gd._replotPending = false;
+    if(!gd.layout || graphWasEmpty) {
+        gd.layout = helpers.cleanLayout(layout);
     }
 
     Plots.supplyDefaults(gd);
@@ -195,7 +185,7 @@ exports.plot = function(gd, data, layout, config) {
     if(gd._context.responsive) {
         if(!gd._responsiveChartHandler) {
             // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function() {Plots.resize(gd);};
+            gd._responsiveChartHandler = function() { Plots.resize(gd); };
 
             // Listen to window resize
             window.addEventListener('resize', gd._responsiveChartHandler);
@@ -242,10 +232,10 @@ exports.plot = function(gd, data, layout, config) {
                     return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
                 })
                 .style({
-                    'position': 'absolute',
-                    'top': 0,
-                    'left': 0,
-                    'overflow': 'visible',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    overflow: 'visible',
                     'pointer-events': 'none'
                 });
         }
@@ -384,6 +374,7 @@ exports.plot = function(gd, data, layout, config) {
         initInteractions,
         Plots.addLinks,
         Plots.rehover,
+        Plots.redrag,
         // TODO: doAutoMargin is only needed here for axis automargin, which
         // happens outside of marginPushers where all the other automargins are
         // calculated. Would be much better to separate margin calculations from
@@ -1402,7 +1393,7 @@ function restyle(gd, astr, val, _traces) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover);
+    seq.push(Plots.rehover, Plots.redrag);
 
     Queue.add(gd,
         restyle, [gd, specs.undoit, specs.traces],
@@ -1911,7 +1902,7 @@ function relayout(gd, astr, val) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover);
+    seq.push(Plots.rehover, Plots.redrag);
 
     Queue.add(gd,
         relayout, [gd, specs.undoit],
@@ -1992,13 +1983,8 @@ function addAxRangeSequence(seq, rangesAltered) {
             return Axes.draw(gd, 'redraw');
         };
 
-    var _clearSelect = function(gd) {
-        var zoomlayer = gd._fullLayout._zoomlayer;
-        if(zoomlayer) clearSelect(zoomlayer);
-    };
-
     seq.push(
-        _clearSelect,
+        clearSelect,
         subroutines.doAutoRangeAndConstraints,
         drawAxes,
         subroutines.drawData,
@@ -2449,7 +2435,7 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover);
+    seq.push(Plots.rehover, Plots.redrag);
 
     Queue.add(gd,
         update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
@@ -2852,7 +2838,7 @@ exports.react = function(gd, data, layout, config) {
             seq.push(emitAfterPlot);
         }
 
-        seq.push(Plots.rehover);
+        seq.push(Plots.rehover, Plots.redrag);
 
         plotDone = Lib.syncOrAsync(seq, gd);
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);

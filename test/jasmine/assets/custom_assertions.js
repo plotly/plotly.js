@@ -226,8 +226,8 @@ exports.assertClip = function(sel, isClipped, size, msg) {
         var clipPath = d3.select(this).attr('clip-path');
 
         if(isClipped) {
-            expect(String(clipPath).substr(0, 4))
-                .toBe('url(', msg + ' clip path ' + '(item ' + i + ')');
+            expect(String(clipPath).substr(0, 5))
+                .toBe('url(\'', msg + ' clip path ' + '(item ' + i + ')');
         } else {
             expect(clipPath)
                 .toBe(null, msg + ' clip path ' + '(item ' + i + ')');

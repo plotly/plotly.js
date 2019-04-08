@@ -1028,7 +1028,7 @@ drawing.setClipUrl = function(s, localId, gd) {
     var context = gd._context;
     var baseUrl = context._exportedPlot ? '' : (context._baseUrl || '');
 
-    s.attr('clip-path', 'url(' + baseUrl + '#' + localId + ')');
+    s.attr('clip-path', 'url(\'' + baseUrl + '#' + localId + '\')');
 };
 
 drawing.getTranslate = function(element) {

@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.46.0
+* plotly.js (finance) v1.46.1
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -18868,7 +18868,7 @@ var scales = {
     ],
 
     // modified RdBu based on
-    // www.sandia.gov/~kmorel/documents/ColorMaps/ColorMapsExpanded.pdf
+    // http://www.kennethmoreland.com/color-maps/
     'RdBu': [
         [0, 'rgb(5,10,172)'], [0.35, 'rgb(106,137,247)'],
         [0.5, 'rgb(190,190,190)'], [0.6, 'rgb(220,170,132)'],
@@ -33978,7 +33978,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.46.0';
+exports.version = '1.46.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -67566,11 +67566,6 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var text = getText(trace, i);
     textPosition = getTextPosition(trace, i);
 
-    var layoutFont = fullLayout.font;
-    var barColor = style.getBarColor(calcTrace[i], trace);
-    var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
-    var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
-
     // compute text position
     var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
     var barmode = fullLayout[prefix + 'mode'];
@@ -67579,15 +67574,20 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var calcBar = calcTrace[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
 
-    // padding excluded
-    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
-    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
-
     if(!text || textPosition === 'none' ||
         (calcBar.isBlank && (textPosition === 'auto' || textPosition === 'inside'))) {
         bar.select('text').remove();
         return;
     }
+
+    var layoutFont = fullLayout.font;
+    var barColor = style.getBarColor(calcTrace[i], trace);
+    var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
+    var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
+
+    // padding excluded
+    var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
+    var barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
 
     var textSelection;
     var textBB;
@@ -76713,7 +76713,8 @@ module.exports = {
 
 'use strict';
 
-var Color = _dereq_('../../components/color');
+var hoverLabelText = _dereq_('../../plots/cartesian/axes').hoverLabelText;
+var opacity = _dereq_('../../components/color').opacity;
 var hoverOnBars = _dereq_('../bar/hover').hoverOnBars;
 
 var DIRSYMBOL = {
@@ -76727,28 +76728,35 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     var cd = point.cd;
     var trace = cd[0].trace;
+    var isHorizontal = (trace.orientation === 'h');
+
+    var vAxis = isHorizontal ? pointData.xa : pointData.ya;
+
+    function formatNumber(a) {
+        return hoverLabelText(vAxis, a);
+    }
 
     // the closest data point
     var index = point.index;
     var di = cd[index];
 
-    var sizeLetter = (trace.orientation === 'h') ? 'x' : 'y';
+    var sizeLetter = isHorizontal ? 'x' : 'y';
 
     var size = (di.isSum) ? di.b + di.s : di.rawS;
 
     if(!di.isSum) {
         // format delta numbers:
         if(size > 0) {
-            point.extraText = size + ' ' + DIRSYMBOL.increasing;
+            point.extraText = formatNumber(size) + ' ' + DIRSYMBOL.increasing;
         } else if(size < 0) {
-            point.extraText = '(' + (-size) + ') ' + DIRSYMBOL.decreasing;
+            point.extraText = '(' + (formatNumber(-size)) + ') ' + DIRSYMBOL.decreasing;
         } else {
             return;
         }
         // display initial value
-        point.extraText += '<br>Initial: ' + (di.b + di.s - size);
+        point.extraText += '<br>Initial: ' + formatNumber(di.b + di.s - size);
     } else {
-        point[sizeLetter + 'LabelVal'] = size;
+        point[sizeLetter + 'LabelVal'] = formatNumber(size);
     }
 
     point.color = getTraceColor(trace, di);
@@ -76761,11 +76769,11 @@ function getTraceColor(trace, di) {
     var mc = cont.color;
     var mlc = cont.line.color;
     var mlw = cont.line.width;
-    if(Color.opacity(mc)) return mc;
-    else if(Color.opacity(mlc) && mlw) return mlc;
+    if(opacity(mc)) return mc;
+    else if(opacity(mlc) && mlw) return mlc;
 }
 
-},{"../../components/color":47,"../bar/hover":262}],348:[function(_dereq_,module,exports){
+},{"../../components/color":47,"../../plots/cartesian/axes":207,"../bar/hover":262}],348:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.

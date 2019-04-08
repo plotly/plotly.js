@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.46.0
+* plotly.js (gl2d) v1.46.1
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -52118,7 +52118,7 @@ var scales = {
     ],
 
     // modified RdBu based on
-    // www.sandia.gov/~kmorel/documents/ColorMaps/ColorMapsExpanded.pdf
+    // http://www.kennethmoreland.com/color-maps/
     'RdBu': [
         [0, 'rgb(5,10,172)'], [0.35, 'rgb(106,137,247)'],
         [0.5, 'rgb(190,190,190)'], [0.6, 'rgb(220,170,132)'],
@@ -67266,7 +67266,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.46.0';
+exports.version = '1.46.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();

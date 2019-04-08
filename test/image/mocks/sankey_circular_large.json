@@ -220,10 +220,11 @@
           [1, "#9467bd"]
         ]
       }],
-      "hovertemplate": "<b>%{label}</b><br>%{flow.labelConcentration:%0.2f}<br>%{flow.value}"
+      "hovertemplate": "%{label}<br><b>flow.labelConcentration</b>: %{flow.labelConcentration:0.2%}<br><b>flow.concentration</b>: %{flow.concentration:0.2%}<br><b>flow.value</b>: %{flow.value}"
     }
   }],
   "layout": {
+      "hovermode": "x",
       "width": 800,
       "height": 800
   }

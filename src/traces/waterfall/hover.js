@@ -8,7 +8,8 @@
 
 'use strict';
 
-var Color = require('../../components/color');
+var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
+var opacity = require('../../components/color').opacity;
 var hoverOnBars = require('../bar/hover').hoverOnBars;
 
 var DIRSYMBOL = {
@@ -22,28 +23,35 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     var cd = point.cd;
     var trace = cd[0].trace;
+    var isHorizontal = (trace.orientation === 'h');
+
+    var vAxis = isHorizontal ? pointData.xa : pointData.ya;
+
+    function formatNumber(a) {
+        return hoverLabelText(vAxis, a);
+    }
 
     // the closest data point
     var index = point.index;
     var di = cd[index];
 
-    var sizeLetter = (trace.orientation === 'h') ? 'x' : 'y';
+    var sizeLetter = isHorizontal ? 'x' : 'y';
 
     var size = (di.isSum) ? di.b + di.s : di.rawS;
 
     if(!di.isSum) {
         // format delta numbers:
         if(size > 0) {
-            point.extraText = size + ' ' + DIRSYMBOL.increasing;
+            point.extraText = formatNumber(size) + ' ' + DIRSYMBOL.increasing;
         } else if(size < 0) {
-            point.extraText = '(' + (-size) + ') ' + DIRSYMBOL.decreasing;
+            point.extraText = '(' + (formatNumber(-size)) + ') ' + DIRSYMBOL.decreasing;
         } else {
             return;
         }
         // display initial value
-        point.extraText += '<br>Initial: ' + (di.b + di.s - size);
+        point.extraText += '<br>Initial: ' + formatNumber(di.b + di.s - size);
     } else {
-        point[sizeLetter + 'LabelVal'] = size;
+        point[sizeLetter + 'LabelVal'] = formatNumber(size);
     }
 
     point.color = getTraceColor(trace, di);
@@ -56,6 +64,6 @@ function getTraceColor(trace, di) {
     var mc = cont.color;
     var mlc = cont.line.color;
     var mlw = cont.line.width;
-    if(Color.opacity(mc)) return mc;
-    else if(Color.opacity(mlc) && mlw) return mlc;
+    if(opacity(mc)) return mc;
+    else if(opacity(mlc) && mlw) return mlc;
 }

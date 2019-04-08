@@ -19,7 +19,7 @@ var Lib = require('../lib');
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
-var axisIDs = require('../plots/cartesian/axis_ids');
+var axisIDs = require('./cartesian/axis_ids');
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
@@ -476,6 +476,15 @@ plots.supplyDefaults = function(gd, opts) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
+    // clear selection outline until we implement persistent selection,
+    // don't clear them though when drag handlers (e.g. listening to
+    // `plotly_selecting`) update the graph.
+    // we should try to come up with a better solution when implementing
+    // https://github.com/plotly/plotly.js/issues/1851
+    if(oldFullLayout._zoomlayer && !gd._dragging) {
+        oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
+    }
+
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
@@ -778,10 +787,6 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
         if(hasInfoLayer) {
             oldFullLayout._infolayer.select('.cb' + oldUid).remove();
         }
-    }
-
-    if(oldFullLayout._zoomlayer) {
-        oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
     }
 };
 
@@ -1679,10 +1684,10 @@ plots.purge = function(gd) {
     // themselves, but may not if there was an error
     delete gd._dragging;
     delete gd._dragged;
+    delete gd._dragdata;
     delete gd._hoverdata;
     delete gd._snapshotInProgress;
     delete gd._editing;
-    delete gd._replotPending;
     delete gd._mouseDownTime;
     delete gd._legendMouseDownTime;
 
@@ -2904,6 +2909,12 @@ function doCrossTraceCalc(gd) {
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {
         gd._fullLayout._rehover();
+    }
+};
+
+plots.redrag = function(gd) {
+    if(gd._fullLayout._redrag) {
+        gd._fullLayout._redrag();
     }
 };
 

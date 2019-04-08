@@ -792,6 +792,47 @@ describe('sankey tests', function() {
                 .then(done);
         });
 
+        it('should show the multiple hover labels in a flow in hovermode `x`', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            Plotly.plot(gd, mockCopy).then(function() {
+                _hover(351, 202);
+
+                assertLabel(
+                    ['source: Nuclear', 'target: Thermal generation', '100TWh'],
+                    ['rgb(144, 238, 144)', 'rgb(68, 68, 68)', 13, 'Arial', 'rgb(68, 68, 68)']
+                );
+
+                var g = d3.selectAll('.hovertext');
+                expect(g.size()).toBe(1);
+                return Plotly.relayout(gd, 'hovermode', 'x');
+            })
+            .then(function() {
+                _hover(351, 202);
+
+                assertMultipleLabels(
+                    [
+                      ['Old generation plant (made-up)', 'source: Nuclear', 'target: Thermal generation', '500TWh'],
+                      ['New generation plant (made-up)', 'source: Nuclear', 'target: Thermal generation', '140TWh'],
+                      ['source: Nuclear', 'target: Thermal generation', '100TWh'],
+                      ['source: Nuclear', 'target: Thermal generation', '100TWh']
+                    ],
+                    [
+                      ['rgb(33, 102, 172)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)'],
+                      ['rgb(178, 24, 43)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)'],
+                      ['rgb(144, 238, 144)', 'rgb(68, 68, 68)', 13, 'Arial', 'rgb(68, 68, 68)'],
+                      ['rgb(218, 165, 32)', 'rgb(68, 68, 68)', 13, 'Arial', 'rgb(68, 68, 68)']
+                    ]
+                );
+
+                var g = d3.select('.hovertext:nth-child(3)');
+                var domRect = g.node().getBoundingClientRect();
+                expect((domRect.bottom + domRect.top) / 2).toBeCloseTo(203, 0, 'it should center the hoverlabel associated with hovered link');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should not show any labels if hovermode is false', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
@@ -1279,7 +1320,18 @@ describe('sankey tests', function() {
 });
 
 function assertLabel(content, style) {
+    assertMultipleLabels([content], [style]);
+}
+
+function assertMultipleLabels(contentArray, styleArray) {
     var g = d3.selectAll('.hovertext');
+    expect(g.size()).toEqual(contentArray.length, 'wrong number of hoverlabels, expected to find ' + contentArray.length);
+    g.each(function(el, i) {
+        _assertLabelGroup(d3.select(this), contentArray[i], styleArray[i]);
+    });
+}
+
+function _assertLabelGroup(g, content, style) {
     var lines = g.selectAll('.nums .line');
     var name = g.selectAll('.name');
     var tooltipBoundingBox = g.node().getBoundingClientRect();

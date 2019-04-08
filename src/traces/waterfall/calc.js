@@ -90,7 +90,7 @@ module.exports = function calc(gd, trace) {
         }
     }
 
-    cd[0].hasTotals = hasTotals;
+    if(cd.length) cd[0].hasTotals = hasTotals;
 
     mergeArray(trace.text, cd, 'tx');
     mergeArray(trace.hovertext, cd, 'htx');

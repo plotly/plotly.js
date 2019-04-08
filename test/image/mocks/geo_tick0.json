@@ -1,0 +1,72 @@
+{
+  "data": [
+    {"type": "scattergeo", "lon": [5], "lat": [2], "name": "lonaxis.tick0: 5 | lataxis.tick0: 2"},
+    {"type": "scattergeo", "lon": [10], "lat": [1], "name": "lonaxis.tick0: 10 | lataxis.tick0: 1", "geo": "geo2"},
+    {"type": "scattergeo", "lon": [40], "lat": [-40], "name": "lonaxis.tick0: 40 | lataxis.tick0: -40", "geo": "geo3"},
+    {"type": "scattergeo", "lon": [73], "lat": [45], "name": "lonaxis.tick0: 73 | lataxis.tick0: 45", "geo": "geo4"}
+  ],
+  "layout": {
+    "legend": {
+      "x": -0.05,
+      "xanchor": "right",
+      "y": 0.5,
+      "yanchor": "middle"
+    },
+    "grid": {"columns": 2, "rows": 2},
+    "geo": {
+      "domain": {"row": 0, "column": 0},
+      "lonaxis": {
+        "showgrid": true,
+        "gridcolor": "#444",
+        "tick0": 5
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridcolor": "#444",
+        "tick0": 2
+      }
+    },
+    "geo2": {
+      "domain": {"row": 0, "column": 1},
+      "lonaxis": {
+        "showgrid": true,
+        "gridcolor": "#444",
+        "tick0": 10
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridcolor": "#444",
+        "tick0": 1
+      }
+    },
+    "geo3": {
+      "domain": {"row": 1, "column": 0},
+      "lonaxis": {
+        "showgrid": true,
+        "gridcolor": "#444",
+        "tick0": 40
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridcolor": "#444",
+        "tick0": -40
+      }
+    },
+    "geo4": {
+      "domain": {"row": 1, "column": 1},
+      "lonaxis": {
+        "showgrid": true,
+        "gridcolor": "#444",
+        "tick0": 73
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridcolor": "#444",
+        "tick0": 45
+      }
+    },
+    "margin": {"t": 10, "b": 10},
+    "width": 1100,
+    "height": 400
+  }
+}

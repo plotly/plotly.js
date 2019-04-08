@@ -141,7 +141,8 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
         hoverGroup = ['hoverClosestPie'];
     }
     else if(hasSankey) {
-        hoverGroup = ['resetSankeyGroup'];
+        hoverGroup = ['hoverClosestCartesian', 'hoverCompareCartesian'];
+        resetGroup = ['resetViewSankey'];
     }
     else { // hasPolar, hasTernary
         // always show at least one hover icon.

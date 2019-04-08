@@ -948,6 +948,36 @@ describe('A waterfall plot', function() {
         .then(done);
     });
 
+    it('should be able to deal with blank bars on transform', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'waterfall',
+                x: [1, 2, 3],
+                xsrc: 'ints',
+                transforms: [{
+                    type: 'filter',
+                    target: [1, 2, 3],
+                    targetsrc: 'ints',
+                    operation: '<',
+                    value: 0
+                }]
+            }]
+        })
+        .then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
+            var pathNode = waterfallNodes[0].querySelector('path');
+
+            expect(gd.calcdata[0][0].x).toEqual(NaN);
+            expect(gd.calcdata[0][0].y).toEqual(NaN);
+            expect(gd.calcdata[0][0].isBlank).toBe(true);
+
+            expect(pathNode.outerHTML).toEqual('<path d="M0,0Z" style="vector-effect: non-scaling-stroke;"></path>');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should coerce text-related attributes', function(done) {
         var data = [{
             y: [10, 20, 30, 40],
@@ -1288,6 +1318,34 @@ describe('waterfall hover', function() {
             })
             .catch(failTest)
             .then(done);
+        });
+
+        describe('round hover precision', function() {
+            it('should format numbers', function(done) {
+                gd = createGraphDiv();
+
+                Plotly.plot(gd, {
+                    data: [{
+                        x: ['A', 'B', 'C', 'D', 'E'],
+                        y: [0, -1.1, 2.2, -3.3, 4.4],
+                        type: 'waterfall'
+                    }],
+                    layout: {width: 400, height: 400}
+                })
+                .then(function() {
+                    var evt = { xpx: 200, ypx: 350 };
+                    Fx.hover('graph', evt, 'xy');
+                })
+                .then(function() {
+                    assertHoverLabelContent({
+                        nums: '2.2\n4.4 ▲\nInitial: −2.2',
+                        name: '',
+                        axis: 'E'
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
         });
     });
 

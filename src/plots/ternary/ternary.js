@@ -493,7 +493,7 @@ proto.initInteractions = function() {
     var _this = this;
     var dragger = _this.layers.plotbg.select('path').node();
     var gd = _this.graphDiv;
-    var zoomContainer = gd._fullLayout._zoomlayer;
+    var zoomLayer = gd._fullLayout._zoomlayer;
 
     // use plotbg for the main interactions
     var dragOptions = {
@@ -526,7 +526,7 @@ proto.initInteractions = function() {
                 dragOptions.clickFn = clickZoomPan;
                 dragOptions.doneFn = dragDone;
                 panPrep();
-                clearSelect(zoomContainer);
+                clearSelect(gd);
             }
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
@@ -578,7 +578,7 @@ proto.initInteractions = function() {
         path0 = 'M0,' + _this.h + 'L' + (_this.w / 2) + ', 0L' + _this.w + ',' + _this.h + 'Z';
         dimmed = false;
 
-        zb = zoomContainer.append('path')
+        zb = zoomLayer.append('path')
             .attr('class', 'zoombox')
             .attr('transform', 'translate(' + _this.x0 + ', ' + _this.y0 + ')')
             .style({
@@ -587,7 +587,7 @@ proto.initInteractions = function() {
             })
             .attr('d', path0);
 
-        corners = zoomContainer.append('path')
+        corners = zoomLayer.append('path')
             .attr('class', 'zoombox-corners')
             .attr('transform', 'translate(' + _this.x0 + ', ' + _this.y0 + ')')
             .style({
@@ -598,7 +598,7 @@ proto.initInteractions = function() {
             })
             .attr('d', 'M0,0Z');
 
-        clearSelect(zoomContainer);
+        clearSelect(gd);
     }
 
     function getAFrac(x, y) { return 1 - (y / _this.h); }
