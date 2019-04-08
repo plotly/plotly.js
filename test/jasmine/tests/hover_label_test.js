@@ -806,21 +806,36 @@ describe('hover info', function() {
                 });
             })
             .then(function() {
-                var nl = [[0, 0, 0], [0, 0, 0]];
-                return Plotly.restyle(gd, 'hoverlabel.namelength', [nl, nl]);
+                return Plotly.restyle(gd, 'hoverlabel.namelength', 2);
             })
             .then(function() {
-                // hoverlabel.namelength has no effect when <extra></extra> is set
                 _hover(gd, 250, 50);
                 assertHoverLabelContent({
                     nums: '(1,3) -- 2',
-                    name: 'trace two'
+                    name: 'tr'
                 });
 
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: '(1,1) -- 5.56',
-                    name: 'trace one'
+                    name: 'tr'
+                });
+            })
+            .then(function() {
+                var nl = [[0, 0, 0], [0, 0, 0]];
+                return Plotly.restyle(gd, 'hoverlabel.namelength', [nl, nl]);
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: '(1,3) -- 2',
+                    name: ''
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: '(1,1) -- 5.56',
+                    name: ''
                 });
             })
             .then(function() {

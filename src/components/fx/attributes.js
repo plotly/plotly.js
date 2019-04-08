@@ -38,6 +38,7 @@ module.exports = {
         namelength: {
             valType: 'integer',
             min: -1,
+            dflt: 15,
             arrayOk: true,
             role: 'style',
             editType: 'none',
@@ -47,7 +48,8 @@ module.exports = {
                 'regardless of length. 0-3 shows the first 0-3 characters, and',
                 'an integer >3 will show the whole name if it is less than that',
                 'many characters, but if it is longer, will truncate to',
-                '`namelength - 3` characters and add an ellipsis.'
+                '`namelength - 3` characters and add an ellipsis.',
+                'Note that when `hovertemplate` is set, `namelength` defaults to *-1*.'
             ].join(' ')
         },
         editType: 'calc'
