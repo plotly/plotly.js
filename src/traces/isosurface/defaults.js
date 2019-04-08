@@ -8,16 +8,20 @@
 
 'use strict';
 
-var Registry = require('../../registry');
 var Lib = require('../../lib');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
+var Registry = require('../../registry');
 var attributes = require('./attributes');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+}
+
+function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var isomin = coerce('isomin');
     var isomax = coerce('isomax');
 
@@ -103,4 +107,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // disable 1D transforms (for now)
     traceOut._length = null;
+}
+
+module.exports = {
+    supplyDefaults: supplyDefaults,
+    supplyIsoDefaults: supplyIsoDefaults
 };
