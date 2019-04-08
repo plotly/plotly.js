@@ -105,7 +105,8 @@ if(isInQueue) {
  *
  */
 function untestableFilter(mockName) {
-    var cond = !(
+    var cond =
+    !(
         mockName === 'font-wishlist' ||
         mockName.indexOf('mapbox_') !== -1
     );

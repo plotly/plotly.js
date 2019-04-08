@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
@@ -37,7 +36,6 @@ var scaleZoom = require('./scale_zoom');
 var constants = require('./constants');
 var MINDRAG = constants.MINDRAG;
 var MINZOOM = constants.MINZOOM;
-
 
 // flag for showing "doubleclick to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;
@@ -216,13 +214,30 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 }
             }
         }
+
+        gd._fullLayout._redrag = function() {
+            var dragDataNow = gd._dragdata;
+
+            if(dragDataNow && dragDataNow.element === dragger) {
+                var dragModeNow = gd._fullLayout.dragmode;
+
+                if(!isSelectOrLasso(dragModeNow)) {
+                    recomputeAxisLists();
+                    updateSubplots([0, 0, pw, ph]);
+                    dragOptions.moveFn(dragDataNow.dx, dragDataNow.dy);
+                }
+
+                // TODO should we try to "re-select" under select/lasso modes?
+                // probably best to wait for https://github.com/plotly/plotly.js/issues/1851
+            }
+        };
     };
 
     function clearAndResetSelect() {
         // clear selection polygon cache (if any)
         dragOptions.plotinfo.selection = false;
         // clear selection outlines
-        clearSelect(zoomlayer);
+        clearSelect(gd);
     }
 
     function clickFn(numClicks, evt) {
@@ -587,8 +602,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         else if(yActive === 's') dy = dz(yaxes, 0, -dy);
         else if(!yActive) dy = 0;
 
-        var x0 = (xActive === 'w') ? dx : 0;
-        var y0 = (yActive === 'n') ? dy : 0;
+        var xStart = (xActive === 'w') ? dx : 0;
+        var yStart = (yActive === 'n') ? dy : 0;
 
         if(links.isSubplotConstrained) {
             var i;
@@ -600,7 +615,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     scaleZoom(xaxes[i], 1 - dy / ph);
                 }
                 dx = dy * pw / ph;
-                x0 = dx / 2;
+                xStart = dx / 2;
             }
             if(!yActive && xActive.length === 1) {
                 for(i = 0; i < yaxes.length; i++) {
@@ -608,13 +623,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     scaleZoom(yaxes[i], 1 - dx / pw);
                 }
                 dy = dx * ph / pw;
-                y0 = dy / 2;
+                yStart = dy / 2;
             }
         }
 
         updateMatchedAxRange('x');
         updateMatchedAxRange('y');
-        updateSubplots([x0, y0, pw - dx, ph - dy]);
+        updateSubplots([xStart, yStart, pw - dx, ph - dy]);
         ticksAndAnnotations();
     }
 

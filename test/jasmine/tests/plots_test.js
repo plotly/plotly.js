@@ -405,10 +405,10 @@ describe('Test Plots', function() {
             // because _dragging and _dragged were not cleared by purge.
             gd._dragging = true;
             gd._dragged = true;
+            gd._dragdata = true;
             gd._hoverdata = true;
             gd._snapshotInProgress = true;
             gd._editing = true;
-            gd._replotPending = true;
             gd._mouseDownTime = true;
             gd._legendMouseDownTime = true;
         });
@@ -427,8 +427,8 @@ describe('Test Plots', function() {
                 'empty', 'fid', 'undoqueue', 'undonum', 'autoplay', 'changed',
                 '_promises', '_redrawTimer', 'firstscatter',
                 '_transitionData', '_transitioning', '_hmpixcount', '_hmlumcount',
-                '_dragging', '_dragged', '_hoverdata', '_snapshotInProgress', '_editing',
-                '_replotPending', '_mouseDownTime', '_legendMouseDownTime'
+                '_dragging', '_dragged', '_dragdata', '_hoverdata', '_snapshotInProgress', '_editing',
+                '_mouseDownTime', '_legendMouseDownTime'
             ];
 
             Plots.purge(gd);

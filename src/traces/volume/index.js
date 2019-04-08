@@ -9,28 +9,28 @@
 
 'use strict';
 
-var Isosurface = {};
+var Volume = {};
 
-Isosurface.attributes = require('./attributes');
-Isosurface.supplyDefaults = require('./defaults').supplyDefaults;
-Isosurface.calc = require('./calc');
-Isosurface.colorbar = {
+Volume.attributes = require('./attributes');
+Volume.supplyDefaults = require('./defaults');
+Volume.calc = require('../isosurface/calc');
+Volume.colorbar = {
     min: 'cmin',
     max: 'cmax'
 };
-Isosurface.plot = require('./convert').createIsosurfaceTrace;
+Volume.plot = require('./convert');
 
-Isosurface.moduleType = 'trace';
-Isosurface.name = 'isosurface',
-Isosurface.basePlotModule = require('../../plots/gl3d');
-Isosurface.categories = ['gl3d'];
-Isosurface.meta = {
+Volume.moduleType = 'trace';
+Volume.name = 'volume',
+Volume.basePlotModule = require('../../plots/gl3d');
+Volume.categories = ['gl3d'];
+Volume.meta = {
     description: [
-        'Draws isosurfaces between iso-min and iso-max values with coordinates given by',
+        'Draws volume trace between iso-min and iso-max values with coordinates given by',
         'four 1-dimensional arrays containing the `value`, `x`, `y` and `z` of every vertex',
         'of a uniform or non-uniform 3-D grid. Horizontal or vertical slices, caps as well as',
         'spaceframe between iso-min and iso-max values could also be drawn using this trace.'
     ].join(' ')
 };
 
-module.exports = Isosurface;
+module.exports = Volume;
