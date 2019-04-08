@@ -213,9 +213,10 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
     // Fix vertical overlap
     var tooltipSpacing = 5;
     var lastBottomY = 0;
+    var anchor = 0;
     hoverLabel
         .sort(function(a, b) {return a.y0 - b.y0;})
-        .each(function(d) {
+        .each(function(d, i) {
             var topY = d.y0 - d.by / 2;
 
             if((topY - tooltipSpacing) < lastBottomY) {
@@ -225,12 +226,16 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
             }
 
             lastBottomY = topY + d.by + d.offset;
-        });
 
+            if(i === opts.anchorIndex || 0) anchor = d.offset;
+        })
+        .each(function(d) {
+            d.offset -= anchor;
+        });
 
     alignHoverText(hoverLabel, fullOpts.rotateLabels);
 
-    return hoverLabel.node();
+    return hoverLabel;
 };
 
 // The actual implementation is here:

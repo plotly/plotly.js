@@ -156,51 +156,69 @@ module.exports = function plot(gd, calcData) {
         if(gd._fullLayout.hovermode === false) return;
         var obj = d.link.trace.link;
         if(obj.hoverinfo === 'none' || obj.hoverinfo === 'skip') return;
-        var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
-        var hoverCenterX;
-        var hoverCenterY;
-        if(d.link.circular) {
-            hoverCenterX = (d.link.circularPathData.leftInnerExtent + d.link.circularPathData.rightInnerExtent) / 2 + d.parent.translateX;
-            hoverCenterY = d.link.circularPathData.verticalFullExtent + d.parent.translateY;
-        } else {
-            var boundingBox = element.getBoundingClientRect();
-            hoverCenterX = boundingBox.left + boundingBox.width / 2 - rootBBox.left;
-            hoverCenterY = boundingBox.top + boundingBox.height / 2 - rootBBox.top;
+
+        var hoverItems = [];
+
+        function hoverCenterPosition(link) {
+            var hoverCenterX, hoverCenterY;
+            if(link.circular) {
+                hoverCenterX = (link.circularPathData.leftInnerExtent + link.circularPathData.rightInnerExtent) / 2 + d.parent.translateX;
+                hoverCenterY = link.circularPathData.verticalFullExtent + d.parent.translateY;
+            } else {
+                hoverCenterX = (link.source.x1 + link.target.x0) / 2 + d.parent.translateX;
+                hoverCenterY = (link.y0 + link.y1) / 2 + d.parent.translateY;
+            }
+            return [hoverCenterX, hoverCenterY];
         }
 
-        var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix};
-        d.link.fullData = d.link.trace;
+        // For each related links, create a hoverItem
+        var anchorIndex = 0;
+        for(var i = 0; i < d.flow.links.length; i++) {
+            var link = d.flow.links[i];
+            if(gd._fullLayout.hovermode === 'closest' && d.link.pointNumber !== link.pointNumber) continue;
+            if(d.link.pointNumber === link.pointNumber) anchorIndex = i;
+            link.fullData = link.trace;
+            obj = d.link.trace.link;
+            var hoverCenter = hoverCenterPosition(link);
+            var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(link.value) + d.valueSuffix};
 
-        var tooltip = Fx.loneHover({
-            x: hoverCenterX,
-            y: hoverCenterY,
-            name: hovertemplateLabels.valueLabel,
-            text: [
-                d.link.label || '',
-                sourceLabel + d.link.source.label,
-                targetLabel + d.link.target.label,
-                d.link.concentrationscale ? concentrationLabel + d3.format('%0.2f')(d.link.flow.labelConcentration) : ''
-            ].filter(renderableValuePresent).join('<br>'),
-            color: castHoverOption(obj, 'bgcolor') || Color.addOpacity(d.tinyColorHue, 1),
-            borderColor: castHoverOption(obj, 'bordercolor'),
-            fontFamily: castHoverOption(obj, 'font.family'),
-            fontSize: castHoverOption(obj, 'font.size'),
-            fontColor: castHoverOption(obj, 'font.color'),
-            idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left',
+            hoverItems.push({
+                x: hoverCenter[0],
+                y: hoverCenter[1],
+                name: hovertemplateLabels.valueLabel,
+                text: [
+                    link.label || '',
+                    sourceLabel + link.source.label,
+                    targetLabel + link.target.label,
+                    link.concentrationscale ? concentrationLabel + d3.format('%0.2f')(link.flow.labelConcentration) : ''
+                ].filter(renderableValuePresent).join('<br>'),
+                color: castHoverOption(obj, 'bgcolor') || Color.addOpacity(link.color, 1),
+                borderColor: castHoverOption(obj, 'bordercolor'),
+                fontFamily: castHoverOption(obj, 'font.family'),
+                fontSize: castHoverOption(obj, 'font.size'),
+                fontColor: castHoverOption(obj, 'font.color'),
+                idealAlign: d3.event.x < hoverCenter[0] ? 'right' : 'left',
 
-            hovertemplate: obj.hovertemplate,
-            hovertemplateLabels: hovertemplateLabels,
-            eventData: [d.link]
-        }, {
+                hovertemplate: obj.hovertemplate,
+                hovertemplateLabels: hovertemplateLabels,
+                eventData: [link]
+            });
+        }
+
+        var tooltips = Fx.multiHovers(hoverItems, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
-            gd: gd
+            gd: gd,
+            anchorIndex: anchorIndex
         });
 
-        if(!d.link.concentrationscale) {
-            makeTranslucent(tooltip, 0.65);
-        }
-        makeTextContrasty(tooltip);
+        tooltips.each(function() {
+            var tooltip = this;
+            if(!d.link.concentrationscale) {
+                makeTranslucent(tooltip, 0.65);
+            }
+            makeTextContrasty(tooltip);
+        });
     };
 
     var linkUnhover = function(element, d, sankey) {
