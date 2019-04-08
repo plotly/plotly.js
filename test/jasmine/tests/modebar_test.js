@@ -982,6 +982,19 @@ describe('ModeBar', function() {
                 .catch(failTest)
                 .then(done);
             });
+
+            it('should accept overriding defaults with null values', function(done) {
+                Plotly.plot(gd, {data: [], layout: {}, config: {
+                    toImageButtonOptions: {width: null, height: null}
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'toImage').click();
+                    expect(Registry.call)
+                        .toHaveBeenCalledWith('downloadImage', gd, {format: 'png', width: null, height: null});
+                })
+                .catch(failTest)
+                .then(done);
+            });
         });
 
         describe('cartesian handlers', function() {
