@@ -977,6 +977,9 @@ describe('@noCI, mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should respect scrollZoom config option', function(done) {
+        var mockCopy2 = Lib.extendDeep({}, mock);
+        mockCopy2.config = {scrollZoom: false};
+
         var relayoutCnt = 0;
         gd.on('plotly_relayout', function() { relayoutCnt++; });
 
@@ -991,6 +994,7 @@ describe('@noCI, mapbox plots', function() {
 
         var zoom = getMapInfo(gd).zoom;
         expect(zoom).toBeCloseTo(1.234);
+        var zoom0 = zoom;
 
         _scroll().then(function() {
             expect(relayoutCnt).toBe(1, 'scroll relayout cnt');
@@ -1015,7 +1019,13 @@ describe('@noCI, mapbox plots', function() {
 
             var zoomNew = getMapInfo(gd).zoom;
             expect(zoomNew).toBeGreaterThan(zoom);
-            zoom = zoomNew;
+        })
+        .then(function() { return Plotly.newPlot(gd, mockCopy2); })
+        .then(_scroll)
+        .then(function() {
+            // see https://github.com/plotly/plotly.js/issues/3738
+            var zoomNew = getMapInfo(gd).zoom;
+            expect(zoomNew).toBe(zoom0);
         })
         .catch(failTest)
         .then(done);
