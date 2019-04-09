@@ -2034,6 +2034,54 @@ describe('hover info', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should honor *hoverlabel.align', function(done) {
+        var gd = createGraphDiv();
+
+        function _assert(msg, exp) {
+            var tx = d3.select('g.hovertext').select('text');
+            expect(tx.attr('text-anchor')).toBe(exp.textAnchor, 'text anchor|' + msg);
+            expect(Number(tx.attr('x'))).toBeWithin(exp.posX, 3, 'x position|' + msg);
+        }
+
+        Plotly.plot(gd, [{
+            y: [1, 2, 1],
+            text: 'LONG TEXT'
+        }], {
+            xaxis: {range: [0, 2]},
+            margin: {l: 0, t: 0, b: 0, r: 0},
+            hovermode: 'closest',
+            width: 400,
+            height: 400
+        })
+        .then(function() { _hoverNatural(gd, 0, 395); })
+        .then(function() { _assert('base left pt', {textAnchor: 'start', posX: 9}); })
+        .then(function() { _hoverNatural(gd, 395, 395); })
+        .then(function() { _assert('base right pt', {textAnchor: 'end', posX: -9}); })
+        .then(function() {
+            return Plotly.relayout(gd, 'hoverlabel.align', 'left');
+        })
+        .then(function() { _hoverNatural(gd, 0, 395); })
+        .then(function() { _assert('align:left left pt', {textAnchor: 'start', posX: 9}); })
+        .then(function() { _hoverNatural(gd, 395, 395); })
+        .then(function() { _assert('align:left right pt', {textAnchor: 'start', posX: -84.73}); })
+        .then(function() {
+            return Plotly.restyle(gd, 'hoverlabel.align', 'right');
+        })
+        .then(function() { _hoverNatural(gd, 0, 395); })
+        .then(function() { _assert('align:right left pt', {textAnchor: 'end', posX: 84.73}); })
+        .then(function() { _hoverNatural(gd, 395, 395); })
+        .then(function() { _assert('align:right right pt', {textAnchor: 'end', posX: -9}); })
+        .then(function() {
+            return Plotly.restyle(gd, 'hoverlabel.align', [['right', 'auto', 'left']]);
+        })
+        .then(function() { _hoverNatural(gd, 0, 395); })
+        .then(function() { _assert('arrayOk align:right left pt', {textAnchor: 'end', posX: 84.73}); })
+        .then(function() { _hoverNatural(gd, 395, 395); })
+        .then(function() { _assert('arrayOk align:left right pt', {textAnchor: 'start', posX: -84.73}); })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('hover info on stacked subplots', function() {

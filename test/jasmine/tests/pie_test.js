@@ -1187,6 +1187,61 @@ describe('pie hovering', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should honor *hoverlabel.align*', function(done) {
+            function _assert(msg, exp) {
+                var tx = d3.select('g.hovertext').select('text');
+                expect(tx.attr('text-anchor')).toBe(exp.textAnchor, 'text anchor|' + msg);
+                expect(Number(tx.attr('x'))).toBeWithin(exp.posX, 3, 'x position|' + msg);
+            }
+
+            function _hoverLeft() {
+                mouseEvent('mouseover', 100, 200);
+                Lib.clearThrottle();
+            }
+
+            function _hoverRight() {
+                mouseEvent('mouseover', 300, 200);
+                Lib.clearThrottle();
+            }
+
+            Plotly.plot(gd, [{
+                type: 'pie',
+                labels: ['a', 'b']
+            }], {
+                showlegend: false,
+                margin: {l: 0, t: 0, b: 0, r: 0},
+                width: 400,
+                height: 400
+            })
+            .then(_hoverLeft)
+            .then(function() { _assert('base left sector', {textAnchor: 'start', posX: 9}); })
+            .then(_hoverRight)
+            .then(function() { _assert('base right sector', {textAnchor: 'end', posX: -9}); })
+            .then(function() {
+                return Plotly.relayout(gd, 'hoverlabel.align', 'left');
+            })
+            .then(_hoverLeft)
+            .then(function() { _assert('align:left left sector', {textAnchor: 'start', posX: 9}); })
+            .then(_hoverRight)
+            .then(function() { _assert('align:left right sector', {textAnchor: 'start', posX: -37.45}); })
+            .then(function() {
+                return Plotly.restyle(gd, 'hoverlabel.align', 'right');
+            })
+            .then(_hoverLeft)
+            .then(function() { _assert('align:right left sector', {textAnchor: 'end', posX: 37.45}); })
+            .then(_hoverRight)
+            .then(function() { _assert('align:right right sector', {textAnchor: 'end', posX: -9}); })
+            .then(function() {
+                return Plotly.restyle(gd, 'hoverlabel.align', [['left', 'right']]);
+            })
+            .then(_hoverLeft)
+            .then(function() { _assert('arrayOk align:right left sector', {textAnchor: 'end', posX: 37.45}); })
+            .then(_hoverRight)
+            .then(function() { _assert('arrayOk align:left right sector', {textAnchor: 'start', posX: -37.45}); })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('should fit labels within graph div', function() {

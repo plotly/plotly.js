@@ -170,6 +170,7 @@ function render(scene) {
                 fontSize: Fx.castHoverOption(traceNow, ptNumber, 'font.size'),
                 fontColor: Fx.castHoverOption(traceNow, ptNumber, 'font.color'),
                 nameLength: Fx.castHoverOption(traceNow, ptNumber, 'namelength'),
+                textAlign: Fx.castHoverOption(traceNow, ptNumber, 'align'),
                 hovertemplate: Lib.castOption(traceNow, ptNumber, 'hovertemplate'),
                 hovertemplateLabels: Lib.extendFlat({}, pointData, labels),
                 eventData: [pointData]

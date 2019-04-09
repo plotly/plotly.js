@@ -380,6 +380,7 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 fontSize: helpers.castOption(hoverFont.size, pt.pts),
                 fontColor: helpers.castOption(hoverFont.color, pt.pts),
                 nameLength: helpers.castOption(hoverLabel.namelength, pt.pts),
+                textAlign: helpers.castOption(hoverLabel.align, pt.pts),
                 hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
                 hovertemplateLabels: pt,
                 eventData: [eventData(pt, trace2)]
