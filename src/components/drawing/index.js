@@ -136,7 +136,7 @@ drawing.crispRound = function(gd, lineWidth, dflt) {
 drawing.singleLineStyle = function(d, s, lw, lc, ld) {
     s.style('fill', 'none');
     var line = (((d || [])[0] || {}).trace || {}).line || {};
-    var lw1 = lw || line.width||0;
+    var lw1 = lw || line.width || 0;
     var dash = ld || line.dash || '';
 
     Color.stroke(s, lc || line.color);
@@ -147,7 +147,7 @@ drawing.lineGroupStyle = function(s, lw, lc, ld) {
     s.style('fill', 'none')
     .each(function(d) {
         var line = (((d || [])[0] || {}).trace || {}).line || {};
-        var lw1 = lw || line.width||0;
+        var lw1 = lw || line.width || 0;
         var dash = ld || line.dash || '';
 
         d3.select(this)

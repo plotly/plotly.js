@@ -16,7 +16,7 @@ module.exports = function styleOne(s, pt, trace) {
     var lineColor = castOption(line.color, pt.pts) || Color.defaultLine;
     var lineWidth = castOption(line.width, pt.pts) || 0;
 
-    s.style({'stroke-width': lineWidth})
+    s.style('stroke-width', lineWidth)
         .call(Color.fill, pt.color)
         .call(Color.stroke, lineColor);
 };

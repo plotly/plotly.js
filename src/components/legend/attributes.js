@@ -78,6 +78,18 @@ module.exports = {
             'Sets the amount of vertical space (in px) between legend groups.'
         ].join(' ')
     },
+    itemsizing: {
+        valType: 'enumerated',
+        values: ['trace', 'constant'],
+        dflt: 'trace',
+        role: 'style',
+        editType: 'legend',
+        description: [
+            'Determines if the legend items symbols scale with their corresponding *trace* attributes',
+            'or remain *constant* independent of the symbol size on the graph.'
+        ].join(' ')
+    },
+
     x: {
         valType: 'number',
         min: -2,
