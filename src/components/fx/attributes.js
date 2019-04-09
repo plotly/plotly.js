@@ -10,7 +10,7 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var hoverLabelAttrs = require('./layout_attributes').hoverlabel;
-var extendFlat = require('../../extend').extendFlat;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
     hoverlabel: {
@@ -27,6 +27,7 @@ module.exports = {
             editType: 'none',
             description: 'Sets the font used in hover labels.'
         }),
+        align: extendFlat({}, hoverLabelAttrs.align, {arrayOk: true}),
         namelength: extendFlat({}, hoverLabelAttrs.namelength, {arrayOk: true}),
         editType: 'none'
     }

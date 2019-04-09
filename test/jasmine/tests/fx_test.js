@@ -171,6 +171,7 @@ describe('Fx defaults', function() {
                 size: 40,
                 color: 'pink'
             },
+            align: 'auto',
             namelength: 15
         });
 
@@ -182,6 +183,7 @@ describe('Fx defaults', function() {
                 size: 20,
                 color: 'red'
             },
+            align: 'auto',
             namelength: 15
         });
 
