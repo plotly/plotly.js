@@ -52,7 +52,8 @@
       "type": "waterfall",
       "name": "waterfall",
       "base": 5,
-      "y": [ 1, -1, 1 ],
+      "y": [ 1, -0.5, null ],
+      "measure": ["", "", "total"],
       "connector": {
         "visible": false
       },
@@ -66,7 +67,7 @@
       "decreasing": {
         "marker": {
           "line": {
-            "width": 40
+            "width": 10
           }
         }
       }
