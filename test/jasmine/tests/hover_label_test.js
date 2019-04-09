@@ -2041,7 +2041,7 @@ describe('hover info', function() {
         function _assert(msg, exp) {
             var tx = d3.select('g.hovertext').select('text');
             expect(tx.attr('text-anchor')).toBe(exp.textAnchor, 'text anchor|' + msg);
-            expect(Number(tx.attr('x'))).toBeCloseTo(exp.posX, 2, 'x position|' + msg);
+            expect(Number(tx.attr('x'))).toBeWithin(exp.posX, 3, 'x position|' + msg);
         }
 
         Plotly.plot(gd, [{
