@@ -10,6 +10,7 @@ var mockCircular = require('@mocks/sankey_circular.json');
 var mockCircularLarge = require('@mocks/sankey_circular_large.json');
 var mockXY = require('@mocks/sankey_x_y.json');
 var Sankey = require('@src/traces/sankey');
+var Registry = require('@src/registry');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -607,6 +608,48 @@ describe('sankey tests', function() {
             })
             .catch(failTest)
             .then(done);
+        });
+
+        ['0', '1'].forEach(function(finalUIRevision) {
+            it('on Plotly.react, it preserves the groups depending on layout.uirevision', function(done) {
+                var uirevisions = ['0', finalUIRevision];
+
+                var mockCopy = Lib.extendDeep({}, mockCircular);
+                mockCopy.layout.uirevision = uirevisions[0];
+
+                Plotly.plot(gd, mockCopy)
+                      .then(function() {
+                          // Create a group via guiRestyle
+                          return Registry.call('_guiRestyle', gd, 'node.groups', [[[0, 1]]]);
+                      })
+                      .then(function() {
+                          // Check that the nodes are grouped
+                          expect(gd._fullData[0].node.groups).toEqual([[0, 1]]);
+
+                          // Change color of nodes
+                          mockCopy = Lib.extendDeep({}, mockCircular);
+                          mockCopy.data[0].node.color = 'orange';
+                          mockCopy.layout.uirevision = uirevisions[1];
+                          return Plotly.react(gd, mockCopy);
+                      })
+                      .then(function() {
+                          if(uirevisions[0] === uirevisions[1]) {
+                              // If uirevision is the same, the groups should stay the same
+                              expect(gd._fullData[0].node.groups).toEqual(
+                                [[0, 1]],
+                                'should stay the same because uirevision did not change'
+                              );
+                          } else {
+                              // If uirevision changed, the groups should be empty as in the figure obj
+                              expect(gd._fullData[0].node.groups).toEqual(
+                                [],
+                                'should go back to its default because uirevision changed'
+                              );
+                          }
+                      })
+                      .catch(failTest)
+                      .then(done);
+            });
         });
     });
 
