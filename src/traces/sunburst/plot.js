@@ -594,6 +594,7 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 fontSize: _cast('hoverlabel.font.size'),
                 fontColor: _cast('hoverlabel.font.color'),
                 nameLength: _cast('hoverlabel.namelength'),
+                textAlign: _cast('hoverlabel.align'),
                 hovertemplate: hovertemplate,
                 hovertemplateLabels: hoverPt,
                 eventData: [makeEventData(pt, traceNow)]
