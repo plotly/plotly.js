@@ -230,6 +230,30 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
+    it('@gl should honor *hoverlabel.namelength*', function(done) {
+        var _mock = Lib.extendDeep({}, multipleScatter3dMock);
+
+        function _hover() {
+            mouseEvent('mouseover', 300, 200);
+        }
+
+        Plotly.plot(gd, _mock)
+        .then(delay(20))
+        .then(function() { return Plotly.restyle(gd, 'hoverlabel.namelength', 3); })
+        .then(_hover)
+        .then(delay(20))
+        .then(function() {
+            assertHoverLabelContent(
+                {
+                    nums: ['x: 0', 'y: 0', 'z: 0'].join('\n'),
+                    name: 'tra'
+                }
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 

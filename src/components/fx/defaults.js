@@ -17,5 +17,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    handleHoverLabelDefaults(traceIn, traceOut, coerce, layout.hoverlabel);
+    var opts = Lib.extendFlat({}, layout.hoverlabel);
+    if(traceOut.hovertemplate) opts.namelength = -1;
+
+    handleHoverLabelDefaults(traceIn, traceOut, coerce, opts);
 };

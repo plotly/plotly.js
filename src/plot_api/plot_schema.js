@@ -453,8 +453,7 @@ function getTraceAttributes(type) {
     if(type === 'area') {
         _module = { attributes: polarAreaAttrs };
         basePlotModule = {};
-    }
-    else {
+    } else {
         _module = Registry.modules[type]._module,
         basePlotModule = _module.basePlotModule;
     }
@@ -463,7 +462,6 @@ function getTraceAttributes(type) {
 
     // make 'type' the first attribute in the object
     attributes.type = null;
-
 
     var copyBaseAttributes = extendDeepAll({}, baseAttributes);
     var copyModuleAttributes = extendDeepAll({}, _module.attributes);
@@ -477,6 +475,22 @@ function getTraceAttributes(type) {
 
     // base attributes (same for all trace types)
     extendDeepAll(attributes, copyBaseAttributes);
+
+    // prune-out base attributes based on trace module categories
+    if(Registry.traceIs(type, 'noOpacity')) {
+        delete attributes.opacity;
+    }
+    if(!Registry.traceIs(type, 'showLegend')) {
+        delete attributes.showlegend;
+        delete attributes.legendgroup;
+    }
+    if(Registry.traceIs(type, 'noHover')) {
+        delete attributes.hoverinfo;
+        delete attributes.hoverlabel;
+    }
+    if(!_module.selectPoints) {
+        delete attributes.selectedpoints;
+    }
 
     // module attributes
     extendDeepAll(attributes, copyModuleAttributes);

@@ -16,6 +16,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var getNodeCoords = require('../assets/get_node_coords');
+var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var defaultColors = require('@src/components/color/attributes').defaults;
@@ -964,6 +965,32 @@ describe('sankey tests', function() {
             .then(function() {
                 _hover(link[0], link[1]);
                 assertNoLabel();
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor *hoverlabel.namelength*', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy)
+            .then(function() { _hover(404, 302); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'Solid\nincoming flow count: 4\noutgoing flow count: 3',
+                    name: '447TWh'
+                });
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'hoverlabel.namelength', 3);
+            })
+            .then(function() { _hover(404, 302); })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'Solid\nincoming flow count: 4\noutgoing flow count: 3',
+                    name: '447'
+                });
             })
             .catch(failTest)
             .then(done);

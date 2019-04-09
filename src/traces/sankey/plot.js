@@ -211,6 +211,7 @@ module.exports = function plot(gd, calcData) {
                 fontFamily: castHoverOption(obj, 'font.family'),
                 fontSize: castHoverOption(obj, 'font.size'),
                 fontColor: castHoverOption(obj, 'font.color'),
+                nameLength: castHoverOption(obj, 'namelength'),
                 idealAlign: d3.event.x < hoverCenter[0] ? 'right' : 'left',
 
                 hovertemplate: obj.hovertemplate,
@@ -299,6 +300,7 @@ module.exports = function plot(gd, calcData) {
             fontFamily: castHoverOption(obj, 'font.family'),
             fontSize: castHoverOption(obj, 'font.size'),
             fontColor: castHoverOption(obj, 'font.color'),
+            nameLength: castHoverOption(obj, 'namelength'),
             idealAlign: 'left',
 
             hovertemplate: obj.hovertemplate,

@@ -317,7 +317,7 @@ var COLORMATCH = /(^|;)\s*color:/;
  *
  * @param {string} _str : input string
  * @param {object} opts :
- * - maxLen {number} max length of output string
+ * - len {number} max length of output string
  * - allowedTags {array} list of pseudo-html tags to NOT strip
  * @return {string}
  */

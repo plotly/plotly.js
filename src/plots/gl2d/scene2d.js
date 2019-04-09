@@ -686,7 +686,8 @@ proto.draw = function() {
                     borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
                     fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
                     fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
-                    fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
+                    fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color'),
+                    nameLength: Fx.castHoverOption(trace, ptNumber, 'namelength')
                 }, {
                     container: this.svgContainer,
                     gd: this.graphDiv

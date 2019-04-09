@@ -124,6 +124,7 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         fontFamily: hoverItem.fontFamily,
         fontSize: hoverItem.fontSize,
         fontColor: hoverItem.fontColor,
+        nameLength: hoverItem.nameLength,
 
         // filler to make createHoverText happy
         trace: hoverItem.trace || {
@@ -180,6 +181,7 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
             fontFamily: hoverItem.fontFamily,
             fontSize: hoverItem.fontSize,
             fontColor: hoverItem.fontColor,
+            nameLength: hoverItem.nameLength,
 
             // filler to make createHoverText happy
             trace: hoverItem.trace || {
@@ -938,11 +940,7 @@ function createHoverText(hoverData, opts, gd) {
             if(fullLayout.meta) {
                 d.name = Lib.templateString(d.name, {meta: fullLayout.meta});
             }
-
-            name = svgTextUtils.plainText(d.name || '', {
-                len: d.nameLength,
-                allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
-            });
+            name = plainText(d.name, d.nameLength);
         }
 
         if(d.zLabel !== undefined) {
@@ -994,8 +992,10 @@ function createHoverText(hoverData, opts, gd) {
             );
 
             text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {
-                name = extra; // Assign name for secondary text label
-                return ''; // Remove from main text label
+                // assign name for secondary text label
+                name = plainText(extra, d.nameLength);
+                // remove from main text label
+                return '';
             });
         }
 
@@ -1339,10 +1339,14 @@ function cleanPoint(d, hovermode) {
     var cd0 = d.cd[0];
     var cd = d.cd[index] || {};
 
+    function pass(v) {
+        return v || (isNumeric(v) && v === 0);
+    }
+
     var getVal = Array.isArray(index) ?
         function(calcKey, traceKey) {
-            return Lib.castOption(cd0, index, calcKey) ||
-                Lib.extractOption({}, trace, '', traceKey);
+            var v = Lib.castOption(cd0, index, calcKey);
+            return pass(v) ? v : Lib.extractOption({}, trace, '', traceKey);
         } :
         function(calcKey, traceKey) {
             return Lib.extractOption(cd, trace, calcKey, traceKey);
@@ -1350,7 +1354,7 @@ function cleanPoint(d, hovermode) {
 
     function fill(key, calcKey, traceKey) {
         var val = getVal(calcKey, traceKey);
-        if(val) d[key] = val;
+        if(pass(val)) d[key] = val;
     }
 
     fill('hoverinfo', 'hi', 'hoverinfo');
@@ -1617,4 +1621,11 @@ function spikesChanged(gd, oldspikepoints) {
         oldspikepoints.hLinePoint !== gd._spikepoints.hLinePoint
     ) return true;
     return false;
+}
+
+function plainText(s, len) {
+    return svgTextUtils.plainText(s || '', {
+        len: len,
+        allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
+    });
 }
