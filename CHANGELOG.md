@@ -10,6 +10,37 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.47.0] -- 2019-04-09
+
+### Added
+- New `volume` gl3d trace type [#3488]
+- Implement node grouping via box and lasso selections for `sankey` traces [#3712, #3750]
+- Implement `hovermode: 'x'`  for `sankey` traces,
+  allowing users to compare links in a flow on hover [#3730]
+- Add way for `Plotly.toImage` and `Plotly.downloadImage` to export images
+  with current graph width/height by passing width/height option as `null` [#3746]
+- Add legend attribute `itemsizing` with value `'constant'` making legend item symbol sizing
+  independent of the sizing of their corresponding trace item [#3732]
+- Add `hoverlabel.align` with value `'left'`, `'right'` and `'auto'` to set the horizontal
+  alignment of the text content within hover labels [#3753]
+- Add `contour.start`, `contour.end` and `contour.size` attribute to `surface` traces [#3469]
+
+### Changed
+- Allow re-plot during drag interactions [#3716]
+- Use high-precision in `scattergl` error bars shader [#3739]
+
+### Fixed
+- Fix implementation of geo `lonaxis` and `lataxis` attribute `tick0` [#3706]
+- Fix `scrollZoom: false` configuration on mapbox subplots [#3745]
+- Fix rendering of alpha channel in `mesh3d` traces [#3744]
+- Fix `hoverlabel.namelength: 0` case [#3734]
+- Fix implementation of `hoverlabel.namelength` for `pie`, `sankey`, `sunburst` and
+  the gl3d traces [#3734]
+- Fix `waterfall` rendering when transforms filter out all
+  increasing or decreasing bars [#3720]
+- Fix clip-path attributes for pages with parenthesis in their `<base>` URL [#3725]
+
+
 ## [1.46.1] -- 2019-04-02
 
 ### Fixed
