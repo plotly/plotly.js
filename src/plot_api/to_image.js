@@ -8,6 +8,8 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var plotApi = require('./plot_api');
 var Lib = require('../lib');
 
@@ -27,7 +29,8 @@ var attrs = {
         min: 1,
         description: [
             'Sets the exported image width.',
-            'Defaults to the value found in `layout.width`'
+            'Defaults to the value found in `layout.width`',
+            'If set to *null*, the exported image width will match the current graph width.'
         ].join(' ')
     },
     height: {
@@ -35,7 +38,8 @@ var attrs = {
         min: 1,
         description: [
             'Sets the exported image height.',
-            'Defaults to the value found in `layout.height`'
+            'Defaults to the value found in `layout.height`',
+            'If set to *null*, the exported image height will match the current graph height.'
         ].join(' ')
     },
     scale: {
@@ -87,23 +91,27 @@ function toImage(gd, opts) {
     var data;
     var layout;
     var config;
+    var fullLayout;
 
     if(Lib.isPlainObject(gd)) {
         data = gd.data || [];
         layout = gd.layout || {};
         config = gd.config || {};
+        fullLayout = {};
     } else {
         gd = Lib.getGraphDiv(gd);
         data = Lib.extendDeep([], gd.data);
         layout = Lib.extendDeep({}, gd.layout);
         config = gd._context;
+        fullLayout = gd._fullLayout || {};
     }
 
     function isImpliedOrValid(attr) {
         return !(attr in opts) || Lib.validate(opts[attr], attrs[attr]);
     }
 
-    if(!isImpliedOrValid('width') || !isImpliedOrValid('height')) {
+    if((!isImpliedOrValid('width') && opts.width !== null) ||
+        (!isImpliedOrValid('height') && opts.height !== null)) {
         throw new Error('Height and width should be pixel values.');
     }
 
@@ -132,8 +140,16 @@ function toImage(gd, opts) {
 
     // extend layout with image options
     var layoutImage = Lib.extendFlat({}, layout);
-    if(width) layoutImage.width = width;
-    if(height) layoutImage.height = height;
+    if(width) {
+        layoutImage.width = width;
+    } else if(opts.width === null && isNumeric(fullLayout.width)) {
+        layoutImage.width = fullLayout.width;
+    }
+    if(height) {
+        layoutImage.height = height;
+    } else if(opts.height === null && isNumeric(fullLayout.height)) {
+        layoutImage.height = fullLayout.height;
+    }
 
     // extend config for static plot
     var configImage = Lib.extendFlat({}, config, {

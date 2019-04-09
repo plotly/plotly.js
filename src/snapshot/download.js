@@ -6,11 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var toImage = require('../plot_api/to_image');
-var Lib = require('../lib'); // for isIE
+var Lib = require('../lib');
 var fileSaver = require('./filesaver');
 
 /** Plotly.downloadImage

@@ -115,6 +115,24 @@ describe('Plotly.toImage', function() {
         .then(done);
     });
 
+    it('should use width/height of graph div when width/height are set to *null*', function(done) {
+        var fig = Lib.extendDeep({}, subplotMock);
+
+        gd.style.width = '832px';
+        gd.style.height = '502px';
+
+        Plotly.plot(gd, fig.data, fig.layout).then(function() {
+            expect(gd.layout.width).toBe(undefined, 'user layout width');
+            expect(gd.layout.height).toBe(undefined, 'user layout height');
+            expect(gd._fullLayout.width).toBe(832, 'full layout width');
+            expect(gd._fullLayout.height).toBe(502, 'full layout height');
+        })
+        .then(function() { return Plotly.toImage(gd, {width: null, height: null}); })
+        .then(function(url) { return assertSize(url, 832, 502); })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should create proper file type', function(done) {
         var fig = Lib.extendDeep({}, subplotMock);
 

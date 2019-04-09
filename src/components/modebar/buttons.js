@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -44,7 +43,6 @@ var modeBarButtons = module.exports = {};
  * @param {boolean} [toggle]
  *      is the button a toggle button?
  */
-
 modeBarButtons.toImage = {
     name: 'toImage',
     title: function(gd) {
@@ -67,7 +65,7 @@ modeBarButtons.toImage = {
         }
 
         ['filename', 'width', 'height', 'scale'].forEach(function(key) {
-            if(toImageButtonOptions[key]) {
+            if(key in toImageButtonOptions) {
                 opts[key] = toImageButtonOptions[key];
             }
         });
