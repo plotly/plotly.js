@@ -1597,6 +1597,7 @@ describe('Test select box and lasso per trace:', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
+        spyOn(Lib, 'error');
     });
 
     afterEach(destroyGraphDiv);
@@ -1716,6 +1717,7 @@ describe('Test select box and lasso per trace:', function() {
             .then(eventCounts[2] ? deselectPromise : Promise.resolve())
             .then(function() {
                 assertEventCounts(eventCounts[0], eventCounts[1], eventCounts[2], msg + ' (after dblclick)');
+                expect(Lib.error).not.toHaveBeenCalled();
             });
     }
 

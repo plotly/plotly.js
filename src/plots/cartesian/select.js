@@ -15,6 +15,7 @@ var Registry = require('../../registry');
 var Color = require('../../components/color');
 var Fx = require('../../components/fx');
 
+var Lib = require('../../lib');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
@@ -266,7 +267,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             }
 
             Fx.click(gd, evt);
-        });
+        }).catch(Lib.error);
     };
 
     dragOptions.doneFn = function() {
@@ -289,7 +290,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             if(dragOptions.doneFnCompleted) {
                 dragOptions.doneFnCompleted(selection);
             }
-        });
+        }).catch(Lib.error);
     };
 }
 
