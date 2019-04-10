@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.47.0
+* plotly.js (gl3d) v1.47.1
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -74233,7 +74233,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.47.0';
+exports.version = '1.47.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -97241,6 +97241,7 @@ var Registry = _dereq_('../../registry');
 var Color = _dereq_('../../components/color');
 var Fx = _dereq_('../../components/fx');
 
+var Lib = _dereq_('../../lib');
 var polygon = _dereq_('../../lib/polygon');
 var throttle = _dereq_('../../lib/throttle');
 var makeEventData = _dereq_('../../components/fx/helpers').makeEventData;
@@ -97274,8 +97275,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var ph = dragOptions.yaxes[0]._length;
     var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
     var subtract = e.altKey;
-
-    var doneFnCompleted = dragOptions.doneFnCompleted;
 
     var filterPoly, selectionTester, mergedPolygons, currentPolygon;
     var i, searchInfo, eventData;
@@ -97494,7 +97493,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             }
 
             Fx.click(gd, evt);
-        });
+        }).catch(Lib.error);
     };
 
     dragOptions.doneFn = function() {
@@ -97514,8 +97513,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
             }
 
-            doneFnCompleted(selection);
-        });
+            if(dragOptions.doneFnCompleted) {
+                dragOptions.doneFnCompleted(selection);
+            }
+        }).catch(Lib.error);
     };
 }
 
@@ -98027,7 +98028,7 @@ module.exports = {
     selectOnClick: selectOnClick
 };
 
-},{"../../components/color":378,"../../components/fx":417,"../../components/fx/helpers":413,"../../lib/clear_gl_canvases":485,"../../lib/polygon":509,"../../lib/throttle":521,"../../plot_api/subroutines":534,"../../registry":594,"./axis_ids":546,"./constants":549,"polybooljs":301}],561:[function(_dereq_,module,exports){
+},{"../../components/color":378,"../../components/fx":417,"../../components/fx/helpers":413,"../../lib":497,"../../lib/clear_gl_canvases":485,"../../lib/polygon":509,"../../lib/throttle":521,"../../plot_api/subroutines":534,"../../registry":594,"./axis_ids":546,"./constants":549,"polybooljs":301}],561:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
