@@ -10,6 +10,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.47.1] -- 2019-04-10
+
+### Fixed
+- Fix console errors during selections (bug introduced in 1.47.0) [#3755]
+
+
 ## [1.47.0] -- 2019-04-09
 
 ### Added
