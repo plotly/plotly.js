@@ -15,6 +15,7 @@ var Registry = require('../../registry');
 var Color = require('../../components/color');
 var Fx = require('../../components/fx');
 
+var Lib = require('../../lib');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
@@ -48,8 +49,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var ph = dragOptions.yaxes[0]._length;
     var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
     var subtract = e.altKey;
-
-    var doneFnCompleted = dragOptions.doneFnCompleted;
 
     var filterPoly, selectionTester, mergedPolygons, currentPolygon;
     var i, searchInfo, eventData;
@@ -268,7 +267,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             }
 
             Fx.click(gd, evt);
-        });
+        }).catch(Lib.error);
     };
 
     dragOptions.doneFn = function() {
@@ -288,8 +287,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
             }
 
-            doneFnCompleted(selection);
-        });
+            if(dragOptions.doneFnCompleted) {
+                dragOptions.doneFnCompleted(selection);
+            }
+        }).catch(Lib.error);
     };
 }
 
