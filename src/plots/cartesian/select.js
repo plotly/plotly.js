@@ -49,8 +49,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
     var subtract = e.altKey;
 
-    var doneFnCompleted = dragOptions.doneFnCompleted;
-
     var filterPoly, selectionTester, mergedPolygons, currentPolygon;
     var i, searchInfo, eventData;
 
@@ -288,7 +286,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
             }
 
-            doneFnCompleted(selection);
+            if(dragOptions.doneFnCompleted) {
+                dragOptions.doneFnCompleted(selection);
+            }
         });
     };
 }
