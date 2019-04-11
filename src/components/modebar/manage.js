@@ -56,11 +56,9 @@ module.exports = function manageModeBar(gd) {
 
     if(Array.isArray(customButtons) && customButtons.length) {
         buttonGroups = fillCustomButton(customButtons);
-    }
-    else if(!context.displayModeBar && context.watermark) {
+    } else if(!context.displayModeBar && context.watermark) {
         buttonGroups = [];
-    }
-    else {
+    } else {
         buttonGroups = getButtonGroups(
             gd,
             context.modeBarButtonsToRemove,
@@ -120,31 +118,24 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];
         resetGroup = ['resetViews'];
-    }
-    else if(hasGeo) {
+    } else if(hasGeo) {
         zoomGroup = ['zoomInGeo', 'zoomOutGeo'];
         hoverGroup = ['hoverClosestGeo'];
         resetGroup = ['resetGeo'];
-    }
-    else if(hasGL3D) {
+    } else if(hasGL3D) {
         hoverGroup = ['hoverClosest3d'];
         resetGroup = ['resetCameraDefault3d', 'resetCameraLastSave3d'];
-    }
-    else if(hasMapbox) {
+    } else if(hasMapbox) {
         hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMapbox'];
-    }
-    else if(hasGL2D) {
+    } else if(hasGL2D) {
         hoverGroup = ['hoverClosestGl2d'];
-    }
-    else if(hasPie) {
+    } else if(hasPie) {
         hoverGroup = ['hoverClosestPie'];
-    }
-    else if(hasSankey) {
+    } else if(hasSankey) {
         hoverGroup = ['hoverClosestCartesian', 'hoverCompareCartesian'];
         resetGroup = ['resetViewSankey'];
-    }
-    else { // hasPolar, hasTernary
+    } else { // hasPolar, hasTernary
         // always show at least one hover icon.
         hoverGroup = ['toggleHover'];
     }
@@ -162,14 +153,11 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
 
     if(hasGL3D) {
         dragModeGroup = ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'];
-    }
-    else if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
+    } else if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
-    }
-    else if(hasMapbox || hasGeo) {
+    } else if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];
-    }
-    else if(hasPolar) {
+    } else if(hasPolar) {
         dragModeGroup = ['zoom2d'];
     }
     if(isSelectable(fullData)) {
@@ -215,11 +203,13 @@ function isSelectable(fullData) {
             if(trace.boxpoints === 'all' || trace.points === 'all') {
                 selectable = true;
             }
+        } else {
+            // assume that in general if the trace module has selectPoints,
+            // then it's selectable. Scatter is an exception to this because it must
+            // have markers or text, not just be a scatter type.
+
+            selectable = true;
         }
-        // assume that in general if the trace module has selectPoints,
-        // then it's selectable. Scatter is an exception to this because it must
-        // have markers or text, not just be a scatter type.
-        else selectable = true;
     }
 
     return selectable;
@@ -231,8 +221,7 @@ function appendButtonsToGroups(groups, buttons) {
             for(var i = 0; i < buttons.length; i++) {
                 groups.push(buttons[i]);
             }
-        }
-        else groups.push(buttons);
+        } else groups.push(buttons);
     }
 
     return groups;
@@ -249,8 +238,7 @@ function fillCustomButton(customButtons) {
             if(typeof button === 'string') {
                 if(modeBarButtons[button] !== undefined) {
                     customButtons[i][j] = modeBarButtons[button];
-                }
-                else {
+                } else {
                     throw new Error([
                         '*modeBarButtons* configuration options',
                         'invalid button name'

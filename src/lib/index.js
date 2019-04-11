@@ -302,8 +302,7 @@ lib.randstr = function randstr(existing, bits, base, _recursion) {
             return res;
         }
         return randstr(existing, bits, base, (_recursion || 0) + 1);
-    }
-    else return res;
+    } else return res;
 };
 
 lib.OptionControl = function(opt, optname) {
@@ -649,8 +648,7 @@ lib.minExtend = function(obj1, obj2) {
             } else {
                 objOut[k] = v.slice(0, arrayLen);
             }
-        }
-        else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+        } else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
         else objOut[k] = v;
     }
 
@@ -716,11 +714,9 @@ lib.addRelatedStyleRule = function(uid, selector, styleString) {
 
     if(styleSheet.insertRule) {
         styleSheet.insertRule(selector + '{' + styleString + '}', 0);
-    }
-    else if(styleSheet.addRule) {
+    } else if(styleSheet.addRule) {
         styleSheet.addRule(selector, styleString, 0);
-    }
-    else lib.warn('addStyleRule failed');
+    } else lib.warn('addStyleRule failed');
 };
 
 /**

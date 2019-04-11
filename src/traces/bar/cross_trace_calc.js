@@ -139,8 +139,7 @@ function initBase(gd, pa, sa, calcTraces) {
                 if(isNumeric(b)) {
                     cd[j].b = +b;
                     cd[j].hasB = 1;
-                }
-                else cd[j].b = 0;
+                } else cd[j].b = 0;
             }
             for(; j < cd.length; j++) {
                 cd[j].b = 0;

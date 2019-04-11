@@ -23,8 +23,7 @@ describe('segmentsIntersect', function() {
             expect(result2.y).toBeWithin(expected[0], 1e-6);
             expect(result1.y).toBeWithin(expected[1], 1e-6);
             expect(result2.x).toBeWithin(expected[1], 1e-6);
-        }
-        else {
+        } else {
             expect(result1).toBe(expected);
             expect(result2).toBe(expected);
         }
@@ -116,8 +115,7 @@ describe('getVisibleSegment', function() {
 
             if(!expected) {
                 expect(vis).toBeUndefined(msg2);
-            }
-            else {
+            } else {
                 expect(vis.min).toBeWithin(expected.min, buffer * 1.1, msg2);
                 expect(vis.max).toBeWithin(expected.max, buffer * 1.1, msg2);
                 expect(vis.len).toBeWithin(expected.len, buffer * 2.1, msg2);

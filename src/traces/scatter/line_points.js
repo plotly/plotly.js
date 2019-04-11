@@ -224,8 +224,7 @@ module.exports = function linePoints(d, opts) {
                 var ptToAlter;
                 if(ptInt1 && ptInt2) {
                     ptToAlter = (midShift > 0 === ptInt1[dim] > ptInt2[dim]) ? ptInt1 : ptInt2;
-                }
-                else ptToAlter = ptInt1 || ptInt2;
+                } else ptToAlter = ptInt1 || ptInt2;
 
                 ptToAlter[dim] += midShift;
             }
@@ -237,11 +236,9 @@ module.exports = function linePoints(d, opts) {
     var getEdgeIntersections;
     if(shape === 'linear' || shape === 'spline') {
         getEdgeIntersections = getLinearEdgeIntersections;
-    }
-    else if(shape === 'hv' || shape === 'vh') {
+    } else if(shape === 'hv' || shape === 'vh') {
         getEdgeIntersections = getHVEdgeIntersections;
-    }
-    else if(shape === 'hvh') getEdgeIntersections = getABAEdgeIntersections(0, xEdge0, xEdge1);
+    } else if(shape === 'hvh') getEdgeIntersections = getABAEdgeIntersections(0, xEdge0, xEdge1);
     else if(shape === 'vhv') getEdgeIntersections = getABAEdgeIntersections(1, yEdge0, yEdge1);
 
     // a segment pt1->pt2 entirely outside the nearby region:
@@ -269,14 +266,11 @@ module.exports = function linePoints(d, opts) {
             if(xSame && (x === xEdge0 || x === xEdge1) && xSame2) {
                 if(ySame2) pti--; // backtracking exactly - drop prev pt and don't add
                 else pts[pti - 1] = pt; // not exact: replace the prev pt
-            }
-            else if(ySame && (y === yEdge0 || y === yEdge1) && ySame2) {
+            } else if(ySame && (y === yEdge0 || y === yEdge1) && ySame2) {
                 if(xSame2) pti--;
                 else pts[pti - 1] = pt;
-            }
-            else pts[pti++] = pt;
-        }
-        else pts[pti++] = pt;
+            } else pts[pti++] = pt;
+        } else pts[pti++] = pt;
     }
 
     function updateEdgesForReentry(pt) {
@@ -299,12 +293,12 @@ module.exports = function linePoints(d, opts) {
         xEdge = (pt[0] < xEdge0) ? xEdge0 : (pt[0] > xEdge1) ? xEdge1 : 0;
         yEdge = (pt[1] < yEdge0) ? yEdge0 : (pt[1] > yEdge1) ? yEdge1 : 0;
         if(xEdge || yEdge) {
-            // to get fills right - if first point is far, push it toward the
-            // screen in whichever direction(s) are far
             if(!pti) {
+                // to get fills right - if first point is far, push it toward the
+                // screen in whichever direction(s) are far
+
                 pts[pti++] = [xEdge || pt[0], yEdge || pt[1]];
-            }
-            else if(lastFarPt) {
+            } else if(lastFarPt) {
                 // both this point and the last are outside the nearby region
                 // check if we're crossing the nearby region
                 var intersections = getEdgeIntersections(lastFarPt, pt);
@@ -312,9 +306,9 @@ module.exports = function linePoints(d, opts) {
                     updateEdgesForReentry(intersections[0]);
                     pts[pti++] = intersections[1];
                 }
-            }
-            // we're leaving the nearby region - add the point where we left it
-            else {
+            } else {
+                // we're leaving the nearby region - add the point where we left it
+
                 edgePt = getEdgeIntersections(pts[pti - 1], pt)[0];
                 pts[pti++] = edgePt;
             }
@@ -330,20 +324,17 @@ module.exports = function linePoints(d, opts) {
                             // need to add the correct extra corner
                             // in order to get the right winding
                             updateEdge(getClosestCorner(lastFarPt, pt));
-                        }
-                        else {
+                        } else {
                             // we're coming from a far edge - the extra corner
                             // we need is determined uniquely by the sectors
                             updateEdge([lastXEdge || xEdge, lastYEdge || yEdge]);
                         }
-                    }
-                    else if(lastXEdge && lastYEdge) {
+                    } else if(lastXEdge && lastYEdge) {
                         updateEdge([lastXEdge, lastYEdge]);
                     }
                 }
                 updateEdge([xEdge, yEdge]);
-            }
-            else if((lastXEdge - xEdge) && (lastYEdge - yEdge)) {
+            } else if((lastXEdge - xEdge) && (lastYEdge - yEdge)) {
                 // we're coming from an edge or far corner to an edge - again the
                 // extra corner we need is uniquely determined by the sectors
                 updateEdge([xEdge || lastXEdge, yEdge || lastYEdge]);
@@ -351,8 +342,7 @@ module.exports = function linePoints(d, opts) {
             lastFarPt = pt;
             lastXEdge = xEdge;
             lastYEdge = yEdge;
-        }
-        else {
+        } else {
             if(lastFarPt) {
                 // this point is in range but the previous wasn't: add its entry pt first
                 updateEdgesForReentry(getEdgeIntersections(lastFarPt, pt)[0]);

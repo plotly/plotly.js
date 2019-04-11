@@ -26,8 +26,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
         if(traceOut.a && traceOut.a.length) len = Math.min(len, traceOut.a.length);
         if(traceOut.b && traceOut.b.length) len = Math.min(len, traceOut.b.length);
         traceOut._length = len;
-    }
-    else traceOut._length = null;
+    } else traceOut._length = null;
 
     return true;
 };

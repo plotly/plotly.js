@@ -69,8 +69,7 @@ module.exports = function makeColorMap(trace) {
             domain.push(zmax);
             range.push(range[range.length - 1]);
         }
-    }
-    else {
+    } else {
         for(i = 0; i < len; i++) {
             si = scl[i];
 

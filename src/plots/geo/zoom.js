@@ -155,8 +155,7 @@ function zoomNonClipped(geo, projection) {
         if(!zoomPoint) {
             mouse0 = mouse1;
             zoomPoint = position(mouse0);
-        }
-        else if(position(mouse1)) {
+        } else if(position(mouse1)) {
             point1 = position(mouse1);
             rotate1 = [lastRotate[0] + (point1[0] - zoomPoint[0]), rotate0[1], rotate0[2]];
             projection.rotate(rotate1);
@@ -221,12 +220,12 @@ function zoomClipped(geo, projection) {
                 // maybe this point is the start... we'll find out next time!
                 mouse0 = mouse1;
                 zoomPoint = position(projection, mouse0);
-            }
-            // check if the point is on the map
-            // if not, don't do anything new but scale
-            // if it is, then we can assume between will exist below
-            // so we don't need the 'bank' function, whatever that is.
-            else if(position(projection, mouse1)) {
+            } else if(position(projection, mouse1)) {
+                // check if the point is on the map
+                // if not, don't do anything new but scale
+                // if it is, then we can assume between will exist below
+                // so we don't need the 'bank' function, whatever that is.
+
                 // go back to original projection temporarily
                 // except for scale... that's kind of independent?
                 projection

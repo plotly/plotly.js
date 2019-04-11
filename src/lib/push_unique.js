@@ -30,8 +30,7 @@ module.exports = function pushUnique(array, item) {
             }
         }
         array.push(item);
-    }
-    else if((item || item === 0) && array.indexOf(item) === -1) array.push(item);
+    } else if((item || item === 0) && array.indexOf(item) === -1) array.push(item);
 
     return array;
 };

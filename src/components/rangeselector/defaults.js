@@ -64,8 +64,7 @@ function buttonDefaults(buttonIn, buttonOut, selectorOut, opts) {
         if(step !== 'all') {
             if(calendar && calendar !== 'gregorian' && (step === 'month' || step === 'year')) {
                 buttonOut.stepmode = 'backward';
-            }
-            else {
+            } else {
                 coerce('stepmode');
             }
 

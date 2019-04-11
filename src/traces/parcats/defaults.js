@@ -27,8 +27,7 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
             coerce('line.colorscale');
             colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
             return lineColor.length;
-        }
-        else {
+        } else {
             traceOut.line.color = defaultColor;
         }
     }

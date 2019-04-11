@@ -41,8 +41,7 @@ function findParentSVG(node) {
 
     if(parentNode.tagName === 'svg') {
         return parentNode;
-    }
-    else {
+    } else {
         return findParentSVG(parentNode);
     }
 }

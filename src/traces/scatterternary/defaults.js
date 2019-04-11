@@ -42,11 +42,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         if(b) {
             len = Math.min(len, b.length);
             if(c) len = Math.min(len, c.length);
-        }
-        else if(c) len = Math.min(len, c.length);
+        } else if(c) len = Math.min(len, c.length);
         else len = 0;
-    }
-    else if(b && c) {
+    } else if(b && c) {
         len = Math.min(b.length, c.length);
     }
 

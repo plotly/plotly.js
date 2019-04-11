@@ -303,8 +303,7 @@ describe('validateTemplate', function() {
         if(expected) {
             expect(countToCheck ? out1.slice(0, countToCheck) : out1)
                 .toEqual(expected);
-        }
-        else {
+        } else {
             expect(out1).toBeUndefined();
         }
     }

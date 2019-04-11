@@ -158,15 +158,13 @@ module.exports = function draw(gd) {
 
             if(Lib.isRightAnchor(opts)) {
                 lx -= opts._width;
-            }
-            else if(Lib.isCenterAnchor(opts)) {
+            } else if(Lib.isCenterAnchor(opts)) {
                 lx -= opts._width / 2;
             }
 
             if(Lib.isBottomAnchor(opts)) {
                 ly -= opts._height;
-            }
-            else if(Lib.isMiddleAnchor(opts)) {
+            } else if(Lib.isMiddleAnchor(opts)) {
                 ly -= opts._height / 2;
             }
 
@@ -177,8 +175,7 @@ module.exports = function draw(gd) {
             if(legendWidth > legendWidthMax) {
                 lx = gs.l;
                 legendWidth = legendWidthMax;
-            }
-            else {
+            } else {
                 if(lx + legendWidth > lxMax) lx = lxMax - legendWidth;
                 if(lx < lxMin) lx = lxMin;
                 legendWidth = Math.min(lxMax - lx, opts._width);
@@ -193,8 +190,7 @@ module.exports = function draw(gd) {
             if(legendHeight > legendHeightMax) {
                 ly = gs.t;
                 legendHeight = legendHeightMax;
-            }
-            else {
+            } else {
                 if(ly + legendHeight > lyMax) ly = lyMax - legendHeight;
                 if(ly < lyMin) ly = lyMin;
                 legendHeight = Math.min(lyMax - ly, opts._height);
@@ -230,8 +226,7 @@ module.exports = function draw(gd) {
 
                 Drawing.setRect(scrollBar, 0, 0, 0, 0);
                 delete opts._scrollY;
-            }
-            else {
+            } else {
                 var scrollBarHeight = Math.max(constants.scrollBarMinHeight,
                     legendHeight * legendHeight / opts._height);
                 var scrollBarYMax = legendHeight -
@@ -391,8 +386,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         legend._clickTimeout = setTimeout(function() {
             handleClick(legendItem, gd, numClicks);
         }, DBLCLICKDELAY);
-    }
-    else if(numClicks === 2) {
+    } else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
         gd._legendMouseDownTime = 0;
 
@@ -489,8 +483,7 @@ function setupTraceToggle(g, gd) {
         if(newMouseDownTime - gd._legendMouseDownTime < DBLCLICKDELAY) {
             // in a click train
             numClicks += 1;
-        }
-        else {
+        } else {
             // new click train
             numClicks = 1;
             gd._legendMouseDownTime = newMouseDownTime;
@@ -589,8 +582,7 @@ function computeLegendDimensions(gd, groups, traces) {
         }
 
         extraWidth = 40;
-    }
-    else if(isGrouped) {
+    } else if(isGrouped) {
         var maxHeight = 0;
         var maxWidth = 0;
         var groupData = groups.data();
@@ -663,8 +655,7 @@ function computeLegendDimensions(gd, groups, traces) {
         var maxOffset = Math.max.apply(null, groupXOffsets);
         opts._width = maxOffset + maxWidth + 40;
         opts._width += borderwidth * 2;
-    }
-    else {
+    } else {
         var rowHeight = 0;
         var maxTraceHeight = 0;
         var maxTraceWidth = 0;
@@ -742,16 +733,14 @@ function expandMargin(gd) {
     var xanchor = 'left';
     if(Lib.isRightAnchor(opts)) {
         xanchor = 'right';
-    }
-    else if(Lib.isCenterAnchor(opts)) {
+    } else if(Lib.isCenterAnchor(opts)) {
         xanchor = 'center';
     }
 
     var yanchor = 'top';
     if(Lib.isBottomAnchor(opts)) {
         yanchor = 'bottom';
-    }
-    else if(Lib.isMiddleAnchor(opts)) {
+    } else if(Lib.isMiddleAnchor(opts)) {
         yanchor = 'middle';
     }
 
@@ -773,8 +762,7 @@ function expandHorizontalMargin(gd) {
     var xanchor = 'left';
     if(Lib.isRightAnchor(opts)) {
         xanchor = 'right';
-    }
-    else if(Lib.isCenterAnchor(opts)) {
+    } else if(Lib.isCenterAnchor(opts)) {
         xanchor = 'center';
     }
 

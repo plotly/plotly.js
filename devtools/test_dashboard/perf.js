@@ -25,8 +25,7 @@ window.timeit = function(f, n, nchunk, arg) {
             for(var j = 0; j < nchunk; j++) { f(_arg); }
             t1 = performance.now();
             dt = (t1 - t0) / nchunk;
-        }
-        else {
+        } else {
             t0 = performance.now();
             f(_arg);
             t1 = performance.now();

@@ -22,8 +22,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
             if(trace.contours.type === 'constraint') {
                 if(trace.fillcolor && Color.opacity(trace.fillcolor)) {
                     hoverPt.color = Color.addOpacity(trace.fillcolor, 1);
-                }
-                else if(trace.contours.showlines && Color.opacity(trace.line.color)) {
+                } else if(trace.contours.showlines && Color.opacity(trace.line.color)) {
                     hoverPt.color = Color.addOpacity(trace.line.color, 1);
                 }
             }

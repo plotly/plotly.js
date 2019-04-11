@@ -57,8 +57,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
         if(containerOut.type === '-') {
             containerOut.type = 'linear';
-        }
-        else {
+        } else {
             // copy autoType back to input axis
             // note that if this object didn't exist
             // in the input layout, we have to put it in

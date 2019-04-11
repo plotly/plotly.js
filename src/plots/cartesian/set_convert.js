@@ -74,9 +74,7 @@ module.exports = function setConvert(ax, fullLayout) {
             var r0 = ax.range[0];
             var r1 = ax.range[1];
             return 0.5 * (r0 + r1 - 2 * LOG_CLIP * Math.abs(r0 - r1));
-        }
-
-        else return BADNUM;
+        } else return BADNUM;
     }
 
     /*
@@ -99,8 +97,7 @@ module.exports = function setConvert(ax, fullLayout) {
                 var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
                 var msRounded = Math.round(v - msecTenths / 10);
                 ms = dateTime2ms(new Date(msRounded)) + msecTenths / 10;
-            }
-            else return BADNUM;
+            } else return BADNUM;
         }
         return ms;
     }
@@ -206,8 +203,7 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.p2d = ax.p2r = p2l;
 
         ax.cleanPos = ensureNumber;
-    }
-    else if(ax.type === 'log') {
+    } else if(ax.type === 'log') {
         // d and c are data vals, r and l are logged (but d and r need cleaning)
         ax.d2r = ax.d2l = function(v, clip) { return toLog(cleanNumber(v), clip); };
         ax.r2d = ax.r2c = function(v) { return fromLog(cleanNumber(v)); };
@@ -225,8 +221,7 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.p2r = p2l;
 
         ax.cleanPos = ensureNumber;
-    }
-    else if(ax.type === 'date') {
+    } else if(ax.type === 'date') {
         // r and d are date strings, l and c are ms
 
         /*
@@ -246,8 +241,7 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.p2d = ax.p2r = function(px, r, calendar) { return ms2dt(p2l(px), r, calendar); };
 
         ax.cleanPos = function(v) { return Lib.cleanDate(v, BADNUM, ax.calendar); };
-    }
-    else if(ax.type === 'category') {
+    } else if(ax.type === 'category') {
         // d is categories (string)
         // c and l are indices (numbers)
         // r is categories or numbers
@@ -274,8 +268,7 @@ module.exports = function setConvert(ax, fullLayout) {
             if(typeof v === 'string' && v !== '') return v;
             return ensureNumber(v);
         };
-    }
-    else if(ax.type === 'multicategory') {
+    } else if(ax.type === 'multicategory') {
         // N.B. multicategory axes don't define d2c and d2l,
         // as 'data-to-calcdata' conversion needs to take into
         // account all data array items as in ax.makeCalcdata.
@@ -432,13 +425,11 @@ module.exports = function setConvert(ax, fullLayout) {
                     range[1] = ax.l2r(linCenter + 1000);
                     break;
                 }
-            }
-            else {
+            } else {
                 if(!isNumeric(range[i])) {
                     if(isNumeric(range[1 - i])) {
                         range[i] = range[1 - i] * (i ? 10 : 0.1);
-                    }
-                    else {
+                    } else {
                         ax[rangeAttr] = dflt;
                         break;
                     }
@@ -532,8 +523,7 @@ module.exports = function setConvert(ax, fullLayout) {
             for(i = 0; i < len; i++) {
                 arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
             }
-        }
-        else {
+        } else {
             var v0 = ((axLetter + '0') in trace) ? ax.d2c(trace[axLetter + '0'], 0, cal) : 0;
             var dv = (trace['d' + axLetter]) ? Number(trace['d' + axLetter]) : 1;
 

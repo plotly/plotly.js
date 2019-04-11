@@ -40,8 +40,7 @@ module.exports = function calc(gd, trace) {
             var visible = carpet.isVisible(+a, +b);
             if(!visible) needsCull = true;
             cd[i] = {x: xy[0], y: xy[1], a: a, b: b, vis: visible};
-        }
-        else cd[i] = {x: false, y: false};
+        } else cd[i] = {x: false, y: false};
     }
 
     trace._needsCull = needsCull;

@@ -70,11 +70,9 @@ exports.getDataToPixel = function(gd, axis, isVertical) {
         };
 
         if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
-    }
-    else if(isVertical) {
+    } else if(isVertical) {
         dataToPixel = function(v) { return gs.t + gs.h * (1 - v); };
-    }
-    else {
+    } else {
         dataToPixel = function(v) { return gs.l + gs.w * v; };
     }
 
@@ -88,11 +86,9 @@ exports.getPixelToData = function(gd, axis, isVertical) {
     if(axis) {
         var r2d = exports.rangeToShapePosition(axis);
         pixelToData = function(p) { return r2d(axis.p2r(p - axis._offset)); };
-    }
-    else if(isVertical) {
+    } else if(isVertical) {
         pixelToData = function(p) { return 1 - (p - gs.t) / gs.h; };
-    }
-    else {
+    } else {
         pixelToData = function(p) { return (p - gs.l) / gs.w; };
     }
 

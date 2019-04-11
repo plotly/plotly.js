@@ -229,8 +229,7 @@ describe('user-defined transforms:', function() {
         function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
             if(!calledSupplyDefaults) {
                 expect(_transformIn).toBe(transformIn);
-            }
-            else {
+            } else {
                 // second supplyDefaults call has _module attached
                 expect(_transformIn).toEqual(jasmine.objectContaining({
                     type: 'fake',

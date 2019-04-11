@@ -107,8 +107,7 @@ function createCamera(scene) {
                 dataBox[i0 + 2] = range1;
                 result.dataBox = dataBox;
                 scene.setRanges(dataBox);
-            }
-            else {
+            } else {
                 scene.selectBox.selectBox = [0, 0, 1, 1];
                 scene.glplot.setDirty();
             }
@@ -165,14 +164,12 @@ function createCamera(scene) {
                                 result.boxEnd[1] = dataBox[1];
                                 result.boxEnd[0] = result.boxStart[0] +
                                     (dataBox[1] - result.boxStart[1]) / Math.abs(dydx);
-                            }
-                            else if(result.boxEnd[1] > dataBox[3]) {
+                            } else if(result.boxEnd[1] > dataBox[3]) {
                                 result.boxEnd[1] = dataBox[3];
                                 result.boxEnd[0] = result.boxStart[0] +
                                     (dataBox[3] - result.boxStart[1]) / Math.abs(dydx);
                             }
-                        }
-                        else {
+                        } else {
                             result.boxEnd[0] = result.boxStart[0] +
                                 Math.abs(dy) / dydx * (dx >= 0 ? 1 : -1);
 
@@ -180,21 +177,19 @@ function createCamera(scene) {
                                 result.boxEnd[0] = dataBox[0];
                                 result.boxEnd[1] = result.boxStart[1] +
                                     (dataBox[0] - result.boxStart[0]) * Math.abs(dydx);
-                            }
-                            else if(result.boxEnd[0] > dataBox[2]) {
+                            } else if(result.boxEnd[0] > dataBox[2]) {
                                 result.boxEnd[0] = dataBox[2];
                                 result.boxEnd[1] = result.boxStart[1] +
                                     (dataBox[2] - result.boxStart[0]) * Math.abs(dydx);
                             }
                         }
-                    }
-                    // otherwise clamp small changes to the origin so we get 1D zoom
-                    else {
+                    } else {
+                        // otherwise clamp small changes to the origin so we get 1D zoom
+
                         if(smallDx) result.boxEnd[0] = result.boxStart[0];
                         if(smallDy) result.boxEnd[1] = result.boxStart[1];
                     }
-                }
-                else if(result.boxEnabled) {
+                } else if(result.boxEnabled) {
                     dx = result.boxStart[0] !== result.boxEnd[0];
                     dy = result.boxStart[1] !== result.boxEnd[1];
                     if(dx || dy) {
@@ -207,15 +202,14 @@ function createCamera(scene) {
                             scene.yaxis.autorange = false;
                         }
                         scene.relayoutCallback();
-                    }
-                    else {
+                    } else {
                         scene.glplot.setDirty();
                     }
                     result.boxEnabled = false;
                     result.boxInited = false;
-                }
-                // if box was inited but button released then - reset the box
-                else if(result.boxInited) {
+                } else if(result.boxInited) {
+                    // if box was inited but button released then - reset the box
+
                     result.boxInited = false;
                 }
                 break;
@@ -250,8 +244,7 @@ function createCamera(scene) {
                     unSetAutoRange();
                     scene.cameraChanged();
                     scene.handleAnnotations();
-                }
-                else if(result.panning) {
+                } else if(result.panning) {
                     result.panning = false;
                     scene.relayoutCallback();
                 }

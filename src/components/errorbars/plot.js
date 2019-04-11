@@ -103,8 +103,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
                 }
 
                 yerror.attr('d', path);
-            }
-            else yerror.remove();
+            } else yerror.remove();
 
             var xerror = errorbar.select('path.xerror');
             if(xObj.visible && isNumeric(coords.y) &&
@@ -132,8 +131,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
                 }
 
                 xerror.attr('d', path);
-            }
-            else xerror.remove();
+            } else xerror.remove();
         });
     });
 };

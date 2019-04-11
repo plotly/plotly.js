@@ -190,8 +190,7 @@ exports.supplyDefaults = function(transformIn, traceOut) {
 
             arrayAttrs[target] = 0;
             aggregationsOut[i] = aggregationOut;
-        }
-        else aggregationsOut[i] = {enabled: false, _index: i};
+        } else aggregationsOut[i] = {enabled: false, _index: i};
     }
 
     // any array attributes we haven't yet covered, fill them with the default aggregation
@@ -237,8 +236,7 @@ exports.calcTransform = function(gd, trace, opts) {
             newGrouping = [i];
             groupings.push(newGrouping);
             indexToPoints[groupIndices[vi]] = originalPointsAccessor(i);
-        }
-        else {
+        } else {
             groupings[groupIndex].push(i);
             indexToPoints[groupIndices[vi]] = (indexToPoints[groupIndices[vi]] || []).concat(originalPointsAccessor(i));
         }

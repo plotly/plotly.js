@@ -54,8 +54,7 @@ module.exports = function calc(gd, trace) {
         y0 = binned.y0;
         dy = binned.dy;
         z = binned.z;
-    }
-    else {
+    } else {
         var zIn = trace.z;
         if(Lib.isArray1D(zIn)) {
             convertColumnData(trace, xa, ya, 'x', 'y', ['z']);
@@ -89,8 +88,7 @@ module.exports = function calc(gd, trace) {
     if(zsmooth === 'fast') {
         if(xa.type === 'log' || ya.type === 'log') {
             noZsmooth('log axis found');
-        }
-        else if(!isHist) {
+        } else if(!isHist) {
             if(x.length) {
                 var avgdx = (x[x.length - 1] - x[0]) / (x.length - 1);
                 var maxErrX = Math.abs(avgdx / 100);

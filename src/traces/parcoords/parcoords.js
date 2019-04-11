@@ -242,11 +242,9 @@ function viewModel(state, callbacks, model) {
             // ensure ticktext and tickvals have same length
             if(!Array.isArray(ticktext) || !ticktext.length) {
                 ticktext = tickvals.map(d3.format(dimension.tickformat));
-            }
-            else if(ticktext.length > tickvals.length) {
+            } else if(ticktext.length > tickvals.length) {
                 ticktext = ticktext.slice(0, tickvals.length);
-            }
-            else if(tickvals.length > ticktext.length) {
+            } else if(tickvals.length > ticktext.length) {
                 tickvals = tickvals.slice(0, ticktext.length);
             }
 
@@ -261,8 +259,7 @@ function viewModel(state, callbacks, model) {
                     break;
                 }
             }
-        }
-        else tickvals = undefined;
+        } else tickvals = undefined;
 
         return {
             key: key,

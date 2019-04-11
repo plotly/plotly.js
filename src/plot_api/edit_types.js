@@ -139,8 +139,7 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
             }
         }
         return out;
-    }
-    else {
+    } else {
         // don't provide an editType for the _deprecated container
         return overrideAll(attr, editTypeOverride,
             (key.charAt(0) === '_') ? 'nested' : 'from-root');

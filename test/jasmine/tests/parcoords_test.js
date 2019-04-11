@@ -1205,8 +1205,7 @@ describe('parcoords constraint interactions', function() {
             if(hasGD) {
                 expect(getDashArray(0)).toBeCloseToArray(initialDashArray0);
                 expect(getDashArray(1)).toBeCloseToArray(initialDashArray1);
-            }
-            else {
+            } else {
                 initialDashArray0 = getDashArray(0);
                 initialDashArray1 = getDashArray(1);
                 checkDashCount(initialDashArray0, 1);

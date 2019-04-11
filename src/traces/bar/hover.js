@@ -95,8 +95,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
         sizeLetter = 'x';
         dx = sizeFn;
         dy = positionFn;
-    }
-    else {
+    } else {
         posVal = xval;
         sizeVal = yval;
         posLetter = 'x';

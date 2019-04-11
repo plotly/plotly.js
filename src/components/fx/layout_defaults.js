@@ -31,8 +31,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             layoutOut._isHoriz = isHoriz(fullData, layoutOut);
             hovermodeDflt = layoutOut._isHoriz ? 'y' : 'x';
         }
-    }
-    else hovermodeDflt = 'closest';
+    } else hovermodeDflt = 'closest';
 
     var hoverMode = coerce('hovermode', hovermodeDflt);
     if(hoverMode) {

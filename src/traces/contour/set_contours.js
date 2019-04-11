@@ -52,8 +52,7 @@ module.exports = function setContours(trace) {
             size: contours.size
         });
         trace._input.autocontour = true;
-    }
-    else if(contours.type !== 'constraint') {
+    } else if(contours.type !== 'constraint') {
         // sanity checks on manually-supplied start/end/size
         var start = contours.start;
         var end = contours.end;

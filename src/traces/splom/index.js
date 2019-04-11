@@ -292,13 +292,11 @@ function plotOne(gd, cd0) {
             scene.matrix.update(matrixOpts, matrixOpts);
             scene.matrix.update(scene.unselectedOptions, scene.selectedOptions);
             scene.matrix.update(viewOpts, viewOpts);
-        }
-        else {
+        } else {
             // delete selection pass
             scene.matrix.update(viewOpts, null);
         }
-    }
-    else {
+    } else {
         var opts = Lib.extendFlat({}, matrixOpts, viewOpts);
         scene.matrix.update(opts, null);
         stash.xpx = stash.ypx = null;
@@ -406,8 +404,7 @@ function selectPoints(searchInfo, selectionTester) {
                     x: x[i],
                     y: y[i]
                 });
-            }
-            else {
+            } else {
                 unels.push(i);
             }
         }

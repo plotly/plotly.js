@@ -179,8 +179,7 @@ module.exports = function calc(gd, trace) {
                 cdi.pts = inputPoints[i];
                 if(uniqueValsPerBin) {
                     cdi.ph0 = cdi.ph1 = (inputPoints[i].length) ? pos0[inputPoints[i][0]] : pos[i];
-                }
-                else {
+                } else {
                     cdi.ph0 = roundFn(binEdges[i]);
                     cdi.ph1 = roundFn(binEdges[i + 1], true);
                 }
@@ -225,8 +224,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         if(bins[attr + 'Found']) {
             bins[attr] = cleanBound(bins[attr]);
             if(bins[attr] === null) bins[attr] = newBins[attr];
-        }
-        else {
+        } else {
             autoVals[attr] = bins[attr] = newBins[attr];
             Lib.nestedProperty(traces[0], binAttr + '.' + attr).set(newBins[attr]);
         }
@@ -238,8 +236,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
     // clear this flag, so next time we run calc we will run autobin again
     if(trace._autoBinFinished) {
         delete trace._autoBinFinished;
-    }
-    else {
+    } else {
         traces = binOpts.traces;
         var sizeFound = binOpts.sizeFound;
         var allPos = [];
@@ -258,8 +255,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
                 if(trace.visible === true) {
                     if(isFirstVisible) {
                         isFirstVisible = false;
-                    }
-                    else {
+                    } else {
                         delete tracei._autoBin;
                         tracei._autoBinFinished = 1;
                     }
@@ -290,8 +286,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
                     pa.r2c(newBinSpec.start, 0, calendar),
                     newBinSpec.size, true, calendar
                 ));
-            }
-            else {
+            } else {
                 newBinSpec.end = pa.c2r(Axes.tickIncrement(
                     pa.r2c(newBinSpec.end, 0, calendar),
                     newBinSpec.size, false, calendar
@@ -395,8 +390,7 @@ function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
             // This trace has already had its autobins calculated
             // (so must not have been single-valued).
             minSize = Math.min(minSize, tracei[binAttr].size);
-        }
-        else {
+        } else {
             var resulti = calcAllAutoBins(gd, tracei, pa, mainData, true);
             var binSpeci = resulti[0];
             var isSingleValued = resulti[2];
@@ -408,8 +402,7 @@ function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
 
             if(isSingleValued) {
                 singleValuedTraces.push(tracei);
-            }
-            else {
+            } else {
                 minSize = Math.min(minSize, binSpeci.size);
             }
         }
@@ -498,15 +491,13 @@ function cdf(size, direction, currentBin) {
             for(i = 1; i < size.length; i++) {
                 nextHalfPoint(i);
             }
-        }
-        else {
+        } else {
             firstHalfPoint(size.length - 1);
             for(i = size.length - 2; i >= 0; i--) {
                 nextHalfPoint(i);
             }
         }
-    }
-    else if(direction === 'increasing') {
+    } else if(direction === 'increasing') {
         for(i = 1; i < size.length; i++) {
             size[i] += size[i - 1];
         }
@@ -516,8 +507,7 @@ function cdf(size, direction, currentBin) {
             size.unshift(0);
             size.pop();
         }
-    }
-    else {
+    } else {
         for(i = size.length - 2; i >= 0; i--) {
             size[i] += size[i + 1];
         }

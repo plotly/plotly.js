@@ -561,7 +561,8 @@ function textGuidePath(d) {
     return d3.svg.line()([
         [d.horizontal ? (d.left ? -d.sizeAcross : d.visibleWidth + c.nodeTextOffsetHorizontal) : c.nodeTextOffsetHorizontal, 0],
         [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal : d.sizeAcross) : d.visibleHeight - c.nodeTextOffsetHorizontal, 0]
-    ]);}
+    ]);
+}
 
 function sankeyInverseTransform(d) {return d.horizontal ? 'matrix(1 0 0 1 0 0)' : 'matrix(0 1 1 0 0 0)';}
 function textFlip(d) {return d.horizontal ? 'scale(1 1)' : 'scale(-1 1)';}

@@ -423,8 +423,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
         if(!gd._context._scrollZoom.geo) {
             bgRect.on('wheel.zoom', null);
         }
-    }
-    else if(dragMode === 'select' || dragMode === 'lasso') {
+    } else if(dragMode === 'select' || dragMode === 'lasso') {
         bgRect.on('.zoom', null);
 
         dragOptions.prepFn = function(e, startX, startY) {

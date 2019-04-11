@@ -185,8 +185,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
             if(trace.text && !Array.isArray(trace.text)) {
                 pointData.text = String(trace.text);
-            }
-            else pointData.text = trace.name;
+            } else pointData.text = trace.name;
 
             return [pointData];
         }

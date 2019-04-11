@@ -115,15 +115,13 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
             boxT = t;
             boxB = Math.min(boxT + boxH, fullHeight);
             boxH = boxB - boxT;
-        }
-        else {
+        } else {
             // anchor to bottom side
             boxB = t + boxH;
             boxT = Math.max(boxB - boxH, 0);
             boxH = boxB - boxT;
         }
-    }
-    else {
+    } else {
         boxT = t;
         boxB = boxT + boxH;
 
@@ -132,8 +130,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
             boxR = l + boxW;
             boxL = Math.max(boxR - boxW, 0);
             boxW = boxR - boxL;
-        }
-        else {
+        } else {
             // anchor to left side
             boxL = l;
             boxR = Math.min(boxL + boxW, fullWidth);
@@ -182,8 +179,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
         // hbar center moves between hbarXMin and hbarXMin + hbarTranslateMax
         this._hbarXMin = hbarL + hbarW / 2;
         this._hbarTranslateMax = boxW - hbarW;
-    }
-    else {
+    } else {
         delete this.hbar;
         delete this._hbarXMin;
         delete this._hbarTranslateMax;
@@ -223,8 +219,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
         // vbar center moves between vbarYMin and vbarYMin + vbarTranslateMax
         this._vbarYMin = vbarT + vbarH / 2;
         this._vbarTranslateMax = boxH - vbarH;
-    }
-    else {
+    } else {
         delete this.vbar;
         delete this._vbarYMin;
         delete this._vbarTranslateMax;
@@ -262,8 +257,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
             width: w,
             height: h
         });
-    }
-    else {
+    } else {
         this.bg.attr({
             width: 0,
             height: 0

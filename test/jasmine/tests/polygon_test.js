@@ -107,8 +107,7 @@ describe('polygon.tester', function() {
                 for(j = 1; j < np; j++) {
                     if(pt0[0] === pt1[0]) {
                         testPts.push([pt0[0], pt0[1] + (pt1[1] - pt0[1]) * j / np]);
-                    }
-                    else {
+                    } else {
                         var x = pt0[0] + (pt1[0] - pt0[0]) * j / np;
                         // calculated the same way as in the pt_in_polygon source,
                         // so we know rounding errors will apply the same and this pt

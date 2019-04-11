@@ -34,8 +34,7 @@ exports.findBin = function(val, bins, linelow) {
         return linelow ?
             Math.ceil((val - bins.start) / bins.size - roundingError) - 1 :
             Math.floor((val - bins.start) / bins.size + roundingError);
-    }
-    else {
+    } else {
         var n1 = 0;
         var n2 = bins.length;
         var c = 0;

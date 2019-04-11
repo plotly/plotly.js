@@ -91,8 +91,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
             defaultXAnchor = 'left';
             defaultY = 1.1;
             defaultYAnchor = 'bottom';
-        }
-        else {
+        } else {
             defaultX = 0;
             defaultXAnchor = 'left';
             defaultY = -0.1;

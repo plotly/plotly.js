@@ -950,12 +950,10 @@ describe('Plotly.react and uirevision attributes', function() {
         if(Array.isArray(val1) && Array.isArray(val2)) {
             if(Array.isArray(val1[0]) && Array.isArray(val2[0])) {
                 expect(val1).toBeCloseTo2DArray(val2, 2, msg);
-            }
-            else {
+            } else {
                 expect(val1).toBeCloseToArray(val2, 2, msg);
             }
-        }
-        else {
+        } else {
             expect(val1).toBe(val2, msg);
         }
     }

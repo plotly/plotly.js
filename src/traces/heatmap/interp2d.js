@@ -93,8 +93,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
             if(neighborVal !== undefined) {
                 if(neighborSum === 0) {
                     minNeighbor = maxNeighbor = neighborVal;
-                }
-                else {
+                } else {
                     minNeighbor = Math.min(minNeighbor, neighborVal);
                     maxNeighbor = Math.max(maxNeighbor, neighborVal);
                 }
@@ -116,8 +115,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
 
         if(initialVal === undefined) {
             if(neighborCount < 4) maxFractionalChange = 1;
-        }
-        else {
+        } else {
             // we can make large empty regions converge faster
             // if we overshoot the change vs the previous value
             z[i][j] = (1 + overshoot) * z[i][j] - overshoot * initialVal;

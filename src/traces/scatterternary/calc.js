@@ -67,8 +67,7 @@ module.exports = function calc(gd, trace) {
             y = a;
             x = c - b;
             cd[i] = {x: x, y: y, a: a, b: b, c: c};
-        }
-        else cd[i] = {x: false, y: false};
+        } else cd[i] = {x: false, y: false};
     }
 
     calcMarkerSize(trace, serieslen);

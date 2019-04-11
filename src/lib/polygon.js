@@ -60,8 +60,7 @@ polygon.tester = function tester(ptsIn) {
                 isRect = true;
                 rectFirstEdgeTest = function(pt) { return pt[0] === pts[0][0]; };
             }
-        }
-        else if(pts[0][1] === pts[1][1]) { // horz, vert, horz, vert
+        } else if(pts[0][1] === pts[1][1]) { // horz, vert, horz, vert
             if(pts[2][1] === pts[3][1] &&
                     pts[0][0] === pts[3][0] &&
                     pts[1][0] === pts[2][0]) {
@@ -114,21 +113,21 @@ polygon.tester = function tester(ptsIn) {
             y1 = pts[i][1];
             xmini = Math.min(x0, x1);
 
-            // outside the bounding box of this segment, it's only a crossing
-            // if it's below the box.
             if(x < xmini || x > Math.max(x0, x1) || y > Math.max(y0, y1)) {
+                // outside the bounding box of this segment, it's only a crossing
+                // if it's below the box.
+
                 continue;
-            }
-            else if(y < Math.min(y0, y1)) {
+            } else if(y < Math.min(y0, y1)) {
                 // don't count the left-most point of the segment as a crossing
                 // because we don't want to double-count adjacent crossings
                 // UNLESS the polygon turns past vertical at exactly this x
                 // Note that this is repeated below, but we can't factor it out
                 // because
                 if(x !== xmini) crossings++;
-            }
-            // inside the bounding box, check the actual line intercept
-            else {
+            } else {
+                // inside the bounding box, check the actual line intercept
+
                 // vertical segment - we know already that the point is exactly
                 // on the segment, so mark the crossing as exactly at the point.
                 if(x1 === x0) ycross = y;

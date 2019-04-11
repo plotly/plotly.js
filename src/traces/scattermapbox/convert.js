@@ -275,11 +275,9 @@ function makeSymbolGeoJSON(calcTrace) {
 function getFillFunc(attr) {
     if(Lib.isArrayOrTypedArray(attr)) {
         return function(v) { return v; };
-    }
-    else if(attr) {
+    } else if(attr) {
         return function() { return attr; };
-    }
-    else {
+    } else {
         return blankFillFunc;
     }
 }

@@ -74,11 +74,9 @@ function cleanBins(trace, binDirection, fullLayout, autoBins) {
 
     if(isNumeric(binSize)) {
         bins.size = (binSize > 0) ? Number(binSize) : sizeDflt;
-    }
-    else if(typeof binSize !== 'string') {
+    } else if(typeof binSize !== 'string') {
         bins.size = sizeDflt;
-    }
-    else {
+    } else {
         // date special case: "M<n>" gives bins every (integer) n months
         var prefix = binSize.charAt(0);
         var sizeNum = binSize.substr(1);

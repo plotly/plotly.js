@@ -123,8 +123,7 @@ function testExport(mockName, format, cb) {
         if(format === 'svg') {
             var dims = sizeOf(imagePaths.test);
             didExport = (dims.width === WIDTH) && (dims.height === HEIGHT);
-        }
-        else {
+        } else {
             var stats = fs.statSync(imagePaths.test);
             didExport = stats.size > MIN_SIZE;
         }

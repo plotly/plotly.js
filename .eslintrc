@@ -4,7 +4,7 @@
     "eslint:recommended"
   ],
   "parserOptions": {
-    "ecmaVersion": 5,
+    "ecmaVersion": 5
   },
   "env": {
     "commonjs": true
@@ -27,7 +27,7 @@
     "indent": [0],
     "indent-legacy": [2, 4, {"SwitchCase": 1}],
     "max-len": [0, 80],
-    "brace-style": [0, "stroustrup", {"allowSingleLine": true}],
+    "brace-style": [2, "1tbs", {"allowSingleLine": true}],
     "curly": [2, "multi-line"],
     "camelcase": [2, {"properties": "never"}],
     "comma-spacing": [2, {"before": false, "after": true}],

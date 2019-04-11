@@ -67,16 +67,14 @@ function apply(f, args) {
             // applying a method of the console object.
             f.apply(console, args);
             return;
-        }
-        catch(e) { /* in case apply failed, fall back on the code below */ }
+        } catch(e) { /* in case apply failed, fall back on the code below */ }
     }
 
     // no apply - just try calling the function on each arg independently
     for(var i = 0; i < args.length; i++) {
         try {
             f(args[i]);
-        }
-        catch(e) {
+        } catch(e) {
             // still fails - last resort simple console.log
             console.log(args[i]);
         }

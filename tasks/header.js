@@ -76,8 +76,7 @@ function updateHeadersInSrcFiles() {
                     var newCode = licenseSrc + '\n' + codeLines.join('\n');
 
                     common.writeFile(file, newCode);
-                }
-                else {
+                } else {
                     // otherwise, throw an error
                     throw new Error(file + ' : has wrong header information.');
                 }

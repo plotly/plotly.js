@@ -69,8 +69,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
         if(mi > 20) {
             mi = constants.CHOOSESADDLE[mi][(marchStep[0] || marchStep[1]) < 0 ? 0 : 1];
             pi.crossings[locStr] = constants.SADDLEREMAINDER[mi];
-        }
-        else {
+        } else {
             delete pi.crossings[locStr];
         }
 
@@ -134,8 +133,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
             for(cnt2 = cnt - 1; cnt2 >= cropstart; cnt2--) {
                 if(distgroup + alldists[cnt2] < distThreshold) {
                     distgroup += alldists[cnt2];
-                }
-                else break;
+                } else break;
             }
 
             // closed path with close points wrapping around the boundary?
@@ -143,8 +141,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
                 for(cnt3 = 0; cnt3 < cnt2; cnt3++) {
                     if(distgroup + alldists[cnt3] < distThreshold) {
                         distgroup += alldists[cnt3];
-                    }
-                    else break;
+                    } else break;
                 }
             }
             ptcnt = cnt - cnt2 + cnt3 + 1;
@@ -184,8 +181,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
     else if(closedpath) {
         pts.pop();
         pi.paths.push(pts);
-    }
-    else {
+    } else {
         if(!edgeflag) {
             Lib.log('Unclosed interior contour?',
                 pi.level, startLocStr, pts.join('L'));
@@ -210,8 +206,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
                         if(j === i) {
                             // the path is now closed
                             pi.paths.push(pts.concat(edgepathj));
-                        }
-                        else {
+                        } else {
                             if(j > i) j--;
                             pi.edgepaths[j] = edgepathj.concat(pts, edgepathi);
                         }
@@ -247,13 +242,11 @@ function startStep(mi, edgeflag, loc) {
         if(mi === 208 || mi === 1114) {
             // if we're starting at the left side, we must be going right
             dx = loc[0] === 0 ? 1 : -1;
-        }
-        else {
+        } else {
             // if we're starting at the bottom, we must be going up
             dy = loc[1] === 0 ? 1 : -1;
         }
-    }
-    else if(constants.BOTTOMSTART.indexOf(mi) !== -1) dy = 1;
+    } else if(constants.BOTTOMSTART.indexOf(mi) !== -1) dy = 1;
     else if(constants.LEFTSTART.indexOf(mi) !== -1) dx = 1;
     else if(constants.TOPSTART.indexOf(mi) !== -1) dy = -1;
     else dx = -1;
@@ -288,8 +281,7 @@ function getInterpPx(pi, loc, step) {
         return [xa.c2p((1 - dx) * pi.x[locx] + dx * pi.x[locx + 1], true),
             ya.c2p(pi.y[locy], true),
             locx + dx, locy];
-    }
-    else {
+    } else {
         var dy = (pi.level - zxy) / (pi.z[locy + 1][locx] - zxy);
         return [xa.c2p(pi.x[locx], true),
             ya.c2p((1 - dy) * pi.y[locy] + dy * pi.y[locy + 1], true),

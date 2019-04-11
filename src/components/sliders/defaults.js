@@ -101,8 +101,7 @@ function stepDefaults(valueIn, valueOut) {
     var visible;
     if(valueIn.method !== 'skip' && !Array.isArray(valueIn.args)) {
         visible = valueOut.visible = false;
-    }
-    else visible = coerce('visible');
+    } else visible = coerce('visible');
 
     if(visible) {
         coerce('method');

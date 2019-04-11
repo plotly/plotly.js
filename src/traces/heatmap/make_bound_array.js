@@ -33,8 +33,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
             if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
             else if(numbricks === 1) {
                 arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
-            }
-            else {
+            } else {
                 arrayOut = [1.5 * arrayIn[0] - 0.5 * arrayIn[1]];
 
                 for(i = 1; i < len; i++) {
@@ -53,16 +52,14 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
                     arrayOut.push(lastPt);
                 }
             }
-        }
-        else {
+        } else {
             // hopefully length === numbricks+1, but do something regardless:
             // given vals are brick boundaries
             return isContour ?
                 arrayIn.slice(0, numbricks) :  // we must be strict for contours
                 arrayIn.slice(0, numbricks + 1);
         }
-    }
-    else {
+    } else {
         var calendar = trace[ax._id.charAt(0) + 'calendar'];
 
         if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) {

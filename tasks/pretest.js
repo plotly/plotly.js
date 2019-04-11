@@ -25,8 +25,7 @@ function makeTestImageFolders() {
         if(!common.doesDirExist(folderPath)) {
             fs.mkdirSync(folderPath);
             logger('initialize ' + info);
-        }
-        else logger(info + ' is present');
+        } else logger(info + ' is present');
     }
 
     makeOne(constants.pathToTestImages, 'test image folder');

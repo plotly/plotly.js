@@ -22,8 +22,7 @@ if(!argLocale) {
             pullOneLocale(itemLocale);
         });
     });
-}
-else {
+} else {
     pullOneLocale(argLocale);
 }
 
@@ -68,8 +67,7 @@ function pullOneLocale(locale) {
             var outObj;
             try {
                 outObj = eval('a=' + objText);
-            }
-            catch(e) {
+            } catch(e) {
                 throw new Error(locale + '--' + objText);
             }
 

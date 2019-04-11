@@ -322,11 +322,9 @@ exports.assertNodeOrder = function(selectorBehind, selectorInFront, msg) {
     var nodeInFront = document.querySelector(selectorInFront);
     if(!nodeBehind) {
         fail(selectorBehind + ' not found (' + msg + ')');
-    }
-    else if(!nodeInFront) {
+    } else if(!nodeInFront) {
         fail(selectorInFront + ' not found (' + msg + ')');
-    }
-    else {
+    } else {
         var parentsBehind = getParents(nodeBehind);
         var parentsInFront = getParents(nodeInFront);
 
@@ -336,8 +334,7 @@ exports.assertNodeOrder = function(selectorBehind, selectorInFront, msg) {
         for(var i = 0; i < parentsBehind.length; i++) {
             if(parentsBehind[i] === parentsInFront[i]) {
                 commonParent = parentsBehind[i];
-            }
-            else {
+            } else {
                 siblingBehind = parentsBehind[i];
                 siblingInFront = parentsInFront[i];
                 break;

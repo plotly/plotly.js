@@ -175,8 +175,7 @@ function getInterval(d, y) {
         if(isNaN(closestInterval)) {
             if(isNaN(previousInterval) || isNaN(nextInterval)) {
                 closestInterval = isNaN(previousInterval) ? nextInterval : previousInterval;
-            }
-            else {
+            } else {
                 closestInterval = (y - pixIntervals[previousInterval][1] < pixIntervals[nextInterval][0] - y) ?
                     previousInterval : nextInterval;
             }
@@ -306,13 +305,11 @@ function attachDragBehavior(selection) {
                     if(s.clickableOrdinalRange) {
                         if(brush.filterSpecified && d.multiselect) {
                             s.extent.push(s.clickableOrdinalRange);
-                        }
-                        else {
+                        } else {
                             s.extent = [s.clickableOrdinalRange];
                             brush.filterSpecified = true;
                         }
-                    }
-                    else if(grabbingBar) {
+                    } else if(grabbingBar) {
                         s.extent = s.stayingIntervals;
                         if(s.extent.length === 0) {
                             brushClear(brush);
@@ -348,8 +345,7 @@ function attachDragBehavior(selection) {
                     if(hasNewExtent) {
                         // merging intervals post the snap tween
                         renderHighlight(this.parentNode, mergeIntervals);
-                    }
-                    else {
+                    } else {
                         // if no new interval, don't animate, just redraw the highlight immediately
                         mergeIntervals();
                         renderHighlight(this.parentNode);
@@ -502,8 +498,7 @@ function cleanRanges(ranges, dimension) {
 
         if(!dimension.multiselect) ranges = [ranges[0]];
         else ranges = dedupeRealRanges(ranges.sort(startAsc));
-    }
-    else ranges = [ranges.sort(sortAsc)];
+    } else ranges = [ranges.sort(sortAsc)];
 
     // ordinal snapping
     if(dimension.tickvals) {

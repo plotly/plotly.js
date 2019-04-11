@@ -181,8 +181,7 @@ function npSet(cont, parts, propStr) {
                     }
                 }
             }
-        }
-        else curCont[parts[i]] = val;
+        } else curCont[parts[i]] = val;
     };
 }
 

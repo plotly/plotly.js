@@ -23,8 +23,7 @@ exports.writeFile = function(filePath, content, cb) {
 exports.doesDirExist = function(dirPath) {
     try {
         if(fs.statSync(dirPath).isDirectory()) return true;
-    }
-    catch(e) {
+    } catch(e) {
         return false;
     }
 
@@ -34,8 +33,7 @@ exports.doesDirExist = function(dirPath) {
 exports.doesFileExist = function(filePath) {
     try {
         if(fs.statSync(filePath).isFile()) return true;
-    }
-    catch(e) {
+    } catch(e) {
         return false;
     }
 
