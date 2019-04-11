@@ -193,21 +193,18 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             revpathbase = Drawing.steps(
                 line.shape.split('').reverse().join('')
             );
-        }
-        else if(line.shape === 'spline') {
+        } else if(line.shape === 'spline') {
             pathfn = revpathbase = function(pts) {
                 var pLast = pts[pts.length - 1];
                 if(pts.length > 1 && pts[0][0] === pLast[0] && pts[0][1] === pLast[1]) {
                     // identical start and end points: treat it as a
                     // closed curve so we don't get a kink
                     return Drawing.smoothclosed(pts.slice(1), line.smoothing);
-                }
-                else {
+                } else {
                     return Drawing.smoothopen(pts, line.smoothing);
                 }
             };
-        }
-        else {
+        } else {
             pathfn = revpathbase = function(pts) {
                 return 'M' + pts.join('L');
             };
@@ -250,12 +247,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 if(!fullpath) {
                     fullpath = thispath;
                     revpath = thisrevpath;
-                }
-                else if(ownFillDir) {
+                } else if(ownFillDir) {
                     fullpath += 'L' + thispath.substr(1);
                     revpath = thisrevpath + ('L' + revpath.substr(1));
-                }
-                else {
+                } else {
                     fullpath += 'Z' + thispath;
                     revpath = thisrevpath + 'Z' + revpath;
                 }
@@ -308,8 +303,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 if(ownFillDir) {
                     if(ownFillDir === 'y') {
                         pt0[1] = pt1[1] = ya.c2p(0, true);
-                    }
-                    else if(ownFillDir === 'x') {
+                    } else if(ownFillDir === 'x') {
                         pt0[0] = pt1[0] = xa.c2p(0, true);
                     }
 
@@ -326,8 +320,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                         .call(Drawing.singleFillStyle);
                 }
             }
-        }
-        else if(tonext) {
+        } else if(tonext) {
             if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
                 // fill to next: full trace path, plus the previous path reversed
                 if(trace.fill === 'tonext') {
@@ -337,8 +330,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // inside the other, but then that is a strange usage.
                     transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
                         .call(Drawing.singleFillStyle);
-                }
-                else {
+                } else {
                     // tonextx/y: for now just connect endpoints with lines. This is
                     // the correct behavior if the endpoints are at the same value of
                     // y/x, but if they *aren't*, we should ideally do more complicated
@@ -348,16 +340,14 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                         .call(Drawing.singleFillStyle);
                 }
                 trace._polygons = trace._polygons.concat(prevPolygons);
-            }
-            else {
+            } else {
                 clearFill(tonext);
                 trace._polygons = null;
             }
         }
         trace._prevRevpath = revpath;
         trace._prevPolygons = thisPolygons;
-    }
-    else {
+    } else {
         if(ownFillEl3) clearFill(ownFillEl3);
         else if(tonext) clearFill(tonext);
         trace._polygons = trace._prevRevpath = trace._prevPolygons = null;
@@ -413,8 +403,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 gd._fullLayout._scatterStackOpts[xa._id + ya._id][stackGroup].stackgaps === 'infer zero');
             if(trace.marker.maxdisplayed || trace._needsCull) {
                 showFilter = isInferZero ? visFilterWithGaps : visFilter;
-            }
-            else if(stackGroup && !isInferZero) {
+            } else if(stackGroup && !isInferZero) {
                 showFilter = gapFilter;
             }
 

@@ -59,8 +59,7 @@ module.exports = function style(gd) {
         if(isConstraintType) {
             c.selectAll('g.contourfill path')
                 .style('fill', trace.fillcolor);
-        }
-        else if(colorFills) {
+        } else if(colorFills) {
             var firstFill;
 
             c.selectAll('g.contourfill path')

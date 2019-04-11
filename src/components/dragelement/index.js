@@ -241,8 +241,7 @@ dragElement.init = function init(options) {
 
                 try {
                     e2 = new MouseEvent('click', e);
-                }
-                catch(err) {
+                } catch(err) {
                     var offset = pointerOffset(e);
                     e2 = document.createEvent('MouseEvents');
                     e2.initMouseEvent('click',

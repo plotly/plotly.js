@@ -88,8 +88,7 @@ exports.clear = function(id) {
     if(id) {
         _clearTimeout(timerCache[id]);
         delete timerCache[id];
-    }
-    else {
+    } else {
         for(var idi in timerCache) exports.clear(idi);
     }
 };

@@ -52,8 +52,7 @@ exports.dateTick0 = function(calendar, sunday) {
         return sunday ?
             Registry.getComponentMethod('calendars', 'CANONICAL_SUNDAY')[calendar] :
             Registry.getComponentMethod('calendars', 'CANONICAL_TICK')[calendar];
-    }
-    else {
+    } else {
         return sunday ? '2000-01-02' : '2000-01-01';
     }
 };
@@ -64,8 +63,7 @@ exports.dateTick0 = function(calendar, sunday) {
 exports.dfltRange = function(calendar) {
     if(isWorldCalendar(calendar)) {
         return Registry.getComponentMethod('calendars', 'DFLTRANGE')[calendar];
-    }
-    else {
+    } else {
         return ['2000-01-01', '2001-01-01'];
     }
 };
@@ -189,12 +187,10 @@ exports.dateTime2ms = function(s, calendar) {
                 var isIntercalary = m.charAt(m.length - 1) === 'i';
                 m = parseInt(m, 10);
                 cDate = calInstance.newDate(y, calInstance.toMonthIndex(y, m, isIntercalary), d);
-            }
-            else {
+            } else {
                 cDate = calInstance.newDate(y, Number(m), d);
             }
-        }
-        catch(e) { return BADNUM; } // Invalid ... date
+        } catch(e) { return BADNUM; } // Invalid ... date
 
         if(!cDate) return BADNUM;
 
@@ -204,8 +200,7 @@ exports.dateTime2ms = function(s, calendar) {
 
     if(y.length === 2) {
         y = (Number(y) + 2000 - YFIRST) % 100 + YFIRST;
-    }
-    else y = Number(y);
+    } else y = Number(y);
 
     // new Date uses months from 0; subtract 1 here just so we
     // don't have to do it again during the validity test below
@@ -282,8 +277,7 @@ exports.ms2DateTime = function(ms, r, calendar) {
         m = (r < NINETYDAYS) ? Math.floor((timeMs % ONEHOUR) / ONEMIN) : 0;
         s = (r < THREEHOURS) ? Math.floor((timeMs % ONEMIN) / ONESEC) : 0;
         msec10 = (r < FIVEMIN) ? (timeMs % ONESEC) * 10 + msecTenths : 0;
-    }
-    else {
+    } else {
         d = new Date(msRounded);
 
         dateStr = utcFormat('%Y-%m-%d')(d);
@@ -358,8 +352,7 @@ exports.cleanDate = function(v, dflt, calendar) {
         // that is: '2012' -> Jan. 1, 2012, but 2012 -> 2012 epoch milliseconds
         v = exports.ms2DateTimeLocal(+v);
         if(!v && dflt !== undefined) return dflt;
-    }
-    else if(!exports.isDateTime(v, calendar)) {
+    } else if(!exports.isDateTime(v, calendar)) {
         Loggers.error('unrecognized date', v);
         return dflt;
     }
@@ -390,8 +383,7 @@ function modDateFormat(fmt, x, formatter, calendar) {
     if(isWorldCalendar(calendar)) {
         try {
             fmt = Registry.getComponentMethod('calendars', 'worldCalFmt')(fmt, x, calendar);
-        }
-        catch(e) {
+        } catch(e) {
             return 'Invalid';
         }
     }
@@ -466,8 +458,7 @@ exports.formatDate = function(x, fmt, tr, formatter, calendar, extraFormat) {
         else if(tr === 'm') fmt = extraFormat.month;
         else if(tr === 'd') {
             fmt = extraFormat.dayMonth + '\n' + extraFormat.year;
-        }
-        else {
+        } else {
             return formatTime(x, tr) + '\n' + modDateFormat(extraFormat.dayMonthYear, x, formatter, calendar);
         }
     }
@@ -568,20 +559,16 @@ exports.findExactDates = function(data, calendar) {
                 if(d.day() === 1) {
                     if(d.month() === 1) exactYears++;
                     else exactMonths++;
-                }
-                else exactDays++;
-            }
-            catch(e) {
+                } else exactDays++;
+            } catch(e) {
                 // invalid date in this calendar - ignore it here.
             }
-        }
-        else {
+        } else {
             d = new Date(di);
             if(d.getUTCDate() === 1) {
                 if(d.getUTCMonth() === 0) exactYears++;
                 else exactMonths++;
-            }
-            else exactDays++;
+            } else exactDays++;
         }
     }
     exactMonths += exactYears;

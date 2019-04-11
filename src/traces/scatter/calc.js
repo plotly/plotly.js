@@ -45,14 +45,12 @@ function calc(gd, trace) {
         if(isV) {
             yAttr = 's';
             posAttr = 'x';
-        }
-        else {
+        } else {
             xAttr = 's';
             posAttr = 'y';
         }
         interpolate = stackGroupOpts.stackgaps === 'interpolate';
-    }
-    else {
+    } else {
         var ppad = calcMarkerSize(trace, serieslen);
         calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     }
@@ -73,12 +71,10 @@ function calc(gd, trace) {
             if(interpolate) {
                 cdi.s = BADNUM;
                 interpolateGaps = true;
-            }
-            else {
+            } else {
                 cdi.s = 0;
             }
-        }
-        else {
+        } else {
             cdi[xAttr] = cdi[yAttr] = BADNUM;
         }
 
@@ -98,8 +94,7 @@ function calc(gd, trace) {
         while(i < cd.length) {
             if(cd[i][posAttr] === BADNUM) {
                 cd.splice(i, 1);
-            }
-            else i++;
+            } else i++;
         }
 
         Lib.sort(cd, function(a, b) {

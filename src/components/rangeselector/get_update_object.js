@@ -17,8 +17,7 @@ module.exports = function getUpdateObject(axisLayout, buttonLayout) {
 
     if(buttonLayout.step === 'all') {
         update[axName + '.autorange'] = true;
-    }
-    else {
+    } else {
         var xrange = getXRange(axisLayout, buttonLayout);
 
         update[axName + '.range[0]'] = xrange[0];

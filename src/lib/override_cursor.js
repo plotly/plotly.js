@@ -37,8 +37,7 @@ module.exports = function overrideCursor(el3, csr) {
             }
         }
         setCursor(el3, csr);
-    }
-    else if(savedCursor) {
+    } else if(savedCursor) {
         el3.attr(STASHATTR, null);
 
         if(savedCursor === NO_CURSOR) setCursor(el3);

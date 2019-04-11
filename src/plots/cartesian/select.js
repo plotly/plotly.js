@@ -138,8 +138,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 if(dy < Math.min(dx * 0.6, MINSELECT)) direction = 'h';
                 else if(dx < Math.min(dy * 0.6, MINSELECT)) direction = 'v';
                 else direction = 'd';
-            }
-            else {
+            } else {
                 direction = fullLayout.selectdirection;
             }
 
@@ -155,8 +154,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
                     'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
-            }
-            else if(direction === 'v') {
+            } else if(direction === 'v') {
                 // vertical motion: make a horizontal box
                 currentPolygon = [[0, y0], [0, y1], [pw, y1], [pw, y0]];
                 currentPolygon.xmin = Math.min(0, pw);
@@ -167,8 +165,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     'v-4h' + (2 * MINSELECT) + 'v4Z' +
                     'M' + (x0 - MINSELECT) + ',' + (currentPolygon.ymax - 1) +
                     'v4h' + (2 * MINSELECT) + 'v-4Z');
-            }
-            else if(direction === 'd') {
+            } else if(direction === 'd') {
                 // diagonal motion
                 currentPolygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
                 currentPolygon.xmin = Math.min(x0, x1);
@@ -177,8 +174,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 currentPolygon.ymax = Math.max(y0, y1);
                 corners.attr('d', 'M0,0Z');
             }
-        }
-        else if(mode === 'lasso') {
+        } else if(mode === 'lasso') {
             filterPoly.addPt([x1, y1]);
             currentPolygon = filterPoly.filtered;
         }
@@ -188,8 +184,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
             currentPolygon.subtract = subtract;
             selectionTester = multiTester(dragOptions.selectionDefs.concat([currentPolygon]));
-        }
-        else {
+        } else {
             mergedPolygons = [currentPolygon];
             selectionTester = polygonTester(currentPolygon);
         }
@@ -219,8 +214,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                         for(var j = 0; j < thisSelection.length; j++) {
                             selection.push(thisSelection[j]);
                         }
-                    }
-                    else selection = thisSelection;
+                    } else selection = thisSelection;
                 }
 
                 eventData = {points: selection};
@@ -315,8 +309,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
         if(isBinnedTrace ?
             isOnlyThisBinSelected(searchTraces, clickedPtInfo) :
             isOnlyOnePointSelected(searchTraces) &&
-                (pointOrBinSelected = isPointOrBinSelected(clickedPtInfo)))
-        {
+                (pointOrBinSelected = isPointOrBinSelected(clickedPtInfo))) {
             if(polygonOutlines) polygonOutlines.remove();
             for(i = 0; i < searchTraces.length; i++) {
                 searchInfo = searchTraces[i];
@@ -348,8 +341,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
                     for(var j = 0; j < thisTracesSelection.length; j++) {
                         selection.push(thisTracesSelection[j]);
                     }
-                }
-                else selection = thisTracesSelection;
+                } else selection = thisTracesSelection;
             }
 
             eventData = {points: selection};
@@ -712,8 +704,7 @@ function updateSelectedState(gd, searchTraces, eventData) {
                 }
             }
         }
-    }
-    else {
+    } else {
         for(i = 0; i < searchTraces.length; i++) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;

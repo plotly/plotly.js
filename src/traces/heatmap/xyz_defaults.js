@@ -32,8 +32,7 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
         if(xlen === 0 || ylen === 0) return 0;
 
         traceOut._length = Math.min(xlen, ylen, z.length);
-    }
-    else {
+    } else {
         x = coordDefaults(xName, coerce);
         y = coordDefaults(yName, coerce);
 

@@ -103,8 +103,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
 
             if(hasBothSides) {
                 path = pathPos + 'L' + pathNeg.substr(1) + 'Z';
-            }
-            else {
+            } else {
                 var startPt = [posCenterPx, valAxis.c2p(density[0].t)];
                 var endPt = [posCenterPx, valAxis.c2p(density[len - 1].t)];
 

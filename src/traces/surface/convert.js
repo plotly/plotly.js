@@ -545,8 +545,7 @@ proto.update = function(data) {
         });
 
         coords.push(intensity);
-    }
-    else {
+    } else {
         // when 'z' is used as 'intensity',
         // we must scale its value
         params.intensityBounds[0] *= scaleFactor[2];
@@ -593,8 +592,7 @@ proto.update = function(data) {
 
             if(contourParams.usecolormap) {
                 surface.highlightTint[i] = params.contourTint[i] = 0;
-            }
-            else {
+            } else {
                 surface.highlightTint[i] = params.contourTint[i] = 1;
             }
             params.contourWidth[i] = contourParams.width;

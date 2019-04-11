@@ -96,8 +96,7 @@ exports.traceTemplater = function(dataTemplate) {
             var typei = traceCounts[traceType] % typeTemplates.length;
             traceCounts[traceType]++;
             traceOut._template = typeTemplates[typei];
-        }
-        else {
+        } else {
             // TODO: anything we should do for types missing from the template?
             // try to apply some other type? Or just bail as we do here?
             // Actually I think yes, we should apply other types; would be nice
@@ -298,8 +297,7 @@ exports.arrayEditor = function(parentIn, containerStr, itemOut) {
         if(templateItemName) {
             // we're making a new object: edit that object
             Lib.nestedProperty(update[itemStr], attr).set(value);
-        }
-        else {
+        } else {
             // we're editing an existing object: include *just* the edit
             update[itemStr + '.' + attr] = value;
         }

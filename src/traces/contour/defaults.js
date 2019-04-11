@@ -41,8 +41,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(isConstraint) {
         handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor);
-    }
-    else {
+    } else {
         handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
         handleStyleDefaults(traceIn, traceOut, coerce, layout);
     }

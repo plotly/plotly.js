@@ -107,8 +107,7 @@ function selectorKeyFunc(d) {
 function isActive(axisLayout, opts, update) {
     if(opts.step === 'all') {
         return axisLayout.autorange === true;
-    }
-    else {
+    } else {
         var keys = Object.keys(update);
 
         return (

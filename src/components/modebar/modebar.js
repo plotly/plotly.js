@@ -169,8 +169,7 @@ proto.createButton = function(config) {
     var click = config.click;
     if(typeof click !== 'function') {
         throw new Error('must provide button \'click\' function in button config');
-    }
-    else {
+    } else {
         button.addEventListener('click', function(ev) {
             config.click(_this.graphInfo, ev);
 
@@ -185,8 +184,7 @@ proto.createButton = function(config) {
     var icon = config.icon;
     if(typeof icon === 'function') {
         button.appendChild(icon());
-    }
-    else {
+    } else {
         button.appendChild(this.createIcon(icon || Icons.question));
     }
     button.setAttribute('data-gravity', config.gravity || 'n');
@@ -219,8 +217,7 @@ proto.createIcon = function(thisIcon) {
 
         if(thisIcon.transform) {
             path.setAttribute('transform', thisIcon.transform);
-        }
-        else if(thisIcon.ascent !== undefined) {
+        } else if(thisIcon.ascent !== undefined) {
             // Legacy icon transform calculation
             path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
         }
@@ -262,8 +259,7 @@ proto.updateActiveButton = function(buttonClicked) {
             if(dataAttr === dataAttrClicked) {
                 button3.classed('active', !button3.classed('active'));
             }
-        }
-        else {
+        } else {
             var val = (dataAttr === null) ?
                 dataAttr :
                 Lib.nestedProperty(fullLayout, dataAttr).get();

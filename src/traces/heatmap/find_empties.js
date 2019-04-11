@@ -60,8 +60,7 @@ module.exports = function findEmpties(z) {
                     }
 
                     empties.push([i, j, neighborCount]);
-                }
-                else noNeighborList.push([i, j]);
+                } else noNeighborList.push([i, j]);
             }
         }
     }

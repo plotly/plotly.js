@@ -99,8 +99,7 @@ exports.getFromTrace = function(gd, fullTrace, type) {
         if(scene.substr(0, 5) === 'scene') {
             ax = fullLayout[scene][type + 'axis'];
         }
-    }
-    else {
+    } else {
         ax = exports.getFromId(gd, fullTrace[type + 'axis'] || type);
     }
 

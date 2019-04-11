@@ -1381,8 +1381,7 @@ describe('Test shapes', function() {
 
             if(s.type === 'path') {
                 s.path = 'M' + x0y0 + 'L' + x1y1 + 'L' + x1y0 + 'Z';
-            }
-            else {
+            } else {
                 s.x0 = x0;
                 s.x1 = x1;
                 s.y0 = y0;
@@ -1508,8 +1507,7 @@ describe('Test shapes', function() {
                 if(initialCoordinate.x) {
                     expect(finalCoordinate.x - initialCoordinate.x)
                         .toBeCloseTo(dx);
-                }
-                else {
+                } else {
                     expect(finalCoordinate.y - initialCoordinate.y)
                         .toBeCloseTo(dy);
                 }
@@ -1531,22 +1529,19 @@ describe('Test shapes', function() {
             var keyN, keyS, keyW, keyE;
             if(initialCoordinates.y0 < initialCoordinates.y1) {
                 keyN = 'y0'; keyS = 'y1';
-            }
-            else {
+            } else {
                 keyN = 'y1'; keyS = 'y0';
             }
             if(initialCoordinates.x0 < initialCoordinates.x1) {
                 keyW = 'x0'; keyE = 'x1';
-            }
-            else {
+            } else {
                 keyW = 'x1'; keyE = 'x0';
             }
 
             if(~direction.indexOf('n')) {
                 expect(finalCoordinates[keyN] - initialCoordinates[keyN])
                     .toBeCloseTo(dy);
-            }
-            else if(~direction.indexOf('s')) {
+            } else if(~direction.indexOf('s')) {
                 expect(finalCoordinates[keyS] - initialCoordinates[keyS])
                     .toBeCloseTo(dy);
             }
@@ -1554,8 +1549,7 @@ describe('Test shapes', function() {
             if(~direction.indexOf('w')) {
                 expect(finalCoordinates[keyW] - initialCoordinates[keyW])
                     .toBeCloseTo(dx);
-            }
-            else if(~direction.indexOf('e')) {
+            } else if(~direction.indexOf('e')) {
                 expect(finalCoordinates[keyE] - initialCoordinates[keyE])
                     .toBeCloseTo(dx);
             }
@@ -1611,8 +1605,7 @@ describe('Test shapes', function() {
 
                     if(xParams[paramNumber]) {
                         coordinates.push({ x: x2p(param) });
-                    }
-                    else if(yParams[paramNumber]) {
+                    } else if(yParams[paramNumber]) {
                         coordinates.push({ y: y2p(param) });
                     }
 

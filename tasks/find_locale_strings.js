@@ -74,8 +74,7 @@ function findLocaleStrings() {
         if(!EXIT_CODE) {
             if(noOutput) {
                 console.log('ok find_locale_strings - no output requested.');
-            }
-            else {
+            } else {
                 var strings = Object.keys(dict).sort().map(function(k) {
                     return k + spaces(maxLen - k.length) + '  // ' + dict[k];
                 }).join('\n');

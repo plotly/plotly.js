@@ -214,8 +214,7 @@ proto.getLabelPad = function(axisName, ax) {
         return (ax.side === 'top') ?
             -10 + fontSize * (offsetBase + (showticklabels ? 1 : 0)) :
             -10 + fontSize * (offsetBase + (showticklabels ? 0.5 : 0));
-    }
-    else if(axisName === 'yaxis') {
+    } else if(axisName === 'yaxis') {
         return (ax.side === 'right') ?
             10 + fontSize * (offsetBase + (showticklabels ? 1 : 0.5)) :
             10 + fontSize * (offsetBase + (showticklabels ? 0.5 : 0));

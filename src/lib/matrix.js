@@ -49,14 +49,12 @@ exports.dot = function(x, y) {
         // mat-vec or mat-mat
         out = new Array(len);
         for(i = 0; i < len; i++) out[i] = exports.dot(x[i], y);
-    }
-    else if(y[0].length) {
+    } else if(y[0].length) {
         // vec-mat
         var yTranspose = exports.transposeRagged(y);
         out = new Array(yTranspose.length);
         for(i = 0; i < yTranspose.length; i++) out[i] = exports.dot(x, yTranspose[i]);
-    }
-    else {
+    } else {
         // vec-vec
         out = 0;
         for(i = 0; i < len; i++) out += x[i] * y[i];

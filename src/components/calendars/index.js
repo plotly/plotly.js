@@ -137,8 +137,7 @@ function worldCalFmt(fmt, x, calendar) {
             directiveLen = 3;
             directive = fmt.charAt(i + 2);
             if(modifier === '_') modifier = '-';
-        }
-        else {
+        } else {
             directive = modifier;
             modifier = '0';
             directiveLen = 2;
@@ -146,8 +145,7 @@ function worldCalFmt(fmt, x, calendar) {
         directiveObj = d3ToWorldCalendars[directive];
         if(!directiveObj) {
             i += directiveLen;
-        }
-        else {
+        } else {
             // code is recognized as a date part but world-calendars doesn't support it
             if(directiveObj === UNKNOWN) replacementPart = UNKNOWN;
 

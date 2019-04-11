@@ -407,7 +407,8 @@ describe('Click-to-select', function() {
             clickmode: 'event+select'
         })
           .then(function() {
-              return _click(136, 369, {}, true); })
+              return _click(136, 369, {}, true);
+          })
           .then(function() {
               assertSelectedPoints([[1], [], []]);
               return _click(245, 136, { shiftKey: true });

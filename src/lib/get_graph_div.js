@@ -27,8 +27,7 @@ module.exports = function(gd) {
         }
 
         return gdElement;
-    }
-    else if(gd === null || gd === undefined) {
+    } else if(gd === null || gd === undefined) {
         throw new Error('DOM element provided is null or undefined');
     }
 

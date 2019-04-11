@@ -155,8 +155,7 @@ function zoomNonClipped(geo, projection) {
         if(!zoomPoint) {
             mouse0 = mouse1;
             zoomPoint = position(mouse0);
-        }
-        else if(position(mouse1)) {
+        } else if(position(mouse1)) {
             point1 = position(mouse1);
             rotate1 = [lastRotate[0] + (point1[0] - zoomPoint[0]), rotate0[1], rotate0[2]];
             projection.rotate(rotate1);

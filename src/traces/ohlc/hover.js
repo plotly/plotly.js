@@ -133,8 +133,7 @@ function hoverSplit(pointData, xval, yval, hovermode) {
         if(val in usedVals) {
             pointData2 = usedVals[val];
             pointData2.yLabel += '<br>' + t.labels[attr] + Axes.hoverLabelText(ya, val);
-        }
-        else {
+        } else {
             // copy out to a new object for each new y-value to label
             pointData2 = Lib.extendFlat({}, closestPoint);
 

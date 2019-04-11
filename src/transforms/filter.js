@@ -219,8 +219,7 @@ exports.calcTransform = function(gd, trace, opts) {
         if(passed) {
             forAllAttrs(fillFn, i);
             indexToPoints[index++] = originalPointsAccessor(i);
-        }
-        else if(preservegaps) index++;
+        } else if(preservegaps) index++;
     }
 
     opts._indexToPoints = indexToPoints;
@@ -243,13 +242,11 @@ function getFilterFunc(opts, d2c, targetCalendar) {
 
     if(isOperationIn(COMPARISON_OPS)) {
         coercedValue = hasArrayValue ? d2cValue(value[0]) : d2cValue(value);
-    }
-    else if(isOperationIn(INTERVAL_OPS)) {
+    } else if(isOperationIn(INTERVAL_OPS)) {
         coercedValue = hasArrayValue ?
             [d2cValue(value[0]), d2cValue(value[1])] :
             [d2cValue(value), d2cValue(value)];
-    }
-    else if(isOperationIn(SET_OPS)) {
+    } else if(isOperationIn(SET_OPS)) {
         coercedValue = hasArrayValue ? value.map(d2cValue) : [d2cValue(value)];
     }
 

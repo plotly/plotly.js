@@ -157,8 +157,7 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
         thisGroup[thisID] = 1;
         thisGroupIndex = constraintGroups.length;
         constraintGroups.push(thisGroup);
-    }
-    else {
+    } else {
         thisGroupIndex = constraintGroups.indexOf(thisGroup);
     }
 
@@ -256,8 +255,7 @@ exports.enforce = function enforceAxisConstraints(gd) {
 
                 if(mode === 'range') {
                     scaleZoom(ax, factor);
-                }
-                else {
+                } else {
                     // mode === 'domain'
 
                     var inputDomain = ax._inputDomain;

@@ -173,15 +173,13 @@ function joinAllPaths(pi, perimeter) {
                         newendpt = ptNew;
                         nexti = possiblei;
                     }
-                }
-                else if(Math.abs(endpt[1] - newendpt[1]) < 0.01) {
+                } else if(Math.abs(endpt[1] - newendpt[1]) < 0.01) {
                     if(Math.abs(endpt[1] - ptNew[1]) < 0.01 &&
                             (ptNew[0] - endpt[0]) * (newendpt[0] - ptNew[0]) >= 0) {
                         newendpt = ptNew;
                         nexti = possiblei;
                     }
-                }
-                else {
+                } else {
                     Lib.log('endpt to newendpt is not vert. or horz.',
                         endpt, newendpt, ptNew);
                 }
@@ -397,13 +395,11 @@ exports.createLineClip = function(lineContainer, clipLinesForLabels, gd, uid) {
 exports.labelFormatter = function(contours, colorbar, fullLayout) {
     if(contours.labelformat) {
         return fullLayout._d3locale.numberFormat(contours.labelformat);
-    }
-    else {
+    } else {
         var formatAxis;
         if(colorbar) {
             formatAxis = colorbar.axis;
-        }
-        else {
+        } else {
             formatAxis = {
                 type: 'linear',
                 _id: 'ycontour',
@@ -415,10 +411,8 @@ exports.labelFormatter = function(contours, colorbar, fullLayout) {
                 var value = contours.value;
                 if(Array.isArray(value)) {
                     formatAxis.range = [value[0], value[value.length - 1]];
-                }
-                else formatAxis.range = [value, value];
-            }
-            else {
+                } else formatAxis.range = [value, value];
+            } else {
                 formatAxis.range = [contours.start, contours.end];
                 formatAxis.nticks = (contours.end - contours.start) / contours.size;
             }
@@ -462,8 +456,7 @@ exports.findBestTextLocation = function(path, pathBounds, textOpts, labelData, p
         dp = pathBounds.len / costConstants.INITIALSEARCHPOINTS;
         p0 = pathBounds.min + dp / 2;
         pMax = pathBounds.max;
-    }
-    else {
+    } else {
         dp = (pathBounds.len - textWidth) / (costConstants.INITIALSEARCHPOINTS + 1);
         p0 = pathBounds.min + dp + textWidth / 2;
         pMax = pathBounds.max - (dp + textWidth) / 2;
@@ -657,8 +650,7 @@ function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
 
         var path = Lib.ensureSingle(clipPath, 'path', '');
         path.attr('d', fullpath);
-    }
-    else clipId = null;
+    } else clipId = null;
 
     Drawing.setClipUrl(plotGroup, clipId, gd);
 }

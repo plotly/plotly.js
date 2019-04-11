@@ -53,8 +53,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         // mostly this is for transparent markers to behave nicely
         if(lineColor && !Array.isArray(lineColor) && (traceOut.marker.color !== lineColor)) {
             defaultMLC = lineColor;
-        }
-        else if(isBubble) defaultMLC = Color.background;
+        } else if(isBubble) defaultMLC = Color.background;
         else defaultMLC = Color.defaultLine;
 
         coerce('marker.line.color', defaultMLC);

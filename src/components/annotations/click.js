@@ -111,8 +111,7 @@ function getToggleSets(gd, hoverData) {
                     if(anni.visible) {
                         if(showMode === 'onout') toggleType = offSet;
                         else toggleType = explicitOffSet;
-                    }
-                    else {
+                    } else {
                         toggleType = onSet;
                     }
                     toggleType.push(i);

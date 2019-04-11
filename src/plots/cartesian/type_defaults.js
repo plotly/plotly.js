@@ -78,8 +78,7 @@ function setAutoType(ax, data) {
         }
 
         ax.type = autoType(boxPositions, calendar, opts);
-    }
-    else if(d0.type === 'splom') {
+    } else if(d0.type === 'splom') {
         var dimensions = d0.dimensions;
         var diag = d0._diag;
         for(i = 0; i < dimensions.length; i++) {
@@ -89,8 +88,7 @@ function setAutoType(ax, data) {
                 break;
             }
         }
-    }
-    else {
+    } else {
         ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar, opts);
     }
 }
@@ -109,8 +107,7 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
         if((trace[axLetter + 'axis'] || axLetter) === id) {
             if(isBoxWithoutPositionCoords(trace, axLetter)) {
                 return trace;
-            }
-            else if((trace[axLetter] || []).length || trace[axLetter + '0']) {
+            } else if((trace[axLetter] || []).length || trace[axLetter + '0']) {
                 return trace;
             }
         }

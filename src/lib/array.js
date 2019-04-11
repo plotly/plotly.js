@@ -89,13 +89,11 @@ exports.concat = function() {
 
             if(isArray(argi)) {
                 _constructor = false;
-            }
-            else {
+            } else {
                 allArray = false;
                 if(!totalLen) {
                     _constructor = argi.constructor;
-                }
-                else if(_constructor !== argi.constructor) {
+                } else if(_constructor !== argi.constructor) {
                     // TODO: in principle we could upgrade here,
                     // ie keep typed array but convert all to Float64Array?
                     _constructor = false;

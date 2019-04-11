@@ -42,8 +42,7 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         if(groupOpts.orientation === 'v') {
             posAttr = 'x';
             valAttr = 'y';
-        }
-        else {
+        } else {
             posAttr = 'y';
             valAttr = 'x';
         }
@@ -159,8 +158,7 @@ function insertBlank(calcTrace, index, position, traceIndex, hasAnyBlanks, inter
         // calcdata points with the same index?
         newEntry.i = prevEntry.i;
         newEntry.gap = prevEntry.gap;
-    }
-    else if(interpolate) {
+    } else if(interpolate) {
         newEntry.s = getInterp(calcTrace, index, position, posAttr);
     }
     if(!index) {

@@ -50,8 +50,7 @@ function formatColor(containerIn, opacityIn, len) {
         sclFunc = Colorscale.makeColorScaleFunc(
             Colorscale.extractScale(containerIn, {cLetter: 'c'})
         );
-    }
-    else {
+    } else {
         sclFunc = validateColor;
     }
 
@@ -60,15 +59,13 @@ function formatColor(containerIn, opacityIn, len) {
             // FIXME: there is double work, considering that sclFunc does the opposite
             return c[i] === undefined ? colorDfltRgba : rgba(sclFunc(c[i]));
         };
-    }
-    else getColor = validateColor;
+    } else getColor = validateColor;
 
     if(isArrayOpacityIn) {
         getOpacity = function(o, i) {
             return o[i] === undefined ? opacityDflt : validateOpacity(o[i]);
         };
-    }
-    else getOpacity = validateOpacity;
+    } else getOpacity = validateOpacity;
 
     if(isArrayColorIn || isArrayOpacityIn) {
         for(var i = 0; i < len; i++) {
@@ -76,8 +73,7 @@ function formatColor(containerIn, opacityIn, len) {
             opacityi = getOpacity(opacityIn, i);
             colorOut[i] = calculateColor(colori, opacityi);
         }
-    }
-    else colorOut = calculateColor(rgba(colorIn), opacityIn);
+    } else colorOut = calculateColor(rgba(colorIn), opacityIn);
 
     return colorOut;
 }

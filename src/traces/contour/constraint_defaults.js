@@ -31,8 +31,7 @@ module.exports = function handleConstraintDefaults(traceIn, traceOut, coerce, la
 
     if(operation === '=') {
         showLines = contours.showlines = true;
-    }
-    else {
+    } else {
         showLines = coerce('contours.showlines');
         fillColor = coerce('fillcolor', addOpacity(
             (traceIn.line || {}).color || defaultColor, 0.5

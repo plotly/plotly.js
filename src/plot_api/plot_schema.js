@@ -207,8 +207,7 @@ exports.findArrayAttributes = function(trace) {
             if(Lib.isArrayOrTypedArray(item)) {
                 arrayAttributes.push(baseAttrName + newAstrPartial);
             }
-        }
-        else {
+        } else {
             if(isArrayStack[i]) {
                 if(Array.isArray(item)) {
                     for(var j = 0; j < item.length; j++) {
@@ -217,8 +216,7 @@ exports.findArrayAttributes = function(trace) {
                         }
                     }
                 }
-            }
-            else if(Lib.isPlainObject(item)) {
+            } else if(Lib.isPlainObject(item)) {
                 crawlIntoTrace(item, i + 1, newAstrPartial + '.');
             }
         }
@@ -282,11 +280,9 @@ exports.getTraceValObject = function(trace, parts) {
         moduleAttrs = (Registry.transformsRegistry[transforms[tNum].type] || {}).attributes;
         valObject = moduleAttrs && moduleAttrs[parts[2]];
         i = 3; // start recursing only inside the transform
-    }
-    else if(trace.type === 'area') {
+    } else if(trace.type === 'area') {
         valObject = polarAreaAttrs[head];
-    }
-    else {
+    } else {
         // first look in the module for this trace
         // components have already merged their trace attributes in here
         var _module = trace._module;
@@ -414,8 +410,7 @@ function recurseIntoValObject(valObject, parts, i) {
         if(valObject._isLinkedToArray) {
             i++;
             if(!isIndex(parts[i])) return false;
-        }
-        else if(valObject.valType === 'info_array') {
+        } else if(valObject.valType === 'info_array') {
             i++;
             var index = parts[i];
             if(!isIndex(index)) return false;
@@ -429,10 +424,8 @@ function recurseIntoValObject(valObject, parts, i) {
                     var index2 = parts[i];
                     if(!isIndex(index2)) return false;
                     valObject = items[index][index2];
-                }
-                else valObject = items[index];
-            }
-            else {
+                } else valObject = items[index];
+            } else {
                 valObject = items;
             }
         }
@@ -635,13 +628,11 @@ function mergeValTypeAndRole(attrs) {
                 attr.role = 'data';
                 // all 'data_array' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
-            }
-            else if(attr.arrayOk === true) {
+            } else if(attr.arrayOk === true) {
                 // all 'arrayOk' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
             }
-        }
-        else if(isPlainObject(attr)) {
+        } else if(isPlainObject(attr)) {
             // all attrs container objects get role 'object'
             attr.role = 'object';
         }

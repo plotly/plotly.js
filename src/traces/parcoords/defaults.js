@@ -30,8 +30,7 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
             // but I'm not sure what color to give these lines - probably black or white
             // depending on the background color?
             return lineColor.length;
-        }
-        else {
+        } else {
             traceOut.line.color = defaultColor;
         }
     }

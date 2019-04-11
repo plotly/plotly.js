@@ -907,8 +907,7 @@ describe('annotation clicktoshow', function() {
             var clickResult = Annotations.onClick(gd, hoverData(opts.newPts));
             if(clickResult && clickResult.then) {
                 return clickResult.then(function() { checkVisible(opts); });
-            }
-            else {
+            } else {
                 checkVisible(opts);
             }
         };

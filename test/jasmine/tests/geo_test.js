@@ -607,7 +607,8 @@ describe('Test geo interactions', function() {
                 };
 
                 Plotly.restyle(gd, update).then(function() {
-                    setTimeout(function() { mouseEvent('mousemove', 300, 230);
+                    setTimeout(function() {
+                        mouseEvent('mousemove', 300, 230);
 
                         expect(cnt).toEqual(1);
 

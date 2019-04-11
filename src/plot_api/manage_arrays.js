@@ -147,20 +147,17 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
 
             if(isRemoveVal(objVal)) {
                 deletes.push(componentNum);
-            }
-            else if(adding) {
+            } else if(adding) {
                 if(objVal === 'add') objVal = {};
                 componentArray.splice(componentNum, 0, objVal);
                 if(componentArrayFull) componentArrayFull.splice(componentNum, 0, {});
-            }
-            else {
+            } else {
                 Loggers.warn('Unrecognized full object edit value',
                     componentType, componentNum, objVal);
             }
 
             if(firstIndexChange === -1) firstIndexChange = componentNum;
-        }
-        else {
+        } else {
             for(j = 0; j < objKeys.length; j++) {
                 prefix = componentType + '[' + componentNum + '].';
                 _nestedProperty(componentArray[componentNum], objKeys[j], prefix)
@@ -191,8 +188,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
         if(firstIndexChange === -1) {
             // there's no re-indexing to do, so only redraw components that changed
             indicesToDraw = componentNums;
-        }
-        else {
+        } else {
             // in case the component array was shortened, we still need do call
             // drawOne on the latter items so they get properly removed
             maxIndex = Math.max(componentArray.length, maxIndex);
@@ -209,8 +205,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
         for(i = 0; i < indicesToDraw.length; i++) {
             drawOne(gd, indicesToDraw[i]);
         }
-    }
-    else draw(gd);
+    } else draw(gd);
 
     return true;
 };

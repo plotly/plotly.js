@@ -30,8 +30,7 @@ function copyArgArray(gd, args) {
             copy[i] = Array.isArray(arg) ?
                 Lib.extendDeep([], arg) :
                 Lib.extendDeepAll({}, arg);
-        }
-        else copy[i] = arg;
+        } else copy[i] = arg;
     }
 
     return copy;

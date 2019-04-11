@@ -35,8 +35,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         try {
             nx = Math.round(pointData.index[1]);
             ny = Math.round(pointData.index[0]);
-        }
-        catch(e) {
+        } catch(e) {
             Lib.error('Error hovering on heatmap, ' +
                 'pointNumber must be [row,col], found:', pointData.index);
             return;
@@ -44,12 +43,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         if(nx < 0 || nx >= z[0].length || ny < 0 || ny > z.length) {
             return;
         }
-    }
-    else if(Fx.inbox(xval - x[0], xval - x[x.length - 1], 0) > 0 ||
+    } else if(Fx.inbox(xval - x[0], xval - x[x.length - 1], 0) > 0 ||
             Fx.inbox(yval - y[0], yval - y[y.length - 1], 0) > 0) {
         return;
-    }
-    else {
+    } else {
         if(contour) {
             var i2;
             x2 = [2 * x[0] - x[1]];
@@ -79,8 +76,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         xl = x[nx];
         y1 = y0;
         yl = y[ny];
-    }
-    else {
+    } else {
         xl = xc ? xc[nx] : ((x[nx] + x[nx + 1]) / 2);
         yl = yc ? yc[ny] : ((y[ny] + y[ny + 1]) / 2);
         if(trace.zsmooth) {

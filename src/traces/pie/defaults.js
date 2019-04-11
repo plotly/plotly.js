@@ -26,8 +26,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(Array.isArray(labels)) {
         len = labels.length;
         if(hasVals) len = Math.min(len, vals.length);
-    }
-    else if(hasVals) {
+    } else if(hasVals) {
         len = vals.length;
 
         coerce('label0');

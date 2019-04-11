@@ -45,8 +45,7 @@ module.exports = {
             if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
-            }
-            else if(size[n] > v) {
+            } else if(size[n] > v) {
                 var delta = v - size[n];
                 size[n] = v;
                 return delta;
@@ -62,8 +61,7 @@ module.exports = {
             if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
-            }
-            else if(size[n] < v) {
+            } else if(size[n] < v) {
                 var delta = v - size[n];
                 size[n] = v;
                 return delta;

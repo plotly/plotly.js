@@ -135,14 +135,11 @@ function assertSrcContents() {
 
                     if(source === 'Math.sign') {
                         logs.push(file + ' : contains Math.sign (IE failure)');
-                    }
-                    else if(source === 'window.getComputedStyle') {
+                    } else if(source === 'window.getComputedStyle') {
                         getComputedStyleCnt++;
-                    }
-                    else if(IE_BLACK_LIST.indexOf(lastPart) !== -1) {
+                    } else if(IE_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (IE failure)');
-                    }
-                    else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
+                    } else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
                         // add special case for sunburst where we use 'children'
                         // off the d3-hierarchy output
                         var dirParts = path.dirname(file).split(path.sep);
@@ -151,23 +148,19 @@ function assertSrcContents() {
                         if(!(isSunburstFile && isLinkedToObject)) {
                             logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
                         }
-                    }
-                    else if(FF_BLACK_LIST.indexOf(lastPart) !== -1) {
+                    } else if(FF_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (FF failure)');
                     }
-                }
-                else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
+                } else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
                     if(node.parent.source() !== 'window.getComputedStyle') {
                         logs.push(file + ' : getComputedStyle must be called as a `window` property.');
                     }
-                }
-                else if(node.type === 'CallExpression' && node.callee.name === 'require') {
+                } else if(node.type === 'CallExpression' && node.callee.name === 'require') {
                     var pathNode = node.arguments[0];
                     var pathStr = pathNode.value;
                     if(pathNode.type !== 'Literal') {
                         logs.push(file + ' : You may only `require` literals.');
-                    }
-                    else if(BUILTINS.indexOf(pathStr) === -1) {
+                    } else if(BUILTINS.indexOf(pathStr) === -1) {
                         // node version 8.9.0+ can use require.resolve(request, {paths: [...]})
                         // and avoid this explicit conversion to the current location
                         if(pathStr.charAt(0) === '.') {

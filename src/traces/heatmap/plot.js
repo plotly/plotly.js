@@ -155,8 +155,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             ypx = yrev ?
                 function(index) { return m - 1 - index; } :
                 Lib.identity;
-        }
-        else {
+        } else {
             xpx = function(index) {
                 return Lib.constrain(Math.round(xa.c2p(x[index]) - left),
                     0, imageWidth);
@@ -217,12 +216,10 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                 if(z11 === undefined) dxy = 0;
                 else if(z10 === undefined) dxy = 2 * (z11 - z00);
                 else dxy = (2 * z11 - z10 - z00) * 2 / 3;
-            }
-            else if(z11 === undefined) {
+            } else if(z11 === undefined) {
                 if(z10 === undefined) dxy = 0;
                 else dxy = (2 * z00 - z01 - z10) * 2 / 3;
-            }
-            else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;
+            } else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;
             else dxy = (z11 + z00 - z01 - z10);
 
             return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
@@ -266,8 +263,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                         putColor(pixels, pxIndex, c);
                     }
                 }
-            }
-            else { // zsmooth = fast
+            } else { // zsmooth = fast
                 for(j = 0; j < m; j++) {
                     row = z[j];
                     yb = ypx(j);

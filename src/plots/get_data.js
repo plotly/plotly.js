@@ -116,8 +116,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
             if(trace[attr[0]] === subplotX && trace[attr[1]] === subplotY) {
                 subplotData.push(trace);
             }
-        }
-        else {
+        } else {
             if(trace[attr] === subplotId) subplotData.push(trace);
         }
     }

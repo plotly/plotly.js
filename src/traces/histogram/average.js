@@ -17,8 +17,7 @@ module.exports = function doAvg(size, counts) {
         if(counts[i]) {
             size[i] /= counts[i];
             total += size[i];
-        }
-        else size[i] = null;
+        } else size[i] = null;
     }
     return total;
 };

@@ -29,13 +29,11 @@ module.exports = function getLegendData(calcdata, opts) {
             lgroups.push(uniqueGroup);
             lgroupToTraces[uniqueGroup] = [[legendItem]];
             lgroupi++;
-        }
-        else if(lgroups.indexOf(legendGroup) === -1) {
+        } else if(lgroups.indexOf(legendGroup) === -1) {
             lgroups.push(legendGroup);
             hasOneNonBlankGroup = true;
             lgroupToTraces[legendGroup] = [[legendItem]];
-        }
-        else lgroupToTraces[legendGroup].push([legendItem]);
+        } else lgroupToTraces[legendGroup].push([legendItem]);
     }
 
     // build an { legendgroup: [cd0, cd0], ... } object
@@ -65,9 +63,7 @@ module.exports = function getLegendData(calcdata, opts) {
                     slicesShown[lgroup][labelj] = true;
                 }
             }
-        }
-
-        else addOneItem(lgroup, cd0);
+        } else addOneItem(lgroup, cd0);
     }
 
     // won't draw a legend in this case
@@ -85,8 +81,7 @@ module.exports = function getLegendData(calcdata, opts) {
             ltraces = lgroupToTraces[lgroups[i]];
             legendData[i] = helpers.isReversed(opts) ? ltraces.reverse() : ltraces;
         }
-    }
-    else {
+    } else {
         // collapse all groups into one if all groups are blank
         legendData = [new Array(lgroupsLength)];
 

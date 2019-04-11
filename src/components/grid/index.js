@@ -196,8 +196,7 @@ function sizeDefaults(layoutIn, layoutOut) {
     if(hasSubplotGrid) {
         dfltRows = gridIn.subplots.length;
         dfltColumns = gridIn.subplots[0].length;
-    }
-    else {
+    } else {
         if(hasYaxes) dfltRows = yAxes.length;
         if(hasXaxes) dfltColumns = xAxes.length;
     }
@@ -287,8 +286,7 @@ function contentDefaults(layoutIn, layoutOut) {
                 if(useDefaultSubplots) {
                     subplotId = (index === 1) ? 'xy' : ('x' + index + 'y' + index);
                     index++;
-                }
-                else subplotId = rowIn[j];
+                } else subplotId = rowIn[j];
 
                 rowOut[j] = '';
 
@@ -308,8 +306,7 @@ function contentDefaults(layoutIn, layoutOut) {
                 }
             }
         }
-    }
-    else {
+    } else {
         var xAxes = getAxes(layoutOut, gridIn, 'x');
         var yAxes = getAxes(layoutOut, gridIn, 'y');
         gridOut.xaxes = fillGridAxes(xAxes, subplots.xaxis, columns, axisMap, 'x');
@@ -329,14 +326,12 @@ function contentDefaults(layoutIn, layoutOut) {
             // grid edge -  ie not "* plot" - make these as free axes
             // since we're not guaranteed to have a subplot there at all
             anchors[axisId] = 'free';
-        }
-        else if(axLetter === 'x') {
+        } else if(axLetter === 'x') {
             if((side.charAt(0) === 't') === reversed) {
                 i0 = 0;
                 inc = 1;
                 iFinal = rows;
-            }
-            else {
+            } else {
                 i0 = rows - 1;
                 inc = -1;
                 iFinal = -1;
@@ -352,8 +347,7 @@ function contentDefaults(layoutIn, layoutOut) {
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 for(i = i0; i !== iFinal; i += inc) {
                     yId = gridOut.yaxes[i];
                     if(subplots.cartesian.indexOf(axisId + yId) !== -1) {
@@ -362,14 +356,12 @@ function contentDefaults(layoutIn, layoutOut) {
                     }
                 }
             }
-        }
-        else {
+        } else {
             if((side.charAt(0) === 'l')) {
                 i0 = 0;
                 inc = 1;
                 iFinal = columns;
-            }
-            else {
+            } else {
                 i0 = columns - 1;
                 inc = -1;
                 iFinal = -1;
@@ -385,8 +377,7 @@ function contentDefaults(layoutIn, layoutOut) {
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 for(i = i0; i !== iFinal; i += inc) {
                     xId = gridOut.xaxes[i];
                     if(subplots.cartesian.indexOf(xId + axisId) !== -1) {
@@ -407,16 +398,14 @@ function fillGridAxes(axesIn, axesAllowed, len, axisMap, axLetter) {
         if(axesAllowed.indexOf(axisId) !== -1 && axisMap[axisId] === undefined) {
             out[i] = axisId;
             axisMap[axisId] = i;
-        }
-        else out[i] = '';
+        } else out[i] = '';
     }
 
     if(Array.isArray(axesIn)) {
         for(i = 0; i < len; i++) {
             fillOneAxis(i, axesIn[i]);
         }
-    }
-    else {
+    } else {
         // default axis list is the first `len` axis ids
         fillOneAxis(0, axLetter);
         for(i = 1; i < len; i++) {

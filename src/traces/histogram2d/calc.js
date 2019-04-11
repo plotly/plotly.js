@@ -232,8 +232,7 @@ function makeIncrements(len, bins, dv, nonuniform) {
     var i;
     if(nonuniform) {
         for(i = 0; i < len; i++) out[i] = 1 / (bins[i + 1] - bins[i]);
-    }
-    else {
+    } else {
         var inc = 1 / dv;
         for(i = 0; i < len; i++) out[i] = inc;
     }
@@ -254,8 +253,7 @@ function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
     var out = new Array(len);
     if(uniqueVals) {
         for(i = 0; i < len; i++) out[i] = [uniqueVals[i], uniqueVals[i]];
-    }
-    else {
+    } else {
         var roundFn = getBinSpanLabelRound(gapLow, gapHigh, edges, ax, calendar);
         for(i = 0; i < len; i++) out[i] = [roundFn(edges[i]), roundFn(edges[i + 1], true)];
     }

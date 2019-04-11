@@ -75,8 +75,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
                 // if open == close, look for a change from the previous close
                 if(cPrev !== null && ci !== cPrev) increasing = ci > cPrev;
                 // else (c === cPrev or cPrev is null) no change
-            }
-            else increasing = ci > oi;
+            } else increasing = ci > oi;
 
             cPrev = ci;
 

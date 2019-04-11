@@ -58,8 +58,7 @@ module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, 
     if(leftDigit > rightDigit && rightDigit < Math.abs(edge1 - edge0) / 4000) {
         digit = leftDigit;
         disambiguateEdges = false;
-    }
-    else {
+    } else {
         digit = Math.min(leftDigit, rightDigit);
         disambiguateEdges = true;
     }

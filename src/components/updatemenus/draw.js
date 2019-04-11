@@ -162,8 +162,7 @@ function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, scrollBox, button
 
     if(menuOpts.type === 'buttons') {
         drawButtons(gd, gHeader, null, null, menuOpts);
-    }
-    else if(menuOpts.type === 'dropdown') {
+    } else if(menuOpts.type === 'dropdown') {
         // fold up buttons and redraw header
         gButton.attr(constants.menuIndexAttrName, '-1');
 
@@ -331,8 +330,7 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
     if(isVertical) {
         scrollBoxPosition.w = Math.max(dims.openWidth, dims.headerWidth);
         scrollBoxPosition.h = posOpts.y - scrollBoxPosition.t;
-    }
-    else {
+    } else {
         scrollBoxPosition.w = posOpts.x - scrollBoxPosition.l;
         scrollBoxPosition.h = Math.max(dims.openHeight, dims.headerHeight);
     }
@@ -342,8 +340,7 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
     if(scrollBox) {
         if(buttons.size()) {
             drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts, scrollBoxPosition);
-        }
-        else {
+        } else {
             hideScrollBox(scrollBox);
         }
     }
@@ -363,8 +360,7 @@ function drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts, position) {
         for(i = 0; i < active; i++) {
             translateY += dims.heights[i] + constants.gapButton;
         }
-    }
-    else {
+    } else {
         translateX = 0;
         for(i = 0; i < active; i++) {
             translateX += dims.widths[i] + constants.gapButton;

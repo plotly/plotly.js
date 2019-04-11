@@ -368,8 +368,7 @@ function getSymbolSdf(symbol) {
 
     if(isDot && !symbolNoDot) {
         symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
-    }
-    else {
+    } else {
         symbolPath = symbolFunc(SYMBOL_SIZE);
     }
 
@@ -416,8 +415,7 @@ function convertLinePositions(gd, trace, positions) {
                         linePositions.push(NaN, NaN);
                     }
                     linePositions.push(NaN, NaN);
-                }
-                else {
+                } else {
                     var midPtX = (positions[i * 2] + positions[i * 2 + 2]) / 2;
                     linePositions.push(
                         positions[i * 2],
@@ -440,8 +438,7 @@ function convertLinePositions(gd, trace, positions) {
                         linePositions.push(NaN, NaN);
                     }
                     linePositions.push(NaN, NaN);
-                }
-                else {
+                } else {
                     var midPtY = (positions[i * 2 + 1] + positions[i * 2 + 3]) / 2;
                     linePositions.push(
                         positions[i * 2],
@@ -459,8 +456,7 @@ function convertLinePositions(gd, trace, positions) {
             for(i = 0; i < count - 1; i++) {
                 if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
                     linePositions.push(NaN, NaN, NaN, NaN);
-                }
-                else {
+                } else {
                     linePositions.push(positions[i * 2], positions[i * 2 + 1]);
                     if(!isNaN(positions[i * 2 + 2]) && !isNaN(positions[i * 2 + 3])) {
                         linePositions.push(positions[i * 2], positions[i * 2 + 3]);
@@ -497,8 +493,7 @@ function convertLinePositions(gd, trace, positions) {
             if(isNaN(linePositions[i]) || isNaN(linePositions[i + 1])) {
                 linePositions[i] = lastX;
                 linePositions[i + 1] = lastY;
-            }
-            else {
+            } else {
                 lastX = linePositions[i];
                 lastY = linePositions[i + 1];
             }

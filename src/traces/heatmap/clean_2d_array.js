@@ -24,8 +24,7 @@ module.exports = function clean2dArray(zOld, transpose) {
         if(rowlen === 0) return false;
         getCollen = function(zOld) { return zOld.length; };
         old2new = function(zOld, i, j) { return zOld[j][i]; };
-    }
-    else {
+    } else {
         rowlen = zOld.length;
         getCollen = function(zOld, i) { return zOld[i].length; };
         old2new = function(zOld, i, j) { return zOld[i][j]; };

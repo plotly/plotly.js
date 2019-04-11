@@ -37,8 +37,7 @@ module.exports = function makeComputeError(opts) {
                 var val = +(array[index]);
                 return [val, val];
             };
-        }
-        else {
+        } else {
             var arrayminus = opts.arrayminus || [];
             return function computeError(dataPt, index) {
                 var val = +array[index];
@@ -52,8 +51,7 @@ module.exports = function makeComputeError(opts) {
                 return [NaN, NaN];
             };
         }
-    }
-    else {
+    } else {
         var computeErrorValue = makeComputeErrorValue(type, opts.value);
         var computeErrorValueMinus = makeComputeErrorValue(type, opts.valueminus);
 
@@ -62,8 +60,7 @@ module.exports = function makeComputeError(opts) {
                 var val = computeErrorValue(dataPt);
                 return [val, val];
             };
-        }
-        else {
+        } else {
             return function computeError(dataPt) {
                 return [
                     computeErrorValueMinus(dataPt),

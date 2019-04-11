@@ -130,14 +130,11 @@ exports.convertToTspans = function(_context, gd, _callback) {
                         ') translate(' + [-newSvgW / 2, dy - newSvgH / 2] + ')'
                     });
                     newSvg.attr({x: +_context.attr('x'), y: +_context.attr('y')});
-                }
-                else if(svgClass[0] === 'l') {
+                } else if(svgClass[0] === 'l') {
                     newSvg.attr({x: _context.attr('x'), y: dy - (newSvgH / 2)});
-                }
-                else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
+                } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
                     newSvg.attr({x: 0, y: dy});
-                }
-                else {
+                } else {
                     newSvg.attr({x: newX, y: (+_context.attr('y') + dy - newSvgH / 2)});
                 }
 
@@ -145,8 +142,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 resolve(mathjaxGroup);
             });
         }));
-    }
-    else showText();
+    } else showText();
 
     return _context;
 };
@@ -209,8 +205,7 @@ function texToSVG(_texString, _config, _callback) {
         if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
-        }
-        else {
+        } else {
             var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
             _callback(tmpDiv.select('.MathJax_SVG'), glyphDefs, svgBBox);
         }
@@ -413,8 +408,7 @@ function convertEntities(_str) {
                     parseInt(innerMatch.substr(2), 16) :
                     parseInt(innerMatch.substr(1), 10)
             );
-        }
-        else outChar = entityToUnicode[innerMatch];
+        } else outChar = entityToUnicode[innerMatch];
 
         // as in regular HTML, if we didn't decode the entity just
         // leave the raw text in place.
@@ -514,8 +508,7 @@ function buildSVGText(containerNode, str) {
                         popup + '");return false;';
                 }
             }
-        }
-        else nodeType = 'tspan';
+        } else nodeType = 'tspan';
 
         if(nodeSpec.style) nodeAttrs.style = nodeSpec.style;
 
@@ -532,8 +525,7 @@ function buildSVGText(containerNode, str) {
 
             currentNode.appendChild(newNode);
             currentNode.appendChild(resetter);
-        }
-        else {
+        } else {
             currentNode.appendChild(newNode);
         }
 
@@ -581,16 +573,13 @@ function buildSVGText(containerNode, str) {
 
         if(tagType === 'br') {
             newLine();
-        }
-        else if(tagStyle === undefined) {
+        } else if(tagStyle === undefined) {
             addTextNode(currentNode, convertEntities(parti));
-        }
-        else {
+        } else {
             // tag - open or close
             if(match[1]) {
                 exitNode(tagType);
-            }
-            else {
+            } else {
                 var extra = match[4];
 
                 var nodeSpec = {type: tagType};
@@ -602,8 +591,7 @@ function buildSVGText(containerNode, str) {
                 if(css) {
                     css = css.replace(COLORMATCH, '$1 fill:');
                     if(tagStyle) css += ';' + tagStyle;
-                }
-                else if(tagStyle) css = tagStyle;
+                } else if(tagStyle) css = tagStyle;
 
                 if(css) nodeSpec.style = css;
 
@@ -650,8 +638,7 @@ exports.positionText = function positionText(s, x, y) {
                     text.attr(attr, 0);
                     val = 0;
                 }
-            }
-            else text.attr(attr, val);
+            } else text.attr(attr, val);
             return val;
         }
 
@@ -807,8 +794,7 @@ exports.makeEditable = function(context, options) {
                         .on('blur', function() { return false; })
                         .transition().remove();
                     dispatch.cancel.call(context, this.textContent);
-                }
-                else {
+                } else {
                     dispatch.input.call(context, this.textContent);
                     d3.select(this).call(alignHTMLWith(context, container, options));
                 }

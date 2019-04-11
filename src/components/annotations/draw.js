@@ -316,13 +316,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 }
                 basePx = ax._offset + ax.r2p(options[axLetter]);
                 autoAlignFraction = 0.5;
-            }
-            else {
+            } else {
                 if(axLetter === 'x') {
                     alignPosition = options[axLetter];
                     basePx = gs.l + gs.w * alignPosition;
-                }
-                else {
+                } else {
                     alignPosition = 1 - options[axLetter];
                     basePx = gs.t + gs.h * alignPosition;
                 }
@@ -344,8 +342,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     posPx.tail = ax._offset + ax.r2p(arrowLength);
                     // tail is data-referenced: autorange pads the text in px from the tail
                     textPadShift = textShift;
-                }
-                else {
+                } else {
                     posPx.tail = basePx + arrowLength;
                     // tail is specified in px from head, so autorange also pads vs head
                     textPadShift = textShift + arrowLength;
@@ -365,8 +362,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     if(shiftPlus > 0) {
                         posPx.tail += shiftPlus;
                         posPx.text += shiftPlus;
-                    }
-                    else if(shiftMinus > 0) {
+                    } else if(shiftMinus > 0) {
                         posPx.tail -= shiftMinus;
                         posPx.text -= shiftMinus;
                     }
@@ -374,8 +370,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
                 posPx.tail += overallShift;
                 posPx.head += overallShift;
-            }
-            else {
+            } else {
                 // with no arrow, the text rotates and *then* we put the anchor
                 // relative to the new bounding box
                 textShift = annSize * shiftFraction(autoAlignFraction, anchor);
@@ -419,8 +414,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 y: borderfull + yShift
             })
             .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null, gd);
-        }
-        else {
+        } else {
             var texty = borderfull + yShift - anntextBB.top;
             var textx = borderfull + xShift - anntextBB.left;
 
@@ -629,8 +623,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         }
 
                         drawArrow(dx, dy);
-                    }
-                    else if(!subplotId) {
+                    } else if(!subplotId) {
                         var xUpdate, yUpdate;
                         if(xa) {
                             xUpdate = xa.p2r(xa.r2p(options.x) + dx);
@@ -660,8 +653,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                                 options.xanchor, options.yanchor
                             );
                         }
-                    }
-                    else return;
+                    } else return;
 
                     annTextGroup.attr({
                         transform: 'translate(' + dx + ',' + dy + ')' + baseTextTransform
@@ -698,6 +690,5 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
                 Registry.call('_guiRelayout', gd, getUpdateObj());
             });
-    }
-    else annText.call(textLayout);
+    } else annText.call(textLayout);
 }

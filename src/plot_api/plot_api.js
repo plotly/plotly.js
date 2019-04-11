@@ -302,8 +302,7 @@ exports.plot = function(gd, data, layout, config) {
             var colorbarOpts = trace._module.colorbar;
             if(trace.visible !== true || !colorbarOpts) {
                 Plots.autoMargin(gd, 'cb' + trace.uid);
-            }
-            else connectColorbar(gd, cd, colorbarOpts);
+            } else connectColorbar(gd, cd, colorbarOpts);
         }
 
         Plots.doAutoMargin(gd);
@@ -1152,8 +1151,7 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
     try {
         // this is redundant, but necessary to not catch later possible errors!
         checkMoveTracesArgs(gd, currentIndices, newIndices);
-    }
-    catch(error) {
+    } catch(error) {
         // something went wrong, reset gd to be safe and rethrow error
         gd.data.splice(gd.data.length - traces.length, traces.length);
         throw error;
@@ -1347,8 +1345,7 @@ function restyle(gd, astr, val, _traces) {
         // the 3-arg form
         aobj = Lib.extendFlat({}, astr);
         if(_traces === undefined) _traces = val;
-    }
-    else {
+    } else {
         Lib.warn('Restyle fail.', astr, val, _traces);
         return Promise.reject();
     }
@@ -1445,16 +1442,14 @@ function storeCurrent(attr, val, newVal, preGUI) {
         for(var i = 0; i < maxLen; i++) {
             storeCurrent(attr + '[' + i + ']', arrayVal[i], arrayNew[i], preGUI);
         }
-    }
-    else if(Lib.isPlainObject(val) || Lib.isPlainObject(newVal)) {
+    } else if(Lib.isPlainObject(val) || Lib.isPlainObject(newVal)) {
         var objVal = Lib.isPlainObject(val) ? val : {};
         var objNew = Lib.isPlainObject(newVal) ? newVal : {};
         var objBoth = Lib.extendFlat({}, objVal, objNew);
         for(var key in objBoth) {
             storeCurrent(attr + '.' + key, objVal[key], objNew[key], preGUI);
         }
-    }
-    else if(preGUI[attr] === undefined) {
+    } else if(preGUI[attr] === undefined) {
         preGUI[attr] = undefinedToNull(val);
     }
 }
@@ -1649,15 +1644,12 @@ function _restyle(gd, aobj, traces) {
                     var thicknorm = topOrBottom ? gs.h : gs.w;
                     doextra(prefixDot + 'thickness', innerContFull.thickness *
                         (newVal === 'fraction' ? 1 / thicknorm : thicknorm), i);
-                }
-                else {
+                } else {
                     var lennorm = topOrBottom ? gs.w : gs.h;
                     doextra(prefixDot + 'len', innerContFull.len *
                         (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
                 }
-            }
-
-            else if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
+            } else if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
                 var labelsTo = 'x';
                 var valuesTo = 'y';
                 if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
@@ -1707,13 +1699,11 @@ function _restyle(gd, aobj, traces) {
                 }
                 helpers.swapXYData(cont);
                 flags.calc = flags.clearAxisTypes = true;
-            }
-            else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
+            } else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
                 // TODO: use manageArrays.applyContainerArrayChanges here too
                 helpers.manageArrayContainers(param, newVal, undoit);
                 flags.calc = true;
-            }
-            else {
+            } else {
                 if(valObject) {
                     // must redo calcdata when restyling array values of arrayOk attributes
                     // ... but no need to this for regl-based traces
@@ -1722,10 +1712,8 @@ function _restyle(gd, aobj, traces) {
                         (Lib.isArrayOrTypedArray(newVal) || Lib.isArrayOrTypedArray(oldVal))
                     ) {
                         flags.calc = true;
-                    }
-                    else editTypes.update(flags, valObject);
-                }
-                else {
+                    } else editTypes.update(flags, valObject);
+                } else {
                     /*
                      * if we couldn't find valObject,  assume a full recalc.
                      * This can happen if you're changing type and making
@@ -1888,8 +1876,7 @@ function relayout(gd, astr, val) {
 
     if(flags.layoutReplot) {
         seq.push(subroutines.layoutReplot);
-    }
-    else if(Object.keys(aobj).length) {
+    } else if(Object.keys(aobj).length) {
         axRangeSupplyDefaultsByPass(gd, flags, specs) || Plots.supplyDefaults(gd);
 
         if(flags.legend) seq.push(subroutines.doLegend);
@@ -2119,12 +2106,10 @@ function _relayout(gd, aobj) {
                 // ignore this if the same relayout call also provides oppositeAttr
                 var oppositeAttr = ai === 'height' ? 'width' : 'height';
                 doextra(oppositeAttr, fullLayout[oppositeAttr]);
-            }
-            else {
+            } else {
                 fullLayout[ai] = gd._initialAutoSize[ai];
             }
-        }
-        else if(ai === 'autosize') {
+        } else if(ai === 'autosize') {
             // depends on vi here too, so again can't use impliedEdits
             doextra('width', vi ? null : fullLayout.width);
             doextra('height', vi ? null : fullLayout.height);
@@ -2133,8 +2118,7 @@ function _relayout(gd, aobj) {
         else if(pleafPlus.match(AX_RANGE_RE)) {
             recordAlteredAxis(pleafPlus);
             nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
-        }
-        else if(pleafPlus.match(AX_AUTORANGE_RE)) {
+        } else if(pleafPlus.match(AX_AUTORANGE_RE)) {
             recordAlteredAxis(pleafPlus);
             nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
             var axFull = nestedProperty(fullLayout, ptrunk).get();
@@ -2143,8 +2127,7 @@ function _relayout(gd, aobj) {
                 // reset it so we don't get locked into a shrunken size
                 axFull._input.domain = axFull._inputDomain.slice();
             }
-        }
-        else if(pleafPlus.match(AX_DOMAIN_RE)) {
+        } else if(pleafPlus.match(AX_DOMAIN_RE)) {
             nestedProperty(fullLayout, ptrunk + '._inputDomain').set(null);
         }
 
@@ -2164,8 +2147,7 @@ function _relayout(gd, aobj) {
                     // I don't think this is needed, but left here in case there
                     // are edge cases I'm not thinking of.
                     doextra(ptrunk + '.autorange', true);
-                }
-                else if(!parentFull.autorange) {
+                } else if(!parentFull.autorange) {
                     // toggling log without autorange: need to also recalculate ranges
                     // because log axes use linearized values for range endpoints
                     var r0 = ax.range[0];
@@ -2181,13 +2163,11 @@ function _relayout(gd, aobj) {
                         // now set the range values as appropriate
                         doextra(ptrunk + '.range[0]', Math.log(r0) / Math.LN10);
                         doextra(ptrunk + '.range[1]', Math.log(r1) / Math.LN10);
-                    }
-                    else {
+                    } else {
                         doextra(ptrunk + '.range[0]', Math.pow(10, r0));
                         doextra(ptrunk + '.range[1]', Math.pow(10, r1));
                     }
-                }
-                else if(toLog) {
+                } else if(toLog) {
                     // just make sure the range is positive and in the right
                     // order, it'll get recalculated later
                     ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
@@ -2207,16 +2187,14 @@ function _relayout(gd, aobj) {
                 // Shapes do not need this :)
                 Registry.getComponentMethod('annotations', 'convertCoords')(gd, parentFull, vi, doextra);
                 Registry.getComponentMethod('images', 'convertCoords')(gd, parentFull, vi, doextra);
-            }
-            else {
+            } else {
                 // any other type changes: the range from the previous type
                 // will not make sense, so autorange it.
                 doextra(ptrunk + '.autorange', true);
                 doextra(ptrunk + '.range', null);
             }
             nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
-        }
-        else if(pleaf.match(AX_NAME_PATTERN)) {
+        } else if(pleaf.match(AX_NAME_PATTERN)) {
             var fullProp = nestedProperty(fullLayout, ai).get();
             var newType = (vi || {}).type;
 
@@ -2273,19 +2251,16 @@ function _relayout(gd, aobj) {
 
             if(parentFull.autorange) flags.calc = true;
             else flags.plot = true;
-        }
-        else {
+        } else {
             if((fullLayout._has('scatter-like') && fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
             ) {
                 flags.plot = true;
-            }
-            else if(fullLayout._has('gl2d')) {
+            } else if(fullLayout._has('gl2d')) {
                 flags.plot = true;
-            }
-            else if(valObject) editTypes.update(flags, valObject);
+            } else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
 
             p.set(vi);
@@ -2412,14 +2387,11 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         gd.layout = undefined;
 
         seq.push(function() { return exports.plot(gd, data, layout); });
-    }
-    else if(restyleFlags.fullReplot) {
+    } else if(restyleFlags.fullReplot) {
         seq.push(exports.plot);
-    }
-    else if(relayoutFlags.layoutReplot) {
+    } else if(relayoutFlags.layoutReplot) {
         seq.push(subroutines.layoutReplot);
-    }
-    else {
+    } else {
         seq.push(Plots.previousPromises);
         axRangeSupplyDefaultsByPass(gd, relayoutFlags, relayoutSpecs) || Plots.supplyDefaults(gd);
 
@@ -2597,8 +2569,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     continue;
                 }
             }
-        }
-        else {
+        } else {
             Lib.warn('unrecognized GUI edit: ' + key);
         }
         // if we got this far, the new value was accepted as the new starting
@@ -2658,8 +2629,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                 if(match.attr) {
                     oldRev = nestedProperty(oldFullLayout, match.attr).get();
                     newRev = oldRev && getNewRev(match.attr, layout);
-                }
-                else {
+                } else {
                     oldRev = fullInput.uirevision;
                     // inheritance for trace.uirevision is simple, just layout.uirevision
                     newRev = newTrace.uirevision;
@@ -2676,8 +2646,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                         continue;
                     }
                 }
-            }
-            else {
+            } else {
                 Lib.warn('unrecognized GUI edit: ' + key + ' in trace uid ' + uid);
             }
             delete tracePreGUI[key];
@@ -2721,8 +2690,7 @@ exports.react = function(gd, data, layout, config) {
     // you can use this as the initial draw as well as to update
     if(!Lib.isPlotDiv(gd) || !oldFullData || !oldFullLayout) {
         plotDone = exports.newPlot(gd, data, layout, config);
-    }
-    else {
+    } else {
         if(Lib.isPlainObject(data)) {
             var obj = data;
             data = obj.data;
@@ -2801,12 +2769,10 @@ exports.react = function(gd, data, layout, config) {
             seq.push(function() {
                 return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
             });
-        }
-        else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
+        } else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
             gd._fullLayout._skipDefaults = true;
             seq.push(exports.plot);
-        }
-        else {
+        } else {
             for(var componentType in relayoutFlags.arrays) {
                 var indices = relayoutFlags.arrays[componentType];
                 if(indices.length) {
@@ -2815,8 +2781,7 @@ exports.react = function(gd, data, layout, config) {
                         for(var i = 0; i < indices.length; i++) {
                             drawOne(gd, indices[i]);
                         }
-                    }
-                    else {
+                    } else {
                         var draw = Registry.getComponentMethod(componentType, 'draw');
                         if(draw === Lib.noop) {
                             throw new Error('cannot draw components: ' + componentType);
@@ -3035,8 +3000,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         if(newVal === undefined) {
             if(canBeDataArray && wasArray) flags.calc = true;
             else changed();
-        }
-        else if(valObject._isLinkedToArray) {
+        } else if(valObject._isLinkedToArray) {
             var arrayEditIndices = [];
             var extraIndices = false;
             if(!inArray) flags.arrays[key] = arrayEditIndices;
@@ -3046,8 +3010,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             if(minLen !== maxLen) {
                 if(valObject.editType === 'arraydraw') {
                     extraIndices = true;
-                }
-                else {
+                } else {
                     changed();
                     continue;
                 }
@@ -3067,11 +3030,9 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
                     arrayEditIndices.push(i);
                 }
             }
-        }
-        else if(!valType && Lib.isPlainObject(oldVal)) {
+        } else if(!valType && Lib.isPlainObject(oldVal)) {
             getDiffFlags(oldVal, newVal, parts, opts);
-        }
-        else if(canBeDataArray) {
+        } else if(canBeDataArray) {
             if(wasArray && nowArray) {
                 // don't try to diff two data arrays. If immutable we know the data changed,
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
@@ -3083,13 +3044,10 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
                 if(immutable || opts.newDataRevision) {
                     changed();
                 }
-            }
-            else if(wasArray !== nowArray) {
+            } else if(wasArray !== nowArray) {
                 flags.calc = true;
-            }
-            else changed();
-        }
-        else if(wasArray && nowArray) {
+            } else changed();
+        } else if(wasArray && nowArray) {
             // info array, colorscale, 'any' - these are short, just stringify.
             // I don't *think* that covers up any real differences post-validation, does it?
             // otherwise we need to dive in 1 (info_array) or 2 (colorscale) levels and compare
@@ -3097,8 +3055,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             if(oldVal.length !== newVal.length || String(oldVal) !== String(newVal)) {
                 changed();
             }
-        }
-        else {
+        } else {
             changed();
         }
     }
@@ -3110,8 +3067,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             if(valObjectCanBeDataArray(valObject) && Array.isArray(newContainer[key])) {
                 flags.calc = true;
                 return;
-            }
-            else changed();
+            } else changed();
         }
     }
 }
@@ -3131,8 +3087,7 @@ function diffConfig(oldConfig, newConfig) {
                 if(diffConfig(oldVal, newVal)) {
                     return true;
                 }
-            }
-            else if(Array.isArray(oldVal) && Array.isArray(newVal)) {
+            } else if(Array.isArray(oldVal) && Array.isArray(newVal)) {
                 if(oldVal.length !== newVal.length) {
                     return true;
                 }
@@ -3142,14 +3097,12 @@ function diffConfig(oldConfig, newConfig) {
                             if(diffConfig(oldVal[i], newVal[i])) {
                                 return true;
                             }
-                        }
-                        else {
+                        } else {
                             return true;
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 return true;
             }
         }

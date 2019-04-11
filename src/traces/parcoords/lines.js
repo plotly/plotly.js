@@ -382,8 +382,7 @@ module.exports = function(canvasGL, d) {
                     var lim;
                     if(dimP < initialDims.length) {
                         lim = initialDims[dimP].brush.filter.getBounds()[loHi];
-                    }
-                    else lim = loHi;
+                    } else lim = loHi;
                     lims[loHi][abcd][d] = lim + (2 * loHi - 1) * filterEpsilon;
                 }
             }

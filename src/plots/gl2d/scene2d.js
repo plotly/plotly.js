@@ -110,8 +110,7 @@ proto.makeFramework = function() {
 
         this.canvas = STATIC_CANVAS;
         this.gl = STATIC_CONTEXT;
-    }
-    else {
+    } else {
         var liveCanvas = this.container.querySelector('.gl-canvas-focus');
 
         var gl = getContext({
@@ -537,11 +536,9 @@ proto.updateFx = function(dragmode) {
     // set proper cursor
     if(dragmode === 'pan') {
         this.mouseContainer.style.cursor = 'move';
-    }
-    else if(dragmode === 'zoom') {
+    } else if(dragmode === 'zoom') {
         this.mouseContainer.style.cursor = 'crosshair';
-    }
-    else {
+    } else {
         this.mouseContainer.style.cursor = null;
     }
 };
@@ -612,8 +609,7 @@ proto.draw = function() {
         }
 
         glplot.setDirty();
-    }
-    else if(!camera.panning && this.isMouseOver) {
+    } else if(!camera.panning && this.isMouseOver) {
         this.selectBox.enabled = false;
 
         var size = fullLayout._size;

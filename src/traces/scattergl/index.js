@@ -473,8 +473,7 @@ function plot(gd, subplot, cdata) {
                     if(srcPos[lastptdef + 1] !== 0) {
                         pos = pos.concat([srcPos[lastptdef], 0]);
                     }
-                }
-                else if(trace.fill === 'tozerox') {
+                } else if(trace.fill === 'tozerox') {
                     firstptdef = 0;
                     while(firstptdef < srcPos.length && isNaN(srcPos[firstptdef])) {
                         firstptdef += 2;
@@ -490,8 +489,7 @@ function plot(gd, subplot, cdata) {
                     if(srcPos[lastptdef] !== 0) {
                         pos = pos.concat([ 0, srcPos[lastptdef + 1]]);
                     }
-                }
-                else if(trace.fill === 'toself' || trace.fill === 'tonext') {
+                } else if(trace.fill === 'toself' || trace.fill === 'tonext') {
                     pos = [];
                     last = 0;
                     for(j = 0; j < srcPos.length; j += 2) {
@@ -505,8 +503,7 @@ function plot(gd, subplot, cdata) {
                     if(last) {
                         pos.push(srcPos[last], srcPos[last + 1]);
                     }
-                }
-                else {
+                } else {
                     var nextTrace = trace._nexttrace;
 
                     if(nextTrace) {
@@ -709,18 +706,15 @@ function hoverPoints(pointData, xval, yval, hovermode) {
                 Math.min(xl, xr), Math.min(ya._rl[0], ya._rl[1]),
                 Math.max(xl, xr), Math.max(ya._rl[0], ya._rl[1])
             );
-        }
-        else {
+        } else {
             ids = stash.tree.range(
                 Math.min(xl, xr), Math.min(yl, yr),
                 Math.max(xl, xr), Math.max(yl, yr)
             );
         }
-    }
-    else if(stash.ids) {
+    } else if(stash.ids) {
         ids = stash.ids;
-    }
-    else return [pointData];
+    } else return [pointData];
 
     // pick the id closest to the point
     // note that point possibly may not be found
@@ -738,8 +732,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
                 id = ids[i];
             }
         }
-    }
-    else {
+    } else {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             pty = y[ids[i]];
@@ -902,8 +895,7 @@ function selectPoints(searchInfo, selectionTester) {
                     x: x[i],
                     y: y[i]
                 });
-            }
-            else {
+            } else {
                 unels.push(i);
             }
         }

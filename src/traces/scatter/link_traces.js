@@ -25,16 +25,13 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
         if(group) {
             if(group in groupIndices) {
                 groupIndex = groupIndices[group];
-            }
-            else {
+            } else {
                 groupIndex = groupIndices[group] = nextGroupIndex;
                 nextGroupIndex++;
             }
-        }
-        else if(trace.fill in LINKEDFILLS && prevUnstackedGroupIndex >= 0) {
+        } else if(trace.fill in LINKEDFILLS && prevUnstackedGroupIndex >= 0) {
             groupIndex = prevUnstackedGroupIndex;
-        }
-        else {
+        } else {
             groupIndex = prevUnstackedGroupIndex = nextGroupIndex;
             nextGroupIndex++;
         }

@@ -158,8 +158,7 @@ exports.cleanLayout = function(layout) {
             if(ann.ref === 'paper') {
                 ann.xref = 'paper';
                 ann.yref = 'paper';
-            }
-            else if(ann.ref === 'data') {
+            } else if(ann.ref === 'data') {
                 ann.xref = 'x';
                 ann.yref = 'y';
             }
@@ -186,8 +185,7 @@ exports.cleanLayout = function(layout) {
         if(legend.x > 3) {
             legend.x = 1.02;
             legend.xanchor = 'left';
-        }
-        else if(legend.x < -2) {
+        } else if(legend.x < -2) {
             legend.x = -0.02;
             legend.xanchor = 'right';
         }
@@ -195,8 +193,7 @@ exports.cleanLayout = function(layout) {
         if(legend.y > 3) {
             legend.y = 1.02;
             legend.yanchor = 'bottom';
-        }
-        else if(legend.y < -2) {
+        } else if(legend.y < -2) {
             legend.y = -0.02;
             legend.yanchor = 'top';
         }
@@ -340,8 +337,7 @@ exports.cleanData = function(data) {
                 for(i = 0; i < trace.textposition.length; i++) {
                     trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
                 }
-            }
-            else if(trace.textposition) {
+            } else if(trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
             }
         }
@@ -397,8 +393,7 @@ exports.cleanData = function(data) {
                 );
                 // if no common part, leave whatever name was (or wasn't) there
                 if(newName) trace.name = newName;
-            }
-            else if((increasingName || decreasingName) && !trace.name) {
+            } else if((increasingName || decreasingName) && !trace.name) {
                 // one sub-name existed but not the base name - just use the sub-name
                 trace.name = increasingName || decreasingName;
             }
@@ -570,11 +565,9 @@ exports.swapXYData = function(trace) {
 exports.coerceTraceIndices = function(gd, traceIndices) {
     if(isNumeric(traceIndices)) {
         return [traceIndices];
-    }
-    else if(!Array.isArray(traceIndices) || !traceIndices.length) {
+    } else if(!Array.isArray(traceIndices) || !traceIndices.length) {
         return gd.data.map(function(_, i) { return i; });
-    }
-    else if(Array.isArray(traceIndices)) {
+    } else if(Array.isArray(traceIndices)) {
         var traceIndicesOut = [];
         for(var i = 0; i < traceIndices.length; i++) {
             if(Lib.isIndex(traceIndices[i], gd.data.length)) {

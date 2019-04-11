@@ -41,8 +41,7 @@ module.exports = function calc(gd, trace, opts) {
     if(auto !== false && mid !== undefined) {
         if(max - mid > mid - min) {
             min = mid - (max - mid);
-        }
-        else if(max - mid < mid - min) {
+        } else if(max - mid < mid - min) {
             max = mid + (mid - min);
         }
     }

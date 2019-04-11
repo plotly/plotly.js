@@ -238,8 +238,7 @@ axes.minDtick = function(ax, newDiff, newFirst, allow) {
     else if(ax._minDtick === undefined) {
         ax._minDtick = newDiff;
         ax._forceTick0 = newFirst;
-    }
-    else if(ax._minDtick) {
+    } else if(ax._minDtick) {
         // existing minDtick is an integer multiple of newDiff
         // (within rounding err)
         // and forceTick0 can be shifted to newFirst
@@ -343,8 +342,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar, size) {
     if(size) {
         dummyAx.dtick = size;
         dummyAx.tick0 = cleanTicks.tick0(undefined, dummyAx.type, calendar);
-    }
-    else {
+    } else {
         var size0;
         if(nbins) size0 = ((dataMax - dataMin) / nbins);
         else {
@@ -383,8 +381,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar, size) {
 
         bincount = 1 + Math.floor((dataMax - binStart) / finalSize);
         binEnd = binStart + bincount * finalSize;
-    }
-    else {
+    } else {
         // month ticks - should be the only nonlinear kind we have at this point.
         // dtick (as supplied by axes.autoTick) only has nonlinear values on
         // date and log axes, but even if you display a histogram on a log axis
@@ -448,8 +445,7 @@ function autoShiftNumericBins(binStart, data, ax, dataMin, dataMax) {
             binStart -= 0.5;
             if(binStart + ax.dtick < dataMin) binStart += ax.dtick;
         }
-    }
-    else if(midcount < dataCount * 0.1) {
+    } else if(midcount < dataCount * 0.1) {
         if(edgecount > dataCount * 0.3 ||
                 nearEdge(dataMin) || nearEdge(dataMax)) {
             // lots of points at the edge, not many in the middle
@@ -476,15 +472,13 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
             // so if we start the bins here, all but leap years will
             // get hover-labeled as exact years.
             binStart = axes.tickIncrement(binStart, 'M6', 'reverse') + ONEDAY * 1.5;
-        }
-        else if(stats.exactMonths > threshold) {
+        } else if(stats.exactMonths > threshold) {
             // Months are not as clean, but if we shift half the *longest*
             // month (31/2 days) then 31-day months will get labeled exactly
             // and shorter months will get labeled with the correct month
             // but shifted 12-36 hours into it.
             binStart = axes.tickIncrement(binStart, 'M1', 'reverse') + ONEDAY * 15.5;
-        }
-        else {
+        } else {
             // Shifting half a day is exact, but since these are month bins it
             // will always give a somewhat odd-looking label, until we do something
             // smarter like showing the bin boundaries (or the bounds of the actual
@@ -708,42 +702,34 @@ axes.autoTicks = function(ax, roughDTick) {
             roughDTick /= ONEAVGYEAR;
             base = getBase(10);
             ax.dtick = 'M' + (12 * roundDTick(roughDTick, base, roundBase10));
-        }
-        else if(roughX2 > ONEAVGMONTH) {
+        } else if(roughX2 > ONEAVGMONTH) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
-        }
-        else if(roughX2 > ONEDAY) {
+        } else if(roughX2 > ONEDAY) {
             ax.dtick = roundDTick(roughDTick, ONEDAY, roundDays);
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
-        }
-        else if(roughX2 > ONEHOUR) {
+        } else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
-        }
-        else if(roughX2 > ONEMIN) {
+        } else if(roughX2 > ONEMIN) {
             ax.dtick = roundDTick(roughDTick, ONEMIN, roundBase60);
-        }
-        else if(roughX2 > ONESEC) {
+        } else if(roughX2 > ONESEC) {
             ax.dtick = roundDTick(roughDTick, ONESEC, roundBase60);
-        }
-        else {
+        } else {
             // milliseconds
             base = getBase(10);
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
-    }
-    else if(ax.type === 'log') {
+    } else if(ax.type === 'log') {
         ax.tick0 = 0;
         var rng = Lib.simpleMap(ax.range, ax.r2l);
 
         if(roughDTick > 0.7) {
             // only show powers of 10
             ax.dtick = Math.ceil(roughDTick);
-        }
-        else if(Math.abs(rng[1] - rng[0]) < 1) {
+        } else if(Math.abs(rng[1] - rng[0]) < 1) {
             // span is less than one power of 10
             var nt = 1.5 * Math.abs((rng[1] - rng[0]) / roughDTick);
 
@@ -752,24 +738,20 @@ axes.autoTicks = function(ax, roughDTick) {
                 Math.pow(10, rng[0])) / nt;
             base = getBase(10);
             ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
-        }
-        else {
+        } else {
             // include intermediates between powers of 10,
             // labeled with small digits
             // ax.dtick = "D2" (show 2 and 5) or "D1" (show all digits)
             ax.dtick = (roughDTick > 0.3) ? 'D2' : 'D1';
         }
-    }
-    else if(ax.type === 'category' || ax.type === 'multicategory') {
+    } else if(ax.type === 'category' || ax.type === 'multicategory') {
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
-    }
-    else if(isAngular(ax)) {
+    } else if(isAngular(ax)) {
         ax.tick0 = 0;
         base = 1;
         ax.dtick = roundDTick(roughDTick, base, roundAngles);
-    }
-    else {
+    } else {
         // auto ticks always start at 0
         ax.tick0 = 0;
         base = getBase(10);
@@ -817,8 +799,7 @@ function autoTickRound(ax) {
             if(tick0len > 10 || tick0str.substr(5) !== '01-01') ax._tickround = 'd';
             // show the month unless ticks are full multiples of a year
             else ax._tickround = (+(dtick.substr(1)) % 12 === 0) ? 'y' : 'm';
-        }
-        else if((dtick >= ONEDAY && tick0len <= 10) || (dtick >= ONEDAY * 15)) ax._tickround = 'd';
+        } else if((dtick >= ONEDAY && tick0len <= 10) || (dtick >= ONEDAY * 15)) ax._tickround = 'd';
         else if((dtick >= ONEMIN && tick0len <= 16) || (dtick >= ONEHOUR)) ax._tickround = 'M';
         else if((dtick >= ONESEC && tick0len <= 19) || (dtick >= ONEMIN)) ax._tickround = 'S';
         else {
@@ -833,8 +814,7 @@ function autoTickRound(ax) {
             // something, fall back on maximum precision
             if(ax._tickround < 0) ax._tickround = 4;
         }
-    }
-    else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
+    } else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
         // linear or log (except D1, D2)
         var rng = ax.range.map(ax.r2d || Number);
         if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
@@ -847,8 +827,7 @@ function autoTickRound(ax) {
         if(Math.abs(rangeexp) > 3) {
             if(isSIFormat(ax.exponentformat) && !beyondSI(rangeexp)) {
                 ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
-            }
-            else ax._tickexponent = rangeexp;
+            } else ax._tickexponent = rangeexp;
         }
     }
     // D1 or D2 (log)
@@ -886,8 +865,7 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
 
         return Math.floor(x2) +
             Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
-    }
-    else throw 'unrecognized dtick ' + String(dtick);
+    } else throw 'unrecognized dtick ' + String(dtick);
 };
 
 // calculate the first tick on an axis
@@ -943,15 +921,13 @@ axes.tickFirst = function(ax) {
     else if(tType === 'L') {
         return Math.log(sRound(
             (Math.pow(10, r0) - tick0) / dtNum) * dtNum + tick0) / Math.LN10;
-    }
-    else if(tType === 'D') {
+    } else if(tType === 'D') {
         var tickset = (dtick === 'D2') ? roundLog2 : roundLog1;
         var frac = Lib.roundUp(Lib.mod(r0, 1), tickset, axrev);
 
         return Math.floor(r0) +
             Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
-    }
-    else throw 'unrecognized dtick ' + String(dtick);
+    } else throw 'unrecognized dtick ' + String(dtick);
 };
 
 // draw the text for one tick.
@@ -1102,8 +1078,7 @@ function formatDate(ax, out, hover, extraPrecision) {
         if(dateStr === '00:00:00' || dateStr === '00:00') {
             dateStr = headStr;
             headStr = '';
-        }
-        else if(dateStr.length === 8) {
+        } else if(dateStr.length === 8) {
             // strip off seconds if they're zero (zero fractional seconds
             // are already omitted)
             // but we never remove minutes and leave just hours
@@ -1117,8 +1092,7 @@ function formatDate(ax, out, hover, extraPrecision) {
             // except for year headPart: turn this into "Jan 1, 2000" etc.
             if(tr === 'd') dateStr += ', ' + headStr;
             else dateStr = headStr + (dateStr ? ', ' + dateStr : '');
-        }
-        else if(!ax._inCalcTicks || (headStr !== ax._prevDateHead)) {
+        } else if(!ax._inCalcTicks || (headStr !== ax._prevDateHead)) {
             dateStr += '<br>' + headStr;
             ax._prevDateHead = headStr;
         }
@@ -1150,8 +1124,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
 
     if(tickformat || (dtChar0 === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
-    }
-    else if(isNumeric(dtick) || ((dtChar0 === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
+    } else if(isNumeric(dtick) || ((dtChar0 === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
         var p = Math.round(x);
         var absP = Math.abs(p);
         var exponentFormat = ax.exponentformat;
@@ -1161,22 +1134,18 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
             else out.text = '10<sup>' + (p > 1 ? '' : MINUS_SIGN) + absP + '</sup>';
 
             out.fontSize *= 1.25;
-        }
-        else if((exponentFormat === 'e' || exponentFormat === 'E') && absP > 2) {
+        } else if((exponentFormat === 'e' || exponentFormat === 'E') && absP > 2) {
             out.text = '1' + exponentFormat + (p > 0 ? '+' : MINUS_SIGN) + absP;
-        }
-        else {
+        } else {
             out.text = numFormat(Math.pow(10, x), ax, '', 'fakehover');
             if(dtick === 'D1' && ax._id.charAt(0) === 'y') {
                 out.dy -= out.fontSize / 6;
             }
         }
-    }
-    else if(dtChar0 === 'D') {
+    } else if(dtChar0 === 'D') {
         out.text = String(Math.round(Math.pow(10, Lib.mod(x, 1))));
         out.fontSize *= 0.75;
-    }
-    else throw 'unrecognized dtick ' + String(dtick);
+    } else throw 'unrecognized dtick ' + String(dtick);
 
     // if 9's are printed on log scale, move the 10's away a bit
     if(ax.dtick === 'D1') {
@@ -1184,8 +1153,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         if(firstChar === '0' || firstChar === '1') {
             if(ax._id.charAt(0) === 'y') {
                 out.dx -= out.fontSize / 4;
-            }
-            else {
+            } else {
                 out.dy += out.fontSize / 2;
                 out.dx += (ax.range[1] > ax.range[0] ? 1 : -1) *
                     out.fontSize * (x < 0 ? 0.5 : 0.25);
@@ -1370,8 +1338,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         // 0 is just 0, but may get exponent if it's the last tick
         v = '0';
         isNeg = false;
-    }
-    else {
+    } else {
         v += e;
         // take out a common exponent, if any
         if(exponent) {
@@ -1384,8 +1351,7 @@ function numFormat(v, ax, fmtoverride, hover) {
             v = String(Math.round(v));
             v = v.substr(0, v.length + tickRound);
             for(var i = tickRound; i < 0; i++) v += '0';
-        }
-        else {
+        } else {
             v = String(v);
             var dp = v.indexOf('.') + 1;
             if(dp) v = v.substr(0, dp + tickRound).replace(/\.?0+$/, '');
@@ -1405,14 +1371,11 @@ function numFormat(v, ax, fmtoverride, hover) {
 
         if(exponentFormat === 'e' || exponentFormat === 'E') {
             v += exponentFormat + signedExponent;
-        }
-        else if(exponentFormat === 'power') {
+        } else if(exponentFormat === 'power') {
             v += '×10<sup>' + signedExponent + '</sup>';
-        }
-        else if(exponentFormat === 'B' && exponent === 9) {
+        } else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
-        }
-        else if(isSIFormat(exponentFormat)) {
+        } else if(isSIFormat(exponentFormat)) {
             v += SIPREFIXES[exponent / 3 + 5];
         }
     }
@@ -2344,8 +2307,7 @@ axes.drawGrid = function(gd, ax, opts) {
     var counterAx = opts.counterAxis;
     if(ax.showgrid === false) {
         vals = [];
-    }
-    else if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
+    } else if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
         var isArrayMode = ax.tickmode === 'array';
         for(var i = 0; i < vals.length; i++) {
             var xi = vals[i].x;
@@ -2980,8 +2942,7 @@ function swapAxisGroup(gd, xIds, yIds) {
                 // type is special - if we find a mixture of linear and log,
                 // coerce them all to linear on flipping
                 coerceLinearX = true;
-            }
-            else if(xVali !== xVal) allEqual = false;
+            } else if(xVali !== xVal) allEqual = false;
         }
         for(j = 1; j < yFullAxes.length && allEqual; j++) {
             var yVali = yFullAxes[j][keyi];
@@ -2990,8 +2951,7 @@ function swapAxisGroup(gd, xIds, yIds) {
                 // type is special - if we find a mixture of linear and log,
                 // coerce them all to linear on flipping
                 coerceLinearY = true;
-            }
-            else if(yFullAxes[j][keyi] !== yVal) allEqual = false;
+            } else if(yFullAxes[j][keyi] !== yVal) allEqual = false;
         }
         if(allEqual) {
             if(coerceLinearX) layout[xFullAxes[0]._name].type = 'linear';

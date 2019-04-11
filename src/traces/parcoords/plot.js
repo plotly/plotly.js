@@ -59,8 +59,7 @@ module.exports = function plot(gd, cdparcoords) {
             delete gdDimension.constraintrange;
             delete fullDimension.constraintrange;
             newConstraints = null;
-        }
-        else {
+        } else {
             if(newConstraints.length === 1) newConstraints = newConstraints[0];
             gdDimension.constraintrange = newConstraints;
             fullDimension.constraintrange = newConstraints.slice();

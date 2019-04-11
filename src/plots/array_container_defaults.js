@@ -59,8 +59,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
         if(!Lib.isPlainObject(itemIn)) {
             itemOut = templater.newItem({});
             itemOut[inclusionAttr] = false;
-        }
-        else {
+        } else {
             itemOut = templater.newItem(itemIn);
         }
 
