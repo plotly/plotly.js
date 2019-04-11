@@ -106,55 +106,7 @@ exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
  *      constrain the hover label and determine whether to show it on the left or right
  */
 exports.loneHover = function loneHover(hoverItem, opts) {
-    var pointData = {
-        color: hoverItem.color || Color.defaultLine,
-        x0: hoverItem.x0 || hoverItem.x || 0,
-        x1: hoverItem.x1 || hoverItem.x || 0,
-        y0: hoverItem.y0 || hoverItem.y || 0,
-        y1: hoverItem.y1 || hoverItem.y || 0,
-        xLabel: hoverItem.xLabel,
-        yLabel: hoverItem.yLabel,
-        zLabel: hoverItem.zLabel,
-        text: hoverItem.text,
-        name: hoverItem.name,
-        idealAlign: hoverItem.idealAlign,
-
-        // optional extra bits of styling
-        borderColor: hoverItem.borderColor,
-        fontFamily: hoverItem.fontFamily,
-        fontSize: hoverItem.fontSize,
-        fontColor: hoverItem.fontColor,
-        nameLength: hoverItem.nameLength,
-        textAlign: hoverItem.textAlign,
-
-        // filler to make createHoverText happy
-        trace: hoverItem.trace || {
-            index: 0,
-            hoverinfo: ''
-        },
-        xa: {_offset: 0},
-        ya: {_offset: 0},
-        index: 0,
-
-        hovertemplate: hoverItem.hovertemplate || false,
-        eventData: hoverItem.eventData || false,
-        hovertemplateLabels: hoverItem.hovertemplateLabels || false,
-    };
-
-    var container3 = d3.select(opts.container);
-    var outerContainer3 = opts.outerContainer ?
-        d3.select(opts.outerContainer) : container3;
-
-    var fullOpts = {
-        hovermode: 'closest',
-        rotateLabels: false,
-        bgColor: opts.bgColor || Color.background,
-        container: container3,
-        outerContainer: outerContainer3
-    };
-    var hoverLabel = createHoverText([pointData], fullOpts, opts.gd);
-    alignHoverText(hoverLabel, fullOpts.rotateLabels);
-
+    var hoverLabel = exports.multiHovers(hoverItem, opts);
     return hoverLabel.node();
 };
 
@@ -199,7 +151,6 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
             hovertemplateLabels: hoverItem.hovertemplateLabels || false,
         };
     });
-
 
     var container3 = d3.select(opts.container);
     var outerContainer3 = opts.outerContainer ? d3.select(opts.outerContainer) : container3;
