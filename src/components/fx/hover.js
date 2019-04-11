@@ -77,7 +77,7 @@ exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
 };
 
 /*
- * Draw a single hover item in a pre-existing svg container somewhere
+ * Draw a single hover item or an array of hover item in a pre-existing svg container somewhere
  * hoverItem should have keys:
  *    - x and y (or x0, x1, y0, and y1):
  *      the pixel position to mark, relative to opts.container
@@ -104,14 +104,15 @@ exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
  *    - outerContainer:
  *      normally a parent of `container`, sets the bounding box to use to
  *      constrain the hover label and determine whether to show it on the left or right
+ * opts can have optional keys:
+ *    - anchorIndex:
+        the index of the hover item used as an anchor for positioning.
+        The other hover items will be pushed up or down to prevent overlap.
  */
-exports.loneHover = function loneHover(hoverItem, opts) {
-    var hoverLabel = exports.multiHovers(hoverItem, opts);
-    return hoverLabel.node();
-};
-
-exports.multiHovers = function multiHovers(hoverItems, opts) {
+exports.loneHover = function loneHover(hoverItems, opts) {
+    var multiHover = true;
     if(!Array.isArray(hoverItems)) {
+        multiHover = false;
         hoverItems = [hoverItems];
     }
 
@@ -190,7 +191,7 @@ exports.multiHovers = function multiHovers(hoverItems, opts) {
 
     alignHoverText(hoverLabel, fullOpts.rotateLabels);
 
-    return hoverLabel;
+    return multiHover ? hoverLabel : hoverLabel.node();
 };
 
 // The actual implementation is here:

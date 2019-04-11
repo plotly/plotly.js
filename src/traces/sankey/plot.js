@@ -221,7 +221,7 @@ module.exports = function plot(gd, calcData) {
             });
         }
 
-        var tooltips = Fx.multiHovers(hoverItems, {
+        var tooltips = Fx.loneHover(hoverItems, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
             gd: gd,
