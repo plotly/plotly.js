@@ -162,7 +162,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 .attr('d', isBlank ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
-            appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
+            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1);
 
             if(plotinfo.layerClipId) {
                 Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
@@ -179,7 +179,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo);
 };
 
-function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
+function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     var fullLayout = gd._fullLayout;
     var textPosition;
 
@@ -225,6 +225,21 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var barColor = style.getBarColor(calcTrace[i], trace);
     var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
+
+    // Special case: don't use the c2p(v, true) value on log size axes,
+    // so that we can get correctly inside text scaling
+    var di = bar.datum();
+    if(orientation === 'h') {
+        var xa = plotinfo.xaxis;
+        if(xa.type === 'log' && di.s0 <= 0) {
+            x0 = xa._length;
+        }
+    } else {
+        var ya = plotinfo.yaxis;
+        if(ya.type === 'log' && di.s0 <= 0) {
+            y0 = ya._length;
+        }
+    }
 
     // padding excluded
     var barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
