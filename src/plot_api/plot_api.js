@@ -1625,18 +1625,17 @@ function _restyle(gd, aobj, traces) {
                 for(var impliedKey in valObject.impliedEdits) {
                     doextra(Lib.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey], i);
                 }
-            }
-
-            // changing colorbar size modes,
-            // make the resulting size not change
-            // note that colorbar fractional sizing is based on the
-            // original plot size, before anything (like a colorbar)
-            // increases the margins
-            else if((finalPart === 'thicknessmode' || finalPart === 'lenmode') &&
+            } else if((finalPart === 'thicknessmode' || finalPart === 'lenmode') &&
                     oldVal !== newVal &&
                     (newVal === 'fraction' || newVal === 'pixels') &&
                     innerContFull
             ) {
+                // changing colorbar size modes,
+                // make the resulting size not change
+                // note that colorbar fractional sizing is based on the
+                // original plot size, before anything (like a colorbar)
+                // increases the margins
+
                 var gs = fullLayout._size;
                 var orient = innerContFull.orient;
                 var topOrBottom = (orient === 'top') || (orient === 'bottom');
@@ -1690,10 +1689,10 @@ function _restyle(gd, aobj, traces) {
                     if((param.get() || defaultOrientation) === contFull.orientation) {
                         continue;
                     }
-                }
-                // orientationaxes has no value,
-                // it flips everything and the axes
-                else if(ai === 'orientationaxes') {
+                } else if(ai === 'orientationaxes') {
+                    // orientationaxes has no value,
+                    // it flips everything and the axes
+
                     cont.orientation =
                         {v: 'h', h: 'v'}[contFull.orientation];
                 }
@@ -2113,9 +2112,9 @@ function _relayout(gd, aobj) {
             // depends on vi here too, so again can't use impliedEdits
             doextra('width', vi ? null : fullLayout.width);
             doextra('height', vi ? null : fullLayout.height);
-        }
-        // check autorange vs range
-        else if(pleafPlus.match(AX_RANGE_RE)) {
+        } else if(pleafPlus.match(AX_RANGE_RE)) {
+            // check autorange vs range
+
             recordAlteredAxis(pleafPlus);
             nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         } else if(pleafPlus.match(AX_AUTORANGE_RE)) {
@@ -2240,9 +2239,9 @@ function _relayout(gd, aobj) {
             objEdits[propStr] = vi;
 
             delete aobj[ai];
-        }
-        // handle axis reversal explicitly, as there's no 'reverse' attribute
-        else if(pleaf === 'reverse') {
+        } else if(pleaf === 'reverse') {
+            // handle axis reversal explicitly, as there's no 'reverse' attribute
+
             if(parentIn.range) parentIn.range.reverse();
             else {
                 doextra(ptrunk + '.autorange', true);

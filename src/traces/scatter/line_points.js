@@ -293,9 +293,10 @@ module.exports = function linePoints(d, opts) {
         xEdge = (pt[0] < xEdge0) ? xEdge0 : (pt[0] > xEdge1) ? xEdge1 : 0;
         yEdge = (pt[1] < yEdge0) ? yEdge0 : (pt[1] > yEdge1) ? yEdge1 : 0;
         if(xEdge || yEdge) {
-            // to get fills right - if first point is far, push it toward the
-            // screen in whichever direction(s) are far
             if(!pti) {
+                // to get fills right - if first point is far, push it toward the
+                // screen in whichever direction(s) are far
+
                 pts[pti++] = [xEdge || pt[0], yEdge || pt[1]];
             } else if(lastFarPt) {
                 // both this point and the last are outside the nearby region
@@ -305,9 +306,9 @@ module.exports = function linePoints(d, opts) {
                     updateEdgesForReentry(intersections[0]);
                     pts[pti++] = intersections[1];
                 }
-            }
-            // we're leaving the nearby region - add the point where we left it
-            else {
+            } else {
+                // we're leaving the nearby region - add the point where we left it
+
                 edgePt = getEdgeIntersections(pts[pti - 1], pt)[0];
                 pts[pti++] = edgePt;
             }

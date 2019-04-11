@@ -167,9 +167,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 } else if(e.ctrlKey) {
                     dragModeNow = 'pan';
                 }
+            } else {
+                // all other draggers just pan
+                dragModeNow = 'pan';
             }
-            // all other draggers just pan
-            else dragModeNow = 'pan';
         }
 
         if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
@@ -380,10 +381,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             } else {
                 noZoom();
             }
-        }
-        // look for small drags in one direction or the other,
-        // and only drag the other axis
-        else if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
+        } else if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
+            // look for small drags in one direction or the other,
+            // and only drag the other axis
+
             if(dx < MINDRAG || !xActive) {
                 noZoom();
             } else {

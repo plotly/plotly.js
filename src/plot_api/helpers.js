@@ -62,8 +62,9 @@ exports.cleanLayout = function(layout) {
     for(i = 0; i < keys.length; i++) {
         var key = keys[i];
 
-        // modifications to cartesian axes
         if(axisAttrRegex && axisAttrRegex.test(key)) {
+            // modifications to cartesian axes
+
             var ax = layout[key];
             if(ax.anchor && ax.anchor !== 'free') {
                 ax.anchor = cleanId(ax.anchor);
@@ -96,26 +97,21 @@ exports.cleanLayout = function(layout) {
             }
 
             cleanTitle(ax);
-        }
+        } else if(polarAttrRegex && polarAttrRegex.test(key)) {
+            // modifications for polar
 
-        // modifications for polar
-        else if(polarAttrRegex && polarAttrRegex.test(key)) {
             var polar = layout[key];
-
             cleanTitle(polar.radialaxis);
-        }
+        } else if(ternaryAttrRegex && ternaryAttrRegex.test(key)) {
+            // modifications for ternary
 
-        // modifications for ternary
-        else if(ternaryAttrRegex && ternaryAttrRegex.test(key)) {
             var ternary = layout[key];
-
             cleanTitle(ternary.aaxis);
             cleanTitle(ternary.baxis);
             cleanTitle(ternary.caxis);
-        }
+        } else if(sceneAttrRegex && sceneAttrRegex.test(key)) {
+            // modifications for 3D scenes
 
-        // modifications for 3D scenes
-        else if(sceneAttrRegex && sceneAttrRegex.test(key)) {
             var scene = layout[key];
 
             // clean old Camera coords
@@ -602,8 +598,9 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
 
     var pLastIsNumber = isNumeric(pLast);
 
-    // delete item
     if(pLastIsNumber && newVal === null) {
+        // delete item
+
         // Clear item in array container when new value is null
         var contPath = parts.slice(0, pLength - 1).join('.');
         var cont = Lib.nestedProperty(obj, contPath).get();
@@ -611,16 +608,16 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
 
         // Note that nested property clears null / undefined at end of
         // array container, but not within them.
-    }
-    // create item
-    else if(pLastIsNumber && np.get() === undefined) {
+    } else if(pLastIsNumber && np.get() === undefined) {
+        // create item
+
         // When adding a new item, make sure undo command will remove it
         if(np.get() === undefined) undoit[np.astr] = null;
 
         np.set(newVal);
-    }
-    // update item
-    else {
+    } else {
+        // update item
+
         // If the last part of attribute string isn't a number,
         // np.set is all we need.
         np.set(newVal);

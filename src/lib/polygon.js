@@ -113,9 +113,10 @@ polygon.tester = function tester(ptsIn) {
             y1 = pts[i][1];
             xmini = Math.min(x0, x1);
 
-            // outside the bounding box of this segment, it's only a crossing
-            // if it's below the box.
             if(x < xmini || x > Math.max(x0, x1) || y > Math.max(y0, y1)) {
+                // outside the bounding box of this segment, it's only a crossing
+                // if it's below the box.
+
                 continue;
             } else if(y < Math.min(y0, y1)) {
                 // don't count the left-most point of the segment as a crossing
@@ -124,9 +125,9 @@ polygon.tester = function tester(ptsIn) {
                 // Note that this is repeated below, but we can't factor it out
                 // because
                 if(x !== xmini) crossings++;
-            }
-            // inside the bounding box, check the actual line intercept
-            else {
+            } else {
+                // inside the bounding box, check the actual line intercept
+
                 // vertical segment - we know already that the point is exactly
                 // on the segment, so mark the crossing as exactly at the point.
                 if(x1 === x0) ycross = y;

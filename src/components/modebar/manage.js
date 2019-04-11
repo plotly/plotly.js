@@ -203,11 +203,13 @@ function isSelectable(fullData) {
             if(trace.boxpoints === 'all' || trace.points === 'all') {
                 selectable = true;
             }
+        } else {
+            // assume that in general if the trace module has selectPoints,
+            // then it's selectable. Scatter is an exception to this because it must
+            // have markers or text, not just be a scatter type.
+
+            selectable = true;
         }
-        // assume that in general if the trace module has selectPoints,
-        // then it's selectable. Scatter is an exception to this because it must
-        // have markers or text, not just be a scatter type.
-        else selectable = true;
     }
 
     return selectable;

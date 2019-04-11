@@ -62,10 +62,10 @@ function calc(gd, trace) {
         if(xValid && yValid) {
             cdi[xAttr] = x[i];
             cdi[yAttr] = y[i];
-        }
-        // if we're stacking we need to hold on to all valid positions
-        // even with invalid sizes
-        else if(stackGroupOpts && (isV ? xValid : yValid)) {
+        } else if(stackGroupOpts && (isV ? xValid : yValid)) {
+            // if we're stacking we need to hold on to all valid positions
+            // even with invalid sizes
+
             cdi[posAttr] = isV ? x[i] : y[i];
             cdi.gap = true;
             if(interpolate) {
@@ -170,17 +170,17 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
 
     var openEnded = serieslen < 2 || (x[0] !== x[serieslen - 1]) || (y[0] !== y[serieslen - 1]);
 
-    // include zero (tight) and extremes (padded) if fill to zero
-    // (unless the shape is closed, then it's just filling the shape regardless)
     if(openEnded && (
         (fill === 'tozerox') ||
         ((fill === 'tonextx') && (firstScatter || stackOrientation === 'h'))
     )) {
-        xOptions.tozero = true;
-    }
+        // include zero (tight) and extremes (padded) if fill to zero
+        // (unless the shape is closed, then it's just filling the shape regardless)
 
-    // if no error bars, markers or text, or fill to y=0 remove x padding
-    else if(!(trace.error_y || {}).visible && (
+        xOptions.tozero = true;
+    } else if(!(trace.error_y || {}).visible && (
+        // if no error bars, markers or text, or fill to y=0 remove x padding
+
             (fill === 'tonexty' || fill === 'tozeroy') ||
             (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace))
         )) {
@@ -188,18 +188,18 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
         xOptions.ppad = 0;
     }
 
-    // now check for y - rather different logic, though still mostly padded both ends
-    // include zero (tight) and extremes (padded) if fill to zero
-    // (unless the shape is closed, then it's just filling the shape regardless)
     if(openEnded && (
         (fill === 'tozeroy') ||
         ((fill === 'tonexty') && (firstScatter || stackOrientation === 'v'))
     )) {
-        yOptions.tozero = true;
-    }
+        // now check for y - rather different logic, though still mostly padded both ends
+        // include zero (tight) and extremes (padded) if fill to zero
+        // (unless the shape is closed, then it's just filling the shape regardless)
 
-    // tight y: any x fill
-    else if(fill === 'tonextx' || fill === 'tozerox') {
+        yOptions.tozero = true;
+    } else if(fill === 'tonextx' || fill === 'tozerox') {
+        // tight y: any x fill
+
         yOptions.padded = false;
     }
 

@@ -35,12 +35,13 @@ function findLocaleStrings() {
             var filePartialPath = file.substr(constants.pathToSrc.length);
 
             falafel(code, {locations: true}, function(node) {
-                // parse through code string looking for translated strings
-                // You may either assign `Lib.localize` to `_` and use that, or
-                // call `Lib.localize` directly.
                 if(node.type === 'CallExpression' &&
                     (node.callee.name === '_' || node.callee.source() === 'Lib._')
                 ) {
+                    // parse through code string looking for translated strings
+                    // You may either assign `Lib.localize` to `_` and use that, or
+                    // call `Lib.localize` directly.
+
                     var strNode = node.arguments[1];
                     if(node.arguments.length !== 2) {
                         logError(file, node, 'Localize takes 2 args');
@@ -53,11 +54,10 @@ function findLocaleStrings() {
                         maxLen = Math.max(maxLen, strNode.value.length);
                         hasTranslation = true;
                     }
-                }
+                } else if(node.type === 'VariableDeclarator' && node.id.name === '_') {
+                    // make sure localize is the only thing we assign to a variable `_`
+                    // NB: this does not preclude using `_` for an unused function arg
 
-                // make sure localize is the only thing we assign to a variable `_`
-                // NB: this does not preclude using `_` for an unused function arg
-                else if(node.type === 'VariableDeclarator' && node.id.name === '_') {
                     var src = node.init.source();
                     if(!localizeRE.test(src)) {
                         logError(file, node, 'Use `_` only to mean localization');

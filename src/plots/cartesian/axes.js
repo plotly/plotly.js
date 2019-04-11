@@ -233,25 +233,26 @@ axes.minDtick = function(ax, newDiff, newFirst, allow) {
     // and the plot itself may decide to cancel (ie non-grouped bars)
     if(['log', 'category', 'multicategory'].indexOf(ax.type) !== -1 || !allow) {
         ax._minDtick = 0;
-    }
-    // undefined means there's nothing there yet
-    else if(ax._minDtick === undefined) {
+    } else if(ax._minDtick === undefined) {
+        // undefined means there's nothing there yet
+
         ax._minDtick = newDiff;
         ax._forceTick0 = newFirst;
     } else if(ax._minDtick) {
-        // existing minDtick is an integer multiple of newDiff
-        // (within rounding err)
-        // and forceTick0 can be shifted to newFirst
         if((ax._minDtick / newDiff + 1e-6) % 1 < 2e-6 &&
+            // existing minDtick is an integer multiple of newDiff
+            // (within rounding err)
+            // and forceTick0 can be shifted to newFirst
+
                 (((newFirst - ax._forceTick0) / newDiff % 1) +
                     1.000001) % 1 < 2e-6) {
             ax._minDtick = newDiff;
             ax._forceTick0 = newFirst;
-        }
-        // if the converse is true (newDiff is a multiple of minDtick and
-        // newFirst can be shifted to forceTick0) then do nothing - same
-        // forcing stands. Otherwise, cancel forced minimum
-        else if((newDiff / ax._minDtick + 1e-6) % 1 > 2e-6 ||
+        } else if((newDiff / ax._minDtick + 1e-6) % 1 > 2e-6 ||
+            // if the converse is true (newDiff is a multiple of minDtick and
+            // newFirst can be shifted to forceTick0) then do nothing - same
+            // forcing stands. Otherwise, cancel forced minimum
+
                 (((newFirst - ax._forceTick0) / ax._minDtick % 1) +
                     1.000001) % 1 > 2e-6) {
             ax._minDtick = 0;
@@ -431,17 +432,18 @@ function autoShiftNumericBins(binStart, data, ax, dataMin, dataMax) {
     var dataCount = data.length - blankCount;
 
     if(intcount === dataCount && ax.type !== 'date') {
-        // all integers: if bin size is <1, it's because
-        // that was specifically requested (large nbins)
-        // so respect that... but center the bins containing
-        // integers on those integers
         if(ax.dtick < 1) {
+            // all integers: if bin size is <1, it's because
+            // that was specifically requested (large nbins)
+            // so respect that... but center the bins containing
+            // integers on those integers
+
             binStart = dataMin - 0.5 * ax.dtick;
-        }
-        // otherwise start half an integer down regardless of
-        // the bin size, just enough to clear up endpoint
-        // ambiguity about which integers are in which bins.
-        else {
+        } else {
+            // otherwise start half an integer down regardless of
+            // the bin size, just enough to clear up endpoint
+            // ambiguity about which integers are in which bins.
+
             binStart -= 0.5;
             if(binStart + ax.dtick < dataMin) binStart += ax.dtick;
         }
@@ -829,9 +831,10 @@ function autoTickRound(ax) {
                 ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
             } else ax._tickexponent = rangeexp;
         }
+    } else {
+        // D1 or D2 (log)
+        ax._tickround = null;
     }
-    // D1 or D2 (log)
-    else ax._tickround = null;
 }
 
 // months and years don't have constant millisecond values
@@ -915,10 +918,9 @@ axes.tickFirst = function(ax) {
         }
         Lib.error('tickFirst did not converge', ax);
         return t0;
-    }
+    } else if(tType === 'L') {
+        // Log scales: Linear, Digits
 
-    // Log scales: Linear, Digits
-    else if(tType === 'L') {
         return Math.log(sRound(
             (Math.pow(10, r0) - tick0) / dtNum) * dtNum + tick0) / Math.LN10;
     } else if(tType === 'D') {

@@ -183,9 +183,9 @@ function createCamera(scene) {
                                     (dataBox[2] - result.boxStart[0]) * Math.abs(dydx);
                             }
                         }
-                    }
-                    // otherwise clamp small changes to the origin so we get 1D zoom
-                    else {
+                    } else {
+                        // otherwise clamp small changes to the origin so we get 1D zoom
+
                         if(smallDx) result.boxEnd[0] = result.boxStart[0];
                         if(smallDy) result.boxEnd[1] = result.boxStart[1];
                     }
@@ -207,9 +207,9 @@ function createCamera(scene) {
                     }
                     result.boxEnabled = false;
                     result.boxInited = false;
-                }
-                // if box was inited but button released then - reset the box
-                else if(result.boxInited) {
+                } else if(result.boxInited) {
+                    // if box was inited but button released then - reset the box
+
                     result.boxInited = false;
                 }
                 break;

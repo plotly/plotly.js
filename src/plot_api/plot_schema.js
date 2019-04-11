@@ -543,6 +543,7 @@ function getLayoutAttributes() {
         _module = Registry.componentsRegistry[key];
         var schema = _module.schema;
 
+        if(schema && (schema.subplots || schema.layout)) {
         /*
          * Components with defined schema have already been merged in at register time
          * but a few components define attributes that apply only to xaxis
@@ -553,14 +554,14 @@ function getLayoutAttributes() {
          * we will need to extend both this code and mergeComponentAttrsToSubplot
          * (which will not find yaxis only for example)
          */
-        if(schema && (schema.subplots || schema.layout)) {
+
             var subplots = schema.subplots;
             if(subplots && subplots.xaxis && !subplots.yaxis) {
                 for(var xkey in subplots.xaxis) delete layoutAttributes.yaxis[xkey];
             }
-        }
+        } else if(_module.layoutAttributes) {
         // older style without schema need to be explicitly merged in now
-        else if(_module.layoutAttributes) {
+
             insertAttrs(layoutAttributes, _module.layoutAttributes, _module.name);
         }
     }

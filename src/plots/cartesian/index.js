@@ -330,17 +330,18 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 
-    // if we've gotten rid of all cartesian traces, remove all the subplot svg items
     var hadCartesian = (oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = (newFullLayout._has && newFullLayout._has('cartesian'));
 
     if(hadCartesian && !hasCartesian) {
+        // if we've gotten rid of all cartesian traces, remove all the subplot svg items
+
         purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
         delete oldFullLayout._axisConstraintGroups;
-    }
-    // otherwise look for subplots we need to remove
-    else if(oldSubplotList.cartesian) {
+    } else if(oldSubplotList.cartesian) {
+        // otherwise look for subplots we need to remove
+
         for(i = 0; i < oldSubplotList.cartesian.length; i++) {
             var oldSubplotId = oldSubplotList.cartesian[i];
             if(!newPlots[oldSubplotId]) {
