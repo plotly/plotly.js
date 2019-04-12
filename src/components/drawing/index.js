@@ -332,7 +332,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
             });
         });
 
-    sel.style(prop, 'url(#' + fullID + ')')
+    sel.style(prop, getFullUrl(fullID, gd))
         .style(prop + '-opacity', null);
 };
 
@@ -1015,16 +1015,16 @@ function nodeHash(node) {
  * - context._exportedPlot {boolean}
  */
 drawing.setClipUrl = function(s, localId, gd) {
-    if(!localId) {
-        s.attr('clip-path', null);
-        return;
-    }
+    s.attr('clip-path', getFullUrl(localId, gd));
+};
+
+function getFullUrl(localId, gd) {
+    if(!localId) return null;
 
     var context = gd._context;
     var baseUrl = context._exportedPlot ? '' : (context._baseUrl || '');
-
-    s.attr('clip-path', 'url(\'' + baseUrl + '#' + localId + '\')');
-};
+    return 'url(\'' + baseUrl + '#' + localId + '\')';
+}
 
 drawing.getTranslate = function(element) {
     // Note the separator [^\d] between x and y in this regex

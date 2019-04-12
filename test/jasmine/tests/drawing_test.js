@@ -543,4 +543,34 @@ describe('gradients', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should append window URL to gradient ref if <base> is present', function(done) {
+        var base = d3.select('body')
+            .append('base')
+            .attr('href', 'https://plot.ly');
+
+        Plotly.plot(gd, [{
+            type: 'heatmap',
+            x: [1, 2],
+            y: [2, 3],
+            z: [[1, 3], [2, 3]]
+        }])
+        .then(function() {
+            var cbfills = d3.select(gd).select('.cbfills > rect');
+            expect(cbfills.node().style.fill).toBe([
+                'url("',
+                window.location.href,
+                'g',
+                gd._fullLayout._uid,
+                '-cb',
+                gd._fullData[0].uid,
+                '")'
+            ].join(''));
+        })
+        .catch(failTest)
+        .then(function() {
+            base.remove();
+            done();
+        });
+    });
 });
