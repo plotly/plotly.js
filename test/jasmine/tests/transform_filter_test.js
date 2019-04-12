@@ -86,6 +86,33 @@ describe('filter transforms defaults:', function() {
         expect(traceOut.transforms[2].target).toEqual('x');
         expect(traceOut.transforms[3].target).toEqual('marker.color');
     });
+
+    it('supplyTraceDefaults should set *enabled:false* and return early when *target* is an empty array', function() {
+        // see https://github.com/plotly/plotly.js/issues/2908
+        // this solves multiple problems downstream
+
+        traceIn = {
+            x: [1, 2, 3],
+            transforms: [{
+                type: 'filter',
+                target: []
+            }]
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        expect(traceOut.transforms[0].target).toEqual([]);
+        expect(traceOut.transforms[0].enabled).toBe(false, 'set to false!');
+
+        traceIn = {
+            x: new Float32Array([1, 2, 3]),
+            transforms: [{
+                type: 'filter',
+                target: new Float32Array()
+            }]
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        expect(traceOut.transforms[0].target).toEqual(new Float32Array());
+        expect(traceOut.transforms[0].enabled).toBe(false, 'set to false!');
+    });
 });
 
 describe('filter transforms calc:', function() {

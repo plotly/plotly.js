@@ -138,10 +138,16 @@ exports.supplyDefaults = function(transformIn) {
     var enabled = coerce('enabled');
 
     if(enabled) {
+        var target = coerce('target');
+
+        if(Lib.isArrayOrTypedArray(target) && target.length === 0) {
+            transformOut.enabled = false;
+            return transformOut;
+        }
+
         coerce('preservegaps');
         coerce('operation');
         coerce('value');
-        coerce('target');
 
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
         handleCalendarDefaults(transformIn, transformOut, 'valuecalendar', null);
