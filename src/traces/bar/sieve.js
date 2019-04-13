@@ -10,7 +10,7 @@
 
 module.exports = Sieve;
 
-var Lib = require('../../lib');
+var distinctVals = require('../../lib').distinctVals;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 /**
@@ -48,7 +48,7 @@ function Sieve(traces, opts) {
     }
     this.positions = positions;
 
-    var dv = Lib.distinctVals(positions);
+    var dv = distinctVals(positions);
     this.distinctPositions = dv.vals;
     if(dv.vals.length === 1 && width1 !== Infinity) this.minDiff = width1;
     else this.minDiff = Math.min(dv.minDiff, width1);
@@ -66,9 +66,9 @@ function Sieve(traces, opts) {
  * @param {number} value
  * @returns {number} Previous bin value
  */
-Sieve.prototype.put = function put(position, value) {
+Sieve.prototype.put = function put(position, value, initValue) {
     var label = this.getLabel(position, value);
-    var oldValue = this.bins[label] || 0;
+    var oldValue = (this.bins[label] === 0) ? 0 : this.bins[label] || initValue || 0;
 
     this.bins[label] = oldValue + value;
 

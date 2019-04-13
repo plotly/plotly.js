@@ -29,6 +29,10 @@ var helpers = require('./helpers');
 // padding in pixels around text
 var TEXTPAD = 3;
 
+function dirSign(a, b) {
+    return (a < b) ? 1 : -1;
+}
+
 module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -39,13 +43,15 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
         var cd0 = cd[0];
         var trace = cd0.trace;
 
-        var adjustDir;
         var adjustPixel = 0;
         if(trace.type === 'waterfall' && trace.connector.visible && trace.connector.mode === 'between') {
             adjustPixel = trace.connector.line.width / 2;
         }
 
         var isHorizontal = (trace.orientation === 'h');
+
+        function getX(p, s) { return xa.c2p(isHorizontal ? s : p, true); }
+        function getY(p, s) { return ya.c2p(isHorizontal ? p : s, true); }
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
@@ -65,18 +71,11 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
             // clipped xf/yf (2nd arg true): non-positive
             // log values go off-screen by plotwidth
             // so you see them continue if you drag the plot
-            var x0, x1, y0, y1;
-            if(isHorizontal) {
-                y0 = ya.c2p(di.p0, true);
-                y1 = ya.c2p(di.p1, true);
-                x0 = xa.c2p(di.s0, true);
-                x1 = xa.c2p(di.s1, true);
-            } else {
-                x0 = xa.c2p(di.p0, true);
-                x1 = xa.c2p(di.p1, true);
-                y0 = ya.c2p(di.s0, true);
-                y1 = ya.c2p(di.s1, true);
-            }
+
+            var x0 = getX(di.p0, di.s0);
+            var x1 = getX(di.p1, di.s1);
+            var y0 = getY(di.p0, di.s0);
+            var y1 = getY(di.p1, di.s1);
 
             var isBlank = di.isBlank = (
                 !isNumeric(x0) || !isNumeric(x1) ||
@@ -87,13 +86,11 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
             if(adjustPixel) {
                 if(isHorizontal) {
-                    adjustDir = (x1 < x0) ? -1 : 1;
-                    x0 -= adjustDir * adjustPixel;
-                    x1 += adjustDir * adjustPixel;
+                    x0 -= dirSign(x0, x1) * adjustPixel;
+                    x1 += dirSign(x0, x1) * adjustPixel;
                 } else {
-                    adjustDir = (y1 < y0) ? -1 : 1;
-                    y0 -= adjustDir * adjustPixel;
-                    y1 += adjustDir * adjustPixel;
+                    y0 -= dirSign(y0, y1) * adjustPixel;
+                    y1 += dirSign(y0, y1) * adjustPixel;
                 }
             }
 
@@ -112,7 +109,12 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
                     (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
                 mc = di.mc || trace.marker.color;
-                prefix = 'bar';
+
+                if(trace.type === 'funnel') {
+                    prefix = 'funnel';
+                } else {
+                    prefix = 'bar';
+                }
             }
 
             var offset = d3.round((lw / 2) % 1, 2);
@@ -206,7 +208,10 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     textPosition = getTextPosition(trace, i);
 
     // compute text position
-    var prefix = trace.type === 'waterfall' ? 'waterfall' : 'bar';
+    var prefix =
+        (trace.type === 'waterfall') ? 'waterfall' :
+        (trace.type === 'funnel') ? 'funnel' : 'bar';
+
     var barmode = fullLayout[prefix + 'mode'];
     var inStackOrRelativeMode = barmode === 'stack' || barmode === 'relative';
 
@@ -312,13 +317,13 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
-            orientation, constrained);
+            orientation, constrained, !!trace.insidetextcenter);
     }
 
     textSelection.attr('transform', transform);
 }
 
-function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
+function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained, keepCenter) {
     // compute text and target positions
     var textWidth = textBB.width;
     var textHeight = textBB.height;
@@ -326,10 +331,6 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
     var textY = (textBB.top + textBB.bottom) / 2;
     var barWidth = Math.abs(x1 - x0);
     var barHeight = Math.abs(y1 - y0);
-    var targetWidth;
-    var targetHeight;
-    var targetX;
-    var targetY;
 
     // apply text padding
     var textpad;
@@ -364,31 +365,17 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
     if(rotate) rotate = 90;  // rotate clockwise
 
     // compute text and target positions
-    if(rotate) {
-        targetWidth = scale * textHeight;
-        targetHeight = scale * textWidth;
-    } else {
-        targetWidth = scale * textWidth;
-        targetHeight = scale * textHeight;
-    }
+    var targetX = (x0 + x1) / 2;
+    var targetY = (y0 + y1) / 2;
 
-    if(orientation === 'h') {
-        if(x1 < x0) {
-            // bar end is on the left hand side
-            targetX = x1 + textpad + targetWidth / 2;
-            targetY = (y0 + y1) / 2;
+    if(!keepCenter) {
+        var targetWidth = scale * (rotate ? textHeight : textWidth);
+        var targetHeight = scale * (rotate ? textWidth : textHeight);
+
+        if(orientation === 'h') {
+            targetX = x1 - (textpad + targetWidth / 2) * dirSign(x0, x1);
         } else {
-            targetX = x1 - textpad - targetWidth / 2;
-            targetY = (y0 + y1) / 2;
-        }
-    } else {
-        if(y1 > y0) {
-            // bar end is on the bottom
-            targetX = (x0 + x1) / 2;
-            targetY = y1 - textpad - targetHeight / 2;
-        } else {
-            targetX = (x0 + x1) / 2;
-            targetY = y1 + textpad + targetHeight / 2;
+            targetY = y1 - (textpad + targetHeight / 2) * dirSign(y0, y1);
         }
     }
 
@@ -418,32 +405,17 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
     // compute text and target positions
     var textX = (textBB.left + textBB.right) / 2;
     var textY = (textBB.top + textBB.bottom) / 2;
-    var targetWidth;
-    var targetHeight;
-    var targetX;
-    var targetY;
 
-    targetWidth = scale * textBB.width;
-    targetHeight = scale * textBB.height;
+    var targetWidth = scale * textBB.width;
+    var targetHeight = scale * textBB.height;
+
+    var targetX = (x0 + x1) / 2;
+    var targetY = (y0 + y1) / 2;
 
     if(orientation === 'h') {
-        if(x1 < x0) {
-            // bar end is on the left hand side
-            targetX = x1 - textpad - targetWidth / 2;
-            targetY = (y0 + y1) / 2;
-        } else {
-            targetX = x1 + textpad + targetWidth / 2;
-            targetY = (y0 + y1) / 2;
-        }
+        targetX = x1 - (textpad + targetWidth / 2) * dirSign(x1, x0);
     } else {
-        if(y1 > y0) {
-            // bar end is on the bottom
-            targetX = (x0 + x1) / 2;
-            targetY = y1 + textpad + targetHeight / 2;
-        } else {
-            targetX = (x0 + x1) / 2;
-            targetY = y1 - textpad - targetHeight / 2;
-        }
+        targetY = y1 + (textpad + targetHeight / 2) * dirSign(y0, y1);
     }
 
     return getTransform(textX, textY, targetX, targetY, scale, false);
@@ -504,6 +476,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
 
     var parts = textinfo.split('+');
     var text = [];
+    var tx;
 
     var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
 
@@ -516,7 +489,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     }
 
     if(hasFlag('text')) {
-        var tx = Lib.castOption(trace, cdi.i, 'text');
+        tx = Lib.castOption(trace, cdi.i, 'text');
         if(tx) text.push(tx);
     }
 
@@ -528,6 +501,33 @@ function calcTextinfo(calcTrace, index, xa, ya) {
         if(hasFlag('initial')) text.push(formatNumber(initial));
         if(hasFlag('delta')) text.push(formatNumber(delta));
         if(hasFlag('final')) text.push(formatNumber(final));
+    }
+
+    if(trace.type === 'funnel') {
+        if(hasFlag('value')) text.push(pieHelpers.formatPieValue(cdi.s, separators));
+
+        var nPercent = 0;
+        if(hasFlag('percent of initial')) nPercent++;
+        if(hasFlag('percent of previous')) nPercent++;
+        if(hasFlag('percent of total')) nPercent++;
+
+        var hasMultiplePercents = nPercent > 1;
+
+        if(hasFlag('percent of initial')) {
+            tx = pieHelpers.formatPiePercent(cdi.begR, separators);
+            if(hasMultiplePercents) tx += ' of initial';
+            text.push(tx);
+        }
+        if(hasFlag('percent of previous')) {
+            tx = pieHelpers.formatPiePercent(cdi.difR, separators);
+            if(hasMultiplePercents) tx += ' of initial';
+            text.push(tx);
+        }
+        if(hasFlag('percent of total')) {
+            tx = pieHelpers.formatPiePercent(cdi.sumR, separators);
+            if(hasMultiplePercents) tx += ' of total';
+            text.push(tx);
+        }
     }
 
     return text.join('<br>');

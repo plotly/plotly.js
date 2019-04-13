@@ -119,7 +119,7 @@ function initBase(gd, pa, sa, calcTraces) {
     for(i = 0; i < calcTraces.length; i++) {
         var cd = calcTraces[i];
         var trace = cd[0].trace;
-        var base = trace.base;
+        var base = (trace.type === 'funnel') ? trace._base : trace.base;
         var b;
 
         // not sure if it really makes sense to have dates for bar size data...
@@ -501,27 +501,50 @@ function setBaseAndTop(gd, sa, sieve) {
         var calcTrace = calcTraces[i];
         var fullTrace = calcTrace[0].trace;
         var pts = [];
-        var allBarBaseAboveZero = true;
+        var allBaseAboveZero = true;
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
-            var barBase = bar.b;
-            var barTop = barBase + bar.s;
+            var base = bar.b;
+            var top = base + bar.s;
 
-            bar[sLetter] = barTop;
-            pts.push(barTop);
-            if(bar.hasB) pts.push(barBase);
+            bar[sLetter] = top;
+            pts.push(top);
+            if(bar.hasB) pts.push(base);
 
             if(!bar.hasB || !(bar.b > 0 && bar.s > 0)) {
-                allBarBaseAboveZero = false;
+                allBaseAboveZero = false;
             }
         }
 
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
-            tozero: !allBarBaseAboveZero,
+            tozero: !allBaseAboveZero,
             padded: true
         });
     }
+}
+
+function computeTotalVaules(calcTraces) {
+    var totalValues = [];
+
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        var fullTrace = calcTrace[0].trace;
+
+        var isFunnel = (fullTrace.type === 'funnel');
+        if(!isFunnel) continue; // for the moment we only need to compute this for funnels
+
+        for(var j = 0; j < calcTrace.length; j++) {
+            totalValues[j] = totalValues[j] || 0;
+
+            var bar = calcTrace[j];
+            if(bar.s !== BADNUM) {
+                totalValues[j] += bar.s;
+            }
+        }
+    }
+
+    return totalValues;
 }
 
 function stackBars(gd, sa, sieve) {
@@ -530,26 +553,48 @@ function stackBars(gd, sa, sieve) {
     var sLetter = getAxisLetter(sa);
     var calcTraces = sieve.traces;
 
+    var totalValues = computeTotalVaules(sieve.traces);
+    var seen = [];
+
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
         var fullTrace = calcTrace[0].trace;
         var pts = [];
+
+        var isFunnel = (fullTrace.type === 'funnel');
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
             if(bar.s !== BADNUM) {
                 // stack current bar and get previous sum
-                var barBase = sieve.put(bar.p, bar.b + bar.s);
-                var barTop = barBase + bar.b + bar.s;
+                var value;
+                if(isFunnel) {
+                    value = bar.s;
+                } else {
+                    value = bar.s + bar.b;
+                }
+
+                var initValue = 0;
+                if(isFunnel) {
+                    if(!seen[j]) {
+                        seen[j] = true;
+                        initValue = -0.5 * totalValues[j];
+                    }
+                }
+                var base = sieve.put(bar.p, value, initValue);
+
+                var top = base + value;
 
                 // store the bar base and top in each calcdata item
-                bar.b = barBase;
-                bar[sLetter] = barTop;
+                bar.b = base;
+                bar[sLetter] = top;
 
                 if(!barnorm) {
-                    pts.push(barTop);
-                    if(bar.hasB) pts.push(barBase);
+                    pts.push(top);
+                    if(bar.hasB) {
+                        pts.push(base);
+                    }
                 }
             }
         }
@@ -600,12 +645,12 @@ function unhideBarsWithinTrace(gd, sa, sieve) {
 
                 if(bar.p !== BADNUM) {
                     // stack current bar and get previous sum
-                    var barBase = inTraceSieve.put(bar.p, bar.b + bar.s);
+                    var base = inTraceSieve.put(bar.p, bar.b + bar.s);
 
                     // if previous sum if non-zero, this means:
                     // multiple bars have same starting point are potentially hidden,
                     // shift them vertically so that all bars are visible by default
-                    if(barBase) bar.b = barBase;
+                    if(base) bar.b = base;
                 }
             }
         }
@@ -636,7 +681,7 @@ function normalizeBars(gd, sa, sieve) {
         var calcTrace = calcTraces[i];
         var fullTrace = calcTrace[0].trace;
         var pts = [];
-        var allBarBaseAboveZero = true;
+        var allBaseAboveZero = true;
         var padded = false;
 
         for(var j = 0; j < calcTrace.length; j++) {
@@ -647,26 +692,26 @@ function normalizeBars(gd, sa, sieve) {
                 bar.b *= scale;
                 bar.s *= scale;
 
-                var barBase = bar.b;
-                var barTop = barBase + bar.s;
+                var base = bar.b;
+                var top = base + bar.s;
 
-                bar[sLetter] = barTop;
-                pts.push(barTop);
-                padded = padded || needsPadding(barTop);
+                bar[sLetter] = top;
+                pts.push(top);
+                padded = padded || needsPadding(top);
 
                 if(bar.hasB) {
-                    pts.push(barBase);
-                    padded = padded || needsPadding(barBase);
+                    pts.push(base);
+                    padded = padded || needsPadding(base);
                 }
 
                 if(!bar.hasB || !(bar.b > 0 && bar.s > 0)) {
-                    allBarBaseAboveZero = false;
+                    allBaseAboveZero = false;
                 }
             }
         }
 
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
-            tozero: !allBarBaseAboveZero,
+            tozero: !allBaseAboveZero,
             padded: padded
         });
     }
