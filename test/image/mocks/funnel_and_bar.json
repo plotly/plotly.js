@@ -1,0 +1,55 @@
+{
+    "data": [
+        {
+            "name": "bar",
+            "type": "bar",
+            "orientation": "v",
+            "opacity": 0.5,
+            "x": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "y": [
+                375,
+                128,
+                78,
+                27
+            ]
+        }, {
+            "name": "funnel",
+            "type": "funnel",
+            "orientation": "v",
+            "opacity": 0.5,
+            "x": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "y": [
+                375,
+                128,
+                78,
+                27
+            ]
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "funnel chart with bar chart"
+        },
+        "xaxis": {
+            "type": "category"
+        },
+        "yaxis": {
+            "type": "linear"
+        },
+        "height": 600,
+        "width": 600,
+        "showlegend": true,
+        "bargap": 0,
+        "funnelgap": 0.4
+    }
+}

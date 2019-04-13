@@ -1,0 +1,82 @@
+{
+    "data": [
+        {
+            "type": "funnel",
+            "orientation": "h",
+            "y": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "x": [
+                120,
+                60,
+                30,
+                20
+            ],
+            "textposition": "auto",
+            "textinfo": "value+percent of initial"
+        },
+        {
+            "type": "funnel",
+            "orientation": "h",
+            "y": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+            ],
+            "x": [
+                120,
+                60,
+                30,
+                20,
+                10
+            ],
+            "textposition": "inside",
+            "textinfo": "value+percent of previous"
+        },
+        {
+            "type": "funnel",
+            "orientation": "h",
+            "y": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+            ],
+            "x": [
+                120,
+                60,
+                30,
+                20,
+                10,
+                5
+            ],
+            "cliponaxis": false,
+            "textposition": "outside",
+            "textinfo": "value+percent of total"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "plotly stacked funnel chart with textposition' (auto | inside | outside)<br>and textinfo: percent of (initial | previous | total)"
+        },
+        "yaxis": {
+            "type": "category",
+            "autorange": "reversed"
+        },
+        "xaxis": {
+            "type": "linear"
+        },
+        "margin": { "l": 50 },
+        "height": 800,
+        "width": 800,
+        "funnelmode": "stack",
+        "showlegend": true
+    }
+}

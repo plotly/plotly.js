@@ -1,0 +1,101 @@
+{
+    "data": [
+        {
+            "name": "2018",
+            "type": "funnel",
+            "orientation": "v",
+            "width": [1.0, 0.6, 0.5, 0.7, 0.9, 0.8],
+            "offset": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
+            "x": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+            ],
+            "y": [
+                120,
+                60,
+                30,
+                15,
+                10,
+                5
+            ]
+        },
+        {
+            "name": "2018",
+            "type": "funnel",
+            "orientation": "v",
+            "width": [1.0, 0.6, 0.5, 0.7, 0.9, 0.8],
+            "offset": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
+            "x": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+            ],
+            "y": [
+                120,
+                80,
+                40,
+                20,
+                10,
+                5
+            ],
+            "marker": {
+                "color": [
+                    "rgb(255, 0, 0)",
+                    "rgb(255, 255, 0)",
+                    "rgb(0, 255, 0)",
+                    "rgb(0, 255, 255)",
+                    "rgb(0, 0, 255)",
+                    "rgb(255, 0, 255)"
+                ],
+                "line": {
+                    "width": [
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7
+                    ],
+                    "color": [
+                        "rgb(127, 0, 127)",
+                        "rgb(0, 0, 127)",
+                        "rgb(0, 127, 127)",
+                        "rgb(0, 127, 0)",
+                        "rgb(127, 127, 0)",
+                        "rgb(127, 0, 0)"
+                    ]
+                }
+            },
+            "connector": {
+                "line": {
+                    "dash": 10,
+                    "width": 2
+                }
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "funnel chart with custom bar widths, offsets and colors"
+        },
+        "xaxis": {
+            "type": "category"
+        },
+        "yaxis": {
+            "type": "linear"
+        },
+        "margin": { "l": 150 },
+        "height": 800,
+        "width": 800,
+        "autosize": true,
+        "showlegend": true,
+        "funnelmode": "stack"
+    }
+}

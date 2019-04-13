@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [ "textposition:outside" ],
+      "x": [ 0 ],
+      "text": [ "Text" ],
+      "textposition": [ "outside" ]
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [ "textpostion:auto" ],
+      "x": [ 0 ],
+      "text": [ "should not see" ],
+      "textposition": [ "auto" ]
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [ "textpostion:inside" ],
+      "x": [ 0 ],
+      "text": [ "should not see" ],
+      "textposition": [ "inside" ]
+    }
+  ],
+  "layout": {
+    "margin": { "l": 150 },
+    "showlegend": false,
+    "width": 600
+  }
+}

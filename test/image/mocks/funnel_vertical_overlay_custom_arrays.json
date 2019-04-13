@@ -1,0 +1,130 @@
+{
+    "data": [
+        {
+            "name": "plotly.js",
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "All tickets",
+                "Pull requests",
+                "Author: etpinard",
+                "Label: bug",
+                "Status: open"
+            ],
+            "y": [
+                3756,
+                1580,
+                663,
+                343,
+                1
+            ],
+            "textposition": "outside",
+            "text": [
+                "3756",
+                "1580",
+                "663",
+                "343",
+                "1"
+            ],
+            "connector": {
+                "line": {
+                    "color": "rgb(127, 127, 127)",
+                    "dash": 10,
+                    "width": 4
+                }
+            },
+            "marker": {
+                "color": [
+                    "rgb(0, 127, 127)",
+                    "rgb(0, 0, 127)",
+                    "rgb(127, 0, 127)",
+                    "rgb(127, 0, 0)",
+                    "rgb(127, 127, 0)"
+                ],
+                "line": {
+                    "color": [
+                        "rgb(255, 127, 127)",
+                        "rgb(255, 255, 127)",
+                        "rgb(127, 255, 127)",
+                        "rgb(127, 255, 255)",
+                        "rgb(127, 127, 255)"
+                    ],
+                    "dash": 10,
+                    "width": [
+                        16,
+                        8,
+                        4,
+                        2,
+                        1
+                    ]
+                }
+            },
+            "width": [
+                0.85,
+                0.70,
+                0.55,
+                0.30,
+                0.15
+            ]
+        },
+        {
+            "name": "orca",
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "All tickets",
+                "Pull requests",
+                "Author: etpinard",
+                "Label: bug",
+                "Status: open"
+            ],
+            "y": [
+                224,
+                107,
+                31,
+                2,
+                0
+            ],
+            "textposition": "inside",
+            "text": [
+                "224",
+                "107",
+                "31",
+                "2",
+                "0"
+            ],
+            "connector": {
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "dash": 0,
+                    "width": 2
+                }
+            },
+            "marker": {
+                "color": "rgb(255, 255, 0)",
+                "line": {
+                    "color": "rgb(255, 0, 0)",
+                    "dash": 10,
+                    "width": 3
+                }
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "plotly repos | April 10 2019"
+        },
+        "xaxis": {
+            "type": "category",
+            "autorange": "reversed"
+        },
+        "yaxis": {
+            "type": "linear"
+        },
+        "margin": { "l": 150 },
+        "height": 800,
+        "width": 800,
+        "funnelmode": "overlay",
+        "showlegend": true
+    }
+}
