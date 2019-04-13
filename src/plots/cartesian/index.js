@@ -260,7 +260,10 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         );
 
         // layers that allow `cliponaxis: false`
-        if(className !== 'scatterlayer' && className !== 'barlayer' && className !== 'waterfalllayer') {
+        if(className !== 'scatterlayer' &&
+            className !== 'barlayer' &&
+            className !== 'funnellayer' &&
+            className !== 'waterfalllayer') {
             Drawing.setClipUrl(sel, plotinfo.layerClipId, gd);
         }
     });
@@ -276,7 +279,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     if(!gd._context.staticPlot) {
         if(plotinfo._hasClipOnAxisFalse) {
             plotinfo.clipOnAxisFalseTraces = plotinfo.plot
-                .selectAll('.scatterlayer, .barlayer, .waterfalllayer')
+                .selectAll('.scatterlayer, .barlayer, .funnellayer, .waterfalllayer')
                 .selectAll('.trace');
         }
 

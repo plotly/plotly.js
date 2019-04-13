@@ -110,8 +110,10 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
         var trace = d[0].trace;
         var xcalendar = trace.xcalendar;
         var ycalendar = trace.ycalendar;
-        var selector = trace.type === 'bar' ? '.bartext' :
+        var selector =
+            trace.type === 'bar' ? '.bartext' :
             trace.type === 'waterfall' ? '.bartext,.line' :
+            trace.type === 'funnel' ? '.bartext,.line,.region' :
                 '.point,.textpoint';
 
         traceGroups.selectAll(selector).each(function(d) {

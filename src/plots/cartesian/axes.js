@@ -1647,7 +1647,7 @@ axes.drawOne = function(gd, ax, opts) {
         vals[i].axInfo = axInfo;
     }
 
-    if(!ax.visible) return;
+    if(!ax.visible || ax._hide) return;
 
     // stash selections to avoid DOM queries e.g.
     // - stash tickLabels selection, so that drawTitle can use it to scoot title
@@ -2813,7 +2813,7 @@ function hasBarsOrFill(gd, ax) {
 
         if(trace.visible === true && (trace.xaxis + trace.yaxis) === subplot) {
             if(
-                (Registry.traceIs(trace, 'bar') || trace.type === 'waterfall') &&
+                (Registry.traceIs(trace, 'bar') || trace.type === 'waterfall' || trace.type === 'funnel') &&
                 trace.orientation === {x: 'h', y: 'v'}[axLetter]
             ) return true;
 

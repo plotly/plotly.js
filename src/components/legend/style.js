@@ -84,6 +84,7 @@ module.exports = function style(s, gd) {
             .classed('legendpoints', true);
     })
     .each(styleWaterfalls)
+    .each(styleFunnels)
     .each(styleBars)
     .each(styleBoxes)
     .each(stylePies)
@@ -306,14 +307,25 @@ module.exports = function style(s, gd) {
     }
 
     function styleBars(d) {
+        styleBarFamily(d, this);
+    }
+
+    function styleFunnels(d) {
+        styleBarFamily(d, this, 'funnel');
+    }
+
+    function styleBarFamily(d, lThis, desiredType) {
         var trace = d[0].trace;
         var marker = trace.marker || {};
         var markerLine = marker.line || {};
 
-        var barpath = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legendbar')
-            .data(Registry.traceIs(trace, 'bar') ? [d] : []);
-        barpath.enter().append('path').classed('legendbar', true)
+        var selection = (!desiredType) ? Registry.traceIs(trace, 'bar') :
+            (trace.type === desiredType && trace.visible);
+
+        var barpath = d3.select(lThis).select('g.legendpoints')
+            .selectAll('path.legend' + desiredType)
+            .data(selection ? [d] : []);
+        barpath.enter().append('path').classed('legend' + desiredType, true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');
         barpath.exit().remove();
