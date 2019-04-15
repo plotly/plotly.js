@@ -10,6 +10,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.47.2] -- 2019-04-15
+
+### Fixed
+- Fix bar `'auto'` and `'inside'` `textposition` rendering on log size axes [#3762, #3773]
+- Fix matching axes autorange algorithm for date axes [#3772]
+- Fix SVG gradient rendering (colorbar and marker gradient) when `<base>` is present on page [#3765]
+
+
 ## [1.47.1] -- 2019-04-10
 
 ### Fixed
