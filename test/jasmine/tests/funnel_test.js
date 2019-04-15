@@ -1,0 +1,1718 @@
+var Plotly = require('@lib/index');
+
+var Funnel = require('@src/traces/funnel');
+var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
+var Drawing = require('@src/components/drawing');
+
+var Axes = require('@src/plots/cartesian/axes');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
+var supplyAllDefaults = require('../assets/supply_defaults');
+var color = require('../../../src/components/color');
+var rgb = color.rgb;
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var Fx = require('@src/components/fx');
+
+var d3 = require('d3');
+
+var FUNNEL_TEXT_SELECTOR = '.bars .bartext';
+
+describe('Funnel.supplyDefaults', function() {
+    'use strict';
+
+    var traceIn,
+        traceOut;
+
+    var defaultColor = '#444';
+
+    var supplyDefaults = Funnel.supplyDefaults;
+
+    beforeEach(function() {
+        traceOut = {};
+    });
+
+    it('should set visible to false when x and y are empty', function() {
+        traceIn = {};
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            x: [],
+            y: []
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.visible).toBe(false);
+    });
+
+    it('should set visible to false when x or y is empty', function() {
+        traceIn = {
+            x: []
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            x: [],
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            y: []
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            x: [1, 2, 3],
+            y: []
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.visible).toBe(false);
+    });
+
+    [{letter: 'y', counter: 'x'}, {letter: 'x', counter: 'y'}].forEach(function(spec) {
+        var l = spec.letter;
+        var c = spec.counter;
+        var c0 = c + '0';
+        var dc = 'd' + c;
+        it('should be visible using ' + c0 + '/' + dc + ' if ' + c + ' is missing completely but ' + l + ' is present', function() {
+            traceIn = {};
+            traceIn[l] = [1, 2];
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            expect(traceOut.visible).toBe(undefined, l); // visible: true gets set above the module level
+            expect(traceOut._length).toBe(2, l);
+            expect(traceOut[c0]).toBe(0, c0);
+            expect(traceOut[dc]).toBe(1, dc);
+            expect(traceOut.orientation).toBe(l === 'x' ? 'h' : 'v', l);
+        });
+    });
+
+    it('should not set base, offset or width', function() {
+        traceIn = {
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.base).toBeUndefined();
+        expect(traceOut.offset).toBeUndefined();
+        expect(traceOut.width).toBeUndefined();
+    });
+
+    it('should coerce a non-negative width', function() {
+        traceIn = {
+            width: -1,
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.width).toBeUndefined();
+    });
+
+    it('should coerce textposition to auto', function() {
+        traceIn = {
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textposition).toBe('auto');
+        expect(traceOut.texfont).toBeUndefined();
+        expect(traceOut.insidetexfont).toBeUndefined();
+        expect(traceOut.outsidetexfont).toBeUndefined();
+        expect(traceOut.constraintext).toBe('both'); // TODO: is this expected for funnel?
+    });
+
+    it('should default textfont to layout.font except for insidetextfont.color', function() {
+        traceIn = {
+            textposition: 'inside',
+            y: [1, 2, 3]
+        };
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+        var layoutFontMinusColor = {family: 'arial', size: 13};
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.textposition).toBe('inside');
+        expect(traceOut.textfont).toEqual(layout.font);
+        expect(traceOut.textfont).not.toBe(layout.font);
+        expect(traceOut.insidetextfont).toEqual(layoutFontMinusColor);
+        expect(traceOut.insidetextfont).not.toBe(layout.font);
+        expect(traceOut.insidetextfont).not.toBe(traceOut.textfont);
+        expect(traceOut.outsidetexfont).toBeUndefined();
+        expect(traceOut.constraintext).toBe('both');
+    });
+
+    it('should not default insidetextfont.color to layout.font.color', function() {
+        traceIn = {
+            textposition: 'inside',
+            y: [1, 2, 3]
+        };
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.insidetextfont.family).toBe('arial');
+        expect(traceOut.insidetextfont.color).toBeUndefined();
+        expect(traceOut.insidetextfont.size).toBe(13);
+    });
+
+    it('should default insidetextfont.color to textfont.color', function() {
+        traceIn = {
+            textposition: 'inside',
+            y: [1, 2, 3],
+            textfont: {family: 'arial', color: '#09F', size: 20}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+
+        expect(traceOut.insidetextfont.family).toBe('arial');
+        expect(traceOut.insidetextfont.color).toBe('#09F');
+        expect(traceOut.insidetextfont.size).toBe(20);
+    });
+
+    it('should inherit layout.calendar', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        // we always fill calendar attributes, because it's hard to tell if
+        // we're on a date axis at this point.
+        expect(traceOut.xcalendar).toBe('islamic');
+        expect(traceOut.ycalendar).toBe('islamic');
+    });
+
+    it('should take its own calendars', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            xcalendar: 'coptic',
+            ycalendar: 'ethiopian'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        expect(traceOut.xcalendar).toBe('coptic');
+        expect(traceOut.ycalendar).toBe('ethiopian');
+    });
+
+    it('should not include alignementgroup/offsetgroup when funnelmode is not *group*', function() {
+        var gd = {
+            data: [{type: 'funnel', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
+            layout: {funnelmode: 'group'}
+        };
+
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
+
+        gd.layout.funnelmode = 'stack';
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+    });
+});
+
+describe('funnel calc / crossTraceCalc', function() {
+    'use strict';
+
+    it('should fill in calc pt fields (stack case)', function() {
+        var gd = mockFunnelPlot([{
+            y: [3, 2, 1]
+        }, {
+            y: [4, 3, 2]
+        }, {
+            y: [null, null, 2]
+        }], {
+            funnelmode: 'stack'
+        });
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
+        assertPointField(cd, 'y', [[-0.5, -0.5, -1.5], [3.5, 2.5, 0.5], [undefined, undefined, 2.5]]);
+        assertPointField(cd, 'b', [[-3.5, -2.5, -2.5], [-0.5, -0.5, -1.5], [0, 0, 0.5]]);
+        assertPointField(cd, 's', [[3, 2, 1], [4, 3, 2], [undefined, undefined, 2]]);
+        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
+        assertTraceField(cd, 't.barwidth', [0.8, 0.8, 0.8]);
+        assertTraceField(cd, 't.poffset', [-0.4, -0.4, -0.4]);
+        assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8]);
+    });
+
+    it('should fill in calc pt fields (overlay case)', function() {
+        var gd = mockFunnelPlot([{
+            y: [2, 1, 2]
+        }, {
+            y: [3, 1, 2]
+        }], {
+            funnelmode: 'overlay'
+        });
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
+        assertPointField(cd, 'y', [[1, 0.5, 1], [1.5, 0.5, 1]]);
+        assertPointField(cd, 'b', [[-1, -0.5, -1], [-1.5, -0.5, -1]]);
+        assertPointField(cd, 's', [[2, 1, 2], [3, 1, 2]]);
+        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertTraceField(cd, 't.barwidth', [0.8, 0.8]);
+        assertTraceField(cd, 't.poffset', [-0.4, -0.4]);
+        assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8]);
+    });
+
+    it('should fill in calc pt fields (group case)', function() {
+        var gd = mockFunnelPlot([{
+            y: [2, 1, 2]
+        }, {
+            y: [3, 1, 2]
+        }], {
+            funnelmode: 'group',
+            // asumming default bargap is 0.2
+            funnelgroupgap: 0.1
+        });
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[-0.2, 0.8, 1.8], [0.2, 1.2, 2.2]]);
+        assertPointField(cd, 'y', [[1, 0.5, 1], [1.5, 0.5, 1]]);
+        assertPointField(cd, 'b', [[-1, -0.5, -1], [-1.5, -0.5, -1]]);
+        assertPointField(cd, 's', [[2, 1, 2], [3, 1, 2]]);
+        assertPointField(cd, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertTraceField(cd, 't.barwidth', [0.36, 0.36]);
+        assertTraceField(cd, 't.poffset', [-0.38, 0.02]);
+        assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8]);
+    });
+});
+
+describe('Funnel.calc', function() {
+    'use strict';
+
+    it('should not exclude items with non-numeric x from calcdata (vertical case)', function() {
+        var gd = mockFunnelPlot([{
+            x: [5, NaN, 15, 20, null, 21],
+            orientation: 'v',
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[5, NaN, 15, 20, NaN, 21]]);
+    });
+
+    it('should not exclude items with non-numeric y from calcdata (horizontal case)', function() {
+        var gd = mockFunnelPlot([{
+            orientation: 'h',
+            y: [20, NaN, 23, 25, null, 26]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'y', [[20, NaN, 23, 25, NaN, 26]]);
+    });
+
+    it('should not exclude items with non-numeric y from calcdata (to plots gaps correctly)', function() {
+        var gd = mockFunnelPlot([{
+            x: ['a', 'b', 'c', 'd'],
+            y: [1, null, 'nonsense', 15]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[0, 1, 2, 3]]);
+        assertPointField(cd, 'y', [[0.5, NaN, NaN, 7.5]]);
+    });
+
+    it('should not exclude items with non-numeric x from calcdata (to plots gaps correctly)', function() {
+        var gd = mockFunnelPlot([{
+            x: [1, null, 'nonsense', 15],
+            y: [1, 2, 10, 30]
+        }], {funnelmode: 'group'});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[1, NaN, NaN, 15]]);
+        assertPointField(cd, 'y', [[0.5, 1, 5, 15]]);
+    });
+});
+
+describe('Funnel.crossTraceCalc', function() {
+    'use strict';
+
+    it('should guard against invalid offset items', function() {
+        var gd = mockFunnelPlot([{
+            offset: [null, 0, 1],
+            y: [1, 2, 3]
+        }, {
+            offset: [null, 1],
+            y: [1, 2, 3]
+        }, {
+            offset: null,
+            y: [1]
+        }], {
+            funnelgap: 0.2,
+            funnelmode: 'overlay'
+        });
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.poffset', [-0.4, 0, 1]);
+        assertArrayField(cd[1][0], 't.poffset', [-0.4, 1, -0.4]);
+        assertArrayField(cd[2][0], 't.poffset', [-0.4]);
+    });
+
+    it('should work with *width* typed arrays', function() {
+        var w = [0.1, 0.4, 0.7];
+
+        var gd = mockFunnelPlot([{
+            width: w,
+            y: [1, 2, 3]
+        }, {
+            width: new Float32Array(w),
+            y: [1, 2, 3]
+        }], {funnelmode: 'group'});
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', w);
+        assertArrayField(cd[1][0], 't.barwidth', w);
+        assertPointField(cd, 'x', [
+            [-0.2, 0.8, 1.8],
+            [0.2, 1.2, 2.2]
+        ]);
+    });
+
+    it('should work with *offset* typed arrays', function() {
+        var o = [0.1, 0.4, 0.7];
+
+        var gd = mockFunnelPlot([{
+            offset: o,
+            y: [1, 2, 3]
+        }, {
+            offset: new Float32Array(o),
+            y: [1, 2, 3]
+        }]);
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.poffset', o);
+        assertArrayField(cd[1][0], 't.poffset', o);
+        assertPointField(cd, 'x', [
+            [0.5, 1.8, 3.1],
+            [0.5, 1.8, 3.099]
+        ]);
+    });
+
+    it('should guard against invalid width items', function() {
+        var gd = mockFunnelPlot([{
+            width: [null, 1, 0.8],
+            y: [1, 2, 3]
+        }, {
+            width: [null, 1],
+            y: [1, 2, 3]
+        }, {
+            width: null,
+            y: [1]
+        }], {
+            funnelgap: 0.2,
+            funnelmode: 'overlay'
+        });
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', [0.8, 1, 0.8]);
+        assertArrayField(cd[1][0], 't.barwidth', [0.8, 1, 0.8]);
+        assertArrayField(cd[2][0], 't.barwidth', [0.8]);
+    });
+
+    it('should guard against invalid width items (group case)', function() {
+        var gd = mockFunnelPlot([{
+            width: [null, 0.1, 0.2],
+            y: [1, 2, 3]
+        }, {
+            width: [null, 0.1],
+            y: [1, 2, 3]
+        }, {
+            width: null,
+            y: [1]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'group'
+        });
+
+        var cd = gd.calcdata;
+        assertArrayField(cd[0][0], 't.barwidth', [0.33, 0.1, 0.2]);
+        assertArrayField(cd[1][0], 't.barwidth', [0.33, 0.1, 0.33]);
+        assertArrayField(cd[2][0], 't.barwidth', [0.33]);
+    });
+
+    it('should stack vertical and horizontal traces separately', function() {
+        var gd = mockFunnelPlot([{
+            y: [3, 2, 1]
+        }, {
+            y: [4, 3, 2]
+        }, {
+            x: [3, 2, 1]
+        }, {
+            x: [4, 3, 2]
+        }], {
+            funnelmode: 'stack'
+        });
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[-3.5, -2.5, -1.5], [-0.5, -0.5, -0.5], [-3.5, -2.5, -1.5], [-0.5, -0.5, -0.5]]);
+        assertPointField(cd, 's', [[3, 2, 1], [4, 3, 2], [3, 2, 1], [4, 3, 2]]);
+        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2], [-0.5, -0.5, -0.5], [3.5, 2.5, 1.5]]);
+        assertPointField(cd, 'y', [[-0.5, -0.5, -0.5], [3.5, 2.5, 1.5], [0, 1, 2], [0, 1, 2]]);
+    });
+
+    it('should not group traces that set offset', function() {
+        var gd = mockFunnelPlot([{
+            y: [3, 2, 1]
+        }, {
+            y: [2, 1, 0]
+        }, {
+            offset: -1,
+            y: [15, 10, 5]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'group'
+        });
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[-1.5, -1, -0.5], [-1, -0.5, 0], [-7.5, -5, -2.5]]);
+        assertPointField(cd, 's', [[3, 2, 1], [2, 1, 0], [15, 10, 5]]);
+        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25], [-0.5, 0.5, 1.5]]);
+        assertPointField(cd, 'y', [[1.5, 1, 0.5], [1, 0.5, 0], [7.5, 5, 2.5]]);
+    });
+
+    it('should draw traces separately in overlay mode', function() {
+        var gd = mockFunnelPlot([{
+            y: [1, 2, 3]
+        }, {
+            y: [10, 20, 30]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'overlay',
+            funnelnorm: false
+        });
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[-0.5, -1, -1.5], [-5, -10, -15]]);
+        assertPointField(cd, 's', [[1, 2, 3], [10, 20, 30]]);
+        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
+        assertPointField(cd, 'y', [[0.5, 1, 1.5], [5, 10, 15]]);
+    });
+
+    it('should honor funnelnorm for traces that cannot be grouped', function() {
+        var gd = mockFunnelPlot([{
+            offset: 0,
+            y: [3, 2, 1]
+        }, {
+            offset: 0,
+            y: [2, 1, 0]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'group',
+            funnelnorm: 'percent'
+        });
+
+        expect(gd._fullLayout.funnelnorm).toBe('percent');
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[-100, -100, -100], [-100, -100, NaN]]);
+        assertPointField(cd, 's', [[200, 200, 200], [200, 200, NaN]]);
+        assertPointField(cd, 'x', [[0.5, 1.5, 2.5], [0.5, 1.5, 2.5]]);
+        assertPointField(cd, 'y', [[100, 100, 100], [100, 100, NaN]]);
+    });
+
+    it('should honor funnelnorm for traces that cannot be stacked', function() {
+        var gd = mockFunnelPlot([{
+            offset: 0,
+            y: [3, 2, 1]
+        }, {
+            offset: 0,
+            y: [2, 1, 0]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'stack',
+            funnelnorm: 'percent'
+        });
+
+        expect(gd._fullLayout.funnelnorm).toBe('percent');
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[-100, -100, -100], [20, 33.333, 100]]);
+        assertPointField(cd, 's', [[120, 133.333, 200], [80, 66.666, 0]]);
+        assertPointField(cd, 'x', [[0.5, 1.5, 2.5], [0.5, 1.5, 2.5]]);
+        assertPointField(cd, 'y', [[20, 33.333, 100], [100, 100, 100]]);
+    });
+
+    it('should honor funnelnorm (group case)', function() {
+        var gd = mockFunnelPlot([{
+            y: [3, 2, 1]
+        }, {
+            y: [2, 1, 0]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'group',
+            funnelnorm: 'fraction'
+        });
+
+        expect(gd._fullLayout.funnelnorm).toBe('fraction');
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[-0.6, -0.666, -1], [-0.4, -0.333, 0]]);
+        assertPointField(cd, 's', [[1.2, 1.333, 2], [0.8, 0.666, 0]]);
+        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25]]);
+        assertPointField(cd, 'y', [[0.6, 0.666, 1], [0.4, 0.333, 0]]);
+    });
+
+    it('should honor funnelnorm (stack case)', function() {
+        var gd = mockFunnelPlot([{
+            y: [3, 2, 1]
+        }, {
+            y: [2, 1, 0]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'stack',
+            funnelnorm: 'fraction'
+        });
+
+        expect(gd._fullLayout.funnelnorm).toBe('fraction');
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[-1, -1, -1], [0.2, 0.333, 1]]);
+        assertPointField(cd, 's', [[1.2, 1.333, 2], [0.8, 0.666, 0]]);
+        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
+        assertPointField(cd, 'y', [[0.2, 0.333, 1], [1, 1, 1]]);
+    });
+
+    it('should expand position axis', function() {
+        var gd = mockFunnelPlot([{
+            offset: 10,
+            width: 2,
+            y: [1.5, 1, 0.5]
+        }, {
+            offset: -5,
+            width: 2,
+            y: [3, 2, 1]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'overlay'
+        });
+
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-5, 14], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-1.666, 1.666], undefined, '(ya.range)');
+    });
+
+    it('should expand size axis (overlay case)', function() {
+        var gd = mockFunnelPlot([{
+            y: [20, 18, 16]
+        }, {
+            y: [6, 7, 8]
+        }], {
+            funnelgap: 0,
+            funnelmode: 'overlay',
+            funnelnorm: false
+        });
+
+        expect(gd._fullLayout.barnorm).toBeUndefined();
+
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
+    });
+
+    it('should expand size axis (funnelnorm case)', function() {
+        var gd = mockFunnelPlot([{
+            y: [3, 2, 1]
+        }, {
+            y: [2, 1, 0]
+        }, {
+            y: [4, 3, 2, 1]
+        }, {
+            y: [3, 2, 1, 0]
+        }], {
+            funnelgap: 0,
+            funnelnorm: 'fraction'
+        });
+
+        expect(gd._fullLayout.funnelnorm).toBe('fraction');
+
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 3.5], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
+    });
+
+    it('works with log axes (grouped funnels)', function() {
+        var gd = mockFunnelPlot([
+            {y: [1, 10, 1e10]},
+            {y: [2, 20, 2e10]}
+        ], {
+            yaxis: {type: 'log'},
+            funnelmode: 'group'
+        });
+
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.8733094398675356, 10.572279444203554], undefined, '(ya.range)');
+    });
+
+    it('works with log axes (stacked funnels)', function() {
+        var gd = mockFunnelPlot([
+            {y: [1, 10, 1e10]},
+            {y: [2, 20, 2e10]}
+        ], {
+            yaxis: {type: 'log'},
+            funnelmode: 'stack'
+        });
+
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.37946429649987423, 10.731646814611235], undefined, '(ya.range)');
+    });
+
+    it('works with log axes (normalized funnels)', function() {
+        // strange case... but it should work!
+        var gd = mockFunnelPlot([
+            {y: [1, 10, 1e10]},
+            {y: [2, 20, 2e10]}
+        ], {
+            yaxis: {type: 'log'},
+            funnelmode: 'stack',
+            funnelnorm: 'percent'
+        });
+
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([1, 3], undefined, '(ya.range)');
+    });
+});
+
+describe('A funnel plot', function() {
+    'use strict';
+
+    var DARK = '#444';
+    var LIGHT = '#fff';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function getAllTraceNodes(node) {
+        return node.querySelectorAll('g.points');
+    }
+
+    function getAllFunnelNodes(node) {
+        return node.querySelectorAll('g.point');
+    }
+
+    function assertTextIsInsidePath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
+
+        expect(pathBB.left).not.toBeGreaterThan(textBB.left);
+        expect(textBB.right).not.toBeGreaterThan(pathBB.right);
+        expect(pathBB.top).not.toBeGreaterThan(textBB.top);
+        expect(textBB.bottom).not.toBeGreaterThan(pathBB.bottom);
+    }
+
+    function assertTextIsAbovePath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
+
+        expect(textBB.bottom).not.toBeGreaterThan(pathBB.top);
+    }
+
+    function assertTextIsBelowPath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
+
+        expect(pathBB.bottom).not.toBeGreaterThan(textBB.top);
+    }
+
+    function assertTextIsAfterPath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
+
+        expect(pathBB.right).not.toBeGreaterThan(textBB.left);
+    }
+
+    function assertTextFont(textNode, expectedFontProps, index) {
+        expect(textNode.style.fontFamily).toBe(expectedFontProps.family[index]);
+        expect(textNode.style.fontSize).toBe(expectedFontProps.size[index] + 'px');
+
+        var actualColorRGB = textNode.style.fill;
+        var expectedColorRGB = rgb(expectedFontProps.color[index]);
+        expect(actualColorRGB).toBe(expectedColorRGB);
+    }
+
+    function assertTextIsBeforePath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect();
+        var pathBB = pathNode.getBoundingClientRect();
+
+        expect(textBB.right).not.toBeGreaterThan(pathBB.left);
+    }
+
+    function assertTextFontColors(expFontColors, label) {
+        return function() {
+            var selection = d3.selectAll(FUNNEL_TEXT_SELECTOR);
+            expect(selection.size()).toBe(expFontColors.length);
+
+            selection.each(function(d, i) {
+                var expFontColor = expFontColors[i];
+                var isArray = Array.isArray(expFontColor);
+
+                expect(this.style.fill).toBe(isArray ? rgb(expFontColor[0]) : rgb(expFontColor),
+                  (label || '') + ', fill for element ' + i);
+                expect(this.style.fillOpacity).toBe(isArray ? expFontColor[1] : '1',
+                  (label || '') + ', fillOpacity for element ' + i);
+            });
+        };
+    }
+
+    it('should show texts (inside case)', function(done) {
+        var data = [{
+            y: [10, 20, 30],
+            type: 'funnel',
+            text: ['1', 'Very very very very very long text'],
+            textposition: 'inside',
+        }];
+        var layout = {};
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var funnelNodes = getAllFunnelNodes(traceNodes[0]);
+            var foundTextNodes;
+
+            for(var i = 0; i < funnelNodes.length; i++) {
+                var funnelNode = funnelNodes[i];
+                var pathNode = funnelNode.querySelector('path');
+                var textNode = funnelNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsInsidePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not push text inside when base is set', function(done) {
+        var data = [{
+            x: [1, 2],
+            y: [20, 10],
+            base: [1, 2],
+            type: 'funnel',
+            text: ['a', 'b'],
+            textposition: 'outside',
+        }, {
+            x: [3, 4],
+            y: [30, 40],
+            type: 'funnel',
+            text: ['c', 'd']
+        }];
+        var layout = {};
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var funnelNodes = getAllFunnelNodes(traceNodes[0]);
+            var foundTextNodes;
+
+            for(var i = 0; i < funnelNodes.length; i++) {
+                var funnelNode = funnelNodes[i];
+                var pathNode = funnelNode.querySelector('path');
+                var textNode = funnelNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsAbovePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should show funnel texts (outside case)', function(done) {
+        var data = [{
+            y: [30, 20, 10],
+            type: 'funnel',
+            text: ['1', 'Very very very very very long funnel text'],
+            textposition: 'outside',
+        }];
+        var layout = {};
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var funnelNodes = getAllFunnelNodes(traceNodes[0]);
+            var foundTextNodes;
+
+            for(var i = 0; i < funnelNodes.length; i++) {
+                var funnelNode = funnelNodes[i];
+                var pathNode = funnelNode.querySelector('path');
+                var textNode = funnelNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    if(data[0].y[i] > 0) assertTextIsAbovePath(textNode, pathNode);
+                    else assertTextIsBelowPath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should show texts (horizontal case)', function(done) {
+        var data = [{
+            x: [30, 20, 10],
+            type: 'funnel',
+            text: ['Very very very very very long text', -20],
+            textposition: 'outside',
+        }];
+        var layout = {};
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var funnelNodes = getAllFunnelNodes(traceNodes[0]);
+            var foundTextNodes;
+
+            for(var i = 0; i < funnelNodes.length; i++) {
+                var funnelNode = funnelNodes[i];
+                var pathNode = funnelNode.querySelector('path');
+                var textNode = funnelNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    if(data[0].x[i] > 0) assertTextIsAfterPath(textNode, pathNode);
+                    else assertTextIsBeforePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    var insideTextTestsTrace = {
+        x: ['giraffes', 'orangutans', 'monkeys', 'elefants', 'spiders', 'snakes'],
+        y: [20, 14, 23, 10, 59, 15],
+        text: [20, 14, 23, 10, 59, 15],
+        type: 'funnel',
+        textposition: 'auto',
+        marker: {
+            color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
+        }
+    };
+
+    it('should take fill opacities into account when calculating contrasting inside text colors', function(done) {
+        var trace = {
+            x: [5, 10],
+            y: [5, 15],
+            text: ['Giraffes', 'Zebras'],
+            type: 'funnel',
+            textposition: 'inside',
+            marker: {
+                color: ['rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.8)']
+            }
+        };
+
+        Plotly.plot(gd, [trace])
+          .then(assertTextFontColors([DARK, LIGHT]))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: '#09f' } });
+
+        Plotly.plot(gd, [data])
+          .then(assertTextFontColors(Lib.repeat('#09f', 6)))
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('should be able to restyle', function(done) {
+        var mock = {
+            data: [
+                {
+                    width: [1, 0.8, 0.6, 0.4],
+                    text: [1, 2, 3333333333, 4],
+                    textposition: 'outside',
+                    y: [1, 2, 3, 4],
+                    x: [1, 2, 3, 4],
+                    type: 'funnel'
+                }, {
+                    width: [0.4, 0.6, 0.8, 1],
+                    text: ['Three', 2, 'inside text', 0],
+                    textposition: 'auto',
+                    textfont: { size: [10] },
+                    y: [3, 2, 1, 0],
+                    x: [1, 2, 3, 4],
+                    type: 'funnel'
+                }, {
+                    width: 1,
+                    text: [4, 3, 2, 1],
+                    textposition: 'inside',
+                    y: [4, 3, 2, 1],
+                    x: [1, 2, 3, 4],
+                    type: 'funnel'
+                }, {
+                    text: [0, 'outside text', 3, 2],
+                    textposition: 'auto',
+                    y: [0, 0.25, 3, 2],
+                    x: [1, 2, 3, 4],
+                    type: 'funnel'
+                }
+            ],
+            layout: {
+                xaxis: { showgrid: true },
+                yaxis: { range: [-6, 6] },
+                height: 400,
+                width: 400,
+                funnelmode: 'overlay'
+            }
+        };
+
+        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            var cd = gd.calcdata;
+            assertPointField(cd, 'x', [
+                [1, 2, 3, 4], [1, 2, 3, 4],
+                [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertPointField(cd, 'y', [
+                [0.5, 1, 1.5, 2], [1.5, 1, 0.5, 0],
+                [2, 1.5, 1, 0.5], [0, 0.125, 1.5, 1]]);
+            assertPointField(cd, 'b', [
+                [-0.5, -1, -1.5, -2], [-1.5, -1, -0.5, 0],
+                [-2, -1.5, -1, -0.5], [0, -0.125, -1.5, -1]]);
+            assertPointField(cd, 's', [
+                [1, 2, 3, 4], [3, 2, 1, 0],
+                [4, 3, 2, 1], [0, 0.25, 3, 2]]);
+            assertPointField(cd, 'p', [
+                [1, 2, 3, 4], [1, 2, 3, 4],
+                [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            assertArrayField(cd[0][0], 't.poffset', [-0.5, -0.4, -0.3, -0.2]);
+            assertArrayField(cd[1][0], 't.poffset', [-0.2, -0.3, -0.4, -0.5]);
+            expect(cd[2][0].t.poffset).toBe(-0.5);
+            expect(cd[3][0].t.poffset).toBe(-0.4);
+            assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
+
+            return Plotly.restyle(gd, 'offset', 0);
+        })
+        .then(function() {
+            var cd = gd.calcdata;
+            assertPointField(cd, 'x', [
+                [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
+                [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
+            assertPointField(cd, 'y', [
+                [0.5, 1, 1.5, 2], [1.5, 1, 0.5, 0],
+                [2, 1.5, 1, 0.5], [0, 0.125, 1.5, 1]]);
+            assertPointField(cd, 'b', [
+                [-0.5, -1, -1.5, -2], [-1.5, -1, -0.5, 0],
+                [-2, -1.5, -1, -0.5], [0, -0.125, -1.5, -1]]);
+            assertPointField(cd, 's', [
+                [1, 2, 3, 4], [3, 2, 1, 0],
+                [4, 3, 2, 1], [0, 0.25, 3, 2]]);
+            assertPointField(cd, 'p', [
+                [1, 2, 3, 4], [1, 2, 3, 4],
+                [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            expect(cd[0][0].t.poffset).toBe(0);
+            expect(cd[1][0].t.poffset).toBe(0);
+            expect(cd[2][0].t.poffset).toBe(0);
+            expect(cd[3][0].t.poffset).toBe(0);
+            assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
+
+            var traceNodes = getAllTraceNodes(gd);
+            var trace0Bar3 = getAllFunnelNodes(traceNodes[0])[3];
+            var path03 = trace0Bar3.querySelector('path');
+            var text03 = trace0Bar3.querySelector('text');
+            var trace1Bar2 = getAllFunnelNodes(traceNodes[1])[2];
+            var path12 = trace1Bar2.querySelector('path');
+            var text12 = trace1Bar2.querySelector('text');
+            var trace2Bar0 = getAllFunnelNodes(traceNodes[2])[0];
+            var path20 = trace2Bar0.querySelector('path');
+            var text20 = trace2Bar0.querySelector('text');
+            var trace3Bar0 = getAllFunnelNodes(traceNodes[3])[1];
+            var path30 = trace3Bar0.querySelector('path');
+            var text30 = trace3Bar0.querySelector('text');
+
+            expect(text03.textContent).toBe('4');
+            expect(text12.textContent).toBe('inside text');
+            expect(text20.textContent).toBe('4');
+            expect(text30.textContent).toBe('outside text');
+
+            assertTextIsAbovePath(text03, path03); // outside
+            assertTextIsInsidePath(text12, path12); // inside
+            assertTextIsInsidePath(text20, path20); // inside
+            assertTextIsAbovePath(text30, path30); // outside
+
+            // clear bounding box cache - somehow when you cache
+            // text size too early sometimes it changes later...
+            // we've had this issue before, where we've had to
+            // redraw annotations to get final sizes, I wish we
+            // could get some signal that fonts are really ready
+            // and not start drawing until then (or invalidate
+            // the bbox cache when that happens?)
+            // without this change, we get an error at
+            // assertTextIsInsidePath(text30, path30);
+            Drawing.savedBBoxes = {};
+
+            return Plotly.restyle(gd, 'textposition', 'inside');
+        })
+        .then(function() {
+            var cd = gd.calcdata;
+            assertPointField(cd, 'x', [
+                [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
+                [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
+            assertPointField(cd, 'y', [
+                [0.5, 1, 1.5, 2], [1.5, 1, 0.5, 0],
+                [2, 1.5, 1, 0.5], [0, 0.125, 1.5, 1]]);
+            assertPointField(cd, 'b', [
+                [-0.5, -1, -1.5, -2], [-1.5, -1, -0.5, 0],
+                [-2, -1.5, -1, -0.5], [0, -0.125, -1.5, -1]]);
+            assertPointField(cd, 's', [
+                [1, 2, 3, 4], [3, 2, 1, 0],
+                [4, 3, 2, 1], [0, 0.25, 3, 2]]);
+            assertPointField(cd, 'p', [
+                [1, 2, 3, 4], [1, 2, 3, 4],
+                [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            expect(cd[0][0].t.poffset).toBe(0);
+            expect(cd[1][0].t.poffset).toBe(0);
+            expect(cd[2][0].t.poffset).toBe(0);
+            expect(cd[3][0].t.poffset).toBe(0);
+            assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
+
+            var traceNodes = getAllTraceNodes(gd);
+            var trace0Bar3 = getAllFunnelNodes(traceNodes[0])[3];
+            var path03 = trace0Bar3.querySelector('path');
+            var text03 = trace0Bar3.querySelector('text');
+            var trace1Bar2 = getAllFunnelNodes(traceNodes[1])[2];
+            var path12 = trace1Bar2.querySelector('path');
+            var text12 = trace1Bar2.querySelector('text');
+            var trace2Bar0 = getAllFunnelNodes(traceNodes[2])[0];
+            var path20 = trace2Bar0.querySelector('path');
+            var text20 = trace2Bar0.querySelector('text');
+            var trace3Bar0 = getAllFunnelNodes(traceNodes[3])[1];
+            var path30 = trace3Bar0.querySelector('path');
+            var text30 = trace3Bar0.querySelector('text');
+
+            expect(text03.textContent).toBe('4');
+            expect(text12.textContent).toBe('inside text');
+            expect(text20.textContent).toBe('4');
+            expect(text30.textContent).toBe('outside text');
+
+            assertTextIsInsidePath(text03, path03); // inside
+            assertTextIsInsidePath(text12, path12); // inside
+            assertTextIsInsidePath(text20, path20); // inside
+            assertTextIsInsidePath(text30, path30); // inside
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to add/remove connector line nodes on restyle', function(done) {
+        function _assertNumberOfFunnelConnectorNodes(cnt) {
+            var sel = d3.select(gd).select('.funnellayer').selectAll('.line');
+            expect(sel.size()).toBe(cnt);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'funnel',
+            x: ['Initial', 'A', 'B', 'C', 'Total'],
+            y: [10, 2, 3, 5],
+            connector: { visible: false, line: { width: 2 } }
+        }])
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(0);
+            return Plotly.restyle(gd, 'connector.visible', true);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(4);
+            return Plotly.restyle(gd, 'connector.visible', false);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(0);
+            return Plotly.restyle(gd, 'connector.visible', true);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(4);
+            return Plotly.restyle(gd, 'connector.line.width', 0);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(0);
+            return Plotly.restyle(gd, 'connector.line.width', 10);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(4);
+            return Plotly.restyle(gd, 'connector.line.width', 0);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to add/remove connector region nodes on restyle', function(done) {
+        function _assertNumberOfFunnelConnectorNodes(cnt) {
+            var sel = d3.select(gd).select('.funnellayer').selectAll('.region');
+            expect(sel.size()).toBe(cnt);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'funnel',
+            x: ['Initial', 'A', 'B', 'C', 'Total'],
+            y: [10, 2, 3, 5],
+            connector: { visible: false }
+        }])
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(0);
+            return Plotly.restyle(gd, 'connector.visible', true);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(4);
+            return Plotly.restyle(gd, 'connector.visible', false);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(0);
+            return Plotly.restyle(gd, 'connector.visible', true);
+        })
+        .then(function() {
+            _assertNumberOfFunnelConnectorNodes(4);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to deal with blank bars on transform', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'funnel',
+                x: [1, 2, 3],
+                xsrc: 'ints',
+                transforms: [{
+                    type: 'filter',
+                    target: [1, 2, 3],
+                    targetsrc: 'ints',
+                    operation: '<',
+                    value: 0
+                }]
+            }],
+            layout: {
+                funnelmode: 'group'
+            }
+        })
+        .then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var funnelNodes = getAllFunnelNodes(traceNodes[0]);
+            var pathNode = funnelNodes[0].querySelector('path');
+
+            expect(gd.calcdata[0][0].x).toEqual(NaN);
+            expect(gd.calcdata[0][0].y).toEqual(NaN);
+            expect(gd.calcdata[0][0].isBlank).toBe(true);
+
+            expect(pathNode.outerHTML).toEqual('<path d="M0,0Z" style="vector-effect: non-scaling-stroke;"></path>');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should coerce text-related attributes', function(done) {
+        var data = [{
+            y: [10, 20, 30, 40],
+            type: 'funnel',
+            text: ['T1P1', 'T1P2', 13, 14],
+            textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+            textfont: {
+                family: ['"comic sans"'],
+                color: ['red', 'green'],
+            },
+            insidetextfont: {
+                size: [8, 12, 16],
+                color: ['black'],
+            },
+            outsidetextfont: {
+                size: [null, 24, 32]
+            }
+        }];
+        var layout = {
+            font: {family: 'arial', color: 'blue', size: 13}
+        };
+
+        // Note: insidetextfont.color does NOT inherit from textfont.color
+        // since insidetextfont.color should be contrasting to bar's fill by default.
+        var contrastingLightColorVal = color.contrast('black');
+        var expected = {
+            y: [10, 20, 30, 40],
+            type: 'funnel',
+            text: ['T1P1', 'T1P2', '13', '14'],
+            textposition: ['inside', 'outside', 'none'],
+            textfont: {
+                family: ['"comic sans"', 'arial'],
+                color: ['red', 'green'],
+                size: [13, 13]
+            },
+            insidetextfont: {
+                family: ['"comic sans"', 'arial', 'arial'],
+                color: ['black', 'green', contrastingLightColorVal],
+                size: [8, 12, 16]
+            },
+            outsidetextfont: {
+                family: ['"comic sans"', 'arial', 'arial'],
+                color: ['red', 'green', 'blue'],
+                size: [13, 24, 32]
+            }
+        };
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var funnelNodes = getAllFunnelNodes(traceNodes[0]);
+            var pathNodes = [
+                funnelNodes[0].querySelector('path'),
+                funnelNodes[1].querySelector('path'),
+                funnelNodes[2].querySelector('path'),
+                funnelNodes[3].querySelector('path')
+            ];
+            var textNodes = [
+                funnelNodes[0].querySelector('text'),
+                funnelNodes[1].querySelector('text'),
+                funnelNodes[2].querySelector('text'),
+                funnelNodes[3].querySelector('text')
+            ];
+            var i;
+
+            // assert funnel texts
+            for(i = 0; i < 3; i++) {
+                expect(textNodes[i].textContent).toBe(expected.text[i]);
+            }
+
+            // assert funnel positions
+            assertTextIsInsidePath(textNodes[0], pathNodes[0]); // inside
+            assertTextIsAbovePath(textNodes[1], pathNodes[1]); // outside
+            assertTextIsInsidePath(textNodes[2], pathNodes[2]); // auto -> inside
+            expect(textNodes[3]).toBe(null); // BADVALUE -> none
+
+            // assert fonts
+            assertTextFont(textNodes[0], expected.insidetextfont, 0);
+            assertTextFont(textNodes[1], expected.outsidetextfont, 1);
+            assertTextFont(textNodes[2], expected.insidetextfont, 2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to add/remove text node on restyle', function(done) {
+        function _assertNumberOfFunnelTextNodes(cnt) {
+            var sel = d3.select(gd).select('.funnellayer').selectAll('text');
+            expect(sel.size()).toBe(cnt);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'funnel',
+            x: ['Product A', 'Product B', 'Product C'],
+            y: [20, 14, 23],
+            text: [20, 14, 23],
+            textposition: 'auto'
+        }])
+        .then(function() {
+            _assertNumberOfFunnelTextNodes(3);
+            return Plotly.restyle(gd, 'textposition', 'none');
+        })
+        .then(function() {
+            _assertNumberOfFunnelTextNodes(0);
+            return Plotly.restyle(gd, 'textposition', 'auto');
+        })
+        .then(function() {
+            _assertNumberOfFunnelTextNodes(3);
+            return Plotly.restyle(gd, 'text', [[null, 0, '']]);
+        })
+        .then(function() {
+            // N.B. that '0' should be there!
+            _assertNumberOfFunnelTextNodes(1);
+            return Plotly.restyle(gd, 'text', 'yo!');
+        })
+        .then(function() {
+            _assertNumberOfFunnelTextNodes(3);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to react with new text colors', function(done) {
+        Plotly.react(gd, [{
+            type: 'funnel',
+            y: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside'
+        }])
+        .then(assertTextFontColors(['rgb(255, 255, 255)', 'rgb(255, 255, 255)', 'rgb(255, 255, 255)']))
+        .then(function() {
+            gd.data[0].insidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .then(function() {
+            delete gd.data[0].insidetextfont.color;
+            gd.data[0].textfont = {color: 'blue'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].textposition = 'outside';
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
+        .then(function() {
+            gd.data[0].outsidetextfont = {color: 'red'};
+            return Plotly.react(gd, gd.data);
+        })
+        .then(assertTextFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('funnel hover', function() {
+    'use strict';
+
+    var gd;
+
+    afterEach(destroyGraphDiv);
+
+    function getPointData(gd) {
+        var cd = gd.calcdata;
+        var subplot = gd._fullLayout._plots.xy;
+
+        return {
+            index: false,
+            distance: 20,
+            cd: cd[0],
+            trace: cd[0][0].trace,
+            xa: subplot.xaxis,
+            ya: subplot.yaxis,
+            maxHoverDistance: 20
+        };
+    }
+
+    function _hover(gd, xval, yval, hovermode) {
+        var pointData = getPointData(gd);
+        var pts = Funnel.hoverPoints(pointData, xval, yval, hovermode);
+        if(!pts) return false;
+
+        var pt = pts[0];
+
+        return {
+            style: [pt.index, pt.color, pt.xLabelVal, pt.yLabelVal],
+            pos: [pt.x0, pt.x1, pt.y0, pt.y1],
+            text: pt.text
+        };
+    }
+
+    function assertPos(actual, expected) {
+        var TOL = 5;
+
+        actual.forEach(function(p, i) {
+            expect(p).toBeWithin(expected[i], TOL);
+        });
+    }
+
+    describe('with orientation *v*', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/funnel_11.json'));
+
+            Plotly.plot(gd, mock.data, mock.layout)
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should return the correct hover point data (case x)', function() {
+            var out = _hover(gd, 0, 0, 'x');
+
+            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
+            assertPos(out.pos, [11.87, 106.8, 76.23, 76.23]);
+        });
+
+        it('should return the correct hover point data (case closest)', function() {
+            var out = _hover(gd, -0.2, 6, 'closest');
+
+            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
+            assertPos(out.pos, [11.87, 59.33, 76.23, 76.23]);
+        });
+    });
+
+    describe('text labels', function() {
+        it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) { t.type = 'funnel'; });
+            mock.layout.funnelmode = 'group';
+
+            Plotly.plot(gd, mock).then(function() {
+                var out = _hover(gd, -0.25, 0.25, 'closest');
+                expect(out.text).toEqual('Hover text\nA', 'hover text');
+
+                return Plotly.restyle(gd, 'hovertext', null);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.25, 'closest');
+                expect(out.text).toEqual('Text\nA', 'hover text');
+
+                return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.25, 'closest');
+                expect(out.text).toEqual('APPLE', 'hover text');
+
+                return Plotly.restyle(gd, 'hovertext', ['apple', 'banana', 'orange']);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.25, 'closest');
+                expect(out.text).toEqual('apple', 'hover text');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should use hovertemplate if specified', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) {
+                t.type = 'funnel';
+                t.hovertemplate = '%{y}<extra></extra>';
+            });
+
+            function _hover() {
+                var evt = { xpx: 125, ypx: 150 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.plot(gd, mock)
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: ['1', '2', '1.5'],
+                    name: ['', '', ''],
+                    axis: '0'
+                });
+                // return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        describe('display percentage from the initial value', function() {
+            it('should format numbers', function(done) {
+                gd = createGraphDiv();
+
+                Plotly.plot(gd, {
+                    data: [{
+                        x: ['A', 'B', 'C', 'D', 'E'],
+                        y: [5.5, 4.4, 3.3, 2.2, 1.1],
+                        type: 'funnel'
+                    }],
+                    layout: {width: 400, height: 400}
+                })
+                .then(function() {
+                    var evt = { xpx: 200, ypx: 350 };
+                    Fx.hover('graph', evt, 'xy');
+                })
+                .then(function() {
+                    assertHoverLabelContent({
+                        nums: '1.1\n6% of total\n50% of previous\n20% of initial',
+                        axis: 'E'
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
+    describe('with special width/offset combinations', function() {
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        it('should return correct hover data (single funnel, trace width)', function(done) {
+            Plotly.plot(gd, [{
+                type: 'funnel',
+                x: [1],
+                y: [2],
+                width: 10,
+                marker: { color: 'red' }
+            }], {
+                xaxis: { range: [-200, 200] }
+            })
+            .then(function() {
+                // all these x, y, hovermode should give the same (the only!) hover label
+                [
+                    [0, 0, 'closest'],
+                    [-3.9, 0.5, 'closest'],
+                    [5.9, 0.95, 'closest'],
+                    [-3.9, -5, 'x'],
+                    [5.9, 9.5, 'x']
+                ].forEach(function(hoverSpec) {
+                    var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
+
+                    expect(out.style).toEqual([0, 'red', 1, 2], hoverSpec);
+                    assertPos(out.pos, [264, 278, 14, 14], hoverSpec);
+                });
+
+                // then a few that are off the edge so yield nothing
+                [
+                    [1, 2.1, 'closest'],
+                    [-4.1, 1, 'closest'],
+                    [6.1, 1, 'closest'],
+                    [-4.1, 1, 'x'],
+                    [6.1, 1, 'x']
+                ].forEach(function(hoverSpec) {
+                    var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
+
+                    expect(out).toBe(false, hoverSpec);
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should return correct hover data (two funnels, array width)', function(done) {
+            Plotly.plot(gd, [{
+                type: 'funnel',
+                x: [1, 200],
+                y: [4, 2],
+                width: [10, 20],
+                marker: { color: 'red' }
+            }, {
+                type: 'funnel',
+                x: [1, 200],
+                y: [2, 4],
+                width: [20, 10],
+                marker: { color: 'green' }
+            }], {
+                funnelmode: 'group',
+                xaxis: { range: [-200, 300] },
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                var out = _hover(gd, -36, 1.5, 'closest');
+
+                expect(out.style).toEqual([0, 'red', 1, 4]);
+                assertPos(out.pos, [99, 106, 13, 13]);
+
+                out = _hover(gd, 164, 0.8, 'closest');
+
+                expect(out.style).toEqual([1, 'red', 200, 2]);
+                assertPos(out.pos, [222, 235, 88, 88]);
+
+                out = _hover(gd, 125, 0.8, 'x');
+
+                expect(out.style).toEqual([1, 'red', 200, 2]);
+                assertPos(out.pos, [222, 280, 88, 88]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('positions labels correctly w.r.t. narrow funnels', function(done) {
+            Plotly.newPlot(gd, [{
+                x: [0, 10, 20],
+                y: [2, 6, 4],
+                type: 'funnel',
+                width: 1
+            }], {
+                width: 500,
+                height: 500,
+                margin: {l: 100, r: 100, t: 100, b: 100}
+            })
+            .then(function() {
+                // you can still hover over the gap (14) but the label will
+                // get pushed in to the bar
+                var out = _hover(gd, 14, 2, 'x');
+                assertPos(out.pos, [145, 155, 15, 15]);
+
+                // in closest mode you must be over the bar though
+                out = _hover(gd, 14, 2, 'closest');
+                expect(out).toBe(false);
+
+                // now for a single bar trace, closest and compare modes give the same
+                // positioning of hover labels
+                out = _hover(gd, 10, 2, 'closest');
+                assertPos(out.pos, [145, 155, 15, 15]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+});
+
+function mockFunnelPlot(dataWithoutTraceType, layout) {
+    var traceTemplate = { type: 'funnel' };
+
+    var dataWithTraceType = dataWithoutTraceType.map(function(trace) {
+        return Lib.extendFlat({}, traceTemplate, trace);
+    });
+
+    var gd = {
+        data: dataWithTraceType,
+        layout: layout || {},
+        calcdata: [],
+        _context: {locale: 'en', locales: {}}
+    };
+
+    supplyAllDefaults(gd);
+    Plots.doCalcdata(gd);
+
+    return gd;
+}
+
+function assertArrayField(calcData, prop, expectation) {
+    var values = Lib.nestedProperty(calcData, prop).get();
+    if(!Array.isArray(values)) values = [values];
+
+    expect(values).toBeCloseToArray(expectation, undefined, '(field ' + prop + ')');
+}
+
+function assertPointField(calcData, prop, expectation) {
+    var values = [];
+
+    calcData.forEach(function(calcTrace) {
+        var vals = calcTrace.map(function(pt) {
+            return Lib.nestedProperty(pt, prop).get();
+        });
+
+        values.push(vals);
+    });
+
+    expect(values).toBeCloseTo2DArray(expectation, undefined, '(field ' + prop + ')');
+}
+
+function assertTraceField(calcData, prop, expectation) {
+    var values = calcData.map(function(calcTrace) {
+        return Lib.nestedProperty(calcTrace[0], prop).get();
+    });
+
+    expect(values).toBeCloseToArray(expectation, undefined, '(field ' + prop + ')');
+}

@@ -2174,8 +2174,8 @@ describe('Test select box and lasso per trace:', function() {
                 [[300, 300], [400, 400]],
                 function() {
                     assertPoints([
-                        [0, 281, 'Purchases', 269],
-                        [0, 269, 'Material expenses', 269]
+                        [0, 281, 'Purchases'],
+                        [0, 269, 'Material expenses']
                     ]);
                     assertSelectedPoints({
                         0: [5, 6]
@@ -2186,6 +2186,75 @@ describe('Test select box and lasso per trace:', function() {
                     ]);
                 },
                 null, BOXEVENTS, 'waterfall select'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@noCI @flaky should work for funnel traces', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+        var assertRanges = makeAssertRanges();
+        var assertLassoPoints = makeAssertLassoPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/funnel_horizontal_group_basic'));
+        fig.layout.dragmode = 'lasso';
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[400, 300], [200, 400], [400, 500], [600, 400], [500, 350]],
+                function() {
+                    assertPoints([
+                        [0, 331.5, 'Author: etpinard'],
+                        [1, 15.5, 'Author: etpinard']
+                    ]);
+                    assertSelectedPoints({
+                        0: [2],
+                        1: [2]
+                    });
+                    assertLassoPoints([
+                        [-154.56790123456787, -1700.2469, -154.5679, 1391.1111, 618.2716],
+                        ['Pull requests', 'Author: etpinard', 'Label: bug', 'Author: etpinard', 'Author: etpinard']
+                    ]);
+                },
+                null, LASSOEVENTS, 'funnel lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            // For some reason we need this to make the following tests pass
+            // on CI consistently. It appears that a double-click action
+            // is being confused with a mere click. See
+            // https://github.com/plotly/plotly.js/pull/2135#discussion_r148897529
+            // for more info.
+            return new Promise(function(resolve) {
+                setTimeout(resolve, 100);
+            });
+        })
+        .then(function() {
+            return _run(
+                [[300, 300], [500, 500]],
+                function() {
+                    assertPoints([
+                        [0, 331.5, 'Author: etpinard'],
+                        [1, 53.5, 'Pull requests'],
+                        [1, 15.5, 'Author: etpinard']
+                    ]);
+                    assertSelectedPoints({
+                        0: [2],
+                        1: [1, 2]
+                    });
+                    assertRanges([
+                        [-927.4074, 618.2716],
+                        ['Pull requests', 'Label: bug']
+                    ]);
+                },
+                null, BOXEVENTS, 'funnel select'
             );
         })
         .catch(failTest)
