@@ -702,6 +702,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
     var axList = Axes.list(gd, '', true);
     var matchGroups = fullLayout._axisMatchGroups || [];
     var ax;
+    var axRng;
 
     for(var i = 0; i < axList.length; i++) {
         ax = axList[i];
@@ -721,23 +722,24 @@ exports.doAutoRangeAndConstraints = function(gd) {
             ax = Axes.getFromId(gd, id);
             if(ax.autorange === false) continue groupLoop;
 
+            axRng = Lib.simpleMap(ax.range, ax.r2l);
             if(rng) {
                 if(rng[0] < rng[1]) {
-                    rng[0] = Math.min(rng[0], ax.range[0]);
-                    rng[1] = Math.max(rng[1], ax.range[1]);
+                    rng[0] = Math.min(rng[0], axRng[0]);
+                    rng[1] = Math.max(rng[1], axRng[1]);
                 } else {
-                    rng[0] = Math.max(rng[0], ax.range[0]);
-                    rng[1] = Math.min(rng[1], ax.range[1]);
+                    rng[0] = Math.max(rng[0], axRng[0]);
+                    rng[1] = Math.min(rng[1], axRng[1]);
                 }
             } else {
-                rng = ax.range;
+                rng = axRng;
             }
         }
 
         for(id in group) {
             ax = Axes.getFromId(gd, id);
-            ax.range = rng.slice();
-            ax._input.range = rng.slice();
+            ax.range = Lib.simpleMap(rng, ax.l2r);
+            ax._input.range = ax.range.slice();
             ax.setScale();
         }
     }
