@@ -232,12 +232,20 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     if(orientation === 'h') {
         var xa = plotinfo.xaxis;
         if(xa.type === 'log' && di.s0 <= 0) {
-            x0 = xa._length;
+            if(xa.range[0] < xa.range[1]) {
+                x0 = 0;
+            } else {
+                x0 = xa._length;
+            }
         }
     } else {
         var ya = plotinfo.yaxis;
         if(ya.type === 'log' && di.s0 <= 0) {
-            y0 = ya._length;
+            if(ya.range[0] < ya.range[1]) {
+                y0 = ya._length;
+            } else {
+                y0 = 0;
+            }
         }
     }
 
