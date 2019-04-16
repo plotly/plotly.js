@@ -150,6 +150,7 @@
         "margin": { "l": 150 },
         "height": 800,
         "width": 800,
+        "hovermode": "closest",
         "showlegend": true
     }
 }
