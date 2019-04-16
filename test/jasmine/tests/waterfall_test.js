@@ -1257,6 +1257,13 @@ describe('waterfall hover', function() {
             expect(out.style).toEqual([0, '#3D9970', 0, 13.23]);
             assertPos(out.pos, [11.87, 59.33, 52.71, 52.71]);
         });
+
+        it('should return the correct hover point data (case closest - decreasing case)', function() {
+            var out = _hover(gd, 0.8, 4, 'closest');
+
+            expect(out.style).toBeCloseToArray([1, '#FF4136', 1, -9.47]);
+            assertPos(out.pos, [137, 181, 266, 266]);
+        });
     });
 
     describe('text labels', function() {
@@ -1371,6 +1378,7 @@ describe('waterfall hover', function() {
                     [-3.9, 1, 'closest'],
                     [5.9, 1.9, 'closest'],
                     [-3.9, -10, 'x'],
+                    [1, 2.1, 'closest'],
                     [5.9, 19, 'x']
                 ].forEach(function(hoverSpec) {
                     var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
@@ -1382,7 +1390,6 @@ describe('waterfall hover', function() {
                 // then a few that are off the edge so yield nothing
                 [
                     [1, -0.1, 'closest'],
-                    [1, 2.1, 'closest'],
                     [-4.1, 1, 'closest'],
                     [6.1, 1, 'closest'],
                     [-4.1, 1, 'x'],
