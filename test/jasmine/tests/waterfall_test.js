@@ -202,6 +202,15 @@ describe('Waterfall.supplyDefaults', function() {
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
+
+    it('should coerce connector line color and default to Color.defaultLine', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.connector.line.color).toBe(color.defaultLine);
+    });
 });
 
 describe('waterfall calc / crossTraceCalc', function() {
