@@ -11,6 +11,7 @@
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var extendFlat = require('../../lib/extend').extendFlat;
+var Color = require('../../components/color');
 
 function directionAttrs(dirTxt) {
     return {
@@ -94,7 +95,7 @@ module.exports = {
 
     connector: {
         line: {
-            color: lineAttrs.color,
+            color: extendFlat({}, lineAttrs.color, {dflt: Color.defaultLine}),
             width: lineAttrs.width,
             dash: lineAttrs.dash,
             editType: 'plot'
