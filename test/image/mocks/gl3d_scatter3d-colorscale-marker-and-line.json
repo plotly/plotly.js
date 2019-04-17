@@ -1,0 +1,39 @@
+{
+    "data": [
+        {
+            "x": [1, 2, 4, 8, 16],
+            "y": [-1, -2, -4, -8, -16],
+            "z": [0, 1, 0, 1, 0],
+            "type": "scatter3d",
+            "mode": "lines+markers",
+            "line": {
+                "color": [0, 0.25, 0.5, 0.75, 1.0],
+                "width": 10,
+                "colorscale": "Blues",
+                "colorbar": {
+                    "len": 0.5,
+                    "y": 1,
+                    "yanchor": "top",
+                    "title": {"text": "line colorscale", "side": "right"}
+                }
+            },
+            "marker": {
+                "color": [1.0, 0.75, 0.5, 0.25, 0],
+                "size": 10,
+                "colorscale": "Reds",
+                "colorbar": {
+                    "len": 0.5,
+                    "y": 0,
+                    "yanchor": "bottom",
+                    "title": {"text": "marker colorscale", "side": "right"}
+                }
+
+            }
+        }
+    ],
+    "layout": {
+        "title": "Scatter3d show line AND marker color scales",
+        "width": 600,
+        "height": 600
+    }
+}

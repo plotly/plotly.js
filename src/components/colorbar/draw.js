@@ -81,7 +81,8 @@ function makeColorBarData(gd) {
         var moduleOpts = trace._module.colorbar;
 
         if(trace.visible === true && moduleOpts) {
-            var cbOpts = Array.isArray(moduleOpts) ? moduleOpts : [moduleOpts];
+            var allowsMultiplotCbs = Array.isArray(moduleOpts);
+            var cbOpts = allowsMultiplotCbs ? moduleOpts : [moduleOpts];
 
             for(var j = 0; j < cbOpts.length; j++) {
                 var cbOpt = cbOpts[j];
@@ -90,7 +91,7 @@ function makeColorBarData(gd) {
 
                 if(cont && cont.showscale) {
                     var opts = cont.colorbar;
-                    opts._id = 'cb' + trace.uid;
+                    opts._id = 'cb' + trace.uid + (allowsMultiplotCbs && contName ? '-' + contName : '');
                     opts._traceIndex = trace.index;
                     opts._propPrefix = (contName ? contName + '.' : '') + 'colorbar.';
 
