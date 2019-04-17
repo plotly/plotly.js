@@ -2082,6 +2082,45 @@ describe('hover info', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should honor *hoverlabel.align (centered label case)', function(done) {
+        var gd = createGraphDiv();
+
+        function _assert(msg, exp) {
+            var tx = d3.select('g.hovertext').select('text.nums');
+            expect(tx.attr('text-anchor')).toBe(exp.textAnchor, 'text anchor|' + msg);
+            expect(Number(tx.attr('x'))).toBeWithin(exp.posX, 3, 'x position|' + msg);
+            delete gd._hoverdata;
+        }
+
+        Plotly.plot(gd, [{
+            x: ['giraffes'],
+            y: [5],
+            name: 'LA Zoo',
+            type: 'bar',
+            text: ['Way tooooo long hover info!'],
+            hoverinfo: 'all'
+        }], {
+            margin: {l: 0, t: 0, b: 0, r: 0},
+            hovermode: 'closest',
+            width: 400,
+            height: 400
+        })
+        .then(function() { _hoverNatural(gd, 200, 200); })
+        .then(function() { _assert('base', {textAnchor: 'middle', posX: -24.3}); })
+        .then(function() {
+            return Plotly.relayout(gd, 'hoverlabel.align', 'left');
+        })
+        .then(function() { _hoverNatural(gd, 200, 200); })
+        .then(function() { _assert('align:left', {textAnchor: 'start', posX: -105.7}); })
+        .then(function() {
+            return Plotly.restyle(gd, 'hoverlabel.align', 'right');
+        })
+        .then(function() { _hoverNatural(gd, 200, 200); })
+        .then(function() { _assert('align:right', {textAnchor: 'end', posX: 57}); })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('hover info on stacked subplots', function() {
