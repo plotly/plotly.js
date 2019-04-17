@@ -54,7 +54,7 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     coerce(prefix + 'colorscale');
     coerce(prefix + 'reversescale');
 
-    if(!opts.noScale && prefix !== 'marker.line.') {
+    if(prefix !== 'marker.line.') {
         // handles both the trace case where the dflt is listed in attributes and
         // the marker case where the dflt is determined by hasColorbar
         var showScaleDflt;
