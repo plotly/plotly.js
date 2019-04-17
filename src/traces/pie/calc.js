@@ -85,27 +85,36 @@ function calc(gd, trace) {
     // include the sum of all values in the first point
     if(cd[0]) cd[0].vTotal = vTotal;
 
-    // now insert text
     if(trace.textinfo && trace.textinfo !== 'none') {
-        var hasLabel = trace.textinfo.indexOf('label') !== -1;
-        var hasText = trace.textinfo.indexOf('text') !== -1;
-        var hasValue = trace.textinfo.indexOf('value') !== -1;
-        var hasPercent = trace.textinfo.indexOf('percent') !== -1;
-        var separators = fullLayout.separators;
+        // now insert text
+        cd = insertText(gd, trace, cd, vTotal);
+    }
 
-        var thisText;
+    return cd;
+}
 
-        for(i = 0; i < cd.length; i++) {
-            pt = cd[i];
-            thisText = hasLabel ? [pt.label] : [];
-            if(hasText) {
-                var texti = helpers.getFirstFilled(trace.text, pt.pts);
-                if(texti) thisText.push(texti);
-            }
-            if(hasValue) thisText.push(helpers.formatPieValue(pt.v, separators));
-            if(hasPercent) thisText.push(helpers.formatPiePercent(pt.v / vTotal, separators));
-            pt.text = thisText.join('<br>');
+function insertText(gd, trace, cd, vTotal) {
+    var fullLayout = gd._fullLayout;
+    var i, pt;
+
+    var hasLabel = trace.textinfo.indexOf('label') !== -1;
+    var hasText = trace.textinfo.indexOf('text') !== -1;
+    var hasValue = trace.textinfo.indexOf('value') !== -1;
+    var hasPercent = trace.textinfo.indexOf('percent') !== -1;
+    var separators = fullLayout.separators;
+
+    var thisText;
+
+    for(i = 0; i < cd.length; i++) {
+        pt = cd[i];
+        thisText = hasLabel ? [pt.label] : [];
+        if(hasText) {
+            var texti = helpers.getFirstFilled(trace.text, pt.pts);
+            if(texti) thisText.push(texti);
         }
+        if(hasValue) thisText.push(helpers.formatPieValue(pt.v, separators));
+        if(hasPercent) thisText.push(helpers.formatPiePercent(pt.v / vTotal, separators));
+        pt.text = thisText.join('<br>');
     }
 
     return cd;
@@ -189,6 +198,7 @@ function generateExtendedColors(colorList, extendedColorWays) {
 module.exports = {
     calc: calc,
     crossTraceCalc: crossTraceCalc,
+    insertText: insertText,
 
     makePullColorFn: makePullColorFn,
     generateExtendedColors: generateExtendedColors
