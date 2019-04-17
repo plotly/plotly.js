@@ -607,22 +607,12 @@ exports.doCamera = function(gd) {
 
 exports.drawData = function(gd) {
     var fullLayout = gd._fullLayout;
-    var calcdata = gd.calcdata;
-    var i;
-
-    // remove old colorbars explicitly
-    for(i = 0; i < calcdata.length; i++) {
-        var trace = calcdata[i][0].trace;
-        if(trace.visible !== true || !trace._module.colorbar) {
-            fullLayout._infolayer.select('.cb' + trace.uid).remove();
-        }
-    }
 
     clearGlCanvases(gd);
 
     // loop over the base plot modules present on graph
     var basePlotModules = fullLayout._basePlotModules;
-    for(i = 0; i < basePlotModules.length; i++) {
+    for(var i = 0; i < basePlotModules.length; i++) {
         basePlotModules[i].plot(gd);
     }
 

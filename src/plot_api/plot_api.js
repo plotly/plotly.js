@@ -28,7 +28,6 @@ var Polar = require('../plots/polar/legacy');
 var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
-var connectColorbar = require('../components/colorbar/connect');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
@@ -283,9 +282,6 @@ exports.plot = function(gd, data, layout, config) {
 
     // draw anything that can affect margins.
     function marginPushers() {
-        var calcdata = gd.calcdata;
-        var i, cd, trace;
-
         // First reset the list of things that are allowed to change the margins
         // So any deleted traces or components will be wiped out of the
         // automargin calculation.
@@ -295,15 +291,6 @@ exports.plot = function(gd, data, layout, config) {
 
         subroutines.drawMarginPushers(gd);
         Axes.allowAutoMargin(gd);
-
-        for(i = 0; i < calcdata.length; i++) {
-            cd = calcdata[i];
-            trace = cd[0].trace;
-            var colorbarOpts = trace._module.colorbar;
-            if(trace.visible !== true || !colorbarOpts) {
-                Plots.autoMargin(gd, 'cb' + trace.uid);
-            } else connectColorbar(gd, cd, colorbarOpts);
-        }
 
         Plots.doAutoMargin(gd);
         return Plots.previousPromises(gd);
