@@ -154,9 +154,7 @@ function makeColorScaleFunc(specs, opts) {
     }
 
     // colorbar draw looks into the d3 scale closure for domain and range
-
     sclFunc.domain = _sclFunc.domain;
-
     sclFunc.range = function() { return range; };
 
     return sclFunc;

@@ -6,12 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
+module.exports = {
+    moduleType: 'component',
+    name: 'colorbar',
 
-exports.attributes = require('./attributes');
-exports.supplyDefaults = require('./defaults');
-exports.connect = require('./connect');
-exports.draw = require('./draw');
-exports.hasColorbar = require('./has_colorbar');
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+
+    draw: require('./draw').draw,
+    hasColorbar: require('./has_colorbar')
+};
