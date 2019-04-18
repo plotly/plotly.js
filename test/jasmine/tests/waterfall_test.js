@@ -1140,6 +1140,41 @@ describe('A waterfall plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to adjust bars when reacting with new connector.line.width ', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'waterfall',
+                y: [1, 2, 3],
+            }],
+            layout: {
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
+            var path = waterfallNodes[0].querySelector('path');
+            var d = d3.select(path).attr('d');
+            expect(d).toBe('M11.33,321V268.33H102V321Z');
+        })
+        .then(function() {
+            gd.data[0].connector = {
+                line: { width: 10 }
+            };
+            return Plotly.react(gd, gd.data);
+        })
+        .then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
+            var path = waterfallNodes[0].querySelector('path');
+            var d = d3.select(path).attr('d');
+            expect(d).toBe('M11.33,325V264.33H102V325Z');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('waterfall visibility toggling:', function() {

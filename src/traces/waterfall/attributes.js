@@ -96,7 +96,9 @@ module.exports = {
     connector: {
         line: {
             color: extendFlat({}, lineAttrs.color, {dflt: Color.defaultLine}),
-            width: lineAttrs.width,
+            width: extendFlat({}, lineAttrs.width, {
+                editType: 'plot', // i.e. to adjust bars is mode: 'between'. See https://github.com/plotly/plotly.js/issues/3787
+            }),
             dash: lineAttrs.dash,
             editType: 'plot'
         },
