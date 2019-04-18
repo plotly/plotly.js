@@ -65,6 +65,11 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
             if(di.isSum === false) {
                 di.s0 += (j === 0) ? 0 : cd[j - 1].s;
             }
+
+            if(j + 1 < cd.length) {
+                cd[j].nextP0 = cd[j + 1].p0;
+                cd[j].nextS0 = cd[j + 1].s0;
+            }
         }
     }
 };
