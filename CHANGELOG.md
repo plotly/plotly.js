@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.47.3] -- 2019-04-18
+
+### Fixed
+- Fix MathJax rendering in Firefox [#3783]
+- Fix `waterfall` hover under `hovermode: 'closest'` [#3778]
+- Fix `waterfall` `connector.line.width` updates [#3789]
+- Fix `waterfall` positioning on date axes [#3791]
+- Fix `waterfall` default connector line color [#3788]
+- Fix `hoverlabel.align` behavior for centered hover labels [#3781]
+
+
 ## [1.47.2] -- 2019-04-15
 
 ### Fixed
