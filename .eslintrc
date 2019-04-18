@@ -70,6 +70,7 @@
     "no-loop-func": [2],
     "no-console": [0],
     "no-unused-labels": [2],
-    "no-useless-escape": [0]
+    "no-useless-escape": [0],
+    "func-names": ["error", "never"]
   }
 }
