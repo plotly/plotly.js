@@ -16,7 +16,7 @@ var handleArrayContainerDefaults = require('../array_container_defaults');
 var layoutAttributes = require('./layout_attributes');
 
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function(layoutIn, layoutOut, fullData) {
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
         type: 'mapbox',
         attributes: layoutAttributes,

@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function selectPoints(searchInfo, selectionTester) {
+module.exports = function(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;

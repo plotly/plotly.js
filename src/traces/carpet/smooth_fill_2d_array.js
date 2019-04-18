@@ -22,7 +22,7 @@ var Lib = require('../../lib');
  *  - a: array such that a.length === data[0].length
  *  - b: array such that b.length === data.length
  */
-module.exports = function smoothFill2dArray(data, a, b) {
+module.exports = function(data, a, b) {
     var i, j, k;
     var ip = [];
     var jp = [];

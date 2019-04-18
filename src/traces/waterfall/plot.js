@@ -13,7 +13,7 @@ var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var barPlot = require('../bar/plot');
 
-module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
+module.exports = function(gd, plotinfo, cdModule, traceLayer) {
     barPlot(gd, plotinfo, cdModule, traceLayer);
     plotConnectors(gd, plotinfo, cdModule, traceLayer);
 };

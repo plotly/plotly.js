@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function makePath(xp, yp, isBicubic) {
+module.exports = function(xp, yp, isBicubic) {
     // Prevent d3 errors that would result otherwise:
     if(xp.length === 0) return '';
 

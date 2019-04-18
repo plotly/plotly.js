@@ -19,42 +19,42 @@
  */
 
 
-exports.isLeftAnchor = function isLeftAnchor(opts) {
+exports.isLeftAnchor = function(opts) {
     return (
       opts.xanchor === 'left' ||
       (opts.xanchor === 'auto' && opts.x <= 1 / 3)
     );
 };
 
-exports.isCenterAnchor = function isCenterAnchor(opts) {
+exports.isCenterAnchor = function(opts) {
     return (
         opts.xanchor === 'center' ||
         (opts.xanchor === 'auto' && opts.x > 1 / 3 && opts.x < 2 / 3)
     );
 };
 
-exports.isRightAnchor = function isRightAnchor(opts) {
+exports.isRightAnchor = function(opts) {
     return (
       opts.xanchor === 'right' ||
       (opts.xanchor === 'auto' && opts.x >= 2 / 3)
     );
 };
 
-exports.isTopAnchor = function isTopAnchor(opts) {
+exports.isTopAnchor = function(opts) {
     return (
         opts.yanchor === 'top' ||
         (opts.yanchor === 'auto' && opts.y >= 2 / 3)
     );
 };
 
-exports.isMiddleAnchor = function isMiddleAnchor(opts) {
+exports.isMiddleAnchor = function(opts) {
     return (
         opts.yanchor === 'middle' ||
         (opts.yanchor === 'auto' && opts.y > 1 / 3 && opts.y < 2 / 3)
     );
 };
 
-exports.isBottomAnchor = function isBottomAnchor(opts) {
+exports.isBottomAnchor = function(opts) {
     return (
       opts.yanchor === 'bottom' ||
       (opts.yanchor === 'auto' && opts.y <= 1 / 3)

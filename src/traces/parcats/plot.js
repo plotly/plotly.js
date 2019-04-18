@@ -17,7 +17,7 @@ var parcats = require('./parcats');
  * @param {Object} graphDiv
  * @param {Array.<ParcatsModel>} parcatsModels
  */
-module.exports = function plot(graphDiv, parcatsModels, transitionOpts, makeOnCompleteCallback) {
+module.exports = function(graphDiv, parcatsModels, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = graphDiv._fullLayout;
     var svg = fullLayout._paper;
     var size = fullLayout._size;

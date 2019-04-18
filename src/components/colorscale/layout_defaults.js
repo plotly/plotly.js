@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var colorscaleAttrs = require('./layout_attributes');
 var Template = require('../../plot_api/plot_template');
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
+module.exports = function(layoutIn, layoutOut) {
     var colorscaleIn = layoutIn.colorscale;
     var colorscaleOut = Template.newContainer(layoutOut, 'colorscale');
     function coerce(attr, dflt) {

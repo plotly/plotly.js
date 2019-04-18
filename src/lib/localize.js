@@ -20,7 +20,7 @@ var Registry = require('../registry');
  *  gd._context.locales or globally via Plotly.register
  * @param {string} s: the string to translate
  */
-module.exports = function localize(gd, s) {
+module.exports = function(gd, s) {
     var locale = gd._context.locale;
 
     /*

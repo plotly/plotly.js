@@ -14,7 +14,7 @@ var Lib = require('../../lib');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function(traceIn, traceOut, defaultColor, layout) {
     var i, j;
 
     function coerce(attr, dflt) {

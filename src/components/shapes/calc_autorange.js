@@ -15,7 +15,7 @@ var constants = require('./constants');
 var helpers = require('./helpers');
 
 
-module.exports = function calcAutorange(gd) {
+module.exports = function(gd) {
     var fullLayout = gd._fullLayout;
     var shapeList = Lib.filterVisible(fullLayout.shapes);
 

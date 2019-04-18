@@ -21,7 +21,7 @@ function isTotal(a) {
     return (a === 't' || a === 'total');
 }
 
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var size, pos;

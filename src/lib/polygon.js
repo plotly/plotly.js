@@ -30,7 +30,7 @@ var polygon = module.exports = {};
  *              don't double-count the edge where they meet.
  *          returns boolean: is pt inside the polygon (including on its edges)
  */
-polygon.tester = function tester(ptsIn) {
+polygon.tester = function(ptsIn) {
     var pts = ptsIn.slice();
     var xmin = pts[0][0];
     var xmax = xmin;
@@ -181,7 +181,7 @@ polygon.tester = function tester(ptsIn) {
  *      before the line counts as bent
  * @returns boolean: true means this segment is bent, false means straight
  */
-var isBent = polygon.isSegmentBent = function isBent(pts, start, end, tolerance) {
+var isBent = polygon.isSegmentBent = function(pts, start, end, tolerance) {
     var startPt = pts[start];
     var segment = [pts[end][0] - startPt[0], pts[end][1] - startPt[1]];
     var segmentSquared = dot(segment, segment);
@@ -214,7 +214,7 @@ var isBent = polygon.isSegmentBent = function isBent(pts, start, end, tolerance)
  *      raw is all the input points
  *      filtered is the resulting filtered Array of [x, y] pairs
  */
-polygon.filter = function filter(pts, tolerance) {
+polygon.filter = function(pts, tolerance) {
     var ptsFiltered = [pts[0]];
     var doneRawIndex = 0;
     var doneFilteredIndex = 0;

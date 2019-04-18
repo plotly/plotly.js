@@ -60,7 +60,7 @@ proto.addLayer = function(k, opts) {
     });
 };
 
-proto.update = function update(calcTrace) {
+proto.update = function(calcTrace) {
     var subplot = this.subplot;
     var optsAll = convert(calcTrace);
 
@@ -80,7 +80,7 @@ proto.update = function update(calcTrace) {
     calcTrace[0].trace._glTrace = this;
 };
 
-proto.dispose = function dispose() {
+proto.dispose = function() {
     var map = this.subplot.map;
 
     for(var i = 0; i < this.order.length; i++) {
@@ -90,7 +90,7 @@ proto.dispose = function dispose() {
     }
 };
 
-module.exports = function createScatterMapbox(subplot, calcTrace) {
+module.exports = function(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
     var scatterMapbox = new ScatterMapbox(subplot, trace.uid);
     var optsAll = convert(calcTrace);

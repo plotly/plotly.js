@@ -15,7 +15,7 @@ var handleABDefaults = require('./ab_defaults');
 var attributes = require('./attributes');
 var colorAttrs = require('../../components/color/attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayout) {
+module.exports = function(traceIn, traceOut, dfltColor, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }

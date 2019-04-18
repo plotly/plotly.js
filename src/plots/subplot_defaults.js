@@ -41,7 +41,7 @@ var handleDomainDefaults = require('./domain').defaults;
  *      additional items needed by this function here as well
  * }
  */
-module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, opts) {
+module.exports = function(layoutIn, layoutOut, fullData, opts) {
     var subplotType = opts.type;
     var subplotAttributes = opts.attributes;
     var handleDefaults = opts.handleDefaults;

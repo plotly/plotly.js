@@ -42,7 +42,7 @@ var Template = require('../plot_api/plot_template');
  *    links to supplementary data (e.g. fullData for layout components)
  *
  */
-module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
+module.exports = function(parentObjIn, parentObjOut, opts) {
     var name = opts.name;
     var inclusionAttr = opts.inclusionAttr || 'visible';
 

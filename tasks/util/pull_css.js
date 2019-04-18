@@ -1,7 +1,7 @@
 var fs = require('fs');
 
 
-module.exports = function pullCSS(data, pathOut) {
+module.exports = function(data, pathOut) {
     var rules = {};
 
     data.split(/\s*\}\s*/).forEach(function(chunk) {

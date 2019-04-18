@@ -127,7 +127,7 @@ function inferCubicControlPoint(p0, p2, p3) {
     ];
 }
 
-module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmoothing) {
+module.exports = function(xe, ye, x, y, asmoothing, bsmoothing) {
     var i, j, ie, je, xej, yej, xj, yj, cp, p1;
     // At this point, we know these dimensions are correct and representative of
     // the whole 2D arrays:

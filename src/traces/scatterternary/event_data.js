@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function eventData(out, pt, trace, cd, pointNumber) {
+module.exports = function(out, pt, trace, cd, pointNumber) {
     if(pt.xa) out.xaxis = pt.xa;
     if(pt.ya) out.yaxis = pt.ya;
 

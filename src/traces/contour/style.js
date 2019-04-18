@@ -17,7 +17,7 @@ var heatmapStyle = require('../heatmap/style');
 var makeColorMap = require('./make_color_map');
 
 
-module.exports = function style(gd) {
+module.exports = function(gd) {
     var contours = d3.select(gd).selectAll('g.contour');
 
     contours.style('opacity', function(d) {

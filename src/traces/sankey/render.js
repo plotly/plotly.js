@@ -722,7 +722,7 @@ function startForce(sankeyNode, sankeyLink, d, forceKey, gd) {
 }
 
 function snappingForce(sankeyNode, forceKey, nodes, d) {
-    return function _snappingForce() {
+    return function() {
         var maxVelocity = 0;
         for(var i = 0; i < nodes.length; i++) {
             var n = nodes[i];

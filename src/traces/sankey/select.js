@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function selectPoints(searchInfo, selectionTester) {
+module.exports = function(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var selection = [];
     var fullData = cd[0].trace;

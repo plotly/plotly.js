@@ -78,7 +78,7 @@ ScrollBox.barColor = '#808BA4';
  * @param {number}  [translateX=0]  Horizontal offset (in pixels)
  * @param {number}  [translateY=0]  Vertical offset (in pixels)
  */
-ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
+ScrollBox.prototype.enable = function(position, translateX, translateY) {
     var fullLayout = this.gd._fullLayout;
     var fullWidth = fullLayout.width;
     var fullHeight = fullLayout.height;
@@ -312,7 +312,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
  *
  * @method
  */
-ScrollBox.prototype.disable = function disable() {
+ScrollBox.prototype.disable = function() {
     if(this.hbar || this.vbar) {
         this.bg.attr({
             width: 0,
@@ -347,7 +347,7 @@ ScrollBox.prototype.disable = function disable() {
  *
  * @method
  */
-ScrollBox.prototype._onBoxDrag = function onBarDrag() {
+ScrollBox.prototype._onBoxDrag = function() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 
@@ -367,7 +367,7 @@ ScrollBox.prototype._onBoxDrag = function onBarDrag() {
  *
  * @method
  */
-ScrollBox.prototype._onBoxWheel = function onBarWheel() {
+ScrollBox.prototype._onBoxWheel = function() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 
@@ -387,7 +387,7 @@ ScrollBox.prototype._onBoxWheel = function onBarWheel() {
  *
  * @method
  */
-ScrollBox.prototype._onBarDrag = function onBarDrag() {
+ScrollBox.prototype._onBarDrag = function() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 
@@ -423,7 +423,7 @@ ScrollBox.prototype._onBarDrag = function onBarDrag() {
  * @param {number}  [translateX=0]  Horizontal offset (in pixels)
  * @param {number}  [translateY=0]  Vertical offset (in pixels)
  */
-ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY) {
+ScrollBox.prototype.setTranslate = function(translateX, translateY) {
     // store translateX and translateY (needed by mouse event handlers)
     var translateXMax = this.position.w - this._box.w;
     var translateYMax = this.position.h - this._box.h;

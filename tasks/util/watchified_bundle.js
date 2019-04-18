@@ -18,7 +18,7 @@ var strictD3 = require('./strict_d3');
  * @param {function} onFirstBundleCallback executed when first bundle is completed
  *
  */
-module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
+module.exports = function(onFirstBundleCallback) {
     var b = browserify(constants.pathToPlotlyIndex, {
         debug: true,
         standalone: 'Plotly',

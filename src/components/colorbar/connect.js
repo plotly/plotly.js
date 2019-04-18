@@ -36,7 +36,7 @@ var flipScale = require('../colorscale/helpers').flipScale;
  *   used only if min/max fail. May be omitted if these are always
  *   pre-calculated.
  */
-module.exports = function connectColorbar(gd, cd, moduleOpts) {
+module.exports = function(gd, cd, moduleOpts) {
     if(typeof moduleOpts === 'function') return moduleOpts(gd, cd);
 
     var trace = cd[0].trace;

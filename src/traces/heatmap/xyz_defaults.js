@@ -13,7 +13,7 @@ var Lib = require('../../lib');
 
 var Registry = require('../../registry');
 
-module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, xName, yName) {
+module.exports = function(traceIn, traceOut, coerce, layout, xName, yName) {
     var z = coerce('z');
     xName = xName || 'x';
     yName = yName || 'y';

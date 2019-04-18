@@ -58,7 +58,7 @@ function code(s) {
  *
  * @return {object}
  */
-module.exports = function colorScaleAttrs(context, opts) {
+module.exports = function(context, opts) {
     context = context || '';
     opts = opts || {};
 

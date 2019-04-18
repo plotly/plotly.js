@@ -12,7 +12,7 @@ var Color = require('../../components/color');
 var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
-module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout) {
+module.exports = function(traceIn, traceOut, coerce, defaultColor, layout) {
     coerce('marker.color', defaultColor);
 
     if(hasColorscale(traceIn, 'marker')) {

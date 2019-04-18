@@ -66,7 +66,7 @@ var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 //
 // We wrap the hovers in a timer, to limit their frequency.
 // The actual rendering is done by private function _hover.
-exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
+exports.hover = function(gd, evt, subplot, noHoverEvent) {
     gd = Lib.getGraphDiv(gd);
 
     Lib.throttle(
@@ -109,7 +109,7 @@ exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
         the index of the hover item used as an anchor for positioning.
         The other hover items will be pushed up or down to prevent overlap.
  */
-exports.loneHover = function loneHover(hoverItems, opts) {
+exports.loneHover = function(hoverItems, opts) {
     var multiHover = true;
     if(!Array.isArray(hoverItems)) {
         multiHover = false;

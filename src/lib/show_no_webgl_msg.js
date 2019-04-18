@@ -21,7 +21,7 @@ var noop = function() {};
  * Expects 'scene' to have property 'container'
  *
  */
-module.exports = function showNoWebGlMsg(scene) {
+module.exports = function(scene) {
     for(var prop in scene) {
         if(typeof scene[prop] === 'function') scene[prop] = noop;
     }

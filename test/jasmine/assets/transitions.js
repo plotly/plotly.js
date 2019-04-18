@@ -5,7 +5,7 @@
  * a sequence of indices such that you efficiently execute each transition
  * from any state to any other state.
  */
-module.exports = function transitions(n) {
+module.exports = function(n) {
     var out = [0];
     var nextStates = [];
     var i;

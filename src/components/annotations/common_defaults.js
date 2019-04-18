@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var Color = require('../color');
 
 // defaults common to 'annotations' and 'annotations3d'
-module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayout, coerce) {
+module.exports = function(annIn, annOut, fullLayout, coerce) {
     coerce('opacity');
     var bgColor = coerce('bgcolor');
 

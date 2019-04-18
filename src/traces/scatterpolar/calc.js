@@ -19,7 +19,7 @@ var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     var fullLayout = gd._fullLayout;
     var subplotId = trace.subplot;
     var radialAxis = fullLayout[subplotId].radialaxis;

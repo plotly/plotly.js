@@ -16,7 +16,7 @@ var Lib = require('../../lib');
 
 var makeComputeError = require('./compute_error');
 
-module.exports = function calc(gd) {
+module.exports = function(gd) {
     var calcdata = gd.calcdata;
 
     for(var i = 0; i < calcdata.length; i++) {

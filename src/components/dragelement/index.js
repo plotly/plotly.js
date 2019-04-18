@@ -79,7 +79,7 @@ dragElement.unhoverRaw = unhover.raw;
  *          By default, clamping is done using `minDrag` to x and y displacements
  *          independently.
  */
-dragElement.init = function init(options) {
+dragElement.init = function(options) {
     var gd = options.gd;
     var numClicks = 1;
     var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;

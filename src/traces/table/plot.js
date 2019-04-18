@@ -19,7 +19,7 @@ var prepareData = require('./data_preparation_helper');
 var splitData = require('./data_split_helpers');
 var Color = require('../../components/color');
 
-module.exports = function plot(gd, wrappedTraceHolders) {
+module.exports = function(gd, wrappedTraceHolders) {
     var dynamic = !gd._context.staticPlot;
 
     var table = gd._fullLayout._paper.selectAll('.' + c.cn.table)
@@ -714,7 +714,7 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
 }
 
 function makeDragRow(gd, allTableControlView, optionalMultiplier, optionalPosition) {
-    return function dragRow(eventD) {
+    return function(eventD) {
         // may come from whichever DOM event target: drag, wheel, bar... eventD corresponds to event target
         var d = eventD.calcdata ? eventD.calcdata : eventD;
         var tableControlView = allTableControlView.filter(function(dd) {return d.key === dd.key;});
@@ -747,7 +747,7 @@ function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages,
 }
 
 function wrapTextMaker(columnBlock, element, tableControlView, gd) {
-    return function wrapText() {
+    return function() {
         var cellTextHolder = d3.select(element.parentNode);
         cellTextHolder
             .each(function(d) {
@@ -790,7 +790,7 @@ function wrapTextMaker(columnBlock, element, tableControlView, gd) {
 }
 
 function updateYPositionMaker(columnBlock, element, tableControlView, gd, d) {
-    return function updateYPosition() {
+    return function() {
         if(d.settledY) return;
         var cellTextHolder = d3.select(element.parentNode);
         var l = getBlock(d);

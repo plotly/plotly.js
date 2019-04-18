@@ -16,7 +16,7 @@ var scatterStyle = require('../scatter/style');
 var stylePoints = scatterStyle.stylePoints;
 var styleText = scatterStyle.styleText;
 
-module.exports = function style(gd, calcTrace) {
+module.exports = function(gd, calcTrace) {
     if(calcTrace) styleTrace(gd, calcTrace);
 };
 

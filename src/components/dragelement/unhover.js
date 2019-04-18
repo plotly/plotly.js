@@ -32,7 +32,7 @@ unhover.wrapped = function(gd, evt, subplot) {
 
 
 // remove hover effects on mouse out, and emit unhover event
-unhover.raw = function unhoverRaw(gd, evt) {
+unhover.raw = function(gd, evt) {
     var fullLayout = gd._fullLayout;
     var oldhoverdata = gd._hoverdata;
 

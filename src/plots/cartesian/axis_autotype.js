@@ -14,7 +14,7 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function autoType(array, calendar, opts) {
+module.exports = function(array, calendar, opts) {
     opts = opts || {};
 
     if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';

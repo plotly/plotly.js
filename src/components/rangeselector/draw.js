@@ -26,7 +26,7 @@ var FROM_BR = alignmentConstants.FROM_BR;
 var constants = require('./constants');
 var getUpdateObject = require('./get_update_object');
 
-module.exports = function draw(gd) {
+module.exports = function(gd) {
     var fullLayout = gd._fullLayout;
 
     var selectors = fullLayout._infolayer.selectAll('.rangeselector')

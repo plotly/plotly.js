@@ -23,7 +23,7 @@ var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
 
-module.exports = function draw(gd) {
+module.exports = function(gd) {
     var fullLayout = gd._fullLayout;
     var sliderData = makeSliderData(fullLayout, gd);
 

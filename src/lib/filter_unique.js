@@ -31,7 +31,7 @@
  * @param {array} array base array
  * @return {array} new filtered array
  */
-module.exports = function filterUnique(array) {
+module.exports = function(array) {
     var seen = {};
     var out = [];
     var j = 0;

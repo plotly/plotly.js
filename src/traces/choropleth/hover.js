@@ -13,7 +13,7 @@ var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
 var fillHoverText = require('../scatter/fill_hover_text');
 
-module.exports = function hoverPoints(pointData, xval, yval) {
+module.exports = function(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var geo = pointData.subplot;

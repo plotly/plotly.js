@@ -7,7 +7,7 @@ var hover = require('../assets/hover');
 
 'use strict';
 
-module.exports = function checkEventData(mock, x, y, additionalFields) {
+module.exports = function(mock, x, y, additionalFields) {
     var mockCopy = Lib.extendDeep({}, mock);
     var gd;
 

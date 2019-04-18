@@ -21,7 +21,7 @@ var cursorset = [
     ['nw-resize', 'n-resize', 'ne-resize']
 ];
 
-module.exports = function getCursor(x, y, xanchor, yanchor) {
+module.exports = function(x, y, xanchor, yanchor) {
     if(xanchor === 'left') x = 0;
     else if(xanchor === 'center') x = 1;
     else if(xanchor === 'right') x = 2;

@@ -17,7 +17,7 @@ var DIRSYMBOL = {
     decreasing: '▼'
 };
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
+module.exports = function(pointData, xval, yval, hovermode) {
     var point = hoverOnBars(pointData, xval, yval, hovermode);
     if(!point) return;
 

@@ -10,7 +10,7 @@
 
 var LINKEDFILLS = {tonextx: 1, tonexty: 1, tonext: 1};
 
-module.exports = function linkTraces(gd, plotinfo, cdscatter) {
+module.exports = function(gd, plotinfo, cdscatter) {
     var trace, i, group, prevtrace, groupIndex;
 
     // first sort traces to keep stacks & filled-together groups together

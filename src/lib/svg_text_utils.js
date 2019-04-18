@@ -624,11 +624,11 @@ function buildSVGText(containerNode, str) {
     return hasLink;
 }
 
-exports.lineCount = function lineCount(s) {
+exports.lineCount = function(s) {
     return s.selectAll('tspan.line').size() || 1;
 };
 
-exports.positionText = function positionText(s, x, y) {
+exports.positionText = function(s, x, y) {
     return s.each(function() {
         var text = d3.select(this);
 

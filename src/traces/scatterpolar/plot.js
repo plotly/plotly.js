@@ -11,7 +11,7 @@
 var scatterPlot = require('../scatter/plot');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function plot(gd, subplot, moduleCalcData) {
+module.exports = function(gd, subplot, moduleCalcData) {
     var mlayer = subplot.layers.frontplot.select('g.scatterlayer');
 
     var plotinfo = {

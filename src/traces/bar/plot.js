@@ -28,7 +28,7 @@ var style = require('./style');
 // padding in pixels around text
 var TEXTPAD = 3;
 
-module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
+module.exports = function(gd, plotinfo, cdModule, traceLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;

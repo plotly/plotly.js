@@ -18,7 +18,7 @@ var name = constants.name;
 var stepAttrs = attributes.steps;
 
 
-module.exports = function slidersDefaults(layoutIn, layoutOut) {
+module.exports = function(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, {
         name: name,
         handleItemDefaults: sliderDefaults

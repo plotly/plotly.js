@@ -16,7 +16,7 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     var len = trace._length;
     var calcTrace = new Array(len);
 

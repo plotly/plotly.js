@@ -12,6 +12,6 @@
 var Lib = require('../../lib');
 
 
-module.exports = function hasColorbar(container) {
+module.exports = function(container) {
     return Lib.isPlainObject(container.colorbar);
 };

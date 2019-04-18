@@ -15,7 +15,7 @@ var appendArrayMultiPointValues = require('../../components/fx/helpers').appendA
 // Note: like other eventData routines, this creates the data for hover/unhover/click events
 // but it has a different API and goes through a totally different pathway.
 // So to ensure it doesn't get misused, it's not attached to the Pie module.
-module.exports = function eventData(pt, trace) {
+module.exports = function(pt, trace) {
     var out = {
         curveNumber: trace.index,
         pointNumbers: pt.pts,

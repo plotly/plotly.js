@@ -10,7 +10,7 @@ var constants = require('../../../tasks/util/constants');
  *  @param {string} pattern
  *  @return {array}
  */
-module.exports = function getMocks(pattern) {
+module.exports = function(pattern) {
     // defaults to 'all'
     pattern = pattern || '*';
 

@@ -39,7 +39,7 @@ exports.baseLayoutAttrOverrides = overrideAll({
 
 exports.supplyLayoutDefaults = require('./layout/defaults');
 
-exports.plot = function plotGl3d(gd) {
+exports.plot = function(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var sceneIds = fullLayout._subplots[GL3D];
@@ -138,7 +138,7 @@ exports.toSVG = function(gd) {
 };
 
 // clean scene ids, 'scene1' -> 'scene'
-exports.cleanId = function cleanId(id) {
+exports.cleanId = function(id) {
     if(!id.match(/^scene[0-9]*$/)) return;
 
     var sceneNum = id.substr(5);

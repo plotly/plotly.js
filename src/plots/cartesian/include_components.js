@@ -23,8 +23,8 @@ var Lib = require('../../lib');
  * @return {function}: with args layoutIn (gd.layout) and layoutOut (gd._fullLayout)
  * as expected of a component includeBasePlot method
  */
-module.exports = function makeIncludeComponents(containerArrayName) {
-    return function includeComponents(layoutIn, layoutOut) {
+module.exports = function(containerArrayName) {
+    return function(layoutIn, layoutOut) {
         var array = layoutIn[containerArrayName];
         if(!Array.isArray(array)) return;
 

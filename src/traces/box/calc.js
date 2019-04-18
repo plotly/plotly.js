@@ -15,7 +15,7 @@ var _ = Lib._;
 var Axes = require('../../plots/cartesian/axes');
 
 // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     var fullLayout = gd._fullLayout;
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');

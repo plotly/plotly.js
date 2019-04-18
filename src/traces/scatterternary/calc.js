@@ -19,7 +19,7 @@ var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var dataArrays = ['a', 'b', 'c'];
 var arraysToFill = {a: ['b', 'c'], b: ['a', 'c'], c: ['a', 'b']};
 
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     var ternary = gd._fullLayout[trace.subplot];
     var displaySum = ternary.sum;
     var normSum = trace.sum || displaySum;

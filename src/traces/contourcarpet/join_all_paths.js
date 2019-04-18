@@ -12,7 +12,7 @@ var Drawing = require('../../components/drawing');
 var axisAlignedLine = require('../carpet/axis_aligned_line');
 var Lib = require('../../lib');
 
-module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
+module.exports = function(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
     var i;
     var fullpath = '';
 

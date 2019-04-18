@@ -18,7 +18,7 @@ var setCursor = require('../../lib/setcursor');
 var makeDragBox = require('./dragbox').makeDragBox;
 var DRAGGERSIZE = require('./constants').DRAGGERSIZE;
 
-exports.initInteractions = function initInteractions(gd) {
+exports.initInteractions = function(gd) {
     var fullLayout = gd._fullLayout;
 
     if(gd._context.staticPlot) {

@@ -13,7 +13,7 @@ var Registry = require('../../registry');
 
 var SHOWISOLATETIP = true;
 
-module.exports = function handleClick(g, gd, numClicks) {
+module.exports = function(g, gd, numClicks) {
     if(gd._dragged || gd._editing) return;
 
     var hiddenSlices = gd._fullLayout.hiddenlabels ?

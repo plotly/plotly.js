@@ -10,7 +10,7 @@
  *
  * delay(50)().then(...);
  */
-module.exports = function delay(duration) {
+module.exports = function(duration) {
     return function(value) {
         return new Promise(function(resolve) {
             setTimeout(function() {

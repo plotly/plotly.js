@@ -30,7 +30,7 @@ var VALUE = 2;
 var BOTH = 3;
 var UNSET = 4;
 
-module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
+module.exports = function(baseObj, path, keyName, valueName) {
     keyName = keyName || 'name';
     valueName = valueName || 'value';
     var i, arr, baseProp;

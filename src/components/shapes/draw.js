@@ -316,14 +316,14 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
             if(xPixelSized) {
                 modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
             } else {
-                moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+                moveX = function(x) { return p2x(x2p(x) + dx); };
                 if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
             }
 
             if(yPixelSized) {
                 modifyItem('yanchor', shapeOptions.yanchor = p2y(yAnchor + dy));
             } else {
-                moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+                moveY = function(y) { return p2y(y2p(y) + dy); };
                 if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
             }
 
@@ -358,14 +358,14 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
             if(xPixelSized) {
                 modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
             } else {
-                moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+                moveX = function(x) { return p2x(x2p(x) + dx); };
                 if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
             }
 
             if(yPixelSized) {
                 modifyItem('yanchor', shapeOptions.yanchor = p2y(yAnchor + dy));
             } else {
-                moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+                moveY = function(y) { return p2y(y2p(y) + dy); };
                 if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
             }
 

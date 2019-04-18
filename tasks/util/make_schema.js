@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var JSDOM = require('jsdom').JSDOM;
 
-module.exports = function makeSchema(plotlyPath, schemaPath) {
+module.exports = function(plotlyPath, schemaPath) {
     return function() {
         var plotlyjsCode = fs.readFileSync(plotlyPath, 'utf-8');
 

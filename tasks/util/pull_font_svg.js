@@ -4,7 +4,7 @@ var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 var builder = new xml2js.Builder({ headless: true, rootName: 'svg', renderOpts: {'newline': ''}});
 
-module.exports = function pullFontSVG(data, pathOut) {
+module.exports = function(data, pathOut) {
     parser.parseString(data, function(err, result) {
         if(err) throw err;
 

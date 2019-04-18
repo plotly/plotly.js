@@ -7,7 +7,7 @@
  *
  * @param {rect} rect svg <rect> node
  */
-module.exports = function getRectCenter(rect) {
+module.exports = function(rect) {
     var corners = getRectScreenCoords(rect);
 
     return [

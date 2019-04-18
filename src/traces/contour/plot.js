@@ -26,7 +26,7 @@ var closeBoundaries = require('./close_boundaries');
 var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
-exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
+exports.plot = function(gd, plotinfo, cdcontours, contourLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 

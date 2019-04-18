@@ -15,7 +15,7 @@ var isNumeric = require('fast-isnumeric');
 var Drawing = require('../drawing');
 var subTypes = require('../../traces/scatter/subtypes');
 
-module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
+module.exports = function(gd, traces, plotinfo, transitionOpts) {
     var isNew;
 
     var xa = plotinfo.xaxis;

@@ -12,7 +12,7 @@ var d3 = require('d3');
 
 var styleOne = require('./style_one');
 
-module.exports = function style(gd) {
+module.exports = function(gd) {
     gd._fullLayout._pielayer.selectAll('.trace').each(function(cd) {
         var cd0 = cd[0];
         var trace = cd0.trace;

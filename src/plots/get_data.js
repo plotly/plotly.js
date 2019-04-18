@@ -96,7 +96,7 @@ exports.getModuleCalcData = function(calcdata, arg1) {
  * @return {array} list of trace objects.
  *
  */
-exports.getSubplotData = function getSubplotData(data, type, subplotId) {
+exports.getSubplotData = function(data, type, subplotId) {
     if(!Registry.subplotsRegistry[type]) return [];
 
     var attr = Registry.subplotsRegistry[type].attr;

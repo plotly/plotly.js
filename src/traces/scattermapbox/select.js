@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var subtypes = require('../scatter/subtypes');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function selectPoints(searchInfo, selectionTester) {
+module.exports = function(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;

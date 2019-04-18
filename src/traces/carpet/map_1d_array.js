@@ -15,7 +15,7 @@ var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
  * The output array is optional, but if provided, it will be reused without
  * reallocation to the extent possible.
  */
-module.exports = function mapArray(out, data, func) {
+module.exports = function(out, data, func) {
     var i;
 
     if(!isArrayOrTypedArray(out)) {

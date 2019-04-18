@@ -28,7 +28,7 @@ var strictD3 = require('./strict_d3');
  *
  * Logs basename of bundle when completed.
  */
-module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
+module.exports = function(pathToIndex, pathToBundle, opts, cb) {
     opts = opts || {};
 
     var pathToMinBundle = opts.pathToMinBundle;

@@ -30,7 +30,7 @@ var Axes = require('./axes');
  * @param {object} transitionOpts
  * @param {function} makeOnCompleteCallback
  */
-module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnCompleteCallback) {
+module.exports = function(gd, edits, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
 
     // special case for redraw:false Plotly.animate that relies on this

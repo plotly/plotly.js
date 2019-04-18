@@ -12,7 +12,7 @@ var d3 = require('d3');
 var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
 
-module.exports = function style(gd, cd) {
+module.exports = function(gd, cd) {
     var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.ohlclayer').selectAll('g.trace');
 
     s.style('opacity', function(d) {

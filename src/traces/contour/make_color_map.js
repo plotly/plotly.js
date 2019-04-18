@@ -13,7 +13,7 @@ var d3 = require('d3');
 var Colorscale = require('../../components/colorscale');
 var endPlus = require('./end_plus');
 
-module.exports = function makeColorMap(trace) {
+module.exports = function(trace) {
     var contours = trace.contours;
     var start = contours.start;
     var end = endPlus(contours);

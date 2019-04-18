@@ -25,7 +25,7 @@ var toLogRange = require('../../lib/to_log_range');
  *     Use this to make the changes as it's aware if any other changes in the
  *     same relayout call should override this conversion.
  */
-module.exports = function convertCoords(gd, ax, newType, doExtra) {
+module.exports = function(gd, ax, newType, doExtra) {
     ax = ax || {};
 
     var toLog = (newType === 'log') && (ax.type === 'linear');

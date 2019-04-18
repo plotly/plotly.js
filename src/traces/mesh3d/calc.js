@@ -10,7 +10,7 @@
 
 var colorscaleCalc = require('../../components/colorscale/calc');
 
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     if(trace.intensity) {
         colorscaleCalc(gd, trace, {
             vals: trace.intensity,

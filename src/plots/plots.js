@@ -1463,7 +1463,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     )(layoutIn, layoutOut, coerce);
 };
 
-plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
+plots.plotAutoSize = function(gd, layout, fullLayout) {
     var context = gd._context || {};
     var frameMargins = context.frameMargins;
     var newWidth;

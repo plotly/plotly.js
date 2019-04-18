@@ -15,7 +15,7 @@
  *  @return {array of objects} of length <= container
  *
  */
-module.exports = function filterVisible(container) {
+module.exports = function(container) {
     var filterFn = isCalcData(container) ? calcDataFilter : baseFilter;
     var out = [];
 

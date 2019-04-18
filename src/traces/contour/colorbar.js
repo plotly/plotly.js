@@ -15,7 +15,7 @@ var makeColorMap = require('./make_color_map');
 var endPlus = require('./end_plus');
 
 
-module.exports = function colorbar(gd, cd) {
+module.exports = function(gd, cd) {
     var trace = cd[0].trace;
     var cbId = 'cb' + trace.uid;
 

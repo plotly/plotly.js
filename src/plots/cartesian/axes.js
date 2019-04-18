@@ -550,7 +550,7 @@ axes.prepTicks = function(ax) {
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
-axes.calcTicks = function calcTicks(ax) {
+axes.calcTicks = function(ax) {
     axes.prepTicks(ax);
     var rng = Lib.simpleMap(ax.range, ax.r2l);
 

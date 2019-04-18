@@ -21,7 +21,7 @@
  *  ref to array (now possibly containing one more item)
  *
  */
-module.exports = function pushUnique(array, item) {
+module.exports = function(array, item) {
     if(item instanceof RegExp) {
         var itemStr = item.toString();
         for(var i = 0; i < array.length; i++) {

@@ -13,7 +13,7 @@
  *
  * @param {DOM node or object} gd : graph div object
  */
-module.exports = function clearResponsive(gd) {
+module.exports = function(gd) {
     if(gd._responsiveChartHandler) {
         window.removeEventListener('resize', gd._responsiveChartHandler);
         delete gd._responsiveChartHandler;

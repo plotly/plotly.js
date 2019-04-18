@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
-module.exports = function convert(scene) {
+module.exports = function(scene) {
     var fullSceneLayout = scene.fullSceneLayout;
     var anns = fullSceneLayout.annotations;
 

@@ -17,7 +17,7 @@ var handleMarkerDefaults = require('../scatter/marker_defaults');
 var mergeLength = require('../parcoords/merge_length');
 var OPEN_RE = /-open/;
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }

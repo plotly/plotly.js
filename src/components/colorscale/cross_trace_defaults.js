@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var hasColorscale = require('./helpers').hasColorscale;
 
-module.exports = function crossTraceDefaults(fullData) {
+module.exports = function(fullData) {
     function replace(cont, k) {
         var val = cont['_' + k];
         if(val !== undefined) {

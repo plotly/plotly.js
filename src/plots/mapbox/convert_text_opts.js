@@ -22,7 +22,7 @@ var Lib = require('../../lib');
  *      - anchor
  *      - offset
  */
-module.exports = function convertTextOpts(textposition, iconSize) {
+module.exports = function(textposition, iconSize) {
     var parts = textposition.split(' ');
     var vPos = parts[0];
     var hPos = parts[1];

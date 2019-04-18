@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function makeBinAttrs(axLetter, match) {
+module.exports = function(axLetter, match) {
     return {
         start: {
             valType: 'any', // for date axes

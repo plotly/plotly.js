@@ -11,7 +11,7 @@
 var scatterHover = require('../scatter/hover');
 var fillHoverText = require('../scatter/fill_hover_text');
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
+module.exports = function(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
     if(!scatterPointData || scatterPointData[0].index === false) return;
 

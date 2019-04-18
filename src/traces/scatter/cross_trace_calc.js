@@ -16,7 +16,7 @@ var calc = require('./calc');
  * runs per subplot, and can handle multiple stacking groups
  */
 
-module.exports = function crossTraceCalc(gd, plotinfo) {
+module.exports = function(gd, plotinfo) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var subplot = xa._id + ya._id;

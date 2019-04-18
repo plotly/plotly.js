@@ -8,7 +8,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
  * expects bar, scatter3d, filter, and calendars to be registered
  * but the test is that they may have been registered in any order
  */
-module.exports = function checkComponent(Plotly) {
+module.exports = function(Plotly) {
     describe('core (svg 2d, scatter) and registered (bar) traces and transforms', function() {
         var gd;
 

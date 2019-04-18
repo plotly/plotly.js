@@ -22,7 +22,7 @@ var Lib = require('../../lib');
  *   - noZeroLine {boolean} : don't coerce zeroline* attributes
  *   - attributes {object} : attribute object associated with input containers
  */
-module.exports = function handleLineGridDefaults(containerIn, containerOut, coerce, opts) {
+module.exports = function(containerIn, containerOut, coerce, opts) {
     opts = opts || {};
 
     var dfltColor = opts.dfltColor;

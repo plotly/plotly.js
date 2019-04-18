@@ -30,7 +30,7 @@ var tickIncrement = require('../../plots/cartesian/axes').tickIncrement;
  * @return {function(v, isRightEdge)}:
  *   find the start (isRightEdge is falsy) or end (truthy) label value for a bin edge `v`
  */
-module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, calendar) {
+module.exports = function(leftGap, rightGap, binEdges, pa, calendar) {
     // the rounding digit is the largest digit that changes in *all* of 4 regions:
     // - inside the rightGap before binEdges[0] (shifted 10% to the left)
     // - inside the leftGap after binEdges[0] (expanded by 10% of rightGap on each end)

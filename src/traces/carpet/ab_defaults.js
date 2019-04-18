@@ -11,7 +11,7 @@
 var handleAxisDefaults = require('./axis_defaults');
 var Template = require('../../plot_api/plot_template');
 
-module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce, dfltColor) {
+module.exports = function(traceIn, traceOut, fullLayout, coerce, dfltColor) {
     var a = coerce('a');
 
     if(!a) {

@@ -32,7 +32,7 @@ function MapboxLayer(mapbox, index) {
 
 var proto = MapboxLayer.prototype;
 
-proto.update = function update(opts) {
+proto.update = function(opts) {
     if(!this.visible) {
         // IMPORTANT: must create source before layer to not cause errors
         this.updateSource(opts);
@@ -120,7 +120,7 @@ proto.removeLayer = function() {
     }
 };
 
-proto.dispose = function dispose() {
+proto.dispose = function() {
     var map = this.map;
     map.removeLayer(this.idLayer);
     map.removeSource(this.idSource);
@@ -212,7 +212,7 @@ function convertSourceOpts(opts) {
     return sourceOpts;
 }
 
-module.exports = function createMapboxLayer(mapbox, index, opts) {
+module.exports = function(mapbox, index, opts) {
     var mapboxLayer = new MapboxLayer(mapbox, index);
 
     mapboxLayer.update(opts);

@@ -15,7 +15,7 @@ var handleArrayContainerDefaults = require('../../plots/array_container_defaults
 var attributes = require('./attributes');
 var name = 'images';
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
+module.exports = function(layoutIn, layoutOut) {
     var opts = {
         name: name,
         handleItemDefaults: imageDefaults

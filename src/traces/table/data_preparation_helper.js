@@ -13,7 +13,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var isNumeric = require('fast-isnumeric');
 
 // pure functions, don't alter but passes on `gd` and parts of `trace` without deep copying
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     var cellsValues = squareStringMatrix(trace.cells.values);
     var slicer = function(a) {
         return a.slice(trace.header.values.length, a.length);

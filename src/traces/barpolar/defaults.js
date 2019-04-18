@@ -14,7 +14,7 @@ var handleRThetaDefaults = require('../scatterpolar/defaults').handleRThetaDefau
 var handleStyleDefaults = require('../bar/style_defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }

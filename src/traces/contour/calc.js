@@ -15,7 +15,7 @@ var setContours = require('./set_contours');
 // most is the same as heatmap calc, then adjust it
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     var cd = heatmapCalc(gd, trace);
     setContours(trace);
     return cd;

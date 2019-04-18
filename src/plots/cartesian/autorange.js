@@ -197,7 +197,7 @@ function makePadFn(ax) {
             (ax.domain[1] - ax.domain[0]);
     }
 
-    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    return function(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
 function concatExtremes(gd, ax) {

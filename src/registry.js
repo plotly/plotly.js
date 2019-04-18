@@ -72,7 +72,7 @@ exports.collectableSubplotTypes = null;
  *  - fn {function} : the api method called with Register.call();
  *
  */
-exports.register = function register(_modules) {
+exports.register = function(_modules) {
     exports.collectableSubplotTypes = null;
 
     if(!_modules) {

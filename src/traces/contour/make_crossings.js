@@ -14,7 +14,7 @@ var constants = require('./constants');
 // since we want to be exhaustive we'll check for contour crossings
 // at every intersection, rather than just following a path
 // TODO: shorten the inner loop to only the relevant levels
-module.exports = function makeCrossings(pathinfo) {
+module.exports = function(pathinfo) {
     var z = pathinfo[0].z;
     var m = z.length;
     var n = z[0].length; // we already made sure z isn't ragged in interp2d

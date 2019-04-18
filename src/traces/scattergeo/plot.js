@@ -19,7 +19,7 @@ var geoJsonUtils = require('../../lib/geojson_utils');
 var subTypes = require('../scatter/subtypes');
 var style = require('./style');
 
-module.exports = function plot(gd, geo, calcData) {
+module.exports = function(gd, geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {
         calcGeoJSON(calcData[i], geo.topojson);
     }

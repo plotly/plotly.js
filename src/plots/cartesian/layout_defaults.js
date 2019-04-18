@@ -33,7 +33,7 @@ function appendList(cont, k, item) {
     else cont[k] = [item];
 }
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function(layoutIn, layoutOut, fullData) {
     var ax2traces = {};
     var xaCheater = {};
     var xaNonCheater = {};

@@ -35,7 +35,7 @@ function correctionOvershoot(maxFractionalChange) {
  *      of neighbors that are *not* missing. Assumed to be sorted from most to
  *      least neighbors, as produced by heatmap/find_empties.
  */
-module.exports = function interp2d(z, emptyPoints) {
+module.exports = function(z, emptyPoints) {
     var maxFractionalChange = 1;
     var i;
 

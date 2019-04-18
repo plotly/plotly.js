@@ -20,7 +20,7 @@ var getSubplotData = require('../../get_data').getSubplotData;
 
 var GL3D = 'gl3d';
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function(layoutIn, layoutOut, fullData) {
     var hasNon3D = layoutOut._basePlotModules.length > 1;
 
     // some layout-wide attribute are used in all scenes

@@ -13,7 +13,7 @@ var scatterHover = require('../scatter/hover');
 var Axes = require('../../plots/cartesian/axes');
 
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
+module.exports = function(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
     if(!scatterPointData || scatterPointData[0].index === false) return;
 

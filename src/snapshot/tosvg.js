@@ -36,7 +36,7 @@ function xmlEntityEncode(str) {
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g, '&amp;');
 }
 
-module.exports = function toSVG(gd, format, scale) {
+module.exports = function(gd, format, scale) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
     var toppaper = fullLayout._toppaper;

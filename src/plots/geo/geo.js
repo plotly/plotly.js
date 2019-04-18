@@ -64,7 +64,7 @@ function Geo(opts) {
 
 var proto = Geo.prototype;
 
-module.exports = function createGeo(opts) {
+module.exports = function(opts) {
     return new Geo(opts);
 };
 

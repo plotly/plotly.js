@@ -20,7 +20,7 @@ var smoothFill2dArray = require('./smooth_fill_2d_array');
 var convertColumnData = require('../heatmap/convert_column_xyz');
 var setConvert = require('./set_convert');
 
-module.exports = function calc(gd, trace) {
+module.exports = function(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis);
     var ya = Axes.getFromId(gd, trace.yaxis);
     var aax = trace.aaxis;

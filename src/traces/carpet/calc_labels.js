@@ -11,7 +11,7 @@
 var Axes = require('../../plots/cartesian/axes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = function calcLabels(trace, axis) {
+module.exports = function(trace, axis) {
     var i, tobj, prefix, suffix, gridline;
 
     var labels = axis._labels = [];

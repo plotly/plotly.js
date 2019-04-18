@@ -6,7 +6,7 @@ var ATTRS = ['x', 'y', 'width', 'height'];
 
 
 // In-house implementation of SVG getBBox that takes clip paths into account
-module.exports = function getBBox(element) {
+module.exports = function(element) {
     var elementBBox = element.getBBox();
 
     var s = d3.select(element);

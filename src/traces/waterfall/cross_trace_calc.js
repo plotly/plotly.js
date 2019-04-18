@@ -10,7 +10,7 @@
 
 var setGroupPositions = require('../bar/cross_trace_calc').setGroupPositions;
 
-module.exports = function crossTraceCalc(gd, plotinfo) {
+module.exports = function(gd, plotinfo) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var calcdata = gd.calcdata;

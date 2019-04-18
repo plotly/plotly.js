@@ -35,7 +35,7 @@ var ARROWPATHS = require('./arrow_paths');
  *     of both the line and head has opacity applied to it so there isn't greater opacity
  *     where they overlap.
  */
-module.exports = function drawArrowHead(el3, ends, options) {
+module.exports = function(el3, ends, options) {
     var el = el3.node();
     var headStyle = ARROWPATHS[options.arrowhead || 0];
     var startHeadStyle = ARROWPATHS[options.startarrowhead || 0];

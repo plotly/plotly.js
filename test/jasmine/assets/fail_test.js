@@ -17,7 +17,7 @@
  *
  *    See ./with_setup_teardown.js for a different example.
  */
-module.exports = function failTest(error) {
+module.exports = function(error) {
     if(error === undefined) {
         expect(error).not.toBeUndefined();
     } else {

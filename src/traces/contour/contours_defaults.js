@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function handleContourDefaults(traceIn, traceOut, coerce, coerce2) {
+module.exports = function(traceIn, traceOut, coerce, coerce2) {
     var contourStart = coerce2('contours.start');
     var contourEnd = coerce2('contours.end');
     var missingEnd = (contourStart === false) || (contourEnd === false);

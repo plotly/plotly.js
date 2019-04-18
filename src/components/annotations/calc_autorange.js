@@ -15,7 +15,7 @@ var Axes = require('../../plots/cartesian/axes');
 var draw = require('./draw').draw;
 
 
-module.exports = function calcAutorange(gd) {
+module.exports = function(gd) {
     var fullLayout = gd._fullLayout;
     var annotationList = Lib.filterVisible(fullLayout.annotations);
 
