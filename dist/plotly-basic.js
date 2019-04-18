@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v1.47.2
+* plotly.js (basic) v1.47.3
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -23394,10 +23394,14 @@ function alignHoverText(hoverLabels, rotateLabels) {
         if(textAlign !== 'auto') {
             if(textAlign === 'left' && anchor !== 'start') {
                 tx.attr('text-anchor', 'start');
-                posX = -d.bx - HOVERTEXTPAD;
+                posX = anchor === 'middle' ?
+                    -d.bx / 2 - d.tx2width / 2 + HOVERTEXTPAD :
+                    -d.bx - HOVERTEXTPAD;
             } else if(textAlign === 'right' && anchor !== 'end') {
                 tx.attr('text-anchor', 'end');
-                posX = d.bx + HOVERTEXTPAD;
+                posX = anchor === 'middle' ?
+                    d.bx / 2 - d.tx2width / 2 - HOVERTEXTPAD :
+                    d.bx + HOVERTEXTPAD;
             }
         }
 
@@ -33830,7 +33834,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.47.2';
+exports.version = '1.47.3';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -39337,10 +39341,11 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 .style({overflow: 'visible', 'pointer-events': 'none'});
 
                 var fill = _context.node().style.fill || 'black';
-                newSvg.select('g').attr({fill: fill, stroke: fill});
+                var g = newSvg.select('g');
+                g.attr({fill: fill, stroke: fill});
 
-                var newSvgW = getSize(newSvg, 'width');
-                var newSvgH = getSize(newSvg, 'height');
+                var newSvgW = getSize(g, 'width');
+                var newSvgH = getSize(g, 'height');
                 var newX = +_context.attr('x') - newSvgW *
                     {start: 0, middle: 0.5, end: 1}[_context.attr('text-anchor') || 'start'];
                 // font baseline is about 1/4 fontSize below centerline
@@ -66715,6 +66720,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
     var isClosest = (hovermode === 'closest');
+    var isWaterfall = (trace.type === 'waterfall');
     var maxHoverDistance = pointData.maxHoverDistance;
     var maxSpikeDistance = pointData.maxSpikeDistance;
 
@@ -66763,10 +66769,17 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     }
 
     function sizeFn(di) {
+        var v = sizeVal;
+        var b = di.b;
+        var s = di[sizeLetter];
+
+        if(isWaterfall) {
+            s += Math.abs(di.rawS || 0);
+        }
+
         // add a gradient so hovering near the end of a
         // bar makes it a little closer match
-        return Fx.inbox(di.b - sizeVal, di[sizeLetter] - sizeVal,
-            maxHoverDistance + (di[sizeLetter] - sizeVal) / (di[sizeLetter] - di.b) - 1);
+        return Fx.inbox(b - v, s - v, maxHoverDistance + (s - v) / (s - b) - 1);
     }
 
     if(trace.orientation === 'h') {

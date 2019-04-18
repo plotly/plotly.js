@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.47.2
+* plotly.js (finance) v1.47.3
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -23450,10 +23450,14 @@ function alignHoverText(hoverLabels, rotateLabels) {
         if(textAlign !== 'auto') {
             if(textAlign === 'left' && anchor !== 'start') {
                 tx.attr('text-anchor', 'start');
-                posX = -d.bx - HOVERTEXTPAD;
+                posX = anchor === 'middle' ?
+                    -d.bx / 2 - d.tx2width / 2 + HOVERTEXTPAD :
+                    -d.bx - HOVERTEXTPAD;
             } else if(textAlign === 'right' && anchor !== 'end') {
                 tx.attr('text-anchor', 'end');
-                posX = d.bx + HOVERTEXTPAD;
+                posX = anchor === 'middle' ?
+                    d.bx / 2 - d.tx2width / 2 - HOVERTEXTPAD :
+                    d.bx + HOVERTEXTPAD;
             }
         }
 
@@ -33886,7 +33890,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.47.2';
+exports.version = '1.47.3';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -39393,10 +39397,11 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 .style({overflow: 'visible', 'pointer-events': 'none'});
 
                 var fill = _context.node().style.fill || 'black';
-                newSvg.select('g').attr({fill: fill, stroke: fill});
+                var g = newSvg.select('g');
+                g.attr({fill: fill, stroke: fill});
 
-                var newSvgW = getSize(newSvg, 'width');
-                var newSvgH = getSize(newSvg, 'height');
+                var newSvgW = getSize(g, 'width');
+                var newSvgH = getSize(g, 'height');
                 var newX = +_context.attr('x') - newSvgW *
                     {start: 0, middle: 0.5, end: 1}[_context.attr('text-anchor') || 'start'];
                 // font baseline is about 1/4 fontSize below centerline
@@ -66771,6 +66776,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
     var isClosest = (hovermode === 'closest');
+    var isWaterfall = (trace.type === 'waterfall');
     var maxHoverDistance = pointData.maxHoverDistance;
     var maxSpikeDistance = pointData.maxSpikeDistance;
 
@@ -66819,10 +66825,17 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     }
 
     function sizeFn(di) {
+        var v = sizeVal;
+        var b = di.b;
+        var s = di[sizeLetter];
+
+        if(isWaterfall) {
+            s += Math.abs(di.rawS || 0);
+        }
+
         // add a gradient so hovering near the end of a
         // bar makes it a little closer match
-        return Fx.inbox(di.b - sizeVal, di[sizeLetter] - sizeVal,
-            maxHoverDistance + (di[sizeLetter] - sizeVal) / (di[sizeLetter] - di.b) - 1);
+        return Fx.inbox(b - v, s - v, maxHoverDistance + (s - v) / (s - b) - 1);
     }
 
     if(trace.orientation === 'h') {
@@ -75993,6 +76006,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
 var barAttrs = _dereq_('../bar/attributes');
 var lineAttrs = _dereq_('../scatter/attributes').line;
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var Color = _dereq_('../../components/color');
 
 function directionAttrs(dirTxt) {
     return {
@@ -76068,8 +76082,10 @@ module.exports = {
 
     connector: {
         line: {
-            color: lineAttrs.color,
-            width: lineAttrs.width,
+            color: extendFlat({}, lineAttrs.color, {dflt: Color.defaultLine}),
+            width: extendFlat({}, lineAttrs.width, {
+                editType: 'plot', // i.e. to adjust bars is mode: 'between'. See https://github.com/plotly/plotly.js/issues/3787
+            }),
             dash: lineAttrs.dash,
             editType: 'plot'
         },
@@ -76095,7 +76111,7 @@ module.exports = {
     alignmentgroup: barAttrs.offsetgroup
 };
 
-},{"../../lib/extend":157,"../bar/attributes":256,"../scatter/attributes":316}],344:[function(_dereq_,module,exports){
+},{"../../components/color":47,"../../lib/extend":157,"../bar/attributes":256,"../scatter/attributes":316}],344:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -76264,6 +76280,11 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
 
             if(di.isSum === false) {
                 di.s0 += (j === 0) ? 0 : cd[j - 1].s;
+            }
+
+            if(j + 1 < cd.length) {
+                cd[j].nextP0 = cd[j + 1].p0;
+                cd[j].nextS0 = cd[j + 1].s0;
             }
         }
     }
@@ -76605,11 +76626,6 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
             var x2, y2;
             var x3, y3;
 
-            var delta = 0;
-            if(i + 1 < len && Array.isArray(trace.offset)) {
-                delta -= trace.offset[i + 1] - trace.offset[i];
-            }
-
             if(isHorizontal) {
                 x0 = xa.c2p(di.s1, true);
                 y0 = ya.c2p(di.p1, true);
@@ -76621,8 +76637,8 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 y2 = ya.c2p(di.p1, true);
 
                 if(i + 1 < len) {
-                    x3 = xa.c2p(di.s0 + 1 - delta, true);
-                    y3 = ya.c2p(di.p0 + 1 - delta, true);
+                    x3 = xa.c2p(di.nextS0, true);
+                    y3 = ya.c2p(di.nextP0, true);
                 }
             } else {
                 x0 = xa.c2p(di.p1, true);
@@ -76635,8 +76651,8 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 y2 = ya.c2p(di.s1, true);
 
                 if(i + 1 < len) {
-                    x3 = xa.c2p(di.p0 + 1 - delta, true);
-                    y3 = ya.c2p(di.s0 + 1 - delta, true);
+                    x3 = xa.c2p(di.nextP0, true);
+                    y3 = ya.c2p(di.nextS0, true);
                 }
             }
 

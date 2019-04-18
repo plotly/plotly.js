@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.47.2
+* plotly.js (gl2d) v1.47.3
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -56700,10 +56700,14 @@ function alignHoverText(hoverLabels, rotateLabels) {
         if(textAlign !== 'auto') {
             if(textAlign === 'left' && anchor !== 'start') {
                 tx.attr('text-anchor', 'start');
-                posX = -d.bx - HOVERTEXTPAD;
+                posX = anchor === 'middle' ?
+                    -d.bx / 2 - d.tx2width / 2 + HOVERTEXTPAD :
+                    -d.bx - HOVERTEXTPAD;
             } else if(textAlign === 'right' && anchor !== 'end') {
                 tx.attr('text-anchor', 'end');
-                posX = d.bx + HOVERTEXTPAD;
+                posX = anchor === 'middle' ?
+                    d.bx / 2 - d.tx2width / 2 - HOVERTEXTPAD :
+                    d.bx + HOVERTEXTPAD;
             }
         }
 
@@ -67174,7 +67178,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.47.2';
+exports.version = '1.47.3';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -72978,10 +72982,11 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 .style({overflow: 'visible', 'pointer-events': 'none'});
 
                 var fill = _context.node().style.fill || 'black';
-                newSvg.select('g').attr({fill: fill, stroke: fill});
+                var g = newSvg.select('g');
+                g.attr({fill: fill, stroke: fill});
 
-                var newSvgW = getSize(newSvg, 'width');
-                var newSvgH = getSize(newSvg, 'height');
+                var newSvgW = getSize(g, 'width');
+                var newSvgH = getSize(g, 'height');
                 var newX = +_context.attr('x') - newSvgW *
                     {start: 0, middle: 0.5, end: 1}[_context.attr('text-anchor') || 'start'];
                 // font baseline is about 1/4 fontSize below centerline
