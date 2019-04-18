@@ -8,6 +8,7 @@
 
 'use strict';
 
+var pieAtts = require('../pie/attributes');
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -75,6 +76,15 @@ module.exports = {
 
     hovertext: barAttrs.hovertext,
     hovertemplate: barAttrs.hovertemplate,
+
+    // labels (legend is handled by plots.attributes.showlegend and layout.hiddenlabels)
+    textinfo: extendFlat({}, pieAtts.textinfo, {
+        editType: 'plot',
+        flags: ['text', 'delta', 'initial', 'final'],
+        description: [
+            'Determines which trace information appear on the graph.'
+        ].join(' ')
+    }),
 
     text: barAttrs.text,
     textposition: barAttrs.textposition,

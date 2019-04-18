@@ -22,8 +22,9 @@ var Registry = require('../../registry');
 var attributes = require('./attributes');
 var attributeText = attributes.text;
 var attributeTextPosition = attributes.textposition;
-var helpers = require('./helpers');
 var style = require('./style');
+var helpers = require('./helpers');
+var pieHelpers = require('../pie/helpers');
 
 // padding in pixels around text
 var TEXTPAD = 3;
@@ -204,7 +205,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     var trace = calcTrace[0].trace;
     var orientation = trace.orientation;
 
-    var text = getText(trace, i);
+    var text = getText(calcTrace, i, fullLayout);
     textPosition = getTextPosition(trace, i);
 
     // compute text position
@@ -475,12 +476,51 @@ function getTransform(textX, textY, targetX, targetY, scale, rotate) {
     return transformTranslate + transformScale + transformRotate;
 }
 
-function getText(trace, index) {
-    var value = helpers.getValue(trace.text, index);
+function getText(calcTrace, index, fullLayout) {
+    var trace = calcTrace[0].trace;
+
+    var value;
+    if(!trace.textinfo || trace.textinfo === 'none') {
+        value = helpers.getValue(trace.text, index);
+    } else {
+        value = calcTextinfo(calcTrace, index, fullLayout);
+    }
+
     return helpers.coerceString(attributeText, value);
 }
 
 function getTextPosition(trace, index) {
     var value = helpers.getValue(trace.textposition, index);
     return helpers.coerceEnumerated(attributeTextPosition, value);
+}
+
+function calcTextinfo(calcTrace, index, fullLayout) {
+    var trace = calcTrace[0].trace;
+    var textinfo = trace.textinfo;
+    var cdi = calcTrace[index];
+
+    var separators = fullLayout.separators;
+    var parts = textinfo.split('+');
+    var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
+    var thisText = [];
+
+    var delta = +cdi.rawS || cdi.s;
+    var final = cdi.v;
+    var initial = final - delta;
+
+    if(hasFlag('delta')) {
+        thisText.push(pieHelpers.formatPieValue(delta, separators));
+    }
+    if(hasFlag('final')) {
+        thisText.push(pieHelpers.formatPieValue(final, separators));
+    }
+    if(hasFlag('initial')) {
+        thisText.push(pieHelpers.formatPieValue(initial, separators));
+    }
+    if(hasFlag('text')) {
+        var tx = Lib.castOption(trace, cdi.i, 'text');
+        if(tx) thisText.push(tx);
+    }
+
+    return thisText.join('<br>'); // TODO: ' | ' may be a better dividor for bar
 }

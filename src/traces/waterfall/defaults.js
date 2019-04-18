@@ -45,6 +45,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('width');
 
     coerce('text');
+    coerce('textinfo');
+
     coerce('hovertext');
     coerce('hovertemplate');
 
