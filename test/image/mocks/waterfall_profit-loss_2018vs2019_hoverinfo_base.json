@@ -39,6 +39,23 @@
                 "Income tax (15%)",
                 "Profit after tax"
             ],
+            "text": [
+                "+ Sales",
+                "+ Consulting",
+                "+ Maintenance",
+                "+ Other revenue",
+                "= Net revenue",
+                "- Purchases",
+                "- Material expenses",
+                "- Personnel expenses",
+                "- Other expenses",
+                "= Operating profit",
+                "+ Investment income",
+                "+ Financial income",
+                "= Profit before tax",
+                "- Income tax (15%)",
+                "= Profit after tax"
+            ],
             "x": [
                 375,
                 128,
@@ -57,7 +74,7 @@
                 null
             ],
             "base": 0,
-            "textinfo": "delta",
+            "textinfo": "text+delta",
             "textposition": "outside"
         },
         {
@@ -116,7 +133,7 @@
                 null
             ],
             "base": 255,
-            "textinfo": "delta",
+            "textinfo": "initial+final",
             "textposition": "outside"
         }
     ],
@@ -131,9 +148,9 @@
         "xaxis": {
             "type": "linear"
         },
-        "margin": { "l": 150 },
-        "height": 800,
-        "width": 800,
+        "margin": { "l": 150, "r": 50 },
+        "height": 1200,
+        "width": 900,
         "hovermode": "closest",
         "showlegend": true
     }

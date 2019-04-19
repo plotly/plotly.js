@@ -77,10 +77,9 @@ module.exports = {
     hovertext: barAttrs.hovertext,
     hovertemplate: barAttrs.hovertemplate,
 
-    // labels (legend is handled by plots.attributes.showlegend and layout.hiddenlabels)
     textinfo: extendFlat({}, pieAtts.textinfo, {
         editType: 'plot',
-        flags: ['text', 'delta', 'initial', 'final'],
+        flags: ['label', 'text', 'delta', 'initial', 'final'],
         description: [
             'Determines which trace information appear on the graph.'
         ].join(' ')

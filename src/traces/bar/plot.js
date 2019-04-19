@@ -500,27 +500,48 @@ function calcTextinfo(calcTrace, index, fullLayout) {
     var cdi = calcTrace[index];
 
     var separators = fullLayout.separators;
-    var parts = textinfo.split('+');
-    var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
-    var thisText = [];
+    var allParts = textinfo.split('+');
+    var allTexts = [];
 
-    var delta = +cdi.rawS || cdi.s;
-    var final = cdi.v;
-    var initial = final - delta;
+    var hadDelta = false;
+    var hadFinal = false;
+    var hadInitial = false;
+    var hadText = false;
+    var hadLabel = false;
 
-    if(hasFlag('delta')) {
-        thisText.push(pieHelpers.formatPieValue(delta, separators));
-    }
-    if(hasFlag('final')) {
-        thisText.push(pieHelpers.formatPieValue(final, separators));
-    }
-    if(hasFlag('initial')) {
-        thisText.push(pieHelpers.formatPieValue(initial, separators));
-    }
-    if(hasFlag('text')) {
-        var tx = Lib.castOption(trace, cdi.i, 'text');
-        if(tx) thisText.push(tx);
+    for(var k = 0; k < allParts.length; k++) {
+        var part = allParts[k];
+
+        if(!hadText && part === 'text') {
+            hadText = true;
+            var tx = Lib.castOption(trace, cdi.i, 'text');
+            if(tx) allTexts.push(tx);
+        } else if(!hadLabel && part === 'label') {
+            hadLabel = true;
+            if(trace.orientation === 'h') {
+                allTexts.push(trace.y[index]);
+            } else {
+                allTexts.push(trace.x[index]);
+            }
+        } else {
+            // waterfall options
+
+            var delta = +cdi.rawS || cdi.s;
+            var final = cdi.v;
+            var initial = final - delta;
+
+            if(!hadDelta && part === 'delta') {
+                hadDelta = true;
+                allTexts.push(pieHelpers.formatPieValue(delta, separators));
+            } else if(!hadFinal && part === 'final') {
+                hadFinal = true;
+                allTexts.push(pieHelpers.formatPieValue(final, separators));
+            } else if(!hadInitial && part === 'initial') {
+                hadInitial = true;
+                allTexts.push(pieHelpers.formatPieValue(initial, separators));
+            }
+        }
     }
 
-    return thisText.join('<br>'); // TODO: ' | ' may be a better dividor for bar
+    return allTexts.join('<br>');
 }
