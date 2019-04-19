@@ -52,7 +52,7 @@ exports.baseLayoutAttrOverrides = overrideAll({
     // dragmode: fxAttrs.dragmode
 }, 'plot', 'nested');
 
-exports.plot = function plotGl2d(gd) {
+exports.plot = function plot(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var subplotIds = fullLayout._subplots.gl2d;

@@ -181,7 +181,7 @@ polygon.tester = function tester(ptsIn) {
  *      before the line counts as bent
  * @returns boolean: true means this segment is bent, false means straight
  */
-var isBent = polygon.isSegmentBent = function isBent(pts, start, end, tolerance) {
+polygon.isSegmentBent = function isSegmentBent(pts, start, end, tolerance) {
     var startPt = pts[start];
     var segment = [pts[end][0] - startPt[0], pts[end][1] - startPt[1]];
     var segmentSquared = dot(segment, segment);
@@ -226,7 +226,7 @@ polygon.filter = function filter(pts, tolerance) {
         ptsFiltered.splice(doneFilteredIndex + 1);
 
         for(var i = iLast + 1; i < pts.length; i++) {
-            if(i === pts.length - 1 || isBent(pts, iLast, i + 1, tolerance)) {
+            if(i === pts.length - 1 || polygon.isSegmentBent(pts, iLast, i + 1, tolerance)) {
                 ptsFiltered.push(pts[i]);
                 if(ptsFiltered.length < prevFilterLen - 2) {
                     doneRawIndex = i;
