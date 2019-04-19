@@ -12,7 +12,7 @@ var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
-module.exports = function(traceIn, traceOut, defaultColor, layout, coerce, opts) {
+module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
     var markerColor = (traceIn.marker || {}).color;
 
     coerce('line.color', defaultColor);

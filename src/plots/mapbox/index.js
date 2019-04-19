@@ -50,7 +50,7 @@ exports.layoutAttributes = require('./layout_attributes');
 
 exports.supplyLayoutDefaults = require('./layout_defaults');
 
-exports.plot = function(gd) {
+exports.plot = function plotMapbox(gd) {
     var fullLayout = gd._fullLayout;
     var calcData = gd.calcdata;
     var mapboxIds = fullLayout._subplots[MAPBOX];

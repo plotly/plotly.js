@@ -25,7 +25,7 @@ var mapPathinfo = require('./map_pathinfo');
 var lookupCarpet = require('../carpet/lookup_carpetid');
 var closeBoundaries = require('../contour/close_boundaries');
 
-module.exports = function(gd, plotinfo, cdcontours, contourcarpetLayer) {
+module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 

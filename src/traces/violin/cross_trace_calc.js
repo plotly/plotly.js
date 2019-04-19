@@ -11,7 +11,7 @@
 var setPositionOffset = require('../box/cross_trace_calc').setPositionOffset;
 var orientations = ['v', 'h'];
 
-module.exports = function(gd, plotinfo) {
+module.exports = function crossTraceCalc(gd, plotinfo) {
     var calcdata = gd.calcdata;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;

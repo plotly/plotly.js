@@ -12,7 +12,7 @@
 var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function(trace, ax1, ax2, var1Name, var2Name, arrayVarNames) {
+module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name, arrayVarNames) {
     var colLen = trace._length;
     var col1 = ax1.makeCalcdata(trace, var1Name);
     var col2 = ax2.makeCalcdata(trace, var2Name);

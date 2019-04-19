@@ -14,7 +14,7 @@ var handleArrayContainerDefaults = require('../../plots/array_container_defaults
 var handleAnnotationCommonDefaults = require('../annotations/common_defaults');
 var attributes = require('./attributes');
 
-module.exports = function(sceneLayoutIn, sceneLayoutOut, opts) {
+module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
     handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults,

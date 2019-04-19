@@ -24,7 +24,7 @@ var Registry = require('../registry');
  *  if the whole array) and the property within that (or '' if the whole array
  *  or the whole object)
  */
-module.exports = function(astr) {
+module.exports = function containerArrayMatch(astr) {
     var rootContainers = Registry.layoutArrayContainers;
     var regexpContainers = Registry.layoutArrayRegexes;
     var rootPart = astr.split('[')[0];

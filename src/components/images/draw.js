@@ -13,7 +13,7 @@ var Drawing = require('../drawing');
 var Axes = require('../../plots/cartesian/axes');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
-module.exports = function(gd) {
+module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
     var imageDataAbove = [];
     var imageDataSubplot = {};

@@ -32,7 +32,7 @@ var setConvert = require('./set_convert');
  *  data: the plot data, used to manage categories
  *  bgColor: the plot background color, to calculate default gridline colors
  */
-module.exports = function(containerIn, containerOut, coerce, options, layoutOut) {
+module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
     var font = options.font || {};
     var splomStash = options.splomStash || {};

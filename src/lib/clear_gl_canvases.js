@@ -15,7 +15,7 @@
  *
  * @param {DOM node or object} gd : graph div object
  */
-module.exports = function(gd) {
+module.exports = function clearGlCanvases(gd) {
     var fullLayout = gd._fullLayout;
 
     if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {

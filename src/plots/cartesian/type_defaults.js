@@ -15,7 +15,7 @@ var autoType = require('./axis_autotype');
  *  data: the plot data to use in choosing auto type
  *  name: axis object name (ie 'xaxis') if one should be stored
  */
-module.exports = function(containerIn, containerOut, coerce, options) {
+module.exports = function handleTypeDefaults(containerIn, containerOut, coerce, options) {
     var axType = coerce('type', (options.splomStash || {}).type);
 
     if(axType === '-') {

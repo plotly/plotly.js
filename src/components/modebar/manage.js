@@ -24,7 +24,7 @@ var modeBarButtons = require('./buttons');
  * @param {object} gd main plot object
  *
  */
-module.exports = function(gd) {
+module.exports = function manageModeBar(gd) {
     var fullLayout = gd._fullLayout;
     var context = gd._context;
     var modeBar = fullLayout._modeBar;

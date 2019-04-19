@@ -18,7 +18,7 @@ var name = constants.name;
 var buttonAttrs = attributes.buttons;
 
 
-module.exports = function(layoutIn, layoutOut) {
+module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
     var opts = {
         name: name,
         handleItemDefaults: menuDefaults

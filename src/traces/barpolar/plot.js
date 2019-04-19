@@ -15,7 +15,7 @@ var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var helpers = require('../../plots/polar/helpers');
 
-module.exports = function(gd, subplot, cdbar) {
+module.exports = function plot(gd, subplot, cdbar) {
     var xa = subplot.xaxis;
     var ya = subplot.yaxis;
     var radialAxis = subplot.radialAxis;

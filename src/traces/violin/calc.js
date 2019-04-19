@@ -14,7 +14,7 @@ var boxCalc = require('../box/calc');
 var helpers = require('./helpers');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     var cd = boxCalc(gd, trace);
 
     if(cd[0].t.empty) return cd;

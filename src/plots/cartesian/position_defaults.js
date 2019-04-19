@@ -14,7 +14,7 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 
 
-module.exports = function(containerIn, containerOut, coerce, options) {
+module.exports = function handlePositionDefaults(containerIn, containerOut, coerce, options) {
     var counterAxes = options.counterAxes || [];
     var overlayableAxes = options.overlayableAxes || [];
     var letter = options.letter;

@@ -16,21 +16,21 @@ var constants = require('./constants');
 // convert between axis names (xaxis, xaxis2, etc, elements of gd.layout)
 // and axis id's (x, x2, etc). Would probably have ditched 'xaxis'
 // completely in favor of just 'x' if it weren't ingrained in the API etc.
-exports.id2name = function(id) {
+exports.id2name = function id2name(id) {
     if(typeof id !== 'string' || !id.match(constants.AX_ID_PATTERN)) return;
     var axNum = id.substr(1);
     if(axNum === '1') axNum = '';
     return id.charAt(0) + 'axis' + axNum;
 };
 
-exports.name2id = function(name) {
+exports.name2id = function name2id(name) {
     if(!name.match(constants.AX_NAME_PATTERN)) return;
     var axNum = name.substr(5);
     if(axNum === '1') axNum = '';
     return name.charAt(0) + axNum;
 };
 
-exports.cleanId = function(id, axLetter) {
+exports.cleanId = function cleanId(id, axLetter) {
     if(!id.match(constants.AX_ID_PATTERN)) return;
     if(axLetter && id.charAt(0) !== axLetter) return;
 
@@ -114,7 +114,7 @@ exports.idSort = function(id1, id2) {
     return +(id1.substr(1) || 1) - +(id2.substr(1) || 1);
 };
 
-exports.getAxisGroup = function(fullLayout, axId) {
+exports.getAxisGroup = function getAxisGroup(fullLayout, axId) {
     var matchGroups = fullLayout._axisMatchGroups;
 
     for(var i = 0; i < matchGroups.length; i++) {

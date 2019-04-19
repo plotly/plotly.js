@@ -18,11 +18,11 @@ var Registry = require('../registry');
 
 exports.containerArrayMatch = require('./container_array_match');
 
-var isAddVal = exports.isAddVal = function(val) {
+var isAddVal = exports.isAddVal = function isAddVal(val) {
     return val === 'add' || isPlainObject(val);
 };
 
-var isRemoveVal = exports.isRemoveVal = function(val) {
+var isRemoveVal = exports.isRemoveVal = function isRemoveVal(val) {
     return val === null || val === 'remove';
 };
 
@@ -73,7 +73,7 @@ var isRemoveVal = exports.isRemoveVal = function(val) {
  * @returns {bool} `true` if it managed to complete drawing of the changes
  *  `false` would mean the parent should replot.
  */
-exports.applyContainerArrayChanges = function(gd, np, edits, flags, _nestedProperty) {
+exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np, edits, flags, _nestedProperty) {
     var componentType = np.astr;
     var supplyComponentDefaults = Registry.getComponentMethod(componentType, 'supplyLayoutDefaults');
     var draw = Registry.getComponentMethod(componentType, 'draw');

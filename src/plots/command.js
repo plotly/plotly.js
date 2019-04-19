@@ -67,7 +67,7 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
         // Build the cache:
         bindingValueHasChanged(gd, binding, ret.cache);
 
-        ret.check = function() {
+        ret.check = function check() {
             if(!enabled) return;
 
             var update = bindingValueHasChanged(gd, binding, ret.cache);
@@ -117,11 +117,11 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
         ret.remove = function() {};
     }
 
-    ret.disable = function() {
+    ret.disable = function disable() {
         enabled = false;
     };
 
-    ret.enable = function() {
+    ret.enable = function enable() {
         enabled = true;
     };
 

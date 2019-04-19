@@ -17,7 +17,7 @@ var calcSelection = require('../scatter/calc_selection');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var lookupCarpet = require('../carpet/lookup_carpetid');
 
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
     if(!carpet || !carpet.visible || carpet.visible === 'legendonly') return;
     var i;

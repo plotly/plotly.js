@@ -11,7 +11,7 @@
 
 var d3 = require('d3');
 
-module.exports = function(axisLayout, buttonLayout) {
+module.exports = function getUpdateObject(axisLayout, buttonLayout) {
     var axName = axisLayout._name;
     var update = {};
 

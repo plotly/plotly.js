@@ -17,7 +17,7 @@ var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeature
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var style = require('./style').style;
 
-module.exports = function(gd, geo, calcData) {
+module.exports = function plot(gd, geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {
         calcGeoJSON(calcData[i], geo.topojson);
     }

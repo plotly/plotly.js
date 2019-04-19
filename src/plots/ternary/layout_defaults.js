@@ -21,7 +21,7 @@ var layoutAttributes = require('./layout_attributes');
 
 var axesNames = ['aaxis', 'baxis', 'caxis'];
 
-module.exports = function(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
         type: 'ternary',
         attributes: layoutAttributes,

@@ -26,7 +26,7 @@ var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
  * you can't do nestedProperty(obj, 'arr[-1]').set(5)
  * but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
  */
-module.exports = function(container, propStr) {
+module.exports = function nestedProperty(container, propStr) {
     if(isNumeric(propStr)) propStr = String(propStr);
     else if(typeof propStr !== 'string' ||
             propStr.substr(propStr.length - 4) === '[-1]') {

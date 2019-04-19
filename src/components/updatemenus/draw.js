@@ -23,7 +23,7 @@ var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
 var constants = require('./constants');
 var ScrollBox = require('./scrollbox');
 
-module.exports = function(gd) {
+module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
     var menuData = Lib.filterVisible(fullLayout[constants.name]);
 

@@ -14,7 +14,7 @@
 // >2/3 means right, and between is center. Pick the right fraction
 // based on where you are, and return the fraction corresponding to
 // that position on the object
-module.exports = function(v, dv, v0, v1, anchor) {
+module.exports = function align(v, dv, v0, v1, anchor) {
     var vmin = (v - v0) / (v1 - v0);
     var vmax = vmin + dv / (v1 - v0);
     var vc = (vmin + vmax) / 2;

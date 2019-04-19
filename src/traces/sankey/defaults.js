@@ -17,7 +17,7 @@ var handleHoverLabelDefaults = require('../../components/fx/hoverlabel_defaults'
 var Template = require('../../plot_api/plot_template');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
-module.exports = function(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }

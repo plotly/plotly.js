@@ -24,7 +24,7 @@ var timerCache = {};
  * @param {function} callback: the function to throttle. `callback` itself
  *   should be a purely synchronous function.
  */
-exports.throttle = function(id, minInterval, callback) {
+exports.throttle = function throttle(id, minInterval, callback) {
     var cache = timerCache[id];
     var now = Date.now();
 
@@ -70,7 +70,7 @@ exports.done = function(id) {
 
     return new Promise(function(resolve) {
         var previousOnDone = cache.onDone;
-        cache.onDone = function() {
+        cache.onDone = function onDone() {
             if(previousOnDone) previousOnDone();
             resolve();
             cache.onDone = null;

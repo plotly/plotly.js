@@ -756,13 +756,13 @@ function getLayoutCamera(camera) {
 }
 
 // get camera position in plotly coords from 'orbit-camera' coords
-proto.getCamera = function() {
+proto.getCamera = function getCamera() {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
     return getLayoutCamera(this.glplot.camera);
 };
 
 // set camera position with a set of plotly coords
-proto.setCamera = function(cameraData) {
+proto.setCamera = function setCamera(cameraData) {
     this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
 
     var newOrtho = (cameraData.projection.type === 'orthographic');
@@ -790,7 +790,7 @@ proto.setCamera = function(cameraData) {
 };
 
 // save camera to user layout (i.e. gd.layout)
-proto.saveCamera = function(layout) {
+proto.saveCamera = function saveCamera(layout) {
     var fullLayout = this.fullLayout;
     var cameraData = this.getCamera();
     var cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');

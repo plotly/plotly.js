@@ -16,7 +16,7 @@ var boxPlot = require('../box/plot');
 var linePoints = require('../scatter/line_points');
 var helpers = require('./helpers');
 
-module.exports = function(gd, plotinfo, cdViolins, violinLayer) {
+module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;

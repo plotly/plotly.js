@@ -33,7 +33,7 @@ var helpers = require('./helpers');
 
 var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 
-module.exports = function(gd) {
+module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
     var clipId = 'legend' + fullLayout._uid;
 

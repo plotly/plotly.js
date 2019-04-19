@@ -153,7 +153,7 @@ lib.pushUnique = require('./push_unique');
 
 lib.cleanNumber = require('./clean_number');
 
-lib.ensureNumber = function(v) {
+lib.ensureNumber = function num(v) {
     if(!isNumeric(v)) return BADNUM;
     v = Number(v);
     if(v < -FP_SAFE || v > FP_SAFE) return BADNUM;
@@ -212,7 +212,7 @@ lib.swapAttrs = function(cont, attrList, part1, part2) {
 /**
  * SVG painter's algo worked around with reinsertion
  */
-lib.raiseToTop = function(elem) {
+lib.raiseToTop = function raiseToTop(elem) {
     elem.parentNode.appendChild(elem);
 };
 
@@ -268,7 +268,7 @@ lib.simpleMap = function(array, func, x1, x2) {
  * @param {int} base
  *     base of string representation, default 16. Should be a power of 2.
  */
-lib.randstr = function(existing, bits, base, _recursion) {
+lib.randstr = function randstr(existing, bits, base, _recursion) {
     if(!base) base = 16;
     if(bits === undefined) bits = 24;
     if(bits <= 0) return '0';
@@ -301,7 +301,7 @@ lib.randstr = function(existing, bits, base, _recursion) {
             lib.warn('randstr failed uniqueness');
             return res;
         }
-        return lib.randstr(existing, bits, base, (_recursion || 0) + 1);
+        return randstr(existing, bits, base, (_recursion || 0) + 1);
     } else return res;
 };
 

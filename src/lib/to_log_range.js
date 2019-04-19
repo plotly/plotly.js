@@ -14,7 +14,7 @@ var isNumeric = require('fast-isnumeric');
  * convert a linear value into a logged value, folding negative numbers into
  * the given range
  */
-module.exports = function(val, range) {
+module.exports = function toLogRange(val, range) {
     if(val > 0) return Math.log(val) / Math.LN10;
 
     // move a negative value reference to a log axis - just put the

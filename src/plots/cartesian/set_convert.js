@@ -59,7 +59,7 @@ function isValidCategory(v) {
  *
  * also clears the autotick constraints ._minDtick, ._forceTick0
  */
-module.exports = function(ax, fullLayout) {
+module.exports = function setConvert(ax, fullLayout) {
     fullLayout = fullLayout || {};
 
     var axId = (ax._id || 'x');

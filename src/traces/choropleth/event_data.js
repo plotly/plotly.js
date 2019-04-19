@@ -9,7 +9,7 @@
 
 'use strict';
 
-module.exports = function(out, pt) {
+module.exports = function eventData(out, pt) {
     out.location = pt.location;
     out.z = pt.z;
 

@@ -23,7 +23,7 @@ var Lib = require('../../lib');
  *  @param {object} trace
  *  @param {object || array} contOut (mutated here)
  */
-module.exports = function(calcPt, trace, contOut) {
+module.exports = function fillHoverText(calcPt, trace, contOut) {
     var fill = Array.isArray(contOut) ?
         function(v) { contOut.push(v); } :
         function(v) { contOut.text = v; };

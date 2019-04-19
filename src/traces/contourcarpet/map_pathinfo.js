@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function(pathinfo, map) {
+module.exports = function mapPathinfo(pathinfo, map) {
     var i, j, k, pi, pedgepaths, ppaths, pedgepath, ppath, path;
 
     for(i = 0; i < pathinfo.length; i++) {

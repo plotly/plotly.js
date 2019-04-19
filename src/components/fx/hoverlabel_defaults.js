@@ -10,7 +10,7 @@
 
 var Lib = require('../../lib');
 
-module.exports = function(contIn, contOut, coerce, opts) {
+module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
 
     coerce('hoverlabel.bgcolor', opts.bgcolor);

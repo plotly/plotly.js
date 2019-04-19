@@ -15,7 +15,7 @@ var layoutAttributes = require('./layout_attributes');
 
 var axesNames = constants.axesNames;
 
-module.exports = function(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
         type: 'geo',
         attributes: layoutAttributes,

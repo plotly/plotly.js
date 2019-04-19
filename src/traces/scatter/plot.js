@@ -22,7 +22,7 @@ var linePoints = require('./line_points');
 var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
-module.exports = function(gd, plotinfo, cdscatter, scatterLayer, transitionOpts, makeOnCompleteCallback) {
+module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transitionOpts, makeOnCompleteCallback) {
     var join, onComplete;
 
     // If transition config is provided, then it is only a partial replot and traces not

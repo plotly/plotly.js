@@ -10,7 +10,7 @@
 
 var cleanTicks = require('./clean_ticks');
 
-module.exports = function(containerIn, containerOut, coerce, axType) {
+module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
     var tickmode;
 
     if(containerIn.tickmode === 'array' &&

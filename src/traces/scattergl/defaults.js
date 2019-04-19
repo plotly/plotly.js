@@ -20,7 +20,7 @@ var handleLineDefaults = require('../scatter/line_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
 
-module.exports = function(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }

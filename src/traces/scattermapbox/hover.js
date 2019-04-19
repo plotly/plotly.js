@@ -15,7 +15,7 @@ var getTraceColor = require('../scatter/get_trace_color');
 var fillHoverText = require('../scatter/fill_hover_text');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function(pointData, xval, yval) {
+module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var xa = pointData.xa;

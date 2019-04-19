@@ -22,7 +22,7 @@ var findEmpties = require('./find_empties');
 var makeBoundArray = require('./make_bound_array');
 
 
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');

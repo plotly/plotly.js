@@ -14,7 +14,7 @@
  * makes this much simpler. Just loop over it and do the best we can to fill
  * the array.
  */
-module.exports = function(data) {
+module.exports = function smoothFillArray(data) {
     var i, i0, i1;
     var n = data.length;
 

@@ -16,7 +16,7 @@ var calcColorscale = require('../scatter/colorscale_calc');
  * calcdata the way Scatter.plot does, so that legends and
  * popovers know what to do with them.
  */
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     var cd = [{x: false, y: false, trace: trace, t: {}}];
 
     arraysToCalcdata(cd, trace);

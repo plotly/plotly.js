@@ -11,7 +11,7 @@
 
 var subtypes = require('./subtypes');
 
-module.exports = function(searchInfo, selectionTester) {
+module.exports = function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;

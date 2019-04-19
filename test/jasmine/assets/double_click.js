@@ -11,7 +11,7 @@ var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY
  * to specify modifier keys. See `click` function
  * for more info.
  */
-module.exports = function(x, y, clickOpts) {
+module.exports = function doubleClick(x, y, clickOpts) {
     if(typeof x === 'object') {
         var coords = getNodeCoords(x, y);
         x = coords.x;

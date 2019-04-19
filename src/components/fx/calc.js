@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 
-module.exports = function(gd) {
+module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
     var fullLayout = gd._fullLayout;
 

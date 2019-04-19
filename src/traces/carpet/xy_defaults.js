@@ -11,7 +11,7 @@
 
 var isArray1D = require('../../lib').isArray1D;
 
-module.exports = function(traceIn, traceOut, coerce) {
+module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     var x = coerce('x');
     var hasX = x && x.length;
     var y = coerce('y');

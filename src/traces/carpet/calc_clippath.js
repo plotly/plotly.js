@@ -9,7 +9,7 @@
 
 'use strict';
 
-module.exports = function(xctrl, yctrl, aax, bax) {
+module.exports = function makeClipPath(xctrl, yctrl, aax, bax) {
     var i, x, y;
     var segments = [];
 

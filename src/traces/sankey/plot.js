@@ -122,7 +122,7 @@ function castHoverOption(trace, attr) {
     return Array.isArray(val) ? false : val;
 }
 
-module.exports = function(gd, calcData) {
+module.exports = function plot(gd, calcData) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
     var size = fullLayout._size;

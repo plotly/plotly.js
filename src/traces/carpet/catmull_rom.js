@@ -19,7 +19,7 @@
  * math works out this way if you work through the bezier derivatives)
  */
 var CatmullRomExp = 0.5;
-module.exports = function(p0, p1, p2, smoothness) {
+module.exports = function makeControlPoints(p0, p1, p2, smoothness) {
     var d1x = p0[0] - p1[0];
     var d1y = p0[1] - p1[1];
     var d2x = p2[0] - p1[0];

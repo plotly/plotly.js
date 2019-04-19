@@ -7,7 +7,7 @@ function compare(baseRects, compareRects) {
             baseRects.bottom > compareRects.top;
 }
 
-module.exports = function(base, elements) {
+module.exports = function checkOverlap(base, elements) {
     var baseRects = base.getBoundingClientRect();
 
     // handle array as second argument

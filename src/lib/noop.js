@@ -11,4 +11,4 @@
 // Simple helper functions
 // none of these need any external deps
 
-module.exports = function() {};
+module.exports = function noop() {};

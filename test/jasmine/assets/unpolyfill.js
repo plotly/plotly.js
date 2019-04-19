@@ -11,7 +11,7 @@
             configurable: true,
             enumerable: true,
             writable: true,
-            value: function() {
+            value: function remove() {
                 throw Error([
                     'test/jasmine/assets/unpolyfill.js error: calling ChildNode.remove()',
                     'which is not available in IE.'
@@ -23,7 +23,7 @@
             configurable: true,
             enumerable: true,
             writable: true,
-            value: function() {
+            value: function remove() {
                 throw Error([
                     'test/jasmine/assets/unpolyfill.js error: calling ChildNode.prepend()',
                     'which is not available in IE.'

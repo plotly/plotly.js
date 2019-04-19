@@ -231,14 +231,14 @@ function sceneUpdate(gd, subplot) {
     if(!subplot._scene) {
         scene = subplot._scene = {};
 
-        scene.init = function() {
+        scene.init = function init() {
             Lib.extendFlat(scene, initOpts, resetOpts);
         };
 
         scene.init();
 
         // apply new option to all regl components (used on drag)
-        scene.update = function(opt) {
+        scene.update = function update(opt) {
             var opts = Lib.repeat(opt, scene.count);
 
             if(scene.fill2d) scene.fill2d.update(opts);
@@ -254,7 +254,7 @@ function sceneUpdate(gd, subplot) {
         };
 
         // draw traces in proper order
-        scene.draw = function() {
+        scene.draw = function draw() {
             var count = scene.count;
             var fill2d = scene.fill2d;
             var error2d = scene.error2d;
@@ -293,7 +293,7 @@ function sceneUpdate(gd, subplot) {
         };
 
         // remove scene resources
-        scene.destroy = function() {
+        scene.destroy = function destroy() {
             if(scene.fill2d && scene.fill2d.destroy) scene.fill2d.destroy();
             if(scene.scatter2d && scene.scatter2d.destroy) scene.scatter2d.destroy();
             if(scene.error2d && scene.error2d.destroy) scene.error2d.destroy();

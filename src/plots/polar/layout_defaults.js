@@ -218,7 +218,7 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
     return axOut.type;
 }
 
-module.exports = function(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
         type: constants.name,
         attributes: layoutAttributes,

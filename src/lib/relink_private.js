@@ -19,7 +19,7 @@ var isPlainObject = require('./is_plain_object');
  * if object is pass-by-ref.
  * This prevents deepCopying massive structures like a webgl context.
  */
-function relinkPrivateKeys(toContainer, fromContainer) {
+module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
     for(var k in fromContainer) {
         var fromVal = fromContainer[k];
         var toVal = toContainer[k];
@@ -53,6 +53,4 @@ function relinkPrivateKeys(toContainer, fromContainer) {
             if(!Object.keys(toVal).length) delete toContainer[k];
         }
     }
-}
-
-module.exports = relinkPrivateKeys;
+};

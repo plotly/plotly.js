@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function(x, y, z, len) {
+module.exports = function zip3(x, y, z, len) {
     len = len || x.length;
 
     var result = new Array(len);

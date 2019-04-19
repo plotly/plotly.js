@@ -23,7 +23,7 @@ var setContours = require('../contour/set_contours');
 // most is the same as heatmap calc, then adjust it
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
     if(!carpet || !carpet.visible || carpet.visible === 'legendonly') return;
 

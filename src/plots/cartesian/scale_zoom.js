@@ -11,7 +11,7 @@
 
 var FROM_BL = require('../../constants/alignment').FROM_BL;
 
-module.exports = function(ax, factor, centerFraction) {
+module.exports = function scaleZoom(ax, factor, centerFraction) {
     if(centerFraction === undefined) {
         centerFraction = FROM_BL[ax.constraintoward || 'center'];
     }

@@ -37,7 +37,7 @@ function segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
 /*
  * find the minimum distance between two line segments (1->2 and 3->4)
  */
-exports.segmentDistance = function(x1, y1, x2, y2, x3, y3, x4, y4) {
+exports.segmentDistance = function segmentDistance(x1, y1, x2, y2, x3, y3, x4, y4) {
     if(segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4)) return 0;
 
     // the two segments and their lengths squared
@@ -88,7 +88,7 @@ function perpDistance2(xab, yab, llab, xac, yac) {
 var locationCache, workingPath, workingTextWidth;
 
 // turn a path and position along it into x, y, and angle for the given text
-exports.getTextLocation = function(path, totalPathLen, positionOnPath, textWidth) {
+exports.getTextLocation = function getTextLocation(path, totalPathLen, positionOnPath, textWidth) {
     if(path !== workingPath || textWidth !== workingTextWidth) {
         locationCache = {};
         workingPath = path;
@@ -143,7 +143,7 @@ exports.clearLocationCache = function() {
  * the path). Note that if a path enters, exits, and re-enters the plot, we
  * will not capture this behavior.
  */
-exports.getVisibleSegment = function(path, bounds, buffer) {
+exports.getVisibleSegment = function getVisibleSegment(path, bounds, buffer) {
     var left = bounds.left;
     var right = bounds.right;
     var top = bounds.top;
@@ -204,7 +204,7 @@ exports.getVisibleSegment = function(path, bounds, buffer) {
  *  - {Number} iterationLimit
  * @return {SVGPoint}
  */
-exports.findPointOnPath = function(path, val, coord, opts) {
+exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     opts = opts || {};
 
     var pathLength = opts.pathLength || path.getTotalLength();

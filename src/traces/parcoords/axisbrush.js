@@ -429,7 +429,7 @@ function brushClear(brush) {
 }
 
 function axisBrushMoved(callback) {
-    return function(dimension) {
+    return function axisBrushMoved(dimension) {
         var brush = dimension.brush;
         var extent = getBrushExtent(brush);
         var newExtent = extent.slice();

@@ -11,7 +11,7 @@
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
 
-module.exports = function(gd, cdparcoords) {
+module.exports = function plot(gd, cdparcoords) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var root = fullLayout._paperdiv;
@@ -97,7 +97,7 @@ module.exports = function(gd, cdparcoords) {
         }
 
         function sorter(orig) {
-            return function(d1, d2) {
+            return function sorter(d1, d2) {
                 var i1 = newIdx(visibleIndices, orig, d1);
                 var i2 = newIdx(visibleIndices, orig, d2);
                 return i1 - i2;

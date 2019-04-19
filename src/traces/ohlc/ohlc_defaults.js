@@ -11,7 +11,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 
-module.exports = function(traceIn, traceOut, coerce, layout) {
+module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
     var x = coerce('x');
     var open = coerce('open');
     var high = coerce('high');

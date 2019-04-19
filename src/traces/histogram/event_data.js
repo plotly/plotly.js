@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function(out, pt, trace, cd, pointNumber) {
+module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     // standard cartesian event data
     out.x = 'xVal' in pt ? pt.xVal : pt.x;
     out.y = 'yVal' in pt ? pt.yVal : pt.y;

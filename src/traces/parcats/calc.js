@@ -25,7 +25,7 @@ var Lib = require('../../lib');
  * @param {Object} trace
  * @return {Array.<ParcatsModel>}
  */
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     var visibleDims = Lib.filterVisible(trace.dimensions);
 
     if(visibleDims.length === 0) return [];

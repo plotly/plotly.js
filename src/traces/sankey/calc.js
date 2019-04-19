@@ -168,7 +168,7 @@ function circularityPresent(nodeLen, sources, targets) {
     });
 }
 
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     var result = convertToD3Sankey(trace);
 
     return wrap({

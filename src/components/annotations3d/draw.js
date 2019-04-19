@@ -12,7 +12,7 @@ var drawRaw = require('../annotations/draw').drawRaw;
 var project = require('../../plots/gl3d/project');
 var axLetters = ['x', 'y', 'z'];
 
-module.exports = function(scene) {
+module.exports = function draw(scene) {
     var fullSceneLayout = scene.fullSceneLayout;
     var dataScale = scene.dataScale;
     var anns = fullSceneLayout.annotations;

@@ -138,7 +138,7 @@ function sceneUpdate(gd, trace) {
     if(!scene) {
         scene = splomScenes[uid] = Lib.extendFlat({}, reset, first);
 
-        scene.draw = function() {
+        scene.draw = function draw() {
             if(scene.matrix && scene.matrix.draw) {
                 if(scene.selectBatch) {
                     scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
@@ -151,7 +151,7 @@ function sceneUpdate(gd, trace) {
         };
 
         // remove scene resources
-        scene.destroy = function() {
+        scene.destroy = function destroy() {
             if(scene.matrix && scene.matrix.destroy) {
                 scene.matrix.destroy();
             }

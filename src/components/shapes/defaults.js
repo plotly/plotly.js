@@ -17,7 +17,7 @@ var attributes = require('./attributes');
 var helpers = require('./helpers');
 
 
-module.exports = function(layoutIn, layoutOut) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, {
         name: 'shapes',
         handleItemDefaults: handleShapeDefaults

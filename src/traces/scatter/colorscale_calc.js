@@ -13,7 +13,7 @@ var calcColorscale = require('../../components/colorscale/calc');
 
 var subTypes = require('./subtypes');
 
-module.exports = function(gd, trace) {
+module.exports = function calcMarkerColorscale(gd, trace) {
     if(subTypes.hasLines(trace) && hasColorscale(trace, 'line')) {
         calcColorscale(gd, trace, {
             vals: trace.line.color,

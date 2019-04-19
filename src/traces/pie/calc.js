@@ -112,7 +112,7 @@ function calc(gd, trace) {
 }
 
 function makePullColorFn(colorMap) {
-    return function(color, id) {
+    return function pullColor(color, id) {
         if(!color) return false;
 
         color = tinycolor(color);

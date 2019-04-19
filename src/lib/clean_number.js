@@ -20,7 +20,7 @@ var JUNK = /^['"%,$#\s']+|[, ]|['"%,$#\s']+$/g;
  * cleanNumber: remove common leading and trailing cruft
  * Always returns either a number or BADNUM.
  */
-module.exports = function(v) {
+module.exports = function cleanNumber(v) {
     if(typeof v === 'string') {
         v = v.replace(JUNK, '');
     }

@@ -18,7 +18,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
 
-module.exports = function(gd, plotinfo, cdcarpet, carpetLayer) {
+module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;

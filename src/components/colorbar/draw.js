@@ -35,7 +35,7 @@ var axisLayoutAttrs = require('../../plots/cartesian/layout_attributes');
 var attributes = require('./attributes');
 var cn = require('./constants').cn;
 
-module.exports = function(gd, id) {
+module.exports = function draw(gd, id) {
     // opts: options object, containing everything from attributes
     // plus a few others that are the equivalent of the colorbar "data"
     var opts = {};

@@ -24,7 +24,7 @@ var Lib = require('../../../src/lib');
  * @param {array(2)} opts.slop - shift [x, y] between mousedown and mouseup.
  *    Just for testing purposes, to simulate a sloppy click
  */
-module.exports = function(x, y, optsIn) {
+module.exports = function click(x, y, optsIn) {
     var opts = Lib.extendFlat({}, optsIn || {});
     var button = opts.button || 0;
     if(button && button !== 2) throw new Error('unsupported button: ' + button);

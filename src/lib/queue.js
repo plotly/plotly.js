@@ -123,7 +123,7 @@ queue.stopSequence = function(gd) {
  *
  * @param gd
  */
-queue.undo = function(gd) {
+queue.undo = function undo(gd) {
     var queueObj, i;
 
     if(gd.framework && gd.framework.isPolar) {
@@ -156,7 +156,7 @@ queue.undo = function(gd) {
  *
  * @param gd
  */
-queue.redo = function(gd) {
+queue.redo = function redo(gd) {
     var queueObj, i;
 
     if(gd.framework && gd.framework.isPolar) {

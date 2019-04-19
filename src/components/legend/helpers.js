@@ -9,14 +9,14 @@
 
 'use strict';
 
-exports.isGrouped = function(legendLayout) {
+exports.isGrouped = function isGrouped(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('grouped') !== -1;
 };
 
-exports.isVertical = function(legendLayout) {
+exports.isVertical = function isVertical(legendLayout) {
     return legendLayout.orientation !== 'h';
 };
 
-exports.isReversed = function(legendLayout) {
+exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };

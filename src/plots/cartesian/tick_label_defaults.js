@@ -13,7 +13,7 @@ var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 var handleArrayContainerDefaults = require('../array_container_defaults');
 
-module.exports = function(containerIn, containerOut, coerce, axType, options) {
+module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
     var showAttrDflt = getShowAttrDflt(containerIn);
 
     var tickPrefix = coerce('tickprefix');

@@ -188,7 +188,7 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
     thisGroup[scaleanchor] = 1;
 }
 
-exports.enforce = function(gd) {
+exports.enforce = function enforceAxisConstraints(gd) {
     var fullLayout = gd._fullLayout;
     var constraintGroups = fullLayout._axisConstraintGroups || [];
 
@@ -346,7 +346,7 @@ exports.enforce = function(gd) {
 
 // For use before autoranging, check if this axis was previously constrained
 // by domain but no longer is
-exports.clean = function(gd, ax) {
+exports.clean = function cleanConstraints(gd, ax) {
     if(ax._inputDomain) {
         var isConstrained = false;
         var axId = ax._id;

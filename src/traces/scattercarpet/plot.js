@@ -13,7 +13,7 @@ var scatterPlot = require('../scatter/plot');
 var Axes = require('../../plots/cartesian/axes');
 var Drawing = require('../../components/drawing');
 
-module.exports = function(gd, plotinfoproxy, data, layer) {
+module.exports = function plot(gd, plotinfoproxy, data, layer) {
     var i, trace, node;
 
     var carpet = data[0][0].carpet;

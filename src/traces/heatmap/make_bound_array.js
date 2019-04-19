@@ -11,7 +11,7 @@
 var Registry = require('../../registry');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
-module.exports = function(trace, arrayIn, v0In, dvIn, numbricks, ax) {
+module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [];
     var isContour = Registry.traceIs(trace, 'contour');
     var isHist = Registry.traceIs(trace, 'histogram');

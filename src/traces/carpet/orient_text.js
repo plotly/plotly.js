@@ -9,7 +9,7 @@
 
 'use strict';
 
-module.exports = function(trace, xaxis, yaxis, xy, dxy, refDxy) {
+module.exports = function orientText(trace, xaxis, yaxis, xy, dxy, refDxy) {
     var dx = dxy[0] * trace.dpdx(xaxis);
     var dy = dxy[1] * trace.dpdy(yaxis);
     var flip = 1;

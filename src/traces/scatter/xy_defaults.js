@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 
-module.exports = function(traceIn, traceOut, layout, coerce) {
+module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     var x = coerce('x');
     var y = coerce('y');
     var len;

@@ -15,7 +15,7 @@ var axisIds = require('../../plots/cartesian/axis_ids');
 var attributes = require('./attributes');
 var oppAxisAttrs = require('./oppaxis_attributes');
 
-module.exports = function(layoutIn, layoutOut, axName) {
+module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     var axIn = layoutIn[axName];
     var axOut = layoutOut[axName];
 

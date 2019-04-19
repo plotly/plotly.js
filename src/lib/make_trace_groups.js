@@ -20,7 +20,7 @@
  * @param {string} cls: the class attribute to give each trace group
  *     so you can give multiple classes separated by spaces
  */
-module.exports = function(traceLayer, cdModule, cls) {
+module.exports = function makeTraceGroups(traceLayer, cdModule, cls) {
     var traces = traceLayer.selectAll('g.' + cls.replace(/\s/g, '.'))
         .data(cdModule, function(cd) { return cd[0].trace.uid; });
 

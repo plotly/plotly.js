@@ -11,7 +11,7 @@
 var Registry = require('../../registry');
 var hover = require('./hover').hover;
 
-module.exports = function(gd, evt, subplot) {
+module.exports = function click(gd, evt, subplot) {
     var annotationsDone = Registry.getComponentMethod('annotations', 'onClick')(gd, gd._hoverdata);
 
     // fallback to fail-safe in case the plot type's hover method doesn't pass the subplot.

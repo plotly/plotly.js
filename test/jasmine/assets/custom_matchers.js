@@ -204,7 +204,7 @@ function assert2DArray(actual, expected, testFn) {
 }
 
 function makeIsCloseFn(precision) {
-    return function(actual, expected) {
+    return function isClose(actual, expected) {
         if(isNumeric(actual) && isNumeric(expected)) {
             return Math.abs(actual - expected) < precision;
         }
@@ -216,7 +216,7 @@ function makeIsCloseFn(precision) {
 }
 
 function makeIsWithinFn(tolerance) {
-    return function(actual, expected) {
+    return function isWithin(actual, expected) {
         if(isNumeric(actual) && isNumeric(expected)) {
             return Math.abs(actual - expected) < tolerance;
         }

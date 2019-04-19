@@ -1,4 +1,4 @@
-module.exports = function(selector, index) {
+module.exports = function getClientPosition(selector, index) {
     index = index || 0;
 
     var selection = document.querySelectorAll(selector);

@@ -24,7 +24,7 @@ var createJDerivativeEvaluator = require('./create_j_derivative_evaluator');
  *   c: cartesian x-y coordinates
  *   p: screen-space pixel coordinates
  */
-module.exports = function(trace) {
+module.exports = function setConvert(trace) {
     var a = trace._a;
     var b = trace._b;
     var na = a.length;

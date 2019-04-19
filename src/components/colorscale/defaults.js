@@ -23,7 +23,7 @@ function npMaybe(cont, prefix) {
         cont;
 }
 
-module.exports = function(traceIn, traceOut, layout, coerce, opts) {
+module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, opts) {
     var prefix = opts.prefix;
     var cLetter = opts.cLetter;
     var containerIn = npMaybe(traceIn, prefix);

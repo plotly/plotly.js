@@ -20,7 +20,7 @@ var normFunctions = require('./norm_functions');
 var doAvg = require('./average');
 var getBinSpanLabelRound = require('./bin_label_vals');
 
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     // ignore as much processing as possible (and including in autorange) if not visible
     if(trace.visible !== true) return;
 

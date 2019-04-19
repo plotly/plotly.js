@@ -10,7 +10,7 @@
 
 var Lib = require('../../lib');
 
-module.exports = function(gd, trace, opts) {
+module.exports = function calc(gd, trace, opts) {
     var fullLayout = gd._fullLayout;
     var vals = opts.vals;
     var containerStr = opts.containerStr;

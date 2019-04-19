@@ -26,7 +26,7 @@ var createRegl = require('regl');
  *
  * @return {boolean} true if all createRegl calls succeeded, false otherwise
  */
-module.exports = function(gd, extensions) {
+module.exports = function prepareRegl(gd, extensions) {
     var fullLayout = gd._fullLayout;
     var success = true;
 

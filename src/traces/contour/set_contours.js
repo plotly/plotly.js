@@ -13,7 +13,7 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 
-module.exports = function(trace) {
+module.exports = function setContours(trace) {
     var contours = trace.contours;
 
     // check if we need to auto-choose contour levels

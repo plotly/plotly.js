@@ -25,7 +25,7 @@ var CST_MARKER_LINE_WIDTH = 2;
 var MAX_LINE_WIDTH = 10;
 var MAX_MARKER_LINE_WIDTH = 5;
 
-module.exports = function(s, gd) {
+module.exports = function style(s, gd) {
     var fullLayout = gd._fullLayout;
     var legend = fullLayout.legend;
     var constantItemSizing = legend.itemsizing === 'constant';

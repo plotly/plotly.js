@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var constraintMapping = require('./constraint_mapping');
 var endPlus = require('./end_plus');
 
-module.exports = function(contours, plotinfo, cd0) {
+module.exports = function emptyPathinfo(contours, plotinfo, cd0) {
     var contoursFinal = (contours.type === 'constraint') ?
         constraintMapping[contours._operation](contours.value) :
         contours;

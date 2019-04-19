@@ -14,7 +14,7 @@ var Color = require('../../components/color');
 var boxDefaults = require('../box/defaults');
 var attributes = require('./attributes');
 
-module.exports = function(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }

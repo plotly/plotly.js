@@ -403,7 +403,7 @@ function emitAfterPlot(gd) {
     }
 }
 
-exports.setPlotConfig = function(obj) {
+exports.setPlotConfig = function setPlotConfig(obj) {
     return Lib.extendFlat(dfltConfig, obj);
 };
 
@@ -2433,7 +2433,7 @@ exports.update = update;
  * Plotly.react data updates, dependent on uirevision attributes
  */
 function guiEdit(func) {
-    return function(gd) {
+    return function wrappedEdit(gd) {
         gd._fullLayout._guiEditing = true;
         var p = func.apply(null, arguments);
         gd._fullLayout._guiEditing = false;
@@ -3670,7 +3670,7 @@ exports.deleteFrames = function(gd, frameList) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-exports.purge = function(gd) {
+exports.purge = function purge(gd) {
     gd = Lib.getGraphDiv(gd);
 
     var fullLayout = gd._fullLayout || {};

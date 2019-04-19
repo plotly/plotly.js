@@ -72,7 +72,7 @@ function Polar(gd, id) {
 
 var proto = Polar.prototype;
 
-module.exports = function(gd, id) {
+module.exports = function createPolar(gd, id) {
     return new Polar(gd, id);
 };
 

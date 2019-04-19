@@ -11,7 +11,7 @@
 
 var scatterPlot = require('../scatter/plot');
 
-module.exports = function(gd, ternary, moduleCalcData) {
+module.exports = function plot(gd, ternary, moduleCalcData) {
     var plotContainer = ternary.plotContainer;
 
     // remove all nodes inside the scatter layer

@@ -13,7 +13,7 @@ var Color = require('../../components/color');
 var subtypes = require('./subtypes');
 
 
-module.exports = function(trace, di) {
+module.exports = function getTraceColor(trace, di) {
     var lc, tc;
 
     // TODO: text modes

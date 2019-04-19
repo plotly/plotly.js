@@ -17,7 +17,7 @@ var attributes = require('./attributes');
 var constants = require('./constants');
 
 
-module.exports = function(containerIn, containerOut, layout, counterAxes, calendar) {
+module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes, calendar) {
     var selectorIn = containerIn.rangeselector || {};
     var selectorOut = Template.newContainer(containerOut, 'rangeselector');
 

@@ -13,7 +13,7 @@ var DEFAULT_SCALE = 1;
  *      scale (optional): scale of generated image
  *      url (optional): URL of image server
  */
-module.exports = function(specs) {
+module.exports = function getRequestOpts(specs) {
     var pathToMock = path.join(constants.pathToTestImageMocks, specs.mockName) + '.json';
     var figure = require(pathToMock);
 

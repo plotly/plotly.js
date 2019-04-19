@@ -25,7 +25,7 @@
  *        - error[0] : error magnitude in the negative direction
  *        - error[1] : " " " " positive "
  */
-module.exports = function(opts) {
+module.exports = function makeComputeError(opts) {
     var type = opts.type;
     var symmetric = opts.symmetric;
 
@@ -33,13 +33,13 @@ module.exports = function(opts) {
         var array = opts.array || [];
 
         if(symmetric) {
-            return function(dataPt, index) {
+            return function computeError(dataPt, index) {
                 var val = +(array[index]);
                 return [val, val];
             };
         } else {
             var arrayminus = opts.arrayminus || [];
-            return function(dataPt, index) {
+            return function computeError(dataPt, index) {
                 var val = +array[index];
                 var valMinus = +arrayminus[index];
                 // in case one is present and the other is missing, fill in 0
@@ -56,12 +56,12 @@ module.exports = function(opts) {
         var computeErrorValueMinus = makeComputeErrorValue(type, opts.valueminus);
 
         if(symmetric || opts.valueminus === undefined) {
-            return function(dataPt) {
+            return function computeError(dataPt) {
                 var val = computeErrorValue(dataPt);
                 return [val, val];
             };
         } else {
-            return function(dataPt) {
+            return function computeError(dataPt) {
                 return [
                     computeErrorValueMinus(dataPt),
                     computeErrorValue(dataPt)

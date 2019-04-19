@@ -17,7 +17,7 @@ var handleAnnotationCommonDefaults = require('./common_defaults');
 var attributes = require('./attributes');
 
 
-module.exports = function(layoutIn, layoutOut) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, {
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults

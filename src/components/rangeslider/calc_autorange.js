@@ -12,7 +12,7 @@ var listAxes = require('../../plots/cartesian/axis_ids').list;
 var getAutoRange = require('../../plots/cartesian/autorange').getAutoRange;
 var constants = require('./constants');
 
-module.exports = function(gd) {
+module.exports = function calcAutorange(gd) {
     var axes = listAxes(gd, 'x', true);
 
     // Compute new slider range using axis autorange if necessary.

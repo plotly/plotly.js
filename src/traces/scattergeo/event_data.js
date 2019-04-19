@@ -10,7 +10,7 @@
 'use strict';
 
 
-module.exports = function(out, pt) {
+module.exports = function eventData(out, pt) {
     out.lon = pt.lon;
     out.lat = pt.lat;
     out.location = pt.loc ? pt.loc : null;

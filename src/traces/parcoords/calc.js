@@ -13,7 +13,7 @@ var calcColorscale = require('../../components/colorscale/calc');
 var Lib = require('../../lib');
 var wrap = require('../../lib/gup').wrap;
 
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     for(var i = 0; i < trace.dimensions.length; i++) {
         trace.dimensions[i].values = convertTypedArray(trace.dimensions[i].values);
     }

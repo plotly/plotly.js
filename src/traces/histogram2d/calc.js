@@ -18,7 +18,7 @@ var doAvg = require('../histogram/average');
 var getBinSpanLabelRound = require('../histogram/bin_label_vals');
 
 
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');

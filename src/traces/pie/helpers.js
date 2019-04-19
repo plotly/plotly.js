@@ -10,7 +10,7 @@
 
 var Lib = require('../../lib');
 
-exports.formatPiePercent = function(v, separators) {
+exports.formatPiePercent = function formatPiePercent(v, separators) {
     var vRounded = (v * 100).toPrecision(3);
     if(vRounded.lastIndexOf('.') !== -1) {
         vRounded = vRounded.replace(/[.]?0+$/, '');
@@ -18,7 +18,7 @@ exports.formatPiePercent = function(v, separators) {
     return Lib.numSeparate(vRounded, separators) + '%';
 };
 
-exports.formatPieValue = function(v, separators) {
+exports.formatPieValue = function formatPieValue(v, separators) {
     var vRounded = v.toPrecision(10);
     if(vRounded.lastIndexOf('.') !== -1) {
         vRounded = vRounded.replace(/[.]?0+$/, '');
@@ -26,7 +26,7 @@ exports.formatPieValue = function(v, separators) {
     return Lib.numSeparate(vRounded, separators);
 };
 
-exports.getFirstFilled = function(array, indices) {
+exports.getFirstFilled = function getFirstFilled(array, indices) {
     if(!Array.isArray(array)) return;
     for(var i = 0; i < indices.length; i++) {
         var v = array[indices[i]];
@@ -34,7 +34,7 @@ exports.getFirstFilled = function(array, indices) {
     }
 };
 
-exports.castOption = function(item, indices) {
+exports.castOption = function castOption(item, indices) {
     if(Array.isArray(item)) return exports.getFirstFilled(item, indices);
     else if(item) return item;
 };

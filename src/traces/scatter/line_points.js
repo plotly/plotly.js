@@ -20,7 +20,7 @@ var constrain = Lib.constrain;
 var constants = require('./constants');
 
 
-module.exports = function(d, opts) {
+module.exports = function linePoints(d, opts) {
     var xa = opts.xaxis;
     var ya = opts.yaxis;
     var xLog = xa.type === 'log';

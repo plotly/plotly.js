@@ -13,7 +13,7 @@ var Registry = require('../../registry');
 var helpers = require('./helpers');
 
 
-module.exports = function(calcdata, opts) {
+module.exports = function getLegendData(calcdata, opts) {
     var lgroupToTraces = {};
     var lgroups = [];
     var hasOneNonBlankGroup = false;

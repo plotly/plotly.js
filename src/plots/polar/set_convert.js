@@ -46,7 +46,7 @@ var rad2deg = Lib.rad2deg;
  *
  * Then, 'g'eometric data is ready to be converted to (x,y).
  */
-module.exports = function(ax, polarLayout, fullLayout) {
+module.exports = function setConvert(ax, polarLayout, fullLayout) {
     setConvertCartesian(ax, fullLayout);
 
     switch(ax._id) {

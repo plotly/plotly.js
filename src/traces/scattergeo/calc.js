@@ -18,7 +18,7 @@ var calcSelection = require('../scatter/calc_selection');
 
 var _ = require('../../lib')._;
 
-module.exports = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     var hasLocationData = Array.isArray(trace.locations);
     var len = hasLocationData ? trace.locations.length : trace._length;
     var calcTrace = new Array(len);

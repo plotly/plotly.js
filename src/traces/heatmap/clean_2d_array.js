@@ -10,7 +10,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-module.exports = function(zOld, transpose) {
+module.exports = function clean2dArray(zOld, transpose) {
     var rowlen, collen, getCollen, old2new, i, j;
 
     function cleanZvalue(v) {

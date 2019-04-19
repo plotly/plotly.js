@@ -14,7 +14,7 @@ var DEFAULT_FORMAT = 'png';
  *      test
  *      diff
  */
-module.exports = function(mockName, format) {
+module.exports = function getImagePaths(mockName, format) {
     format = format || DEFAULT_FORMAT;
 
     return {

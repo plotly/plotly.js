@@ -20,7 +20,7 @@ var NO_CURSOR = '!!';
  * by moving the name of the original cursor to the data-savedcursor attr.
  * omit cursor to revert to the previously set value.
  */
-module.exports = function(el3, csr) {
+module.exports = function overrideCursor(el3, csr) {
     var savedCursor = el3.attr(STASHATTR);
     if(csr) {
         if(!savedCursor) {

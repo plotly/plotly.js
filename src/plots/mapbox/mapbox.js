@@ -48,7 +48,7 @@ function Mapbox(opts) {
 
 var proto = Mapbox.prototype;
 
-module.exports = function(opts) {
+module.exports = function createMapbox(opts) {
     return new Mapbox(opts);
 };
 
