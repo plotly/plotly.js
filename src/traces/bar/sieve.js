@@ -84,7 +84,7 @@ Sieve.prototype.put = function put(position, value) {
  *                           (required if this.sepNegVal is true)
  * @returns {number} Current bin value
  */
-Sieve.prototype.get = function put(position, value) {
+Sieve.prototype.get = function get(position, value) {
     var label = this.getLabel(position, value);
     return this.bins[label] || 0;
 };
