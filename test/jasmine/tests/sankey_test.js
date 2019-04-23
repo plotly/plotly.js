@@ -610,6 +610,18 @@ describe('sankey tests', function() {
             .then(done);
         });
 
+        it('works as a subplot in the presence of other trace types', function(done) {
+            var mockCopy = Lib.extendDeep({}, require('@mocks/sankey_subplots_circular'));
+
+            mockCopy.data[0] = {
+                y: [5, 1, 4, 3, 2]
+            };
+
+            Plotly.plot(gd, mockCopy)
+            .catch(failTest)
+            .then(done);
+        });
+
         ['0', '1'].forEach(function(finalUIRevision) {
             it('on Plotly.react, it preserves the groups depending on layout.uirevision', function(done) {
                 var uirevisions = ['0', finalUIRevision];
