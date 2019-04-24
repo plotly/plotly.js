@@ -39,7 +39,7 @@ exports.baseLayoutAttrOverrides = overrideAll({
 
 exports.supplyLayoutDefaults = require('./layout/defaults');
 
-exports.plot = function plotGl3d(gd) {
+exports.plot = function plot(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var sceneIds = fullLayout._subplots[GL3D];

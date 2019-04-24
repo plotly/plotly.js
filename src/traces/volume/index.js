@@ -6,31 +6,28 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Volume = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    calc: require('../isosurface/calc'),
+    colorbar: {
+        min: 'cmin',
+        max: 'cmax'
+    },
+    plot: require('./convert'),
 
-Volume.attributes = require('./attributes');
-Volume.supplyDefaults = require('./defaults');
-Volume.calc = require('../isosurface/calc');
-Volume.colorbar = {
-    min: 'cmin',
-    max: 'cmax'
+    moduleType: 'trace',
+    name: 'volume',
+    basePlotModule: require('../../plots/gl3d'),
+    categories: ['gl3d'],
+    meta: {
+        description: [
+            'Draws volume trace between iso-min and iso-max values with coordinates given by',
+            'four 1-dimensional arrays containing the `value`, `x`, `y` and `z` of every vertex',
+            'of a uniform or non-uniform 3-D grid. Horizontal or vertical slices, caps as well as',
+            'spaceframe between iso-min and iso-max values could also be drawn using this trace.'
+        ].join(' ')
+    }
 };
-Volume.plot = require('./convert');
-
-Volume.moduleType = 'trace';
-Volume.name = 'volume',
-Volume.basePlotModule = require('../../plots/gl3d');
-Volume.categories = ['gl3d'];
-Volume.meta = {
-    description: [
-        'Draws volume trace between iso-min and iso-max values with coordinates given by',
-        'four 1-dimensional arrays containing the `value`, `x`, `y` and `z` of every vertex',
-        'of a uniform or non-uniform 3-D grid. Horizontal or vertical slices, caps as well as',
-        'spaceframe between iso-min and iso-max values could also be drawn using this trace.'
-    ].join(' ')
-};
-
-module.exports = Volume;

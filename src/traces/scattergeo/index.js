@@ -6,33 +6,30 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var ScatterGeo = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    colorbar: require('../scatter/marker_colorbar'),
+    calc: require('./calc'),
+    plot: require('./plot'),
+    style: require('./style'),
+    styleOnSelect: require('../scatter/style').styleOnSelect,
+    hoverPoints: require('./hover'),
+    eventData: require('./event_data'),
+    selectPoints: require('./select'),
 
-ScatterGeo.attributes = require('./attributes');
-ScatterGeo.supplyDefaults = require('./defaults');
-ScatterGeo.colorbar = require('../scatter/marker_colorbar');
-ScatterGeo.calc = require('./calc');
-ScatterGeo.plot = require('./plot');
-ScatterGeo.style = require('./style');
-ScatterGeo.styleOnSelect = require('../scatter/style').styleOnSelect;
-ScatterGeo.hoverPoints = require('./hover');
-ScatterGeo.eventData = require('./event_data');
-ScatterGeo.selectPoints = require('./select');
-
-ScatterGeo.moduleType = 'trace';
-ScatterGeo.name = 'scattergeo';
-ScatterGeo.basePlotModule = require('../../plots/geo');
-ScatterGeo.categories = ['geo', 'symbols', 'showLegend', 'scatter-like'];
-ScatterGeo.meta = {
-    hrName: 'scatter_geo',
-    description: [
-        'The data visualized as scatter point or lines on a geographic map',
-        'is provided either by longitude/latitude pairs in `lon` and `lat`',
-        'respectively or by geographic location IDs or names in `locations`.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'scattergeo',
+    basePlotModule: require('../../plots/geo'),
+    categories: ['geo', 'symbols', 'showLegend', 'scatter-like'],
+    meta: {
+        hrName: 'scatter_geo',
+        description: [
+            'The data visualized as scatter point or lines on a geographic map',
+            'is provided either by longitude/latitude pairs in `lon` and `lat`',
+            'respectively or by geographic location IDs or names in `locations`.'
+        ].join(' ')
+    }
 };
-
-module.exports = ScatterGeo;

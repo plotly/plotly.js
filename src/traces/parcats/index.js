@@ -8,26 +8,24 @@
 
 'use strict';
 
-var Parcats = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    calc: require('./calc'),
+    plot: require('./plot'),
+    colorbar: {
+        container: 'line',
+        min: 'cmin',
+        max: 'cmax'
+    },
 
-Parcats.attributes = require('./attributes');
-Parcats.supplyDefaults = require('./defaults');
-Parcats.calc = require('./calc');
-Parcats.plot = require('./plot');
-Parcats.colorbar = {
-    container: 'line',
-    min: 'cmin',
-    max: 'cmax'
+    moduleType: 'trace',
+    name: 'parcats',
+    basePlotModule: require('./base_plot'),
+    categories: ['noOpacity'],
+    meta: {
+        description: [
+            'Parallel categories diagram for multidimensional categorical data.'
+        ].join(' ')
+    }
 };
-
-Parcats.moduleType = 'trace';
-Parcats.name = 'parcats';
-Parcats.basePlotModule = require('./base_plot');
-Parcats.categories = ['noOpacity'];
-Parcats.meta = {
-    description: [
-        'Parallel categories diagram for multidimensional categorical data.'
-    ].join(' ')
-};
-
-module.exports = Parcats;

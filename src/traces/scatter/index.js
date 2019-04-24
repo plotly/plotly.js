@@ -6,46 +6,44 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Scatter = {};
-
 var subtypes = require('./subtypes');
-Scatter.hasLines = subtypes.hasLines;
-Scatter.hasMarkers = subtypes.hasMarkers;
-Scatter.hasText = subtypes.hasText;
-Scatter.isBubble = subtypes.isBubble;
 
-Scatter.attributes = require('./attributes');
-Scatter.supplyDefaults = require('./defaults');
-Scatter.crossTraceDefaults = require('./cross_trace_defaults');
-Scatter.calc = require('./calc').calc;
-Scatter.crossTraceCalc = require('./cross_trace_calc');
-Scatter.arraysToCalcdata = require('./arrays_to_calcdata');
-Scatter.plot = require('./plot');
-Scatter.colorbar = require('./marker_colorbar');
-Scatter.style = require('./style').style;
-Scatter.styleOnSelect = require('./style').styleOnSelect;
-Scatter.hoverPoints = require('./hover');
-Scatter.selectPoints = require('./select');
-Scatter.animatable = true;
+module.exports = {
+    hasLines: subtypes.hasLines,
+    hasMarkers: subtypes.hasMarkers,
+    hasText: subtypes.hasText,
+    isBubble: subtypes.isBubble,
 
-Scatter.moduleType = 'trace';
-Scatter.name = 'scatter';
-Scatter.basePlotModule = require('../../plots/cartesian');
-Scatter.categories = [
-    'cartesian', 'svg', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like',
-    'zoomScale'
-];
-Scatter.meta = {
-    description: [
-        'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
-        'The data visualized as scatter point or lines is set in `x` and `y`.',
-        'Text (appearing either on the chart or on hover only) is via `text`.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'to numerical arrays.'
-    ].join(' ')
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    crossTraceDefaults: require('./cross_trace_defaults'),
+    calc: require('./calc').calc,
+    crossTraceCalc: require('./cross_trace_calc'),
+    arraysToCalcdata: require('./arrays_to_calcdata'),
+    plot: require('./plot'),
+    colorbar: require('./marker_colorbar'),
+    style: require('./style').style,
+    styleOnSelect: require('./style').styleOnSelect,
+    hoverPoints: require('./hover'),
+    selectPoints: require('./select'),
+    animatable: true,
+
+    moduleType: 'trace',
+    name: 'scatter',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: [
+        'cartesian', 'svg', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like',
+        'zoomScale'
+    ],
+    meta: {
+        description: [
+            'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
+            'The data visualized as scatter point or lines is set in `x` and `y`.',
+            'Text (appearing either on the chart or on hover only) is via `text`.',
+            'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+            'to numerical arrays.'
+        ].join(' ')
+    }
 };
-
-module.exports = Scatter;

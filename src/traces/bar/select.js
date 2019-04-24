@@ -12,6 +12,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
+    var trace = cd[0].trace;
     var selection = [];
     var i;
 
@@ -21,10 +22,15 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
             cd[i].selected = 0;
         }
     } else {
+        var getCentroid = trace.orientation === 'h' ?
+            function(d) { return [xa.c2p(d.s1, true), (ya.c2p(d.p0, true) + ya.c2p(d.p1, true)) / 2]; } :
+            function(d) { return [(xa.c2p(d.p0, true) + xa.c2p(d.p1, true)) / 2, ya.c2p(d.s1, true)]; };
+
         for(i = 0; i < cd.length; i++) {
             var di = cd[i];
+            var ct = 'ct' in di ? di.ct : getCentroid(di);
 
-            if(selectionTester.contains(di.ct, false, i, searchInfo)) {
+            if(selectionTester.contains(ct, false, i, searchInfo)) {
                 selection.push({
                     pointNumber: i,
                     x: xa.c2d(di.x),

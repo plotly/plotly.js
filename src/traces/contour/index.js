@@ -6,34 +6,31 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Contour = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    calc: require('./calc'),
+    plot: require('./plot').plot,
+    style: require('./style'),
+    colorbar: require('./colorbar'),
+    hoverPoints: require('./hover'),
 
-Contour.attributes = require('./attributes');
-Contour.supplyDefaults = require('./defaults');
-Contour.calc = require('./calc');
-Contour.plot = require('./plot').plot;
-Contour.style = require('./style');
-Contour.colorbar = require('./colorbar');
-Contour.hoverPoints = require('./hover');
+    moduleType: 'trace',
+    name: 'contour',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap', 'contour', 'showLegend'],
+    meta: {
+        description: [
+            'The data from which contour lines are computed is set in `z`.',
+            'Data in `z` must be a {2D array} of numbers.',
 
-Contour.moduleType = 'trace';
-Contour.name = 'contour';
-Contour.basePlotModule = require('../../plots/cartesian');
-Contour.categories = ['cartesian', 'svg', '2dMap', 'contour', 'showLegend'];
-Contour.meta = {
-    description: [
-        'The data from which contour lines are computed is set in `z`.',
-        'Data in `z` must be a {2D array} of numbers.',
-
-        'Say that `z` has N rows and M columns, then by default,',
-        'these N rows correspond to N y coordinates',
-        '(set in `y` or auto-generated) and the M columns',
-        'correspond to M x coordinates (set in `x` or auto-generated).',
-        'By setting `transpose` to *true*, the above behavior is flipped.'
-    ].join(' ')
+            'Say that `z` has N rows and M columns, then by default,',
+            'these N rows correspond to N y coordinates',
+            '(set in `y` or auto-generated) and the M columns',
+            'correspond to M x coordinates (set in `x` or auto-generated).',
+            'By setting `transpose` to *true*, the above behavior is flipped.'
+        ].join(' ')
+    }
 };
-
-module.exports = Contour;
