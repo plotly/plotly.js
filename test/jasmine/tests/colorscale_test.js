@@ -632,6 +632,27 @@ describe('Test colorscale:', function() {
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale).toEqual(colorscale);
         });
+
+        it('should compute min/max across trace linked to same color axis', function() {
+            gd = _supply([
+                {type: 'heatmap', z: [[1, 3, 4], [2, 3, 1]], coloraxis: 'coloraxis'},
+                {y: [1, 3, 1], marker: {color: [3, 4, -2], coloraxis: 'coloraxis'}},
+            ]);
+
+            Plots.doCalcdata(gd);
+
+            var fullData = gd._fullData;
+            expect(fullData[0].zmin).toBe(undefined);
+            expect(fullData[0].zmax).toBe(undefined);
+            expect(fullData[1].marker.cmin).toBe(undefined);
+            expect(fullData[1].marker.cmax).toBe(undefined);
+
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.coloraxis.cmin).toBe(-2);
+            expect(fullLayout.coloraxis._cmin).toBe(-2);
+            expect(fullLayout.coloraxis.cmax).toBe(4);
+            expect(fullLayout.coloraxis._cmax).toBe(4);
+        });
     });
 
     describe('extractScale + makeColorScaleFunc', function() {
@@ -685,6 +706,29 @@ describe('Test colorscale:', function() {
             expect(color1).toEqual('rgb(178, 10, 28)');
             expect(color3).toEqual(color4);
             expect(color4).toEqual('rgb(5, 10, 172)');
+        });
+
+        it('should extract coloraxis options, if present', function() {
+            var trace = {
+                _colorAx: {
+                    colorscale: scale,
+                    cmin: 2,
+                    cmax: 3
+                }
+            };
+
+            var specs = Colorscale.extractScale(trace);
+            var sclFunc = Colorscale.makeColorScaleFunc(specs);
+
+            var color1 = sclFunc(1);
+            var color2 = sclFunc(2);
+            var color3 = sclFunc(3);
+            var color4 = sclFunc(4);
+
+            expect(color1).toEqual(color2);
+            expect(color1).toEqual('rgb(5, 10, 172)');
+            expect(color3).toEqual(color4);
+            expect(color4).toEqual('rgb(178, 10, 28)');
         });
     });
 });
@@ -967,6 +1011,86 @@ describe('Test colorscale restyle calls:', function() {
         .then(function() {
             return _run('back to autocolorscale:false w/ colorscale set', {'marker.line.autocolorscale': false}, {
                 mlcc: grns,
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.Greens,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to toggle between autocolorscale true/false and set colorscales (coloraxis case)', function(done) {
+        function _assert(msg, exp) {
+            var mcc = [];
+            d3.selectAll('path.point').each(function() { mcc.push(getFill(this)); });
+            expect(mcc).toEqual(exp.mcc);
+
+            expect(gd._fullLayout.coloraxis.colorscale).toEqual(exp.colorscale);
+            expect(gd._fullLayout.coloraxis.autocolorscale).toBe(exp.autocolorscale, msg);
+            expect((gd.layout.coloraxis || {}).colorscale).toEqual(exp.colorscaleIn);
+            expect((gd.layout.coloraxis || {}).autocolorscale).toBe(exp.autocolorscaleIn, msg);
+        }
+
+        // update via, assert then assert again (and again ;) after non-calc edits
+        function _run(msg, updateObj, exp) {
+            return Plotly.relayout(gd, updateObj)
+                .then(function() { _assert(msg, exp); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.range', [-1, 5]); })
+                .then(function() { _assert(msg + ' after axrange relayout', exp); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.autorange', true); })
+                .then(function() { _assert(msg + ' after autorange', exp); })
+                .then(function() { return Plotly.restyle(gd, 'marker.symbol', 'square'); })
+                .then(function() { _assert(msg + ' after marker.symbol restyle', exp); })
+                .then(function() { return Plotly.restyle(gd, 'marker.symbol', null); })
+                .then(function() { _assert(msg + ' back to original marker.symbol', exp); });
+        }
+
+        var rdbu = ['rgb(5, 10, 172)', 'rgb(53, 70, 208)', 'rgb(227, 153, 104)',
+            'rgb(53, 70, 208)', 'rgb(53, 70, 208)', 'rgb(178, 10, 28)'];
+        var grns = ['rgb(0, 68, 27)', 'rgb(12, 119, 52)', 'rgb(174, 222, 167)',
+            'rgb(12, 119, 52)', 'rgb(12, 119, 52)', 'rgb(247, 252, 245)'];
+
+        Plotly.plot(gd, [{
+            mode: 'markers',
+            y: [1, 2, 3],
+            marker: {color: [-1, 0, 3], coloraxis: 'coloraxis'}
+        }, {
+            mode: 'markers',
+            y: [2, 3, 4],
+            marker: {color: [0, 0, 5], coloraxis: 'coloraxis'}
+        }])
+        .then(function() {
+            _assert('base (autocolorscale:true by dflt)', {
+                mcc: rdbu,
+                autocolorscale: true,
+                autocolorscaleIn: undefined,
+                colorscale: Colorscale.scales.RdBu,
+                colorscaleIn: undefined
+            });
+        })
+        .then(function() {
+            return _run('set *Greens* colorscale', {'coloraxis.colorscale': 'Greens'}, {
+                mcc: grns,
+                autocolorscale: false,
+                autocolorscaleIn: false,
+                colorscale: Colorscale.scales.Greens,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .then(function() {
+            return _run('back to autocolorscale:true', {'coloraxis.autocolorscale': true}, {
+                mcc: rdbu,
+                autocolorscale: true,
+                autocolorscaleIn: true,
+                colorscale: Colorscale.scales.RdBu,
+                colorscaleIn: 'Greens'
+            });
+        })
+        .then(function() {
+            return _run('back to autocolorscale:false w/ colorscale set', {'coloraxis.autocolorscale': false}, {
+                mcc: grns,
                 autocolorscale: false,
                 autocolorscaleIn: false,
                 colorscale: Colorscale.scales.Greens,

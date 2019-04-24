@@ -72,12 +72,58 @@ function draw(gd) {
 }
 
 function makeColorBarData(gd) {
+    var fullLayout = gd._fullLayout;
     var calcdata = gd.calcdata;
     var out = [];
 
+    // single out item
+    var opts;
+    // colorbar attr parent container
+    var cont;
+    // trace attr container
+    var trace;
+    // colorbar options
+    var cbOpt;
+
+    function initOpts(opts) {
+        return extendFlat(opts, {
+            // fillcolor can be a d3 scale, domain is z values, range is colors
+            // or leave it out for no fill,
+            // or set to a string constant for single-color fill
+            _fillcolor: null,
+            // line.color has the same options as fillcolor
+            _line: {color: null, width: null, dash: null},
+            // levels of lines to draw.
+            // note that this DOES NOT determine the extent of the bar
+            // that's given by the domain of fillcolor
+            // (or line.color if no fillcolor domain)
+            _levels: {start: null, end: null, size: null},
+            // separate fill levels (for example, heatmap coloring of a
+            // contour map) if this is omitted, fillcolors will be
+            // evaluated halfway between levels
+            _filllevels: null,
+            // for continuous colorscales: fill with a gradient instead of explicit levels
+            // value should be the colorscale [[0, c0], [v1, c1], ..., [1, cEnd]]
+            _fillgradient: null,
+            // when using a gradient, we need the data range specified separately
+            _zrange: null
+        });
+    }
+
+    function calcOpts() {
+        if(typeof cbOpt.calc === 'function') {
+            cbOpt.calc(gd, trace, opts);
+        } else {
+            opts._fillgradient = cont.reversescale ?
+                flipScale(cont.colorscale) :
+                cont.colorscale;
+            opts._zrange = [cont[cbOpt.min], cont[cbOpt.max]];
+        }
+    }
+
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
-        var trace = cd[0].trace;
+        trace = cd[0].trace;
         var moduleOpts = trace._module.colorbar;
 
         if(trace.visible === true && moduleOpts) {
@@ -85,51 +131,34 @@ function makeColorBarData(gd) {
             var cbOpts = allowsMultiplotCbs ? moduleOpts : [moduleOpts];
 
             for(var j = 0; j < cbOpts.length; j++) {
-                var cbOpt = cbOpts[j];
+                cbOpt = cbOpts[j];
                 var contName = cbOpt.container;
-                var cont = contName ? trace[contName] : trace;
+                cont = contName ? trace[contName] : trace;
 
                 if(cont && cont.showscale) {
-                    var opts = cont.colorbar;
+                    opts = initOpts(cont.colorbar);
                     opts._id = 'cb' + trace.uid + (allowsMultiplotCbs && contName ? '-' + contName : '');
                     opts._traceIndex = trace.index;
                     opts._propPrefix = (contName ? contName + '.' : '') + 'colorbar.';
-
-                    extendFlat(opts, {
-                        // fillcolor can be a d3 scale, domain is z values, range is colors
-                        // or leave it out for no fill,
-                        // or set to a string constant for single-color fill
-                        _fillcolor: null,
-                        // line.color has the same options as fillcolor
-                        _line: {color: null, width: null, dash: null},
-                        // levels of lines to draw.
-                        // note that this DOES NOT determine the extent of the bar
-                        // that's given by the domain of fillcolor
-                        // (or line.color if no fillcolor domain)
-                        _levels: {start: null, end: null, size: null},
-                        // separate fill levels (for example, heatmap coloring of a
-                        // contour map) if this is omitted, fillcolors will be
-                        // evaluated halfway between levels
-                        _filllevels: null,
-                        // for continuous colorscales: fill with a gradient instead of explicit levels
-                        // value should be the colorscale [[0, c0], [v1, c1], ..., [1, cEnd]]
-                        _fillgradient: null,
-                        // when using a gradient, we need the data range specified separately
-                        _zrange: null
-                    });
-
-                    if(typeof cbOpt.calc === 'function') {
-                        cbOpt.calc(gd, cd, opts);
-                    } else {
-                        opts._fillgradient = cont.reversescale ?
-                            flipScale(cont.colorscale) :
-                            cont.colorscale;
-                        opts._zrange = [cont[cbOpt.min], cont[cbOpt.max]];
-                    }
-
+                    calcOpts();
                     out.push(opts);
                 }
             }
+        }
+    }
+
+    for(var k in fullLayout._colorAxes) {
+        cont = fullLayout[k];
+
+        if(cont.showscale) {
+            var colorAxOpts = fullLayout._colorAxes[k];
+
+            opts = initOpts(cont.colorbar);
+            opts._id = 'cb' + k;
+
+            cbOpt = {min: 'cmin', max: 'cmax'};
+            calcOpts();
+            out.push(opts);
         }
     }
 

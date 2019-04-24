@@ -10,8 +10,9 @@
 
 var Lib = require('../../lib');
 var hasColorscale = require('./helpers').hasColorscale;
+var extractOpts = require('./helpers').extractOpts;
 
-module.exports = function crossTraceDefaults(fullData) {
+module.exports = function crossTraceDefaults(fullData, fullLayout) {
     function replace(cont, k) {
         var val = cont['_' + k];
         if(val !== undefined) {
@@ -19,43 +20,45 @@ module.exports = function crossTraceDefaults(fullData) {
         }
     }
 
-    function relinkColorAtts(trace, cAttrs) {
-        var cont = cAttrs.container ?
-            Lib.nestedProperty(trace, cAttrs.container).get() :
-            trace;
+    function relinkColorAtts(outerCont, cbOpt) {
+        var cont = cbOpt.container ?
+            Lib.nestedProperty(outerCont, cbOpt.container).get() :
+            outerCont;
 
         if(cont) {
-            var isAuto = cont.zauto || cont.cauto;
-            var minAttr = cAttrs.min;
-            var maxAttr = cAttrs.max;
+            if(cont.coloraxis) {
+                // stash ref to color axis
+                cont._colorAx = fullLayout[cont.coloraxis];
+            } else {
+                var cOpts = extractOpts(cont);
+                var isAuto = cOpts.auto;
 
-            if(isAuto || cont[minAttr] === undefined) {
-                replace(cont, minAttr);
-            }
-            if(isAuto || cont[maxAttr] === undefined) {
-                replace(cont, maxAttr);
-            }
-            if(cont.autocolorscale) {
-                replace(cont, 'colorscale');
+                if(isAuto || cOpts.min === undefined) {
+                    replace(cont, cbOpt.min);
+                }
+                if(isAuto || cOpts.max === undefined) {
+                    replace(cont, cbOpt.max);
+                }
+                if(cOpts.autocolorscale) {
+                    replace(cont, 'colorscale');
+                }
             }
         }
     }
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        var colorbar = trace._module.colorbar;
+        var cbOpts = trace._module.colorbar;
 
-        if(colorbar) {
-            if(Array.isArray(colorbar)) {
-                for(var j = 0; j < colorbar.length; j++) {
-                    relinkColorAtts(trace, colorbar[j]);
+        if(cbOpts) {
+            if(Array.isArray(cbOpts)) {
+                for(var j = 0; j < cbOpts.length; j++) {
+                    relinkColorAtts(trace, cbOpts[j]);
                 }
             } else {
-                relinkColorAtts(trace, colorbar);
+                relinkColorAtts(trace, cbOpts);
             }
         }
-
-        // TODO could generalize _module.colorscale and use it here?
 
         if(hasColorscale(trace, 'marker.line')) {
             relinkColorAtts(trace, {
@@ -64,6 +67,9 @@ module.exports = function crossTraceDefaults(fullData) {
                 max: 'cmax'
             });
         }
+    }
 
+    for(var k in fullLayout._colorAxes) {
+        relinkColorAtts(fullLayout[k], {min: 'cmin', max: 'cmax'});
     }
 };

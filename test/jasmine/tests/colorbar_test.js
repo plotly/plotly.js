@@ -10,7 +10,6 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 var drag = require('../assets/drag');
 
-
 describe('Test colorbar:', function() {
     'use strict';
 
@@ -218,6 +217,41 @@ describe('Test colorbar:', function() {
                 assertCB('mid-plot', true, {expandedMarginR: false});
 
                 return Plotly.restyle(gd, {'marker.colorbar.x': 1.1});
+            })
+            .then(function() {
+                assertCB('far right', true, {expandedMarginR: true});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can show and hide colorbars of shared color axes', function(done) {
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 3],
+                marker: {color: [1, 2, 3], coloraxis: 'coloraxis'}
+            }, {
+                y: [1, 2, 3],
+                marker: {color: [1, 0, 3], coloraxis: 'coloraxis'}
+            }], {
+                showlegend: false,
+                height: 500,
+                width: 500,
+                margin: {l: 50, r: 50, t: 50, b: 50}
+            })
+            .then(function() {
+                assertCB('initial', true, {expandedMarginR: true});
+
+                return Plotly.relayout(gd, {'coloraxis.showscale': false});
+            })
+            .then(function() {
+                assertCB('hidden', false, {expandedMarginR: false});
+
+                return Plotly.relayout(gd, {'coloraxis.showscale': true, 'coloraxis.colorbar.x': 0.7});
+            })
+            .then(function() {
+                assertCB('mid-plot', true, {expandedMarginR: false});
+
+                return Plotly.relayout(gd, {'coloraxis.colorbar.x': 1.1});
             })
             .then(function() {
                 assertCB('far right', true, {expandedMarginR: true});
