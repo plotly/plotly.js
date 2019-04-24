@@ -8,8 +8,7 @@
 
 'use strict';
 
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var meshAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -236,14 +235,11 @@ var attrs = module.exports = overrideAll(extendFlat({
     hovertemplate: hovertemplateAttrs()
 },
 
-colorscaleAttrs('', {
+colorScaleAttrs('', {
     colorAttr: '`value`',
     showScaleDflt: true,
     editTypeOverride: 'calc'
 }), {
-
-    colorbar: colorbarAttrs,
-
     opacity: meshAttrs.opacity,
     lightposition: meshAttrs.lightposition,
     lighting: meshAttrs.lighting,

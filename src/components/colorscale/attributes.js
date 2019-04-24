@@ -8,6 +8,7 @@
 
 'use strict';
 
+var colorbarAttrs = require('../colorbar/attributes');
 var palettes = require('./scales.js').scales;
 var paletteStr = Object.keys(palettes);
 
@@ -240,6 +241,8 @@ module.exports = function colorScaleAttrs(context, opts) {
                 effectDesc
             ].join('')
         };
+
+        attrs.colorbar = colorbarAttrs;
     }
 
     return attrs;

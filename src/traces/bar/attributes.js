@@ -10,8 +10,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var colorAttributes = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var constants = require('./constants.js');
 
@@ -33,13 +32,12 @@ var markerLineWidth = extendFlat({},
 var markerLine = extendFlat({
     width: markerLineWidth,
     editType: 'calc'
-}, colorAttributes('marker.line'));
+}, colorScaleAttrs('marker.line'));
 
 var marker = extendFlat({
     line: markerLine,
     editType: 'calc'
-}, colorAttributes('marker'), {
-    colorbar: colorbarAttrs,
+}, colorScaleAttrs('marker'), {
     opacity: {
         valType: 'number',
         arrayOk: true,

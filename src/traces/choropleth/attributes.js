@@ -10,8 +10,7 @@
 
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterGeoAttrs = require('../scattergeo/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var plotAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -80,9 +79,8 @@ module.exports = extendFlat({
     hovertemplate: hovertemplateAttrs(),
 },
 
-    colorscaleAttrs('', {
+    colorScaleAttrs('', {
         cLetter: 'z',
         editTypeOverride: 'calc'
-    }),
-    {colorbar: colorbarAttrs}
+    })
 );

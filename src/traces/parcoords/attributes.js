@@ -8,8 +8,7 @@
 
 'use strict';
 
-var colorAttributes = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
@@ -112,15 +111,13 @@ module.exports = {
         description: 'The dimensions (variables) of the parallel coordinates chart. 2..60 dimensions are supported.'
     }),
 
-    line: extendFlat(
-        colorAttributes('line', {
+    line: extendFlat({editType: 'calc'},
+        colorScaleAttrs('line', {
             // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
             // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
             colorscaleDflt: 'Viridis',
             autoColorDflt: false,
             editTypeOverride: 'calc'
-        }), {
-            colorbar: colorbarAttrs,
-            editType: 'calc'
         })
+    )
 };
