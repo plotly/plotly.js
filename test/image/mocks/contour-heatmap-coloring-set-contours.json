@@ -1,0 +1,28 @@
+{
+  "data": [{
+    "name": "with set contours",
+    "type": "contour",
+    "x": [1, 2, 3],
+    "z": [[1, 2, 3], [1, 2, 3]],
+    "contours": {
+      "coloring": "heatmap",
+      "start": 0, "end": 5
+    },
+    "colorbar": {
+      "x": -0.05, "xanchor": "right",
+      "title": {"text": "with set<br>contours"}
+    }
+  }, {
+    "type": "contour",
+    "name": "auto contours",
+    "x": [5, 6, 7],
+    "z": [[1, 2, 3], [1, 2, 3]],
+    "contours": {
+      "coloring": "heatmap"
+    },
+    "colorbar": {
+      "x": 1.05, "xanchor": "left",
+      "title": {"text": "auto<br>contours"}
+    }
+  }]
+}
