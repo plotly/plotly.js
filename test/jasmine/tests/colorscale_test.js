@@ -13,14 +13,12 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
-function _supply(trace, layout) {
+function _supply(arg, layout) {
     var gd = {
-        data: [trace],
+        data: Array.isArray(arg) ? arg : [arg],
         layout: layout || {}
     };
-
     supplyAllDefaults(gd);
-
     return gd;
 }
 
@@ -259,7 +257,7 @@ describe('Test colorscale:', function() {
         }
 
         beforeEach(function() {
-            traceOut = {};
+            traceOut = {_module: {}};
         });
 
         it('should set auto to true when min/max are valid', function() {
@@ -330,7 +328,10 @@ describe('Test colorscale:', function() {
         }
 
         beforeEach(function() {
-            traceOut = { marker: {} };
+            traceOut = {
+                marker: {},
+                _module: {}
+            };
         });
 
         it('should coerce autocolorscale to true by default', function() {
@@ -365,6 +366,117 @@ describe('Test colorscale:', function() {
             };
             handleDefaults(traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.showscale).toBe(true);
+        });
+    });
+
+    describe('handleDefaults (coloraxis version)', function() {
+        it('should not coerced colorscale/colorbar attributes when referencing a shared color axis', function() {
+            var gd = _supply([
+                {type: 'heatmap', z: [[0]]},
+                {type: 'heatmap', z: [[2]], coloraxis: 'coloraxis'},
+                {type: 'heatmap', z: [[2]], coloraxis: 'coloraxis'},
+            ]);
+
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+
+            var zAttrs = ['zauto', 'colorscale', 'reversescale'];
+            zAttrs.forEach(function(attr) {
+                expect(fullData[0][attr]).not.toBe(undefined, 'trace 0 ' + attr);
+                expect(fullData[1][attr]).toBe(undefined, 'trace 1 ' + attr);
+                expect(fullData[2][attr]).toBe(undefined, 'trace 2 ' + attr);
+            });
+
+            var cAttrs = ['cauto', 'colorscale', 'reversescale'];
+            cAttrs.forEach(function(attr) {
+                expect(fullLayout.coloraxis[attr]).not.toBe(undefined, 'coloraxis ' + attr);
+            });
+
+            expect(fullData[0].coloraxis).toBe(undefined);
+            expect(fullData[1].coloraxis).toBe('coloraxis');
+            expect(fullData[2].coloraxis).toBe('coloraxis');
+            expect(fullLayout.coloraxis.coloraxis).toBe(undefined);
+            expect(fullLayout.coloraxis.showscale).toBe(true, 'showscale is true by dflt in color axes');
+        });
+
+        it('should keep track of all the color axes referenced in the traces', function() {
+            var gd = _supply([
+                {type: 'heatmap', z: [[1]], coloraxis: 'coloraxis'},
+                {y: [1], marker: {color: [1], coloraxis: 'coloraxis'}},
+                {type: 'contour', z: [[1]], coloraxis: 'coloraxis3'},
+                // invalid
+                {y: [1], marker: {color: [1], coloraxis: 'c1'}},
+                // not coerced - visible:false trace
+                {marker: {color: [1], coloraxis: 'coloraxis2'}}
+            ], {
+                // not referenced in traces, shouldn't get coerced
+                coloraxis4: {colorscale: 'Viridis'}
+            });
+
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+
+            expect(fullData[0].coloraxis).toBe('coloraxis');
+            expect(fullData[1].marker.coloraxis).toBe('coloraxis');
+            expect(fullData[2].coloraxis).toBe('coloraxis3');
+            expect(fullData[3].coloraxis).toBe(undefined);
+
+            expect(fullData[0]._colorAx).toBe(fullLayout.coloraxis);
+            expect(fullData[1].marker._colorAx).toBe(fullLayout.coloraxis);
+            expect(fullData[2]._colorAx).toBe(fullLayout.coloraxis3);
+
+            expect(fullLayout.coloraxis).not.toBe(undefined);
+            expect(fullLayout.coloraxis2).toBe(undefined);
+            expect(fullLayout.coloraxis3).not.toBe(undefined);
+            expect(fullLayout.coloraxis4).toBe(undefined);
+
+            expect(Object.keys(fullLayout._colorAxes)).toEqual(['coloraxis', 'coloraxis3']);
+            expect(fullLayout._colorAxes.coloraxis[0]).toBe('heatmap');
+            expect(fullLayout._colorAxes.coloraxis3[0]).toBe('fill');
+        });
+
+        it('should log warning when trying to shared color axis with traces with incompatible color bars', function() {
+            spyOn(Lib, 'warn');
+
+            var gd = _supply([
+                // ok
+                {type: 'heatmap', z: [[1]], coloraxis: 'coloraxis'},
+                {y: [1], marker: {color: [1], coloraxis: 'coloraxis'}},
+                {type: 'contour', z: [[1]], contours: {coloring: 'heatmap'}, coloraxis: 'coloraxis'},
+                // invalid (coloring dflt is 'fill')
+                {type: 'heatmap', z: [[1]], coloraxis: 'coloraxis2'},
+                {type: 'contour', z: [[1]], coloraxis: 'coloraxis2'},
+                // invalid
+                {type: 'contour', z: [[1]], contours: {coloring: 'lines'}, coloraxis: 'coloraxis3'},
+                {type: 'contour', z: [[1]], contours: {coloring: 'heatmap'}, coloraxis: 'coloraxis3'},
+                // ok
+                {type: 'contour', z: [[1]], coloraxis: 'coloraxis4'},
+                {type: 'contour', z: [[1]], coloraxis: 'coloraxis4'},
+                // ok
+                {type: 'contour', z: [[1]], contours: {coloring: 'lines'}, coloraxis: 'coloraxis5'},
+                {type: 'contour', z: [[1]], contours: {coloring: 'lines'}, coloraxis: 'coloraxis5'}
+            ]);
+
+            var fullData = gd._fullData;
+            var fullLayout = gd._fullLayout;
+
+            expect(Object.keys(fullLayout._colorAxes)).toEqual(['coloraxis', 'coloraxis4', 'coloraxis5']);
+            expect(fullLayout._colorAxes.coloraxis[0]).toBe('heatmap');
+            expect(fullLayout._colorAxes.coloraxis4[0]).toBe('fill');
+            expect(fullLayout._colorAxes.coloraxis5[0]).toBe('lines');
+            expect(Lib.warn).toHaveBeenCalledTimes(2);
+
+            var zAttrs = ['zauto', 'colorscale', 'reversescale'];
+            var withColorAx = [0, 1, 2, 7, 8, 9, 10];
+            var woColorAx = [3, 4, 5, 6];
+            zAttrs.forEach(function(attr) {
+                withColorAx.forEach(function(i) {
+                    expect(fullData[i][attr]).toBe(undefined, 'trace ' + i + ' ' + attr);
+                });
+                woColorAx.forEach(function(i) {
+                    expect(fullData[i][attr]).not.toBe(undefined, 'trace ' + i + ' ' + attr);
+                });
+            });
         });
     });
 

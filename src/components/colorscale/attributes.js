@@ -9,6 +9,8 @@
 'use strict';
 
 var colorbarAttrs = require('../colorbar/attributes');
+var counterRegex = require('../../lib/regex').counter;
+
 var palettes = require('./scales.js').scales;
 var paletteStr = Object.keys(palettes);
 
@@ -243,6 +245,23 @@ module.exports = function colorScaleAttrs(context, opts) {
         };
 
         attrs.colorbar = colorbarAttrs;
+    }
+
+    if(!opts.noColorAxis) {
+        attrs.coloraxis = {
+            valType: 'subplotid',
+            role: 'info',
+            regex: counterRegex('coloraxis'),
+            dflt: null,
+            editType: 'calc',
+            description: [
+                'Sets a reference to a shared color axis.',
+                'References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc.',
+                'Settings for these shared color axes are set in the layout, under',
+                '`layout.coloraxis`, `layout.coloraxis2`, etc.',
+                'Note that multiple color scales can be linked to the same color axis.'
+            ].join(' ')
+        };
     }
 
     return attrs;

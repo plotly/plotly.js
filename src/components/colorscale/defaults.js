@@ -15,20 +15,63 @@ var hasColorbar = require('../colorbar/has_colorbar');
 var colorbarDefaults = require('../colorbar/defaults');
 
 var isValidScale = require('./scales').isValid;
+var traceIs = require('../../registry').traceIs;
 
-function npMaybe(cont, prefix) {
+function npMaybe(outerCont, prefix) {
     var containerStr = prefix.slice(0, prefix.length - 1);
     return prefix ?
-        Lib.nestedProperty(cont, containerStr).get() || {} :
-        cont;
+        Lib.nestedProperty(outerCont, containerStr).get() || {} :
+        outerCont;
 }
 
-module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, opts) {
+module.exports = function colorScaleDefaults(outerContIn, outerContOut, layout, coerce, opts) {
     var prefix = opts.prefix;
     var cLetter = opts.cLetter;
-    var containerIn = npMaybe(traceIn, prefix);
-    var containerOut = npMaybe(traceOut, prefix);
-    var template = npMaybe(traceOut._template || {}, prefix) || {};
+    var inTrace = '_module' in outerContOut;
+    var containerIn = npMaybe(outerContIn, prefix);
+    var containerOut = npMaybe(outerContOut, prefix);
+    var template = npMaybe(outerContOut._template || {}, prefix) || {};
+
+    // colorScaleDefaults wrapper called if-ever we need to reset the colorscale
+    // attributes for containers that were linked to invalid color axes
+    var thisFn = function() {
+        delete outerContIn.coloraxis;
+        delete outerContOut.coloraxis;
+        return colorScaleDefaults(outerContIn, outerContOut, layout, coerce, opts);
+    };
+
+    if(inTrace) {
+        var colorAxes = layout._colorAxes || {};
+        var colorAx = coerce(prefix + 'coloraxis');
+
+        if(colorAx) {
+            var colorbarVisuals = (
+                traceIs(outerContOut, 'contour') &&
+                Lib.nestedProperty(outerContOut, 'contours.coloring').get()
+            ) || 'heatmap';
+
+            var stash = colorAxes[colorAx];
+
+            if(stash) {
+                stash[2].push(thisFn);
+
+                if(stash[0] !== colorbarVisuals) {
+                    stash[0] = false;
+                    Lib.warn([
+                        'Ignoring coloraxis:', colorAx, 'setting',
+                        'as it is linked to incompatible colorscales.'
+                    ].join(' '));
+                }
+            } else {
+                // stash:
+                // - colorbar visual 'type'
+                // - colorbar options to help in Colorbar.draw
+                // - list of colorScaleDefaults wrapper functions
+                colorAxes[colorAx] = [colorbarVisuals, outerContOut, [thisFn]];
+            }
+            return;
+        }
+    }
 
     var minIn = containerIn[cLetter + 'min'];
     var maxIn = containerIn[cLetter + 'max'];
@@ -58,7 +101,7 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
         // handles both the trace case where the dflt is listed in attributes and
         // the marker case where the dflt is determined by hasColorbar
         var showScaleDflt;
-        if(prefix) showScaleDflt = hasColorbar(containerIn);
+        if(prefix && inTrace) showScaleDflt = hasColorbar(containerIn);
 
         var showScale = coerce(prefix + 'showscale', showScaleDflt);
         if(showScale) colorbarDefaults(containerIn, containerOut, layout);
