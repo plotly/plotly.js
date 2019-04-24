@@ -70,17 +70,11 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 y1 = ya.c2p(di.p1, true);
                 x0 = xa.c2p(di.s0, true);
                 x1 = xa.c2p(di.s1, true);
-
-                // for selections
-                di.ct = [x1, (y0 + y1) / 2];
             } else {
                 x0 = xa.c2p(di.p0, true);
                 x1 = xa.c2p(di.p1, true);
                 y0 = ya.c2p(di.s0, true);
                 y1 = ya.c2p(di.s1, true);
-
-                // for selections
-                di.ct = [(x0 + x1) / 2, y1];
             }
 
             var isBlank = di.isBlank = (
