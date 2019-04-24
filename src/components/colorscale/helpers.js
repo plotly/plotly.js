@@ -44,6 +44,66 @@ function hasColorscale(trace, containerStr) {
     );
 }
 
+var constantAttrs = ['showscale', 'autocolorscale', 'colorscale', 'reversescale', 'colorbar'];
+var letterAttrs = ['min', 'max', 'mid', 'auto'];
+
+/**
+ * Extract 'c' / 'z', trace / color axis colorscale options
+ *
+ * Note that it would be nice to replace all z* with c* equivalents in v2
+ *
+ * @param {object} cont : attribute container
+ * @return {object}:
+ *  - min: cmin or zmin
+ *  - max: cmax or zmax
+ *  - mid: cmid or zmid
+ *  - auto: cauto or zauto
+ *  - *scale: *scale attrs
+ *  - colorbar: colorbar
+ *  - _sync: function syncing attr and underscore dual (useful when calc'ing min/max)
+ */
+function extractOpts(cont) {
+    var colorAx = cont._colorAx;
+    var cont2 = colorAx ? colorAx : cont;
+    var out = {};
+    var cLetter;
+    var i, k;
+
+    for(i = 0; i < constantAttrs.length; i++) {
+        k = constantAttrs[i];
+        out[k] = cont2[k];
+    }
+
+    if(colorAx) {
+        cLetter = 'c';
+        for(i = 0; i < letterAttrs.length; i++) {
+            k = letterAttrs[i];
+            out[k] = cont2['c' + k];
+        }
+    } else {
+        var k2;
+        for(i = 0; i < letterAttrs.length; i++) {
+            k = letterAttrs[i];
+            k2 = 'c' + k;
+            if(k2 in cont2) {
+                out[k] = cont2[k2];
+                continue;
+            }
+            k2 = 'z' + k;
+            if(k2 in cont2) {
+                out[k] = cont2[k2];
+            }
+        }
+        cLetter = k2.charAt(0);
+    }
+
+    out._sync = function(k, v) {
+        var k2 = letterAttrs.indexOf(k) !== -1 ? cLetter + k : k;
+        cont2[k2] = cont2['_' + k2] = v;
+    };
+
+    return out;
+}
 /**
  * Extract colorscale into numeric domain and color range.
  *
@@ -173,6 +233,7 @@ function colorArray2rbga(colorArray) {
 
 module.exports = {
     hasColorscale: hasColorscale,
+    extractOpts: extractOpts,
     extractScale: extractScale,
     flipScale: flipScale,
     makeColorScaleFunc: makeColorScaleFunc
