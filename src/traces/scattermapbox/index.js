@@ -8,36 +8,33 @@
 
 'use strict';
 
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    colorbar: require('../scatter/marker_colorbar'),
+    calc: require('../scattergeo/calc'),
+    plot: require('./plot'),
+    hoverPoints: require('./hover'),
+    eventData: require('./event_data'),
+    selectPoints: require('./select'),
 
-var ScatterMapbox = {};
+    style: function(_, cd) {
+        if(cd) {
+            var trace = cd[0].trace;
+            trace._glTrace.update(cd);
+        }
+    },
 
-ScatterMapbox.attributes = require('./attributes');
-ScatterMapbox.supplyDefaults = require('./defaults');
-ScatterMapbox.colorbar = require('../scatter/marker_colorbar');
-ScatterMapbox.calc = require('../scattergeo/calc');
-ScatterMapbox.plot = require('./plot');
-ScatterMapbox.hoverPoints = require('./hover');
-ScatterMapbox.eventData = require('./event_data');
-ScatterMapbox.selectPoints = require('./select');
-
-ScatterMapbox.style = function(_, cd) {
-    if(cd) {
-        var trace = cd[0].trace;
-        trace._glTrace.update(cd);
+    moduleType: 'trace',
+    name: 'scattermapbox',
+    basePlotModule: require('../../plots/mapbox'),
+    categories: ['mapbox', 'gl', 'symbols', 'showLegend', 'scatterlike'],
+    meta: {
+        hrName: 'scatter_mapbox',
+        description: [
+            'The data visualized as scatter point, lines or marker symbols',
+            'on a Mapbox GL geographic map',
+            'is provided by longitude/latitude pairs in `lon` and `lat`.'
+        ].join(' ')
     }
 };
-
-ScatterMapbox.moduleType = 'trace';
-ScatterMapbox.name = 'scattermapbox';
-ScatterMapbox.basePlotModule = require('../../plots/mapbox');
-ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'showLegend', 'scatterlike'];
-ScatterMapbox.meta = {
-    hrName: 'scatter_mapbox',
-    description: [
-        'The data visualized as scatter point, lines or marker symbols',
-        'on a Mapbox GL geographic map',
-        'is provided by longitude/latitude pairs in `lon` and `lat`.'
-    ].join(' ')
-};
-
-module.exports = ScatterMapbox;
