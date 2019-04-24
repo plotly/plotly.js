@@ -910,11 +910,14 @@ describe('Test colorscale restyle calls:', function() {
             x: [1, 2, 3],
             y: [1, 2, 3],
             z: [1, 2, 1],
-            marker: {color: [1, 2, 1], showscale: true}
+            marker: {color: [1, 2, 1], showscale: true},
+            line: {color: [2, 3, 4], showscale: true}
         }])
         .then(function() {
             expect(gd._fullData[0].marker.cmin).toBe(1);
             expect(gd._fullData[0].marker.cmax).toBe(2);
+            expect(gd._fullData[0].line.cmin).toBe(2);
+            expect(gd._fullData[0].line.cmax).toBe(4);
         })
         .then(function() {
             // some non-calc edit
@@ -923,6 +926,8 @@ describe('Test colorscale restyle calls:', function() {
         .then(function() {
             expect(gd._fullData[0].marker.cmin).toBe(1);
             expect(gd._fullData[0].marker.cmax).toBe(2);
+            expect(gd._fullData[0].line.cmin).toBe(2);
+            expect(gd._fullData[0].line.cmax).toBe(4);
         })
         .catch(failTest)
         .then(done);

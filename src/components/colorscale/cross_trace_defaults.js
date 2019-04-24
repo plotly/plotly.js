@@ -65,12 +65,5 @@ module.exports = function crossTraceDefaults(fullData) {
             });
         }
 
-        if(hasColorscale(trace, 'line')) {
-            relinkColorAtts(trace, {
-                container: 'line',
-                min: 'cmin',
-                max: 'cmax'
-            });
-        }
     }
 };
