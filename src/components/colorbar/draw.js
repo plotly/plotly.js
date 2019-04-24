@@ -158,6 +158,11 @@ function makeColorBarData(gd) {
             opts._propPrefix = k + '.colorbar.';
 
             cbOpt = {min: 'cmin', max: 'cmax'};
+            if(colorAxOpts[0] !== 'heatmap') {
+                trace = colorAxOpts[1];
+                cbOpt.calc = trace._module.colorbar.calc;
+            }
+
             calcOpts();
             out.push(opts);
         }
