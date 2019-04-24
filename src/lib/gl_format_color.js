@@ -47,9 +47,7 @@ function formatColor(containerIn, opacityIn, len) {
     var sclFunc, getColor, getOpacity, colori, opacityi;
 
     if(containerIn.colorscale !== undefined) {
-        sclFunc = Colorscale.makeColorScaleFunc(
-            Colorscale.extractScale(containerIn, {cLetter: 'c'})
-        );
+        sclFunc = Colorscale.makeColorScaleFuncFromTrace(containerIn);
     } else {
         sclFunc = validateColor;
     }

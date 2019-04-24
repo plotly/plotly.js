@@ -104,6 +104,7 @@ function extractOpts(cont) {
 
     return out;
 }
+
 /**
  * Extract colorscale into numeric domain and color range.
  *
@@ -112,24 +113,19 @@ function extractOpts(cont) {
  *  - cmin/zmin {number}
  *  - cmax/zmax {number}
  *  - reversescale {boolean}
- * @param {object} opts
- *  - cLetter {string} 'c' (for cmin/cmax) or 'z' (for zmin/zmax)
  *
  * @return {object}
  *  - domain {array}
  *  - range {array}
  */
-function extractScale(cont, opts) {
-    var cLetter = opts.cLetter;
+function extractScale(cont) {
+    var cOpts = extractOpts(cont);
+    var cmin = cOpts.min;
+    var cmax = cOpts.max;
 
-    var scl = cont.reversescale ?
-        flipScale(cont.colorscale) :
-        cont.colorscale;
-
-    // minimum color value (used to clamp scale)
-    var cmin = cont[cLetter + 'min'];
-    // maximum color value (used to clamp scale)
-    var cmax = cont[cLetter + 'max'];
+    var scl = cOpts.reversescale ?
+        flipScale(cOpts.colorscale) :
+        cOpts.colorscale;
 
     var N = scl.length;
     var domain = new Array(N);
@@ -141,10 +137,7 @@ function extractScale(cont, opts) {
         range[i] = si[1];
     }
 
-    return {
-        domain: domain,
-        range: range
-    };
+    return {domain: domain, range: range};
 }
 
 function flipScale(scl) {
@@ -220,6 +213,10 @@ function makeColorScaleFunc(specs, opts) {
     return sclFunc;
 }
 
+function makeColorScaleFuncFromTrace(trace, opts) {
+    return makeColorScaleFunc(extractScale(trace), opts);
+}
+
 function colorArray2rbga(colorArray) {
     var colorObj = {
         r: colorArray[0],
@@ -236,5 +233,6 @@ module.exports = {
     extractOpts: extractOpts,
     extractScale: extractScale,
     flipScale: flipScale,
-    makeColorScaleFunc: makeColorScaleFunc
+    makeColorScaleFunc: makeColorScaleFunc,
+    makeColorScaleFuncFromTrace: makeColorScaleFuncFromTrace
 };

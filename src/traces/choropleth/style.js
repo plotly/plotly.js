@@ -24,9 +24,7 @@ function styleTrace(gd, calcTrace) {
     var marker = trace.marker || {};
     var markerLine = marker.line || {};
 
-    var sclFunc = Colorscale.makeColorScaleFunc(
-        Colorscale.extractScale(trace, {cLetter: 'z'})
-    );
+    var sclFunc = Colorscale.makeColorScaleFuncFromTrace(trace);
 
     locs.each(function(d) {
         d3.select(this)
