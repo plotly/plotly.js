@@ -8,33 +8,31 @@
 
 'use strict';
 
-var Waterfall = {};
+module.exports = {
+    attributes: require('./attributes'),
+    layoutAttributes: require('./layout_attributes'),
+    supplyDefaults: require('./defaults').supplyDefaults,
+    crossTraceDefaults: require('./defaults').crossTraceDefaults,
+    supplyLayoutDefaults: require('./layout_defaults'),
+    calc: require('./calc'),
+    crossTraceCalc: require('./cross_trace_calc'),
+    plot: require('./plot'),
+    style: require('./style').style,
+    hoverPoints: require('./hover'),
+    selectPoints: require('../bar/select'),
 
-Waterfall.attributes = require('./attributes');
-Waterfall.layoutAttributes = require('./layout_attributes');
-Waterfall.supplyDefaults = require('./defaults').supplyDefaults;
-Waterfall.crossTraceDefaults = require('./defaults').crossTraceDefaults;
-Waterfall.supplyLayoutDefaults = require('./layout_defaults');
-Waterfall.calc = require('./calc');
-Waterfall.crossTraceCalc = require('./cross_trace_calc');
-Waterfall.plot = require('./plot');
-Waterfall.style = require('./style').style;
-Waterfall.hoverPoints = require('./hover');
-Waterfall.selectPoints = require('../bar/select');
-
-Waterfall.moduleType = 'trace';
-Waterfall.name = 'waterfall';
-Waterfall.basePlotModule = require('../../plots/cartesian');
-Waterfall.categories = ['cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'];
-Waterfall.meta = {
-    description: [
-        'Draws waterfall trace which is useful graph to displays the',
-        'contribution of various elements (either positive or negative)',
-        'in a bar chart. The data visualized by the span of the bars is',
-        'set in `y` if `orientation` is set th *v* (the default) and the',
-        'labels are set in `x`.',
-        'By setting `orientation` to *h*, the roles are interchanged.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'waterfall',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'],
+    meta: {
+        description: [
+            'Draws waterfall trace which is useful graph to displays the',
+            'contribution of various elements (either positive or negative)',
+            'in a bar chart. The data visualized by the span of the bars is',
+            'set in `y` if `orientation` is set th *v* (the default) and the',
+            'labels are set in `x`.',
+            'By setting `orientation` to *h*, the roles are interchanged.'
+        ].join(' ')
+    }
 };
-
-module.exports = Waterfall;

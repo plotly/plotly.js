@@ -8,28 +8,26 @@
 
 'use strict';
 
-var Parcoords = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    calc: require('./calc'),
+    plot: require('./plot'),
+    colorbar: {
+        container: 'line',
+        min: 'cmin',
+        max: 'cmax'
+    },
 
-Parcoords.attributes = require('./attributes');
-Parcoords.supplyDefaults = require('./defaults');
-Parcoords.calc = require('./calc');
-Parcoords.plot = require('./plot');
-Parcoords.colorbar = {
-    container: 'line',
-    min: 'cmin',
-    max: 'cmax'
+    moduleType: 'trace',
+    name: 'parcoords',
+    basePlotModule: require('./base_plot'),
+    categories: ['gl', 'regl', 'noOpacity', 'noHover'],
+    meta: {
+        description: [
+            'Parallel coordinates for multidimensional exploratory data analysis.',
+            'The samples are specified in `dimensions`.',
+            'The colors are set in `line.color`.'
+        ].join(' ')
+    }
 };
-
-Parcoords.moduleType = 'trace';
-Parcoords.name = 'parcoords';
-Parcoords.basePlotModule = require('./base_plot');
-Parcoords.categories = ['gl', 'regl', 'noOpacity', 'noHover'];
-Parcoords.meta = {
-    description: [
-        'Parallel coordinates for multidimensional exploratory data analysis.',
-        'The samples are specified in `dimensions`.',
-        'The colors are set in `line.color`.'
-    ].join(' ')
-};
-
-module.exports = Parcoords;

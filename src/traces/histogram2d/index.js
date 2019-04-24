@@ -6,36 +6,34 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Histogram2D = {};
+module.exports = {
 
-Histogram2D.attributes = require('./attributes');
-Histogram2D.supplyDefaults = require('./defaults');
-Histogram2D.crossTraceDefaults = require('./cross_trace_defaults');
-Histogram2D.calc = require('../heatmap/calc');
-Histogram2D.plot = require('../heatmap/plot');
-Histogram2D.layerName = 'heatmaplayer';
-Histogram2D.colorbar = require('../heatmap/colorbar');
-Histogram2D.style = require('../heatmap/style');
-Histogram2D.hoverPoints = require('./hover');
-Histogram2D.eventData = require('../histogram/event_data');
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    crossTraceDefaults: require('./cross_trace_defaults'),
+    calc: require('../heatmap/calc'),
+    plot: require('../heatmap/plot'),
+    layerName: 'heatmaplayer',
+    colorbar: require('../heatmap/colorbar'),
+    style: require('../heatmap/style'),
+    hoverPoints: require('./hover'),
+    eventData: require('../histogram/event_data'),
 
-Histogram2D.moduleType = 'trace';
-Histogram2D.name = 'histogram2d';
-Histogram2D.basePlotModule = require('../../plots/cartesian');
-Histogram2D.categories = ['cartesian', 'svg', '2dMap', 'histogram'];
-Histogram2D.meta = {
-    hrName: 'histogram_2d',
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'and `y` (where `x` and `y` represent marginal distributions,',
-        'binning is set in `xbins` and `ybins` in this case)',
-        'or `z` (where `z` represent the 2D distribution and binning set,',
-        'binning is set by `x` and `y` in this case).',
-        'The resulting distribution is visualized as a heatmap.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'histogram2d',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap', 'histogram'],
+    meta: {
+        hrName: 'histogram_2d',
+        description: [
+            'The sample data from which statistics are computed is set in `x`',
+            'and `y` (where `x` and `y` represent marginal distributions,',
+            'binning is set in `xbins` and `ybins` in this case)',
+            'or `z` (where `z` represent the 2D distribution and binning set,',
+            'binning is set by `x` and `y` in this case).',
+            'The resulting distribution is visualized as a heatmap.'
+        ].join(' ')
+    }
 };
-
-module.exports = Histogram2D;

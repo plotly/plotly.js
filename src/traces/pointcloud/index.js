@@ -8,24 +8,22 @@
 
 'use strict';
 
-var pointcloud = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
 
-pointcloud.attributes = require('./attributes');
-pointcloud.supplyDefaults = require('./defaults');
+    // reuse the Scatter3D 'dummy' calc step so that legends know what to do
+    calc: require('../scatter3d/calc'),
+    plot: require('./convert'),
 
-// reuse the Scatter3D 'dummy' calc step so that legends know what to do
-pointcloud.calc = require('../scatter3d/calc');
-pointcloud.plot = require('./convert');
-
-pointcloud.moduleType = 'trace';
-pointcloud.name = 'pointcloud';
-pointcloud.basePlotModule = require('../../plots/gl2d');
-pointcloud.categories = ['gl', 'gl2d', 'showLegend'];
-pointcloud.meta = {
-    description: [
-        'The data visualized as a point cloud set in `x` and `y`',
-        'using the WebGl plotting engine.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'pointcloud',
+    basePlotModule: require('../../plots/gl2d'),
+    categories: ['gl', 'gl2d', 'showLegend'],
+    meta: {
+        description: [
+            'The data visualized as a point cloud set in `x` and `y`',
+            'using the WebGl plotting engine.'
+        ].join(' ')
+    }
 };
-
-module.exports = pointcloud;
