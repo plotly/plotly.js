@@ -2,6 +2,8 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Colorbar = require('@src/components/colorbar');
+var Plots = require('@src/plots/plots');
+var subroutines = require('@src/plot_api/subroutines');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -430,6 +432,72 @@ describe('Test colorbar:', function() {
                 expect(gd.data[0].marker.colorbar.x).toBeWithin(0.591, 0.01);
                 expect(gd.data[0].marker.colorbar.y).toBeWithin(0.045, 0.01);
             })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can edit colorbar visuals in optimized edit pathway', function(done) {
+            spyOn(subroutines, 'doColorBars').and.callThrough();
+            spyOn(Plots, 'doCalcdata').and.callThrough();
+
+            function getOutline(cb) {
+                return Number(cb.select('.cboutline').node().style['stroke-width']);
+            }
+
+            function _assert(msg, exp) {
+                var gd3 = d3.select(gd);
+                var cb0 = gd3.select('.cbtrace0');
+                var cb1 = gd3.select('.cbcoloraxis');
+
+                if(msg !== 'base') {
+                    expect(subroutines.doColorBars).toHaveBeenCalledTimes(1);
+                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
+                }
+                subroutines.doColorBars.calls.reset();
+                Plots.doCalcdata.calls.reset();
+
+                expect(getOutline(cb0)).toBe(exp.outline[0], 'trace0 cb outline');
+                expect(getOutline(cb1)).toBe(exp.outline[1], 'coloraxis cb outline');
+            }
+
+            Plotly.newPlot(gd, [{
+                type: 'heatmap',
+                z: [[1, 2, 3], [2, 1, 2]],
+                uid: 'trace0'
+            }, {
+                y: [1, 2, 3],
+                marker: {color: [2, 1, 2], coloraxis: 'coloraxis'}
+            }], {
+                width: 500,
+                height: 500
+            })
+            .then(function() { _assert('base', {outline: [1, 1]}); })
+            .then(function() {
+                return Plotly.restyle(gd, 'colorbar.outlinewidth', 2, [0]);
+            })
+            .then(function() { _assert('after restyle', {outline: [2, 1]}); })
+            .then(function() {
+                return Plotly.relayout(gd, 'coloraxis.colorbar.outlinewidth', 5);
+            })
+            .then(function() { _assert('after relayout', {outline: [2, 5]}); })
+            .then(function() {
+                return Plotly.update(gd, {'colorbar.outlinewidth': 1}, {}, [0]);
+            })
+            .then(function() { _assert('after trace update', {outline: [1, 5]}); })
+            .then(function() {
+                return Plotly.update(gd, {}, {'coloraxis.colorbar.outlinewidth': 1});
+            })
+            .then(function() { _assert('after layout update', {outline: [1, 1]}); })
+            .then(function() {
+                gd.data[0].colorbar = {outlinewidth: 10};
+                return Plotly.react(gd, gd.data, gd.layout);
+            })
+            .then(function() { _assert('after trace react', {outline: [10, 1]}); })
+            .then(function() {
+                gd.layout.coloraxis = {colorbar: {outlinewidth: 10}};
+                return Plotly.react(gd, gd.data, gd.layout);
+            })
+            .then(function() { _assert('after layout trace', {outline: [10, 10]}); })
             .catch(failTest)
             .then(done);
         });

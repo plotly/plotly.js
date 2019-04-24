@@ -373,7 +373,9 @@ function layoutHeadAttr(fullLayout, head) {
      */
     for(key in Registry.componentsRegistry) {
         _module = Registry.componentsRegistry[key];
-        if(!_module.schema && (head === _module.name)) {
+        if(_module.name === 'colorscale' && head.indexOf('coloraxis') === 0) {
+            return _module.layoutAttributes[head];
+        } else if(!_module.schema && (head === _module.name)) {
             return _module.layoutAttributes;
         }
     }
