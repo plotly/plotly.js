@@ -500,48 +500,33 @@ function calcTextinfo(calcTrace, index, fullLayout) {
     var cdi = calcTrace[index];
 
     var separators = fullLayout.separators;
-    var allParts = textinfo.split('+');
-    var allTexts = [];
+    var parts = textinfo.split('+');
+    var text = [];
 
-    var hadDelta = false;
-    var hadFinal = false;
-    var hadInitial = false;
-    var hadText = false;
-    var hadLabel = false;
+    var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
 
-    for(var k = 0; k < allParts.length; k++) {
-        var part = allParts[k];
-
-        if(!hadText && part === 'text') {
-            hadText = true;
-            var tx = Lib.castOption(trace, cdi.i, 'text');
-            if(tx) allTexts.push(tx);
-        } else if(!hadLabel && part === 'label') {
-            hadLabel = true;
-            if(trace.orientation === 'h') {
-                allTexts.push(trace.y[index]);
-            } else {
-                allTexts.push(trace.x[index]);
-            }
+    if(hasFlag('label')) {
+        if(trace.orientation === 'h') {
+            text.push(trace.y[index]);
         } else {
-            // waterfall options
-
-            var delta = +cdi.rawS || cdi.s;
-            var final = cdi.v;
-            var initial = final - delta;
-
-            if(!hadDelta && part === 'delta') {
-                hadDelta = true;
-                allTexts.push(pieHelpers.formatPieValue(delta, separators));
-            } else if(!hadFinal && part === 'final') {
-                hadFinal = true;
-                allTexts.push(pieHelpers.formatPieValue(final, separators));
-            } else if(!hadInitial && part === 'initial') {
-                hadInitial = true;
-                allTexts.push(pieHelpers.formatPieValue(initial, separators));
-            }
+            text.push(trace.x[index]);
         }
     }
 
-    return allTexts.join('<br>');
+    if(hasFlag('text')) {
+        var tx = Lib.castOption(trace, cdi.i, 'text');
+        if(tx) text.push(tx);
+    }
+
+    if(trace.type === 'waterfall') {
+        var delta = +cdi.rawS || cdi.s;
+        var final = cdi.v;
+        var initial = final - delta;
+
+        if(hasFlag('initial')) text.push(pieHelpers.formatPieValue(initial, separators));
+        if(hasFlag('delta')) text.push(pieHelpers.formatPieValue(delta, separators));
+        if(hasFlag('final')) text.push(pieHelpers.formatPieValue(final, separators));
+    }
+
+    return text.join('<br>');
 }
