@@ -436,6 +436,28 @@ describe('Test colorbar:', function() {
             .then(done);
         });
 
+        it('can drag colorbars linked to color axes in editable mode', function(done) {
+            Plotly.newPlot(gd,
+                [{z: [[1, 2], [3, 4]], type: 'heatmap', coloraxis: 'coloraxis'}],
+                {coloraxis: {}, width: 400, height: 400},
+                {editable: true}
+            )
+            .then(function() {
+                expect(gd.layout.coloraxis.colorbar).toBeUndefined();
+                expect(gd._fullLayout.coloraxis.colorbar.x).toBe(1.02);
+                expect(gd._fullLayout.coloraxis.colorbar.y).toBe(0.5);
+                return drag(getCBNode(), -100, 100);
+            })
+            .then(function() {
+                expect(gd.layout.coloraxis.colorbar.x).toBeWithin(0.591, 0.01);
+                expect(gd.layout.coloraxis.colorbar.y).toBeWithin(0.045, 0.01);
+                expect(gd._fullLayout.coloraxis.colorbar.x).toBeWithin(0.591, 0.01);
+                expect(gd._fullLayout.coloraxis.colorbar.y).toBeWithin(0.045, 0.01);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('can edit colorbar visuals in optimized edit pathway', function(done) {
             spyOn(subroutines, 'doColorBars').and.callThrough();
             spyOn(Plots, 'doCalcdata').and.callThrough();

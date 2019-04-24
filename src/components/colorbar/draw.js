@@ -155,6 +155,7 @@ function makeColorBarData(gd) {
 
             opts = initOpts(cont.colorbar);
             opts._id = 'cb' + k;
+            opts._propPrefix = k + '.colorbar.';
 
             cbOpt = {min: 'cmin', max: 'cmax'};
             calcOpts();
@@ -591,7 +592,11 @@ function makeEditable(g, opts, gd) {
                 var update = {};
                 update[opts._propPrefix + 'x'] = xf;
                 update[opts._propPrefix + 'y'] = yf;
-                Registry.call('_guiRestyle', gd, update, opts._traceIndex);
+                if(opts._traceIndex !== undefined) {
+                    Registry.call('_guiRestyle', gd, update, opts._traceIndex);
+                } else {
+                    Registry.call('_guiRelayout', gd, update);
+                }
             }
         }
     });
