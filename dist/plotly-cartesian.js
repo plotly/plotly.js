@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.47.3
+* plotly.js (cartesian) v1.47.4
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -19461,7 +19461,7 @@ unhover.wrapped = function(gd, evt, subplot) {
 
 
 // remove hover effects on mouse out, and emit unhover event
-unhover.raw = function unhoverRaw(gd, evt) {
+unhover.raw = function raw(gd, evt) {
     var fullLayout = gd._fullLayout;
     var oldhoverdata = gd._hoverdata;
 
@@ -22018,7 +22018,7 @@ exports.getSubplot = function getSubplot(trace) {
 
 // is trace in given list of subplots?
 // does handle splom case
-exports.isTraceInSubplots = function isTraceInSubplot(trace, subplots) {
+exports.isTraceInSubplots = function isTraceInSubplots(trace, subplots) {
     if(trace.type === 'splom') {
         var xaxes = trace.xaxes || [];
         var yaxes = trace.yaxes || [];
@@ -33638,7 +33638,7 @@ ScrollBox.prototype.disable = function disable() {
  *
  * @method
  */
-ScrollBox.prototype._onBoxDrag = function onBarDrag() {
+ScrollBox.prototype._onBoxDrag = function _onBoxDrag() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 
@@ -33658,7 +33658,7 @@ ScrollBox.prototype._onBoxDrag = function onBarDrag() {
  *
  * @method
  */
-ScrollBox.prototype._onBoxWheel = function onBarWheel() {
+ScrollBox.prototype._onBoxWheel = function _onBoxWheel() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 
@@ -33678,7 +33678,7 @@ ScrollBox.prototype._onBoxWheel = function onBarWheel() {
  *
  * @method
  */
-ScrollBox.prototype._onBarDrag = function onBarDrag() {
+ScrollBox.prototype._onBarDrag = function _onBarDrag() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 
@@ -33984,7 +33984,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.47.3';
+exports.version = '1.47.4';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -36517,7 +36517,7 @@ lib.pushUnique = _dereq_('./push_unique');
 
 lib.cleanNumber = _dereq_('./clean_number');
 
-lib.ensureNumber = function num(v) {
+lib.ensureNumber = function ensureNumber(v) {
     if(!isNumeric(v)) return BADNUM;
     v = Number(v);
     if(v < -FP_SAFE || v > FP_SAFE) return BADNUM;
@@ -38608,7 +38608,7 @@ polygon.tester = function tester(ptsIn) {
  *      before the line counts as bent
  * @returns boolean: true means this segment is bent, false means straight
  */
-var isBent = polygon.isSegmentBent = function isBent(pts, start, end, tolerance) {
+polygon.isSegmentBent = function isSegmentBent(pts, start, end, tolerance) {
     var startPt = pts[start];
     var segment = [pts[end][0] - startPt[0], pts[end][1] - startPt[1]];
     var segmentSquared = dot(segment, segment);
@@ -38653,7 +38653,7 @@ polygon.filter = function filter(pts, tolerance) {
         ptsFiltered.splice(doneFilteredIndex + 1);
 
         for(var i = iLast + 1; i < pts.length; i++) {
-            if(i === pts.length - 1 || isBent(pts, iLast, i + 1, tolerance)) {
+            if(i === pts.length - 1 || polygon.isSegmentBent(pts, iLast, i + 1, tolerance)) {
                 ptsFiltered.push(pts[i]);
                 if(ptsFiltered.length < prevFilterLen - 2) {
                     doneRawIndex = i;
@@ -41586,7 +41586,7 @@ var numericNameWarningCountLimit = 5;
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-exports.plot = function(gd, data, layout, config) {
+function plot(gd, data, layout, config) {
     var frames;
 
     gd = Lib.getGraphDiv(gd);
@@ -41911,7 +41911,7 @@ exports.plot = function(gd, data, layout, config) {
         emitAfterPlot(gd);
         return gd;
     });
-};
+}
 
 function emitAfterPlot(gd) {
     var fullLayout = gd._fullLayout;
@@ -41923,9 +41923,9 @@ function emitAfterPlot(gd) {
     }
 }
 
-exports.setPlotConfig = function setPlotConfig(obj) {
+function setPlotConfig(obj) {
     return Lib.extendFlat(dfltConfig, obj);
-};
+}
 
 function setBackground(gd, bgColor) {
     try {
@@ -42142,7 +42142,7 @@ function plotLegacyPolar(gd, data, layout) {
 }
 
 // convenience function to force a full redraw, mostly for use by plotly.js
-exports.redraw = function(gd) {
+function redraw(gd) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -42157,7 +42157,7 @@ exports.redraw = function(gd) {
         gd.emit('plotly_redraw');
         return gd;
     });
-};
+}
 
 /**
  * Convenience function to make idempotent plot option obvious to users.
@@ -42167,7 +42167,7 @@ exports.redraw = function(gd) {
  * @param {Object} layout
  * @param {Object} config
  */
-exports.newPlot = function(gd, data, layout, config) {
+function newPlot(gd, data, layout, config) {
     gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
@@ -42175,7 +42175,7 @@ exports.newPlot = function(gd, data, layout, config) {
 
     Plots.purge(gd);
     return exports.plot(gd, data, layout, config);
-};
+}
 
 /**
  * Wrap negative indicies to their positive counterparts.
@@ -42495,7 +42495,7 @@ function concatTypedArray(arr0, arr1) {
  * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
  *
  */
-exports.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
+function extendTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -42551,9 +42551,9 @@ exports.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     Queue.add(gd, exports.prependTraces, undoArgs, extendTraces, arguments);
 
     return promise;
-};
+}
 
-exports.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
+function prependTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -42608,7 +42608,7 @@ exports.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     Queue.add(gd, exports.extendTraces, undoArgs, prependTraces, arguments);
 
     return promise;
-};
+}
 
 /**
  * Add data traces to an existing graph div.
@@ -42619,7 +42619,7 @@ exports.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
  * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
  *
  */
-exports.addTraces = function addTraces(gd, traces, newIndices) {
+function addTraces(gd, traces, newIndices) {
     gd = Lib.getGraphDiv(gd);
 
     var currentIndices = [];
@@ -42684,7 +42684,7 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
     promise = exports.moveTraces(gd, currentIndices, newIndices);
     Queue.stopSequence(gd);
     return promise;
-};
+}
 
 /**
  * Delete traces at `indices` from gd.data array.
@@ -42693,7 +42693,7 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
  * @param {Object[]} gd.data The array of traces we're removing from
  * @param {Number|Number[]} indices The indices
  */
-exports.deleteTraces = function deleteTraces(gd, indices) {
+function deleteTraces(gd, indices) {
     gd = Lib.getGraphDiv(gd);
 
     var traces = [];
@@ -42726,7 +42726,7 @@ exports.deleteTraces = function deleteTraces(gd, indices) {
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
-};
+}
 
 /**
  * Move traces at currentIndices array to locations in newIndices array.
@@ -42759,7 +42759,7 @@ exports.deleteTraces = function deleteTraces(gd, indices) {
  *      // reorder all traces (assume there are 5--a, b, c, d, e)
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
-exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
+function moveTraces(gd, currentIndices, newIndices) {
     gd = Lib.getGraphDiv(gd);
 
     var newData = [];
@@ -42823,7 +42823,7 @@ exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
-};
+}
 
 /**
  * restyle: update trace attributes of an existing plot
@@ -42925,7 +42925,6 @@ function restyle(gd, astr, val, _traces) {
         return gd;
     });
 }
-exports.restyle = restyle;
 
 // for undo: undefined initial vals must be turned into nulls
 // so that we unset rather than ignore them
@@ -42986,12 +42985,12 @@ function storeCurrent(attr, val, newVal, preGUI) {
  *     `layout._preGUI` or `layout._tracePreGUI[uid]`
  * @param {object} edits: the {attr: val} object as normally passed to `relayout` etc
  */
-exports._storeDirectGUIEdit = function(container, preGUI, edits) {
+function _storeDirectGUIEdit(container, preGUI, edits) {
     for(var attr in edits) {
         var np = nestedProperty(container, attr);
         storeCurrent(attr, np.get(), edits[attr], preGUI);
     }
-};
+}
 
 function _restyle(gd, aobj, traces) {
     var fullLayout = gd._fullLayout;
@@ -43423,7 +43422,6 @@ function relayout(gd, astr, val) {
         return gd;
     });
 }
-exports.relayout = relayout;
 
 // Optimization mostly for large splom traces where
 // Plots.supplyDefaults can take > 100ms
@@ -43945,7 +43943,6 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         return gd;
     });
 }
-exports.update = update;
 
 /*
  * internal-use-only restyle/relayout/update variants that record the initial
@@ -43960,9 +43957,6 @@ function guiEdit(func) {
         return p;
     };
 }
-exports._guiRestyle = guiEdit(restyle);
-exports._guiRelayout = guiEdit(relayout);
-exports._guiUpdate = guiEdit(update);
 
 // For connecting edited layout attributes to uirevision attrs
 // If no `attr` we use `match[1] + '.uirevision'`
@@ -44196,7 +44190,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-exports.react = function(gd, data, layout, config) {
+function react(gd, data, layout, config) {
     var frames, plotDone;
 
     function addFrames() { return exports.addFrames(gd, frames); }
@@ -44336,7 +44330,7 @@ exports.react = function(gd, data, layout, config) {
 
         return gd;
     });
-};
+}
 
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
     var sameTraceLength = oldFullData.length === newFullData.length;
@@ -44655,7 +44649,7 @@ function diffConfig(oldConfig, newConfig) {
  * @param {object} animationOpts
  *      configuration for the animation
  */
-exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
+function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -44997,7 +44991,7 @@ exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             resolve();
         }
     });
-};
+}
 
 /**
  * Register new frames
@@ -45018,7 +45012,7 @@ exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
  *      provided, an index will be provided in serial order. If already used, the frame
  *      will be overwritten.
  */
-exports.addFrames = function(gd, frameList, indices) {
+function addFrames(gd, frameList, indices) {
     gd = Lib.getGraphDiv(gd);
 
     if(frameList === null || frameList === undefined) {
@@ -45135,7 +45129,7 @@ exports.addFrames = function(gd, frameList, indices) {
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return Plots.modifyFrames(gd, ops);
-};
+}
 
 /**
  * Delete frame
@@ -45146,7 +45140,7 @@ exports.addFrames = function(gd, frameList, indices) {
  * @param {array of integers} frameList
  *      list of integer indices of frames to be deleted
  */
-exports.deleteFrames = function(gd, frameList) {
+function deleteFrames(gd, frameList) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -45182,7 +45176,7 @@ exports.deleteFrames = function(gd, frameList) {
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return Plots.modifyFrames(gd, ops);
-};
+}
 
 /**
  * Purge a graph container div back to its initial pre-Plotly.plot state
@@ -45190,7 +45184,7 @@ exports.deleteFrames = function(gd, frameList) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-exports.purge = function purge(gd) {
+function purge(gd) {
     gd = Lib.getGraphDiv(gd);
 
     var fullLayout = gd._fullLayout || {};
@@ -45212,7 +45206,7 @@ exports.purge = function purge(gd) {
     delete gd._context;
 
     return gd;
-};
+}
 
 // -------------------------------------------------------
 // makePlotFramework: Create the plot container and axes
@@ -45349,6 +45343,35 @@ function makePlotFramework(gd) {
 
     gd.emit('plotly_framework');
 }
+
+exports.animate = animate;
+exports.addFrames = addFrames;
+exports.deleteFrames = deleteFrames;
+
+exports.addTraces = addTraces;
+exports.deleteTraces = deleteTraces;
+exports.extendTraces = extendTraces;
+exports.moveTraces = moveTraces;
+exports.prependTraces = prependTraces;
+
+exports.newPlot = newPlot;
+exports.plot = plot;
+exports.purge = purge;
+
+exports.react = react;
+exports.redraw = redraw;
+exports.relayout = relayout;
+exports.restyle = restyle;
+
+exports.setPlotConfig = setPlotConfig;
+
+exports.update = update;
+
+exports._guiRelayout = guiEdit(relayout);
+exports._guiRestyle = guiEdit(restyle);
+exports._guiUpdate = guiEdit(update);
+
+exports._storeDirectGUIEdit = _storeDirectGUIEdit;
 
 },{"../components/color":51,"../components/colorbar/connect":53,"../components/drawing":72,"../constants/xmlns_namespaces":150,"../lib":168,"../lib/events":161,"../lib/queue":182,"../lib/svg_text_utils":189,"../plots/cartesian/axes":212,"../plots/cartesian/constants":218,"../plots/cartesian/graph_interact":221,"../plots/cartesian/select":229,"../plots/plots":244,"../plots/polar/legacy":247,"../registry":256,"./edit_types":195,"./helpers":196,"./manage_arrays":198,"./plot_config":200,"./plot_schema":201,"./subroutines":203,"d3":16,"fast-isnumeric":18,"has-hover":20}],200:[function(_dereq_,module,exports){
 /**
@@ -53175,7 +53198,7 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
     thisGroup[scaleanchor] = 1;
 }
 
-exports.enforce = function enforceAxisConstraints(gd) {
+exports.enforce = function enforce(gd) {
     var fullLayout = gd._fullLayout;
     var constraintGroups = fullLayout._axisConstraintGroups || [];
 
@@ -53333,7 +53356,7 @@ exports.enforce = function enforceAxisConstraints(gd) {
 
 // For use before autoranging, check if this axis was previously constrained
 // by domain but no longer is
-exports.clean = function cleanConstraints(gd, ax) {
+exports.clean = function clean(gd, ax) {
     if(ax._inputDomain) {
         var isConstrained = false;
         var axId = ax._id;
@@ -64491,7 +64514,7 @@ exports.layoutAttributes = _dereq_('./layout_attributes');
 
 exports.supplyLayoutDefaults = _dereq_('./layout_defaults');
 
-exports.plot = function plotTernary(gd) {
+exports.plot = function plot(gd) {
     var fullLayout = gd._fullLayout;
     var calcData = gd.calcdata;
     var ternaryIds = fullLayout._subplots[TERNARY];
@@ -68388,17 +68411,11 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 y1 = ya.c2p(di.p1, true);
                 x0 = xa.c2p(di.s0, true);
                 x1 = xa.c2p(di.s1, true);
-
-                // for selections
-                di.ct = [x1, (y0 + y1) / 2];
             } else {
                 x0 = xa.c2p(di.p0, true);
                 x1 = xa.c2p(di.p1, true);
                 y0 = ya.c2p(di.s0, true);
                 y1 = ya.c2p(di.s1, true);
-
-                // for selections
-                di.ct = [(x0 + x1) / 2, y1];
             }
 
             var isBlank = di.isBlank = (
@@ -68818,6 +68835,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
+    var trace = cd[0].trace;
     var selection = [];
     var i;
 
@@ -68827,10 +68845,15 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
             cd[i].selected = 0;
         }
     } else {
+        var getCentroid = trace.orientation === 'h' ?
+            function(d) { return [xa.c2p(d.s1, true), (ya.c2p(d.p0, true) + ya.c2p(d.p1, true)) / 2]; } :
+            function(d) { return [(xa.c2p(d.p0, true) + xa.c2p(d.p1, true)) / 2, ya.c2p(d.s1, true)]; };
+
         for(i = 0; i < cd.length; i++) {
             var di = cd[i];
+            var ct = 'ct' in di ? di.ct : getCentroid(di);
 
-            if(selectionTester.contains(di.ct, false, i, searchInfo)) {
+            if(selectionTester.contains(ct, false, i, searchInfo)) {
                 selection.push({
                     pointNumber: i,
                     x: xa.c2d(di.x),
@@ -68933,7 +68956,7 @@ Sieve.prototype.put = function put(position, value) {
  *                           (required if this.sepNegVal is true)
  * @returns {number} Current bin value
  */
-Sieve.prototype.get = function put(position, value) {
+Sieve.prototype.get = function get(position, value) {
     var label = this.getLabel(position, value);
     return this.bins[label] || 0;
 };
@@ -70316,31 +70339,29 @@ module.exports = {
 
 'use strict';
 
-var Box = {};
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    layoutAttributes: _dereq_('./layout_attributes'),
+    supplyDefaults: _dereq_('./defaults').supplyDefaults,
+    crossTraceDefaults: _dereq_('./defaults').crossTraceDefaults,
+    supplyLayoutDefaults: _dereq_('./layout_defaults').supplyLayoutDefaults,
+    calc: _dereq_('./calc'),
+    crossTraceCalc: _dereq_('./cross_trace_calc').crossTraceCalc,
+    plot: _dereq_('./plot').plot,
+    style: _dereq_('./style').style,
+    styleOnSelect: _dereq_('./style').styleOnSelect,
+    hoverPoints: _dereq_('./hover').hoverPoints,
+    eventData: _dereq_('./event_data'),
+    selectPoints: _dereq_('./select'),
 
-Box.attributes = _dereq_('./attributes');
-Box.layoutAttributes = _dereq_('./layout_attributes');
-Box.supplyDefaults = _dereq_('./defaults').supplyDefaults;
-Box.crossTraceDefaults = _dereq_('./defaults').crossTraceDefaults;
-Box.supplyLayoutDefaults = _dereq_('./layout_defaults').supplyLayoutDefaults;
-Box.calc = _dereq_('./calc');
-Box.crossTraceCalc = _dereq_('./cross_trace_calc').crossTraceCalc;
-Box.plot = _dereq_('./plot').plot;
-Box.style = _dereq_('./style').style;
-Box.styleOnSelect = _dereq_('./style').styleOnSelect;
-Box.hoverPoints = _dereq_('./hover').hoverPoints;
-Box.eventData = _dereq_('./event_data');
-Box.selectPoints = _dereq_('./select');
-
-Box.moduleType = 'trace';
-Box.name = 'box';
-Box.basePlotModule = _dereq_('../../plots/cartesian');
-Box.categories = ['cartesian', 'svg', 'symbols', 'oriented', 'box-violin', 'showLegend', 'boxLayout', 'zoomScale'];
-Box.meta = {
-    
+    moduleType: 'trace',
+    name: 'box',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', 'symbols', 'oriented', 'box-violin', 'showLegend', 'boxLayout', 'zoomScale'],
+    meta: {
+        
+    }
 };
-
-module.exports = Box;
 
 },{"../../plots/cartesian":223,"./attributes":281,"./calc":282,"./cross_trace_calc":283,"./defaults":284,"./event_data":285,"./hover":286,"./layout_attributes":288,"./layout_defaults":289,"./plot":290,"./select":291,"./style":292}],288:[function(_dereq_,module,exports){
 /**
@@ -72038,28 +72059,25 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Contour = {};
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    calc: _dereq_('./calc'),
+    plot: _dereq_('./plot').plot,
+    style: _dereq_('./style'),
+    colorbar: _dereq_('./colorbar'),
+    hoverPoints: _dereq_('./hover'),
 
-Contour.attributes = _dereq_('./attributes');
-Contour.supplyDefaults = _dereq_('./defaults');
-Contour.calc = _dereq_('./calc');
-Contour.plot = _dereq_('./plot').plot;
-Contour.style = _dereq_('./style');
-Contour.colorbar = _dereq_('./colorbar');
-Contour.hoverPoints = _dereq_('./hover');
-
-Contour.moduleType = 'trace';
-Contour.name = 'contour';
-Contour.basePlotModule = _dereq_('../../plots/cartesian');
-Contour.categories = ['cartesian', 'svg', '2dMap', 'contour', 'showLegend'];
-Contour.meta = {
-    
+    moduleType: 'trace',
+    name: 'contour',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap', 'contour', 'showLegend'],
+    meta: {
+        
+    }
 };
-
-module.exports = Contour;
 
 },{"../../plots/cartesian":223,"./attributes":293,"./calc":294,"./colorbar":296,"./defaults":302,"./hover":306,"./plot":311,"./style":313}],308:[function(_dereq_,module,exports){
 /**
@@ -73870,28 +73888,25 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Heatmap = {};
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    calc: _dereq_('./calc'),
+    plot: _dereq_('./plot'),
+    colorbar: _dereq_('./colorbar'),
+    style: _dereq_('./style'),
+    hoverPoints: _dereq_('./hover'),
 
-Heatmap.attributes = _dereq_('./attributes');
-Heatmap.supplyDefaults = _dereq_('./defaults');
-Heatmap.calc = _dereq_('./calc');
-Heatmap.plot = _dereq_('./plot');
-Heatmap.colorbar = _dereq_('./colorbar');
-Heatmap.style = _dereq_('./style');
-Heatmap.hoverPoints = _dereq_('./hover');
-
-Heatmap.moduleType = 'trace';
-Heatmap.name = 'heatmap';
-Heatmap.basePlotModule = _dereq_('../../plots/cartesian');
-Heatmap.categories = ['cartesian', 'svg', '2dMap'];
-Heatmap.meta = {
-    
+    moduleType: 'trace',
+    name: 'heatmap',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap'],
+    meta: {
+        
+    }
 };
-
-module.exports = Heatmap;
 
 },{"../../plots/cartesian":223,"./attributes":315,"./calc":316,"./colorbar":318,"./defaults":320,"./hover":322,"./plot":326,"./style":327}],324:[function(_dereq_,module,exports){
 /**
@@ -75926,7 +75941,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 /**
@@ -75942,34 +75956,31 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
  * to allow quadrature combination of errors in summed histograms...
  */
 
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    layoutAttributes: _dereq_('../bar/layout_attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    crossTraceDefaults: _dereq_('./cross_trace_defaults'),
+    supplyLayoutDefaults: _dereq_('../bar/layout_defaults'),
+    calc: _dereq_('./calc'),
+    crossTraceCalc: _dereq_('../bar/cross_trace_calc').crossTraceCalc,
+    plot: _dereq_('../bar/plot'),
+    layerName: 'barlayer',
+    style: _dereq_('../bar/style').style,
+    styleOnSelect: _dereq_('../bar/style').styleOnSelect,
+    colorbar: _dereq_('../scatter/marker_colorbar'),
+    hoverPoints: _dereq_('./hover'),
+    selectPoints: _dereq_('../bar/select'),
+    eventData: _dereq_('./event_data'),
 
-var Histogram = {};
-
-Histogram.attributes = _dereq_('./attributes');
-Histogram.layoutAttributes = _dereq_('../bar/layout_attributes');
-Histogram.supplyDefaults = _dereq_('./defaults');
-Histogram.crossTraceDefaults = _dereq_('./cross_trace_defaults');
-Histogram.supplyLayoutDefaults = _dereq_('../bar/layout_defaults');
-Histogram.calc = _dereq_('./calc');
-Histogram.crossTraceCalc = _dereq_('../bar/cross_trace_calc').crossTraceCalc;
-Histogram.plot = _dereq_('../bar/plot');
-Histogram.layerName = 'barlayer';
-Histogram.style = _dereq_('../bar/style').style;
-Histogram.styleOnSelect = _dereq_('../bar/style').styleOnSelect;
-Histogram.colorbar = _dereq_('../scatter/marker_colorbar');
-Histogram.hoverPoints = _dereq_('./hover');
-Histogram.selectPoints = _dereq_('../bar/select');
-Histogram.eventData = _dereq_('./event_data');
-
-Histogram.moduleType = 'trace';
-Histogram.name = 'histogram';
-Histogram.basePlotModule = _dereq_('../../plots/cartesian');
-Histogram.categories = ['cartesian', 'svg', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
-Histogram.meta = {
-    
+    moduleType: 'trace',
+    name: 'histogram',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'],
+    meta: {
+        
+    }
 };
-
-module.exports = Histogram;
 
 },{"../../plots/cartesian":223,"../bar/cross_trace_calc":269,"../bar/layout_attributes":274,"../bar/layout_defaults":275,"../bar/plot":276,"../bar/select":277,"../bar/style":279,"../scatter/marker_colorbar":384,"./attributes":330,"./calc":335,"./cross_trace_defaults":337,"./defaults":338,"./event_data":339,"./hover":340}],342:[function(_dereq_,module,exports){
 /**
@@ -76501,32 +76512,30 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Histogram2D = {};
+module.exports = {
 
-Histogram2D.attributes = _dereq_('./attributes');
-Histogram2D.supplyDefaults = _dereq_('./defaults');
-Histogram2D.crossTraceDefaults = _dereq_('./cross_trace_defaults');
-Histogram2D.calc = _dereq_('../heatmap/calc');
-Histogram2D.plot = _dereq_('../heatmap/plot');
-Histogram2D.layerName = 'heatmaplayer';
-Histogram2D.colorbar = _dereq_('../heatmap/colorbar');
-Histogram2D.style = _dereq_('../heatmap/style');
-Histogram2D.hoverPoints = _dereq_('./hover');
-Histogram2D.eventData = _dereq_('../histogram/event_data');
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    crossTraceDefaults: _dereq_('./cross_trace_defaults'),
+    calc: _dereq_('../heatmap/calc'),
+    plot: _dereq_('../heatmap/plot'),
+    layerName: 'heatmaplayer',
+    colorbar: _dereq_('../heatmap/colorbar'),
+    style: _dereq_('../heatmap/style'),
+    hoverPoints: _dereq_('./hover'),
+    eventData: _dereq_('../histogram/event_data'),
 
-Histogram2D.moduleType = 'trace';
-Histogram2D.name = 'histogram2d';
-Histogram2D.basePlotModule = _dereq_('../../plots/cartesian');
-Histogram2D.categories = ['cartesian', 'svg', '2dMap', 'histogram'];
-Histogram2D.meta = {
-    
-    
+    moduleType: 'trace',
+    name: 'histogram2d',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap', 'histogram'],
+    meta: {
+        
+        
+    }
 };
-
-module.exports = Histogram2D;
 
 },{"../../plots/cartesian":223,"../heatmap/calc":316,"../heatmap/colorbar":318,"../heatmap/plot":326,"../heatmap/style":327,"../histogram/event_data":339,"./attributes":343,"./cross_trace_defaults":345,"./defaults":346,"./hover":347}],349:[function(_dereq_,module,exports){
 /**
@@ -76666,31 +76675,28 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Histogram2dContour = {};
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    crossTraceDefaults: _dereq_('../histogram2d/cross_trace_defaults'),
+    calc: _dereq_('../contour/calc'),
+    plot: _dereq_('../contour/plot').plot,
+    layerName: 'contourlayer',
+    style: _dereq_('../contour/style'),
+    colorbar: _dereq_('../contour/colorbar'),
+    hoverPoints: _dereq_('../contour/hover'),
 
-Histogram2dContour.attributes = _dereq_('./attributes');
-Histogram2dContour.supplyDefaults = _dereq_('./defaults');
-Histogram2dContour.crossTraceDefaults = _dereq_('../histogram2d/cross_trace_defaults');
-Histogram2dContour.calc = _dereq_('../contour/calc');
-Histogram2dContour.plot = _dereq_('../contour/plot').plot;
-Histogram2dContour.layerName = 'contourlayer';
-Histogram2dContour.style = _dereq_('../contour/style');
-Histogram2dContour.colorbar = _dereq_('../contour/colorbar');
-Histogram2dContour.hoverPoints = _dereq_('../contour/hover');
-
-Histogram2dContour.moduleType = 'trace';
-Histogram2dContour.name = 'histogram2dcontour';
-Histogram2dContour.basePlotModule = _dereq_('../../plots/cartesian');
-Histogram2dContour.categories = ['cartesian', 'svg', '2dMap', 'contour', 'histogram', 'showLegend'];
-Histogram2dContour.meta = {
-    
-    
+    moduleType: 'trace',
+    name: 'histogram2dcontour',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap', 'contour', 'histogram', 'showLegend'],
+    meta: {
+        
+        
+    }
 };
-
-module.exports = Histogram2dContour;
 
 },{"../../plots/cartesian":223,"../contour/calc":294,"../contour/colorbar":296,"../contour/hover":306,"../contour/plot":311,"../contour/style":313,"../histogram2d/cross_trace_defaults":345,"./attributes":350,"./defaults":351}],353:[function(_dereq_,module,exports){
 /**
@@ -77363,30 +77369,27 @@ exports.castOption = function castOption(item, indices) {
 
 'use strict';
 
-var Pie = {};
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    supplyLayoutDefaults: _dereq_('./layout_defaults'),
+    layoutAttributes: _dereq_('./layout_attributes'),
 
-Pie.attributes = _dereq_('./attributes');
-Pie.supplyDefaults = _dereq_('./defaults');
-Pie.supplyLayoutDefaults = _dereq_('./layout_defaults');
-Pie.layoutAttributes = _dereq_('./layout_attributes');
+    calc: _dereq_('./calc').calc,
+    crossTraceCalc: _dereq_('./calc').crossTraceCalc,
 
-var calcModule = _dereq_('./calc');
-Pie.calc = calcModule.calc;
-Pie.crossTraceCalc = calcModule.crossTraceCalc;
+    plot: _dereq_('./plot').plot,
+    style: _dereq_('./style'),
+    styleOne: _dereq_('./style_one'),
 
-Pie.plot = _dereq_('./plot').plot;
-Pie.style = _dereq_('./style');
-Pie.styleOne = _dereq_('./style_one');
-
-Pie.moduleType = 'trace';
-Pie.name = 'pie';
-Pie.basePlotModule = _dereq_('./base_plot');
-Pie.categories = ['pie', 'showLegend'];
-Pie.meta = {
-    
+    moduleType: 'trace',
+    name: 'pie',
+    basePlotModule: _dereq_('./base_plot'),
+    categories: ['pie', 'showLegend'],
+    meta: {
+        
+    }
 };
-
-module.exports = Pie;
 
 },{"./attributes":353,"./base_plot":354,"./calc":355,"./defaults":356,"./layout_attributes":360,"./layout_defaults":361,"./plot":362,"./style":363,"./style_one":364}],360:[function(_dereq_,module,exports){
 /**
@@ -79878,43 +79881,41 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Scatter = {};
-
 var subtypes = _dereq_('./subtypes');
-Scatter.hasLines = subtypes.hasLines;
-Scatter.hasMarkers = subtypes.hasMarkers;
-Scatter.hasText = subtypes.hasText;
-Scatter.isBubble = subtypes.isBubble;
 
-Scatter.attributes = _dereq_('./attributes');
-Scatter.supplyDefaults = _dereq_('./defaults');
-Scatter.crossTraceDefaults = _dereq_('./cross_trace_defaults');
-Scatter.calc = _dereq_('./calc').calc;
-Scatter.crossTraceCalc = _dereq_('./cross_trace_calc');
-Scatter.arraysToCalcdata = _dereq_('./arrays_to_calcdata');
-Scatter.plot = _dereq_('./plot');
-Scatter.colorbar = _dereq_('./marker_colorbar');
-Scatter.style = _dereq_('./style').style;
-Scatter.styleOnSelect = _dereq_('./style').styleOnSelect;
-Scatter.hoverPoints = _dereq_('./hover');
-Scatter.selectPoints = _dereq_('./select');
-Scatter.animatable = true;
+module.exports = {
+    hasLines: subtypes.hasLines,
+    hasMarkers: subtypes.hasMarkers,
+    hasText: subtypes.hasText,
+    isBubble: subtypes.isBubble,
 
-Scatter.moduleType = 'trace';
-Scatter.name = 'scatter';
-Scatter.basePlotModule = _dereq_('../../plots/cartesian');
-Scatter.categories = [
-    'cartesian', 'svg', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like',
-    'zoomScale'
-];
-Scatter.meta = {
-    
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    crossTraceDefaults: _dereq_('./cross_trace_defaults'),
+    calc: _dereq_('./calc').calc,
+    crossTraceCalc: _dereq_('./cross_trace_calc'),
+    arraysToCalcdata: _dereq_('./arrays_to_calcdata'),
+    plot: _dereq_('./plot'),
+    colorbar: _dereq_('./marker_colorbar'),
+    style: _dereq_('./style').style,
+    styleOnSelect: _dereq_('./style').styleOnSelect,
+    hoverPoints: _dereq_('./hover'),
+    selectPoints: _dereq_('./select'),
+    animatable: true,
+
+    moduleType: 'trace',
+    name: 'scatter',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: [
+        'cartesian', 'svg', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like',
+        'zoomScale'
+    ],
+    meta: {
+        
+    }
 };
-
-module.exports = Scatter;
 
 },{"../../plots/cartesian":223,"./arrays_to_calcdata":365,"./attributes":366,"./calc":367,"./cross_trace_calc":371,"./cross_trace_defaults":372,"./defaults":373,"./hover":377,"./marker_colorbar":384,"./plot":386,"./select":387,"./style":389,"./subtypes":390}],379:[function(_dereq_,module,exports){
 /**
@@ -81966,29 +81967,27 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
 'use strict';
 
-var ScatterTernary = {};
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    colorbar: _dereq_('../scatter/marker_colorbar'),
+    calc: _dereq_('./calc'),
+    plot: _dereq_('./plot'),
+    style: _dereq_('../scatter/style').style,
+    styleOnSelect: _dereq_('../scatter/style').styleOnSelect,
+    hoverPoints: _dereq_('./hover'),
+    selectPoints: _dereq_('../scatter/select'),
+    eventData: _dereq_('./event_data'),
 
-ScatterTernary.attributes = _dereq_('./attributes');
-ScatterTernary.supplyDefaults = _dereq_('./defaults');
-ScatterTernary.colorbar = _dereq_('../scatter/marker_colorbar');
-ScatterTernary.calc = _dereq_('./calc');
-ScatterTernary.plot = _dereq_('./plot');
-ScatterTernary.style = _dereq_('../scatter/style').style;
-ScatterTernary.styleOnSelect = _dereq_('../scatter/style').styleOnSelect;
-ScatterTernary.hoverPoints = _dereq_('./hover');
-ScatterTernary.selectPoints = _dereq_('../scatter/select');
-ScatterTernary.eventData = _dereq_('./event_data');
-
-ScatterTernary.moduleType = 'trace';
-ScatterTernary.name = 'scatterternary';
-ScatterTernary.basePlotModule = _dereq_('../../plots/ternary');
-ScatterTernary.categories = ['ternary', 'symbols', 'showLegend', 'scatter-like'];
-ScatterTernary.meta = {
-    
-    
+    moduleType: 'trace',
+    name: 'scatterternary',
+    basePlotModule: _dereq_('../../plots/ternary'),
+    categories: ['ternary', 'symbols', 'showLegend', 'scatter-like'],
+    meta: {
+        
+        
+    }
 };
-
-module.exports = ScatterTernary;
 
 },{"../../plots/ternary":252,"../scatter/marker_colorbar":384,"../scatter/select":387,"../scatter/style":389,"./attributes":393,"./calc":394,"./defaults":395,"./event_data":396,"./hover":397,"./plot":399}],399:[function(_dereq_,module,exports){
 /**
