@@ -2843,9 +2843,175 @@ plots.doCalcdata = function(gd, traces) {
 
     doCrossTraceCalc(gd);
 
+    // Sort axis categories per value if specified
+    var sorted = sortAxisCategoriesByValue(axList, gd);
+    if(sorted.length) {
+        // If a sort operation was performed, run calc() again
+        for(i = 0; i < sorted.length; i++) calci(sorted[i], true);
+        for(i = 0; i < sorted.length; i++) calci(sorted[i], false);
+        doCrossTraceCalc(gd);
+    }
+
     Registry.getComponentMethod('fx', 'calc')(gd);
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
+
+var sortAxisCategoriesByValueRegex = /(value|sum|min|max) (ascending|descending)/;
+
+function sortAxisCategoriesByValue(axList, gd) {
+    var affectedTraces = [];
+    var i, j, k, l, o;
+    for(i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+        if(ax.type !== 'category') continue;
+
+        // Order by value
+        var match = ax.categoryorder.match(sortAxisCategoriesByValueRegex);
+        if(match) {
+            // Store values associated with each category
+            var categoriesValue = [];
+            for(j = 0; j < ax._categories.length; j++) {
+                categoriesValue.push([ax._categories[j], []]);
+            }
+
+            // Collect values across traces
+            for(j = 0; j < ax._traceIndices.length; j++) {
+                var traceIndex = ax._traceIndices[j];
+                var fullData = gd._fullData[traceIndex];
+
+                // Skip over invisible traces
+                if(fullData.visible !== true) continue;
+
+                var type = fullData.type;
+                if(type === 'histogram') delete fullData._autoBinFinished;
+
+                var cd = gd.calcdata[traceIndex];
+                for(k = 0; k < cd.length; k++) {
+                    var cdi = cd[k];
+                    var cat, catIndex, value;
+
+                    // If `splom`, collect values across dimensions
+                    if(type === 'splom') {
+                        // Find which dimension the current axis is representing
+                        var currentDimensionIndex = cdi.trace[ax._id.charAt(0) + 'axes'].indexOf(ax._id);
+
+                        // Apply logic to associated x axis
+                        if(ax._id.charAt(0) === 'y') {
+                            var associatedXAxis = ax._id.split('');
+                            associatedXAxis[0] = 'x';
+                            associatedXAxis = associatedXAxis.join('');
+                            ax = gd._fullLayout[axisIDs.id2name(associatedXAxis)];
+                        }
+
+                        var categories = cdi.trace.dimensions[currentDimensionIndex].values;
+                        for(l = 0; l < categories.length; l++) {
+                            cat = categories[l];
+                            catIndex = ax._categoriesMap[cat];
+
+                            // Collect values over all other dimensions
+                            for(o = 0; o < cdi.trace.dimensions.length; o++) {
+                                if(o === currentDimensionIndex) continue;
+                                var dimension = cdi.trace.dimensions[o];
+                                categoriesValue[catIndex][1].push(dimension.values[l]);
+                            }
+                        }
+                    // If `scattergl`, collect all values stashed under cdi.t
+                    } else if(type === 'scattergl') {
+                        for(l = 0; l < cdi.t.x.length; l++) {
+                            if(ax._id.charAt(0) === 'x') {
+                                cat = cdi.t.x[l];
+                                catIndex = cat;
+                                value = cdi.t.y[l];
+                            }
+
+                            if(ax._id.charAt(0) === 'y') {
+                                cat = cdi.t.y[l];
+                                catIndex = cat;
+                                value = cdi.t.x[l];
+                            }
+                            categoriesValue[catIndex][1].push(value);
+                        }
+                        // must clear scene 'batches', so that 2nd
+                        // _module.calc call starts from scratch
+                        if(cdi.t && cdi.t._scene) {
+                            delete cdi.t._scene.dirty;
+                        }
+                    // For all other 2d cartesian traces
+                    } else {
+                        if(ax._id.charAt(0) === 'x') {
+                            cat = cdi.p + 1 ? cdi.p : cdi.x;
+                            value = cdi.s || cdi.v || cdi.y;
+                        } else if(ax._id.charAt(0) === 'y') {
+                            cat = cdi.p + 1 ? cdi.p : cdi.y;
+                            value = cdi.s || cdi.v || cdi.x;
+                        }
+
+                        // If 2dMap, collect values in `z`
+                        if(cdi.hasOwnProperty('z')) {
+                            value = cdi.z;
+
+                            for(l = 0; l < value.length; l++) {
+                                for(o = 0; o < value[l].length; o++) {
+                                    catIndex = ax._id.charAt(0) === 'y' ? l : o;
+                                    categoriesValue[catIndex][1].push(value[l][o]);
+                                }
+                            }
+                        } else {
+                            if(!Array.isArray(value)) value = [value];
+                            for(l = 0; l < value.length; l++) {
+                                categoriesValue[cat][1].push(value[l]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Aggregate values
+            var aggFn;
+            switch(match[1]) {
+                case 'min':
+                    aggFn = Math.min;
+                    break;
+                case 'max':
+                    aggFn = Math.max;
+                    break;
+                default:
+                    aggFn = function(a, b) { return a + b;};
+            }
+
+            ax._categoriesValue = categoriesValue;
+
+            var categoriesAggregatedValue = [];
+            for(j = 0; j < categoriesValue.length; j++) {
+                categoriesAggregatedValue.push([
+                    categoriesValue[j][0],
+                    Lib.aggNums(aggFn, null, categoriesValue[j][1])
+                ]);
+            }
+
+            // Sort by aggregated value
+            categoriesAggregatedValue.sort(function(a, b) {
+                return a[1] - b[1];
+            });
+
+            ax._categoriesAggregatedValue = categoriesAggregatedValue;
+
+            // Set new category order
+            ax._initialCategories = categoriesAggregatedValue.map(function(c) {
+                return c[0];
+            });
+
+            // Reverse if descending
+            if(match[2] === 'descending') {
+                ax._initialCategories.reverse();
+            }
+
+            // Sort all matching axes
+            affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());
+        }
+    }
+    return affectedTraces;
+}
 
 function setupAxisCategories(axList, fullData) {
     for(var i = 0; i < axList.length; i++) {

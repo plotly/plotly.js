@@ -33,7 +33,7 @@ module.exports = function calc(gd, trace) {
 
     // set position and size
     for(var i = 0; i < serieslen; i++) {
-        cd[i] = { p: pos[i], s: size[i] };
+        cd[i] = { p: pos[i], s: size[i], v: size[i] };
 
         if(trace.ids) {
             cd[i].id = String(trace.ids[i]);

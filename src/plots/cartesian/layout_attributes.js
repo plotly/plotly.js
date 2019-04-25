@@ -817,8 +817,11 @@ module.exports = {
     categoryorder: {
         valType: 'enumerated',
         values: [
-            'trace', 'category ascending', 'category descending', 'array'
-            /* , 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
+            'trace', 'category ascending', 'category descending', 'array',
+            'value ascending', 'value descending',
+            'min ascending', 'min descending',
+            'max ascending', 'max descending',
+            'sum ascending', 'sum descending'
         ],
         dflt: 'trace',
         role: 'info',
@@ -828,11 +831,12 @@ module.exports = {
             'By default, plotly uses *trace*, which specifies the order that is present in the data supplied.',
             'Set `categoryorder` to *category ascending* or *category descending* if order should be determined by',
             'the alphanumerical order of the category names.',
-            /* 'Set `categoryorder` to *value ascending* or *value descending* if order should be determined by the',
-            'numerical order of the values.',*/ // // value ascending / descending to be implemented later
             'Set `categoryorder` to *array* to derive the ordering from the attribute `categoryarray`. If a category',
             'is not found in the `categoryarray` array, the sorting behavior for that attribute will be identical to',
-            'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.'
+            'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.',
+            'Set `categoryorder` to *value ascending* or *value descending* if order should be determined by the',
+            'numerical order of the values.',
+            'Similarly, the order can be determined by the min, max or the sums of the values.'
         ].join(' ')
     },
     categoryarray: {
