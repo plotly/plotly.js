@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.47.4] -- 2019-04-25
+
+### Fixed
+- Fix graphs with `sankey` and cartesian subplots [#3802]
+- Fix selection of `bar` traces on subplot with a range slider [#3806]
+
+
 ## [1.47.3] -- 2019-04-18
 
 ### Fixed
