@@ -12,15 +12,15 @@
 var isNumeric = require('fast-isnumeric');
 var m4FromQuat = require('gl-mat4/fromQuat');
 
-var Registry = require('../registry');
 var Lib = require('../lib');
-var Plots = require('../plots/plots');
-var AxisIds = require('../plots/cartesian/axis_ids');
+var subplotsRegistry = require('../plots/plots').subplotsRegistry;
 var Color = require('../components/color');
 
-var cleanId = AxisIds.cleanId;
-var getFromTrace = AxisIds.getFromTrace;
-var traceIs = Registry.traceIs;
+var cleanId = require('../plots/cartesian/axis_ids').cleanId;
+var getFromTrace = require('../plots/cartesian/axis_ids').getFromTrace;
+
+var traceIs = require('../registry').traceIs;
+var getModule = require('../registry').getModule;
 
 // clear the promise queue if one of them got rejected
 exports.clearPromiseQueue = function(gd) {
@@ -53,10 +53,10 @@ exports.cleanLayout = function(layout) {
         delete layout.scene1;
     }
 
-    var axisAttrRegex = (Plots.subplotsRegistry.cartesian || {}).attrRegex;
-    var polarAttrRegex = (Plots.subplotsRegistry.polar || {}).attrRegex;
-    var ternaryAttrRegex = (Plots.subplotsRegistry.ternary || {}).attrRegex;
-    var sceneAttrRegex = (Plots.subplotsRegistry.gl3d || {}).attrRegex;
+    var axisAttrRegex = (subplotsRegistry.cartesian || {}).attrRegex;
+    var polarAttrRegex = (subplotsRegistry.polar || {}).attrRegex;
+    var ternaryAttrRegex = (subplotsRegistry.ternary || {}).attrRegex;
+    var sceneAttrRegex = (subplotsRegistry.gl3d || {}).attrRegex;
 
     var keys = Object.keys(layout);
     for(i = 0; i < keys.length; i++) {
@@ -325,7 +325,7 @@ exports.cleanData = function(data) {
 
         // scene ids scene1 -> scene
         if(traceIs(trace, 'gl3d') && trace.scene) {
-            trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
+            trace.scene = subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
         if(!traceIs(trace, 'pie') && !traceIs(trace, 'bar') && trace.type !== 'waterfall') {
@@ -339,7 +339,7 @@ exports.cleanData = function(data) {
         }
 
         // fix typo in colorscale definition
-        var _module = Registry.getModule(trace);
+        var _module = getModule(trace);
         if(_module && _module.colorbar) {
             var containerName = _module.colorbar.container;
             var container = containerName ? trace[containerName] : trace;

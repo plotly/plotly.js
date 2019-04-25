@@ -10,7 +10,8 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var plotApi = require('./plot_api');
+var plot = require('./plot_api').plot;
+var purge = require('./plot_api').purge;
 var Lib = require('../lib');
 
 var helpers = require('../snapshot/helpers');
@@ -172,7 +173,7 @@ function toImage(gd, opts) {
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
 
-            plotApi.purge(clonedGd);
+            purge(clonedGd);
             document.body.removeChild(clonedGd);
 
             if(format === 'svg') {
@@ -213,7 +214,7 @@ function toImage(gd, opts) {
     }
 
     return new Promise(function(resolve, reject) {
-        plotApi.plot(clonedGd, data, layoutImage, configImage)
+        plot(clonedGd, data, layoutImage, configImage)
             .then(redrawFunc)
             .then(wait)
             .then(convert)

@@ -13,7 +13,7 @@ var isPlainObject = require('../lib/is_plain_object');
 var noop = require('../lib/noop');
 var Loggers = require('../lib/loggers');
 var sorterAsc = require('../lib/search').sorterAsc;
-var Registry = require('../registry');
+var getComponentMethod = require('../registry').getComponentMethod;
 
 
 exports.containerArrayMatch = require('./container_array_match');
@@ -75,9 +75,9 @@ var isRemoveVal = exports.isRemoveVal = function isRemoveVal(val) {
  */
 exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np, edits, flags, _nestedProperty) {
     var componentType = np.astr;
-    var supplyComponentDefaults = Registry.getComponentMethod(componentType, 'supplyLayoutDefaults');
-    var draw = Registry.getComponentMethod(componentType, 'draw');
-    var drawOne = Registry.getComponentMethod(componentType, 'drawOne');
+    var supplyComponentDefaults = getComponentMethod(componentType, 'supplyLayoutDefaults');
+    var draw = getComponentMethod(componentType, 'draw');
+    var drawOne = getComponentMethod(componentType, 'drawOne');
     var replotLater = flags.replot || flags.recalc || (supplyComponentDefaults === noop) || (draw === noop);
     var layout = gd.layout;
     var fullLayout = gd._fullLayout;
