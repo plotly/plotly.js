@@ -66,7 +66,7 @@ var numericNameWarningCountLimit = 5;
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-exports.plot = function(gd, data, layout, config) {
+function plot(gd, data, layout, config) {
     var frames;
 
     gd = Lib.getGraphDiv(gd);
@@ -391,7 +391,7 @@ exports.plot = function(gd, data, layout, config) {
         emitAfterPlot(gd);
         return gd;
     });
-};
+}
 
 function emitAfterPlot(gd) {
     var fullLayout = gd._fullLayout;
@@ -403,9 +403,9 @@ function emitAfterPlot(gd) {
     }
 }
 
-exports.setPlotConfig = function setPlotConfig(obj) {
+function setPlotConfig(obj) {
     return Lib.extendFlat(dfltConfig, obj);
-};
+}
 
 function setBackground(gd, bgColor) {
     try {
@@ -622,7 +622,7 @@ function plotLegacyPolar(gd, data, layout) {
 }
 
 // convenience function to force a full redraw, mostly for use by plotly.js
-exports.redraw = function(gd) {
+function redraw(gd) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -637,7 +637,7 @@ exports.redraw = function(gd) {
         gd.emit('plotly_redraw');
         return gd;
     });
-};
+}
 
 /**
  * Convenience function to make idempotent plot option obvious to users.
@@ -647,7 +647,7 @@ exports.redraw = function(gd) {
  * @param {Object} layout
  * @param {Object} config
  */
-exports.newPlot = function(gd, data, layout, config) {
+function newPlot(gd, data, layout, config) {
     gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
@@ -655,7 +655,7 @@ exports.newPlot = function(gd, data, layout, config) {
 
     Plots.purge(gd);
     return exports.plot(gd, data, layout, config);
-};
+}
 
 /**
  * Wrap negative indicies to their positive counterparts.
@@ -975,7 +975,7 @@ function concatTypedArray(arr0, arr1) {
  * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
  *
  */
-exports.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
+function extendTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -1031,9 +1031,9 @@ exports.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     Queue.add(gd, exports.prependTraces, undoArgs, extendTraces, arguments);
 
     return promise;
-};
+}
 
-exports.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
+function prependTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -1088,7 +1088,7 @@ exports.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     Queue.add(gd, exports.extendTraces, undoArgs, prependTraces, arguments);
 
     return promise;
-};
+}
 
 /**
  * Add data traces to an existing graph div.
@@ -1099,7 +1099,7 @@ exports.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
  * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
  *
  */
-exports.addTraces = function addTraces(gd, traces, newIndices) {
+function addTraces(gd, traces, newIndices) {
     gd = Lib.getGraphDiv(gd);
 
     var currentIndices = [];
@@ -1164,7 +1164,7 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
     promise = exports.moveTraces(gd, currentIndices, newIndices);
     Queue.stopSequence(gd);
     return promise;
-};
+}
 
 /**
  * Delete traces at `indices` from gd.data array.
@@ -1173,7 +1173,7 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
  * @param {Object[]} gd.data The array of traces we're removing from
  * @param {Number|Number[]} indices The indices
  */
-exports.deleteTraces = function deleteTraces(gd, indices) {
+function deleteTraces(gd, indices) {
     gd = Lib.getGraphDiv(gd);
 
     var traces = [];
@@ -1206,7 +1206,7 @@ exports.deleteTraces = function deleteTraces(gd, indices) {
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
-};
+}
 
 /**
  * Move traces at currentIndices array to locations in newIndices array.
@@ -1239,7 +1239,7 @@ exports.deleteTraces = function deleteTraces(gd, indices) {
  *      // reorder all traces (assume there are 5--a, b, c, d, e)
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
-exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
+function moveTraces(gd, currentIndices, newIndices) {
     gd = Lib.getGraphDiv(gd);
 
     var newData = [];
@@ -1303,7 +1303,7 @@ exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
-};
+}
 
 /**
  * restyle: update trace attributes of an existing plot
@@ -1405,7 +1405,6 @@ function restyle(gd, astr, val, _traces) {
         return gd;
     });
 }
-exports.restyle = restyle;
 
 // for undo: undefined initial vals must be turned into nulls
 // so that we unset rather than ignore them
@@ -1466,12 +1465,12 @@ function storeCurrent(attr, val, newVal, preGUI) {
  *     `layout._preGUI` or `layout._tracePreGUI[uid]`
  * @param {object} edits: the {attr: val} object as normally passed to `relayout` etc
  */
-exports._storeDirectGUIEdit = function(container, preGUI, edits) {
+function _storeDirectGUIEdit(container, preGUI, edits) {
     for(var attr in edits) {
         var np = nestedProperty(container, attr);
         storeCurrent(attr, np.get(), edits[attr], preGUI);
     }
-};
+}
 
 function _restyle(gd, aobj, traces) {
     var fullLayout = gd._fullLayout;
@@ -1903,7 +1902,6 @@ function relayout(gd, astr, val) {
         return gd;
     });
 }
-exports.relayout = relayout;
 
 // Optimization mostly for large splom traces where
 // Plots.supplyDefaults can take > 100ms
@@ -2425,7 +2423,6 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         return gd;
     });
 }
-exports.update = update;
 
 /*
  * internal-use-only restyle/relayout/update variants that record the initial
@@ -2440,9 +2437,6 @@ function guiEdit(func) {
         return p;
     };
 }
-exports._guiRestyle = guiEdit(restyle);
-exports._guiRelayout = guiEdit(relayout);
-exports._guiUpdate = guiEdit(update);
 
 // For connecting edited layout attributes to uirevision attrs
 // If no `attr` we use `match[1] + '.uirevision'`
@@ -2676,7 +2670,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-exports.react = function(gd, data, layout, config) {
+function react(gd, data, layout, config) {
     var frames, plotDone;
 
     function addFrames() { return exports.addFrames(gd, frames); }
@@ -2816,7 +2810,7 @@ exports.react = function(gd, data, layout, config) {
 
         return gd;
     });
-};
+}
 
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
     var sameTraceLength = oldFullData.length === newFullData.length;
@@ -3135,7 +3129,7 @@ function diffConfig(oldConfig, newConfig) {
  * @param {object} animationOpts
  *      configuration for the animation
  */
-exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
+function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -3477,7 +3471,7 @@ exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             resolve();
         }
     });
-};
+}
 
 /**
  * Register new frames
@@ -3498,7 +3492,7 @@ exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
  *      provided, an index will be provided in serial order. If already used, the frame
  *      will be overwritten.
  */
-exports.addFrames = function(gd, frameList, indices) {
+function addFrames(gd, frameList, indices) {
     gd = Lib.getGraphDiv(gd);
 
     if(frameList === null || frameList === undefined) {
@@ -3615,7 +3609,7 @@ exports.addFrames = function(gd, frameList, indices) {
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return Plots.modifyFrames(gd, ops);
-};
+}
 
 /**
  * Delete frame
@@ -3626,7 +3620,7 @@ exports.addFrames = function(gd, frameList, indices) {
  * @param {array of integers} frameList
  *      list of integer indices of frames to be deleted
  */
-exports.deleteFrames = function(gd, frameList) {
+function deleteFrames(gd, frameList) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -3662,7 +3656,7 @@ exports.deleteFrames = function(gd, frameList) {
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return Plots.modifyFrames(gd, ops);
-};
+}
 
 /**
  * Purge a graph container div back to its initial pre-Plotly.plot state
@@ -3670,7 +3664,7 @@ exports.deleteFrames = function(gd, frameList) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-exports.purge = function purge(gd) {
+function purge(gd) {
     gd = Lib.getGraphDiv(gd);
 
     var fullLayout = gd._fullLayout || {};
@@ -3692,7 +3686,7 @@ exports.purge = function purge(gd) {
     delete gd._context;
 
     return gd;
-};
+}
 
 // -------------------------------------------------------
 // makePlotFramework: Create the plot container and axes
@@ -3829,3 +3823,32 @@ function makePlotFramework(gd) {
 
     gd.emit('plotly_framework');
 }
+
+exports.animate = animate;
+exports.addFrames = addFrames;
+exports.deleteFrames = deleteFrames;
+
+exports.addTraces = addTraces;
+exports.deleteTraces = deleteTraces;
+exports.extendTraces = extendTraces;
+exports.moveTraces = moveTraces;
+exports.prependTraces = prependTraces;
+
+exports.newPlot = newPlot;
+exports.plot = plot;
+exports.purge = purge;
+
+exports.react = react;
+exports.redraw = redraw;
+exports.relayout = relayout;
+exports.restyle = restyle;
+
+exports.setPlotConfig = setPlotConfig;
+
+exports.update = update;
+
+exports._guiRelayout = guiEdit(relayout);
+exports._guiRestyle = guiEdit(restyle);
+exports._guiUpdate = guiEdit(update);
+
+exports._storeDirectGUIEdit = _storeDirectGUIEdit;
