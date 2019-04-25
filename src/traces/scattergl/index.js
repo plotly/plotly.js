@@ -116,7 +116,6 @@ function calc(gd, trace) {
         opts.marker.snap = stash.tree || TOO_MANY_POINTS;
     }
 
-    // save scene opts batch
     scene.lineOptions.push(opts.line);
     scene.errorXOptions.push(opts.errorX);
     scene.errorYOptions.push(opts.errorY);
@@ -128,7 +127,6 @@ function calc(gd, trace) {
     scene.textSelectedOptions.push(opts.textSel);
     scene.textUnselectedOptions.push(opts.textUnsel);
 
-    // stash scene ref
     stash._scene = scene;
     stash.index = scene.count;
     stash.x = x;
@@ -146,7 +144,6 @@ function expandForErrorBars(trace, ax, opts) {
     extremes.max = extremes.max.concat(errExt.max);
 }
 
-// create scene options
 function sceneOptions(gd, subplot, trace, positions, x, y) {
     var opts = convert.style(gd, trace);
 
@@ -193,13 +190,12 @@ function sceneOptions(gd, subplot, trace, positions, x, y) {
     return opts;
 }
 
-
 // make sure scene exists on subplot, return it
 function sceneUpdate(gd, subplot) {
     var scene = subplot._scene;
 
     var resetOpts = {
-        // number of traces in subplot, since scene:subplot → 1:1
+        // number of traces in subplot, since scene:subplot -> 1:1
         count: 0,
         // whether scene requires init hook in plot call (dirty plot call)
         dirty: true,
@@ -216,16 +212,16 @@ function sceneUpdate(gd, subplot) {
         textUnselectedOptions: []
     };
 
+    // regl- component stubs, initialized in dirty plot call
     var initOpts = {
         selectBatch: null,
         unselectBatch: null,
-        // regl- component stubs, initialized in dirty plot call
         fill2d: false,
         scatter2d: false,
         error2d: false,
         line2d: false,
         glText: false,
-        select2d: null
+        select2d: false
     };
 
     if(!subplot._scene) {
@@ -325,7 +321,7 @@ function sceneUpdate(gd, subplot) {
         };
     }
 
-    // In case if we have scene from the last calc - reset data
+    // in case if we have scene from the last calc - reset data
     if(!scene.dirty) {
         Lib.extendFlat(scene, resetOpts);
     }
@@ -363,6 +359,7 @@ function plot(gd, subplot, cdata) {
         return;
     }
 
+    var count = scene.count;
     var regl = fullLayout._glcanvas.data()[0].regl;
 
     // that is needed for fills
@@ -383,28 +380,28 @@ function plot(gd, subplot, cdata) {
             scene.fill2d = createLine(regl);
         }
         if(scene.glText === true) {
-            scene.glText = new Array(scene.count);
-            for(i = 0; i < scene.count; i++) {
+            scene.glText = new Array(count);
+            for(i = 0; i < count; i++) {
                 scene.glText[i] = new Text(regl);
             }
         }
 
         // update main marker options
         if(scene.glText) {
-            if(scene.count > scene.glText.length) {
+            if(count > scene.glText.length) {
                 // add gl text marker
-                var textsToAdd = scene.count - scene.glText.length;
+                var textsToAdd = count - scene.glText.length;
                 for(i = 0; i < textsToAdd; i++) {
                     scene.glText.push(new Text(regl));
                 }
-            } else if(scene.count < scene.glText.length) {
+            } else if(count < scene.glText.length) {
                 // remove gl text marker
-                var textsToRemove = scene.glText.length - scene.count;
-                var removedTexts = scene.glText.splice(scene.count, textsToRemove);
+                var textsToRemove = scene.glText.length - count;
+                var removedTexts = scene.glText.splice(count, textsToRemove);
                 removedTexts.forEach(function(text) { text.destroy(); });
             }
 
-            for(i = 0; i < scene.count; i++) {
+            for(i = 0; i < count; i++) {
                 scene.glText[i].update(scene.textOptions[i]);
             }
         }
@@ -437,7 +434,7 @@ function plot(gd, subplot, cdata) {
         }
 
         // fill requires linked traces, so we generate it's positions here
-        scene.fillOrder = Lib.repeat(null, scene.count);
+        scene.fillOrder = Lib.repeat(null, count);
         if(scene.fill2d) {
             scene.fillOptions = scene.fillOptions.map(function(fillOptions, i) {
                 var cdscatter = cdata[i];
@@ -562,7 +559,7 @@ function plot(gd, subplot, cdata) {
     var selectMode = dragmode === 'lasso' || dragmode === 'select';
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
-    for(i = 0; i < cdata.length; i++) {
+    for(i = 0; i < count; i++) {
         var cd0 = cdata[i][0];
         var trace = cd0.trace;
         var stash = cd0.t;
@@ -610,11 +607,9 @@ function plot(gd, subplot, cdata) {
         }
     }
 
-
     if(selectMode) {
-        // create select2d
+        // create scatter instance by cloning scatter2d
         if(!scene.select2d) {
-            // create scatter instance by cloning scatter2d
             scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl);
         }
 
@@ -639,9 +634,9 @@ function plot(gd, subplot, cdata) {
             });
         }
     } else {
+        // reset 'context' scatter2d opts to base opts,
+        // thus unsetting markerUnselectedOptions from selection
         if(scene.scatter2d) {
-            // reset scatter2d opts to base opts,
-            // thus unsetting markerUnselectedOptions from selection
             scene.scatter2d.update(scene.markerOptions);
         }
     }
@@ -679,7 +674,6 @@ function plot(gd, subplot, cdata) {
         scene.glText.forEach(function(text) { text.update(vpRange0); });
     }
 }
-
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -757,7 +751,6 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     return [pointData];
 }
-
 
 function calcHover(pointData, x, y, trace) {
     var xa = pointData.xa;
@@ -924,7 +917,6 @@ function selectPoints(searchInfo, selectionTester) {
     scene.selectBatch[stash.index] = els;
     scene.unselectBatch[stash.index] = unels;
 
-    // update text options
     if(hasText) {
         styleTextSelection(cd);
     }
