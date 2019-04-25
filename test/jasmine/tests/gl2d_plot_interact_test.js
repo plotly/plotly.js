@@ -884,7 +884,7 @@ describe('Test gl2d plots', function() {
 
     it('@gl should restyle opacity', function(done) {
         // #2299
-        spyOn(ScatterGl, 'calc');
+        spyOn(ScatterGl, 'calc').and.callThrough();
 
         var dat = [{
             'x': [1, 2, 3],
@@ -944,8 +944,8 @@ describe('Test gl2d plots', function() {
             var scene = gd._fullLayout._plots.xy._scene;
 
             expect(scene.count).toBe(2);
-            expect(scene.selectBatch).toEqual([[0]]);
-            expect(scene.unselectBatch).toEqual([[]]);
+            expect(scene.selectBatch).toEqual([[0], []]);
+            expect(scene.unselectBatch).toEqual([[], []]);
             expect(scene.markerOptions.length).toBe(2);
             expect(scene.markerOptions[1].color).toEqual(new Uint8Array([255, 0, 0, 255]));
             expect(scene.textOptions.length).toBe(2);
@@ -958,8 +958,8 @@ describe('Test gl2d plots', function() {
             var scene = gd._fullLayout._plots.xy._scene;
             var msg = 'clearing under dragmode select';
 
-            expect(scene.selectBatch).toEqual([], msg);
-            expect(scene.unselectBatch).toEqual([], msg);
+            expect(scene.selectBatch).toEqual([[], []], msg);
+            expect(scene.unselectBatch).toEqual([[], []], msg);
 
             // scattergl uses different pathways for select/lasso & zoom/pan
             return Plotly.relayout(gd, 'dragmode', 'pan');
@@ -968,8 +968,8 @@ describe('Test gl2d plots', function() {
             var scene = gd._fullLayout._plots.xy._scene;
             var msg = 'cleared under dragmode pan';
 
-            expect(scene.selectBatch).toEqual([], msg);
-            expect(scene.unselectBatch).toEqual([], msg);
+            expect(scene.selectBatch).toEqual([[], []], msg);
+            expect(scene.unselectBatch).toEqual([[], []], msg);
 
             return Plotly.restyle(gd, 'selectedpoints', [[1, 2], [0]]);
         })
@@ -986,8 +986,8 @@ describe('Test gl2d plots', function() {
             var scene = gd._fullLayout._plots.xy._scene;
             var msg = 'clearing under dragmode pan';
 
-            expect(scene.selectBatch).toBe(null, msg);
-            expect(scene.unselectBatch).toBe(null, msg);
+            expect(scene.selectBatch).toEqual([[], []], msg);
+            expect(scene.unselectBatch).toEqual([[], []], msg);
         })
         .catch(failTest)
         .then(done);

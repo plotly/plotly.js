@@ -454,14 +454,14 @@ describe('Test gl2d lasso/select:', function() {
             );
             updateCalls.forEach(function(d, i) {
                 d.args.forEach(function(arg, j) {
-                    if('range' in arg[0]) {
+                    if(Array.isArray(arg) && 'range' in arg[0]) {
                         // no need to assert range value in detail
                         expect(exp.updateArgs[i][j]).toBe(
                             'range',
                             'scatter.update range update - ' + msg
                         );
                     } else {
-                        expect(arg).toBe(
+                        expect(arg).toEqual(
                             exp.updateArgs[i][j],
                             'scatter.update call' + i + ' arg' + j + ' - ' + msg
                         );
@@ -475,7 +475,7 @@ describe('Test gl2d lasso/select:', function() {
             );
             drawCalls.forEach(function(d, i) {
                 d.args.forEach(function(arg, j) {
-                    expect(arg).toBe(
+                    expect(arg).toEqual(
                         exp.drawArgs[i][j],
                         'scatter.draw call' + i + ' arg' + j + ' - ' + msg
                     );
@@ -486,9 +486,7 @@ describe('Test gl2d lasso/select:', function() {
             scene.scatter2d.draw.calls.reset();
         }
 
-        var unselectBatchOld;
-
-        Plotly.newPlot('graph', [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             mode: 'markers',
             y: [1, 2, 1],
@@ -507,8 +505,8 @@ describe('Test gl2d lasso/select:', function() {
         })
         .then(function() {
             _assert('base', {
-                selectBatch: [],
-                unselectBatch: [],
+                selectBatch: [[]],
+                unselectBatch: [[]],
                 updateArgs: [],
                 drawArgs: []
             });
@@ -521,9 +519,10 @@ describe('Test gl2d lasso/select:', function() {
                 unselectBatch: [[0, 2]],
                 updateArgs: [
                     // N.B. scatter2d now draws unselected options
-                    [scene.markerUnselectedOptions],
+                    scene.markerUnselectedOptions,
                 ],
                 drawArgs: [
+                    // draw unselectBatch
                     [scene.unselectBatch]
                 ]
             });
@@ -532,45 +531,42 @@ describe('Test gl2d lasso/select:', function() {
         .then(function() {
             var scene = grabScene();
             _assert('after doubleclick', {
-                selectBatch: [null],
-                unselectBatch: [[0, 1, 2]],
-                updateArgs: [],
+                selectBatch: [[]],
+                unselectBatch: [[]],
+                updateArgs: [
+                    // N.B. bring scatter2d back to 'base' marker options
+                    [scene.markerOptions[0]]
+                ],
                 drawArgs: [
-                    // call in no-selection loop (can we get rid of this?)
-                    [0],
-                    // call with unselectBatch
-                    [scene.unselectBatch]
+                    // call data[0] batch
+                    [0]
                 ]
             });
         })
         .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
         .then(function() {
             _assert('after relayout to *pan*', {
-                selectBatch: [null],
-                unselectBatch: [[0, 1, 2]],
+                selectBatch: [[]],
+                unselectBatch: [[]],
                 // nothing to do when relayouting to 'pan'
                 updateArgs: [],
                 drawArgs: []
             });
-
-            // keep ref for next _assert()
-            var scene = grabScene();
-            unselectBatchOld = scene.unselectBatch;
         })
         .then(function() { return drag([[200, 200], [250, 250]]); })
         .then(function() {
             var scene = grabScene();
             _assert('after pan', {
-                selectBatch: null,
-                unselectBatch: null,
+                selectBatch: [[]],
+                unselectBatch: [[]],
                 // drag triggers:
                 // - 2 scene.update() calls, which each invoke
                 //   + 1 scatter2d.update (updating viewport)
-                //   + 2 scatter2d.draw (same as after double-click)
+                //   + 1 scatter2d.draw (same as after double-click)
                 //
                 // replot on mouseup triggers:
-                // - 1 scatter2d.update updating viewport
                 // - 1 scatter2d.update resetting markerOptions
+                // - 1 scatter2d.update updating viewport
                 // - 1 (full) scene.draw()
                 updateArgs: [
                     ['range'],
@@ -580,10 +576,9 @@ describe('Test gl2d lasso/select:', function() {
                     ['range']
                 ],
                 drawArgs: [
+                    // call data[0] batch
                     [0],
-                    [unselectBatchOld],
                     [0],
-                    [unselectBatchOld],
                     [0]
                 ]
             });
