@@ -957,7 +957,7 @@ describe('A waterfall plot', function() {
         .then(done);
     });
 
-    it('should be able to deal with blank bars on transform', function(done) {
+    it('should be able to deal with transform that empty out the data coordinate arrays', function(done) {
         Plotly.plot(gd, {
             data: [{
                 type: 'waterfall',
@@ -974,14 +974,11 @@ describe('A waterfall plot', function() {
         })
         .then(function() {
             var traceNodes = getAllTraceNodes(gd);
-            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
-            var pathNode = waterfallNodes[0].querySelector('path');
+            expect(traceNodes.length).toBe(0);
 
             expect(gd.calcdata[0][0].x).toEqual(NaN);
             expect(gd.calcdata[0][0].y).toEqual(NaN);
-            expect(gd.calcdata[0][0].isBlank).toBe(true);
-
-            expect(pathNode.outerHTML).toEqual('<path d="M0,0Z" style="vector-effect: non-scaling-stroke;"></path>');
+            expect(gd.calcdata[0][0].isBlank).toBe(undefined);
         })
         .catch(failTest)
         .then(done);

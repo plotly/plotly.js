@@ -1321,7 +1321,15 @@ describe('filter transforms interactions', function() {
 });
 
 describe('filter resulting in empty coordinate arrays', function() {
-    afterEach(destroyGraphDiv);
+    var gd;
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        setTimeout(function() {
+            destroyGraphDiv();
+            done();
+        }, 200);
+    });
 
     function filter2empty(mock) {
         var fig = Lib.extendDeep({}, mock);
@@ -1348,7 +1356,7 @@ describe('filter resulting in empty coordinate arrays', function() {
             }
 
             it(d[0], function(done) {
-                var gd = createGraphDiv();
+                gd = createGraphDiv();
                 var fig = filter2empty(d[1]);
                 Plotly.newPlot(gd, fig).catch(failTest).then(done);
             });
@@ -1360,7 +1368,7 @@ describe('filter resulting in empty coordinate arrays', function() {
 
         mockList.forEach(function(d) {
             it('@gl ' + d[0], function(done) {
-                var gd = createGraphDiv();
+                gd = createGraphDiv();
                 var fig = filter2empty(d[1]);
                 Plotly.newPlot(gd, fig).catch(failTest).then(done);
             });
@@ -1376,7 +1384,7 @@ describe('filter resulting in empty coordinate arrays', function() {
 
         mockList.forEach(function(d) {
             it('@noCI ' + d[0], function(done) {
-                var gd = createGraphDiv();
+                gd = createGraphDiv();
                 var fig = filter2empty(d[1]);
                 Plotly.newPlot(gd, fig).catch(failTest).then(done);
             });
