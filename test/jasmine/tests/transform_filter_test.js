@@ -1349,11 +1349,6 @@ describe('filter resulting in empty coordinate arrays', function() {
         var mockList = require('../assets/mock_lists').svg;
 
         mockList.forEach(function(d) {
-            if(d[0] === 'world-cals') {
-                // world-cals mock complains during a Lib.cleanDate()
-                return;
-            }
-
             it(d[0], function(done) {
                 gd = createGraphDiv();
                 var fig = filter2empty(d[1]);
