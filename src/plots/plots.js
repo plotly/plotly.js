@@ -1911,7 +1911,9 @@ plots.didMarginChange = function(margin0, margin1) {
         var k = marginKeys[i];
         var m0 = margin0[k];
         var m1 = margin1[k];
-        if(!isNumeric(m0) || Math.abs(m1 - m0) > 0) {
+        // use 1px tolerance in case we old/new differ only
+        // by rounding errors, which can lead to infinite loops
+        if(!isNumeric(m0) || Math.abs(m1 - m0) > 1) {
             return true;
         }
     }

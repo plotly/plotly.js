@@ -988,6 +988,19 @@ describe('Test Plots', function() {
                     plotCallCnt: 1
                 });
             })
+            .then(function() {
+                gd._fullLayout._pushmargin.legend.r.size += 1;
+                return Plots.doAutoMargin(gd);
+            })
+            .then(function() {
+                // see https://github.com/plotly/plotly.js/issues/3561#issuecomment-485953778
+                // for more info
+                _assert('after doAutoMargin() with bigger margins under tolerance', {
+                    r: r0 + 3,
+                    w: w0 - 3,
+                    plotCallCnt: 0
+                });
+            })
             .catch(failTest)
             .then(done);
         });
