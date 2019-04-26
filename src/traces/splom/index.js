@@ -9,7 +9,6 @@
 'use strict';
 
 var createMatrix = require('regl-splom');
-var arrayRange = require('array-range');
 
 var Registry = require('../../registry');
 var Grid = require('../../components/grid');
@@ -127,10 +126,9 @@ function sceneUpdate(gd, trace) {
     var reset = {dirty: true};
 
     var first = {
-        selectBatch: null,
-        unselectBatch: null,
         matrix: false,
-        select: null
+        selectBatch: [],
+        unselectBatch: []
     };
 
     var scene = splomScenes[trace.uid];
@@ -140,7 +138,7 @@ function sceneUpdate(gd, trace) {
 
         scene.draw = function draw() {
             if(scene.matrix && scene.matrix.draw) {
-                if(scene.selectBatch) {
+                if(scene.selectBatch.length || scene.unselectBatch.length) {
                     scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
                 } else {
                     scene.matrix.draw();
@@ -237,16 +235,10 @@ function plotOne(gd, cd0) {
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
     var selectMode = dragmode === 'lasso' || dragmode === 'select' ||
       !!trace.selectedpoints || clickSelectEnabled;
-    scene.selectBatch = null;
-    scene.unselectBatch = null;
+    var needsBaseUpdate = true;
 
     if(selectMode) {
         var commonLength = trace._length;
-
-        if(!scene.selectBatch) {
-            scene.selectBatch = [];
-            scene.unselectBatch = [];
-        }
 
         // regenerate scene batch, if traces number changed during selection
         if(trace.selectedpoints) {
@@ -288,18 +280,19 @@ function plotOne(gd, cd0) {
             }
         }
 
-        if(scene.selectBatch) {
-            scene.matrix.update(matrixOpts, matrixOpts);
-            scene.matrix.update(scene.unselectedOptions, scene.selectedOptions);
-            scene.matrix.update(viewOpts, viewOpts);
-        } else {
-            // delete selection pass
-            scene.matrix.update(viewOpts, null);
+        if(scene.selectBatch.length || scene.unselectBatch.length) {
+            var unselOpts = Lib.extendFlat({}, matrixOpts, scene.unselectedOptions, viewOpts);
+            var selOpts = Lib.extendFlat({}, matrixOpts, scene.selectedOptions, viewOpts);
+            scene.matrix.update(unselOpts, selOpts);
+            needsBaseUpdate = false;
         }
     } else {
+        stash.xpx = stash.ypx = null;
+    }
+
+    if(needsBaseUpdate) {
         var opts = Lib.extendFlat({}, matrixOpts, viewOpts);
         scene.matrix.update(opts, null);
-        stash.xpx = stash.ypx = null;
     }
 }
 
@@ -374,7 +367,6 @@ function selectPoints(searchInfo, selectionTester) {
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
     var selection = [];
-    var i;
 
     if(!scene) return selection;
 
@@ -389,14 +381,13 @@ function selectPoints(searchInfo, selectionTester) {
     var ypx = stash.ypx[yi];
     var x = cdata[xi];
     var y = cdata[yi];
+    var els = [];
+    var unels = [];
 
     // degenerate polygon does not enable selection
     // filter out points by visible scatter ones
-    var els = null;
-    var unels = null;
     if(selectionTester !== false && !selectionTester.degenerate) {
-        els = [], unels = [];
-        for(i = 0; i < x.length; i++) {
+        for(var i = 0; i < x.length; i++) {
             if(selectionTester.contains([xpx[i], ypx[i]], null, i, searchInfo)) {
                 els.push(i);
                 selection.push({
@@ -408,29 +399,21 @@ function selectPoints(searchInfo, selectionTester) {
                 unels.push(i);
             }
         }
-    } else {
-        unels = arrayRange(stash.count);
     }
 
-    // make sure selectBatch is created
-    if(!scene.selectBatch) {
-        scene.selectBatch = [];
-        scene.unselectBatch = [];
-    }
+    var matrixOpts = scene.matrixOptions;
 
-    if(!scene.selectBatch) {
-        // enter every trace select mode
-        for(i = 0; i < scene.count; i++) {
-            scene.selectBatch = [];
-            scene.unselectBatch = [];
-        }
-        // we should turn scatter2d into unselected once we have any points selected
-        scene.matrix.update(scene.unselectedOptions, scene.selectedOptions);
+    if(!els.length && !unels.length) {
+        scene.matrix.update(matrixOpts, null);
+    } else if(!scene.selectBatch.length && !scene.unselectBatch.length) {
+        scene.matrix.update(
+            scene.unselectedOptions,
+            Lib.extendFlat({}, matrixOpts, scene.selectedOptions, scene.viewOpts)
+        );
     }
 
     scene.selectBatch = els;
     scene.unselectBatch = unels;
-
 
     return selection;
 }

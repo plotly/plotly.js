@@ -75,7 +75,7 @@ function dragOne(gd, trace, scene) {
         }
     }
 
-    if(scene.selectBatch) {
+    if(scene.selectBatch.length || scene.unselectBatch.length) {
         scene.matrix.update({ranges: ranges}, {ranges: ranges});
     } else {
         scene.matrix.update({ranges: ranges});
@@ -201,30 +201,6 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     Cartesian.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
 }
 
-function updateFx(gd) {
-    Cartesian.updateFx(gd);
-
-    var fullLayout = gd._fullLayout;
-    var dragmode = fullLayout.dragmode;
-
-    // unset selection styles when coming out of a selection mode
-    if(dragmode === 'zoom' || dragmode === 'pan') {
-        var cd = gd.calcdata;
-
-        for(var i = 0; i < cd.length; i++) {
-            var cd0 = cd[i][0];
-            var trace = cd0.trace;
-
-            if(trace.type === 'splom') {
-                var scene = fullLayout._splomScenes[trace.uid];
-                if(scene.selectBatch === null) {
-                    scene.matrix.update(scene.matrixOptions, null);
-                }
-            }
-        }
-    }
-}
-
 module.exports = {
     name: SPLOM,
     attr: Cartesian.attr,
@@ -236,6 +212,6 @@ module.exports = {
     drag: drag,
     updateGrid: updateGrid,
     clean: clean,
-    updateFx: updateFx,
+    updateFx: Cartesian.updateFx,
     toSVG: Cartesian.toSVG
 };

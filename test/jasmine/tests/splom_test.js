@@ -1771,16 +1771,16 @@ describe('Test splom select:', function() {
                 updateCnt: 0,
                 drawCnt: 0,
                 matrixTraces: 1,
-                selectBatch: null,
-                unselectBatch: null
+                selectBatch: [],
+                unselectBatch: []
             });
         })
         .then(function() { return Plotly.relayout(gd, 'dragmode', 'select'); })
         .then(function() {
             _assert('under dragmode:select', {
-                updateCnt: 3,     // updates positions, viewport and style in 3 calls
+                updateCnt: 1,     // updates positions, viewport and style in 1 call
                 drawCnt: 1,       // results in a 'plot' edit
-                matrixTraces: 2,
+                matrixTraces: 1,
                 selectBatch: [],
                 unselectBatch: []
             });
@@ -1788,7 +1788,7 @@ describe('Test splom select:', function() {
         .then(function() { return _select([[5, 5], [100, 100]]); })
         .then(function() {
             _assert('after selection', {
-                updateCnt: 0,
+                updateCnt: 1,    // update to [un]selected styles
                 drawCnt: 1,
                 matrixTraces: 2,
                 selectBatch: [1],
@@ -1808,7 +1808,7 @@ describe('Test splom select:', function() {
         .then(function() { return Plotly.relayout(gd, 'dragmode', 'select'); })
         .then(function() {
             _assert('back dragmode:select', {
-                updateCnt: 3,
+                updateCnt: 1,
                 drawCnt: 1,       // a 'plot' edit (again)
                 matrixTraces: 2,
                 selectBatch: [1],
@@ -1818,20 +1818,20 @@ describe('Test splom select:', function() {
         .then(function() { return doubleClick(100, 100); })
         .then(function() {
             _assert('after dblclick clearing selection', {
-                updateCnt: 0,
+                updateCnt: 1,  // reset to 'base' styles
                 drawCnt: 1,
-                matrixTraces: 2,
-                selectBatch: null,
+                matrixTraces: 1,
+                selectBatch: [],
                 unselectBatch: []
             });
         })
         .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
         .then(function() {
             _assert('under dragmode:pan with NO active selection', {
-                updateCnt: 1,       // to clear off 1 matrixTrace
+                updateCnt: 0,
                 drawCnt: 0,
-                matrixTraces: 1,    // N.B. back to '1' here
-                selectBatch: null,
+                matrixTraces: 1,
+                selectBatch: [],
                 unselectBatch: []
             });
         })
