@@ -1349,8 +1349,7 @@ describe('filter resulting in empty coordinate arrays', function() {
         var mockList = require('../assets/mock_lists').svg;
 
         mockList.forEach(function(d) {
-            if(d[0] === 'scattercarpet' || d[0] === 'world-cals') {
-                // scattercarpet don't work with transforms
+            if(d[0] === 'world-cals') {
                 // world-cals mock complains during a Lib.cleanDate()
                 return;
             }

@@ -2730,17 +2730,13 @@ plots.doCalcdata = function(gd, traces) {
         );
     }
 
-    setupAxisCategories(axList, fullData);
-
     var hasCalcTransform = false;
 
-    // transform loop
-    for(i = 0; i < fullData.length; i++) {
+    function transformCalci(i) {
         trace = fullData[i];
+        _module = trace._module;
 
         if(trace.visible === true && trace.transforms) {
-            _module = trace._module;
-
             // we need one round of trace module calc before
             // the calc transform to 'fill in' the categories list
             // used for example in the data-to-coordinate method
@@ -2766,9 +2762,6 @@ plots.doCalcdata = function(gd, traces) {
             }
         }
     }
-
-    // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) setupAxisCategories(axList, fullData);
 
     function calci(i, isContainer) {
         trace = fullData[i];
@@ -2813,6 +2806,16 @@ plots.doCalcdata = function(gd, traces) {
 
         calcdata[i] = cd;
     }
+
+    setupAxisCategories(axList, fullData);
+
+    // 'transform' loop - must calc container traces first
+    // so that if their dependent traces can get transform properly
+    for(i = 0; i < fullData.length; i++) calci(i, true);
+    for(i = 0; i < fullData.length; i++) transformCalci(i);
+
+    // clear stuff that should recomputed in 'regular' loop
+    if(hasCalcTransform) setupAxisCategories(axList, fullData);
 
     // 'regular' loop - make sure container traces (eg carpet) calc before
     // contained traces (eg contourcarpet)
