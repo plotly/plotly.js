@@ -174,6 +174,9 @@ function setConvertAngular(ax, polarLayout) {
                 var catLen = ax._categories.length;
                 var _period = ax.period ? Math.max(ax.period, catLen) : catLen;
 
+                // fallback in case all categories have been filtered out
+                if(_period === 0) _period = 1;
+
                 c2rad = t2rad = function(v) { return v * 2 * Math.PI / _period; };
                 rad2c = rad2t = function(v) { return v * _period / Math.PI / 2; };
 

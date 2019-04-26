@@ -674,7 +674,7 @@ exports.redrawReglTraces = function(gd) {
         for(i = 0; i < fullData.length; i++) {
             var trace = fullData[i];
 
-            if(trace.visible === true) {
+            if(trace.visible === true && trace._length !== 0) {
                 if(trace.type === 'splom') {
                     fullLayout._splomScenes[trace.uid].draw();
                 } else if(trace.type === 'scattergl') {

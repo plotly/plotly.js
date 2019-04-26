@@ -23,7 +23,7 @@ var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 module.exports = function convert(calcTrace) {
     var trace = calcTrace[0].trace;
 
-    var isVisible = (trace.visible === true);
+    var isVisible = (trace.visible === true && trace._length !== 0);
     var hasFill = (trace.fill !== 'none');
     var hasLines = subTypes.hasLines(trace);
     var hasMarkers = subTypes.hasMarkers(trace);

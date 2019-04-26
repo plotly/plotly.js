@@ -1319,3 +1319,67 @@ describe('filter transforms interactions', function() {
         .then(done);
     });
 });
+
+describe('filter resulting in empty coordinate arrays', function() {
+    afterEach(destroyGraphDiv);
+
+    function filter2empty(mock) {
+        var fig = Lib.extendDeep({}, mock);
+        var data = fig.data || [];
+
+        data.forEach(function(trace) {
+            trace.transforms = [{
+                type: 'filter',
+                target: [null]
+            }];
+        });
+
+        return fig;
+    }
+
+    describe('svg mocks', function() {
+        var mockList = require('../assets/mock_lists').svg;
+
+        mockList.forEach(function(d) {
+            if(d[0] === 'scattercarpet' || d[0] === 'world-cals') {
+                // scattercarpet don't work with transforms
+                // world-cals mock complains during a Lib.cleanDate()
+                return;
+            }
+
+            it(d[0], function(done) {
+                var gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
+    });
+
+    describe('gl mocks', function() {
+        var mockList = require('../assets/mock_lists').gl;
+
+        mockList.forEach(function(d) {
+            it('@gl ' + d[0], function(done) {
+                var gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
+    });
+
+    describe('mapbox mocks', function() {
+        var mockList = require('../assets/mock_lists').mapbox;
+
+        Plotly.setPlotConfig({
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        });
+
+        mockList.forEach(function(d) {
+            it('@noCI ' + d[0], function(done) {
+                var gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
+    });
+});

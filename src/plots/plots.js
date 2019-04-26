@@ -2778,7 +2778,7 @@ plots.doCalcdata = function(gd, traces) {
 
         var cd = [];
 
-        if(trace.visible === true) {
+        if(trace.visible === true && trace._length !== 0) {
             // clear existing ref in case it got relinked
             delete trace._indexToPoints;
             // keep ref of index-to-points map object of the *last* enabled transform,
