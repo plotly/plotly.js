@@ -202,6 +202,15 @@ describe('Waterfall.supplyDefaults', function() {
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
+
+    it('should coerce connector line color and default to Color.defaultLine', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.connector.line.color).toBe(color.defaultLine);
+    });
 });
 
 describe('waterfall calc / crossTraceCalc', function() {
@@ -1131,6 +1140,41 @@ describe('A waterfall plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to adjust bars when reacting with new connector.line.width ', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'waterfall',
+                y: [1, 2, 3],
+            }],
+            layout: {
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
+            var path = waterfallNodes[0].querySelector('path');
+            var d = d3.select(path).attr('d');
+            expect(d).toBe('M11.33,321V268.33H102V321Z');
+        })
+        .then(function() {
+            gd.data[0].connector = {
+                line: { width: 10 }
+            };
+            return Plotly.react(gd, gd.data);
+        })
+        .then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
+            var path = waterfallNodes[0].querySelector('path');
+            var d = d3.select(path).attr('d');
+            expect(d).toBe('M11.33,325V264.33H102V325Z');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('waterfall visibility toggling:', function() {
@@ -1257,6 +1301,13 @@ describe('waterfall hover', function() {
             expect(out.style).toEqual([0, '#3D9970', 0, 13.23]);
             assertPos(out.pos, [11.87, 59.33, 52.71, 52.71]);
         });
+
+        it('should return the correct hover point data (case closest - decreasing case)', function() {
+            var out = _hover(gd, 0.8, 4, 'closest');
+
+            expect(out.style).toBeCloseToArray([1, '#FF4136', 1, -9.47]);
+            assertPos(out.pos, [137, 181, 266, 266]);
+        });
     });
 
     describe('text labels', function() {
@@ -1371,6 +1422,7 @@ describe('waterfall hover', function() {
                     [-3.9, 1, 'closest'],
                     [5.9, 1.9, 'closest'],
                     [-3.9, -10, 'x'],
+                    [1, 2.1, 'closest'],
                     [5.9, 19, 'x']
                 ].forEach(function(hoverSpec) {
                     var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
@@ -1382,7 +1434,6 @@ describe('waterfall hover', function() {
                 // then a few that are off the edge so yield nothing
                 [
                     [1, -0.1, 'closest'],
-                    [1, 2.1, 'closest'],
                     [-4.1, 1, 'closest'],
                     [6.1, 1, 'closest'],
                     [-4.1, 1, 'x'],

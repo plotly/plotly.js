@@ -6,26 +6,23 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var HeatmapGl = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('../heatmap/defaults'),
+    colorbar: require('../heatmap/colorbar'),
 
-HeatmapGl.attributes = require('./attributes');
-HeatmapGl.supplyDefaults = require('../heatmap/defaults');
-HeatmapGl.colorbar = require('../heatmap/colorbar');
+    calc: require('../heatmap/calc'),
+    plot: require('./convert'),
 
-HeatmapGl.calc = require('../heatmap/calc');
-HeatmapGl.plot = require('./convert');
-
-HeatmapGl.moduleType = 'trace';
-HeatmapGl.name = 'heatmapgl';
-HeatmapGl.basePlotModule = require('../../plots/gl2d');
-HeatmapGl.categories = ['gl', 'gl2d', '2dMap'];
-HeatmapGl.meta = {
-    description: [
-        'WebGL version of the heatmap trace type.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'heatmapgl',
+    basePlotModule: require('../../plots/gl2d'),
+    categories: ['gl', 'gl2d', '2dMap'],
+    meta: {
+        description: [
+            'WebGL version of the heatmap trace type.'
+        ].join(' ')
+    }
 };
-
-module.exports = HeatmapGl;

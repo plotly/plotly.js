@@ -1,0 +1,28 @@
+{
+    "data": [{
+        "type": "waterfall",
+        "x": [
+            "2010-01-01",
+            "2010-07-01",
+            "2011-01-01",
+            "2012-01-01"
+        ],
+        "y": [
+            1,
+            -2,
+            3,
+            0
+        ],
+        "measure": [
+           "absolute",
+           "relative",
+           "relative",
+           "total"
+        ]
+
+    }],
+    "layout": {
+        "width": 500,
+        "height": 250
+    }
+}

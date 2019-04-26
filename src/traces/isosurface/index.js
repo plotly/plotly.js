@@ -6,31 +6,28 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Isosurface = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults').supplyDefaults,
+    calc: require('./calc'),
+    colorbar: {
+        min: 'cmin',
+        max: 'cmax'
+    },
+    plot: require('./convert').createIsosurfaceTrace,
 
-Isosurface.attributes = require('./attributes');
-Isosurface.supplyDefaults = require('./defaults').supplyDefaults;
-Isosurface.calc = require('./calc');
-Isosurface.colorbar = {
-    min: 'cmin',
-    max: 'cmax'
+    moduleType: 'trace',
+    name: 'isosurface',
+    basePlotModule: require('../../plots/gl3d'),
+    categories: ['gl3d'],
+    meta: {
+        description: [
+            'Draws isosurfaces between iso-min and iso-max values with coordinates given by',
+            'four 1-dimensional arrays containing the `value`, `x`, `y` and `z` of every vertex',
+            'of a uniform or non-uniform 3-D grid. Horizontal or vertical slices, caps as well as',
+            'spaceframe between iso-min and iso-max values could also be drawn using this trace.'
+        ].join(' ')
+    }
 };
-Isosurface.plot = require('./convert').createIsosurfaceTrace;
-
-Isosurface.moduleType = 'trace';
-Isosurface.name = 'isosurface',
-Isosurface.basePlotModule = require('../../plots/gl3d');
-Isosurface.categories = ['gl3d'];
-Isosurface.meta = {
-    description: [
-        'Draws isosurfaces between iso-min and iso-max values with coordinates given by',
-        'four 1-dimensional arrays containing the `value`, `x`, `y` and `z` of every vertex',
-        'of a uniform or non-uniform 3-D grid. Horizontal or vertical slices, caps as well as',
-        'spaceframe between iso-min and iso-max values could also be drawn using this trace.'
-    ].join(' ')
-};
-
-module.exports = Isosurface;

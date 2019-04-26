@@ -347,7 +347,7 @@ ScrollBox.prototype.disable = function disable() {
  *
  * @method
  */
-ScrollBox.prototype._onBoxDrag = function onBarDrag() {
+ScrollBox.prototype._onBoxDrag = function _onBoxDrag() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 
@@ -367,7 +367,7 @@ ScrollBox.prototype._onBoxDrag = function onBarDrag() {
  *
  * @method
  */
-ScrollBox.prototype._onBoxWheel = function onBarWheel() {
+ScrollBox.prototype._onBoxWheel = function _onBoxWheel() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 
@@ -387,7 +387,7 @@ ScrollBox.prototype._onBoxWheel = function onBarWheel() {
  *
  * @method
  */
-ScrollBox.prototype._onBarDrag = function onBarDrag() {
+ScrollBox.prototype._onBarDrag = function _onBarDrag() {
     var translateX = this.translateX;
     var translateY = this.translateY;
 

@@ -10,6 +10,32 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.47.4] -- 2019-04-25
+
+### Fixed
+- Fix graphs with `sankey` and cartesian subplots [#3802]
+- Fix selection of `bar` traces on subplot with a range slider [#3806]
+
+
+## [1.47.3] -- 2019-04-18
+
+### Fixed
+- Fix MathJax rendering in Firefox [#3783]
+- Fix `waterfall` hover under `hovermode: 'closest'` [#3778]
+- Fix `waterfall` `connector.line.width` updates [#3789]
+- Fix `waterfall` positioning on date axes [#3791]
+- Fix `waterfall` default connector line color [#3788]
+- Fix `hoverlabel.align` behavior for centered hover labels [#3781]
+
+
+## [1.47.2] -- 2019-04-15
+
+### Fixed
+- Fix bar `'auto'` and `'inside'` `textposition` rendering on log size axes [#3762, #3773]
+- Fix matching axes autorange algorithm for date axes [#3772]
+- Fix SVG gradient rendering (colorbar and marker gradient) when `<base>` is present on page [#3765]
+
+
 ## [1.47.1] -- 2019-04-10
 
 ### Fixed

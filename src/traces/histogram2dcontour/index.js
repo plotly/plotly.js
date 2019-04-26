@@ -6,35 +6,32 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Histogram2dContour = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    crossTraceDefaults: require('../histogram2d/cross_trace_defaults'),
+    calc: require('../contour/calc'),
+    plot: require('../contour/plot').plot,
+    layerName: 'contourlayer',
+    style: require('../contour/style'),
+    colorbar: require('../contour/colorbar'),
+    hoverPoints: require('../contour/hover'),
 
-Histogram2dContour.attributes = require('./attributes');
-Histogram2dContour.supplyDefaults = require('./defaults');
-Histogram2dContour.crossTraceDefaults = require('../histogram2d/cross_trace_defaults');
-Histogram2dContour.calc = require('../contour/calc');
-Histogram2dContour.plot = require('../contour/plot').plot;
-Histogram2dContour.layerName = 'contourlayer';
-Histogram2dContour.style = require('../contour/style');
-Histogram2dContour.colorbar = require('../contour/colorbar');
-Histogram2dContour.hoverPoints = require('../contour/hover');
-
-Histogram2dContour.moduleType = 'trace';
-Histogram2dContour.name = 'histogram2dcontour';
-Histogram2dContour.basePlotModule = require('../../plots/cartesian');
-Histogram2dContour.categories = ['cartesian', 'svg', '2dMap', 'contour', 'histogram', 'showLegend'];
-Histogram2dContour.meta = {
-    hrName: 'histogram_2d_contour',
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'and `y` (where `x` and `y` represent marginal distributions,',
-        'binning is set in `xbins` and `ybins` in this case)',
-        'or `z` (where `z` represent the 2D distribution and binning set,',
-        'binning is set by `x` and `y` in this case).',
-        'The resulting distribution is visualized as a contour plot.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'histogram2dcontour',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap', 'contour', 'histogram', 'showLegend'],
+    meta: {
+        hrName: 'histogram_2d_contour',
+        description: [
+            'The sample data from which statistics are computed is set in `x`',
+            'and `y` (where `x` and `y` represent marginal distributions,',
+            'binning is set in `xbins` and `ybins` in this case)',
+            'or `z` (where `z` represent the 2D distribution and binning set,',
+            'binning is set by `x` and `y` in this case).',
+            'The resulting distribution is visualized as a contour plot.'
+        ].join(' ')
+    }
 };
-
-module.exports = Histogram2dContour;

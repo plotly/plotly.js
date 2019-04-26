@@ -155,6 +155,8 @@ function plot(gd, subplot, cdata) {
         scene.textOptions.push(opts.text);
         scene.textSelectedOptions.push(opts.textSel);
         scene.textUnselectedOptions.push(opts.textUnsel);
+        scene.selectBatch.push([]);
+        scene.unselectBatch.push([]);
 
         stash.x = x;
         stash.y = y;

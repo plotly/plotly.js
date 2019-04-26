@@ -11,6 +11,7 @@
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var extendFlat = require('../../lib/extend').extendFlat;
+var Color = require('../../components/color');
 
 function directionAttrs(dirTxt) {
     return {
@@ -94,8 +95,10 @@ module.exports = {
 
     connector: {
         line: {
-            color: lineAttrs.color,
-            width: lineAttrs.width,
+            color: extendFlat({}, lineAttrs.color, {dflt: Color.defaultLine}),
+            width: extendFlat({}, lineAttrs.width, {
+                editType: 'plot', // i.e. to adjust bars is mode: 'between'. See https://github.com/plotly/plotly.js/issues/3787
+            }),
             dash: lineAttrs.dash,
             editType: 'plot'
         },

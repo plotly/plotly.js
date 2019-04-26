@@ -128,7 +128,8 @@ module.exports = function plot(gd, calcData) {
     var size = fullLayout._size;
 
     // stash initial view
-    for(var i = 0; i < calcData.length; i++) {
+    for(var i = 0; i < gd._fullData.length; i++) {
+        if(gd._fullData[i].type !== cn.sankey) continue;
         if(!gd._fullData[i]._viewInitial) {
             var node = gd._fullData[i].node;
             gd._fullData[i]._viewInitial = {
@@ -221,7 +222,7 @@ module.exports = function plot(gd, calcData) {
             });
         }
 
-        var tooltips = Fx.multiHovers(hoverItems, {
+        var tooltips = Fx.loneHover(hoverItems, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
             gd: gd,

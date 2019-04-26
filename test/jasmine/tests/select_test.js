@@ -2232,16 +2232,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(function() {
             return Plotly.relayout(gd, 'dragmode', 'select');
         })
-        .then(function() {
-            // For some reason we need this to make the following tests pass
-            // on CI consistently. It appears that a double-click action
-            // is being confused with a mere click. See
-            // https://github.com/plotly/plotly.js/pull/2135#discussion_r148897529
-            // for more info.
-            return new Promise(function(resolve) {
-                setTimeout(resolve, 100);
-            });
-        })
+        .then(delay(100))
         .then(function() {
             return _run(
                 [[350, 200], [370, 220]],
@@ -2259,6 +2250,30 @@ describe('Test select box and lasso per trace:', function() {
                     assertRanges([[4.87, 5.22], [0.31, 0.53]]);
                 },
                 null, BOXEVENTS, 'bar select'
+            );
+        })
+        .then(function() {
+            // mimic https://github.com/plotly/plotly.js/issues/3795
+            return Plotly.relayout(gd, {
+                'xaxis.rangeslider.visible': true,
+                'xaxis.range': [0, 6]
+            });
+        })
+        .then(function() {
+            return _run(
+                [[350, 200], [360, 200]],
+                function() {
+                    assertPoints([
+                        [0, 2.5, -0.429], [1, 2.5, -1.015], [2, 2.5, -1.172],
+                    ]);
+                    assertSelectedPoints({
+                        0: [25],
+                        1: [25],
+                        2: [25]
+                    });
+                    assertRanges([[2.434, 2.521], [-1.4355, 2.0555]]);
+                },
+                null, BOXEVENTS, 'bar select (after xaxis.range relayout)'
             );
         })
         .catch(failTest)
