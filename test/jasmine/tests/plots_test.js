@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Registry = require('@src/registry');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -931,6 +932,61 @@ describe('Test Plots', function() {
             })
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('Test Plots.doAutoMargin', function() {
+        afterEach(destroyGraphDiv);
+
+        it('should trigger a replot when necessary', function(done) {
+            var gd = createGraphDiv();
+            var r0;
+            var w0;
+
+            function _assert(msg, exp) {
+                var fullLayout = gd._fullLayout;
+
+                expect(fullLayout._size.r).toBe(exp.r);
+                expect(fullLayout._size.w).toBe(exp.w);
+
+                expect(Registry.call).toHaveBeenCalledTimes(exp.plotCallCnt);
+                Registry.call.calls.reset();
+            }
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 1],
+                name: 'A trace name long enough to push the right margin'
+            }], {
+                showlegend: true
+            })
+            .then(function() {
+                r0 = gd._fullLayout._size.r;
+                w0 = gd._fullLayout._size.w;
+                spyOn(Registry, 'call');
+            })
+            .then(function() {
+                return Plots.doAutoMargin(gd);
+            })
+            .then(function() {
+                _assert('after doAutoMargin() with identical margins', {
+                    r: r0,
+                    w: w0,
+                    plotCallCnt: 0
+                });
+            })
+            .then(function() {
+                gd._fullLayout._pushmargin.legend.r.size += 2;
+                return Plots.doAutoMargin(gd);
+            })
+            .then(function() {
+                _assert('after doAutoMargin() with bigger margins', {
+                    r: r0 + 2,
+                    w: w0 - 2,
+                    plotCallCnt: 1
+                });
             })
             .catch(failTest)
             .then(done);
