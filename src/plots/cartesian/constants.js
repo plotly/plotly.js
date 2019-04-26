@@ -73,6 +73,13 @@ module.exports = {
         'scattercarpetlayer', 'scatterlayer'
     ],
 
+    clipOnAxisFalseQuery: [
+        '.scatterlayer',
+        '.barlayer',
+        '.funnellayer',
+        '.waterfalllayer'
+    ],
+
     layerValue2layerClass: {
         'above traces': 'above',
         'below traces': 'below'

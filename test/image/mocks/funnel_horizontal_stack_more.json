@@ -16,7 +16,7 @@
                 20
             ],
             "textposition": "auto",
-            "textinfo": "value+percent of initial"
+            "textinfo": "value+percent initial"
         },
         {
             "type": "funnel",
@@ -36,7 +36,7 @@
                 10
             ],
             "textposition": "inside",
-            "textinfo": "value+percent of previous"
+            "textinfo": "value+percent previous"
         },
         {
             "type": "funnel",
@@ -59,12 +59,12 @@
             ],
             "cliponaxis": false,
             "textposition": "outside",
-            "textinfo": "value+percent of total"
+            "textinfo": "value+percent total"
         }
     ],
     "layout": {
         "title": {
-            "text": "plotly stacked funnel chart with textposition' (auto | inside | outside)<br>and textinfo: percent of (initial | previous | total)"
+            "text": "plotly stacked funnel chart with textposition' (auto | inside | outside)<br>and textinfo: percent (initial | previous | total)"
         },
         "yaxis": {
             "type": "category",

@@ -27,10 +27,11 @@
                 "1"
             ],
             "connector": {
+                "fillcolor": "rgba(0, 0, 0, 0)",
                 "line": {
                     "color": "rgb(127, 127, 127)",
                     "dash": 10,
-                    "width": 4
+                    "width": 2
                 }
             },
             "marker": {
@@ -51,11 +52,11 @@
                     ],
                     "dash": 10,
                     "width": [
-                        16,
                         8,
+                        6,
                         4,
                         2,
-                        1
+                        0
                     ]
                 }
             },
@@ -97,7 +98,7 @@
                 "line": {
                     "color": "rgb(0, 0, 0)",
                     "dash": 0,
-                    "width": 2
+                    "width": 1
                 }
             },
             "marker": {

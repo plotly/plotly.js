@@ -33,6 +33,22 @@ function dirSign(a, b) {
     return (a < b) ? 1 : -1;
 }
 
+function getXY(di, xa, ya, isHorizontal) {
+    var s = [];
+    var p = [];
+
+    var sAxis = isHorizontal ? xa : ya;
+    var pAxis = isHorizontal ? ya : xa;
+
+    s[0] = sAxis.c2p(di.s0, true);
+    p[0] = pAxis.c2p(di.p0, true);
+
+    s[1] = sAxis.c2p(di.s1, true);
+    p[1] = pAxis.c2p(di.p1, true);
+
+    return isHorizontal ? [s, p] : [p, s];
+}
+
 module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -49,9 +65,6 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
         }
 
         var isHorizontal = (trace.orientation === 'h');
-
-        function getX(p, s) { return xa.c2p(isHorizontal ? s : p, true); }
-        function getY(p, s) { return ya.c2p(isHorizontal ? p : s, true); }
 
         if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
@@ -72,10 +85,12 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
             // log values go off-screen by plotwidth
             // so you see them continue if you drag the plot
 
-            var x0 = getX(di.p0, di.s0);
-            var x1 = getX(di.p1, di.s1);
-            var y0 = getY(di.p0, di.s0);
-            var y1 = getY(di.p1, di.s1);
+            var xy = getXY(di, xa, ya, isHorizontal);
+
+            var x0 = xy[0][0];
+            var x1 = xy[0][1];
+            var y0 = xy[1][0];
+            var y1 = xy[1][1];
 
             var isBlank = di.isBlank = (
                 !isNumeric(x0) || !isNumeric(x1) ||
@@ -96,7 +111,9 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
 
             var lw;
             var mc;
-            var prefix;
+            var prefix =
+                (trace.type === 'waterfall') ? 'waterfall' :
+                (trace.type === 'funnel') ? 'funnel' : 'bar';
 
             if(trace.type === 'waterfall') {
                 if(!isBlank) {
@@ -104,17 +121,10 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                     lw = cont.line.width;
                     mc = cont.color;
                 }
-                prefix = 'waterfall';
             } else {
                 lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
                     (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
                 mc = di.mc || trace.marker.color;
-
-                if(trace.type === 'funnel') {
-                    prefix = 'funnel';
-                } else {
-                    prefix = 'bar';
-                }
             }
 
             var offset = d3.round((lw / 2) % 1, 2);
@@ -159,7 +169,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 .attr('d', isBlank ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
-            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1);
+            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, prefix);
 
             if(plotinfo.layerClipId) {
                 Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
@@ -176,7 +186,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo);
 };
 
-function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
+function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, prefix) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -208,10 +218,6 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     textPosition = getTextPosition(trace, i);
 
     // compute text position
-    var prefix =
-        (trace.type === 'waterfall') ? 'waterfall' :
-        (trace.type === 'funnel') ? 'funnel' : 'bar';
-
     var barmode = fullLayout[prefix + 'mode'];
     var inStackOrRelativeMode = barmode === 'stack' || barmode === 'relative';
 
@@ -317,13 +323,13 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
-            orientation, constrained, !!trace.insidetextcenter);
+            orientation, constrained, trace.insidetextanchor, trace.insidetextrotate === 'none');
     }
 
     textSelection.attr('transform', transform);
 }
 
-function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained, keepCenter) {
+function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained, anchor, dontRotate) {
     // compute text and target positions
     var textWidth = textBB.width;
     var textHeight = textBB.height;
@@ -341,18 +347,18 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
     } else textpad = 0;
 
     // compute rotation and scale
-    var rotate,
-        scale;
+    var rotate = false;
+    var scale = 1;
 
     if(textWidth <= barWidth && textHeight <= barHeight) {
         // no scale or rotation is required
         rotate = false;
         scale = 1;
-    } else if(textWidth <= barHeight && textHeight <= barWidth) {
+    } else if(textWidth <= barHeight && textHeight <= barWidth && !dontRotate) {
         // only rotation is required
         rotate = true;
         scale = 1;
-    } else if((textWidth < textHeight) === (barWidth < barHeight)) {
+    } else if((textWidth < textHeight) === (barWidth < barHeight) || dontRotate) {
         // only scale is required
         rotate = false;
         scale = constrained ? Math.min(barWidth / textWidth, barHeight / textHeight) : 1;
@@ -362,20 +368,31 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constr
         scale = constrained ? Math.min(barHeight / textWidth, barWidth / textHeight) : 1;
     }
 
-    if(rotate) rotate = 90;  // rotate clockwise
+    if(rotate) rotate = 90; // rotate clockwise
 
     // compute text and target positions
     var targetX = (x0 + x1) / 2;
     var targetY = (y0 + y1) / 2;
 
-    if(!keepCenter) {
+    if(anchor !== 'middle') {
         var targetWidth = scale * (rotate ? textHeight : textWidth);
         var targetHeight = scale * (rotate ? textWidth : textHeight);
 
+        var offset;
         if(orientation === 'h') {
-            targetX = x1 - (textpad + targetWidth / 2) * dirSign(x0, x1);
+            offset = (textpad + targetWidth / 2) * dirSign(x0, x1);
+            if(anchor === 'start') {
+                targetX = x0 + offset;
+            } else { // case 'end'
+                targetX = x1 - offset;
+            }
         } else {
-            targetY = y1 - (textpad + targetHeight / 2) * dirSign(y0, y1);
+            offset = (textpad + targetHeight / 2) * dirSign(y0, y1);
+            if(anchor === 'start') {
+                targetY = y0 + offset;
+            } else { // case 'end'
+                targetY = y1 - offset;
+            }
         }
     }
 
@@ -465,9 +482,8 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     var trace = calcTrace[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
-    function formatNumber(v) {
+    function formatNumber(v, hover) {
         var sAxis = isHorizontal ? xa : ya;
-        var hover = false;
         return tickText(sAxis, +v, hover).text;
     }
 
@@ -504,27 +520,27 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     }
 
     if(trace.type === 'funnel') {
-        if(hasFlag('value')) text.push(pieHelpers.formatPieValue(cdi.s, separators));
+        if(hasFlag('value')) text.push(formatNumber(cdi.s));
 
         var nPercent = 0;
-        if(hasFlag('percent of initial')) nPercent++;
-        if(hasFlag('percent of previous')) nPercent++;
-        if(hasFlag('percent of total')) nPercent++;
+        if(hasFlag('percent initial')) nPercent++;
+        if(hasFlag('percent previous')) nPercent++;
+        if(hasFlag('percent total')) nPercent++;
 
         var hasMultiplePercents = nPercent > 1;
 
-        if(hasFlag('percent of initial')) {
-            tx = pieHelpers.formatPiePercent(cdi.begR, separators);
+        if(hasFlag('percent initial')) {
+            tx = formatNumber(Math.round(100 * cdi.begR), true) + '%';
             if(hasMultiplePercents) tx += ' of initial';
             text.push(tx);
         }
-        if(hasFlag('percent of previous')) {
-            tx = pieHelpers.formatPiePercent(cdi.difR, separators);
-            if(hasMultiplePercents) tx += ' of initial';
+        if(hasFlag('percent previous')) {
+            tx = formatNumber(Math.round(100 * cdi.difR), true) + '%';
+            if(hasMultiplePercents) tx += ' of previous';
             text.push(tx);
         }
-        if(hasFlag('percent of total')) {
-            tx = pieHelpers.formatPiePercent(cdi.sumR, separators);
+        if(hasFlag('percent total')) {
+            tx = formatNumber(Math.round(100 * cdi.sumR), true) + '%';
             if(hasMultiplePercents) tx += ' of total';
             text.push(tx);
         }

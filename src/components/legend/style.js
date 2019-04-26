@@ -319,12 +319,12 @@ module.exports = function style(s, gd) {
         var marker = trace.marker || {};
         var markerLine = marker.line || {};
 
-        var selection = (!desiredType) ? Registry.traceIs(trace, 'bar') :
+        var isVisible = (!desiredType) ? Registry.traceIs(trace, 'bar') :
             (trace.type === desiredType && trace.visible);
 
         var barpath = d3.select(lThis).select('g.legendpoints')
             .selectAll('path.legend' + desiredType)
-            .data(selection ? [d] : []);
+            .data(isVisible ? [d] : []);
         barpath.enter().append('path').classed('legend' + desiredType, true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');

@@ -86,6 +86,28 @@ module.exports = {
         ].join(' ')
     },
 
+    insidetextanchor: {
+        valType: 'enumerated',
+        values: ['end', 'middle', 'start'],
+        dflt: 'end',
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Determines if texts are kept at center or start/end points in `textposition` *inside* mode.'
+        ].join(' ')
+    },
+
+    insidetextrotate: {
+        valType: 'enumerated',
+        values: ['auto', 'none'],
+        dflt: 'auto',
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Determines if texts could automatically be rotated to fit inside bars in `textposition` *inside* mode.'
+        ].join(' ')
+    },
+
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `text`.'
     }),

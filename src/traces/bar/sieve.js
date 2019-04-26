@@ -66,9 +66,9 @@ function Sieve(traces, opts) {
  * @param {number} value
  * @returns {number} Previous bin value
  */
-Sieve.prototype.put = function put(position, value, initValue) {
+Sieve.prototype.put = function put(position, value) {
     var label = this.getLabel(position, value);
-    var oldValue = (this.bins[label] === 0) ? 0 : this.bins[label] || initValue || 0;
+    var oldValue = this.bins[label] || 0;
 
     this.bins[label] = oldValue + value;
 

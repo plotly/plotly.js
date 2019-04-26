@@ -60,9 +60,9 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
 
             if(x[3] !== undefined && y[3] !== undefined) {
                 if(isHorizontal) {
-                    shape += 'M' + x[0] + ',' + y[2] + 'L' + x[1] + ',' + y[1] + 'H' + x[3] + 'L' + x[2] + ',' + y[2] + 'Z';
+                    shape += 'M' + x[0] + ',' + y[1] + 'L' + x[2] + ',' + y[2] + 'H' + x[3] + 'L' + x[1] + ',' + y[1] + 'Z';
                 } else {
-                    shape += 'M' + x[2] + ',' + y[2] + 'L' + x[1] + ',' + y[3] + 'V' + y[1] + 'L' + x[2] + ',' + y[0] + 'Z';
+                    shape += 'M' + x[1] + ',' + y[1] + 'L' + x[2] + ',' + y[3] + 'V' + y[2] + 'L' + x[1] + ',' + y[0] + 'Z';
                 }
             }
 
@@ -114,13 +114,15 @@ function plotConnectorLines(gd, plotinfo, cdModule, traceLayer) {
 
             if(x[3] !== undefined && y[3] !== undefined) {
                 if(isHorizontal) {
-                    shape += 'M' + x[0] + ',' + y[2] + 'L' + x[1] + ',' + y[1];
-                    shape += 'M' + x[2] + ',' + y[2] + 'L' + x[3] + ',' + y[1];
+                    shape += 'M' + x[0] + ',' + y[1] + 'L' + x[2] + ',' + y[2];
+                    shape += 'M' + x[1] + ',' + y[1] + 'L' + x[3] + ',' + y[2];
                 } else {
-                    shape += 'M' + x[2] + ',' + y[2] + 'L' + x[1] + ',' + y[3];
-                    shape += 'M' + x[2] + ',' + y[0] + 'L' + x[1] + ',' + y[1];
+                    shape += 'M' + x[1] + ',' + y[1] + 'L' + x[2] + ',' + y[3];
+                    shape += 'M' + x[1] + ',' + y[0] + 'L' + x[2] + ',' + y[2];
                 }
             }
+
+            if(shape === '') shape = 'M0,0Z';
 
             Lib.ensureSingle(d3.select(this), 'path')
                 .attr('d', shape)
@@ -139,11 +141,11 @@ function getXY(di, xa, ya, isHorizontal) {
     s[0] = sAxis.c2p(di.s0, true);
     p[0] = pAxis.c2p(di.p0, true);
 
-    s[1] = sAxis.c2p(di.nextS0, true);
-    p[1] = pAxis.c2p(di.nextP0, true);
+    s[1] = sAxis.c2p(di.s1, true);
+    p[1] = pAxis.c2p(di.p1, true);
 
-    s[2] = sAxis.c2p(di.s1, true);
-    p[2] = pAxis.c2p(di.p1, true);
+    s[2] = sAxis.c2p(di.nextS0, true);
+    p[2] = pAxis.c2p(di.nextP0, true);
 
     s[3] = sAxis.c2p(di.nextS1, true);
     p[3] = pAxis.c2p(di.nextP1, true);

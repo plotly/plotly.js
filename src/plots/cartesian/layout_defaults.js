@@ -35,51 +35,57 @@ function appendList(cont, k, item) {
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var ax2traces = {};
-    var xaCheater = {};
-    var xaNonCheater = {};
+    var hideX = {};
+    var hideY = {};
     var outerTicks = {};
     var noGrids = {};
     var i, j;
+    var trace;
+    var xaName, yaName;
+
+    function skipType() {
+        return (!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d'));
+    }
+
+    function append(list) {
+        for(var k = 0; k < list.length; k++) {
+            appendList(ax2traces, id2name(list[k]), trace);
+        }
+    }
+
+    function listXnames(trace) {
+        var list = [];
+        if(trace.xaxis) {
+            list = [trace.xaxis];
+        } else if(trace.xaxes) {
+            list = trace.xaxes;
+        }
+
+        append(list);
+    }
+
+    function listYnames(trace) {
+        var list = [];
+        if(trace.yaxis) {
+            list = [trace.yaxis];
+        } else if(trace.yaxes) {
+            list = trace.yaxes;
+        }
+
+        append(list);
+    }
 
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
-        var trace = fullData[i];
-        if(!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d')) continue;
+        trace = fullData[i];
+        if(skipType(trace)) continue;
 
-        var xaName;
-        if(trace.xaxis) {
-            xaName = id2name(trace.xaxis);
-            appendList(ax2traces, xaName, trace);
-        } else if(trace.xaxes) {
-            for(j = 0; j < trace.xaxes.length; j++) {
-                appendList(ax2traces, id2name(trace.xaxes[j]), trace);
-            }
-        }
+        // create lists
+        listXnames(trace);
+        listYnames(trace);
 
-        var yaName;
-        if(trace.yaxis) {
-            yaName = id2name(trace.yaxis);
-            appendList(ax2traces, yaName, trace);
-        } else if(trace.yaxes) {
-            for(j = 0; j < trace.yaxes.length; j++) {
-                appendList(ax2traces, id2name(trace.yaxes[j]), trace);
-            }
-        }
-
-        // Two things trigger axis visibility:
-        // 1. is not carpet
-        // 2. carpet that's not cheater
-        if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
-            if(xaName) xaNonCheater[xaName] = 1;
-        }
-
-        // The above check for definitely-not-cheater is not adequate. This
-        // second list tracks which axes *could* be a cheater so that the
-        // full condition triggering hiding is:
-        //   *could* be a cheater and *is not definitely visible*
-        if(trace.type === 'carpet' && trace._cheater) {
-            if(xaName) xaCheater[xaName] = 1;
-        }
+        xaName = (trace.xaxis) ? id2name(trace.xaxis) : undefined; // TODO: why these should be left undefined?
+        yaName = (trace.yaxis) ? id2name(trace.yaxis) : undefined;
 
         // check for default formatting tweaks
         if(traceIs(trace, '2dMap')) {
@@ -90,6 +96,80 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         if(traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
             noGrids[positionAxis] = 1;
+        }
+    }
+
+    function getXname() {
+        return (trace.xaxis) ? id2name(trace.xaxis) : undefined; // TODO: why these should be left undefined?
+    }
+
+    function getYname() {
+        return (trace.yaxis) ? id2name(trace.yaxis) : undefined; // TODO: why these should be left undefined?
+    }
+
+    function includesOnly(desiredType, xaNameIn, yaNameIn) {
+        var result = false;
+        for(var k = 0; k < fullData.length; k++) {
+            var otherTrace = fullData[k];
+            if(skipType(otherTrace)) continue;
+
+            if(
+                xaNameIn !== getXname(otherTrace) ||
+                yaNameIn !== getYname(otherTrace)
+            ) continue;
+
+            var found = false;
+
+            if(desiredType === 'cheater' && traceIs(trace, 'carpet') && trace._cheater !== false) {
+                found = true;
+            } else if(trace.type === desiredType) {
+                found = true;
+            }
+
+            if(!found) {
+                result = false;
+                break;
+            }
+            result = true;
+        }
+        return result;
+    }
+
+    var funnelOnlyX = {};
+    var funnelOnlyY = {};
+    var cheaterOnlyX = {};
+
+    for(i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        if(skipType(trace)) continue;
+
+        xaName = getXname(trace);
+        yaName = getYname(trace);
+
+        if(funnelOnlyX[xaName] !== false) funnelOnlyX[xaName] = includesOnly('funnel', xaName, yaName);
+        if(funnelOnlyY[yaName] !== false) funnelOnlyY[yaName] = includesOnly('funnel', xaName, yaName);
+        if(cheaterOnlyX[xaName] !== false) cheaterOnlyX[xaName] = includesOnly('cheater', xaName, yaName);
+    }
+
+    for(i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        if(skipType(trace)) continue;
+
+        xaName = getXname(trace);
+        yaName = getYname(trace);
+
+        if(traceIs(trace, 'carpet') && trace._cheater) {
+            if(cheaterOnlyX[xaName] && xaName) hideX[xaName] = 1;
+        }
+
+        if(trace.type === 'funnel') {
+            if(funnelOnlyX[xaName] && trace.orientation === 'h') {
+                hideX[xaName] = 1;
+            }
+
+            if(funnelOnlyY[yaName] && trace.orientation === 'v') {
+                hideY[yaName] = 1;
+            }
         }
     }
 
@@ -176,7 +256,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             bgColor: bgColor,
             calendar: layoutOut.calendar,
             automargin: true,
-            cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName],
+            visibleDflt: (axLetter === 'x' && !!hideX[axName]) || (axLetter === 'y' && !!hideY[axName]),
             splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
         };
 

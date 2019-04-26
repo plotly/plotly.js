@@ -18,7 +18,7 @@
                 343,
                 1
             ],
-            "textinfo": "value+percent of total"
+            "textinfo": "value+percent total"
         },
         {
             "name": "orca",
@@ -38,7 +38,8 @@
                 2,
                 0
             ],
-            "textinfo": "value+percent of total"
+            "textinfo": "value+percent total",
+            "cliponaxis": false
         }
     ],
     "layout": {

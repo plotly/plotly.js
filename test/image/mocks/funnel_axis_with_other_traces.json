@@ -1,0 +1,196 @@
+{
+    "data": [
+        {
+            "type": "funnel",
+            "width": 0.6,
+            "opacity": 0.8,
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                5,
+                4,
+                3
+            ],
+            "xaxis": "x",
+            "yaxis": "y"
+        },
+        {
+            "type": "scatter",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                5,
+                4,
+                3
+            ],
+            "xaxis": "x",
+            "yaxis": "y"
+        },
+        {
+            "type": "funnel",
+            "width": 0.6,
+            "opacity": 0.8,
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                5,
+                4,
+                3
+            ],
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "bar",
+            "width": 0.4,
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                5,
+                4,
+                3
+            ],
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "funnel",
+            "width": 0.6,
+            "opacity": 0.8,
+            "orientation": "h",
+            "x": [
+                5,
+                4,
+                3
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "waterfall",
+            "width": 0.4,
+            "orientation": "h",
+            "x": [
+                3,
+                -2,
+                0
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "measure": [
+                "r",
+                "r",
+                "t"
+            ],
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "funnel",
+            "width": 0.6,
+            "opacity": 0.8,
+            "orientation": "h",
+            "x": [
+                5,
+                4,
+                3
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "xaxis": "x4",
+            "yaxis": "y4"
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "dragmode": "pan",
+        "xaxis": {
+            "type": "category",
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": true
+        },
+        "xaxis2": {
+            "type": "category",
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": true
+        },
+        "xaxis3": {
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": true
+        },
+        "xaxis4": {
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": true
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": true
+        },
+        "yaxis2": {
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": true
+        },
+        "yaxis3": {
+            "type": "category",
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": true
+        },
+        "yaxis4": {
+            "type": "category",
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": true
+        }
+    }
+}

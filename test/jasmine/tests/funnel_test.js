@@ -777,6 +777,7 @@ describe('A funnel plot', function() {
             type: 'funnel',
             text: ['1', 'Very very very very very long text'],
             textposition: 'inside',
+            insidetextrotate: 'auto',
         }];
         var layout = {};
 
@@ -1540,7 +1541,7 @@ describe('funnel hover', function() {
                 })
                 .then(function() {
                     assertHoverLabelContent({
-                        nums: '1.1\n6% of total\n50% of previous\n20% of initial',
+                        nums: '1.1\n20% of initial\n50% of previous\n6.7% of total',
                         axis: 'E'
                     });
                 })

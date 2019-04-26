@@ -24,7 +24,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'funnel',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'],
+    categories: ['bar-like', 'cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'],
     meta: {
         description: [ // TODO: update description
             'Draws funnel trace.',

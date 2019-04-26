@@ -524,47 +524,43 @@ function setBaseAndTop(gd, sa, sieve) {
     }
 }
 
-function computeTotalVaules(calcTraces) {
-    var totalValues = [];
-
-    for(var i = 0; i < calcTraces.length; i++) {
-        var calcTrace = calcTraces[i];
-        var fullTrace = calcTrace[0].trace;
-
-        var isFunnel = (fullTrace.type === 'funnel');
-        if(!isFunnel) continue; // for the moment we only need to compute this for funnels
-
-        for(var j = 0; j < calcTrace.length; j++) {
-            totalValues[j] = totalValues[j] || 0;
-
-            var bar = calcTrace[j];
-            if(bar.s !== BADNUM) {
-                totalValues[j] += bar.s;
-            }
-        }
-    }
-
-    return totalValues;
-}
-
 function stackBars(gd, sa, sieve) {
     var fullLayout = gd._fullLayout;
     var barnorm = fullLayout.barnorm;
     var sLetter = getAxisLetter(sa);
     var calcTraces = sieve.traces;
+    var calcTrace;
+    var fullTrace;
+    var isFunnel;
+    var i, j;
+    var bar;
 
-    var totalValues = computeTotalVaules(sieve.traces);
-    var seen = [];
+    for(i = 0; i < calcTraces.length; i++) {
+        calcTrace = calcTraces[i];
+        fullTrace = calcTrace[0].trace;
 
-    for(var i = 0; i < calcTraces.length; i++) {
-        var calcTrace = calcTraces[i];
-        var fullTrace = calcTrace[0].trace;
+        if(fullTrace.type === 'funnel') {
+            for(j = 0; j < calcTrace.length; j++) {
+                bar = calcTrace[j];
+
+                if(bar.s !== BADNUM) {
+                    // create base of funnels
+                    sieve.put(bar.p, -0.5 * bar.s);
+                }
+            }
+        }
+    }
+
+    for(i = 0; i < calcTraces.length; i++) {
+        calcTrace = calcTraces[i];
+        fullTrace = calcTrace[0].trace;
+
+        isFunnel = (fullTrace.type === 'funnel');
+
         var pts = [];
 
-        var isFunnel = (fullTrace.type === 'funnel');
-
-        for(var j = 0; j < calcTrace.length; j++) {
-            var bar = calcTrace[j];
+        for(j = 0; j < calcTrace.length; j++) {
+            bar = calcTrace[j];
 
             if(bar.s !== BADNUM) {
                 // stack current bar and get previous sum
@@ -575,14 +571,7 @@ function stackBars(gd, sa, sieve) {
                     value = bar.s + bar.b;
                 }
 
-                var initValue = 0;
-                if(isFunnel) {
-                    if(!seen[j]) {
-                        seen[j] = true;
-                        initValue = -0.5 * totalValues[j];
-                    }
-                }
-                var base = sieve.put(bar.p, value, initValue);
+                var base = sieve.put(bar.p, value);
 
                 var top = base + value;
 

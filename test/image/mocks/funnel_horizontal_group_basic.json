@@ -19,8 +19,8 @@
                 1
             ],
             "textposition": "inside",
-            "insidetextcenter": false,
-            "textinfo": "value+percent of initial"
+            "insidetextanchor": "start",
+            "textinfo": "value+percent initial"
         },
         {
             "name": "orca",

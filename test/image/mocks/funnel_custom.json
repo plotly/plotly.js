@@ -74,6 +74,7 @@
                 }
             },
             "connector": {
+                "fillcolor": "#AAA",
                 "line": {
                     "dash": 10,
                     "width": 2

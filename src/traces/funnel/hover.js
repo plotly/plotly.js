@@ -36,9 +36,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     // display ratio to initial value
     point.extraText = [
-        formatNumber(100 * di.sumR |0) + '% of total',
-        formatNumber(100 * di.difR |0) + '% of previous',
-        formatNumber(100 * di.begR |0) + '% of initial'
+        formatNumber(0.1 * (Math.round(1000 * di.begR))) + '% of initial',
+        formatNumber(0.1 * (Math.round(1000 * di.difR))) + '% of previous',
+        formatNumber(0.1 * (Math.round(1000 * di.sumR))) + '% of total'
     ].join('<br>');
     // TODO: Should we use pieHelpers.formatPieValue instead ?
 

@@ -1,0 +1,143 @@
+{
+    "data": [
+        {
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                3,
+                2,
+                1
+            ],
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x",
+            "yaxis": "y"
+        },
+        {
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                300,
+                200,
+                100
+            ],
+            "textposition": "inside",
+            "insidetextanchor": "start",
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "funnel",
+            "orientation": "h",
+            "x": [
+                30000,
+                20000,
+                10000
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "textposition": "inside",
+            "insidetextanchor": "end",
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "funnel",
+            "orientation": "h",
+            "x": [
+                3000000,
+                2000000,
+                1000000
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "textposition": "outside",
+            "cliponaxis": false,
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x4",
+            "yaxis": "y4"
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "dragmode": "pan",
+        "xaxis": {
+            "type": "category",
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": true
+        },
+        "xaxis2": {
+            "type": "category",
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": "reversed"
+        },
+        "xaxis3": {
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": true
+        },
+        "xaxis4": {
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": "reversed"
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": "reversed"
+        },
+        "yaxis2": {
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": true
+        },
+        "yaxis3": {
+            "type": "category",
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": "reversed"
+        },
+        "yaxis4": {
+            "type": "category",
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": true
+        }
+    }
+}

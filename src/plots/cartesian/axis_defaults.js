@@ -37,7 +37,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     var font = options.font || {};
     var splomStash = options.splomStash || {};
 
-    var visible = coerce('visible', !options.cheateronly);
+    var visible = coerce('visible', !options.visibleDflt);
 
     var axType = containerOut.type;
 

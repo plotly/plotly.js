@@ -27,7 +27,7 @@ module.exports = {
 
     textinfo: extendFlat({}, pieAtts.textinfo, {
         editType: 'plot',
-        flags: ['label', 'text', 'percent of initial', 'percent of previous', 'percent of total', 'value'],
+        flags: ['label', 'text', 'percent initial', 'percent previous', 'percent total', 'value'],
         description: [
             'Determines which trace information appear on the graph.'
         ].join(' ')
@@ -35,15 +35,8 @@ module.exports = {
 
     text: barAttrs.text,
     textposition: extendFlat({}, barAttrs.textposition, {dflt: 'auto'}),
-    insidetextcenter: {
-        valType: 'boolean',
-        dflt: false,
-        role: 'info',
-        editType: 'plot',
-        description: [
-            'Determines if texts are kept at center in `textposition` *inside* mode.'
-        ].join(' ')
-    },
+    insidetextanchor: extendFlat({}, barAttrs.insidetextanchor, {dflt: 'middle'}),
+    insidetextrotate: extendFlat({}, barAttrs.insidetextrotate, {dflt: 'none'}),
     textfont: barAttrs.textfont,
     insidetextfont: barAttrs.insidetextfont,
     outsidetextfont: barAttrs.outsidetextfont,

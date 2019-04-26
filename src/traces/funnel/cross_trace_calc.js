@@ -16,14 +16,10 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
     var calcdata = gd.calcdata;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var includeOtherTypes = false;
     var funnels = [];
     var funnelsVert = [];
     var funnelsHorz = [];
     var cd, i;
-
-    var mayHideX = false;
-    var mayHideY = false;
 
     for(i = 0; i < fullData.length; i++) {
         var fullTrace = fullData[i];
@@ -32,29 +28,19 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         if(
             fullTrace.visible === true &&
             fullTrace.xaxis === xa._id &&
-            fullTrace.yaxis === ya._id
+            fullTrace.yaxis === ya._id &&
+            fullTrace.type === 'funnel'
         ) {
-            if(fullTrace.type === 'funnel') {
-                cd = calcdata[i];
+            cd = calcdata[i];
 
-                if(isHorizontal) {
-                    funnelsHorz.push(cd);
-                    mayHideX = true;
-                } else {
-                    funnelsVert.push(cd);
-                    mayHideY = true;
-                }
-
-                funnels.push(cd);
-            } else { // TODO: figure out which trace types should be exluded here?
-                includeOtherTypes = true;
+            if(isHorizontal) {
+                funnelsHorz.push(cd);
+            } else {
+                funnelsVert.push(cd);
             }
-        }
-    }
 
-    if(!includeOtherTypes) {
-        if(mayHideX) xa._hide = true;
-        if(mayHideY) ya._hide = true;
+            funnels.push(cd);
+        }
     }
 
     // funnel version of 'barmode', 'barnorm', 'bargap' and 'bargroupgap'

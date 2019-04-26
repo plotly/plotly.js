@@ -144,8 +144,9 @@ function handleText(traceIn, traceOut, layout, coerce, moduleHasSelUnselected) {
         coerce('cliponaxis');
     }
 
-    if(hasInside && traceIn.type === 'funnel') {
-        coerce('insidetextcenter');
+    if(hasInside) {
+        coerce('insidetextanchor');
+        coerce('insidetextrotate');
     }
 }
 
