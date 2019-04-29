@@ -1802,7 +1802,9 @@ plots.autoMargin = function(gd, id, o) {
             pushMarginIds[id] = 1;
         }
 
-        if(!fullLayout._replotting) plots.doAutoMargin(gd);
+        if(!fullLayout._replotting) {
+            plots.doAutoMargin(gd);
+        }
     }
 };
 
@@ -1812,8 +1814,8 @@ plots.doAutoMargin = function(gd) {
     initMargins(fullLayout);
 
     var gs = fullLayout._size;
-    var oldmargins = JSON.stringify(gs);
     var margin = fullLayout.margin;
+    var oldMargins = Lib.extendFlat({}, gs);
 
     // adjust margins for outside components
     // fullLayout.margin is the requested margin,
@@ -1892,10 +1894,7 @@ plots.doAutoMargin = function(gd) {
     gs.h = Math.round(height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!fullLayout._replotting &&
-        oldmargins !== '{}' &&
-        oldmargins !== JSON.stringify(fullLayout._size)
-    ) {
+    if(!fullLayout._replotting && plots.didMarginChange(oldMargins, gs)) {
         if('_redrawFromAutoMarginCount' in fullLayout) {
             fullLayout._redrawFromAutoMarginCount++;
         } else {
@@ -1903,6 +1902,22 @@ plots.doAutoMargin = function(gd) {
         }
         return Registry.call('plot', gd);
     }
+};
+
+var marginKeys = ['l', 'r', 't', 'b', 'p', 'w', 'h'];
+
+plots.didMarginChange = function(margin0, margin1) {
+    for(var i = 0; i < marginKeys.length; i++) {
+        var k = marginKeys[i];
+        var m0 = margin0[k];
+        var m1 = margin1[k];
+        // use 1px tolerance in case we old/new differ only
+        // by rounding errors, which can lead to infinite loops
+        if(!isNumeric(m0) || Math.abs(m1 - m0) > 1) {
+            return true;
+        }
+    }
+    return false;
 };
 
 /**

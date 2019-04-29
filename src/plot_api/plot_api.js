@@ -198,7 +198,7 @@ function plot(gd, data, layout, config) {
      * start async-friendly code - now we're actually drawing things
      */
 
-    var oldmargins = JSON.stringify(fullLayout._size);
+    var oldMargins = Lib.extendFlat({}, fullLayout._size);
 
     // draw framework first so that margin-pushing
     // components can position themselves correctly
@@ -311,7 +311,7 @@ function plot(gd, data, layout, config) {
 
     // in case the margins changed, draw margin pushers again
     function marginPushersAgain() {
-        if(JSON.stringify(fullLayout._size) === oldmargins) return;
+        if(!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
 
         return Lib.syncOrAsync([
             marginPushers,
