@@ -13,6 +13,7 @@ var createConeMesh = require('gl-cone3d').createConeMesh;
 
 var simpleMap = require('../../lib').simpleMap;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
+var extractOpts = require('../../components/colorscale').extractOpts;
 var zip3 = require('../../plots/gl3d/zip3');
 
 function Cone(scene, uid) {
@@ -80,8 +81,9 @@ function convert(scene, trace) {
         trace._len
     );
 
+    var cOpts = extractOpts(trace);
     coneOpts.colormap = parseColorScale(trace);
-    coneOpts.vertexIntensityBounds = [trace.cmin / trace._normMax, trace.cmax / trace._normMax];
+    coneOpts.vertexIntensityBounds = [cOpts.min / trace._normMax, cOpts.max / trace._normMax];
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
 
     if(trace.sizemode === 'scaled') {

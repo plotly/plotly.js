@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -79,9 +78,11 @@ function formatColor(containerIn, opacityIn, len) {
 function parseColorScale(cont, alpha) {
     if(alpha === undefined) alpha = 1;
 
-    var colorscale = cont.reversescale ?
-        Colorscale.flipScale(cont.colorscale) :
-        cont.colorscale;
+    var cOpts = Colorscale.extractOpts(cont);
+
+    var colorscale = cOpts.reversescale ?
+        Colorscale.flipScale(cOpts.colorscale) :
+        cOpts.colorscale;
 
     return colorscale.map(function(elem) {
         var index = elem[0];

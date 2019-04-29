@@ -607,7 +607,8 @@
                     0.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -1216,7 +1217,8 @@
                     1.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -1825,7 +1827,8 @@
                     2.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -2434,7 +2437,8 @@
                     3.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -3043,7 +3047,8 @@
                     4.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -3652,7 +3657,8 @@
                     5.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -4261,7 +4267,8 @@
                     6.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -4870,7 +4877,8 @@
                     7.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -5479,7 +5487,8 @@
                     8.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -6088,7 +6097,8 @@
                     9.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -6697,7 +6707,8 @@
                     10.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -7306,7 +7317,8 @@
                     11.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -7915,7 +7927,8 @@
                     12.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -8524,7 +8537,8 @@
                     13.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -9133,7 +9147,8 @@
                     14.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -9742,7 +9757,8 @@
                     15.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -10351,7 +10367,8 @@
                     16.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -10960,7 +10977,8 @@
                     17.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         },
         {
             "z": [
@@ -11569,7 +11587,8 @@
                     18.75
                 ]
             ],
-            "type": "surface"
+            "type": "surface",
+            "coloraxis": "coloraxis"
         }
     ],
     "layout": {
