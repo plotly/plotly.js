@@ -30,6 +30,9 @@ module.exports = function calc(gd, trace) {
     var serieslen = Math.min(pos.length, size.length);
     var cd = new Array(serieslen);
 
+    // Unlike other bar-like traces funnels do not support base attribute.
+    // bases for funnels are computed internally in a way that
+    // the mid-point of each bar are located on the axis line.
     trace._base = [];
 
     // set position and size
@@ -50,7 +53,7 @@ module.exports = function calc(gd, trace) {
             cNext: connectToNext
         };
 
-        trace._base[i] = -0.5 * size[i];
+        trace._base[i] = -0.5 * cdi.s;
 
         if(trace.ids) {
             cdi.id = String(trace.ids[i]);
