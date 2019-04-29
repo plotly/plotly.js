@@ -9,7 +9,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var colorAttrs = require('../../components/colorscale/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
@@ -19,12 +19,12 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-var markerLineAttrs = extendFlat(colorAttrs('marker.line', {editTypeOverride: 'calc'}), {
+var markerLineAttrs = extendFlat(colorScaleAttrs('marker.line', {editTypeOverride: 'calc'}), {
     width: extendFlat({}, scatterMarkerLineAttrs.width, {editType: 'calc'}),
     editType: 'calc'
 });
 
-var markerAttrs = extendFlat(colorAttrs('marker'), {
+var markerAttrs = extendFlat(colorScaleAttrs('marker'), {
     symbol: scatterMarkerAttrs.symbol,
     size: extendFlat({}, scatterMarkerAttrs.size, {editType: 'markerSize'}),
     sizeref: scatterMarkerAttrs.sizeref,

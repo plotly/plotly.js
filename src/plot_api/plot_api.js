@@ -1871,6 +1871,7 @@ function relayout(gd, astr, val) {
         if(flags.ticks) seq.push(subroutines.doTicksRelayout);
         if(flags.modebar) seq.push(subroutines.doModeBar);
         if(flags.camera) seq.push(subroutines.doCamera);
+        if(flags.colorbars) seq.push(subroutines.doColorBars);
 
         seq.push(emitAfterPlot);
     }
@@ -2382,7 +2383,7 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         axRangeSupplyDefaultsByPass(gd, relayoutFlags, relayoutSpecs) || Plots.supplyDefaults(gd);
 
         if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
-        if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
+        if(restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
         if(relayoutFlags.legend) seq.push(subroutines.doLegend);
         if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
         if(relayoutFlags.axrange) addAxRangeSequence(seq, relayoutSpecs.rangesAltered);
@@ -2779,7 +2780,7 @@ exports.react = function(gd, data, layout, config) {
 
             seq.push(Plots.previousPromises);
             if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
-            if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
+            if(restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
             if(relayoutFlags.legend) seq.push(subroutines.doLegend);
             if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
             if(relayoutFlags.axrange) addAxRangeSequence(seq);

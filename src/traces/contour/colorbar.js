@@ -8,11 +8,11 @@
 
 'use strict';
 
+var extractOpts = require('../../components/colorscale').extractOpts;
 var makeColorMap = require('./make_color_map');
 var endPlus = require('./end_plus');
 
-function calc(gd, cd, opts) {
-    var trace = cd[0].trace;
+function calc(gd, trace, opts) {
     var contours = trace.contours;
     var line = trace.line;
     var cs = contours.size || 1;
@@ -20,8 +20,9 @@ function calc(gd, cd, opts) {
     var colorMap = makeColorMap(trace, {isColorbar: true});
 
     if(coloring === 'heatmap') {
+        var cOpts = extractOpts(trace);
         opts._fillgradient = trace.colorscale;
-        opts._zrange = [trace.zmin, trace.zmax];
+        opts._zrange = [cOpts.min, cOpts.max];
     } else if(coloring === 'fill') {
         opts._fillcolor = colorMap;
     }

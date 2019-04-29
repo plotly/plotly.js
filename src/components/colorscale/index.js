@@ -32,7 +32,9 @@ module.exports = {
     isValidScale: scales.isValid,
 
     hasColorscale: helpers.hasColorscale,
-    flipScale: helpers.flipScale,
+    extractOpts: helpers.extractOpts,
     extractScale: helpers.extractScale,
-    makeColorScaleFunc: helpers.makeColorScaleFunc
+    flipScale: helpers.flipScale,
+    makeColorScaleFunc: helpers.makeColorScaleFunc,
+    makeColorScaleFuncFromTrace: helpers.makeColorScaleFuncFromTrace
 };

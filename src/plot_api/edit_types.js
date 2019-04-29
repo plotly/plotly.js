@@ -35,7 +35,7 @@ var layoutOpts = {
     extras: ['none'],
     flags: [
         'calc', 'plot', 'legend', 'ticks', 'axrange',
-        'layoutstyle', 'modebar', 'camera', 'arraydraw'
+        'layoutstyle', 'modebar', 'camera', 'arraydraw', 'colorbars'
     ],
     description: [
         'layout attributes should include an `editType` string matching this flaglist.',
@@ -49,7 +49,8 @@ var layoutOpts = {
         '*modebar* just updates the modebar.',
         '*camera* just updates the camera settings for gl3d scenes.',
         '*arraydraw* allows component arrays to invoke the redraw routines just for the',
-        'component(s) that changed.'
+        'component(s) that changed.',
+        '*colorbars* only redraws colorbars.'
     ].join(' ')
 };
 

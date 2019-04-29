@@ -6,10 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
+
 var Colorscale = require('../../components/colorscale');
 var endPlus = require('./end_plus');
 
@@ -20,15 +20,16 @@ module.exports = function makeColorMap(trace) {
     var cs = contours.size || 1;
     var nc = Math.floor((end - start) / cs) + 1;
     var extra = contours.coloring === 'lines' ? 0 : 1;
+    var cOpts = Colorscale.extractOpts(trace);
 
     if(!isFinite(cs)) {
         cs = 1;
         nc = 1;
     }
 
-    var scl = trace.reversescale ?
-        Colorscale.flipScale(trace.colorscale) :
-        trace.colorscale;
+    var scl = cOpts.reversescale ?
+        Colorscale.flipScale(cOpts.colorscale) :
+        cOpts.colorscale;
 
     var len = scl.length;
     var domain = new Array(len);
@@ -37,51 +38,45 @@ module.exports = function makeColorMap(trace) {
     var si, i;
 
     if(contours.coloring === 'heatmap') {
-        if(trace.zauto && trace.autocontour === false) {
-            trace.zmin = start - cs / 2;
-            trace.zmax = trace.zmin + nc * cs;
-        }
+        var zmin0 = cOpts.min;
+        var zmax0 = cOpts.max;
 
         for(i = 0; i < len; i++) {
             si = scl[i];
-
-            domain[i] = si[0] * (trace.zmax - trace.zmin) + trace.zmin;
+            domain[i] = si[0] * (zmax0 - zmin0) + zmin0;
             range[i] = si[1];
         }
 
         // do the contours extend beyond the colorscale?
         // if so, extend the colorscale with constants
         var zRange = d3.extent([
-            trace.zmin,
-            trace.zmax,
+            zmin0,
+            zmax0,
             contours.start,
             contours.start + cs * (nc - 1)
         ]);
-        var zmin = zRange[trace.zmin < trace.zmax ? 0 : 1];
-        var zmax = zRange[trace.zmin < trace.zmax ? 1 : 0];
+        var zmin = zRange[zmin0 < zmax0 ? 0 : 1];
+        var zmax = zRange[zmin0 < zmax0 ? 1 : 0];
 
-        if(zmin !== trace.zmin) {
+        if(zmin !== zmin0) {
             domain.splice(0, 0, zmin);
-            range.splice(0, 0, Range[0]);
+            range.splice(0, 0, range[0]);
         }
 
-        if(zmax !== trace.zmax) {
+        if(zmax !== zmax0) {
             domain.push(zmax);
             range.push(range[range.length - 1]);
         }
     } else {
         for(i = 0; i < len; i++) {
             si = scl[i];
-
             domain[i] = (si[0] * (nc + extra - 1) - (extra / 2)) * cs + start;
             range[i] = si[1];
         }
     }
 
-    return Colorscale.makeColorScaleFunc({
-        domain: domain,
-        range: range,
-    }, {
-        noNumericCheck: true
-    });
+    return Colorscale.makeColorScaleFunc(
+        {domain: domain, range: range},
+        {noNumericCheck: true}
+    );
 };

@@ -8,8 +8,7 @@
 
 'use strict';
 
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var surfaceAtts = require('../surface/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -178,14 +177,11 @@ module.exports = extendFlat({
     transforms: undefined
 },
 
-colorscaleAttrs('', {
+colorScaleAttrs('', {
     colorAttr: '`intensity`',
     showScaleDflt: true,
     editTypeOverride: 'calc'
 }), {
-
-    colorbar: colorbarAttrs,
-
     opacity: surfaceAtts.opacity,
 
     // Flat shaded mode

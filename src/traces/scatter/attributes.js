@@ -9,8 +9,7 @@
 'use strict';
 
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var colorAttributes = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
 
@@ -415,8 +414,6 @@ module.exports = {
             ].join(' ')
         },
 
-        colorbar: colorbarAttrs,
-
         line: extendFlat({
             width: {
                 valType: 'number',
@@ -429,7 +426,7 @@ module.exports = {
             },
             editType: 'calc'
         },
-            colorAttributes('marker.line', {anim: true})
+            colorScaleAttrs('marker.line', {anim: true})
         ),
         gradient: {
             type: {
@@ -458,7 +455,7 @@ module.exports = {
         },
         editType: 'calc'
     },
-        colorAttributes('marker', {anim: true})
+        colorScaleAttrs('marker', {anim: true})
     ),
     selected: {
         marker: {

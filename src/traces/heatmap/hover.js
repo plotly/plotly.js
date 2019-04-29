@@ -6,12 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var extractOpts = require('../../components/colorscale').extractOpts;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer, contour) {
     var cd0 = pointData.cd[0];
@@ -24,7 +24,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var xc = cd0.xCenter;
     var yc = cd0.yCenter;
     var zmask = cd0.zmask;
-    var range = [trace.zmin, trace.zmax];
     var zhoverformat = trace.zhoverformat;
     var x2 = x;
     var y2 = y;
@@ -95,17 +94,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         text = cd0.text[ny][nx];
     }
 
-    var zLabel;
     // dummy axis for formatting the z value
+    var cOpts = extractOpts(trace);
     var dummyAx = {
         type: 'linear',
-        range: range,
+        range: [cOpts.min, cOpts.max],
         hoverformat: zhoverformat,
         _separators: xa._separators,
         _numFormat: xa._numFormat
     };
-    var zLabelObj = Axes.tickText(dummyAx, zVal, 'hover');
-    zLabel = zLabelObj.text;
+    var zLabel = Axes.tickText(dummyAx, zVal, 'hover').text;
 
     return [Lib.extendFlat(pointData, {
         index: [ny, nx],
