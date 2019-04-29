@@ -17,27 +17,38 @@ var colorbarDefaults = require('../colorbar/defaults');
 var isValidScale = require('./scales').isValid;
 var traceIs = require('../../registry').traceIs;
 
-function npMaybe(outerCont, prefix) {
+function npMaybe(parentCont, prefix) {
     var containerStr = prefix.slice(0, prefix.length - 1);
     return prefix ?
-        Lib.nestedProperty(outerCont, containerStr).get() || {} :
-        outerCont;
+        Lib.nestedProperty(parentCont, containerStr).get() || {} :
+        parentCont;
 }
 
-module.exports = function colorScaleDefaults(outerContIn, outerContOut, layout, coerce, opts) {
+/**
+ * Colorscale / colorbar default handler
+ *
+ * @param {object} parentContIn : user (input) parent container (e.g. trace or layout coloraxis object)
+ * @param {object} parentContOut : full parent container
+ * @param {object} layout : (full) layout object
+ * @param {fn} coerce : Lib.coerce wrapper
+ * @param {object} opts :
+ * - prefix {string} : attr string prefix to colorscale container from parent root
+ * - cLetter {string} : 'c or 'z' color letter
+ */
+module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout, coerce, opts) {
     var prefix = opts.prefix;
     var cLetter = opts.cLetter;
-    var inTrace = '_module' in outerContOut;
-    var containerIn = npMaybe(outerContIn, prefix);
-    var containerOut = npMaybe(outerContOut, prefix);
-    var template = npMaybe(outerContOut._template || {}, prefix) || {};
+    var inTrace = '_module' in parentContOut;
+    var containerIn = npMaybe(parentContIn, prefix);
+    var containerOut = npMaybe(parentContOut, prefix);
+    var template = npMaybe(parentContOut._template || {}, prefix) || {};
 
     // colorScaleDefaults wrapper called if-ever we need to reset the colorscale
     // attributes for containers that were linked to invalid color axes
     var thisFn = function() {
-        delete outerContIn.coloraxis;
-        delete outerContOut.coloraxis;
-        return colorScaleDefaults(outerContIn, outerContOut, layout, coerce, opts);
+        delete parentContIn.coloraxis;
+        delete parentContOut.coloraxis;
+        return colorScaleDefaults(parentContIn, parentContOut, layout, coerce, opts);
     };
 
     if(inTrace) {
@@ -46,8 +57,8 @@ module.exports = function colorScaleDefaults(outerContIn, outerContOut, layout, 
 
         if(colorAx) {
             var colorbarVisuals = (
-                traceIs(outerContOut, 'contour') &&
-                Lib.nestedProperty(outerContOut, 'contours.coloring').get()
+                traceIs(parentContOut, 'contour') &&
+                Lib.nestedProperty(parentContOut, 'contours.coloring').get()
             ) || 'heatmap';
 
             var stash = colorAxes[colorAx];
@@ -67,7 +78,7 @@ module.exports = function colorScaleDefaults(outerContIn, outerContOut, layout, 
                 // - colorbar visual 'type'
                 // - colorbar options to help in Colorbar.draw
                 // - list of colorScaleDefaults wrapper functions
-                colorAxes[colorAx] = [colorbarVisuals, outerContOut, [thisFn]];
+                colorAxes[colorAx] = [colorbarVisuals, parentContOut, [thisFn]];
             }
             return;
         }
