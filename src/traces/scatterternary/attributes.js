@@ -11,8 +11,7 @@
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorAttributes = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -130,13 +129,13 @@ module.exports = {
             width: scatterMarkerLineAttrs.width,
             editType: 'calc'
         },
-            colorAttributes('marker.line')
+            colorScaleAttrs('marker.line')
         ),
         gradient: scatterMarkerAttrs.gradient,
         editType: 'calc'
-    }, colorAttributes('marker'), {
-        colorbar: colorbarAttrs
-    }),
+    },
+        colorScaleAttrs('marker')
+    ),
 
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,

@@ -136,7 +136,8 @@ describe('plot schema', function() {
             'xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'mapbox', 'polar',
             // not really a 'subplot' object but supports yaxis, yaxis2, yaxis3,
             // ... counters, so list it here
-            'xaxis.rangeslider.yaxis'
+            'xaxis.rangeslider.yaxis',
+            'coloraxis'
         ];
 
         // check if the subplot objects have '_isSubplotObj'
@@ -146,7 +147,7 @@ describe('plot schema', function() {
                     plotSchema.layout.layoutAttributes,
                     astr + '.' + IS_SUBPLOT_OBJ
                 ).get()
-            ).toBe(true);
+            ).toBe(true, astr);
         });
 
         // check that no other object has '_isSubplotObj'

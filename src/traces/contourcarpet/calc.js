@@ -45,8 +45,7 @@ module.exports = function calc(gd, trace) {
     }
 
     var cd = heatmappishCalc(gd, trace);
-
-    setContours(trace);
+    setContours(trace, trace._z);
 
     return cd;
 };

@@ -8,14 +8,11 @@
 
 'use strict';
 
-
 var heatmapAttrs = require('../heatmap/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-
 
 var commonList = [
     'z',
@@ -34,8 +31,7 @@ for(var i = 0; i < commonList.length; i++) {
 
 extendFlat(
     attrs,
-    colorscaleAttrs('', {cLetter: 'z', autoColorDflt: false}),
-    {colorbar: colorbarAttrs}
+    colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
 );
 
 module.exports = overrideAll(attrs, 'calc', 'nested');

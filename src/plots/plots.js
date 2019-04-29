@@ -54,18 +54,18 @@ plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 plots.redrawText = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
+    var fullLayout = gd._fullLayout || {};
+    var hasPolar = fullLayout._has && fullLayout._has('polar');
+    var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
+
     // do not work if polar is present
-    if((gd.data && gd.data[0] && gd.data[0].r)) return;
+    if(hasLegacyPolar) return;
 
     return new Promise(function(resolve) {
         setTimeout(function() {
             Registry.getComponentMethod('annotations', 'draw')(gd);
             Registry.getComponentMethod('legend', 'draw')(gd);
-
-            (gd.calcdata || []).forEach(function(d) {
-                if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
-            });
-
+            Registry.getComponentMethod('colorbar', 'draw')(gd);
             resolve(plots.previousPromises(gd));
         }, 300);
     });
@@ -390,6 +390,8 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._firstScatter = {};
     // for grouped bar/box/violin trace to share config across traces
     newFullLayout._alignmentOpts = {};
+    // track color axes referenced in the data
+    newFullLayout._colorAxes = {};
 
     // for traces to request a default rangeslider on their x axes
     // eg set `_requestRangeslider.x2 = true` for xaxis2
@@ -445,7 +447,6 @@ plots.supplyDefaults = function(gd, opts) {
     for(i = 0; i < crossTraceDefaultsFuncs.length; i++) {
         crossTraceDefaultsFuncs[i](newFullData, newFullLayout);
     }
-    Registry.getComponentMethod('colorscale', 'crossTraceDefaults')(newFullData, newFullLayout);
 
     // turn on flag to optimize large splom-only graphs
     // mostly by omitting SVG layers during Cartesian.drawFramework
@@ -484,6 +485,9 @@ plots.supplyDefaults = function(gd, opts) {
 
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
+
+    // colorscale crossTraceDefaults needs newFullLayout with relinked keys
+    Registry.getComponentMethod('colorscale', 'crossTraceDefaults')(newFullData, newFullLayout);
 
     // For persisting GUI-driven changes in layout
     // _preGUI and _tracePreGUI were already copied over in relinkPrivateKeys

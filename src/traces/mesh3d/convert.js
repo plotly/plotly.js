@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var createMesh = require('gl-mesh3d');
@@ -16,6 +15,7 @@ var convexHull = require('convex-hull');
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
+var extractOpts = require('../../components/colorscale').extractOpts;
 var zip3 = require('../../plots/gl3d/zip3');
 
 function Mesh3DTrace(scene, mesh, uid) {
@@ -158,9 +158,10 @@ proto.update = function(data) {
     };
 
     if(data.intensity) {
+        var cOpts = extractOpts(data);
         this.color = '#fff';
         config.vertexIntensity = data.intensity;
-        config.vertexIntensityBounds = [data.cmin, data.cmax];
+        config.vertexIntensityBounds = [cOpts.min, cOpts.max];
         config.colormap = parseColorScale(data);
     } else if(data.vertexcolor) {
         this.color = data.vertexcolor[0];

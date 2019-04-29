@@ -8,7 +8,7 @@
 
 'use strict';
 
-var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var isosurfaceAttrs = require('../isosurface/attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -55,7 +55,7 @@ var attrs = module.exports = overrideAll(extendFlat({
     hovertemplate: isosurfaceAttrs.hovertemplate
 },
 
-colorscaleAttrs('', {
+colorScaleAttrs('', {
     colorAttr: '`value`',
     showScaleDflt: true,
     editTypeOverride: 'calc'

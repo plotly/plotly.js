@@ -14,7 +14,7 @@ var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Colorscale = require('../../components/colorscale');
+var makeColorScaleFuncFromTrace = require('../../components/colorscale').makeColorScaleFuncFromTrace;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
@@ -140,10 +140,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         canvas.height = canvasH;
         var context = canvas.getContext('2d');
 
-        var sclFunc = Colorscale.makeColorScaleFunc(
-            Colorscale.extractScale(trace, {cLetter: 'z'}),
-            { noNumericCheck: true, returnArray: true }
-        );
+        var sclFunc = makeColorScaleFuncFromTrace(trace, {noNumericCheck: true, returnArray: true});
 
         // map brick boundaries to image pixels
         var xpx,

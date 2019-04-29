@@ -6,8 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
+
+var Registry = require('../registry');
 
 exports.getDelay = function(fullLayout) {
     if(!fullLayout._has) return 0;
@@ -20,16 +21,13 @@ exports.getDelay = function(fullLayout) {
 };
 
 exports.getRedrawFunc = function(gd) {
-    var fullLayout = gd._fullLayout || {};
-    var hasPolar = fullLayout._has && fullLayout._has('polar');
-    var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
-
-    // do not work for legacy polar
-    if(hasLegacyPolar) return;
-
     return function() {
-        (gd.calcdata || []).forEach(function(d) {
-            if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
-        });
+        var fullLayout = gd._fullLayout || {};
+        var hasPolar = fullLayout._has && fullLayout._has('polar');
+        var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
+
+        if(!hasLegacyPolar) {
+            Registry.getComponentMethod('colorbar', 'draw')(gd);
+        }
     };
 };

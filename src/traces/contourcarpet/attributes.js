@@ -12,8 +12,7 @@ var heatmapAttrs = require('../heatmap/attributes');
 var contourAttrs = require('../contour/attributes');
 var contourContourAttrs = contourAttrs.contours;
 var scatterAttrs = require('../scatter/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -95,9 +94,8 @@ module.exports = extendFlat({
     transforms: undefined
 },
 
-    colorscaleAttrs('', {
+    colorScaleAttrs('', {
         cLetter: 'z',
         autoColorDflt: false
-    }),
-    { colorbar: colorbarAttrs }
+    })
 );

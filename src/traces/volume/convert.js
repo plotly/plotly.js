@@ -6,13 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var createMesh = require('gl-mesh3d');
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
+var extractOpts = require('../../components/colorscale').extractOpts;
 var zip3 = require('../../plots/gl3d/zip3');
 
 var findNearestOnAxis = require('../isosurface/convert').findNearestOnAxis;
@@ -103,8 +103,9 @@ proto.update = function(data) {
         useFacetNormals: data.flatshading
     };
 
+    var cOpts = extractOpts(data);
     config.vertexIntensity = data._intensity;
-    config.vertexIntensityBounds = [data.cmin, data.cmax];
+    config.vertexIntensityBounds = [cOpts.min, cOpts.max];
     config.colormap = parseColorScale(data);
 
     // Update mesh
