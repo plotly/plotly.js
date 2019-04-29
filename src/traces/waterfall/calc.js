@@ -89,7 +89,7 @@ module.exports = function calc(gd, trace) {
             cdi.id = String(trace.ids[i]);
         }
 
-        cdi.v = trace.base + previousSum;
+        cdi.v = (trace.base || 0) + previousSum;
     }
 
     if(cd.length) cd[0].hasTotals = hasTotals;

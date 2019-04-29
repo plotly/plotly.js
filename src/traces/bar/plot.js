@@ -18,13 +18,13 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Registry = require('../../registry');
+var tickText = require('../../plots/cartesian/axes').tickText;
 
 var attributes = require('./attributes');
 var attributeText = attributes.text;
 var attributeTextPosition = attributes.textposition;
 var style = require('./style');
 var helpers = require('./helpers');
-var pieHelpers = require('../pie/helpers');
 
 // padding in pixels around text
 var TEXTPAD = 3;
@@ -175,6 +175,9 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
 };
 
 function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+
     var fullLayout = gd._fullLayout;
     var textPosition;
 
@@ -199,7 +202,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     var trace = calcTrace[0].trace;
     var orientation = trace.orientation;
 
-    var text = getText(calcTrace, i, fullLayout);
+    var text = getText(calcTrace, i, xa, ya);
     textPosition = getTextPosition(trace, i);
 
     // compute text position
@@ -225,7 +228,6 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
     // so that we can get correctly inside text scaling
     var di = bar.datum();
     if(orientation === 'h') {
-        var xa = plotinfo.xaxis;
         if(xa.type === 'log' && di.s0 <= 0) {
             if(xa.range[0] < xa.range[1]) {
                 x0 = 0;
@@ -234,7 +236,6 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1) {
             }
         }
     } else {
-        var ya = plotinfo.yaxis;
         if(ya.type === 'log' && di.s0 <= 0) {
             if(ya.range[0] < ya.range[1]) {
                 y0 = ya._length;
@@ -470,14 +471,14 @@ function getTransform(textX, textY, targetX, targetY, scale, rotate) {
     return transformTranslate + transformScale + transformRotate;
 }
 
-function getText(calcTrace, index, fullLayout) {
+function getText(calcTrace, index, xa, ya) {
     var trace = calcTrace[0].trace;
 
     var value;
     if(!trace.textinfo || trace.textinfo === 'none') {
         value = helpers.getValue(trace.text, index);
     } else {
-        value = calcTextinfo(calcTrace, index, fullLayout);
+        value = calcTextinfo(calcTrace, index, xa, ya);
     }
 
     return helpers.coerceString(attributeText, value);
@@ -488,19 +489,26 @@ function getTextPosition(trace, index) {
     return helpers.coerceEnumerated(attributeTextPosition, value);
 }
 
-function calcTextinfo(calcTrace, index, fullLayout) {
+function calcTextinfo(calcTrace, index, xa, ya) {
     var trace = calcTrace[0].trace;
+    var isHorizontal = (trace.orientation === 'h');
+
+    function formatNumber(v) {
+        var sAxis = isHorizontal ? xa : ya;
+        var hover = false;
+        return tickText(sAxis, +v, hover).text;
+    }
+
     var textinfo = trace.textinfo;
     var cdi = calcTrace[index];
 
-    var separators = fullLayout.separators;
     var parts = textinfo.split('+');
     var text = [];
 
     var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
 
     if(hasFlag('label')) {
-        if(trace.orientation === 'h') {
+        if(isHorizontal) {
             text.push(trace.y[index]);
         } else {
             text.push(trace.x[index]);
@@ -517,9 +525,9 @@ function calcTextinfo(calcTrace, index, fullLayout) {
         var final = cdi.v;
         var initial = final - delta;
 
-        if(hasFlag('initial')) text.push(pieHelpers.formatPieValue(initial, separators));
-        if(hasFlag('delta')) text.push(pieHelpers.formatPieValue(delta, separators));
-        if(hasFlag('final')) text.push(pieHelpers.formatPieValue(final, separators));
+        if(hasFlag('initial')) text.push(formatNumber(initial));
+        if(hasFlag('delta')) text.push(formatNumber(delta));
+        if(hasFlag('final')) text.push(formatNumber(final));
     }
 
     return text.join('<br>');
