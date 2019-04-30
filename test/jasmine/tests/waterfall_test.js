@@ -128,7 +128,7 @@ describe('Waterfall.supplyDefaults', function() {
     it('should not coerce textinfo when textposition is none', function() {
         traceIn = {
             y: [1, 2, 3],
-            textinfo: 'value'
+            textinfo: 'text'
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.textinfo).toBeUndefined();
