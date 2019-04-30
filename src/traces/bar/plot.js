@@ -475,7 +475,7 @@ function getText(calcTrace, index, xa, ya) {
     var trace = calcTrace[0].trace;
 
     var value;
-    if(!trace.textinfo || trace.textinfo === 'none') {
+    if(!trace.textinfo) {
         value = helpers.getValue(trace.text, index);
     } else {
         value = calcTextinfo(calcTrace, index, xa, ya);
