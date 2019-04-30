@@ -37,8 +37,6 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
 
         var isHorizontal = (trace.orientation === 'h');
 
-        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
-
         var connectors = group.selectAll('g.region').data(Lib.identity);
 
         connectors.enter().append('g')
