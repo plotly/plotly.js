@@ -11,6 +11,7 @@
 var setGroupPositions = require('../bar/cross_trace_calc').setGroupPositions;
 
 module.exports = function crossTraceCalc(gd, plotinfo) {
+    var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var calcdata = gd.calcdata;
     var xa = plotinfo.xaxis;
@@ -41,8 +42,15 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         }
     }
 
-    setGroupPositions('waterfall', gd, xa, ya, waterfallsVert);
-    setGroupPositions('waterfall', gd, ya, xa, waterfallsHorz);
+    var opts = {
+        mode: fullLayout.waterfallmode,
+        norm: fullLayout.waterfallnorm,
+        gap: fullLayout.waterfallgap,
+        groupgap: fullLayout.waterfallgroupgap
+    };
+
+    setGroupPositions(gd, xa, ya, waterfallsVert, opts);
+    setGroupPositions(gd, ya, xa, waterfallsHorz, opts);
 
     for(i = 0; i < waterfalls.length; i++) {
         cd = waterfalls[i];

@@ -28,10 +28,11 @@ function crossTraceCalc(gd, plotinfo) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
+    var fullLayout = gd._fullLayout;
     var fullTraces = gd._fullData;
     var calcTraces = gd.calcdata;
-    var calcTracesHorizontal = [];
-    var calcTracesVertical = [];
+    var calcTracesHorz = [];
+    var calcTracesVert = [];
 
     for(var i = 0; i < fullTraces.length; i++) {
         var fullTrace = fullTraces[i];
@@ -42,30 +43,36 @@ function crossTraceCalc(gd, plotinfo) {
             fullTrace.yaxis === ya._id
         ) {
             if(fullTrace.orientation === 'h') {
-                calcTracesHorizontal.push(calcTraces[i]);
+                calcTracesHorz.push(calcTraces[i]);
             } else {
-                calcTracesVertical.push(calcTraces[i]);
+                calcTracesVert.push(calcTraces[i]);
             }
         }
     }
 
-    setGroupPositions('bar', gd, xa, ya, calcTracesVertical);
-    setGroupPositions('bar', gd, ya, xa, calcTracesHorizontal);
+    var opts = {
+        mode: fullLayout.barmode,
+        norm: fullLayout.barnorm,
+        gap: fullLayout.bargap,
+        groupgap: fullLayout.bargroupgap
+    };
+
+    setGroupPositions(gd, xa, ya, calcTracesVert, opts);
+    setGroupPositions(gd, ya, xa, calcTracesHorz, opts);
 }
 
-function setGroupPositions(prefix, gd, pa, sa, calcTraces) {
+function setGroupPositions(gd, pa, sa, calcTraces, opts) {
     if(!calcTraces.length) return;
 
-    var barmode = gd._fullLayout[prefix + 'mode'];
     var excluded;
     var included;
     var i, calcTrace, fullTrace;
 
     initBase(sa, calcTraces);
 
-    switch(barmode) {
+    switch(opts.mode) {
         case 'overlay':
-            setGroupPositionsInOverlayMode(prefix, gd, pa, sa, calcTraces);
+            setGroupPositionsInOverlayMode(pa, sa, calcTraces, opts);
             break;
 
         case 'group':
@@ -81,10 +88,10 @@ function setGroupPositions(prefix, gd, pa, sa, calcTraces) {
             }
 
             if(included.length) {
-                setGroupPositionsInGroupMode(prefix, gd, pa, sa, included);
+                setGroupPositionsInGroupMode(gd, pa, sa, included, opts);
             }
             if(excluded.length) {
-                setGroupPositionsInOverlayMode(prefix, gd, pa, sa, excluded);
+                setGroupPositionsInOverlayMode(pa, sa, excluded, opts);
             }
             break;
 
@@ -102,10 +109,10 @@ function setGroupPositions(prefix, gd, pa, sa, calcTraces) {
             }
 
             if(included.length) {
-                setGroupPositionsInStackOrRelativeMode(prefix, gd, pa, sa, included);
+                setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included, opts);
             }
             if(excluded.length) {
-                setGroupPositionsInOverlayMode(prefix, gd, pa, sa, excluded);
+                setGroupPositionsInOverlayMode(pa, sa, excluded, opts);
             }
             break;
     }
@@ -156,75 +163,66 @@ function initBase(sa, calcTraces) {
     }
 }
 
-function setGroupPositionsInOverlayMode(prefix, gd, pa, sa, calcTraces) {
-    var barnorm = gd._fullLayout[prefix + 'norm'];
-
+function setGroupPositionsInOverlayMode(pa, sa, calcTraces, opts) {
     // update position axis and set bar offsets and widths
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
 
         var sieve = new Sieve([calcTrace], {
             sepNegVal: false,
-            overlapNoMerge: !barnorm
+            overlapNoMerge: !opts.norm
         });
 
         // set bar offsets and widths, and update position axis
-        setOffsetAndWidth(prefix, gd, pa, sieve);
+        setOffsetAndWidth(pa, sieve, opts);
 
         // set bar bases and sizes, and update size axis
         //
         // (note that `setGroupPositionsInOverlayMode` handles the case barnorm
         // is defined, because this function is also invoked for traces that
         // can't be grouped or stacked)
-        if(barnorm) {
+        if(opts.norm) {
             sieveBars(sieve);
-            normalizeBars(prefix, gd, sa, sieve);
+            normalizeBars(sa, sieve, opts);
         } else {
             setBaseAndTop(sa, sieve);
         }
     }
 }
 
-function setGroupPositionsInGroupMode(prefix, gd, pa, sa, calcTraces) {
-    var fullLayout = gd._fullLayout;
-    var barnorm = fullLayout[prefix + 'norm'];
-
+function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces, opts) {
     var sieve = new Sieve(calcTraces, {
         sepNegVal: false,
-        overlapNoMerge: !barnorm
+        overlapNoMerge: !opts.norm
     });
 
     // set bar offsets and widths, and update position axis
-    setOffsetAndWidthInGroupMode(prefix, gd, pa, sieve);
+    setOffsetAndWidthInGroupMode(gd, pa, sieve, opts);
 
     // relative-stack bars within the same trace that would otherwise
     // be hidden
     unhideBarsWithinTrace(sieve);
 
     // set bar bases and sizes, and update size axis
-    if(barnorm) {
+    if(opts.norm) {
         sieveBars(sieve);
-        normalizeBars(prefix, gd, sa, sieve);
+        normalizeBars(sa, sieve, opts);
     } else {
         setBaseAndTop(sa, sieve);
     }
 }
 
-function setGroupPositionsInStackOrRelativeMode(prefix, gd, pa, sa, calcTraces) {
-    var fullLayout = gd._fullLayout;
-    var barmode = fullLayout[prefix + 'mode'];
-    var barnorm = fullLayout[prefix + 'norm'];
-
+function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces, opts) {
     var sieve = new Sieve(calcTraces, {
-        sepNegVal: barmode === 'relative',
-        overlapNoMerge: !(barnorm || barmode === 'stack' || barmode === 'relative')
+        sepNegVal: opts.mode === 'relative',
+        overlapNoMerge: !(opts.norm || opts.mode === 'stack' || opts.mode === 'relative')
     });
 
     // set bar offsets and widths, and update position axis
-    setOffsetAndWidth(prefix, gd, pa, sieve);
+    setOffsetAndWidth(pa, sieve, opts);
 
     // set bar bases and sizes, and update size axis
-    stackBars(prefix, gd, sa, sieve);
+    stackBars(sa, sieve, opts);
 
     // flag the outmost bar (for text display purposes)
     for(var i = 0; i < calcTraces.length; i++) {
@@ -242,21 +240,17 @@ function setGroupPositionsInStackOrRelativeMode(prefix, gd, pa, sa, calcTraces) 
 
     // Note that marking the outmost bars has to be done
     // before `normalizeBars` changes `bar.b` and `bar.s`.
-    if(barnorm) normalizeBars(prefix, gd, sa, sieve);
+    if(opts.norm) normalizeBars(sa, sieve, opts);
 }
 
-function setOffsetAndWidth(prefix, gd, pa, sieve) {
-    var fullLayout = gd._fullLayout;
-    var bargap = fullLayout[prefix + 'gap'];
-    var bargroupgap = fullLayout[prefix + 'groupgap'] || 0;
-
+function setOffsetAndWidth(pa, sieve, opts) {
     var minDiff = sieve.minDiff;
     var calcTraces = sieve.traces;
 
     // set bar offsets and widths
-    var barGroupWidth = minDiff * (1 - bargap);
+    var barGroupWidth = minDiff * (1 - opts.gap);
     var barWidthPlusGap = barGroupWidth;
-    var barWidth = barWidthPlusGap * (1 - bargroupgap);
+    var barWidth = barWidthPlusGap * (1 - (opts.groupgap || 0));
 
     // computer bar group center and bar offset
     var offsetFromCenter = -barWidth / 2;
@@ -285,10 +279,8 @@ function setOffsetAndWidth(prefix, gd, pa, sieve) {
     updatePositionAxis(pa, sieve);
 }
 
-function setOffsetAndWidthInGroupMode(prefix, gd, pa, sieve) {
+function setOffsetAndWidthInGroupMode(gd, pa, sieve, opts) {
     var fullLayout = gd._fullLayout;
-    var bargap = fullLayout[prefix + 'gap'];
-    var bargroupgap = fullLayout[prefix + 'groupgap'] || 0;
     var positions = sieve.positions;
     var distinctPositions = sieve.distinctPositions;
     var minDiff = sieve.minDiff;
@@ -298,7 +290,7 @@ function setOffsetAndWidthInGroupMode(prefix, gd, pa, sieve) {
     // if there aren't any overlapping positions,
     // let them have full width even if mode is group
     var overlap = (positions.length !== distinctPositions.length);
-    var barGroupWidth = minDiff * (1 - bargap);
+    var barGroupWidth = minDiff * (1 - opts.gap);
 
     var groupId = getAxisGroup(fullLayout, pa._id) + calcTraces[0][0].trace.orientation;
     var alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
@@ -317,7 +309,7 @@ function setOffsetAndWidthInGroupMode(prefix, gd, pa, sieve) {
             barWidthPlusGap = overlap ? barGroupWidth / nTraces : barGroupWidth;
         }
 
-        var barWidth = barWidthPlusGap * (1 - bargroupgap);
+        var barWidth = barWidthPlusGap * (1 - (opts.groupgap || 0));
 
         var offsetFromCenter;
         if(nOffsetGroups) {
@@ -524,9 +516,7 @@ function setBaseAndTop(sa, sieve) {
     }
 }
 
-function stackBars(prefix, gd, sa, sieve) {
-    var fullLayout = gd._fullLayout;
-    var barnorm = fullLayout[prefix + 'norm'];
+function stackBars(sa, sieve, opts) {
     var sLetter = getAxisLetter(sa);
     var calcTraces = sieve.traces;
     var calcTrace;
@@ -579,7 +569,7 @@ function stackBars(prefix, gd, sa, sieve) {
                 bar.b = base;
                 bar[sLetter] = top;
 
-                if(!barnorm) {
+                if(!opts.norm) {
                     pts.push(top);
                     if(bar.hasB) {
                         pts.push(base);
@@ -589,7 +579,7 @@ function stackBars(prefix, gd, sa, sieve) {
         }
 
         // if barnorm is set, let normalizeBars update the axis range
-        if(!barnorm) {
+        if(!opts.norm) {
             fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
                 // N.B. we don't stack base with 'base',
                 // so set tozero:true always!
@@ -650,14 +640,13 @@ function unhideBarsWithinTrace(sieve) {
 //
 // normalizeBars requires that either sieveBars or stackBars has been
 // previously invoked.
-function normalizeBars(prefix, gd, sa, sieve) {
-    var fullLayout = gd._fullLayout;
+function normalizeBars(sa, sieve, opts) {
     var calcTraces = sieve.traces;
     var sLetter = getAxisLetter(sa);
-    var sTop = fullLayout[prefix + 'norm'] === 'fraction' ? 1 : 100;
+    var sTop = opts.norm === 'fraction' ? 1 : 100;
     var sTiny = sTop / 1e9; // in case of rounding error in sum
     var sMin = sa.l2c(sa.c2l(0));
-    var sMax = fullLayout[prefix + 'mode'] === 'stack' ? sTop : sMin;
+    var sMax = opts.mode === 'stack' ? sTop : sMin;
 
     function needsPadding(v) {
         return (

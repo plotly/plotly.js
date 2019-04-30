@@ -11,6 +11,7 @@
 var setGroupPositions = require('../bar/cross_trace_calc').setGroupPositions;
 
 module.exports = function crossTraceCalc(gd, plotinfo) {
+    var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var calcdata = gd.calcdata;
     var xa = plotinfo.xaxis;
@@ -42,8 +43,15 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         }
     }
 
-    setGroupPositions('funnel', gd, xa, ya, funnelsVert);
-    setGroupPositions('funnel', gd, ya, xa, funnelsHorz);
+    var opts = {
+        mode: fullLayout.funnelmode,
+        norm: fullLayout.funnelnorm,
+        gap: fullLayout.funnelgap,
+        groupgap: fullLayout.funnelgroupgap
+    };
+
+    setGroupPositions(gd, xa, ya, funnelsVert, opts);
+    setGroupPositions(gd, ya, xa, funnelsHorz, opts);
 
     for(i = 0; i < funnels.length; i++) {
         cd = funnels[i];
