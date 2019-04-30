@@ -2,28 +2,142 @@
   "data": [
     {
       "type": "bar",
-      "x": [ "textposition:outside" ],
-      "y": [ 0 ],
-      "text": [ "Text" ],
-      "textposition": [ "outside" ]
+      "x": [
+        "textposition:outside"
+      ],
+      "y": [
+        0
+      ],
+      "text": [
+        "Text"
+      ],
+      "textposition": [
+        "outside"
+      ],
+      "xaxis": "x",
+      "yaxis": "y"
     },
     {
       "type": "bar",
-      "x": [ "textpostion:auto" ],
-      "y": [ 0 ],
-      "text": [ "should not see" ],
-      "textposition": [ "auto" ]
+      "x": [
+        "textpostion:auto"
+      ],
+      "y": [
+        0
+      ],
+      "text": [
+        "should not see"
+      ],
+      "textposition": [
+        "auto"
+      ],
+      "xaxis": "x",
+      "yaxis": "y"
     },
     {
       "type": "bar",
-      "x": [ "textpostion:inside" ],
-      "y": [ 0 ],
-      "text": [ "should not see" ],
-      "textposition": [ "inside" ]
+      "x": [
+        "textpostion:inside"
+      ],
+      "y": [
+        0
+      ],
+      "text": [
+        "should not see"
+      ],
+      "textposition": [
+        "inside"
+      ],
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [
+        "textposition:outside"
+      ],
+      "x": [
+        0
+      ],
+      "text": [
+        "Text"
+      ],
+      "textposition": [
+        "outside"
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [
+        "textpostion:auto"
+      ],
+      "x": [
+        0
+      ],
+      "text": [
+        "should not see"
+      ],
+      "textposition": [
+        "auto"
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [
+        "textpostion:inside"
+      ],
+      "x": [
+        0
+      ],
+      "text": [
+        "should not see"
+      ],
+      "textposition": [
+        "inside"
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
     }
   ],
   "layout": {
     "showlegend": false,
-    "width": 600
+    "margin": { "l": 150 },
+    "width": 1200,
+    "height": 600,
+    "xaxis": {
+      "anchor": "x",
+      "domain": [
+        0,
+        0.5
+      ]
+    },
+    "yaxis": {
+      "anchor": "y",
+      "domain": [
+        0,
+        0.5
+      ]
+    },
+    "xaxis2": {
+      "anchor": "x2",
+      "domain": [
+        0.5,
+        0.1
+      ]
+    },
+    "yaxis2": {
+      "anchor": "y2",
+      "domain": [
+        0.5,
+        1
+      ]
+    }
   }
 }
