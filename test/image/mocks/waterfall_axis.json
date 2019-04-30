@@ -2,7 +2,6 @@
     "data": [
         {
             "type": "waterfall",
-            "orientation": "v",
             "x": [
                 "A",
                 "B",
@@ -13,7 +12,11 @@
                 -4,
                 3
             ],
-            "measure": [ "a", "r", "r"],
+            "measure": [
+                "a",
+                "r",
+                "r"
+            ],
             "textposition": "auto",
             "textinfo": "initial+delta+final",
             "xaxis": "x",
@@ -21,7 +24,6 @@
         },
         {
             "type": "waterfall",
-            "orientation": "v",
             "x": [
                 "A",
                 "B",
@@ -33,7 +35,11 @@
                 300
             ],
             "base": 100,
-            "measure": [ "a", "r", "r"],
+            "measure": [
+                "a",
+                "r",
+                "r"
+            ],
             "textposition": "auto",
             "textinfo": "initial+delta+final",
             "xaxis": "x2",
@@ -53,7 +59,11 @@
                 "C"
             ],
             "base": 10000,
-            "measure": [ "a", "r", "r"],
+            "measure": [
+                "a",
+                "r",
+                "r"
+            ],
             "textposition": "auto",
             "textinfo": "initial+delta+final",
             "xaxis": "x3",
@@ -73,7 +83,11 @@
                 "C"
             ],
             "base": 1000000,
-            "measure": [ "a", "r", "r"],
+            "measure": [
+                "a",
+                "r",
+                "r"
+            ],
             "textposition": "auto",
             "textinfo": "initial+delta+final",
             "xaxis": "x4",
@@ -85,15 +99,13 @@
         "height": 800,
         "dragmode": "pan",
         "xaxis": {
-            "type": "category",
             "domain": [
                 0,
                 0.48
-            ],
-            "autorange": true
+            ]
         },
         "xaxis2": {
-            "type": "category",
+            "anchor": "y2",
             "domain": [
                 0.52,
                 1
@@ -101,13 +113,14 @@
             "autorange": "reversed"
         },
         "xaxis3": {
+            "anchor": "y3",
             "domain": [
                 0,
                 0.48
-            ],
-            "autorange": true
+            ]
         },
         "xaxis4": {
+            "anchor": "y4",
             "domain": [
                 0.52,
                 1
@@ -122,14 +135,14 @@
             "autorange": "reversed"
         },
         "yaxis2": {
+            "anchor": "x2",
             "domain": [
                 0.52,
                 1
-            ],
-            "autorange": true
+            ]
         },
         "yaxis3": {
-            "type": "category",
+            "anchor": "x3",
             "domain": [
                 0.52,
                 1
@@ -137,12 +150,11 @@
             "autorange": "reversed"
         },
         "yaxis4": {
-            "type": "category",
+            "anchor": "x4",
             "domain": [
                 0,
                 0.48
-            ],
-            "autorange": true
+            ]
         }
     }
 }
