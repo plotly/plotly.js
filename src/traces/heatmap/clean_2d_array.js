@@ -10,7 +10,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-module.exports = function clean2dArray(zOld, transpose) {
+module.exports = function clean2dArray(zOld, transpose, trace, xa, ya) {
     var rowlen, collen, getCollen, old2new, i, j;
 
     function cleanZvalue(v) {
@@ -30,12 +30,21 @@ module.exports = function clean2dArray(zOld, transpose) {
         old2new = function(zOld, i, j) { return zOld[i][j]; };
     }
 
+    var xMap = function(i) {return i;};
+    var yMap = function(i) {return i;};
+    if(ya.type === 'category') {
+        yMap = function(i) {return ya._categoriesMap[trace.y[i]];};
+    }
+    if(xa.type === 'category') {
+        xMap = function(i) {return xa._categoriesMap[trace.x[i]];};
+    }
+
     var zNew = new Array(rowlen);
 
     for(i = 0; i < rowlen; i++) {
         collen = getCollen(zOld, i);
         zNew[i] = new Array(collen);
-        for(j = 0; j < collen; j++) zNew[i][j] = cleanZvalue(old2new(zOld, i, j));
+        for(j = 0; j < collen; j++) zNew[i][j] = cleanZvalue(old2new(zOld, yMap(i), xMap(j)));
     }
 
     return zNew;

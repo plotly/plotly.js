@@ -71,7 +71,7 @@ module.exports = function calc(gd, trace) {
         y0 = trace.y0;
         dy = trace.dy;
 
-        z = clean2dArray(zIn, trace.transpose);
+        z = clean2dArray(zIn, trace.transpose, trace, xa, ya);
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
