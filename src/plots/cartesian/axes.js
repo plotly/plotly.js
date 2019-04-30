@@ -368,7 +368,6 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar, size) {
         axes.autoTicks(dummyAx, size0);
     }
 
-
     var finalSize = dummyAx.dtick;
     var binStart = axes.tickIncrement(
             axes.tickFirst(dummyAx), finalSize, 'reverse', calendar);

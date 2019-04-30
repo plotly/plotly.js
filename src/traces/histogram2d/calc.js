@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -16,7 +15,6 @@ var binFunctions = require('../histogram/bin_functions');
 var normFunctions = require('../histogram/norm_functions');
 var doAvg = require('../histogram/average');
 var getBinSpanLabelRound = require('../histogram/bin_label_vals');
-
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
@@ -44,8 +42,8 @@ module.exports = function calc(gd, trace) {
     var z = [];
     var onecol = [];
     var zerocol = [];
-    var nonuniformBinsX = (typeof(trace.xbins.size) === 'string');
-    var nonuniformBinsY = (typeof(trace.ybins.size) === 'string');
+    var nonuniformBinsX = typeof trace.xbins.size === 'string';
+    var nonuniformBinsY = typeof trace.ybins.size === 'string';
     var xEdges = [];
     var yEdges = [];
     var xbins = nonuniformBinsX ? xEdges : trace.xbins;
@@ -55,9 +53,9 @@ module.exports = function calc(gd, trace) {
     var inputPoints = [];
     var norm = trace.histnorm;
     var func = trace.histfunc;
-    var densitynorm = (norm.indexOf('density') !== -1);
-    var extremefunc = (func === 'max' || func === 'min');
-    var sizeinit = (extremefunc ? null : 0);
+    var densitynorm = norm.indexOf('density') !== -1;
+    var extremefunc = func === 'max' || func === 'min';
+    var sizeinit = extremefunc ? null : 0;
     var binfunc = binFunctions.count;
     var normfunc = normFunctions[norm];
     var doavg = false;

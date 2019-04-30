@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -21,15 +20,9 @@ var doAvg = require('./average');
 var getBinSpanLabelRound = require('./bin_label_vals');
 
 module.exports = function calc(gd, trace) {
-    // ignore as much processing as possible (and including in autorange) if not visible
-    if(trace.visible !== true) return;
-
-    // depending on orientation, set position and size axes and data ranges
-    // note: this logic for choosing orientation is duplicated in graph_obj->setstyles
     var pos = [];
     var size = [];
-    var pa = Axes.getFromId(gd, trace.orientation === 'h' ?
-        (trace.yaxis || 'y') : (trace.xaxis || 'x'));
+    var pa = Axes.getFromId(gd, trace.orientation === 'h' ? trace.yaxis : trace.xaxis);
     var mainData = trace.orientation === 'h' ? 'y' : 'x';
     var counterData = {x: 'y', y: 'x'}[mainData];
     var calendar = trace[mainData + 'calendar'];
@@ -142,7 +135,6 @@ module.exports = function calc(gd, trace) {
 
     // after all normalization etc, now we can accumulate if desired
     if(cumulativeSpec.enabled) cdf(size, cumulativeSpec.direction, cumulativeSpec.currentbin);
-
 
     var seriesLen = Math.min(pos.length, size.length);
     var cd = [];

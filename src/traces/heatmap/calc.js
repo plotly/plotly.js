@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -20,7 +19,6 @@ var clean2dArray = require('./clean_2d_array');
 var interp2d = require('./interp2d');
 var findEmpties = require('./find_empties');
 var makeBoundArray = require('./make_bound_array');
-
 
 module.exports = function calc(gd, trace) {
     // prepare the raw data

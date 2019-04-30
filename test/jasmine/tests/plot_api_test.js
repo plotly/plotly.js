@@ -1297,19 +1297,17 @@ describe('Test plot api', function() {
             ])
             .then(function() {
                 check(true, 'initial');
-                return Plotly.restyle(gd, 'xbins.start', start0, [0]);
             })
-            .then(function() {
-                return Plotly.restyle(gd, {'xbins.end': end1, 'ybins.size': size1}, null, [1]);
-            })
+            .then(function() { return Plotly.restyle(gd, 'xbins.start', start0, [0]); })
+            .then(function() { return Plotly.restyle(gd, {'xbins.end': end1, 'ybins.size': size1}, null, [1]); })
             .then(function() {
                 check(false, 'set start/end/size');
-                return Plotly.restyle(gd, {autobinx: true, autobiny: true});
             })
+            .then(function() { return Plotly.restyle(gd, {autobinx: true, autobiny: true}); })
             .then(function() {
                 check(true, 'reset');
-                return Queue.undo(gd);
             })
+            .then(function() { return Queue.undo(gd); })
             .then(function() {
                 check(false, 'undo');
             })
