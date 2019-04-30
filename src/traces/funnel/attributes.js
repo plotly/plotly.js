@@ -55,7 +55,7 @@ module.exports = {
         fillcolor: {
             valType: 'color',
             role: 'style',
-            editType: 'plot', // TODO: could we set this to 'style' ?
+            editType: 'style',
             description: [
                 'Sets the fill color.'
             ].join(' ')
@@ -64,10 +64,10 @@ module.exports = {
             color: extendFlat({}, lineAttrs.color, {dflt: Color.defaultLine}),
             width: extendFlat({}, lineAttrs.width, {
                 dflt: 0,
-                editType: 'plot', // TODO: could we set this to 'style' ?
+                editType: 'plot',
             }),
             dash: lineAttrs.dash,
-            editType: 'plot' // TODO: could we set this to 'style' ?
+            editType: 'style'
         },
         visible: {
             valType: 'boolean',
