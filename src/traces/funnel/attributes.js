@@ -28,6 +28,7 @@ module.exports = {
     textinfo: extendFlat({}, pieAtts.textinfo, {
         editType: 'plot',
         flags: ['label', 'text', 'percent initial', 'percent previous', 'percent total', 'value'],
+        arrayOk: false,
         description: [
             'Determines which trace information appear on the graph.'
         ].join(' ')

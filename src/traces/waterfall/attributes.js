@@ -80,6 +80,7 @@ module.exports = {
     textinfo: extendFlat({}, pieAtts.textinfo, {
         editType: 'plot',
         flags: ['label', 'text', 'initial', 'delta', 'final'],
+        arrayOk: false,
         description: [
             'Determines which trace information appear on the graph.'
         ].join(' ')
