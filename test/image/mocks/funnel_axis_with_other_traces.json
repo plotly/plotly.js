@@ -4,41 +4,27 @@
             "type": "funnel",
             "width": 0.6,
             "opacity": 0.8,
-            "orientation": "v",
             "x": [
-                "A",
-                "B",
-                "C"
-            ],
-            "y": [
-                5,
-                4,
+                1,
+                2,
                 3
             ],
-            "xaxis": "x",
-            "yaxis": "y"
+            "y": [
+                10,
+                8,
+                6
+            ]
         },
         {
-            "type": "scatter",
-            "orientation": "v",
+            "type": "histogram",
             "x": [
-                "A",
-                "B",
-                "C"
-            ],
-            "y": [
-                5,
-                4,
-                3
-            ],
-            "xaxis": "x",
-            "yaxis": "y"
+                1, 1, 1, 2, 2, 3
+            ]
         },
         {
             "type": "funnel",
             "width": 0.6,
             "opacity": 0.8,
-            "orientation": "v",
             "x": [
                 "A",
                 "B",
@@ -55,7 +41,6 @@
         {
             "type": "bar",
             "width": 0.4,
-            "orientation": "v",
             "x": [
                 "A",
                 "B",
@@ -110,7 +95,24 @@
             "yaxis": "y3"
         },
         {
+            "type": "scatter",
+            "orientation": "h",
+            "x": [
+                5,
+                4,
+                3
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
             "type": "funnel",
+            "name": "only funnel<br>should not<br>see axis",
             "width": 0.6,
             "opacity": 0.8,
             "orientation": "h",
@@ -133,56 +135,54 @@
         "height": 800,
         "dragmode": "pan",
         "xaxis": {
-            "anchor": "x",
             "domain": [
                 0,
                 0.48
             ]
         },
         "xaxis2": {
-            "anchor": "x2",
-            "domain": [
-                0.52,
-                1
-            ]
-        },
-        "xaxis3": {
-            "anchor": "x3",
-            "domain": [
-                0,
-                0.48
-            ]
-        },
-        "xaxis4": {
-            "anchor": "x4",
-            "domain": [
-                0.52,
-                1
-            ]
-        },
-        "yaxis": {
-            "anchor": "y",
-            "domain": [
-                0,
-                0.48
-            ]
-        },
-        "yaxis2": {
             "anchor": "y2",
             "domain": [
                 0.52,
                 1
             ]
         },
-        "yaxis3": {
+        "xaxis3": {
             "anchor": "y3",
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x3",
             "domain": [
                 0.52,
                 1
             ]
         },
         "yaxis4": {
-            "anchor": "y4",
+            "anchor": "x4",
             "domain": [
                 0,
                 0.48

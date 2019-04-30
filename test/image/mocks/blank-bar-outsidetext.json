@@ -108,34 +108,32 @@
   ],
   "layout": {
     "showlegend": false,
-    "margin": { "l": 150 },
-    "width": 1200,
-    "height": 600,
+    "margin": { "l": 150, "b": 25, "t": 25, "r": 25 },
+    "width": 600,
+    "height": 300,
     "xaxis": {
-      "anchor": "x",
       "domain": [
         0,
-        0.5
+        1
       ]
     },
     "yaxis": {
-      "anchor": "y",
       "domain": [
         0,
-        0.5
+        0.45
       ]
     },
     "xaxis2": {
-      "anchor": "x2",
+      "anchor": "y2",
       "domain": [
-        0.5,
-        0.1
+        0,
+        1
       ]
     },
     "yaxis2": {
-      "anchor": "y2",
+      "anchor": "x2",
       "domain": [
-        0.5,
+        0.55,
         1
       ]
     }
