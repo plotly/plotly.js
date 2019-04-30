@@ -100,7 +100,7 @@ function crossTraceCalc(gd, polarLayout, subplotId) {
     // TODO clean up setGroupPositions API instead
     var mockGd = {_fullLayout: polarLayout};
 
-    setGroupPositions(mockGd, aAxis, rAxis, barPolarCd);
+    setGroupPositions('bar', mockGd, aAxis, rAxis, barPolarCd);
 }
 
 module.exports = {
