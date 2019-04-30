@@ -32,12 +32,16 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('width');
 
     coerce('text');
-    coerce('textinfo');
 
     coerce('hovertext');
     coerce('hovertemplate');
 
     handleText(traceIn, traceOut, layout, coerce, false);
+
+    // TODO: move this block to bar handleText if/when textinfo implimented for bars/histograms
+    if(traceOut.textposition !== 'none') {
+        coerce('textinfo');
+    }
 
     coerce('marker.color', defaultColor);
     coerce('marker.line.color', Color.defaultLine);

@@ -125,6 +125,25 @@ describe('Funnel.supplyDefaults', function() {
         expect(traceOut.constraintext).toBe('both'); // TODO: is this expected for funnel?
     });
 
+    it('should not coerce textinfo when textposition is none', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            textposition: 'none',
+            textinfo: 'text'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textinfo).toBeUndefined();
+    });
+
+    it('should coerce textinfo when textposition is not none', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            textinfo: 'text'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textinfo).not.toBeUndefined();
+    });
+
     it('should default textfont to layout.font except for insidetextfont.color', function() {
         traceIn = {
             textposition: 'inside',
