@@ -482,9 +482,9 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     var trace = calcTrace[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
-    function formatNumber(v, hover) {
+    function formatNumber(v) {
         var sAxis = isHorizontal ? xa : ya;
-        return tickText(sAxis, +v, hover).text;
+        return tickText(sAxis, +v, true).text;
     }
 
     var textinfo = trace.textinfo;
@@ -530,17 +530,17 @@ function calcTextinfo(calcTrace, index, xa, ya) {
         var hasMultiplePercents = nPercent > 1;
 
         if(hasFlag('percent initial')) {
-            tx = formatNumber(Math.round(100 * cdi.begR), true) + '%';
+            tx = formatNumber(Math.round(100 * cdi.begR)) + '%';
             if(hasMultiplePercents) tx += ' of initial';
             text.push(tx);
         }
         if(hasFlag('percent previous')) {
-            tx = formatNumber(Math.round(100 * cdi.difR), true) + '%';
+            tx = formatNumber(Math.round(100 * cdi.difR)) + '%';
             if(hasMultiplePercents) tx += ' of previous';
             text.push(tx);
         }
         if(hasFlag('percent total')) {
-            tx = formatNumber(Math.round(100 * cdi.sumR), true) + '%';
+            tx = formatNumber(Math.round(100 * cdi.sumR)) + '%';
             if(hasMultiplePercents) tx += ' of total';
             text.push(tx);
         }
