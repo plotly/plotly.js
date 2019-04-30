@@ -74,6 +74,5 @@ function crossTraceDefaults(fullData, fullLayout) {
 
 module.exports = {
     supplyDefaults: supplyDefaults,
-    crossTraceDefaults: crossTraceDefaults,
-    handleGroupingDefaults: handleGroupingDefaults
+    crossTraceDefaults: crossTraceDefaults
 };
