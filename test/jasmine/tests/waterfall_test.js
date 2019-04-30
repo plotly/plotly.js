@@ -125,6 +125,25 @@ describe('Waterfall.supplyDefaults', function() {
         expect(traceOut.constraintext).toBeUndefined();
     });
 
+    it('should not coerce textinfo when textposition is none', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            textinfo: 'value'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textinfo).toBeUndefined();
+    });
+
+    it('should coerce textinfo when textposition is not none', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            textposition: 'auto',
+            textinfo: 'text'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textinfo).not.toBeUndefined();
+    });
+
     it('should default textfont to layout.font except for insidetextfont.color', function() {
         traceIn = {
             textposition: 'inside',
