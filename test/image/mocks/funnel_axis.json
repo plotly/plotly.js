@@ -80,7 +80,7 @@
         "height": 800,
         "dragmode": "pan",
         "xaxis": {
-            "type": "category",
+            "anchor": "x",
             "domain": [
                 0,
                 0.48
@@ -88,7 +88,7 @@
             "autorange": true
         },
         "xaxis2": {
-            "type": "category",
+            "anchor": "x2",
             "domain": [
                 0.52,
                 1
@@ -96,6 +96,7 @@
             "autorange": "reversed"
         },
         "xaxis3": {
+            "anchor": "x3",
             "domain": [
                 0,
                 0.48
@@ -103,6 +104,7 @@
             "autorange": true
         },
         "xaxis4": {
+            "anchor": "x4",
             "domain": [
                 0.52,
                 1
@@ -110,6 +112,7 @@
             "autorange": "reversed"
         },
         "yaxis": {
+            "anchor": "y",
             "domain": [
                 0,
                 0.48
@@ -117,6 +120,7 @@
             "autorange": "reversed"
         },
         "yaxis2": {
+            "anchor": "y2",
             "domain": [
                 0.52,
                 1
@@ -124,7 +128,7 @@
             "autorange": true
         },
         "yaxis3": {
-            "type": "category",
+            "anchor": "y3",
             "domain": [
                 0.52,
                 1
@@ -132,7 +136,7 @@
             "autorange": "reversed"
         },
         "yaxis4": {
-            "type": "category",
+            "anchor": "y4",
             "domain": [
                 0,
                 0.48
