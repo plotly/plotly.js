@@ -64,6 +64,9 @@ module.exports = function calc(gd, trace) {
         } else {
             x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
             y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+
+            trace._x = x;
+            trace._y = y;
         }
 
         x0 = trace.x0;
