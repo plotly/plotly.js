@@ -9,6 +9,7 @@ var Legend = require('@src/components/legend');
 var Axes = require('@src/plots/cartesian/axes');
 var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
+var manageArrays = require('@src/plot_api/manage_arrays');
 var helpers = require('@src/plot_api/helpers');
 var editTypes = require('@src/plot_api/edit_types');
 
@@ -2674,6 +2675,10 @@ describe('Test plot api', function() {
         });
 
         beforeEach(function(done) {
+            Object.keys(subroutines).forEach(function(k) {
+                subroutines[k].calls.reset();
+            });
+
             gd = createGraphDiv();
             Plotly.plot(gd, [{ y: [2, 1, 2] }]).then(function() {
                 data = gd.data;
@@ -2687,8 +2692,6 @@ describe('Test plot api', function() {
         afterEach(destroyGraphDiv);
 
         it('call doTraceStyle on trace style updates', function(done) {
-            expect(subroutines.doTraceStyle).not.toHaveBeenCalled();
-
             Plotly.update(gd, { 'marker.color': 'blue' }).then(function() {
                 expect(subroutines.doTraceStyle).toHaveBeenCalledTimes(1);
                 expect(calcdata).toBe(gd.calcdata);
@@ -2720,16 +2723,14 @@ describe('Test plot api', function() {
                 expect(data).toBe(gd.data);
                 expect(layout).toBe(gd.layout);
                 expect(calcdata).not.toBe(gd.calcdata);
-
                 expect(gd.data.length).toEqual(1);
+                expect(subroutines.layoutReplot).toHaveBeenCalledTimes(1);
             })
             .catch(failTest)
             .then(done);
         });
 
         it('call doLegend on legend updates', function(done) {
-            expect(subroutines.doLegend).not.toHaveBeenCalled();
-
             Plotly.update(gd, {}, { 'showlegend': true }).then(function() {
                 expect(subroutines.doLegend).toHaveBeenCalledTimes(1);
                 expect(calcdata).toBe(gd.calcdata);
@@ -2738,8 +2739,8 @@ describe('Test plot api', function() {
             .then(done);
         });
 
-        it('call layoutReplot when adding update menu', function(done) {
-            expect(subroutines.layoutReplot).not.toHaveBeenCalled();
+        it('call array manager when adding update menu', function(done) {
+            spyOn(manageArrays, 'applyContainerArrayChanges').and.callThrough();
 
             var layoutUpdate = {
                 updatemenus: [{
@@ -2751,7 +2752,8 @@ describe('Test plot api', function() {
             };
 
             Plotly.update(gd, {}, layoutUpdate).then(function() {
-                expect(subroutines.doLegend).toHaveBeenCalledTimes(1);
+                expect(manageArrays.applyContainerArrayChanges).toHaveBeenCalledTimes(1);
+                expect(subroutines.layoutReplot).toHaveBeenCalledTimes(0);
                 expect(calcdata).toBe(gd.calcdata);
             })
             .catch(failTest)
@@ -2759,8 +2761,6 @@ describe('Test plot api', function() {
         });
 
         it('call doModeBar when updating \'dragmode\'', function(done) {
-            expect(subroutines.doModeBar).not.toHaveBeenCalled();
-
             Plotly.update(gd, {}, { 'dragmode': 'pan' }).then(function() {
                 expect(subroutines.doModeBar).toHaveBeenCalledTimes(1);
                 expect(calcdata).toBe(gd.calcdata);
