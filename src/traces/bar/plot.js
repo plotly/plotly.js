@@ -49,15 +49,23 @@ function getXY(di, xa, ya, isHorizontal) {
     return isHorizontal ? [s, p] : [p, s];
 }
 
-module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
+module.exports = function plot(gd, plotinfo, cdModule, traceLayer, opts) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
 
+    if(!opts) {
+        opts = {
+            mode: fullLayout.barmode,
+            norm: fullLayout.barmode,
+            gap: fullLayout.bargap,
+            groupgap: fullLayout.bargroupgap
+        };
+    }
+
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
-        var cd0 = cd[0];
-        var trace = cd0.trace;
+        var trace = cd[0].trace;
 
         var adjustPixel = 0;
         if(trace.type === 'waterfall' && trace.connector.visible && trace.connector.mode === 'between') {
@@ -66,7 +74,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
 
         var isHorizontal = (trace.orientation === 'h');
 
-        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
+        if(!plotinfo.isRangePlot) cd[0].node3 = plotGroup;
 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
@@ -111,9 +119,6 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
 
             var lw;
             var mc;
-            var prefix =
-                (trace.type === 'waterfall') ? 'waterfall' :
-                (trace.type === 'funnel') ? 'funnel' : 'bar';
 
             if(trace.type === 'waterfall') {
                 if(!isBlank) {
@@ -128,13 +133,11 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
             }
 
             var offset = d3.round((lw / 2) % 1, 2);
-            var bargap = fullLayout[prefix + 'gap'];
-            var bargroupgap = fullLayout[prefix + 'groupgap'];
 
             function roundWithLine(v) {
                 // if there are explicit gaps, don't round,
                 // it can make the gaps look crappy
-                return (bargap === 0 && bargroupgap === 0) ?
+                return (opts.gap === 0 && opts.groupgap === 0) ?
                     d3.round(Math.round(v) - offset, 2) : v;
             }
 
@@ -169,7 +172,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
                 .attr('d', isBlank ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
-            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, prefix);
+            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts);
 
             if(plotinfo.layerClipId) {
                 Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
@@ -178,7 +181,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
 
         // lastly, clip points groups of `cliponaxis !== false` traces
         // on `plotinfo._hasClipOnAxisFalse === true` subplots
-        var hasClipOnAxisFalse = cd0.trace.cliponaxis === false;
+        var hasClipOnAxisFalse = trace.cliponaxis === false;
         Drawing.setClipUrl(plotGroup, hasClipOnAxisFalse ? null : plotinfo.layerClipId, gd);
     });
 
@@ -186,7 +189,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo);
 };
 
-function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, prefix) {
+function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -218,14 +221,18 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, prefix) 
     textPosition = getTextPosition(trace, i);
 
     // compute text position
-    var barmode = fullLayout[prefix + 'mode'];
-    var inStackOrRelativeMode = barmode === 'stack' || barmode === 'relative';
+    var inStackOrRelativeMode =
+        opts.mode === 'stack' ||
+        opts.mode === 'relative';
 
     var calcBar = calcTrace[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
 
-    if(!text || textPosition === 'none' ||
-        (calcBar.isBlank && (textPosition === 'auto' || textPosition === 'inside'))) {
+    if(!text ||
+        textPosition === 'none' ||
+        (calcBar.isBlank && (
+            textPosition === 'auto' ||
+            textPosition === 'inside'))) {
         bar.select('text').remove();
         return;
     }
@@ -286,8 +293,11 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, prefix) 
                 (barWidth >= textWidth * (barHeight / textHeight)) :
                 (barHeight >= textHeight * (barWidth / textWidth));
 
-            if(textHasSize &&
-                    (fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk)) {
+            if(textHasSize && (
+                fitsInside ||
+                fitsInsideIfRotated ||
+                fitsInsideIfShrunk)
+            ) {
                 textPosition = 'inside';
             } else {
                 textPosition = 'outside';
@@ -317,11 +327,17 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, prefix) 
     // compute text transform
     var transform, constrained;
     if(textPosition === 'outside') {
-        constrained = trace.constraintext === 'both' || trace.constraintext === 'outside';
+        constrained =
+            trace.constraintext === 'both' ||
+            trace.constraintext === 'outside';
+
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
             orientation, constrained);
     } else {
-        constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
+        constrained =
+            trace.constraintext === 'both' ||
+            trace.constraintext === 'inside';
+
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
             orientation, constrained, trace.insidetextanchor, trace.insidetextrotate === 'none');
     }

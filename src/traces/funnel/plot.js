@@ -14,7 +14,15 @@ var Drawing = require('../../components/drawing');
 var barPlot = require('../bar/plot');
 
 module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
-    barPlot(gd, plotinfo, cdModule, traceLayer);
+    var fullLayout = gd._fullLayout;
+
+    barPlot(gd, plotinfo, cdModule, traceLayer, {
+        mode: fullLayout.funnelmode,
+        norm: fullLayout.funnelmode,
+        gap: fullLayout.funnelgap,
+        groupgap: fullLayout.funnelgroupgap
+    });
+
     plotConnectorRegions(gd, plotinfo, cdModule, traceLayer);
     plotConnectorLines(gd, plotinfo, cdModule, traceLayer);
 };
@@ -25,8 +33,7 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
 
     Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
-        var cd0 = cd[0];
-        var trace = cd0.trace;
+        var trace = cd[0].trace;
 
         var group = Lib.ensureSingle(plotGroup, 'g', 'regions');
 
@@ -77,8 +84,7 @@ function plotConnectorLines(gd, plotinfo, cdModule, traceLayer) {
 
     Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
-        var cd0 = cd[0];
-        var trace = cd0.trace;
+        var trace = cd[0].trace;
 
         var group = Lib.ensureSingle(plotGroup, 'g', 'lines');
 
