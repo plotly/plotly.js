@@ -2650,16 +2650,29 @@ describe('Test plot api', function() {
         it('should only have one modebar-container', function(done) {
             var data = [{y: [1, 2]}];
 
-            Plotly.plot(gd, data).then(function() {
-                var modebars = document.getElementsByClassName('modebar-container');
-                expect(modebars.length).toBe(1);
+            function _assert(msg) {
+                return function() {
+                    var modebars = document.getElementsByClassName('modebar-container');
+                    expect(modebars.length).toBe(1, msg + ' # of modebar container');
+                    var groups = document.getElementsByClassName('modebar-group');
+                    expect(groups.length).toBe(5, msg + ' # of modebar button groups');
+                };
+            }
 
-                return Plotly.newPlot(gd, data);
-            })
+            Plotly.plot(gd, data)
+            .then(_assert('base'))
+            .then(function() { return Plotly.newPlot(gd, data); })
+            .then(_assert('after newPlot()'))
             .then(function() {
-                var modebars = document.getElementsByClassName('modebar-container');
-                expect(modebars.length).toBe(1);
+                // funky combinations of update flags found in
+                // https://github.com/plotly/plotly.js/issues/3824
+                return Plotly.update(gd, {
+                    visible: false
+                }, {
+                    annotations: [{text: 'a'}]
+                });
             })
+            .then(_assert('after update()'))
             .catch(failTest)
             .then(done);
         });
