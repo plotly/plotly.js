@@ -32,11 +32,13 @@ module.exports = function clean2dArray(zOld, transpose, trace, xa, ya) {
 
     var xMap = function(i) {return i;};
     var yMap = function(i) {return i;};
-    if(ya && ya.type === 'category') {
-        yMap = function(i) {return trace._y[i];};
-    }
-    if(xa && xa.type === 'category') {
-        xMap = function(i) {return trace._x[i];};
+    if(trace.type !== 'contour') {
+        if(ya && ya.type === 'category') {
+            yMap = function(i) {return trace._y[i];};
+        }
+        if(xa && xa.type === 'category') {
+            xMap = function(i) {return trace._x[i];};
+        }
     }
 
     var zNew = new Array(rowlen);
