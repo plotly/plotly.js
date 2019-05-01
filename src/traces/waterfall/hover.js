@@ -35,8 +35,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var index = point.index;
     var di = cd[index];
 
-    var sizeLetter = isHorizontal ? 'x' : 'y';
-
     var size = (di.isSum) ? di.b + di.s : di.rawS;
 
     if(!di.isSum) {
@@ -50,8 +48,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         }
         // display initial value
         point.extraText += '<br>Initial: ' + formatNumber(di.b + di.s - size);
-    } else {
-        point[sizeLetter + 'LabelVal'] = formatNumber(size);
     }
 
     point.color = getTraceColor(trace, di);
