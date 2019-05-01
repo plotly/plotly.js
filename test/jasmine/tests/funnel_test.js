@@ -506,8 +506,7 @@ describe('Funnel.crossTraceCalc', function() {
             y: [10, 20, 30]
         }], {
             funnelgap: 0,
-            funnelmode: 'overlay',
-            funnelnorm: false
+            funnelmode: 'overlay'
         });
 
         var cd = gd.calcdata;
@@ -515,90 +514,6 @@ describe('Funnel.crossTraceCalc', function() {
         assertPointField(cd, 's', [[1, 2, 3], [10, 20, 30]]);
         assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
         assertPointField(cd, 'y', [[0.5, 1, 1.5], [5, 10, 15]]);
-    });
-
-    it('should honor funnelnorm for traces that cannot be grouped', function() {
-        var gd = mockFunnelPlot([{
-            offset: 0,
-            y: [3, 2, 1]
-        }, {
-            offset: 0,
-            y: [2, 1, 0]
-        }], {
-            funnelgap: 0,
-            funnelmode: 'group',
-            funnelnorm: 'percent'
-        });
-
-        expect(gd._fullLayout.funnelnorm).toBe('percent');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[-100, -100, -100], [-100, -100, NaN]]);
-        assertPointField(cd, 's', [[200, 200, 200], [200, 200, NaN]]);
-        assertPointField(cd, 'x', [[0.5, 1.5, 2.5], [0.5, 1.5, 2.5]]);
-        assertPointField(cd, 'y', [[100, 100, 100], [100, 100, NaN]]);
-    });
-
-    it('should honor funnelnorm for traces that cannot be stacked', function() {
-        var gd = mockFunnelPlot([{
-            offset: 0,
-            y: [3, 2, 1]
-        }, {
-            offset: 0,
-            y: [2, 1, 0]
-        }], {
-            funnelgap: 0,
-            funnelmode: 'stack',
-            funnelnorm: 'percent'
-        });
-
-        expect(gd._fullLayout.funnelnorm).toBe('percent');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[-100, -100, -100], [20, 33.333, 100]]);
-        assertPointField(cd, 's', [[120, 133.333, 200], [80, 66.666, 0]]);
-        assertPointField(cd, 'x', [[0.5, 1.5, 2.5], [0.5, 1.5, 2.5]]);
-        assertPointField(cd, 'y', [[20, 33.333, 100], [100, 100, 100]]);
-    });
-
-    it('should honor funnelnorm (group case)', function() {
-        var gd = mockFunnelPlot([{
-            y: [3, 2, 1]
-        }, {
-            y: [2, 1, 0]
-        }], {
-            funnelgap: 0,
-            funnelmode: 'group',
-            funnelnorm: 'fraction'
-        });
-
-        expect(gd._fullLayout.funnelnorm).toBe('fraction');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[-0.6, -0.666, -1], [-0.4, -0.333, 0]]);
-        assertPointField(cd, 's', [[1.2, 1.333, 2], [0.8, 0.666, 0]]);
-        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25]]);
-        assertPointField(cd, 'y', [[0.6, 0.666, 1], [0.4, 0.333, 0]]);
-    });
-
-    it('should honor funnelnorm (stack case)', function() {
-        var gd = mockFunnelPlot([{
-            y: [3, 2, 1]
-        }, {
-            y: [2, 1, 0]
-        }], {
-            funnelgap: 0,
-            funnelmode: 'stack',
-            funnelnorm: 'fraction'
-        });
-
-        expect(gd._fullLayout.funnelnorm).toBe('fraction');
-
-        var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[-1, -1, -1], [0.2, 0.333, 1]]);
-        assertPointField(cd, 's', [[1.2, 1.333, 2], [0.8, 0.666, 0]]);
-        assertPointField(cd, 'x', [[0, 1, 2], [0, 1, 2]]);
-        assertPointField(cd, 'y', [[0.2, 0.333, 1], [1, 1, 1]]);
     });
 
     it('should expand position axis', function() {
@@ -628,8 +543,7 @@ describe('Funnel.crossTraceCalc', function() {
             y: [6, 7, 8]
         }], {
             funnelgap: 0,
-            funnelmode: 'overlay',
-            funnelnorm: false
+            funnelmode: 'overlay'
         });
 
         expect(gd._fullLayout.barnorm).toBeUndefined();
@@ -638,28 +552,6 @@ describe('Funnel.crossTraceCalc', function() {
         var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
-    });
-
-    it('should expand size axis (funnelnorm case)', function() {
-        var gd = mockFunnelPlot([{
-            y: [3, 2, 1]
-        }, {
-            y: [2, 1, 0]
-        }, {
-            y: [4, 3, 2, 1]
-        }, {
-            y: [3, 2, 1, 0]
-        }], {
-            funnelgap: 0,
-            funnelnorm: 'fraction'
-        });
-
-        expect(gd._fullLayout.funnelnorm).toBe('fraction');
-
-        var xa = gd._fullLayout.xaxis;
-        var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 3.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
 
     it('works with log axes (grouped funnels)', function() {
@@ -686,21 +578,6 @@ describe('Funnel.crossTraceCalc', function() {
 
         var ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.37946429649987423, 10.731646814611235], undefined, '(ya.range)');
-    });
-
-    it('works with log axes (normalized funnels)', function() {
-        // strange case... but it should work!
-        var gd = mockFunnelPlot([
-            {y: [1, 10, 1e10]},
-            {y: [2, 20, 2e10]}
-        ], {
-            yaxis: {type: 'log'},
-            funnelmode: 'stack',
-            funnelnorm: 'percent'
-        });
-
-        var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([1, 3], undefined, '(ya.range)');
     });
 });
 

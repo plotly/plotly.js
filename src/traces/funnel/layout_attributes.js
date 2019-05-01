@@ -25,19 +25,6 @@ module.exports = {
             'you might need to an *opacity* to see multiple bars.'
         ].join(' ')
     },
-    funnelnorm: {
-        valType: 'enumerated',
-        values: ['', 'fraction', 'percent'],
-        dflt: '',
-        role: 'info',
-        editType: 'calc',
-        description: [
-            'Sets the normalization for bar traces on the graph.',
-            'With *fraction*, the value of each bar is divided by the sum of all',
-            'values at that location coordinate.',
-            '*percent* is the same but multiplied by 100 to show percentages.'
-        ].join(' ')
-    },
     funnelgap: {
         valType: 'number',
         min: 0,
