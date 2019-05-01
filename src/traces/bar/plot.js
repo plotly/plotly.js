@@ -513,6 +513,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
 
     if(hasFlag('label')) {
+        // TODO: fix me to work with multicategory
         if(isHorizontal) {
             text.push(trace.y[index]);
         } else {
@@ -546,21 +547,25 @@ function calcTextinfo(calcTrace, index, xa, ya) {
         var hasMultiplePercents = nPercent > 1;
 
         if(hasFlag('percent initial')) {
-            tx = formatNumber(Math.round(100 * cdi.begR)) + '%';
+            tx = formatPercent(cdi.begR);
             if(hasMultiplePercents) tx += ' of initial';
             text.push(tx);
         }
         if(hasFlag('percent previous')) {
-            tx = formatNumber(Math.round(100 * cdi.difR)) + '%';
+            tx = formatPercent(cdi.difR);
             if(hasMultiplePercents) tx += ' of previous';
             text.push(tx);
         }
         if(hasFlag('percent total')) {
-            tx = formatNumber(Math.round(100 * cdi.sumR)) + '%';
+            tx = formatPercent(cdi.sumR);
             if(hasMultiplePercents) tx += ' of total';
             text.push(tx);
         }
     }
 
     return text.join('<br>');
+}
+
+function formatPercent(ratio) {
+    return Math.round(100 * ratio) + '%';
 }

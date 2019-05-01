@@ -8,7 +8,6 @@
 
 'use strict';
 
-var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 var opacity = require('../../components/color').opacity;
 var hoverOnBars = require('../bar/hover').hoverOnBars;
 
@@ -20,12 +19,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
-    var vAxis = isHorizontal ? pointData.xa : pointData.ya;
-
-    function formatNumber(a) {
-        return hoverLabelText(vAxis, a);
-    }
-
     // the closest data point
     var index = point.index;
     var di = cd[index];
@@ -36,9 +29,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     // display ratio to initial value
     point.extraText = [
-        formatNumber(0.1 * (Math.round(1000 * di.begR))) + '% of initial',
-        formatNumber(0.1 * (Math.round(1000 * di.difR))) + '% of previous',
-        formatNumber(0.1 * (Math.round(1000 * di.sumR))) + '% of total'
+        formatPercent(di.begR) + ' of initial',
+        formatPercent(di.difR) + ' of previous',
+        formatPercent(di.sumR) + ' of total'
     ].join('<br>');
     // TODO: Should we use pieHelpers.formatPieValue instead ?
 
@@ -54,4 +47,8 @@ function getTraceColor(trace, di) {
     var mlw = di.mlw || cont.line.width;
     if(opacity(mc)) return mc;
     else if(opacity(mlc) && mlw) return mlc;
+}
+
+function formatPercent(ratio) {
+    return ((Math.round(1000 * ratio) * 0.1).toFixed(1) + '%').replace('.0%', '%');
 }

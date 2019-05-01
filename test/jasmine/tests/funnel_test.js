@@ -1420,7 +1420,7 @@ describe('funnel hover', function() {
         });
 
         describe('display percentage from the initial value', function() {
-            it('should format numbers', function(done) {
+            it('should format numbers and add tick prefix & suffix even if axis is not visible', function(done) {
                 gd = createGraphDiv();
 
                 Plotly.plot(gd, {
@@ -1429,7 +1429,15 @@ describe('funnel hover', function() {
                         y: [5.5, 4.4, 3.3, 2.2, 1.1],
                         type: 'funnel'
                     }],
-                    layout: {width: 400, height: 400}
+                    layout: {
+                        yaxis: {
+                            visible: false,
+                            tickprefix: '$',
+                            ticksuffix: '!'
+                        },
+                        width: 400,
+                        height: 400
+                    }
                 })
                 .then(function() {
                     var evt = { xpx: 200, ypx: 350 };
@@ -1437,7 +1445,7 @@ describe('funnel hover', function() {
                 })
                 .then(function() {
                     assertHoverLabelContent({
-                        nums: '1.1\n20% of initial\n50% of previous\n6.7% of total',
+                        nums: '$1.1!\n20% of initial\n50% of previous\n6.7% of total',
                         axis: 'E'
                     });
                 })

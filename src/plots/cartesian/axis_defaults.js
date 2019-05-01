@@ -58,8 +58,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 
-    if(!visible) return containerOut;
-
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,
     // inherit from global font color in case that was provided.
@@ -69,6 +67,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // try to get default title from splom trace, fallback to graph-wide value
     var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
+
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
+
+    // access to ticktext prefix & suffix is required
+    // even if the axis is not visible. e.g. in funnels textinfo & in general
+    if(!visible) return containerOut;
+
     coerce('title.text', dfltTitle);
     Lib.coerceFont(coerce, 'title.font', {
         family: font.family,
@@ -76,8 +81,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         color: dfltFontColor
     });
 
+
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
     handleLineGridDefaults(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
