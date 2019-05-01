@@ -43,13 +43,16 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('textinfo');
     }
 
-    coerce('marker.color', defaultColor);
+    var markerColor = coerce('marker.color', defaultColor);
     coerce('marker.line.color', Color.defaultLine);
     coerce('marker.line.width');
 
     var connectorVisible = coerce('connector.visible');
     if(connectorVisible) {
-        coerce('connector.fillcolor', Color.addOpacity(defaultColor, 0.5));
+        var defaultFillcolor = Color.addOpacity(
+            Lib.isArrayOrTypedArray(markerColor) ? markerColor[0] : markerColor, 0.5
+        );
+        coerce('connector.fillcolor', defaultFillcolor);
 
         var connectorLineWidth = coerce('connector.line.width');
         if(connectorLineWidth) {

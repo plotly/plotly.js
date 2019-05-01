@@ -21,7 +21,10 @@
                 15,
                 10,
                 5
-            ]
+            ],
+            "marker": {
+                "color": "green"
+            }
         },
         {
             "name": "2018",
@@ -74,8 +77,8 @@
                 }
             },
             "connector": {
-                "fillcolor": "#AAA",
                 "line": {
+                    "color": "rgb(127,63,0)",
                     "dash": 10,
                     "width": 2
                 }
