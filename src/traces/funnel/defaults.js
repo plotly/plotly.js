@@ -49,10 +49,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     var connectorVisible = coerce('connector.visible');
     if(connectorVisible) {
-        var defaultFillcolor = Color.addOpacity(
-            Lib.isArrayOrTypedArray(markerColor) ? markerColor[0] : markerColor, 0.5
-        );
-        coerce('connector.fillcolor', defaultFillcolor);
+        coerce('connector.fillcolor', defaultFillColor(markerColor));
 
         var connectorLineWidth = coerce('connector.line.width');
         if(connectorLineWidth) {
@@ -60,6 +57,12 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
             coerce('connector.line.dash');
         }
     }
+}
+
+function defaultFillColor(markerColor) {
+    var cBase = Lib.isArrayOrTypedArray(markerColor) ? '#000' : markerColor;
+
+    return Color.addOpacity(cBase, 0.5 * Color.opacity(cBase));
 }
 
 function crossTraceDefaults(fullData, fullLayout) {

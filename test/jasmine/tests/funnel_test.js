@@ -358,11 +358,11 @@ describe('Funnel.crossTraceCalc', function() {
 
     it('should guard against invalid offset items', function() {
         var gd = mockFunnelPlot([{
-            offset: [null, 0, 1],
+            offset: 0,
             y: [1, 2, 3]
         }, {
-            offset: [null, 1],
-            y: [1, 2, 3]
+            offset: 1,
+            y: [1, 2]
         }, {
             offset: null,
             y: [1]
@@ -372,59 +372,13 @@ describe('Funnel.crossTraceCalc', function() {
         });
 
         var cd = gd.calcdata;
-        assertArrayField(cd[0][0], 't.poffset', [-0.4, 0, 1]);
-        assertArrayField(cd[1][0], 't.poffset', [-0.4, 1, -0.4]);
+        assertArrayField(cd[0][0], 't.poffset', [0]);
+        assertArrayField(cd[1][0], 't.poffset', [1]);
         assertArrayField(cd[2][0], 't.poffset', [-0.4]);
-    });
-
-    it('should work with *width* typed arrays', function() {
-        var w = [0.1, 0.4, 0.7];
-
-        var gd = mockFunnelPlot([{
-            width: w,
-            y: [1, 2, 3]
-        }, {
-            width: new Float32Array(w),
-            y: [1, 2, 3]
-        }], {funnelmode: 'group'});
-
-        var cd = gd.calcdata;
-        assertArrayField(cd[0][0], 't.barwidth', w);
-        assertArrayField(cd[1][0], 't.barwidth', w);
-        assertPointField(cd, 'x', [
-            [-0.2, 0.8, 1.8],
-            [0.2, 1.2, 2.2]
-        ]);
-    });
-
-    it('should work with *offset* typed arrays', function() {
-        var o = [0.1, 0.4, 0.7];
-
-        var gd = mockFunnelPlot([{
-            offset: o,
-            y: [1, 2, 3]
-        }, {
-            offset: new Float32Array(o),
-            y: [1, 2, 3]
-        }]);
-
-        var cd = gd.calcdata;
-        assertArrayField(cd[0][0], 't.poffset', o);
-        assertArrayField(cd[1][0], 't.poffset', o);
-        assertPointField(cd, 'x', [
-            [0.5, 1.8, 3.1],
-            [0.5, 1.8, 3.099]
-        ]);
     });
 
     it('should guard against invalid width items', function() {
         var gd = mockFunnelPlot([{
-            width: [null, 1, 0.8],
-            y: [1, 2, 3]
-        }, {
-            width: [null, 1],
-            y: [1, 2, 3]
-        }, {
             width: null,
             y: [1]
         }], {
@@ -433,18 +387,16 @@ describe('Funnel.crossTraceCalc', function() {
         });
 
         var cd = gd.calcdata;
-        assertArrayField(cd[0][0], 't.barwidth', [0.8, 1, 0.8]);
-        assertArrayField(cd[1][0], 't.barwidth', [0.8, 1, 0.8]);
-        assertArrayField(cd[2][0], 't.barwidth', [0.8]);
+        assertArrayField(cd[0][0], 't.barwidth', [0.8]);
     });
 
     it('should guard against invalid width items (group case)', function() {
         var gd = mockFunnelPlot([{
-            width: [null, 0.1, 0.2],
+            width: 0.2,
             y: [1, 2, 3]
         }, {
-            width: [null, 0.1],
-            y: [1, 2, 3]
+            width: 0.1,
+            y: [1, 2]
         }, {
             width: null,
             y: [1]
@@ -454,8 +406,8 @@ describe('Funnel.crossTraceCalc', function() {
         });
 
         var cd = gd.calcdata;
-        assertArrayField(cd[0][0], 't.barwidth', [0.33, 0.1, 0.2]);
-        assertArrayField(cd[1][0], 't.barwidth', [0.33, 0.1, 0.33]);
+        assertArrayField(cd[0][0], 't.barwidth', [0.2]);
+        assertArrayField(cd[1][0], 't.barwidth', [0.1]);
         assertArrayField(cd[2][0], 't.barwidth', [0.33]);
     });
 
@@ -839,14 +791,13 @@ describe('A funnel plot', function() {
         var mock = {
             data: [
                 {
-                    width: [1, 0.8, 0.6, 0.4],
                     text: [1, 2, 3333333333, 4],
                     textposition: 'outside',
                     y: [1, 2, 3, 4],
                     x: [1, 2, 3, 4],
                     type: 'funnel'
                 }, {
-                    width: [0.4, 0.6, 0.8, 1],
+                    width: 0.4,
                     text: ['Three', 2, 'inside text', 0],
                     textposition: 'auto',
                     textfont: { size: [10] },
@@ -894,12 +845,12 @@ describe('A funnel plot', function() {
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
-            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
-            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            assertArrayField(cd[0][0], 't.barwidth', [0.8]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4]);
             expect(cd[2][0].t.barwidth).toBe(1);
             expect(cd[3][0].t.barwidth).toBe(0.8);
-            assertArrayField(cd[0][0], 't.poffset', [-0.5, -0.4, -0.3, -0.2]);
-            assertArrayField(cd[1][0], 't.poffset', [-0.2, -0.3, -0.4, -0.5]);
+            assertArrayField(cd[0][0], 't.poffset', [-0.4]);
+            assertArrayField(cd[1][0], 't.poffset', [-0.2]);
             expect(cd[2][0].t.poffset).toBe(-0.5);
             expect(cd[3][0].t.poffset).toBe(-0.4);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
@@ -909,7 +860,7 @@ describe('A funnel plot', function() {
         .then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
-                [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
+                [1.4, 2.4, 3.4, 4.4], [1.2, 2.2, 3.2, 4.2],
                 [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
             assertPointField(cd, 'y', [
                 [0.5, 1, 1.5, 2], [1.5, 1, 0.5, 0],
@@ -923,8 +874,8 @@ describe('A funnel plot', function() {
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
-            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
-            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            assertArrayField(cd[0][0], 't.barwidth', [0.8]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4]);
             expect(cd[2][0].t.barwidth).toBe(1);
             expect(cd[3][0].t.barwidth).toBe(0.8);
             expect(cd[0][0].t.poffset).toBe(0);
@@ -973,7 +924,7 @@ describe('A funnel plot', function() {
         .then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
-                [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
+                [1.4, 2.4, 3.4, 4.4], [1.2, 2.2, 3.2, 4.2],
                 [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
             assertPointField(cd, 'y', [
                 [0.5, 1, 1.5, 2], [1.5, 1, 0.5, 0],
@@ -987,8 +938,8 @@ describe('A funnel plot', function() {
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
-            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
-            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            assertArrayField(cd[0][0], 't.barwidth', [0.8]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4]);
             expect(cd[2][0].t.barwidth).toBe(1);
             expect(cd[3][0].t.barwidth).toBe(0.8);
             expect(cd[0][0].t.poffset).toBe(0);
@@ -1497,45 +1448,6 @@ describe('funnel hover', function() {
 
                     expect(out).toBe(false, hoverSpec);
                 });
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('should return correct hover data (two funnels, array width)', function(done) {
-            Plotly.plot(gd, [{
-                type: 'funnel',
-                x: [1, 200],
-                y: [4, 2],
-                width: [10, 20],
-                marker: { color: 'red' }
-            }, {
-                type: 'funnel',
-                x: [1, 200],
-                y: [2, 4],
-                width: [20, 10],
-                marker: { color: 'green' }
-            }], {
-                funnelmode: 'group',
-                xaxis: { range: [-200, 300] },
-                width: 500,
-                height: 500
-            })
-            .then(function() {
-                var out = _hover(gd, -36, 1.5, 'closest');
-
-                expect(out.style).toEqual([0, 'red', 1, 4]);
-                assertPos(out.pos, [99, 106, 13, 13]);
-
-                out = _hover(gd, 164, 0.8, 'closest');
-
-                expect(out.style).toEqual([1, 'red', 200, 2]);
-                assertPos(out.pos, [222, 235, 88, 88]);
-
-                out = _hover(gd, 125, 0.8, 'x');
-
-                expect(out.style).toEqual([1, 'red', 200, 2]);
-                assertPos(out.pos, [222, 280, 88, 88]);
             })
             .catch(failTest)
             .then(done);

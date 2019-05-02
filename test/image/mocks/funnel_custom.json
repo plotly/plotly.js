@@ -4,8 +4,6 @@
             "name": "2018",
             "type": "funnel",
             "orientation": "v",
-            "width": [1.0, 0.6, 0.5, 0.7, 0.9, 0.8],
-            "offset": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
             "x": [
                 "A",
                 "B",
@@ -22,16 +20,22 @@
                 10,
                 5
             ],
+            "opacity": 0.75,
             "marker": {
-                "color": "green"
+                "color": "rgba(0,255,0,0.5)"
+            },
+            "connector": {
+                "line": {
+                    "color": "rgba(255,191,127,0.75)",
+                    "dash": 4,
+                    "width": 4
+                }
             }
         },
         {
             "name": "2018",
             "type": "funnel",
             "orientation": "v",
-            "width": [1.0, 0.6, 0.5, 0.7, 0.9, 0.8],
-            "offset": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
             "x": [
                 "A",
                 "B",
@@ -59,12 +63,12 @@
                 ],
                 "line": {
                     "width": [
-                        2,
-                        3,
-                        4,
-                        5,
+                        7,
                         6,
-                        7
+                        5,
+                        4,
+                        3,
+                        2
                     ],
                     "color": [
                         "rgb(127, 0, 127)",
@@ -75,19 +79,12 @@
                         "rgb(127, 0, 0)"
                     ]
                 }
-            },
-            "connector": {
-                "line": {
-                    "color": "rgb(127,63,0)",
-                    "dash": 10,
-                    "width": 2
-                }
             }
         }
     ],
     "layout": {
         "title": {
-            "text": "funnel chart with custom bar widths, offsets and colors"
+            "text": "two stacked funnel charts with custom marker colors and lines<br>as well as transparent colors and opacity"
         },
         "xaxis": {
             "type": "category"
@@ -95,8 +92,7 @@
         "yaxis": {
             "type": "linear"
         },
-        "margin": { "l": 150 },
-        "height": 800,
+        "height": 450,
         "width": 800,
         "autosize": true,
         "showlegend": true,
