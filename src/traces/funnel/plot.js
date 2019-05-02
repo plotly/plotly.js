@@ -16,15 +16,15 @@ var barPlot = require('../bar/plot');
 module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var fullLayout = gd._fullLayout;
 
+    plotConnectorRegions(gd, plotinfo, cdModule, traceLayer);
+    plotConnectorLines(gd, plotinfo, cdModule, traceLayer);
+
     barPlot(gd, plotinfo, cdModule, traceLayer, {
         mode: fullLayout.funnelmode,
         norm: fullLayout.funnelmode,
         gap: fullLayout.funnelgap,
         groupgap: fullLayout.funnelgroupgap
     });
-
-    plotConnectorRegions(gd, plotinfo, cdModule, traceLayer);
-    plotConnectorLines(gd, plotinfo, cdModule, traceLayer);
 };
 
 function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
