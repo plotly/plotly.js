@@ -28,9 +28,34 @@ var Registry = require('../../registry');
 var traceIs = Registry.traceIs;
 var getComponentMethod = Registry.getComponentMethod;
 
+function skipType(trace) {
+    return !(
+        traceIs(trace, 'cartesian') ||
+        traceIs(trace, 'gl2d')
+    );
+}
+
+function listNames(traceIn, xOy) {
+    var a = traceIn[xOy + 'axis'];
+    var b = traceIn[xOy + 'axes'];
+
+    var list = [];
+    if(a) {
+        list = [a];
+    } else if(b) {
+        list = b;
+    }
+
+    return list;
+}
+
 function appendList(cont, k, item) {
     if(Array.isArray(cont[k])) cont[k].push(item);
     else cont[k] = [item];
+}
+
+function getName(trace, xOy) {
+    return (trace[xOy + 'axis']) ? id2name(trace[xOy + 'axis']) : undefined; // TODO: why these should be left undefined?
 }
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
@@ -43,36 +68,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var trace;
     var xaName, yaName;
 
-    function skipType() {
-        return (!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d'));
-    }
-
     function append(list) {
         for(var k = 0; k < list.length; k++) {
             appendList(ax2traces, id2name(list[k]), trace);
         }
     }
 
-    function listXnames(trace) {
-        var list = [];
-        if(trace.xaxis) {
-            list = [trace.xaxis];
-        } else if(trace.xaxes) {
-            list = trace.xaxes;
-        }
+    // create lists
+    for(i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        if(skipType(trace)) continue;
 
-        append(list);
-    }
-
-    function listYnames(trace) {
-        var list = [];
-        if(trace.yaxis) {
-            list = [trace.yaxis];
-        } else if(trace.yaxes) {
-            list = trace.yaxes;
-        }
-
-        append(list);
+        append(listNames(trace, 'x'));
+        append(listNames(trace, 'y'));
     }
 
     // look for axes in the data
@@ -80,12 +88,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         trace = fullData[i];
         if(skipType(trace)) continue;
 
-        // create lists
-        listXnames(trace);
-        listYnames(trace);
-
-        xaName = (trace.xaxis) ? id2name(trace.xaxis) : undefined; // TODO: why these should be left undefined?
-        yaName = (trace.yaxis) ? id2name(trace.yaxis) : undefined;
+        xaName = getName(trace, 'x');
+        yaName = getName(trace, 'y');
 
         // check for default formatting tweaks
         if(traceIs(trace, '2dMap')) {
@@ -99,14 +103,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
     }
 
-    function getXname() {
-        return (trace.xaxis) ? id2name(trace.xaxis) : undefined; // TODO: why these should be left undefined?
-    }
-
-    function getYname() {
-        return (trace.yaxis) ? id2name(trace.yaxis) : undefined; // TODO: why these should be left undefined?
-    }
-
     function includesOnly(desiredType, xaNameIn, yaNameIn) {
         var result = false;
         for(var k = 0; k < fullData.length; k++) {
@@ -114,8 +110,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             if(skipType(otherTrace)) continue;
 
             if(
-                xaNameIn !== getXname(otherTrace) ||
-                yaNameIn !== getYname(otherTrace)
+                xaNameIn !== getName(otherTrace, 'x') ||
+                yaNameIn !== getName(otherTrace, 'y')
             ) continue;
 
             var found = false;
@@ -143,8 +139,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         trace = fullData[i];
         if(skipType(trace)) continue;
 
-        xaName = getXname(trace);
-        yaName = getYname(trace);
+        xaName = getName(trace, 'x');
+        yaName = getName(trace, 'y');
 
         if(funnelOnlyX[xaName] !== false) funnelOnlyX[xaName] = includesOnly('funnel', xaName, yaName);
         if(funnelOnlyY[yaName] !== false) funnelOnlyY[yaName] = includesOnly('funnel', xaName, yaName);
@@ -155,8 +151,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         trace = fullData[i];
         if(skipType(trace)) continue;
 
-        xaName = getXname(trace);
-        yaName = getYname(trace);
+        xaName = getName(trace, 'x');
+        yaName = getName(trace, 'y');
 
         if(traceIs(trace, 'carpet') && trace._cheater) {
             if(cheaterOnlyX[xaName] && xaName) hideX[xaName] = 1;
