@@ -67,11 +67,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // try to get default title from splom trace, fallback to graph-wide value
     var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
-
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
-
-    // access to ticktext prefix & suffix is required
-    // even if the axis is not visible. e.g. in funnels textinfo & in general
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 1});
     if(!visible) return containerOut;
 
     coerce('title.text', dfltTitle);
@@ -81,8 +77,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         color: dfltFontColor
     });
 
-
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 2});
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
     handleLineGridDefaults(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
