@@ -32,7 +32,7 @@ module.exports = function clean2dArray(zOld, transpose, trace, xa, ya) {
 
     var xMap = function(i) {return i;};
     var yMap = function(i) {return i;};
-    if(trace.type === 'heatmap') {
+    if(trace && trace.type === 'heatmap') {
         if(ya && ya.type === 'category') {
             yMap = function(i) {return trace._y[i];};
         }
