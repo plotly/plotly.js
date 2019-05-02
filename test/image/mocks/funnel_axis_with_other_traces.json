@@ -112,7 +112,6 @@
         },
         {
             "type": "funnel",
-            "name": "only funnel<br>should not<br>see axis",
             "width": 0.6,
             "opacity": 0.8,
             "orientation": "h",
@@ -128,12 +127,34 @@
             ],
             "xaxis": "x4",
             "yaxis": "y4"
+        },
+        {
+            "type": "funnel",
+            "width": 0.6,
+            "opacity": 0.8,
+            "orientation": "h",
+            "x": [
+                3,
+                2,
+                1
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "xaxis": "x4",
+            "yaxis": "y4"
         }
     ],
     "layout": {
+        "text": {
+            "title": "Should not see axis lines by default when there are only funnels!"
+        },
         "width": 800,
         "height": 800,
         "dragmode": "pan",
+        "funnelmode": "overlay",
         "xaxis": {
             "domain": [
                 0,
