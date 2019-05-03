@@ -62,11 +62,8 @@ module.exports = function calc(gd, trace) {
             y = trace._y;
             zIn = trace._z;
         } else {
-            x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-            y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
-
-            trace._x = x;
-            trace._y = y;
+            x = trace._x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
+            y = trace._y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
         }
 
         x0 = trace.x0;
@@ -74,7 +71,7 @@ module.exports = function calc(gd, trace) {
         y0 = trace.y0;
         dy = trace.dy;
 
-        z = clean2dArray(zIn, trace.transpose, trace, xa, ya);
+        z = clean2dArray(zIn, trace, xa, ya);
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);

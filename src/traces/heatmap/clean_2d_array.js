@@ -9,8 +9,9 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var Lib = require('../../lib');
 
-module.exports = function clean2dArray(zOld, transpose, trace, xa, ya) {
+module.exports = function clean2dArray(zOld, trace, xa, ya) {
     var rowlen, collen, getCollen, old2new, i, j;
 
     function cleanZvalue(v) {
@@ -18,7 +19,7 @@ module.exports = function clean2dArray(zOld, transpose, trace, xa, ya) {
         return +v;
     }
 
-    if(transpose) {
+    if(trace && trace.transpose) {
         rowlen = 0;
         for(i = 0; i < zOld.length; i++) rowlen = Math.max(rowlen, zOld[i].length);
         if(rowlen === 0) return false;
@@ -30,14 +31,14 @@ module.exports = function clean2dArray(zOld, transpose, trace, xa, ya) {
         old2new = function(zOld, i, j) { return zOld[i][j]; };
     }
 
-    var xMap = function(i) {return i;};
-    var yMap = function(i) {return i;};
+    var xMap = Lib.identity;
+    var yMap = Lib.identity;
     if(trace && trace.type !== 'carpet' && trace.type !== 'contourcarpet') {
-        if(ya && ya.type === 'category') {
-            if(trace._y.length) yMap = function(i) {return trace._y[i];};
+        if(ya && ya.type === 'category' && trace._y.length) {
+            yMap = function(i) {return trace._y[i];};
         }
-        if(xa && xa.type === 'category') {
-            if(trace._x.length) xMap = function(i) {return trace._x[i];};
+        if(xa && xa.type === 'category' && trace._x.length) {
+            xMap = function(i) {return trace._x[i];};
         }
     }
 

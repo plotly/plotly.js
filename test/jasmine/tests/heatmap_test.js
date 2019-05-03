@@ -492,49 +492,53 @@ describe('heatmap calc', function() {
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
 
-    it('should handle axis categoryorder', function() {
-        var mock = require('@mocks/heatmap_categoryorder');
-        var data = mock.data[0];
-        var layout = mock.layout;
+    ['heatmap'].forEach(function(traceType) { // TODO: add heatmapgl here when plotly.js issue #3833 ?
+        it('should sort z data based on axis categoryorder for ' + traceType, function() {
+            var mock = require('@mocks/heatmap_categoryorder');
+            var data = mock.data[0];
+            data.type = traceType;
+            var layout = mock.layout;
 
-        // sort x axis categories
-        var mockLayout = Lib.extendDeep({}, layout);
-        var out = _calc(data, mockLayout);
-        mockLayout.xaxis.categoryorder = 'category ascending';
-        var out1 = _calc(data, mockLayout);
+            // sort x axis categories
+            var mockLayout = Lib.extendDeep({}, layout);
+            var out = _calc(data, mockLayout);
+            mockLayout.xaxis.categoryorder = 'category ascending';
+            var out1 = _calc(data, mockLayout);
 
-        expect(out._xcategories).toEqual(out1._xcategories.reverse());
-        // Check z data is also sorted
-        for(var i = 0; i < out.z.length; i++) {
-            expect(out1.z[i]).toEqual(out.z[i].reverse());
-        }
+            expect(out._xcategories).toEqual(out1._xcategories.slice().reverse());
+            // Check z data is also sorted
+            for(var i = 0; i < out.z.length; i++) {
+                expect(out1.z[i]).toEqual(out.z[i].slice().reverse());
+            }
 
-        // sort y axis categories
-        mockLayout = Lib.extendDeep({}, layout);
-        out = _calc(data, mockLayout);
-        mockLayout.yaxis.categoryorder = 'category ascending';
-        out1 = _calc(data, mockLayout);
+            // sort y axis categories
+            mockLayout = Lib.extendDeep({}, layout);
+            out = _calc(data, mockLayout);
+            mockLayout.yaxis.categoryorder = 'category ascending';
+            out1 = _calc(data, mockLayout);
 
-        expect(out._ycategories).toEqual(out1._ycategories.reverse());
-        // Check z data is also sorted
-        expect(out1.z).toEqual(out.z.reverse());
-    });
+            expect(out._ycategories).toEqual(out1._ycategories.slice().reverse());
+            // Check z data is also sorted
+            expect(out1.z).toEqual(out.z.slice().reverse());
+        });
 
-    it('should handle axis categoryarray', function() {
-        var mock = require('@mocks/heatmap_categoryorder');
-        var data = mock.data[0];
-        var layout = mock.layout;
+        it('should sort z data based on axis categoryarray ' + traceType, function() {
+            var mock = require('@mocks/heatmap_categoryorder');
+            var data = mock.data[0];
+            data.type = traceType;
+            var layout = mock.layout;
 
-        layout.xaxis.categoryorder = 'array';
-        layout.xaxis.categoryarray = [2, 3, 0, 1];
-        layout.yaxis.categoryorder = 'array';
-        layout.yaxis.categoryarray = ['a', 'd', 'b', 'c'];
+            layout.xaxis.categoryorder = 'array';
+            layout.xaxis.categoryarray = ['x', 'z', 'y', 'w'];
+            layout.yaxis.categoryorder = 'array';
+            layout.yaxis.categoryarray = ['a', 'd', 'b', 'c'];
 
-        var out = _calc(data, layout);
+            var out = _calc(data, layout);
 
-        expect(out._xcategories).toEqual(layout.xaxis.categoryarray, 'xaxis should reorder');
-        expect(out._ycategories).toEqual(layout.yaxis.categoryarray, 'yaxis should reorder');
-        expect(out.z[0][0]).toEqual(65);
+            expect(out._xcategories).toEqual(layout.xaxis.categoryarray, 'xaxis should reorder');
+            expect(out._ycategories).toEqual(layout.yaxis.categoryarray, 'yaxis should reorder');
+            expect(out.z[0][0]).toEqual(65);
+        });
     });
 });
 
