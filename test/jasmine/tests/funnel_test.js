@@ -754,7 +754,6 @@ describe('A funnel plot', function() {
         y: [20, 14, 23, 10, 59, 15],
         text: [20, 14, 23, 10, 59, 15],
         type: 'funnel',
-        textposition: 'auto',
         marker: {
             color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
         }
@@ -792,6 +791,7 @@ describe('A funnel plot', function() {
             data: [
                 {
                     text: [1, 2, 3333333333, 4],
+                    textinfo: 'text',
                     textposition: 'outside',
                     y: [1, 2, 3, 4],
                     x: [1, 2, 3, 4],
@@ -799,7 +799,7 @@ describe('A funnel plot', function() {
                 }, {
                     width: 0.4,
                     text: ['Three', 2, 'inside text', 0],
-                    textposition: 'auto',
+                    textinfo: 'text',
                     textfont: { size: [10] },
                     y: [3, 2, 1, 0],
                     x: [1, 2, 3, 4],
@@ -807,13 +807,14 @@ describe('A funnel plot', function() {
                 }, {
                     width: 1,
                     text: [4, 3, 2, 1],
+                    textinfo: 'text',
                     textposition: 'inside',
                     y: [4, 3, 2, 1],
                     x: [1, 2, 3, 4],
                     type: 'funnel'
                 }, {
                     text: [0, 'outside text', 3, 2],
-                    textposition: 'auto',
+                    textinfo: 'text',
                     y: [0, 0.25, 3, 2],
                     x: [1, 2, 3, 4],
                     type: 'funnel'
@@ -1088,7 +1089,8 @@ describe('A funnel plot', function() {
             y: [10, 20, 30, 40],
             type: 'funnel',
             text: ['T1P1', 'T1P2', 13, 14],
-            textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+            textinfo: 'text',
+            textposition: ['inside', 'outside', 'auto', 'none', 'BADVALUE'],
             textfont: {
                 family: ['"comic sans"'],
                 color: ['red', 'green'],
@@ -1178,7 +1180,7 @@ describe('A funnel plot', function() {
             x: ['Product A', 'Product B', 'Product C'],
             y: [20, 14, 23],
             text: [20, 14, 23],
-            textposition: 'auto'
+            textinfo: 'none'
         }])
         .then(function() {
             _assertNumberOfFunnelTextNodes(3);

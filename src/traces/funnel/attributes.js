@@ -47,7 +47,7 @@ module.exports = {
     orientation: barAttrs.orientation,
 
     offset: extendFlat({}, barAttrs.offset, {arrayOk: false}),
-    width: extendFlat({}, barAttrs.width, {arrayOK: false}),
+    width: extendFlat({}, barAttrs.width, {arrayOk: false}),
 
     marker: barAttrs.marker,
 

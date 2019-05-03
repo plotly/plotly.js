@@ -31,7 +31,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('offset');
     coerce('width');
 
-    coerce('text');
+    var text = coerce('text');
 
     coerce('hovertext');
     coerce('hovertemplate');
@@ -40,7 +40,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     // TODO: move this block to bar handleText if/when textinfo implimented for bars/histograms
     if(traceOut.textposition !== 'none') {
-        coerce('textinfo');
+        var defaultTextinfo =
+            Lib.isArrayOrTypedArray(text) ? 'text+value' : 'value';
+        coerce('textinfo', defaultTextinfo);
     }
 
     var markerColor = coerce('marker.color', defaultColor);

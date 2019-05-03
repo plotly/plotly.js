@@ -19,13 +19,6 @@
                 1
             ],
             "textposition": "outside",
-            "text": [
-                "3756",
-                "1580",
-                "663",
-                "343",
-                "1"
-            ],
             "connector": {
                 "fillcolor": "rgba(0, 0, 0, 0)",
                 "line": {
@@ -59,14 +52,7 @@
                         0
                     ]
                 }
-            },
-            "width": [
-                0.85,
-                0.70,
-                0.55,
-                0.30,
-                0.15
-            ]
+            }
         },
         {
             "name": "orca",
@@ -122,7 +108,7 @@
         "yaxis": {
             "type": "linear"
         },
-        "margin": { "l": 150 },
+        "margin": { "l": 0 },
         "height": 800,
         "width": 800,
         "funnelmode": "overlay",

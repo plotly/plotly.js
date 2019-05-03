@@ -13,11 +13,16 @@
         1,
         null,
         "nonsense",
-        14,
+        2,
         0,
         1
       ],
       "type": "funnel"
     }
-  ]
+  ],
+  "layout": {
+    "margin": { "l": 20, "r": 20, "t": 20, "b": 50 },
+    "width": 600,
+    "height": 200
+  }
 }

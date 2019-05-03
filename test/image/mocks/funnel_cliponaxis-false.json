@@ -6,6 +6,7 @@
       "x": ["apple", "banana", "clementine"],
       "y": [3.8, 4, 4.2],
       "text": ["apple", "banana", "x"],
+      "textinfo": "text",
       "textposition": "outside",
       "cliponaxis": false,
       "textfont": {
@@ -18,6 +19,7 @@
       "x": ["apple", "banana", "clementine"],
       "y": [3.8, 4, 4.2],
       "text": ["apple", "banana", "clementine"],
+      "textinfo": "text",
       "textposition": "outside",
       "cliponaxis": true,
       "textfont": {
@@ -32,6 +34,7 @@
       "x": ["banana"],
       "y": [4],
       "text": ["X"],
+      "textinfo": "text",
       "textposition": "outside",
       "cliponaxis": true,
       "textfont": {"size": [20]},
@@ -43,6 +46,7 @@
       "x": ["banana"],
       "y": [2],
       "text": ["banana"],
+      "textinfo": "text",
       "textposition": "outside",
       "cliponaxis": false,
       "textfont": {"size": [20]},

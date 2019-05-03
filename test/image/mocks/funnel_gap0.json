@@ -2,20 +2,22 @@
   "data": [
     {
       "x": [
-        "giraffes",
-        "orangutans",
-        "monkeys"
+        "Lead",
+        "Proposal",
+        "Finalize"
       ],
       "y": [
-        20,
-        14,
-        23
+        20.0020,
+        10.001001,
+        "05.0005"
       ],
       "name": "SF Zoo",
-      "type": "funnel"
+      "type": "funnel",
+      "textfont": { "size": 18 }
     }
   ],
   "layout": {
+    "margin": { "l": 20, "r": 20, "t": 20, "b": 50 },
     "funnelgap": 0,
     "xaxis": {
       "type": "category",
@@ -23,17 +25,15 @@
         -0.5,
         2.5
       ],
-      "autorange": true
+      "tickfont": { "size": 24 }
     },
     "yaxis": {
       "type": "linear",
-      "range": [
-        0,
-        24.210526315789473
-      ],
-      "autorange": true
+      "tickprefix": "$",
+      "ticksuffix": " million"
+
     },
-    "height": 300,
+    "height": 260,
     "width": 900,
     "autosize": false
   }

@@ -2,6 +2,7 @@
     "data": [
         {
             "type": "funnel",
+            "insidetextanchor": "start",
             "width": 0.6,
             "opacity": 0.8,
             "x": [
@@ -23,6 +24,7 @@
         },
         {
             "type": "funnel",
+            "insidetextanchor": "start",
             "width": 0.6,
             "opacity": 0.8,
             "x": [
@@ -56,6 +58,7 @@
         },
         {
             "type": "funnel",
+            "insidetextanchor": "start",
             "width": 0.6,
             "opacity": 0.8,
             "orientation": "h",
@@ -148,13 +151,12 @@
         }
     ],
     "layout": {
-        "text": {
-            "title": "Should not see axis lines by default when there are only funnels!"
+        "title": {
+            "text": "Should not see axis lines by default when there are only funnels!"
         },
         "width": 800,
         "height": 800,
         "dragmode": "pan",
-        "funnelmode": "overlay",
         "xaxis": {
             "domain": [
                 0,
@@ -197,6 +199,7 @@
         },
         "yaxis3": {
             "anchor": "x3",
+            "autorange": "reversed",
             "domain": [
                 0.52,
                 1
@@ -204,6 +207,7 @@
         },
         "yaxis4": {
             "anchor": "x4",
+            "autorange": "reversed",
             "domain": [
                 0,
                 0.48
