@@ -13,6 +13,24 @@
                 2,
                 1
             ],
+            "textposition": "inside",
+            "textangle": "auto",
+            "textinfo": "value+percent initial+percent previous+percent total"
+        },
+        {
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                3,
+                2,
+                1
+            ],
+            "textposition": "inside",
             "textangle": 0,
             "textinfo": "value+percent initial+percent previous+percent total"
         },
@@ -30,8 +48,26 @@
                 100
             ],
             "textposition": "inside",
-            "insidetextanchor": "start",
-            "textangle": 0,
+            "textangle": 45,
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                300,
+                200,
+                100
+            ],
+            "textposition": "inside",
+            "textangle": -45,
             "textinfo": "value+percent initial+percent previous+percent total",
             "xaxis": "x2",
             "yaxis": "y2"
@@ -50,8 +86,26 @@
                 "C"
             ],
             "textposition": "inside",
-            "insidetextanchor": "end",
-            "textangle": 0,
+            "textangle": 45,
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "funnel",
+            "orientation": "h",
+            "x": [
+                30000,
+                20000,
+                10000
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "textposition": "inside",
+            "textangle": -45,
             "textinfo": "value+percent initial+percent previous+percent total",
             "xaxis": "x3",
             "yaxis": "y3"
@@ -69,9 +123,29 @@
                 "B",
                 "C"
             ],
-            "textposition": "outside",
+            "textposition": "inside",
             "cliponaxis": false,
-            "textangle": 0,
+            "textangle": 90,
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x4",
+            "yaxis": "y4"
+        },
+        {
+            "type": "funnel",
+            "orientation": "h",
+            "x": [
+                3000000,
+                2000000,
+                1000000
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "textposition": "inside",
+            "cliponaxis": false,
+            "textangle": -90,
             "textinfo": "value+percent initial+percent previous+percent total",
             "xaxis": "x4",
             "yaxis": "y4"

@@ -215,7 +215,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
 
     // get trace attributes
     var trace = calcTrace[0].trace;
-    var orientation = trace.orientation;
+    var isHorizontal = (trace.orientation === 'h');
 
     var text = getText(calcTrace, i, xa, ya);
     textPosition = getTextPosition(trace, i);
@@ -245,7 +245,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
     // Special case: don't use the c2p(v, true) value on log size axes,
     // so that we can get correctly inside text scaling
     var di = bar.datum();
-    if(orientation === 'h') {
+    if(isHorizontal) {
         if(xa.type === 'log' && di.s0 <= 0) {
             if(xa.range[0] < xa.range[1]) {
                 x0 = 0;
@@ -289,7 +289,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
             var textHasSize = (textWidth > 0 && textHeight > 0);
             var fitsInside = (textWidth <= barWidth && textHeight <= barHeight);
             var fitsInsideIfRotated = (textWidth <= barHeight && textHeight <= barWidth);
-            var fitsInsideIfShrunk = (orientation === 'h') ?
+            var fitsInsideIfShrunk = (isHorizontal) ?
                 (barWidth >= textWidth * (barHeight / textHeight)) :
                 (barHeight >= textHeight * (barWidth / textWidth));
 
@@ -332,91 +332,107 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
             trace.constraintext === 'outside';
 
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
-            orientation, constrained);
+            isHorizontal, constrained, trace.textangle);
     } else {
         constrained =
             trace.constraintext === 'both' ||
             trace.constraintext === 'inside';
 
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
-            orientation, constrained, trace.insidetextanchor, trace.insidetextrotate === 'none');
+            isHorizontal, constrained, trace.textangle, trace.insidetextanchor);
     }
 
     textSelection.attr('transform', transform);
 }
 
-function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained, anchor, dontRotate) {
+function getRotationFromAngle(angle) {
+    return (angle === 'auto') ? 0 : angle;
+}
+
+function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, constrained, angle, anchor) {
     // compute text and target positions
     var textWidth = textBB.width;
     var textHeight = textBB.height;
-    var textX = (textBB.left + textBB.right) / 2;
-    var textY = (textBB.top + textBB.bottom) / 2;
-    var barWidth = Math.abs(x1 - x0);
-    var barHeight = Math.abs(y1 - y0);
+    var lx = Math.abs(x1 - x0);
+    var ly = Math.abs(y1 - y0);
 
-    // apply text padding
-    var textpad;
-    if(barWidth > (2 * TEXTPAD) && barHeight > (2 * TEXTPAD)) {
-        textpad = TEXTPAD;
-        barWidth -= 2 * textpad;
-        barHeight -= 2 * textpad;
-    } else textpad = 0;
+    var rotation = getRotationFromAngle(angle);
 
-    // compute rotation and scale
-    var rotate = false;
-    var scale = 1;
-
-    if(textWidth <= barWidth && textHeight <= barHeight) {
-        // no scale or rotation is required
-        rotate = false;
-        scale = 1;
-    } else if(textWidth <= barHeight && textHeight <= barWidth && !dontRotate) {
-        // only rotation is required
-        rotate = true;
-        scale = 1;
-    } else if((textWidth < textHeight) === (barWidth < barHeight) || dontRotate) {
-        // only scale is required
-        rotate = false;
-        scale = constrained ? Math.min(barWidth / textWidth, barHeight / textHeight) : 1;
-    } else {
-        // both scale and rotation are required
-        rotate = true;
-        scale = constrained ? Math.min(barHeight / textWidth, barWidth / textHeight) : 1;
+    var autoRotate = (angle === 'auto');
+    var isAutoRotated = false;
+    if(autoRotate) {
+        if(textWidth <= lx && textHeight <= ly) {
+            // no need to fit in other direction
+        } else if(
+            (textWidth <= ly && textHeight <= lx) ||
+            (textWidth < textHeight) !== (lx < ly)
+         ) {
+            isAutoRotated = true;
+        }
     }
 
-    if(rotate) rotate = 90; // rotate clockwise
+    if(isAutoRotated) {
+        // don't rotate yet only swap bar width with height
+        var tmp = ly;
+        ly = lx;
+        lx = tmp;
+    }
+
+    var absSin = Math.abs(Math.sin(rotation));
+    var absCos = Math.abs(Math.cos(rotation));
+
+    // compute and apply text padding
+    var dx = Math.max(lx * absCos, ly * absSin);
+    var dy = Math.max(lx * absSin, ly * absCos);
+
+    var textpad = (
+        dx > (2 * TEXTPAD) &&
+        dy > (2 * TEXTPAD)
+    ) ? TEXTPAD : 0;
+
+    dx -= 2 * textpad;
+    dy -= 2 * textpad;
+
+    var scale = (constrained) ?
+        Math.min(dx / textWidth, dy / textHeight) :
+        Math.max(absCos, absSin);
+
+    scale = Math.min(1, scale);
 
     // compute text and target positions
     var targetX = (x0 + x1) / 2;
     var targetY = (y0 + y1) / 2;
 
-    if(anchor !== 'middle') {
-        var targetWidth = scale * (rotate ? textHeight : textWidth);
-        var targetHeight = scale * (rotate ? textWidth : textHeight);
+    if(anchor !== 'middle') { // case of 'start' or 'end'
+        var flip = xor(!isHorizontal, isAutoRotated);
+        var side = (flip) ? textBB.width : textBB.height;
+        var offset = (0.5 * scale * side) +
+            textpad * (1 + Math.min(absCos, absSin));
 
-        var offset;
-        if(orientation === 'h') {
-            offset = (textpad + targetWidth / 2) * dirSign(x0, x1);
-            if(anchor === 'start') {
-                targetX = x0 + offset;
-            } else { // case 'end'
-                targetX = x1 - offset;
-            }
+        if(isHorizontal) {
+            offset *= dirSign(x0, x1);
+            targetX = (anchor === 'start') ? x0 + offset : x1 - offset;
         } else {
-            offset = (textpad + targetHeight / 2) * dirSign(y0, y1);
-            if(anchor === 'start') {
-                targetY = y0 + offset;
-            } else { // case 'end'
-                targetY = y1 - offset;
-            }
+            offset *= dirSign(y0, y1);
+            targetY = (anchor === 'start') ? y0 + offset : y1 - offset;
         }
     }
 
-    return getTransform(textX, textY, targetX, targetY, scale, rotate);
+    var textX = (textBB.left + textBB.right) / 2;
+    var textY = (textBB.top + textBB.bottom) / 2;
+
+    // lastly apply auto rotation
+    if(isAutoRotated) rotation += 90;
+
+    return getTransform(textX, textY, targetX, targetY, scale, rotation);
 }
 
-function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
-    var barWidth = (orientation === 'h') ?
+function xor(a, b) {
+    return (a && b) || !(a || b);
+}
+
+function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, isHorizontal, constrained, angle) {
+    var barWidth = (isHorizontal) ?
         Math.abs(y1 - y0) :
         Math.abs(x1 - x0);
     var textpad;
@@ -430,7 +446,7 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
     // compute rotation and scale
     var scale = 1;
     if(constrained) {
-        scale = (orientation === 'h') ?
+        scale = (isHorizontal) ?
             Math.min(1, barWidth / textBB.height) :
             Math.min(1, barWidth / textBB.width);
     }
@@ -445,16 +461,18 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
     var targetX = (x0 + x1) / 2;
     var targetY = (y0 + y1) / 2;
 
-    if(orientation === 'h') {
+    if(isHorizontal) {
         targetX = x1 - (textpad + targetWidth / 2) * dirSign(x1, x0);
     } else {
         targetY = y1 + (textpad + targetHeight / 2) * dirSign(y0, y1);
     }
 
-    return getTransform(textX, textY, targetX, targetY, scale, false);
+    var rotation = getRotationFromAngle(angle);
+
+    return getTransform(textX, textY, targetX, targetY, scale, rotation);
 }
 
-function getTransform(textX, textY, targetX, targetY, scale, rotate) {
+function getTransform(textX, textY, targetX, targetY, scale, rotation) {
     var transformScale;
     var transformRotate;
     var transformTranslate;
@@ -465,8 +483,8 @@ function getTransform(textX, textY, targetX, targetY, scale, rotate) {
         transformScale = '';
     }
 
-    transformRotate = (rotate) ?
-        'rotate(' + rotate + ' ' + textX + ' ' + textY + ') ' : '';
+    transformRotate = (rotation) ?
+        'rotate(' + rotation + ' ' + textX + ' ' + textY + ') ' : '';
 
     // Note that scaling also affects the center of the text box
     var translateX = (targetX - scale * textX);

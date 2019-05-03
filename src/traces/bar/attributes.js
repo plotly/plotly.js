@@ -90,21 +90,23 @@ module.exports = {
         valType: 'enumerated',
         values: ['end', 'middle', 'start'],
         dflt: 'end',
-        role: 'info',
+        role: 'info', // TODO: or style ?
         editType: 'plot',
         description: [
             'Determines if texts are kept at center or start/end points in `textposition` *inside* mode.'
         ].join(' ')
     },
 
-    insidetextrotate: {
-        valType: 'enumerated',
-        values: ['auto', 'none'],
+    textangle: {
+        valType: 'angle',
         dflt: 'auto',
-        role: 'info',
+        role: 'info', // TODO: or style ?
         editType: 'plot',
         description: [
-            'Determines if texts could automatically be rotated to fit inside bars in `textposition` *inside* mode.'
+            'Sets the angle of the tick labels with respect to the bar.',
+            'For example, a `tickangle` of -90 draws the tick labels',
+            'vertically. With *auto* the texts may automatically be',
+            'rotated to fit with the maximum size in bars.'
         ].join(' ')
     },
 

@@ -37,7 +37,7 @@ module.exports = {
     text: barAttrs.text,
     textposition: extendFlat({}, barAttrs.textposition, {dflt: 'auto'}),
     insidetextanchor: extendFlat({}, barAttrs.insidetextanchor, {dflt: 'middle'}),
-    insidetextrotate: extendFlat({}, barAttrs.insidetextrotate, {dflt: 'none'}),
+    textangle: extendFlat({}, barAttrs.textangle, {dflt: 0}),
     textfont: barAttrs.textfont,
     insidetextfont: barAttrs.insidetextfont,
     outsidetextfont: barAttrs.outsidetextfont,

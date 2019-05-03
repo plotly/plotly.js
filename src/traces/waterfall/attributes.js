@@ -89,7 +89,7 @@ module.exports = {
     text: barAttrs.text,
     textposition: barAttrs.textposition,
     insidetextanchor: barAttrs.insidetextanchor,
-    insidetextrotate: barAttrs.insidetextrotate,
+    textangle: barAttrs.textangle,
     textfont: barAttrs.textfont,
     insidetextfont: barAttrs.insidetextfont,
     outsidetextfont: barAttrs.outsidetextfont,

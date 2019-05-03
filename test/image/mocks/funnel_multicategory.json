@@ -28,7 +28,6 @@
       "type": "waterfall", "opacity": 0.8, "offset": 0.0, "width": 0.5,
       "cliponaxis": false,
       "textposition": "inside",
-      "insidetextrotate": "none",
       "textinfo": "text+final",
       "text": ["winter 2017", "spring 2017", "summer 2017", "autumn 2017", "winter 2018", "spring 2018", "summer 2018", "autumn 2018"],
       "x": [

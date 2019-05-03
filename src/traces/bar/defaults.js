@@ -142,11 +142,11 @@ function handleText(traceIn, traceOut, layout, coerce, moduleHasSelUnselected) {
         }
 
         coerce('cliponaxis');
+        coerce('textangle');
     }
 
     if(hasInside) {
         coerce('insidetextanchor');
-        coerce('insidetextrotate');
     }
 }
 
