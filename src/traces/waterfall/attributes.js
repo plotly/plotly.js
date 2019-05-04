@@ -137,5 +137,5 @@ module.exports = {
     },
 
     offsetgroup: barAttrs.offsetgroup,
-    alignmentgroup: barAttrs.offsetgroup
+    alignmentgroup: barAttrs.alignmentgroup
 };
