@@ -172,7 +172,7 @@ describe('Test histogram2d', function() {
         });
 
         ['histogram2d', 'histogram2dcontour'].forEach(function(traceType) {
-            it('should sort z data based on axis categoryorder for ' + traceType, function() {
+            it('@flaky should sort z data based on axis categoryorder for ' + traceType, function() {
                 var mock = require('@mocks/heatmap_categoryorder');
                 var mockCopy = Lib.extendDeep({}, mock);
                 var data = mockCopy.data[0];
@@ -215,10 +215,6 @@ describe('Test histogram2d', function() {
                 layout.yaxis.categoryarray = ['a', 'd', 'b', 'c'];
 
                 var out = _calc(data, layout);
-                layout.xaxis.categoryorder = 'array';
-                layout.xaxis.categoryarray = ['x', 'z', 'y', 'w'];
-                layout.yaxis.categoryorder = 'array';
-                layout.yaxis.categoryarray = ['a', 'd', 'b', 'c'];
 
                 expect(out._xcategories).toEqual(layout.xaxis.categoryarray, 'xaxis should reorder');
                 expect(out._ycategories).toEqual(layout.yaxis.categoryarray, 'yaxis should reorder');
