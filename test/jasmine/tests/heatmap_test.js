@@ -539,7 +539,7 @@ describe('heatmap calc', function() {
 
             expect(out._xcategories).toEqual(layout.xaxis.categoryarray, 'xaxis should reorder');
             expect(out._ycategories).toEqual(layout.yaxis.categoryarray, 'yaxis should reorder');
-            expect(out.z[0][0]).toEqual(65);
+            expect(out.z[0][0]).toEqual(0);
         });
     });
 });
@@ -778,6 +778,24 @@ describe('heatmap hover', function() {
 
             expect(pt.index).toEqual([0, 0], 'have correct index');
             assertLabels(pt, 2, 0.2, 6);
+        });
+    });
+
+    describe('with sorted categories', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = require('@mocks/heatmap_categoryorder.json');
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+        afterAll(destroyGraphDiv);
+
+        it('should find closest point (case 1) and should', function() {
+            var pt = _hover(gd, 3, 1)[0];
+            expect(pt.index).toEqual([1, 3], 'have correct index');
+            assertLabels(pt, 2.5, 0.5, 0);
         });
     });
 

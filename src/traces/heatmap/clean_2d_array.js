@@ -31,21 +31,29 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
         old2new = function(zOld, i, j) { return zOld[i][j]; };
     }
 
-    var xMap = Lib.identity;
-    var yMap = Lib.identity;
-    if(trace && trace.type !== 'carpet' && trace.type !== 'contourcarpet') {
-        if(ya && ya.type === 'category' && trace._y.length) {
-            yMap = function(i) {return trace._y[i];};
-        }
-        if(xa && xa.type === 'category' && trace._x.length) {
-            xMap = function(i) {return trace._x[i];};
+    function axisMapping(ax) {
+        if(trace && trace.type !== 'carpet' && trace.type !== 'contourcarpet' &&
+            ax && ax.type === 'category' && trace['_' + ax._id.charAt(0)].length) {
+            var axMapping = [];
+            for(i = 0; i < ax._categories.length; i++) {
+                axMapping.push((trace['_' + ax._id.charAt(0) + 'Map'] || trace[ax._id.charAt(0)]).indexOf(ax._categories[i]));
+            }
+            console.log('axMapping', axMapping);
+            return function(i) {return axMapping[i] === -1 ? undefined : axMapping[i];};
+        } else {
+            return Lib.identity;
         }
     }
 
+    var xMap = axisMapping(xa);
+    var yMap = axisMapping(ya);
+
     var zNew = new Array(rowlen);
 
+    if(ya && ya.type === 'category') rowlen = ya._categories.length;
     for(i = 0; i < rowlen; i++) {
         collen = getCollen(zOld, i);
+        if(xa && xa.type === 'category') collen = xa._categories.length;
         zNew[i] = new Array(collen);
         for(j = 0; j < collen; j++) zNew[i][j] = cleanZvalue(old2new(zOld, yMap(i), xMap(j)));
     }
