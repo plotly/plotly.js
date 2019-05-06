@@ -492,12 +492,13 @@ describe('heatmap calc', function() {
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
 
-    ['heatmap'].forEach(function(traceType) { // TODO: add heatmapgl here when plotly.js issue #3833 ?
+    ['heatmap', 'heatmapgl'].forEach(function(traceType) {
         it('should sort z data based on axis categoryorder for ' + traceType, function() {
             var mock = require('@mocks/heatmap_categoryorder');
-            var data = mock.data[0];
+            var mockCopy = Lib.extendDeep({}, mock);
+            var data = mockCopy.data[0];
             data.type = traceType;
-            var layout = mock.layout;
+            var layout = mockCopy.layout;
 
             // sort x axis categories
             var mockLayout = Lib.extendDeep({}, layout);
@@ -524,9 +525,10 @@ describe('heatmap calc', function() {
 
         it('should sort z data based on axis categoryarray ' + traceType, function() {
             var mock = require('@mocks/heatmap_categoryorder');
-            var data = mock.data[0];
+            var mockCopy = Lib.extendDeep({}, mock);
+            var data = mockCopy.data[0];
             data.type = traceType;
-            var layout = mock.layout;
+            var layout = mockCopy.layout;
 
             layout.xaxis.categoryorder = 'array';
             layout.xaxis.categoryarray = ['x', 'z', 'y', 'w'];
