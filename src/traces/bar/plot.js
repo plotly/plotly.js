@@ -360,15 +360,12 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, const
 
     var autoRotate = (angle === 'auto');
     var isAutoRotated = false;
-    if(autoRotate) {
-        if(textWidth <= lx && textHeight <= ly) {
-            // no need to fit in other direction
-        } else if(
-            (textWidth <= ly && textHeight <= lx) ||
-            (textWidth < textHeight) !== (lx < ly)
-         ) {
-            isAutoRotated = true;
-        }
+    if(autoRotate &&
+        (textWidth > lx || textHeight > ly) && (
+        !(textWidth > ly || textHeight > lx) ||
+        ((textWidth < textHeight) !== (lx < ly))
+    )) {
+        isAutoRotated = true;
     }
 
     if(isAutoRotated) {
