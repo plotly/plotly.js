@@ -35,8 +35,10 @@ function appendList(cont, k, item) {
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var ax2traces = {};
-    var xaCheater = {};
-    var xaNonCheater = {};
+    var xaHide = {};
+    var yaHide = {};
+    var xaDisplay = {};
+    var yaDisplay = {};
     var outerTicks = {};
     var noGrids = {};
     var i, j;
@@ -66,30 +68,41 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             }
         }
 
+        // logic for funnels
+        if(trace.type === 'funnel') {
+            if(trace.orientation === 'h') {
+                if(xaName) xaHide[xaName] = true;
+            } else {
+                if(yaName) yaHide[yaName] = true;
+            }
+        } else {
+            if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
+                if(xaName) xaDisplay[xaName] = true;
+            }
+            if(yaName) yaDisplay[yaName] = true;
+        }
+
         // Two things trigger axis visibility:
         // 1. is not carpet
         // 2. carpet that's not cheater
-        if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
-            if(xaName) xaNonCheater[xaName] = 1;
-        }
 
         // The above check for definitely-not-cheater is not adequate. This
         // second list tracks which axes *could* be a cheater so that the
         // full condition triggering hiding is:
         //   *could* be a cheater and *is not definitely visible*
         if(trace.type === 'carpet' && trace._cheater) {
-            if(xaName) xaCheater[xaName] = 1;
+            if(xaName) xaHide[xaName] = true;
         }
 
         // check for default formatting tweaks
         if(traceIs(trace, '2dMap')) {
-            outerTicks[xaName] = 1;
-            outerTicks[yaName] = 1;
+            outerTicks[xaName] = true;
+            outerTicks[yaName] = true;
         }
 
         if(traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
-            noGrids[positionAxis] = 1;
+            noGrids[positionAxis] = true;
         }
     }
 
@@ -176,7 +189,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             bgColor: bgColor,
             calendar: layoutOut.calendar,
             automargin: true,
-            cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName],
+            visibleDflt:
+                (axLetter === 'x' && xaHide[axName] && !xaDisplay[axName]) ||
+                (axLetter === 'y' && yaHide[axName] && !yaDisplay[axName]),
             splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
         };
 
