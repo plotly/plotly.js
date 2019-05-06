@@ -375,8 +375,8 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, const
         lx = tmp;
     }
 
-    var absSin = Math.abs(Math.sin(rotation));
-    var absCos = Math.abs(Math.cos(rotation));
+    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotation));
+    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotation));
 
     // compute and apply text padding
     var dx = Math.max(lx * absCos, ly * absSin);
@@ -401,10 +401,11 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, const
     var targetY = (y0 + y1) / 2;
 
     if(anchor !== 'middle') { // case of 'start' or 'end'
-        var flip = xor(!isHorizontal, isAutoRotated);
-        var side = (flip) ? textBB.width : textBB.height;
-        var offset = (0.5 * scale * side) +
-            textpad * (1 + Math.min(absCos, absSin));
+        var targetWidth = scale * (isHorizontal !== isAutoRotated ? textHeight : textWidth);
+        var targetHeight = scale * (isHorizontal !== isAutoRotated ? textWidth : textHeight);
+        var move = targetWidth * absSin + targetHeight * absCos;
+
+        var offset = textpad + move / 2;
 
         if(isHorizontal) {
             offset *= dirSign(x0, x1);
@@ -424,21 +425,21 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, const
     return getTransform(textX, textY, targetX, targetY, scale, rotation);
 }
 
-function xor(a, b) {
-    return (a && b) || !(a || b);
-}
-
 function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, isHorizontal, constrained, angle) {
     var barWidth = (isHorizontal) ?
         Math.abs(y1 - y0) :
         Math.abs(x1 - x0);
-    var textpad;
 
+    var rotation = getRotationFromAngle(angle);
+
+    var textpad = 0;
     // Keep the padding so the text doesn't sit right against
     // the bars, but don't factor it into barWidth
     if(barWidth > 2 * TEXTPAD) {
         textpad = TEXTPAD;
     }
+    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotation));
+    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotation));
 
     // compute rotation and scale
     var scale = 1;
@@ -455,6 +456,8 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, isHorizontal, cons
     var targetWidth = scale * textBB.width;
     var targetHeight = scale * textBB.height;
 
+    textpad += 0.5 * Math.min(absSin * targetHeight, absCos * targetWidth);
+
     var targetX = (x0 + x1) / 2;
     var targetY = (y0 + y1) / 2;
 
@@ -463,8 +466,6 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, isHorizontal, cons
     } else {
         targetY = y1 + (textpad + targetHeight / 2) * dirSign(y0, y1);
     }
-
-    var rotation = getRotationFromAngle(angle);
 
     return getTransform(textX, textY, targetX, targetY, scale, rotation);
 }
