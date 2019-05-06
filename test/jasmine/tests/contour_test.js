@@ -400,7 +400,7 @@ describe('contour calc', function() {
 
             expect(out._xcategories).toEqual(layout.xaxis.categoryarray, 'xaxis should reorder');
             expect(out._ycategories).toEqual(layout.yaxis.categoryarray, 'yaxis should reorder');
-            expect(out.z[0][0]).toEqual(65);
+            expect(out.z[0][0]).toEqual(0);
         });
     });
 });

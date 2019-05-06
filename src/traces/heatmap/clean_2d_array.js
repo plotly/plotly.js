@@ -38,7 +38,6 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
             for(i = 0; i < ax._categories.length; i++) {
                 axMapping.push((trace['_' + ax._id.charAt(0) + 'Map'] || trace[ax._id.charAt(0)]).indexOf(ax._categories[i]));
             }
-            console.log('axMapping', axMapping);
             return function(i) {return axMapping[i] === -1 ? undefined : axMapping[i];};
         } else {
             return Lib.identity;
