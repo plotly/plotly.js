@@ -17,7 +17,7 @@
         0,
         1
       ],
-      "type": "funnel"
+      "type": "funnel", "orientation": "v"
     }
   ],
   "layout": {

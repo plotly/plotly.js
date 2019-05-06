@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "funnel",
+      "type": "funnel", "orientation": "v",
   	  "name": "not clipped",
       "x": ["apple", "banana", "clementine"],
       "y": [3.8, 4, 4.2],
@@ -14,7 +14,7 @@
       }
     },
     {
-      "type": "funnel",
+      "type": "funnel", "orientation": "v",
 	    "name": "same but clipped",
       "x": ["apple", "banana", "clementine"],
       "y": [3.8, 4, 4.2],
@@ -29,7 +29,7 @@
 	  "yaxis": "y2"
     },
     {
-      "type": "funnel",
+      "type": "funnel", "orientation": "v",
 	    "name": "should <b>not</b> see text",
       "x": ["banana"],
       "y": [4],
@@ -41,7 +41,7 @@
 	    "marker": {"opacity": 0.3}
     },
     {
-      "type": "funnel",
+      "type": "funnel", "orientation": "v",
       "name": "should see text",
       "x": ["banana"],
       "y": [2],

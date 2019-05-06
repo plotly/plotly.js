@@ -1,21 +1,21 @@
 {
   "data": [
     {
-      "type": "funnel", "opacity": 0.8,
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
       "x": [ "A", "B", "C", "D" ],
       "y": [ 4, 3, 2, 1 ],
       "offsetgroup": 1,
       "hovertext": "offsetgroup: 1"
     },
     {
-      "type": "funnel", "opacity": 0.8,
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
       "x": [ "A", "B", "C", "D" ],
       "y": [ 3, 2, 1, 0 ],
       "offsetgroup": 2,
       "hovertext": "offsetgroup: 2"
     },
     {
-      "type": "funnel", "opacity": 0.8,
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
       "x": [ "A", "B", "C", "D" ],
       "y": [ 4, 3, 2, 1 ],
       "yaxis": "y2",
@@ -23,7 +23,7 @@
       "hovertext": "offsetgroup: 1"
     },
     {
-      "type": "funnel", "opacity": 0.8,
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
       "x": [ "A", "B", "C", "D" ],
       "y": [ 3, 2, 1, 0 ],
       "yaxis": "y2",
@@ -31,7 +31,7 @@
       "hovertext": "offsetgroup: 2"
     },
     {
-      "type": "funnel", "opacity": 0.8,
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
       "x": [ "A", "B", "C", "D" ],
       "y": [ 4, 3, 2, 1 ],
       "offsetgroup": 1,
@@ -39,7 +39,7 @@
       "xaxis": "x2"
     },
     {
-      "type": "funnel", "opacity": 0.8,
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
       "x": [ "A", "B", "C", "D" ],
       "y": [ 3, 2, 1, 0 ],
       "offsetgroup": 2,
@@ -47,7 +47,7 @@
       "xaxis": "x2"
     },
     {
-      "type": "funnel", "opacity": 0.8,
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
       "x": [ "A", "B", "C", "D" ],
       "y": [ 4, 3, 2, 1 ],
       "yaxis": "y2",
@@ -56,7 +56,7 @@
       "xaxis": "x2"
     },
     {
-      "type": "funnel", "opacity": 0.8,
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
       "x": [ "A", "B", "C", "D" ],
       "y": [ 3, 2, 1, 0 ],
       "yaxis": "y2",

@@ -313,7 +313,7 @@ describe('Funnel.calc', function() {
     it('should not exclude items with non-numeric x from calcdata (vertical case)', function() {
         var gd = mockFunnelPlot([{
             x: [5, NaN, 15, 20, null, 21],
-            orientation: 'v',
+            orientation: 'v'
         }]);
 
         var cd = gd.calcdata;
@@ -330,26 +330,26 @@ describe('Funnel.calc', function() {
         assertPointField(cd, 'y', [[20, NaN, 23, 25, NaN, 26]]);
     });
 
-    it('should not exclude items with non-numeric y from calcdata (to plots gaps correctly)', function() {
+    it('should not exclude items with non-numeric x from calcdata (to plots gaps correctly)', function() {
         var gd = mockFunnelPlot([{
-            x: ['a', 'b', 'c', 'd'],
-            y: [1, null, 'nonsense', 15]
+            y: ['a', 'b', 'c', 'd'],
+            x: [1, null, 'nonsense', 15]
         }]);
 
         var cd = gd.calcdata;
-        assertPointField(cd, 'x', [[0, 1, 2, 3]]);
-        assertPointField(cd, 'y', [[0.5, NaN, NaN, 7.5]]);
+        assertPointField(cd, 'y', [[0, 1, 2, 3]]);
+        assertPointField(cd, 'x', [[0.5, NaN, NaN, 7.5]]);
     });
 
-    it('should not exclude items with non-numeric x from calcdata (to plots gaps correctly)', function() {
+    it('should not exclude items with non-numeric y from calcdata (to plots gaps correctly)', function() {
         var gd = mockFunnelPlot([{
-            x: [1, null, 'nonsense', 15],
-            y: [1, 2, 10, 30]
+            y: [1, null, 'nonsense', 15],
+            x: [1, 2, 10, 30]
         }], {funnelmode: 'group'});
 
         var cd = gd.calcdata;
-        assertPointField(cd, 'x', [[1, NaN, NaN, 15]]);
-        assertPointField(cd, 'y', [[0.5, 1, 5, 15]]);
+        assertPointField(cd, 'y', [[1, NaN, NaN, 15]]);
+        assertPointField(cd, 'x', [[0.5, 1, 5, 15]]);
     });
 });
 
@@ -650,43 +650,6 @@ describe('A funnel plot', function() {
         .then(done);
     });
 
-    it('does not push text inside when base is set', function(done) {
-        var data = [{
-            x: [1, 2],
-            y: [20, 10],
-            base: [1, 2],
-            type: 'funnel',
-            text: ['a', 'b'],
-            textposition: 'outside',
-        }, {
-            x: [3, 4],
-            y: [30, 40],
-            type: 'funnel',
-            text: ['c', 'd']
-        }];
-        var layout = {};
-
-        Plotly.plot(gd, data, layout).then(function() {
-            var traceNodes = getAllTraceNodes(gd);
-            var funnelNodes = getAllFunnelNodes(traceNodes[0]);
-            var foundTextNodes;
-
-            for(var i = 0; i < funnelNodes.length; i++) {
-                var funnelNode = funnelNodes[i];
-                var pathNode = funnelNode.querySelector('path');
-                var textNode = funnelNode.querySelector('text');
-                if(textNode) {
-                    foundTextNodes = true;
-                    assertTextIsAbovePath(textNode, pathNode);
-                }
-            }
-
-            expect(foundTextNodes).toBe(true);
-        })
-        .catch(failTest)
-        .then(done);
-    });
-
     it('should show funnel texts (outside case)', function(done) {
         var data = [{
             y: [30, 20, 10],
@@ -778,7 +741,7 @@ describe('A funnel plot', function() {
     });
 
     it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
-        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: '#09f' } });
+        var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: '#09f' }, orientation: 'v' });
 
         Plotly.plot(gd, [data])
           .then(assertTextFontColors(Lib.repeat('#09f', 6)))
@@ -791,10 +754,11 @@ describe('A funnel plot', function() {
             data: [
                 {
                     text: [1, 2, 3333333333, 4],
-                    textinfo: 'text',
                     textposition: 'outside',
+                    textinfo: 'text',
                     y: [1, 2, 3, 4],
                     x: [1, 2, 3, 4],
+                    orientation: 'v',
                     type: 'funnel'
                 }, {
                     width: 0.4,
@@ -803,6 +767,7 @@ describe('A funnel plot', function() {
                     textfont: { size: [10] },
                     y: [3, 2, 1, 0],
                     x: [1, 2, 3, 4],
+                    orientation: 'v',
                     type: 'funnel'
                 }, {
                     width: 1,
@@ -811,12 +776,14 @@ describe('A funnel plot', function() {
                     textposition: 'inside',
                     y: [4, 3, 2, 1],
                     x: [1, 2, 3, 4],
+                    orientation: 'v',
                     type: 'funnel'
                 }, {
                     text: [0, 'outside text', 3, 2],
                     textinfo: 'text',
                     y: [0, 0.25, 3, 2],
                     x: [1, 2, 3, 4],
+                    orientation: 'v',
                     type: 'funnel'
                 }
             ],
@@ -1177,6 +1144,7 @@ describe('A funnel plot', function() {
 
         Plotly.plot(gd, [{
             type: 'funnel',
+            orientation: 'v',
             x: ['Product A', 'Product B', 'Product C'],
             y: [20, 14, 23],
             text: [20, 14, 23],
@@ -1315,7 +1283,7 @@ describe('funnel hover', function() {
             gd = createGraphDiv();
 
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
-            mock.data.forEach(function(t) { t.type = 'funnel'; });
+            mock.data.forEach(function(t) { t.type = 'funnel'; t.orientation = 'v'; });
             mock.layout.funnelmode = 'group';
 
             Plotly.plot(gd, mock).then(function() {
@@ -1350,6 +1318,7 @@ describe('funnel hover', function() {
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'funnel';
+                t.orientation = 'v';
                 t.hovertemplate = '%{y}<extra></extra>';
             });
 
@@ -1380,6 +1349,7 @@ describe('funnel hover', function() {
                     data: [{
                         x: ['A', 'B', 'C', 'D', 'E'],
                         y: [5.5, 4.4, 3.3, 2.2, 1.1],
+                        orientation: 'v',
                         type: 'funnel'
                     }],
                     layout: {
@@ -1416,6 +1386,7 @@ describe('funnel hover', function() {
         it('should return correct hover data (single funnel, trace width)', function(done) {
             Plotly.plot(gd, [{
                 type: 'funnel',
+                orientation: 'v',
                 x: [1],
                 y: [2],
                 width: 10,
@@ -1460,6 +1431,7 @@ describe('funnel hover', function() {
                 x: [0, 10, 20],
                 y: [2, 6, 4],
                 type: 'funnel',
+                orientation: 'v',
                 width: 1
             }], {
                 width: 500,

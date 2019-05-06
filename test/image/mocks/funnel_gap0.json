@@ -11,8 +11,8 @@
         10.001001,
         "05.0005"
       ],
-      "name": "SF Zoo",
       "type": "funnel",
+      "orientation": "v",
       "textfont": { "size": 18 }
     }
   ],

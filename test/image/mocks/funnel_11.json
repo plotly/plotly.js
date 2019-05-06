@@ -15,7 +15,7 @@
             "marker": {
                 "color": "rgb(255, 102, 97)"
             },
-            "type": "funnel"
+            "type": "funnel", "orientation": "v"
         },
         {
             "x": [
@@ -32,7 +32,7 @@
             "marker": {
                 "color": "rgb(0, 196, 200)"
             },
-            "type": "funnel"
+            "type": "funnel", "orientation": "v"
         },
         {
             "x": [
@@ -47,7 +47,7 @@
             ],
             "name": "Std Dev - OJ",
             "visible": false,
-            "type": "funnel"
+            "type": "funnel", "orientation": "v"
         },
         {
             "x": [
@@ -62,7 +62,7 @@
             ],
             "name": "Std Dev - VC",
             "visible": false,
-            "type": "funnel"
+            "type": "funnel", "orientation": "v"
         }
     ],
     "layout": {

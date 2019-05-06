@@ -5,6 +5,7 @@
             "insidetextanchor": "start",
             "width": 0.6,
             "opacity": 0.8,
+            "orientation": "v",
             "x": [
                 1,
                 2,
@@ -27,6 +28,7 @@
             "insidetextanchor": "start",
             "width": 0.6,
             "opacity": 0.8,
+            "orientation": "v",
             "x": [
                 "A",
                 "B",
@@ -61,7 +63,6 @@
             "insidetextanchor": "start",
             "width": 0.6,
             "opacity": 0.8,
-            "orientation": "h",
             "x": [
                 5,
                 4,
@@ -117,7 +118,6 @@
             "type": "funnel",
             "width": 0.6,
             "opacity": 0.8,
-            "orientation": "h",
             "x": [
                 5,
                 4,
@@ -135,7 +135,6 @@
             "type": "funnel",
             "width": 0.6,
             "opacity": 0.8,
-            "orientation": "h",
             "x": [
                 3,
                 2,
