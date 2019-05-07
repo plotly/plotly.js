@@ -516,7 +516,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
 
     function formatLabel(u) {
         var pAxis = isHorizontal ? ya : xa;
-        return tickText(pAxis, u, true).text; // TODO: may pass false here to drop the parent category?
+        return tickText(pAxis, u, true).text;
     }
 
     function formatNumber(v) {
@@ -538,8 +538,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     }
 
     if(hasFlag('text')) {
-        tx = Lib.castOption(trace, cdi.i, 'text');
-        if(tx) text.push(tx);
+        text.push(Lib.castOption(trace, cdi.i, 'text'));
     }
 
     if(trace.type === 'waterfall') {

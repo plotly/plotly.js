@@ -38,11 +38,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     handleText(traceIn, traceOut, layout, coerce, false);
 
-    // TODO: move this block to bar handleText if/when textinfo implimented for bars/histograms
     if(traceOut.textposition !== 'none') {
-        var defaultTextinfo =
-            Lib.isArrayOrTypedArray(text) ? 'text+value' : 'value';
-        coerce('textinfo', defaultTextinfo);
+        coerce('textinfo', Array.isArray(text) ? 'text+value' : 'value');
     }
 
     var markerColor = coerce('marker.color', defaultColor);

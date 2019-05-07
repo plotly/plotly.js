@@ -1148,7 +1148,7 @@ describe('A funnel plot', function() {
             x: ['Product A', 'Product B', 'Product C'],
             y: [20, 14, 23],
             text: [20, 14, 23],
-            textinfo: 'none'
+            textinfo: 'text'
         }])
         .then(function() {
             _assertNumberOfFunnelTextNodes(3);

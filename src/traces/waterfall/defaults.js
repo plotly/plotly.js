@@ -51,7 +51,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     handleText(traceIn, traceOut, layout, coerce, false);
 
-    // TODO: move this block to bar handleText if/when textinfo implimented for bars/histograms
     if(traceOut.textposition !== 'none') {
         coerce('textinfo');
     }
