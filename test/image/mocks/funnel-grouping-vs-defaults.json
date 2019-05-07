@@ -1,0 +1,62 @@
+{
+  "data": [
+    {
+      "type": "funnel", "opacity": 0.8,
+      "y": [ 3, 2, 1 ],
+      "yaxis": "y2"
+    },
+    {
+      "type": "funnel", "opacity": 0.8,
+      "y": [ 5, 3, 2 ]
+    },
+    {
+      "type": "funnel", "opacity": 0.8,
+      "y": [ 4, 1, 0 ]
+    },
+    {
+      "type": "funnel", "opacity": 0.8,
+      "y": [ 3, 2, 1 ],
+      "alignmentgroup": "top",
+      "hovertext": "alignmentgroup: top",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "funnel", "opacity": 0.8,
+      "y": [ 5, 3, 2 ],
+      "hovertext": "alignmentgroup: top<br>offsetgroup: 1",
+      "alignmentgroup": "bottom",
+      "offsetgroup": "1",
+      "xaxis": "x2"
+    },
+    {
+      "type": "funnel", "opacity": 0.8,
+      "y": [ 4, 1, 0 ],
+      "hovertext": "alignmentgroup: top<br>offsetgroup: 2",
+      "alignmentgroup": "bottom",
+      "offsetgroup": "2",
+      "xaxis": "x2"
+    }
+  ],
+  "layout": {
+    "funnelmode": "group",
+    "showlegend": false,
+    "grid": {
+      "rows": 2,
+      "columns": 2,
+      "roworder": "bottom to top"
+    },
+    "colorway": [ "blue", "orange", "green" ],
+    "margin": { "t": 20 },
+    "xaxis": {
+      "title": {
+        "text": "no alignmentgroup<br>no offsetgroup"
+      }
+    },
+    "xaxis2": {
+      "title": {
+        "text": "with alignmentgroup<br>with offsetgroup"
+      }
+    }
+  }
+}

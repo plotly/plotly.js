@@ -86,6 +86,30 @@ module.exports = {
         ].join(' ')
     },
 
+    insidetextanchor: {
+        valType: 'enumerated',
+        values: ['end', 'middle', 'start'],
+        dflt: 'end',
+        role: 'info', // TODO: or style ?
+        editType: 'plot',
+        description: [
+            'Determines if texts are kept at center or start/end points in `textposition` *inside* mode.'
+        ].join(' ')
+    },
+
+    textangle: {
+        valType: 'angle',
+        dflt: 'auto',
+        role: 'info', // TODO: or style ?
+        editType: 'plot',
+        description: [
+            'Sets the angle of the tick labels with respect to the bar.',
+            'For example, a `tickangle` of -90 draws the tick labels',
+            'vertically. With *auto* the texts may automatically be',
+            'rotated to fit with the maximum size in bars.'
+        ].join(' ')
+    },
+
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `text`.'
     }),

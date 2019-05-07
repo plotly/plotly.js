@@ -75,6 +75,7 @@
             ],
             "base": 0,
             "textinfo": "text+delta",
+            "cliponaxis": false,
             "textposition": "outside"
         },
         {
@@ -134,6 +135,7 @@
             ],
             "base": 255,
             "textinfo": "initial+final",
+            "cliponaxis": false,
             "textposition": "outside"
         }
     ],
@@ -143,10 +145,14 @@
         },
         "yaxis": {
             "type": "category",
+            "tickprefix": " \" ",
+            "ticksuffix": " \" ",
             "autorange": "reversed"
         },
         "xaxis": {
-            "type": "linear"
+            "type": "linear",
+            "tickprefix": "$",
+            "ticksuffix": " m"
         },
         "margin": { "l": 150, "r": 50 },
         "height": 1200,

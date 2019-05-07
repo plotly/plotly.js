@@ -31,13 +31,18 @@ var setConvert = require('./set_convert');
  *  noTickson: boolean, this axis doesn't support 'tickson'
  *  data: the plot data, used to manage categories
  *  bgColor: the plot background color, to calculate default gridline colors
+ *  calendar:
+ *  splomStash:
+ *  visibleDflt: boolean
+ *  reverseDflt: boolean
+ *  automargin: boolean
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
     var font = options.font || {};
     var splomStash = options.splomStash || {};
 
-    var visible = coerce('visible', !options.cheateronly);
+    var visible = coerce('visible', !options.visibleDflt);
 
     var axType = containerOut.type;
 
@@ -48,7 +53,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut, layoutOut);
 
-    var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
+    var autorangeDflt = !containerOut.isValidRange(containerIn.range);
+    if(autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
+    var autoRange = coerce('autorange', autorangeDflt);
     if(autoRange && (axType === 'linear' || axType === '-')) coerce('rangemode');
 
     coerce('range');
@@ -57,8 +64,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
-
-    if(!visible) return containerOut;
 
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,
@@ -69,6 +74,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // try to get default title from splom trace, fallback to graph-wide value
     var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 1});
+    if(!visible) return containerOut;
+
     coerce('title.text', dfltTitle);
     Lib.coerceFont(coerce, 'title.font', {
         family: font.family,
@@ -77,7 +85,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     });
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 2});
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
     handleLineGridDefaults(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,

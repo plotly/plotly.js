@@ -1,0 +1,48 @@
+{
+    "data": [
+        {
+            "width": [1, 0.8, 0.6, 0.4],
+            "text": [1, 2, 3333333333, 4],
+            "textposition": "outside",
+            "y": [1, 2, 3, 4],
+            "x": [1, 2, 3, 4],
+            "marker": { "color": "Blue" },
+            "opacity": 0.5,
+            "connector": { "visible": false },
+            "type": "funnel", "orientation": "v"
+        }, {
+            "width": [0.4, 0.6, 0.8, 1],
+            "text": ["Three", 2, "inside text", 0],
+            "textfont": { "size": [10]},
+            "y": [3, 2, 1, 1],
+            "x": [1, 2, 3, 4],
+            "marker": { "color": "Orange" },
+            "opacity": 0.5,
+            "connector": { "visible": false },
+            "type": "funnel", "orientation": "v"
+        }, {
+            "width": 1,
+            "text": [1, 3, 2, 4],
+            "textposition": "inside",
+            "y": [1, 3, 2, 4],
+            "x": [1, 2, 3, 4],
+            "marker": { "color": "Green" },
+            "opacity": 0.5,
+            "connector": { "visible": false },
+            "type": "funnel", "orientation": "v"
+        }, {
+            "text": [2, "outside text", 3, 2],
+            "y": [2, 0.25, 3, 2],
+            "x": [1, 2, 3, 4],
+            "marker": { "color": "Red" },
+            "opacity": 0.5,
+            "connector": { "visible": false },
+            "type": "funnel", "orientation": "v"
+        }
+    ],
+    "layout": {
+        "xaxis": { "showgrid": true },
+        "height": 800,
+        "width": 800
+    }
+}
