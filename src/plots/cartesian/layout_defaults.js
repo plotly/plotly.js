@@ -35,10 +35,12 @@ function appendList(cont, k, item) {
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var ax2traces = {};
-    var xaHide = {};
-    var yaHide = {};
-    var xaDisplay = {};
-    var yaDisplay = {};
+    var xaMayHide = {};
+    var yaMayHide = {};
+    var xaMustDisplay = {};
+    var yaMustDisplay = {};
+    var yaMustForward = {};
+    var yaMayBackward = {};
     var outerTicks = {};
     var noGrids = {};
     var i, j;
@@ -71,15 +73,20 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         // logic for funnels
         if(trace.type === 'funnel') {
             if(trace.orientation === 'h') {
-                if(xaName) xaHide[xaName] = true;
+                if(xaName) xaMayHide[xaName] = true;
+                if(yaName) yaMayBackward[yaName] = true;
             } else {
-                if(yaName) yaHide[yaName] = true;
+                if(yaName) yaMayHide[yaName] = true;
             }
         } else {
-            if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
-                if(xaName) xaDisplay[xaName] = true;
+            if(yaName) {
+                yaMustDisplay[yaName] = true;
+                yaMustForward[yaName] = true;
             }
-            if(yaName) yaDisplay[yaName] = true;
+
+            if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
+                if(xaName) xaMustDisplay[xaName] = true;
+            }
         }
 
         // Two things trigger axis visibility:
@@ -91,7 +98,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         // full condition triggering hiding is:
         //   *could* be a cheater and *is not definitely visible*
         if(trace.type === 'carpet' && trace._cheater) {
-            if(xaName) xaHide[xaName] = true;
+            if(xaName) xaMayHide[xaName] = true;
         }
 
         // check for default formatting tweaks
@@ -180,6 +187,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
+        var visibleDflt =
+            (axLetter === 'x' && !xaMustDisplay[axName] && xaMayHide[axName]) ||
+            (axLetter === 'y' && !yaMustDisplay[axName] && yaMayHide[axName]);
+
+        var reverseDflt =
+            (axLetter === 'y' && !yaMustForward[axName] && yaMayBackward[axName]);
+
         var defaultOptions = {
             letter: axLetter,
             font: layoutOut.font,
@@ -189,9 +203,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             bgColor: bgColor,
             calendar: layoutOut.calendar,
             automargin: true,
-            visibleDflt:
-                (axLetter === 'x' && xaHide[axName] && !xaDisplay[axName]) ||
-                (axLetter === 'y' && yaHide[axName] && !yaDisplay[axName]),
+            visibleDflt: visibleDflt,
+            reverseDflt: reverseDflt,
             splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
         };
 

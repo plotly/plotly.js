@@ -31,6 +31,11 @@ var setConvert = require('./set_convert');
  *  noTickson: boolean, this axis doesn't support 'tickson'
  *  data: the plot data, used to manage categories
  *  bgColor: the plot background color, to calculate default gridline colors
+ *  calendar:
+ *  splomStash:
+ *  visibleDflt: boolean
+ *  reverseDflt: boolean
+ *  automargin: boolean
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
@@ -48,7 +53,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut, layoutOut);
 
-    var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
+    var autorangeDflt = !containerOut.isValidRange(containerIn.range);
+    if(autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
+    var autoRange = coerce('autorange', autorangeDflt);
     if(autoRange && (axType === 'linear' || axType === '-')) coerce('rangemode');
 
     coerce('range');
