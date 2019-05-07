@@ -356,11 +356,18 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, const
     var lx = Math.abs(x1 - x0);
     var ly = Math.abs(y1 - y0);
 
-    var rotation = getRotationFromAngle(angle);
+    var textpad = (
+        lx > (2 * TEXTPAD) &&
+        ly > (2 * TEXTPAD)
+    ) ? TEXTPAD : 0;
+
+    lx -= 2 * textpad;
+    ly -= 2 * textpad;
 
     var autoRotate = (angle === 'auto');
     var isAutoRotated = false;
     if(autoRotate &&
+        !(textWidth <= lx && textHeight <= ly) &&
         (textWidth > lx || textHeight > ly) && (
         !(textWidth > ly || textHeight > lx) ||
         ((textWidth < textHeight) !== (lx < ly))
@@ -375,20 +382,13 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, const
         lx = tmp;
     }
 
+    var rotation = getRotationFromAngle(angle);
     var absSin = Math.abs(Math.sin(Math.PI / 180 * rotation));
     var absCos = Math.abs(Math.cos(Math.PI / 180 * rotation));
 
     // compute and apply text padding
     var dx = Math.max(lx * absCos, ly * absSin);
     var dy = Math.max(lx * absSin, ly * absCos);
-
-    var textpad = (
-        dx > (2 * TEXTPAD) &&
-        dy > (2 * TEXTPAD)
-    ) ? TEXTPAD : 0;
-
-    dx -= 2 * textpad;
-    dy -= 2 * textpad;
 
     var scale = (constrained) ?
         Math.min(dx / textWidth, dy / textHeight) :
