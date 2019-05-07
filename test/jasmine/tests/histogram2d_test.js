@@ -172,7 +172,7 @@ describe('Test histogram2d', function() {
         });
 
         ['histogram2d', 'histogram2dcontour'].forEach(function(traceType) {
-            it('@flaky should sort z data based on axis categoryorder for ' + traceType, function() {
+            it('should sort z data based on axis categoryorder for ' + traceType, function() {
                 var mock = require('@mocks/heatmap_categoryorder');
                 var mockCopy = Lib.extendDeep({}, mock);
                 var data = mockCopy.data[0];

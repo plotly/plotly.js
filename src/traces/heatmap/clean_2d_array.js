@@ -20,7 +20,7 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
         return +v;
     }
 
-    if(trace.transpose) {
+    if(trace && trace.transpose) {
         rowlen = 0;
         for(i = 0; i < zOld.length; i++) rowlen = Math.max(rowlen, zOld[i].length);
         if(rowlen === 0) return false;
