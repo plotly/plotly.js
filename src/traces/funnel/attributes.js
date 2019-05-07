@@ -8,7 +8,6 @@
 
 'use strict';
 
-var pieAtts = require('../pie/attributes');
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -25,14 +24,19 @@ module.exports = {
     hovertext: barAttrs.hovertext,
     hovertemplate: barAttrs.hovertemplate,
 
-    textinfo: extendFlat({}, pieAtts.textinfo, {
-        editType: 'plot',
+    textinfo: {
+        valType: 'flaglist',
         flags: ['label', 'text', 'percent initial', 'percent previous', 'percent total', 'value'],
+        extras: ['none'],
+        role: 'info',
+        editType: 'plot',
         arrayOk: false,
         description: [
-            'Determines which trace information appear on the graph.'
+            'Determines which trace information appear on the graph.',
+            'In the case of having multiple funnels, percentages & totals',
+            'are computed separately (per trace).'
         ].join(' ')
-    }),
+    },
 
     text: barAttrs.text,
     textposition: extendFlat({}, barAttrs.textposition, {dflt: 'auto'}),
@@ -42,9 +46,19 @@ module.exports = {
     insidetextfont: barAttrs.insidetextfont,
     outsidetextfont: barAttrs.outsidetextfont,
     constraintext: barAttrs.constraintext,
-
     cliponaxis: barAttrs.cliponaxis,
-    orientation: barAttrs.orientation,
+
+    orientation: extendFlat({}, barAttrs.orientation, {
+        description: [
+            'Sets the orientation of the funnels.',
+            'With *v* (*h*), the value of the each bar spans',
+            'along the vertical (horizontal).',
+            'By default funnels are tend to be oriented horizontally;',
+            'unless only *y* array is presented or orientation is set to *v*.',
+            'Also regarding graphs including only \'horizontal\' funnels,',
+            '*autorange* on the *y-axis* are set to *reversed*.'
+        ].join(' ')
+    }),
 
     offset: extendFlat({}, barAttrs.offset, {arrayOk: false}),
     width: extendFlat({}, barAttrs.width, {arrayOk: false}),

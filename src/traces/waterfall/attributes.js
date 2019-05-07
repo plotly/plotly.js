@@ -8,7 +8,6 @@
 
 'use strict';
 
-var pieAtts = require('../pie/attributes');
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -77,14 +76,19 @@ module.exports = {
     hovertext: barAttrs.hovertext,
     hovertemplate: barAttrs.hovertemplate,
 
-    textinfo: extendFlat({}, pieAtts.textinfo, {
-        editType: 'plot',
+    textinfo: {
+        valType: 'flaglist',
         flags: ['label', 'text', 'initial', 'delta', 'final'],
+        extras: ['none'],
+        role: 'info',
+        editType: 'plot',
         arrayOk: false,
         description: [
-            'Determines which trace information appear on the graph.'
+            'Determines which trace information appear on the graph.',
+            'In the case of having multiple waterfalls, totals',
+            'are computed separately (per trace).'
         ].join(' ')
-    }),
+    },
 
     text: barAttrs.text,
     textposition: barAttrs.textposition,
