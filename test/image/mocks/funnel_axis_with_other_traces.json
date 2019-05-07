@@ -198,7 +198,6 @@
         },
         "yaxis3": {
             "anchor": "x3",
-            "autorange": "reversed",
             "domain": [
                 0.52,
                 1
@@ -206,7 +205,6 @@
         },
         "yaxis4": {
             "anchor": "x4",
-            "autorange": "reversed",
             "domain": [
                 0,
                 0.48

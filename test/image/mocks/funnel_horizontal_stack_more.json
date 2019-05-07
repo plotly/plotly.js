@@ -65,13 +65,6 @@
         "title": {
             "text": "plotly stacked funnel chart with textposition' (auto | inside | outside)<br>and textinfo: percent (initial | previous | total)"
         },
-        "yaxis": {
-            "type": "category",
-            "autorange": "reversed"
-        },
-        "xaxis": {
-            "type": "linear"
-        },
         "margin": { "l": 50 },
         "height": 800,
         "width": 800,

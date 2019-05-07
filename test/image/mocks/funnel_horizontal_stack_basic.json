@@ -46,13 +46,6 @@
         "title": {
             "text": "plotly repos | April 10 2019"
         },
-        "yaxis": {
-            "type": "category",
-            "autorange": "reversed"
-        },
-        "xaxis": {
-            "type": "linear"
-        },
         "margin": { "l": 150 },
         "height": 800,
         "width": 800,

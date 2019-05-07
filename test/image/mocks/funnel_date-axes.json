@@ -22,9 +22,6 @@
     }],
     "layout": {
         "margin": { "l": 100, "r": 20, "t": 20, "b": 20 },
-        "yaxis": {
-            "autorange": "reversed"
-        },
         "width": 500,
         "height": 250
     }
