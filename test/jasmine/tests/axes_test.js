@@ -3096,7 +3096,7 @@ describe('Test axes', function() {
                     x: new Float32Array([3, 1, 2]),
                 }, 'x', 'category');
                 expect(out).toEqual([0, 1, 2]);
-                expect(ax._categories).toEqual([3, 1, 2]);
+                expect(ax._categories).toEqual(['3', '1', '2']);
             });
 
             it('- on a date axis', function() {
