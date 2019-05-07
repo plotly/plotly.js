@@ -4,8 +4,8 @@
       "type": "funnel", "opacity": 0.8, "offset": -0.5, "width": 0.5, "orientation": "v",
       "cliponaxis": false,
       "textposition": "inside",
-      "textinfo": "value+percent initial",
-      "text": ["winter 2017", "spring 2017", "summer 2017", "autumn 2017", "winter 2018", "spring 2018", "summer 2018", "autumn 2018"],
+      "textinfo": "label+value+percent initial",
+      "text": ["winter", "spring", "summer", "autumn", "winter", "spring", "summer", "autumn"],
       "x": [
         ["2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
         ["q1", "q2", "q3", "q4", "q1", "q2", "q3", "q4"]
@@ -16,8 +16,8 @@
       "type": "funnel", "opacity": 0.8, "offset": -0.5, "width": 0.5, "orientation": "v",
       "cliponaxis": false,
       "textposition": "outside",
-      "textinfo": "text+value+percent initial",
-      "text": ["winter 2017", "spring 2017", "summer 2017", "autumn 2017", "winter 2018", "spring 2018", "summer 2018", "autumn 2018"],
+      "textinfo": "label+text+value+percent initial",
+      "text": ["winter", "spring", "summer", "autumn", "winter", "spring", "summer", "autumn"],
       "x": [
         ["2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
         ["q1", "q2", "q3", "q4", "q1", "q2", "q3", "q4"]
@@ -28,8 +28,8 @@
       "type": "waterfall", "opacity": 0.8, "offset": 0.0, "width": 0.5,
       "cliponaxis": false,
       "textposition": "inside",
-      "textinfo": "text+final",
-      "text": ["winter 2017", "spring 2017", "summer 2017", "autumn 2017", "winter 2018", "spring 2018", "summer 2018", "autumn 2018"],
+      "textinfo": "label+text+final",
+      "text": ["winter", "spring", "summer", "autumn", "winter", "spring", "summer", "autumn"],
       "x": [
         ["2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
         ["q1", "q2", "q3", "q4", "q1", "q2", "q3", "q4"]
@@ -38,6 +38,7 @@
     }
   ],
   "layout": {
+    "hovermode": "closest",
     "width": 1800,
     "height": 600,
     "margin": { "l": 50, "r": 50, "t": 50, "b": 50 },

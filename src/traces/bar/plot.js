@@ -20,11 +20,12 @@ var Drawing = require('../../components/drawing');
 var Registry = require('../../registry');
 var tickText = require('../../plots/cartesian/axes').tickText;
 
-var attributes = require('./attributes');
-var attributeText = attributes.text;
-var attributeTextPosition = attributes.textposition;
 var style = require('./style');
 var helpers = require('./helpers');
+var attributes = require('./attributes');
+
+var attributeText = attributes.text;
+var attributeTextPosition = attributes.textposition;
 
 // padding in pixels around text
 var TEXTPAD = 3;
@@ -513,6 +514,11 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     var trace = calcTrace[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
+    function formatLabel(u) {
+        var pAxis = isHorizontal ? ya : xa;
+        return tickText(pAxis, u, true).text; // TODO: may pass false here to drop the parent category?
+    }
+
     function formatNumber(v) {
         var sAxis = isHorizontal ? xa : ya;
         return tickText(sAxis, +v, true).text;
@@ -528,12 +534,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
 
     if(hasFlag('label')) {
-        // TODO: fix me to work with multicategory
-        if(isHorizontal) {
-            text.push(trace.y[index]);
-        } else {
-            text.push(trace.x[index]);
-        }
+        text.push(formatLabel(calcTrace[index].p));
     }
 
     if(hasFlag('text')) {
