@@ -10,6 +10,7 @@
 
 var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function clean2dArray(zOld, trace, xa, ya) {
     var rowlen, collen, getCollen, old2new, i, j;
@@ -19,7 +20,7 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
         return +v;
     }
 
-    if(trace && trace.transpose) {
+    if(trace.transpose) {
         rowlen = 0;
         for(i = 0; i < zOld.length; i++) rowlen = Math.max(rowlen, zOld[i].length);
         if(rowlen === 0) return false;
@@ -39,11 +40,12 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
     function axisMapping(ax) {
         if(trace && trace.type !== 'carpet' && trace.type !== 'contourcarpet' &&
             ax && ax.type === 'category' && trace['_' + ax._id.charAt(0)].length) {
+            var axLetter = ax._id.charAt(0);
             var axMapping = [];
             for(i = 0; i < ax._categories.length; i++) {
-                axMapping.push((trace['_' + ax._id.charAt(0) + 'Map'] || trace[ax._id.charAt(0)]).indexOf(ax._categories[i]));
+                axMapping.push((trace['_' + axLetter + 'Map'] || trace[axLetter]).indexOf(ax._categories[i]));
             }
-            return function(i) {return axMapping[i] === -1 ? undefined : axMapping[i];};
+            return function(i) {return axMapping[i] === -1 ? BADNUM : axMapping[i];};
         } else {
             return Lib.identity;
         }
