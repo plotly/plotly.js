@@ -46,7 +46,10 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
             for(i = 0; i < traceCategories.length; i++) {
                 axMapping[traceCategories[i]] = i;
             }
-            return function(i) {return axMapping.hasOwnProperty(ax._categories[i]) ? axMapping[ax._categories[i]] : BADNUM;};
+            return function(i) {
+                var ind = axMapping[ax._categories[i]];
+                return ind + 1 ? ind : BADNUM;
+            };
         } else {
             return Lib.identity;
         }
