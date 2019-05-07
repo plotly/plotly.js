@@ -9,7 +9,8 @@
       [1, 0.8, 0.6],
       [0.6, 0.4, 0.2]
     ],
-    "yaxis": "y"
+    "yaxis": "y",
+    "coloraxis": "coloraxis"
   }, {
     "type": "heatmap",
     "x": ["Team B", "Team C"],
@@ -20,7 +21,8 @@
       [0.8, 0.6],
       [0.4, 0.2]
     ],
-    "yaxis": "y2"
+    "yaxis": "y2",
+    "coloraxis": "coloraxis"
   }],
   "layout": {
     "xaxis": {
@@ -44,6 +46,9 @@
       "type": "category",
       "range": [-0.5, 2.5],
       "autorange": true
+    },
+    "coloraxis": {
+        "colorscale": "RdBu"
     }
   }
 }
