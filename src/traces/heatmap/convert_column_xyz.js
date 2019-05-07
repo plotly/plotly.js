@@ -67,10 +67,10 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     if(hasColumnHoverText) trace._hovertext = hovertext;
 
     if(ax1 && ax1.type === 'category') {
-        trace['_' + var1Name + 'Map'] = col1vals.map(function(v) { return ax1._categories[v];});
+        trace['_' + var1Name + 'CategoryMap'] = col1vals.map(function(v) { return ax1._categories[v];});
     }
 
     if(ax2 && ax2.type === 'category') {
-        trace['_' + var2Name + 'Map'] = col2vals.map(function(v) { return ax2._categories[v];});
+        trace['_' + var2Name + 'CategoryMap'] = col2vals.map(function(v) { return ax2._categories[v];});
     }
 };

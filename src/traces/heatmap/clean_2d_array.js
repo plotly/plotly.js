@@ -33,7 +33,7 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
     }
 
     var padOld2new = function(zOld, i, j) {
-        if(i === undefined || j === undefined) return undefined;
+        if(i === BADNUM || j === BADNUM) return BADNUM;
         return old2new(zOld, i, j);
     };
 
@@ -41,11 +41,12 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
         if(trace && trace.type !== 'carpet' && trace.type !== 'contourcarpet' &&
             ax && ax.type === 'category' && trace['_' + ax._id.charAt(0)].length) {
             var axLetter = ax._id.charAt(0);
-            var axMapping = [];
-            for(i = 0; i < ax._categories.length; i++) {
-                axMapping.push((trace['_' + axLetter + 'Map'] || trace[axLetter]).indexOf(ax._categories[i]));
+            var axMapping = {};
+            var traceCategories = trace['_' + axLetter + 'CategoryMap'] || trace[axLetter];
+            for(i = 0; i < traceCategories.length; i++) {
+                axMapping[traceCategories[i]] = i;
             }
-            return function(i) {return axMapping[i] === -1 ? BADNUM : axMapping[i];};
+            return function(i) {return axMapping.hasOwnProperty(ax._categories[i]) ? axMapping[ax._categories[i]] : BADNUM;};
         } else {
             return Lib.identity;
         }
