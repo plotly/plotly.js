@@ -27,6 +27,9 @@ var editTypes = require('./edit_types');
 var extendFlat = Lib.extendFlat;
 var extendDeepAll = Lib.extendDeepAll;
 var isPlainObject = Lib.isPlainObject;
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
+var nestedProperty = Lib.nestedProperty;
+var valObjectMeta = Lib.valObjectMeta;
 
 var IS_SUBPLOT_OBJ = '_isSubplotObj';
 var IS_LINKED_TO_ARRAY = '_isLinkedToArray';
@@ -65,7 +68,7 @@ exports.get = function() {
 
     return {
         defs: {
-            valObjects: Lib.valObjectMeta,
+            valObjects: valObjectMeta,
             metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role', 'editType', 'impliedEdits']),
             editType: {
                 traces: editTypes.traces,
@@ -204,19 +207,19 @@ exports.findArrayAttributes = function(trace) {
         var item = container[stack[i]];
         var newAstrPartial = astrPartial + stack[i];
         if(i === stack.length - 1) {
-            if(Lib.isArrayOrTypedArray(item)) {
+            if(isArrayOrTypedArray(item)) {
                 arrayAttributes.push(baseAttrName + newAstrPartial);
             }
         } else {
             if(isArrayStack[i]) {
                 if(Array.isArray(item)) {
                     for(var j = 0; j < item.length; j++) {
-                        if(Lib.isPlainObject(item[j])) {
+                        if(isPlainObject(item[j])) {
                             crawlIntoTrace(item[j], i + 1, newAstrPartial + '[' + j + '].');
                         }
                     }
                 }
-            } else if(Lib.isPlainObject(item)) {
+            } else if(isPlainObject(item)) {
                 crawlIntoTrace(item, i + 1, newAstrPartial + '.');
             }
         }
@@ -463,9 +466,9 @@ function getTraceAttributes(type) {
 
     // prune global-level trace attributes that are already defined in a trace
     exports.crawl(copyModuleAttributes, function(attr, attrName, attrs, level, fullAttrString) {
-        Lib.nestedProperty(copyBaseAttributes, fullAttrString).set(undefined);
+        nestedProperty(copyBaseAttributes, fullAttrString).set(undefined);
         // Prune undefined attributes
-        if(attr === undefined) Lib.nestedProperty(copyModuleAttributes, fullAttrString).set(undefined);
+        if(attr === undefined) nestedProperty(copyModuleAttributes, fullAttrString).set(undefined);
     });
 
     // base attributes (same for all trace types)
@@ -597,7 +600,7 @@ function getTransformAttributes(type) {
 
 function getFramesAttributes() {
     var attrs = {
-        frames: Lib.extendDeepAll({}, frameAttributes)
+        frames: extendDeepAll({}, frameAttributes)
     };
 
     formatAttributes(attrs);
@@ -699,7 +702,7 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 }
 
 function handleBasePlotModule(layoutAttributes, _module, astr) {
-    var np = Lib.nestedProperty(layoutAttributes, astr);
+    var np = nestedProperty(layoutAttributes, astr);
     var attrs = extendDeepAll({}, _module.layoutAttributes);
 
     attrs[IS_SUBPLOT_OBJ] = true;
@@ -707,7 +710,7 @@ function handleBasePlotModule(layoutAttributes, _module, astr) {
 }
 
 function insertAttrs(baseAttrs, newAttrs, astr) {
-    var np = Lib.nestedProperty(baseAttrs, astr);
+    var np = nestedProperty(baseAttrs, astr);
 
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
