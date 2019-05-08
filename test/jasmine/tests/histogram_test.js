@@ -478,6 +478,50 @@ describe('Test histogram', function() {
                 'with bins on a gregorian calendar'
             );
         });
+
+        it('should force traces that "have to match" to have same bingroup (alignmentgroup case)', function() {
+            var traces;
+
+            function initTraces() {
+                traces = [{}, {}, {yaxis: 'y2'}, {yaxis: 'y2'}];
+                traces.forEach(function(t) {
+                    t.type = 'histogram';
+                    t.x = [1];
+                });
+            }
+
+            function _supply() {
+                gd = {
+                    data: traces,
+                    layout: {
+                        barmode: 'group',
+                        grid: {rows: 2, columns: 1}
+                    }
+                };
+                supplyAllDefaults(gd);
+            }
+
+            initTraces();
+            _supply(gd);
+            _assert('base (separate subplot w/o alignmentgroup)', [
+                ['xyx', [0, 1]],
+                ['xy2x', [2, 3]]
+            ]);
+
+            initTraces();
+            [
+                {alignmentgroup: 'a', offsetgroup: '-'},
+                {alignmentgroup: 'a', offsetgroup: '--'},
+                {alignmentgroup: 'a', offsetgroup: '-'},
+                {alignmentgroup: 'a', offsetgroup: '--'}
+            ].forEach(function(patch, i) {
+                Lib.extendFlat(traces[i], patch);
+            });
+            _supply(gd);
+            _assert('all in same alignmentgroup, must match', [
+                ['xv', [0, 1, 2, 3]]
+            ]);
+        });
     });
 
     describe('calc', function() {

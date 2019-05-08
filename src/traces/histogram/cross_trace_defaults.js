@@ -15,6 +15,7 @@ var traceIs = require('../../registry').traceIs;
 var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 
 var nestedProperty = Lib.nestedProperty;
+var getAxisGroup = axisIds.getAxisGroup;
 
 var BINATTRS = [
     {aStr: {x: 'xbins.start', y: 'ybins.start'}, name: 'start'},
@@ -28,8 +29,6 @@ var BINDIRECTIONS = ['x', 'y'];
 // handle bin attrs and relink auto-determined values so fullData is complete
 module.exports = function crossTraceDefaults(fullData, fullLayout) {
     var allBinOpts = fullLayout._histogramBinOpts = {};
-    var isOverlay = fullLayout.barmode === 'overlay';
-
     var histTraces = [];
     var mustMatchTracesLookup = {};
     var otherTracesList = [];
@@ -117,19 +116,40 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         }
     }
 
+    var alignmentOpts = fullLayout._alignmentOpts || {};
+
     // Look for traces that "have to match", that is:
     // - 1d histogram traces on the same subplot with same orientation under barmode:stack,
     // - 1d histogram traces on the same subplot with same orientation under barmode:group
+    // - 1d histogram traces on the same position axis with the same orientation
+    //   and the same *alignmentgroup* (coerced under barmode:group)
+    // - Once `stackgroup` gets implemented (see https://github.com/plotly/plotly.js/issues/3614),
+    //   traces within the same stackgroup will also "have to match"
     for(i = 0; i < histTraces.length; i++) {
         traceOut = histTraces[i];
+        groupName = '';
 
-        if(!isOverlay && !traceIs(traceOut, '2dMap')) {
-            groupName = (
-                axisIds.getAxisGroup(fullLayout, traceOut.xaxis) +
-                axisIds.getAxisGroup(fullLayout, traceOut.yaxis) +
-                orientation2binDir(traceOut)
-            );
+        if(!traceIs(traceOut, '2dMap')) {
+            binDir = orientation2binDir(traceOut);
 
+            if(fullLayout.barmode === 'group' && traceOut.alignmentgroup) {
+                var pa = traceOut[binDir + 'axis'];
+                var aGroupId = getAxisGroup(fullLayout, pa) + traceOut.orientation;
+                if((alignmentOpts[aGroupId] || {})[traceOut.alignmentgroup]) {
+                    groupName = aGroupId;
+                }
+            }
+
+            if(!groupName && fullLayout.barmode !== 'overlay') {
+                groupName = (
+                    getAxisGroup(fullLayout, traceOut.xaxis) +
+                    getAxisGroup(fullLayout, traceOut.yaxis) +
+                    orientation2binDir(traceOut)
+                );
+            }
+        }
+
+        if(groupName) {
             if(!mustMatchTracesLookup[groupName]) {
                 mustMatchTracesLookup[groupName] = [];
             }
