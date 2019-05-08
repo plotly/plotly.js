@@ -56,33 +56,46 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         if(!groupName) groupName = fallbackGroupName;
 
         var axType = getAxisType(traceOut, binDir);
+        var calendar = traceOut[binDir + 'calendar'];
         var binOpts = allBinOpts[groupName];
+        var needsNewItem = true;
 
         if(binOpts) {
-            if(axType === binOpts.axType) {
+            if(axType === binOpts.axType && calendar === binOpts.calendar) {
+                needsNewItem = false;
                 binOpts.traces.push(traceOut);
                 binOpts.dirs.push(binDir);
             } else {
                 groupName = fallbackGroupName;
-                allBinOpts[groupName] = {
-                    traces: [traceOut],
-                    dirs: [binDir],
-                    axType: axType
-                };
-                Lib.warn([
-                    'Attempted to group the bins of trace', traceOut.index,
-                    'set on a', 'type:' + axType, 'axis',
-                    'with bins on', 'type:' + binOpts.axType, 'axis.'
-                ].join(' '));
+
+                if(axType !== binOpts.axType) {
+                    Lib.warn([
+                        'Attempted to group the bins of trace', traceOut.index,
+                        'set on a', 'type:' + axType, 'axis',
+                        'with bins on', 'type:' + binOpts.axType, 'axis.'
+                    ].join(' '));
+                }
+                if(calendar !== binOpts.calendar) {
+                    // prohibit bingroup for traces using different calendar,
+                    // there's probably a way to make this work, but skip for now
+                    Lib.warn([
+                        'Attempted to group the bins of trace', traceOut.index,
+                        'set with a', calendar, 'calendar',
+                        'with bins',
+                        (binOpts.calendar ? 'on a ' + binOpts.calendar + ' calendar' : 'w/o a set calendar')
+                    ].join(' '));
+                }
             }
-        } else {
-            binOpts = allBinOpts[groupName] = {
-                traces: [traceOut],
-                dirs: [binDir],
-                axType: axType
-            };
         }
 
+        if(needsNewItem) {
+            allBinOpts[groupName] = {
+                traces: [traceOut],
+                dirs: [binDir],
+                axType: axType,
+                calendar: traceOut[binDir + 'calendar'] || ''
+            };
+        }
         traceOut['_' + binDir + 'bingroup'] = groupName;
     }
 

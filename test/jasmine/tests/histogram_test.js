@@ -459,6 +459,25 @@ describe('Test histogram', function() {
                 ['1', [0, 1, 3, 3, 2]]
             ]);
         });
+
+        it('should not group traces across different calendars', function() {
+            gd = {
+                data: [
+                    {uid: 'a', bingroup: '1', type: 'histogram', x: ['2000-01-01']},
+                    {uid: 'b', bingroup: '1', type: 'histogram', x: ['2000-01-01'], xcalendar: 'julian'},
+                ],
+                layout: {barmode: 'overlay'}
+            };
+            supplyAllDefaults(gd);
+
+            _assert('', [
+                ['1', [0]],
+                ['b__x', [1]]
+            ],
+                'Attempted to group the bins of trace 1 set with a julian calendar ' +
+                'with bins on a gregorian calendar'
+            );
+        });
     });
 
     describe('calc', function() {
