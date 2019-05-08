@@ -11,6 +11,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
@@ -242,6 +243,8 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         // But this complicates things a bit since those traces don't `calc`,
         // hence `isFirstVisible`.
         var isFirstVisible = true;
+        var has2dMap = false;
+        var hasHist2dContour = false;
         for(i = 0; i < traces.length; i++) {
             tracei = traces[i];
 
@@ -259,21 +262,40 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
                         delete tracei._autoBin;
                         tracei._autoBinFinished = 1;
                     }
+                    if(Registry.traceIs(tracei, '2dMap')) {
+                        has2dMap = true;
+                    }
+                    if(tracei.type === 'histogram2dcontour') {
+                        hasHist2dContour = true;
+                    }
                 }
             }
         }
 
         calendar = traces[0][mainData + 'calendar'];
-        var newBinSpec = Axes.autoBin(allPos, pa, binOpts.nbins, false, calendar, binOpts.sizeFound && binOpts.size);
+        var newBinSpec = Axes.autoBin(allPos, pa, binOpts.nbins, has2dMap, calendar, binOpts.sizeFound && binOpts.size);
 
         var autoBin = traces[0]._autoBin = {};
         autoVals = autoBin[binOpts.dirs[0]] = {};
+
+        if(hasHist2dContour) {
+            // the "true" 2nd argument reverses the tick direction (which we can't
+            // just do with a minus sign because of month bins)
+            if(!binOpts.size) {
+                newBinSpec.start = c2r(Axes.tickIncrement(
+                    r2c(newBinSpec.start), newBinSpec.size, true, calendar));
+            }
+            if(binOpts.end === undefined) {
+                newBinSpec.end = c2r(Axes.tickIncrement(
+                    r2c(newBinSpec.end), newBinSpec.size, false, calendar));
+            }
+        }
 
         // TODO how does work with bingroup ????
         //
         // Edge case: single-valued histogram overlaying others
         // Use them all together to calculate the bin size for the single-valued one
-        if(isOverlay && newBinSpec._dataSpan === 0 &&
+        if(isOverlay && !Registry.traceIs(trace, '2dMap') && newBinSpec._dataSpan === 0 &&
             pa.type !== 'category' && pa.type !== 'multicategory') {
             // Several single-valued histograms! Stop infinite recursion,
             // just return an extra flag that tells handleSingleValueOverlays
@@ -284,7 +306,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         }
 
         // adjust for CDF edge cases
-        cumulativeSpec = tracei.cumulative;
+        cumulativeSpec = tracei.cumulative || {};
         if(cumulativeSpec.enabled && (cumulativeSpec.currentbin !== 'include')) {
             if(cumulativeSpec.direction === 'decreasing') {
                 newBinSpec.start = c2r(Axes.tickIncrement(

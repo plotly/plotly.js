@@ -15,12 +15,12 @@ var binFunctions = require('../histogram/bin_functions');
 var normFunctions = require('../histogram/norm_functions');
 var doAvg = require('../histogram/average');
 var getBinSpanLabelRound = require('../histogram/bin_label_vals');
+var calcAllAutoBins = require('../histogram/calc').calcAllAutoBins;
 
 module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
-    var x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+    var xa = Axes.getFromId(gd, trace.xaxis);
+    var ya = Axes.getFromId(gd, trace.yaxis);
+
     var xcalendar = trace.xcalendar;
     var ycalendar = trace.ycalendar;
     var xr2c = function(v) { return xa.r2c(v, 0, xcalendar); };
@@ -30,24 +30,28 @@ module.exports = function calc(gd, trace) {
 
     var i, j, n, m;
 
-    var serieslen = trace._length;
-    if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
-    if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
-
     // calculate the bins
-    doAutoBin(trace, 'x', x, xa, xr2c, xc2r, xcalendar);
-    doAutoBin(trace, 'y', y, ya, yr2c, yc2r, ycalendar);
+    var xBinsAndPos = calcAllAutoBins(gd, trace, xa, 'x');
+    var xBinSpec = xBinsAndPos[0];
+    var xPos0 = xBinsAndPos[1];
+    var yBinsAndPos = calcAllAutoBins(gd, trace, ya, 'y');
+    var yBinSpec = yBinsAndPos[0];
+    var yPos0 = yBinsAndPos[1];
+
+    var serieslen = trace._length;
+    if(xPos0.length > serieslen) xPos0.splice(serieslen, xPos0.length - serieslen);
+    if(yPos0.length > serieslen) yPos0.splice(serieslen, yPos0.length - serieslen);
 
     // make the empty bin array & scale the map
     var z = [];
     var onecol = [];
     var zerocol = [];
-    var nonuniformBinsX = typeof trace.xbins.size === 'string';
-    var nonuniformBinsY = typeof trace.ybins.size === 'string';
+    var nonuniformBinsX = typeof xBinSpec.size === 'string';
+    var nonuniformBinsY = typeof yBinSpec.size === 'string';
     var xEdges = [];
     var yEdges = [];
-    var xbins = nonuniformBinsX ? xEdges : trace.xbins;
-    var ybins = nonuniformBinsY ? yEdges : trace.ybins;
+    var xbins = nonuniformBinsX ? xEdges : xBinSpec;
+    var ybins = nonuniformBinsY ? yEdges : yBinSpec;
     var total = 0;
     var counts = [];
     var inputPoints = [];
@@ -77,12 +81,12 @@ module.exports = function calc(gd, trace) {
     }
 
     // decrease end a little in case of rounding errors
-    var binSpec = trace.xbins;
-    var binStart = xr2c(binSpec.start);
-    var binEnd = xr2c(binSpec.end) +
-        (binStart - Axes.tickIncrement(binStart, binSpec.size, false, xcalendar)) / 1e6;
+    var xBinSize = xBinSpec.size;
+    var xBinStart = xr2c(xBinSpec.start);
+    var xBinEnd = xr2c(xBinSpec.end) +
+        (xBinStart - Axes.tickIncrement(xBinStart, xBinSize, false, xcalendar)) / 1e6;
 
-    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, xcalendar)) {
+    for(i = xBinStart; i < xBinEnd; i = Axes.tickIncrement(i, xBinSize, false, xcalendar)) {
         onecol.push(sizeinit);
         xEdges.push(i);
         if(doavg) zerocol.push(0);
@@ -90,16 +94,15 @@ module.exports = function calc(gd, trace) {
     xEdges.push(i);
 
     var nx = onecol.length;
-    var x0c = xr2c(trace.xbins.start);
-    var dx = (i - x0c) / nx;
-    var x0 = xc2r(x0c + dx / 2);
+    var dx = (i - xBinStart) / nx;
+    var x0 = xc2r(xBinStart + dx / 2);
 
-    binSpec = trace.ybins;
-    binStart = yr2c(binSpec.start);
-    binEnd = yr2c(binSpec.end) +
-        (binStart - Axes.tickIncrement(binStart, binSpec.size, false, ycalendar)) / 1e6;
+    var yBinSize = yBinSpec.size;
+    var yBinStart = yr2c(yBinSpec.start);
+    var yBinEnd = yr2c(yBinSpec.end) +
+        (yBinStart - Axes.tickIncrement(yBinStart, yBinSize, false, ycalendar)) / 1e6;
 
-    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, ycalendar)) {
+    for(i = yBinStart; i < yBinEnd; i = Axes.tickIncrement(i, yBinSize, false, ycalendar)) {
         z.push(onecol.slice());
         yEdges.push(i);
         var ipCol = new Array(nx);
@@ -110,9 +113,8 @@ module.exports = function calc(gd, trace) {
     yEdges.push(i);
 
     var ny = z.length;
-    var y0c = yr2c(trace.ybins.start);
-    var dy = (i - y0c) / ny;
-    var y0 = yc2r(y0c + dy / 2);
+    var dy = (i - yBinStart) / ny;
+    var y0 = yc2r(yBinStart + dy / 2);
 
     if(densitynorm) {
         xinc = makeIncrements(onecol.length, xbins, dx, nonuniformBinsX);
@@ -134,8 +136,8 @@ module.exports = function calc(gd, trace) {
     var yGapLow = Infinity;
     var yGapHigh = Infinity;
     for(i = 0; i < serieslen; i++) {
-        var xi = x[i];
-        var yi = y[i];
+        var xi = xPos0[i];
+        var yi = yPos0[i];
         n = Lib.findBin(xi, xbins);
         m = Lib.findBin(yi, ybins);
         if(n >= 0 && n < nx && m >= 0 && m < ny) {
@@ -166,11 +168,11 @@ module.exports = function calc(gd, trace) {
     }
 
     return {
-        x: x,
+        x: xPos0,
         xRanges: getRanges(xEdges, uniqueValsPerX && xVals, xGapLow, xGapHigh, xa, xcalendar),
         x0: x0,
         dx: dx,
-        y: y,
+        y: yPos0,
         yRanges: getRanges(yEdges, uniqueValsPerY && yVals, yGapLow, yGapHigh, ya, ycalendar),
         y0: y0,
         dy: dy,
@@ -178,52 +180,6 @@ module.exports = function calc(gd, trace) {
         pts: inputPoints
     };
 };
-
-function doAutoBin(trace, axLetter, data, ax, r2c, c2r, calendar) {
-    var binAttr = axLetter + 'bins';
-    var binSpec = trace[binAttr];
-    if(!binSpec) binSpec = trace[binAttr] = {};
-    var inputBinSpec = trace._input[binAttr] || {};
-    var autoBin = trace._autoBin = {};
-
-    // clear out any previously added autobin info
-    if(!inputBinSpec.size) delete binSpec.size;
-    if(inputBinSpec.start === undefined) delete binSpec.start;
-    if(inputBinSpec.end === undefined) delete binSpec.end;
-
-    var autoSize = !binSpec.size;
-    var autoStart = binSpec.start === undefined;
-    var autoEnd = binSpec.end === undefined;
-
-    if(autoSize || autoStart || autoEnd) {
-        var newBinSpec = Axes.autoBin(data, ax, trace['nbins' + axLetter], '2d', calendar, binSpec.size);
-        if(trace.type === 'histogram2dcontour') {
-            // the "true" 2nd argument reverses the tick direction (which we can't
-            // just do with a minus sign because of month bins)
-            if(autoStart) {
-                newBinSpec.start = c2r(Axes.tickIncrement(
-                    r2c(newBinSpec.start), newBinSpec.size, true, calendar));
-            }
-            if(autoEnd) {
-                newBinSpec.end = c2r(Axes.tickIncrement(
-                    r2c(newBinSpec.end), newBinSpec.size, false, calendar));
-            }
-        }
-        if(autoSize) binSpec.size = autoBin.size = newBinSpec.size;
-        if(autoStart) binSpec.start = autoBin.start = newBinSpec.start;
-        if(autoEnd) binSpec.end = autoBin.end = newBinSpec.end;
-    }
-
-    // Backward compatibility for one-time autobinning.
-    // autobin: true is handled in cleanData, but autobin: false
-    // needs to be here where we have determined the values.
-    var autoBinAttr = 'autobin' + axLetter;
-    if(trace._input[autoBinAttr] === false) {
-        trace._input[binAttr] = Lib.extendFlat({}, binSpec);
-        delete trace._input[autoBinAttr];
-        delete trace[autoBinAttr];
-    }
-}
 
 function makeIncrements(len, bins, dv, nonuniform) {
     var out = new Array(len);
