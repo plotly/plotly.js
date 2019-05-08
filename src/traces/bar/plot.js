@@ -538,7 +538,8 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     }
 
     if(hasFlag('text')) {
-        text.push(Lib.castOption(trace, cdi.i, 'text'));
+        tx = Lib.castOption(trace, cdi.i, 'text');
+        if(tx === 0 || tx) text.push(tx);
     }
 
     if(trace.type === 'waterfall') {

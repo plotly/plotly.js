@@ -39,23 +39,6 @@
                 "Income tax (15%)",
                 "Profit after tax"
             ],
-            "text": [
-                "+ Sales",
-                "+ Consulting",
-                "+ Maintenance",
-                "+ Other revenue",
-                "= Net revenue",
-                "- Purchases",
-                "- Material expenses",
-                "- Personnel expenses",
-                "- Other expenses",
-                "= Operating profit",
-                "+ Investment income",
-                "+ Financial income",
-                "= Profit before tax",
-                "- Income tax (15%)",
-                "= Profit after tax"
-            ],
             "x": [
                 375,
                 128,
@@ -74,7 +57,7 @@
                 null
             ],
             "base": 0,
-            "textinfo": "text+delta",
+            "textinfo": "label+text+delta",
             "cliponaxis": false,
             "textposition": "outside"
         },
@@ -134,7 +117,7 @@
                 null
             ],
             "base": 255,
-            "textinfo": "initial+final",
+            "textinfo": "text+initial+final",
             "cliponaxis": false,
             "textposition": "outside"
         }
