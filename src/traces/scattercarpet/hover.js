@@ -9,7 +9,7 @@
 'use strict';
 
 var scatterHover = require('../scatter/hover');
-var fillHoverText = require('../scatter/fill_hover_text');
+var fillText = require('../../lib').fillText;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
@@ -84,7 +84,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         text.push('y: ' + newPointData.yLabel);
 
         if(parts.indexOf('text') !== -1) {
-            fillHoverText(cdi, trace, text);
+            fillText(cdi, trace, text);
         }
 
         newPointData.extraText = text.join('<br>');

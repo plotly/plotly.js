@@ -12,7 +12,8 @@
 var Fx = require('../../components/fx');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
-var fillHoverText = require('../scatter/fill_hover_text');
+
+var fillText = require('../../lib').fillText;
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
@@ -155,7 +156,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     // in case of bars shifted within groups
     pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);
 
-    fillHoverText(di, trace, pointData);
+    fillText(di, trace, pointData);
     pointData.hovertemplate = trace.hovertemplate;
 
     return pointData;

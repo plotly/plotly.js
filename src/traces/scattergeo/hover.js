@@ -14,7 +14,7 @@ var Axes = require('../../plots/cartesian/axes');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 var getTraceColor = require('../scatter/get_trace_color');
-var fillHoverText = require('../scatter/fill_hover_text');
+var fillText = require('../../lib').fillText;
 var attributes = require('./attributes');
 
 module.exports = function hoverPoints(pointData, xval, yval) {
@@ -103,7 +103,7 @@ function getExtraText(trace, pt, axis, labels) {
     }
 
     if(hasText) {
-        fillHoverText(pt, trace, text);
+        fillText(pt, trace, text);
     }
 
     return text.join('<br>');

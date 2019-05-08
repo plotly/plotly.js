@@ -12,7 +12,7 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
-var fillHoverText = require('../scatter/fill_hover_text');
+var fillText = Lib.fillText;
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -270,7 +270,7 @@ function hoverOnPoints(pointData, xval, yval) {
     var pLetter = pa._id.charAt(0);
     closePtData[pLetter + 'Spike'] = pa.c2p(di.pos, true);
 
-    fillHoverText(pt, trace, closePtData);
+    fillText(pt, trace, closePtData);
 
     return closePtData;
 }

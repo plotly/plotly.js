@@ -12,7 +12,7 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
-var fillHoverText = require('../scatter/fill_hover_text');
+var fillText = require('../../lib').fillText;
 
 var DIRSYMBOL = {
     increasing: '▲',
@@ -184,7 +184,7 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
         getLabelLine('low'),
         getLabelLine('close') + '  ' + DIRSYMBOL[dir]
     ] : [];
-    if(hasText) fillHoverText(di, trace, textParts);
+    if(hasText) fillText(di, trace, textParts);
 
     // don't make .yLabelVal or .text, since we're managing hoverinfo
     // put it all in .extraText
