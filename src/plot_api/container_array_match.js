@@ -9,8 +9,7 @@
 
 'use strict';
 
-var rootContainers = require('../registry').layoutArrayContainers;
-var regexpContainers = require('../registry').layoutArrayRegexes;
+var Registry = require('../registry');
 
 /*
  * containerArrayMatch: does this attribute string point into a
@@ -26,6 +25,8 @@ var regexpContainers = require('../registry').layoutArrayRegexes;
  *  or the whole object)
  */
 module.exports = function containerArrayMatch(astr) {
+    var rootContainers = Registry.layoutArrayContainers;
+    var regexpContainers = Registry.layoutArrayRegexes;
     var rootPart = astr.split('[')[0];
     var arrayStr;
     var match;

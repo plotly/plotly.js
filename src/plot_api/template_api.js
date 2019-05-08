@@ -10,17 +10,12 @@
 'use strict';
 
 var Lib = require('../lib');
+var isPlainObject = Lib.isPlainObject;
 var PlotSchema = require('./plot_schema');
-var supplyDefaults = require('../plots/plots').supplyDefaults;
+var Plots = require('../plots/plots');
 var plotAttributes = require('../plots/attributes');
 var Template = require('./plot_template');
 var dfltConfig = require('./plot_config').dfltConfig;
-
-var coerce = Lib.coerce;
-var extendDeep = Lib.extendDeep;
-var getGraphDiv = Lib.getGraphDiv;
-var isPlainObject = Lib.isPlainObject;
-var nestedProperty = Lib.nestedProperty;
 
 /**
  * Plotly.makeTemplate: create a template off an existing figure to reuse
@@ -36,9 +31,9 @@ var nestedProperty = Lib.nestedProperty;
  *     `layout.template` in another figure.
  */
 exports.makeTemplate = function(figure) {
-    figure = isPlainObject(figure) ? figure : getGraphDiv(figure);
-    figure = extendDeep({_context: dfltConfig}, {data: figure.data, layout: figure.layout});
-    supplyDefaults(figure);
+    figure = Lib.isPlainObject(figure) ? figure : Lib.getGraphDiv(figure);
+    figure = Lib.extendDeep({_context: dfltConfig}, {data: figure.data, layout: figure.layout});
+    Plots.supplyDefaults(figure);
     var data = figure.data || [];
     var layout = figure.layout || {};
     // copy over a few items to help follow the schema
@@ -69,7 +64,7 @@ exports.makeTemplate = function(figure) {
         var traceTemplate = {};
         walkStyleKeys(trace, traceTemplate, getTraceInfo.bind(null, trace));
 
-        var traceType = coerce(trace, {}, plotAttributes, 'type');
+        var traceType = Lib.coerce(trace, {}, plotAttributes, 'type');
         var typeTemplates = template.data[traceType];
         if(!typeTemplates) typeTemplates = template.data[traceType] = [];
         typeTemplates.push(traceTemplate);
@@ -110,13 +105,13 @@ exports.makeTemplate = function(figure) {
                         mergeTemplates(oldTypeTemplates[i % oldTypeLen], typeTemplates[i]);
                     }
                     for(i = typeLen; i < oldTypeLen; i++) {
-                        typeTemplates.push(extendDeep({}, oldTypeTemplates[i]));
+                        typeTemplates.push(Lib.extendDeep({}, oldTypeTemplates[i]));
                     }
                 }
             }
             for(traceType in oldDataTemplate) {
                 if(!(traceType in template.data)) {
-                    template.data[traceType] = extendDeep([], oldDataTemplate[traceType]);
+                    template.data[traceType] = Lib.extendDeep([], oldDataTemplate[traceType]);
                 }
             }
         }
@@ -128,7 +123,7 @@ exports.makeTemplate = function(figure) {
 function mergeTemplates(oldTemplate, newTemplate) {
     // we don't care about speed here, just make sure we have a totally
     // distinct object from the previous template
-    oldTemplate = extendDeep({}, oldTemplate);
+    oldTemplate = Lib.extendDeep({}, oldTemplate);
 
     // sort keys so we always get annotationdefaults before annotations etc
     // so arrayTemplater will work right
@@ -234,8 +229,8 @@ function walkStyleKeys(parent, templateOut, getAttributeInfo, path, basePath) {
                         var pathInArray = getNextPath(child, namedIndex, nextPath);
                         walkStyleKeys(item, templateOut, getAttributeInfo, pathInArray,
                             getNextPath(child, namedIndex, nextBasePath));
-                        var itemPropInArray = nestedProperty(templateOut, pathInArray);
-                        var dfltProp = nestedProperty(templateOut, dfltPath);
+                        var itemPropInArray = Lib.nestedProperty(templateOut, pathInArray);
+                        var dfltProp = Lib.nestedProperty(templateOut, dfltPath);
                         dfltProp.set(itemPropInArray.get());
                         itemPropInArray.set(null);
 
@@ -244,7 +239,7 @@ function walkStyleKeys(parent, templateOut, getAttributeInfo, path, basePath) {
                 }
             }
         } else {
-            var templateProp = nestedProperty(templateOut, nextPath);
+            var templateProp = Lib.nestedProperty(templateOut, nextPath);
             templateProp.set(child);
         }
     }
@@ -252,13 +247,13 @@ function walkStyleKeys(parent, templateOut, getAttributeInfo, path, basePath) {
 
 function getLayoutInfo(layout, path) {
     return PlotSchema.getLayoutValObject(
-        layout, nestedProperty({}, path).parts
+        layout, Lib.nestedProperty({}, path).parts
     );
 }
 
 function getTraceInfo(trace, path) {
     return PlotSchema.getTraceValObject(
-        trace, nestedProperty({}, path).parts
+        trace, Lib.nestedProperty({}, path).parts
     );
 }
 
@@ -290,7 +285,7 @@ function getNextPath(parent, key, path) {
  *      a full readable description of the issue.
  */
 exports.validateTemplate = function(figureIn, template) {
-    var figure = extendDeep({}, {
+    var figure = Lib.extendDeep({}, {
         _context: dfltConfig,
         data: figureIn.data,
         layout: figureIn.layout
@@ -303,7 +298,7 @@ exports.validateTemplate = function(figureIn, template) {
 
     figure.layout = layout;
     figure.layout.template = template;
-    supplyDefaults(figure);
+    Plots.supplyDefaults(figure);
 
     var fullLayout = figure._fullLayout;
     var fullData = figure._fullData;
