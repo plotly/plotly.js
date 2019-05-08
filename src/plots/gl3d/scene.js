@@ -502,7 +502,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
-        if(data.visible !== true) continue;
+        if(data.visible !== true || data._length === 0) continue;
 
         computeTraceBounds(this, data, dataBounds);
     }
@@ -526,7 +526,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
-        if(data.visible !== true) {
+        if(data.visible !== true || data._length === 0) {
             continue;
         }
         trace = this.traces[data.uid];
@@ -551,7 +551,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
     traceIdLoop:
     for(i = 0; i < traceIds.length; ++i) {
         for(j = 0; j < sceneData.length; ++j) {
-            if(sceneData[j].uid === traceIds[i] && sceneData[j].visible === true) {
+            if(sceneData[j].uid === traceIds[i] &&
+                (sceneData[j].visible === true && sceneData[j]._length !== 0)) {
                 continue traceIdLoop;
             }
         }

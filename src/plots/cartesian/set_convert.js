@@ -403,7 +403,7 @@ module.exports = function setConvert(ax, fullLayout) {
             return;
         }
 
-        if(ax.type === 'date') {
+        if(ax.type === 'date' && !ax.autorange) {
             // check if milliseconds or js date objects are provided for range
             // and convert to date strings
             range[0] = Lib.cleanDate(range[0], BADNUM, ax.calendar);

@@ -370,9 +370,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         cd = searchData[curvenum];
 
         // filter out invisible or broken data
-        if(!cd || !cd[0] || !cd[0].trace || cd[0].trace.visible !== true) continue;
+        if(!cd || !cd[0] || !cd[0].trace) continue;
 
         trace = cd[0].trace;
+
+        if(trace.visible !== true || trace._length === 0) continue;
 
         // Explicitly bail out for these two. I don't know how to otherwise prevent
         // the rest of this function from running and failing

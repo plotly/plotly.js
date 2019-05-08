@@ -69,8 +69,10 @@ exports.getModuleCalcData = function(calcdata, arg1) {
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
-        // N.B. 'legendonly' traces do not make it past here
-        if(trace.visible !== true) continue;
+        // N.B.
+        // - 'legendonly' traces do not make it past here
+        // - skip over 'visible' traces that got trimmed completely during calc transforms
+        if(trace.visible !== true || trace._length === 0) continue;
 
         // group calcdata trace not by 'module' (as the name of this function
         // would suggest), but by 'module plot method' so that if some traces

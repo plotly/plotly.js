@@ -86,6 +86,33 @@ describe('filter transforms defaults:', function() {
         expect(traceOut.transforms[2].target).toEqual('x');
         expect(traceOut.transforms[3].target).toEqual('marker.color');
     });
+
+    it('supplyTraceDefaults should set *enabled:false* and return early when *target* is an empty array', function() {
+        // see https://github.com/plotly/plotly.js/issues/2908
+        // this solves multiple problems downstream
+
+        traceIn = {
+            x: [1, 2, 3],
+            transforms: [{
+                type: 'filter',
+                target: []
+            }]
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        expect(traceOut.transforms[0].target).toEqual([]);
+        expect(traceOut.transforms[0].enabled).toBe(false, 'set to false!');
+
+        traceIn = {
+            x: new Float32Array([1, 2, 3]),
+            transforms: [{
+                type: 'filter',
+                target: new Float32Array()
+            }]
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        expect(traceOut.transforms[0].target).toEqual(new Float32Array());
+        expect(traceOut.transforms[0].enabled).toBe(false, 'set to false!');
+    });
 });
 
 describe('filter transforms calc:', function() {
@@ -1290,5 +1317,71 @@ describe('filter transforms interactions', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+});
+
+describe('filter resulting in empty coordinate arrays', function() {
+    var gd;
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        setTimeout(function() {
+            destroyGraphDiv();
+            done();
+        }, 200);
+    });
+
+    function filter2empty(mock) {
+        var fig = Lib.extendDeep({}, mock);
+        var data = fig.data || [];
+
+        data.forEach(function(trace) {
+            trace.transforms = [{
+                type: 'filter',
+                target: [null]
+            }];
+        });
+
+        return fig;
+    }
+
+    describe('svg mocks', function() {
+        var mockList = require('../assets/mock_lists').svg;
+
+        mockList.forEach(function(d) {
+            it(d[0], function(done) {
+                gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
+    });
+
+    describe('gl mocks', function() {
+        var mockList = require('../assets/mock_lists').gl;
+
+        mockList.forEach(function(d) {
+            it('@gl ' + d[0], function(done) {
+                gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
+    });
+
+    describe('mapbox mocks', function() {
+        var mockList = require('../assets/mock_lists').mapbox;
+
+        Plotly.setPlotConfig({
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        });
+
+        mockList.forEach(function(d) {
+            it('@noCI ' + d[0], function(done) {
+                gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
     });
 });

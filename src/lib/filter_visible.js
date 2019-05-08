@@ -32,7 +32,8 @@ function baseFilter(item) {
 }
 
 function calcDataFilter(item) {
-    return item[0].trace.visible === true;
+    var trace = item[0].trace;
+    return trace.visible === true && trace._length !== 0;
 }
 
 function isCalcData(cont) {
