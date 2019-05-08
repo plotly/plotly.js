@@ -133,7 +133,7 @@ module.exports = function setConvert(ax, fullLayout) {
             if(ax._categoriesMap[v] !== undefined) {
                 return ax._categoriesMap[v];
             } else {
-                ax._categories.push(v);
+                ax._categories.push(typeof v === 'number' ? String(v) : v);
 
                 var curLength = ax._categories.length - 1;
                 ax._categoriesMap[v] = curLength;

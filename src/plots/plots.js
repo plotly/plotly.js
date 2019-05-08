@@ -54,18 +54,18 @@ plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 plots.redrawText = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
+    var fullLayout = gd._fullLayout || {};
+    var hasPolar = fullLayout._has && fullLayout._has('polar');
+    var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
+
     // do not work if polar is present
-    if((gd.data && gd.data[0] && gd.data[0].r)) return;
+    if(hasLegacyPolar) return;
 
     return new Promise(function(resolve) {
         setTimeout(function() {
             Registry.getComponentMethod('annotations', 'draw')(gd);
             Registry.getComponentMethod('legend', 'draw')(gd);
-
-            (gd.calcdata || []).forEach(function(d) {
-                if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
-            });
-
+            Registry.getComponentMethod('colorbar', 'draw')(gd);
             resolve(plots.previousPromises(gd));
         }, 300);
     });
@@ -390,6 +390,8 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._firstScatter = {};
     // for grouped bar/box/violin trace to share config across traces
     newFullLayout._alignmentOpts = {};
+    // track color axes referenced in the data
+    newFullLayout._colorAxes = {};
 
     // for traces to request a default rangeslider on their x axes
     // eg set `_requestRangeslider.x2 = true` for xaxis2
@@ -445,7 +447,6 @@ plots.supplyDefaults = function(gd, opts) {
     for(i = 0; i < crossTraceDefaultsFuncs.length; i++) {
         crossTraceDefaultsFuncs[i](newFullData, newFullLayout);
     }
-    Registry.getComponentMethod('colorscale', 'crossTraceDefaults')(newFullData, newFullLayout);
 
     // turn on flag to optimize large splom-only graphs
     // mostly by omitting SVG layers during Cartesian.drawFramework
@@ -484,6 +485,9 @@ plots.supplyDefaults = function(gd, opts) {
 
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
+
+    // colorscale crossTraceDefaults needs newFullLayout with relinked keys
+    Registry.getComponentMethod('colorscale', 'crossTraceDefaults')(newFullData, newFullLayout);
 
     // For persisting GUI-driven changes in layout
     // _preGUI and _tracePreGUI were already copied over in relinkPrivateKeys
@@ -1802,7 +1806,9 @@ plots.autoMargin = function(gd, id, o) {
             pushMarginIds[id] = 1;
         }
 
-        if(!fullLayout._replotting) plots.doAutoMargin(gd);
+        if(!fullLayout._replotting) {
+            plots.doAutoMargin(gd);
+        }
     }
 };
 
@@ -1812,8 +1818,8 @@ plots.doAutoMargin = function(gd) {
     initMargins(fullLayout);
 
     var gs = fullLayout._size;
-    var oldmargins = JSON.stringify(gs);
     var margin = fullLayout.margin;
+    var oldMargins = Lib.extendFlat({}, gs);
 
     // adjust margins for outside components
     // fullLayout.margin is the requested margin,
@@ -1892,10 +1898,7 @@ plots.doAutoMargin = function(gd) {
     gs.h = Math.round(height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!fullLayout._replotting &&
-        oldmargins !== '{}' &&
-        oldmargins !== JSON.stringify(fullLayout._size)
-    ) {
+    if(!fullLayout._replotting && plots.didMarginChange(oldMargins, gs)) {
         if('_redrawFromAutoMarginCount' in fullLayout) {
             fullLayout._redrawFromAutoMarginCount++;
         } else {
@@ -1903,6 +1906,22 @@ plots.doAutoMargin = function(gd) {
         }
         return Registry.call('plot', gd);
     }
+};
+
+var marginKeys = ['l', 'r', 't', 'b', 'p', 'w', 'h'];
+
+plots.didMarginChange = function(margin0, margin1) {
+    for(var i = 0; i < marginKeys.length; i++) {
+        var k = marginKeys[i];
+        var m0 = margin0[k];
+        var m1 = margin1[k];
+        // use 1px tolerance in case we old/new differ only
+        // by rounding errors, which can lead to infinite loops
+        if(!isNumeric(m0) || Math.abs(m1 - m0) > 1) {
+            return true;
+        }
+    }
+    return false;
 };
 
 /**

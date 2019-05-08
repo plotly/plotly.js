@@ -110,9 +110,7 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
         var trace = d[0].trace;
         var xcalendar = trace.xcalendar;
         var ycalendar = trace.ycalendar;
-        var selector = trace.type === 'bar' ? '.bartext' :
-            trace.type === 'waterfall' ? '.bartext,.line' :
-                '.point,.textpoint';
+        var selector = Registry.traceIs(trace, 'bar-like') ? '.bartext' : '.point,.textpoint';
 
         traceGroups.selectAll(selector).each(function(d) {
             drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya, xcalendar, ycalendar);
@@ -638,13 +636,9 @@ drawing.tryColorscale = function(marker, prefix) {
     var cont = prefix ? Lib.nestedProperty(marker, prefix).get() : marker;
 
     if(cont) {
-        var scl = cont.colorscale;
         var colorArray = cont.color;
-
-        if(scl && Lib.isArrayOrTypedArray(colorArray)) {
-            return Colorscale.makeColorScaleFunc(
-                Colorscale.extractScale(cont, {cLetter: 'c'})
-            );
+        if((cont.colorscale || cont._colorAx) && Lib.isArrayOrTypedArray(colorArray)) {
+            return Colorscale.makeColorScaleFuncFromTrace(cont);
         }
     }
     return Lib.identity;

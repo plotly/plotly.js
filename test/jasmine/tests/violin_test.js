@@ -347,6 +347,14 @@ describe('Test violin hover:', function() {
         return Plotly.plot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent(specs);
+
+            if(specs.hoverLabelPos) {
+                d3.selectAll('g.hovertext').each(function(_, i) {
+                    var bbox = this.getBoundingClientRect();
+                    expect([bbox.bottom, bbox.top])
+                        .toBeWithinArray(specs.hoverLabelPos[i], 10, 'bottom--top hover label ' + i);
+                });
+            }
         });
     }
 
@@ -512,6 +520,24 @@ describe('Test violin hover:', function() {
         nums: 'x: 42.43046, kde: 0.083',
         name: '',
         axis: 'Saturday'
+    }, {
+        desc: 'one-sided violin under hovermode y (ridgeplot case)',
+        mock: require('@mocks/violin_ridgeplot.json'),
+        patch: function(fig) {
+            fig.data.forEach(function(t) { t.hoveron = 'violins'; });
+            fig.layout.hovermode = 'y';
+            return fig;
+        },
+        nums: [
+            'max: 50.81', 'median: 18.24', 'min: 3.07',
+            'q1: 13.8575', 'q3: 24.975', 'upper fence: 39.42'
+        ],
+        name: ['', '', '', '', '', ''],
+        axis: 'Sat',
+        hoverLabelPos: [
+            [364, 270], [339, 270], [352, 270],
+            [346, 270], [349, 270], [387, 270]
+        ]
     }, {
         desc: 'single horizontal violin',
         mock: require('@mocks/violin_non-linear.json'),

@@ -1,0 +1,26 @@
+{
+  "layout": {
+    "xaxis": {
+      "type": "category",
+      "categoryorder": "category descending"
+    },
+    "yaxis": {
+      "type": "category",
+      "categoryorder": "category descending"
+    },
+    "height": 400,
+    "width": 400
+  },
+  "data": [{
+    "type": "heatmap",
+
+    "x": ["z", "y", "x", "w"],
+    "y": ["d", "c", "b", "a"],
+    "z": [
+      [100, 75, 50, 0],
+      [90, 65, 40, 0],
+      [80, 55, 30, 0],
+      [0, 0, 0, 0]
+    ]
+  }]
+}

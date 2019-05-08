@@ -8,8 +8,7 @@
 
 'use strict';
 
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var mesh3dAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -148,13 +147,11 @@ var attrs = {
     })
 };
 
-extendFlat(attrs, colorscaleAttrs('', {
+extendFlat(attrs, colorScaleAttrs('', {
     colorAttr: 'u/v/w norm',
     showScaleDflt: true,
     editTypeOverride: 'calc'
-}), {
-    colorbar: colorbarAttrs
-});
+}));
 
 var fromMesh3d = ['opacity', 'lightposition', 'lighting'];
 fromMesh3d.forEach(function(k) {

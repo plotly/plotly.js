@@ -10,8 +10,7 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -251,10 +250,9 @@ module.exports = extendFlat({
         editType: 'plot'
     }
 },
-    colorscaleAttrs('', {
+    colorScaleAttrs('', {
         cLetter: 'z',
         autoColorDflt: false,
         editTypeOverride: 'calc'
-    }),
-    { colorbar: colorbarAttrs }
+    })
 );

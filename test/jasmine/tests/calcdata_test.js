@@ -862,7 +862,7 @@ describe('calculated data and points', function() {
                 xaxis: {type: 'category'}
             });
 
-            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'b', 1]);
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'b', '1']);
             expect(gd._fullLayout.xaxis._categoriesMap).toEqual({
                 '1': 2,
                 'a': 0,

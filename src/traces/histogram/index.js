@@ -41,7 +41,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'histogram',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'],
+    categories: ['bar-like', 'cartesian', 'svg', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'],
     meta: {
         description: [
             'The sample data from which statistics are computed is set in `x`',

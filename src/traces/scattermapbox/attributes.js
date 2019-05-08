@@ -13,7 +13,7 @@ var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -70,7 +70,7 @@ module.exports = overrideAll({
 
     connectgaps: scatterAttrs.connectgaps,
 
-    marker: {
+    marker: extendFlat({
         symbol: {
             valType: 'string',
             dflt: 'circle',
@@ -87,20 +87,11 @@ module.exports = overrideAll({
         size: markerAttrs.size,
         sizeref: markerAttrs.sizeref,
         sizemin: markerAttrs.sizemin,
-        sizemode: markerAttrs.sizemode,
-        color: markerAttrs.color,
-        colorscale: markerAttrs.colorscale,
-        cauto: markerAttrs.cauto,
-        cmax: markerAttrs.cmax,
-        cmin: markerAttrs.cmin,
-        cmid: markerAttrs.cmid,
-        autocolorscale: markerAttrs.autocolorscale,
-        reversescale: markerAttrs.reversescale,
-        showscale: markerAttrs.showscale,
-        colorbar: colorbarAttrs,
-
-        // line
+        sizemode: markerAttrs.sizemode
     },
+        colorScaleAttrs('marker')
+        // line
+    ),
 
     fill: scatterGeoAttrs.fill,
     fillcolor: scatterAttrs.fillcolor,

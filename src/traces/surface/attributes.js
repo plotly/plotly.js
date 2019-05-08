@@ -9,8 +9,7 @@
 'use strict';
 
 var Color = require('../../components/color');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -188,14 +187,12 @@ var attrs = module.exports = overrideAll(extendFlat({
     },
 },
 
-colorscaleAttrs('', {
+colorScaleAttrs('', {
     colorAttr: 'z or surfacecolor',
     showScaleDflt: true,
     autoColorDflt: false,
     editTypeOverride: 'calc'
 }), {
-    colorbar: colorbarAttrs,
-
     contours: {
         x: makeContourAttr('x'),
         y: makeContourAttr('y'),
@@ -302,13 +299,13 @@ colorscaleAttrs('', {
     },
 
     _deprecated: {
-        zauto: extendFlat({}, colorscaleAttrs.zauto, {
+        zauto: extendFlat({}, colorScaleAttrs.zauto, {
             description: 'Obsolete. Use `cauto` instead.'
         }),
-        zmin: extendFlat({}, colorscaleAttrs.zmin, {
+        zmin: extendFlat({}, colorScaleAttrs.zmin, {
             description: 'Obsolete. Use `cmin` instead.'
         }),
-        zmax: extendFlat({}, colorscaleAttrs.zmax, {
+        zmax: extendFlat({}, colorScaleAttrs.zmax, {
             description: 'Obsolete. Use `cmax` instead.'
         })
     },

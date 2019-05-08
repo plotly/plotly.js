@@ -44,6 +44,67 @@ function hasColorscale(trace, containerStr) {
     );
 }
 
+var constantAttrs = ['showscale', 'autocolorscale', 'colorscale', 'reversescale', 'colorbar'];
+var letterAttrs = ['min', 'max', 'mid', 'auto'];
+
+/**
+ * Extract 'c' / 'z', trace / color axis colorscale options
+ *
+ * Note that it would be nice to replace all z* with c* equivalents in v2
+ *
+ * @param {object} cont : attribute container
+ * @return {object}:
+ *  - min: cmin or zmin
+ *  - max: cmax or zmax
+ *  - mid: cmid or zmid
+ *  - auto: cauto or zauto
+ *  - *scale: *scale attrs
+ *  - colorbar: colorbar
+ *  - _sync: function syncing attr and underscore dual (useful when calc'ing min/max)
+ */
+function extractOpts(cont) {
+    var colorAx = cont._colorAx;
+    var cont2 = colorAx ? colorAx : cont;
+    var out = {};
+    var cLetter;
+    var i, k;
+
+    for(i = 0; i < constantAttrs.length; i++) {
+        k = constantAttrs[i];
+        out[k] = cont2[k];
+    }
+
+    if(colorAx) {
+        cLetter = 'c';
+        for(i = 0; i < letterAttrs.length; i++) {
+            k = letterAttrs[i];
+            out[k] = cont2['c' + k];
+        }
+    } else {
+        var k2;
+        for(i = 0; i < letterAttrs.length; i++) {
+            k = letterAttrs[i];
+            k2 = 'c' + k;
+            if(k2 in cont2) {
+                out[k] = cont2[k2];
+                continue;
+            }
+            k2 = 'z' + k;
+            if(k2 in cont2) {
+                out[k] = cont2[k2];
+            }
+        }
+        cLetter = k2.charAt(0);
+    }
+
+    out._sync = function(k, v) {
+        var k2 = letterAttrs.indexOf(k) !== -1 ? cLetter + k : k;
+        cont2[k2] = cont2['_' + k2] = v;
+    };
+
+    return out;
+}
+
 /**
  * Extract colorscale into numeric domain and color range.
  *
@@ -52,24 +113,19 @@ function hasColorscale(trace, containerStr) {
  *  - cmin/zmin {number}
  *  - cmax/zmax {number}
  *  - reversescale {boolean}
- * @param {object} opts
- *  - cLetter {string} 'c' (for cmin/cmax) or 'z' (for zmin/zmax)
  *
  * @return {object}
  *  - domain {array}
  *  - range {array}
  */
-function extractScale(cont, opts) {
-    var cLetter = opts.cLetter;
+function extractScale(cont) {
+    var cOpts = extractOpts(cont);
+    var cmin = cOpts.min;
+    var cmax = cOpts.max;
 
-    var scl = cont.reversescale ?
-        flipScale(cont.colorscale) :
-        cont.colorscale;
-
-    // minimum color value (used to clamp scale)
-    var cmin = cont[cLetter + 'min'];
-    // maximum color value (used to clamp scale)
-    var cmax = cont[cLetter + 'max'];
+    var scl = cOpts.reversescale ?
+        flipScale(cOpts.colorscale) :
+        cOpts.colorscale;
 
     var N = scl.length;
     var domain = new Array(N);
@@ -81,10 +137,7 @@ function extractScale(cont, opts) {
         range[i] = si[1];
     }
 
-    return {
-        domain: domain,
-        range: range
-    };
+    return {domain: domain, range: range};
 }
 
 function flipScale(scl) {
@@ -154,12 +207,14 @@ function makeColorScaleFunc(specs, opts) {
     }
 
     // colorbar draw looks into the d3 scale closure for domain and range
-
     sclFunc.domain = _sclFunc.domain;
-
     sclFunc.range = function() { return range; };
 
     return sclFunc;
+}
+
+function makeColorScaleFuncFromTrace(trace, opts) {
+    return makeColorScaleFunc(extractScale(trace), opts);
 }
 
 function colorArray2rbga(colorArray) {
@@ -175,7 +230,9 @@ function colorArray2rbga(colorArray) {
 
 module.exports = {
     hasColorscale: hasColorscale,
+    extractOpts: extractOpts,
     extractScale: extractScale,
     flipScale: flipScale,
-    makeColorScaleFunc: makeColorScaleFunc
+    makeColorScaleFunc: makeColorScaleFunc,
+    makeColorScaleFuncFromTrace: makeColorScaleFuncFromTrace
 };

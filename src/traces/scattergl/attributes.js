@@ -10,7 +10,7 @@
 
 var plotAttrs = require('../../plots/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var colorAttrs = require('../../components/colorscale/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -65,7 +65,7 @@ var attrs = module.exports = overrideAll({
             description: 'Sets the style of the lines.'
         }
     },
-    marker: extendFlat({}, colorAttrs('marker'), {
+    marker: extendFlat({}, colorScaleAttrs('marker'), {
         symbol: scatterMarkerAttrs.symbol,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
@@ -73,7 +73,7 @@ var attrs = module.exports = overrideAll({
         sizemode: scatterMarkerAttrs.sizemode,
         opacity: scatterMarkerAttrs.opacity,
         colorbar: scatterMarkerAttrs.colorbar,
-        line: extendFlat({}, colorAttrs('marker.line'), {
+        line: extendFlat({}, colorScaleAttrs('marker.line'), {
             width: scatterMarkerLineAttrs.width
         })
     }),

@@ -1,0 +1,101 @@
+{
+    "data": [
+        {
+            "name": "2018",
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+            ],
+            "y": [
+                120,
+                60,
+                30,
+                15,
+                10,
+                5
+            ],
+            "opacity": 0.75,
+            "marker": {
+                "color": "rgba(0,255,0,0.5)"
+            },
+            "connector": {
+                "line": {
+                    "color": "rgba(255,191,127,0.75)",
+                    "dash": 4,
+                    "width": 4
+                }
+            }
+        },
+        {
+            "name": "2018",
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+            ],
+            "y": [
+                120,
+                80,
+                40,
+                20,
+                10,
+                5
+            ],
+            "marker": {
+                "color": [
+                    "rgb(255, 0, 0)",
+                    "rgb(255, 255, 0)",
+                    "rgb(0, 255, 0)",
+                    "rgb(0, 255, 255)",
+                    "rgb(0, 0, 255)",
+                    "rgb(255, 0, 255)"
+                ],
+                "line": {
+                    "width": [
+                        7,
+                        6,
+                        5,
+                        4,
+                        3,
+                        2
+                    ],
+                    "color": [
+                        "rgb(127, 0, 127)",
+                        "rgb(0, 0, 127)",
+                        "rgb(0, 127, 127)",
+                        "rgb(0, 127, 0)",
+                        "rgb(127, 127, 0)",
+                        "rgb(127, 0, 0)"
+                    ]
+                }
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "two stacked funnel charts with custom marker colors and lines<br>as well as transparent colors and opacity"
+        },
+        "xaxis": {
+            "type": "category"
+        },
+        "yaxis": {
+            "type": "linear"
+        },
+        "height": 450,
+        "width": 800,
+        "autosize": true,
+        "showlegend": true,
+        "funnelmode": "stack"
+    }
+}

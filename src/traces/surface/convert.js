@@ -18,6 +18,7 @@ var fill = require('ndarray-fill');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
+var extractOpts = require('../../components/colorscale').extractOpts;
 
 var interp2d = require('../heatmap/interp2d');
 var findEmpties = require('../heatmap/find_empties');
@@ -534,7 +535,8 @@ proto.update = function(data) {
         opacity: data.opacity
     };
 
-    params.intensityBounds = [data.cmin, data.cmax];
+    var cOpts = extractOpts(data);
+    params.intensityBounds = [cOpts.min, cOpts.max];
 
     // Refine surface color if necessary
     if(data.surfacecolor) {

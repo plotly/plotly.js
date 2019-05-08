@@ -11,19 +11,14 @@
 var extendFlat = require('../../lib/extend').extendFlat;
 var plotAttrs = require('../../plots/attributes');
 var fontAttrs = require('../../plots/font_attributes');
-var colorAttributes = require('../../components/colorscale/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-var scatterAttrs = require('../scatter/attributes');
-var scatterLineAttrs = scatterAttrs.line;
-var colorbarAttrs = require('../../components/colorbar/attributes');
 
-var line = extendFlat({
-    editType: 'calc'
-}, colorAttributes('line', {editType: 'calc'}),
+var line = extendFlat(
+    {editType: 'calc'},
+    colorScaleAttrs('line', {editTypeOverride: 'calc'}),
     {
-        showscale: scatterLineAttrs.showscale,
-        colorbar: colorbarAttrs,
         shape: {
             valType: 'enumerated',
             values: ['linear', 'hspline'],
@@ -46,7 +41,8 @@ var line = extendFlat({
                 'This value here applies when hovering over lines.'
             ].join(' ')
         })
-    });
+    }
+);
 
 module.exports = {
     domain: domainAttrs({name: 'parcats', trace: true, editType: 'calc'}),

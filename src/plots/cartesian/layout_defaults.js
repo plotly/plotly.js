@@ -35,8 +35,12 @@ function appendList(cont, k, item) {
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var ax2traces = {};
-    var xaCheater = {};
-    var xaNonCheater = {};
+    var xaMayHide = {};
+    var yaMayHide = {};
+    var xaMustDisplay = {};
+    var yaMustDisplay = {};
+    var yaMustForward = {};
+    var yaMayBackward = {};
     var outerTicks = {};
     var noGrids = {};
     var i, j;
@@ -66,30 +70,46 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             }
         }
 
+        // logic for funnels
+        if(trace.type === 'funnel') {
+            if(trace.orientation === 'h') {
+                if(xaName) xaMayHide[xaName] = true;
+                if(yaName) yaMayBackward[yaName] = true;
+            } else {
+                if(yaName) yaMayHide[yaName] = true;
+            }
+        } else {
+            if(yaName) {
+                yaMustDisplay[yaName] = true;
+                yaMustForward[yaName] = true;
+            }
+
+            if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
+                if(xaName) xaMustDisplay[xaName] = true;
+            }
+        }
+
         // Two things trigger axis visibility:
         // 1. is not carpet
         // 2. carpet that's not cheater
-        if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
-            if(xaName) xaNonCheater[xaName] = 1;
-        }
 
         // The above check for definitely-not-cheater is not adequate. This
         // second list tracks which axes *could* be a cheater so that the
         // full condition triggering hiding is:
         //   *could* be a cheater and *is not definitely visible*
         if(trace.type === 'carpet' && trace._cheater) {
-            if(xaName) xaCheater[xaName] = 1;
+            if(xaName) xaMayHide[xaName] = true;
         }
 
         // check for default formatting tweaks
         if(traceIs(trace, '2dMap')) {
-            outerTicks[xaName] = 1;
-            outerTicks[yaName] = 1;
+            outerTicks[xaName] = true;
+            outerTicks[yaName] = true;
         }
 
         if(traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
-            noGrids[positionAxis] = 1;
+            noGrids[positionAxis] = true;
         }
     }
 
@@ -167,6 +187,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
+        var visibleDflt =
+            (axLetter === 'x' && !xaMustDisplay[axName] && xaMayHide[axName]) ||
+            (axLetter === 'y' && !yaMustDisplay[axName] && yaMayHide[axName]);
+
+        var reverseDflt =
+            (axLetter === 'y' && !yaMustForward[axName] && yaMayBackward[axName]);
+
         var defaultOptions = {
             letter: axLetter,
             font: layoutOut.font,
@@ -176,7 +203,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             bgColor: bgColor,
             calendar: layoutOut.calendar,
             automargin: true,
-            cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName],
+            visibleDflt: visibleDflt,
+            reverseDflt: reverseDflt,
             splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
         };
 

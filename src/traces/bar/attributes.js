@@ -10,8 +10,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var colorAttributes = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var constants = require('./constants.js');
 
@@ -33,13 +32,12 @@ var markerLineWidth = extendFlat({},
 var markerLine = extendFlat({
     width: markerLineWidth,
     editType: 'calc'
-}, colorAttributes('marker.line'));
+}, colorScaleAttrs('marker.line'));
 
 var marker = extendFlat({
     line: markerLine,
     editType: 'calc'
-}, colorAttributes('marker'), {
-    colorbar: colorbarAttrs,
+}, colorScaleAttrs('marker'), {
     opacity: {
         valType: 'number',
         arrayOk: true,
@@ -83,6 +81,30 @@ module.exports = {
             '*auto* tries to position `text` inside the bar, but if',
             'the bar is too small and no bar is stacked on this one',
             'the text is moved outside.'
+        ].join(' ')
+    },
+
+    insidetextanchor: {
+        valType: 'enumerated',
+        values: ['end', 'middle', 'start'],
+        dflt: 'end',
+        role: 'info', // TODO: or style ?
+        editType: 'plot',
+        description: [
+            'Determines if texts are kept at center or start/end points in `textposition` *inside* mode.'
+        ].join(' ')
+    },
+
+    textangle: {
+        valType: 'angle',
+        dflt: 'auto',
+        role: 'info', // TODO: or style ?
+        editType: 'plot',
+        description: [
+            'Sets the angle of the tick labels with respect to the bar.',
+            'For example, a `tickangle` of -90 draws the tick labels',
+            'vertically. With *auto* the texts may automatically be',
+            'rotated to fit with the maximum size in bars.'
         ].join(' ')
     },
 

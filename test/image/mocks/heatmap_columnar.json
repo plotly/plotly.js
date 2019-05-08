@@ -1,0 +1,13 @@
+{
+  "data": [{
+    "type": "heatmap",
+    "x": ["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+    "y": ["A", "B", "C", "A", "B", "C", "A", "B", "C"],
+    "z": [0, 50, 100, 50, 0, 255, 100, 510, 1010]
+  }],
+  "layout": {
+      "xaxis": {
+        "categoryorder": "category descending"
+      }
+  }
+}

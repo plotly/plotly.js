@@ -43,12 +43,6 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         var heatmapColoringLayer = Lib.ensureSingle(plotGroup, 'g', 'heatmapcoloring');
         var cdheatmaps = [];
         if(contours.coloring === 'heatmap') {
-            if(trace.zauto && (trace.autocontour === false)) {
-                trace._input.zmin = trace.zmin =
-                    contours.start - contours.size / 2;
-                trace._input.zmax = trace.zmax =
-                    trace.zmin + pathinfo.length * contours.size;
-            }
             cdheatmaps = [cd];
         }
         heatmapPlot(gd, plotinfo, cdheatmaps, heatmapColoringLayer);
