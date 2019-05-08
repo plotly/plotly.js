@@ -133,6 +133,16 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
         var edge = bPos + bdPos;
         var edgeplus;
         var edgeminus;
+        // value-space padding
+        var vpadplus;
+        var vpadminus;
+        // pixel-space padding
+        var ppadplus;
+        var ppadminus;
+        // do we add 5% of both sides (more logic for points beyond box/violin below)
+        var padded = Boolean(width);
+        // does this trace show points?
+        var hasPts = (trace.boxpoints || trace.points) && (shownPts > 0);
 
         if(side === 'positive') {
             pushplus = dPos * (width ? 1 : 0.5);
@@ -146,17 +156,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
             pushplus = pushminus = dPos;
             edgeplus = edgeminus = edge;
         }
-
-        // value-space padding
-        var vpadplus;
-        var vpadminus;
-        // pixel-space padding
-        var ppadplus;
-        var ppadminus;
-        // do we add 5% of both sides (for points beyond box/violin)
-        var padded = false;
-        // does this trace show points?
-        var hasPts = (trace.boxpoints || trace.points) && (shownPts > 0);
 
         if(hasPts) {
             var pointpos = trace.pointpos;

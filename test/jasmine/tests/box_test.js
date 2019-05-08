@@ -579,11 +579,11 @@ describe('Test box restyle:', function() {
             y0: 0.1
         }])
         .then(function() {
-            _assert('base', [-0.2, 1.5], [-0.444, 8.444]);
+            _assert('base', [-0.289, 1.5], [-0.444, 8.444]);
             return Plotly.restyle(gd, 'visible', [true, 'legendonly']);
         })
         .then(function() {
-            _assert('only trace0 visible', [-0.2, 0.2], [-0.444, 8.444]);
+            _assert('only trace0 visible', [-0.2222, 0.2222], [-0.444, 8.444]);
             return Plotly.restyle(gd, 'visible', ['legendonly', true]);
         })
         .then(function() {
