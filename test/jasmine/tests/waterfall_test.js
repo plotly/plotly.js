@@ -1122,6 +1122,23 @@ describe('A waterfall plot', function() {
         })
         .then(function() {
             _assertNumberOfWaterfallTextNodes(3);
+            return Plotly.restyle(gd, 'textinfo', 'text');
+        })
+        .then(function() {
+            _assertNumberOfWaterfallTextNodes(3);
+            return Plotly.restyle(gd, 'text', [[null, 0, '']]);
+        })
+        .then(function() {
+            // N.B. that '0' should be there!
+            _assertNumberOfWaterfallTextNodes(1);
+            return Plotly.restyle(gd, 'textinfo', 'delta');
+        })
+        .then(function() {
+            _assertNumberOfWaterfallTextNodes(3);
+            return Plotly.restyle(gd, 'textposition', 'none');
+        })
+        .then(function() {
+            _assertNumberOfWaterfallTextNodes(0);
         })
         .catch(failTest)
         .then(done);

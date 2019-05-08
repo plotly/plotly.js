@@ -1169,6 +1169,23 @@ describe('A funnel plot', function() {
         })
         .then(function() {
             _assertNumberOfFunnelTextNodes(3);
+            return Plotly.restyle(gd, 'textinfo', 'text');
+        })
+        .then(function() {
+            _assertNumberOfFunnelTextNodes(3);
+            return Plotly.restyle(gd, 'text', [[null, 0, '']]);
+        })
+        .then(function() {
+            // N.B. that '0' should be there!
+            _assertNumberOfFunnelTextNodes(1);
+            return Plotly.restyle(gd, 'textinfo', 'value');
+        })
+        .then(function() {
+            _assertNumberOfFunnelTextNodes(3);
+            return Plotly.restyle(gd, 'textposition', 'none');
+        })
+        .then(function() {
+            _assertNumberOfFunnelTextNodes(0);
         })
         .catch(failTest)
         .then(done);
