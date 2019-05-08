@@ -2362,20 +2362,12 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
     // fill in redraw sequence
     var seq = [];
 
-    if(restyleFlags.fullReplot && relayoutFlags.layoutReplot) {
-        var data = gd.data;
-        var layout = gd.layout;
-
-        // clear existing data/layout on gd
-        // so that Plotly.plot doesn't try to extend them
-        gd.data = undefined;
-        gd.layout = undefined;
-
-        seq.push(function() { return exports.plot(gd, data, layout); });
+    if(relayoutFlags.layoutReplot) {
+        // N.B. works fine when both
+        // relayoutFlags.layoutReplot and restyleFlags.fullReplot are true
+        seq.push(subroutines.layoutReplot);
     } else if(restyleFlags.fullReplot) {
         seq.push(exports.plot);
-    } else if(relayoutFlags.layoutReplot) {
-        seq.push(subroutines.layoutReplot);
     } else {
         seq.push(Plots.previousPromises);
         axRangeSupplyDefaultsByPass(gd, relayoutFlags, relayoutSpecs) || Plots.supplyDefaults(gd);
