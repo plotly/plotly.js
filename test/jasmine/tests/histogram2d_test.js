@@ -116,16 +116,29 @@ describe('Test histogram2d', function() {
 
 
     describe('calc', function() {
-        function _calc(opts) {
+        function _calc(opts, layout) {
             var base = { type: 'histogram2d' };
             var trace = Lib.extendFlat({}, base, opts);
             var gd = { data: [trace] };
+            if(layout) gd.layout = layout;
 
             supplyAllDefaults(gd);
             var fullTrace = gd._fullData[0];
+            var fullLayout = gd._fullLayout;
+
+            fullTrace._extremes = {};
+
+            // we used to call ax.setScale during supplyDefaults, and this had a
+            // fallback to provide _categories and _categoriesMap. Now neither of
+            // those is true... anyway the right way to do this though is
+            // ax.clearCalc.
+            fullLayout.xaxis.clearCalc();
+            fullLayout.yaxis.clearCalc();
 
             var out = calc(gd, fullTrace);
-            delete out.trace;
+            out._xcategories = fullLayout.xaxis._categories;
+            out._ycategories = fullLayout.yaxis._categories;
+
             return out;
         }
 
@@ -156,6 +169,60 @@ describe('Test histogram2d', function() {
                 [0, 0, 0, 0],
                 [0, 0, 0, 1]
             ]);
+        });
+
+        ['histogram2d', 'histogram2dcontour'].forEach(function(traceType) {
+            it('should sort z data based on axis categoryorder for ' + traceType, function() {
+                var mock = require('@mocks/heatmap_categoryorder');
+                var mockCopy = Lib.extendDeep({}, mock);
+                var data = mockCopy.data[0];
+                data.type = traceType;
+                var layout = mockCopy.layout;
+
+                // sort x axis categories
+                var mockLayout = Lib.extendDeep({}, layout);
+                var out = _calc(data, mockLayout);
+                mockLayout.xaxis.categoryorder = 'category ascending';
+                var out1 = _calc(data, mockLayout);
+
+                expect(out._xcategories).toEqual(out1._xcategories.slice().reverse());
+                // Check z data is also sorted
+                for(var i = 0; i < out.z.length; i++) {
+                    expect(out1.z[i]).toEqual(out.z[i].slice().reverse());
+                }
+
+                // sort y axis categories
+                mockLayout = Lib.extendDeep({}, layout);
+                out = _calc(data, mockLayout);
+                mockLayout.yaxis.categoryorder = 'category ascending';
+                out1 = _calc(data, mockLayout);
+
+                expect(out._ycategories).toEqual(out1._ycategories.slice().reverse());
+                // Check z data is also sorted
+                expect(out1.z).toEqual(out.z.slice().reverse());
+            });
+
+            it('should sort z data based on axis categoryarray ' + traceType, function() {
+                var mock = require('@mocks/heatmap_categoryorder');
+                var mockCopy = Lib.extendDeep({}, mock);
+                var data = mockCopy.data[0];
+                data.type = traceType;
+                var layout = mockCopy.layout;
+
+                layout.xaxis.categoryorder = 'array';
+                layout.xaxis.categoryarray = ['x', 'z', 'y', 'w'];
+                layout.yaxis.categoryorder = 'array';
+                layout.yaxis.categoryarray = ['a', 'd', 'b', 'c'];
+
+                var out = _calc(data, layout);
+
+                expect(out._xcategories).toEqual(layout.xaxis.categoryarray, 'xaxis should reorder');
+                expect(out._ycategories).toEqual(layout.yaxis.categoryarray, 'yaxis should reorder');
+                var offset = 0;
+                if(traceType === 'histogram2dcontour') offset = 1;
+                expect(out.z[0 + offset][0 + offset]).toEqual(0);
+                expect(out.z[0 + offset][3 + offset]).toEqual(1);
+            });
         });
     });
 

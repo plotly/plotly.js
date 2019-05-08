@@ -1,0 +1,54 @@
+{
+  "data": [{
+    "type": "heatmap",
+    "x": ["Team A", "Team B", "Team C"],
+    "xaxis": "x",
+    "y": ["Game Three", "Game Two", "Game One"],
+    "z": [
+      [0.1, 0.3, 0.5],
+      [1, 0.8, 0.6],
+      [0.6, 0.4, 0.2]
+    ],
+    "yaxis": "y",
+    "coloraxis": "coloraxis"
+  }, {
+    "type": "heatmap",
+    "x": ["Team B", "Team C"],
+    "xaxis": "x",
+    "y": ["Game Three", "Game Two", "Game One"],
+    "z": [
+      [0.3, 0.5],
+      [0.8, 0.6],
+      [0.4, 0.2]
+    ],
+    "yaxis": "y2",
+    "coloraxis": "coloraxis"
+  }],
+  "layout": {
+    "xaxis": {
+      "anchor": "y2",
+      "domain": [0, 1],
+      "type": "category",
+      "range": [-0.5, 2.5],
+      "autorange": true
+    },
+    "yaxis": {
+      "anchor": "free",
+      "domain": [0.575, 1],
+      "position": 0,
+      "type": "category",
+      "range": [-0.5, 2.5],
+      "autorange": true
+    },
+    "yaxis2": {
+      "anchor": "x",
+      "domain": [0, 0.425],
+      "type": "category",
+      "range": [-0.5, 2.5],
+      "autorange": true
+    },
+    "coloraxis": {
+        "colorscale": "RdBu"
+    }
+  }
+}

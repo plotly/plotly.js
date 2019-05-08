@@ -78,6 +78,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     } else {
         xl = xc ? xc[nx] : ((x[nx] + x[nx + 1]) / 2);
         yl = yc ? yc[ny] : ((y[ny] + y[ny + 1]) / 2);
+
+        if(xa && xa.type === 'category') xl = x[nx];
+        if(ya && ya.type === 'category') yl = y[ny];
+
         if(trace.zsmooth) {
             x0 = x1 = xa.c2p(xl);
             y0 = y1 = ya.c2p(yl);

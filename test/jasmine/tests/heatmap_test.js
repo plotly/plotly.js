@@ -491,6 +491,57 @@ describe('heatmap calc', function() {
         expect(out.y).toBeCloseToArray([0, 4, 8]);
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
+
+    ['heatmap', 'heatmapgl'].forEach(function(traceType) {
+        it('should sort z data based on axis categoryorder for ' + traceType, function() {
+            var mock = require('@mocks/heatmap_categoryorder');
+            var mockCopy = Lib.extendDeep({}, mock);
+            var data = mockCopy.data[0];
+            data.type = traceType;
+            var layout = mockCopy.layout;
+
+            // sort x axis categories
+            var mockLayout = Lib.extendDeep({}, layout);
+            var out = _calc(data, mockLayout);
+            mockLayout.xaxis.categoryorder = 'category ascending';
+            var out1 = _calc(data, mockLayout);
+
+            expect(out._xcategories).toEqual(out1._xcategories.slice().reverse());
+            // Check z data is also sorted
+            for(var i = 0; i < out.z.length; i++) {
+                expect(out1.z[i]).toEqual(out.z[i].slice().reverse());
+            }
+
+            // sort y axis categories
+            mockLayout = Lib.extendDeep({}, layout);
+            out = _calc(data, mockLayout);
+            mockLayout.yaxis.categoryorder = 'category ascending';
+            out1 = _calc(data, mockLayout);
+
+            expect(out._ycategories).toEqual(out1._ycategories.slice().reverse());
+            // Check z data is also sorted
+            expect(out1.z).toEqual(out.z.slice().reverse());
+        });
+
+        it('should sort z data based on axis categoryarray ' + traceType, function() {
+            var mock = require('@mocks/heatmap_categoryorder');
+            var mockCopy = Lib.extendDeep({}, mock);
+            var data = mockCopy.data[0];
+            data.type = traceType;
+            var layout = mockCopy.layout;
+
+            layout.xaxis.categoryorder = 'array';
+            layout.xaxis.categoryarray = ['x', 'z', 'y', 'w'];
+            layout.yaxis.categoryorder = 'array';
+            layout.yaxis.categoryarray = ['a', 'd', 'b', 'c'];
+
+            var out = _calc(data, layout);
+
+            expect(out._xcategories).toEqual(layout.xaxis.categoryarray, 'xaxis should reorder');
+            expect(out._ycategories).toEqual(layout.yaxis.categoryarray, 'yaxis should reorder');
+            expect(out.z[0][0]).toEqual(0);
+        });
+    });
 });
 
 describe('heatmap plot', function() {
@@ -727,6 +778,24 @@ describe('heatmap hover', function() {
 
             expect(pt.index).toEqual([0, 0], 'have correct index');
             assertLabels(pt, 2, 0.2, 6);
+        });
+    });
+
+    describe('with sorted categories', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = require('@mocks/heatmap_categoryorder.json');
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+        afterAll(destroyGraphDiv);
+
+        it('should find closest point (case 1) and should', function() {
+            var pt = _hover(gd, 3, 1)[0];
+            expect(pt.index).toEqual([1, 3], 'have correct index');
+            assertLabels(pt, 2.5, 0.5, 0);
         });
     });
 
