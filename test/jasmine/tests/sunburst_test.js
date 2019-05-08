@@ -1138,4 +1138,26 @@ describe('Test sunburst interactions edge cases', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should show falsy zero text', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                parents: ['', 'A', 'B', 'C', 'D', 'E', 'F'],
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+                values: [7, 6, 5, 4, 3, 2, 1],
+                text: [null, '', '0', 0, 1, true, false],
+                textinfo: 'label+text+value'
+            }],
+            layout: {
+                width: 400,
+                height: 400
+            }
+        })
+        .then(hover(gd, 4))
+        .then(function() {
+            assertHoverLabelContent({ nums: 'D\n4\n0' });
+        })
+        .then(done);
+    });
 });

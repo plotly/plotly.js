@@ -998,6 +998,11 @@ describe('pie hovering', function() {
             Lib.clearThrottle();
         }
 
+        function _hover2() {
+            mouseEvent('mouseover', 200, 250);
+            Lib.clearThrottle();
+        }
+
         function assertLabel(content, style, msg) {
             assertHoverLabelContent({nums: content}, msg);
 
@@ -1099,6 +1104,27 @@ describe('pie hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel('0\n12|345|678@91\n99@9%');
+            })
+            .then(done);
+        });
+
+        it('should show falsy zero text', function(done) {
+            Plotly.plot(gd, {
+                data: [{
+                    type: 'pie',
+                    labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+                    values: [7, 6, 5, 4, 3, 2, 1],
+                    text: [null, '', '0', 0, 1, true, false],
+                    textinfo: 'label+text+value'
+                }],
+                layout: {
+                    width: 400,
+                    height: 400
+                }
+            })
+            .then(_hover2)
+            .then(function() {
+                assertLabel('D\n0\n4\n14.3%');
             })
             .then(done);
         });
