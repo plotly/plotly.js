@@ -100,7 +100,7 @@ function calc(gd, trace) {
             thisText = hasLabel ? [pt.label] : [];
             if(hasText) {
                 var texti = helpers.getFirstFilled(trace.text, pt.pts);
-                if(texti) thisText.push(texti);
+                if(texti || texti === 0) thisText.push(texti);
             }
             if(hasValue) thisText.push(helpers.formatPieValue(pt.v, separators));
             if(hasPercent) thisText.push(helpers.formatPiePercent(pt.v / vTotal, separators));
