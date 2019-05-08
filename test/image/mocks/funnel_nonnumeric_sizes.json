@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "x": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f"
+      ],
+      "y": [
+        1,
+        null,
+        "nonsense",
+        2,
+        0,
+        1
+      ],
+      "type": "funnel", "orientation": "v"
+    }
+  ],
+  "layout": {
+    "margin": { "l": 20, "r": 20, "t": 20, "b": 50 },
+    "width": 600,
+    "height": 200
+  }
+}

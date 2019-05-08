@@ -96,11 +96,12 @@ function crossTraceCalc(gd, polarLayout, subplotId) {
     var rAxis = extendFlat({}, polarLayout.radialaxis, {_id: 'x'});
     var aAxis = polarLayout.angularaxis;
 
-    // 'bargap', 'barmode' are in _fullLayout.polar
-    // TODO clean up setGroupPositions API instead
-    var mockGd = {_fullLayout: polarLayout};
-
-    setGroupPositions(mockGd, aAxis, rAxis, barPolarCd);
+    setGroupPositions(gd, aAxis, rAxis, barPolarCd, {
+        mode: polarLayout.barmode,
+        norm: polarLayout.barnorm,
+        gap: polarLayout.bargap,
+        groupgap: polarLayout.bargroupgap
+    });
 }
 
 module.exports = {

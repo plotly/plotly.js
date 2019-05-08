@@ -76,8 +76,24 @@ module.exports = {
     hovertext: barAttrs.hovertext,
     hovertemplate: barAttrs.hovertemplate,
 
+    textinfo: {
+        valType: 'flaglist',
+        flags: ['label', 'text', 'initial', 'delta', 'final'],
+        extras: ['none'],
+        role: 'info',
+        editType: 'plot',
+        arrayOk: false,
+        description: [
+            'Determines which trace information appear on the graph.',
+            'In the case of having multiple waterfalls, totals',
+            'are computed separately (per trace).'
+        ].join(' ')
+    },
+
     text: barAttrs.text,
     textposition: barAttrs.textposition,
+    insidetextanchor: barAttrs.insidetextanchor,
+    textangle: barAttrs.textangle,
     textfont: barAttrs.textfont,
     insidetextfont: barAttrs.insidetextfont,
     outsidetextfont: barAttrs.outsidetextfont,
@@ -125,5 +141,5 @@ module.exports = {
     },
 
     offsetgroup: barAttrs.offsetgroup,
-    alignmentgroup: barAttrs.offsetgroup
+    alignmentgroup: barAttrs.alignmentgroup
 };

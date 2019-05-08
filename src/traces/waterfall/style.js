@@ -39,13 +39,13 @@ function style(gd, cd) {
         styleTextPoints(gTrace, trace, gd);
 
         gTrace.selectAll('.lines').each(function() {
-            var sel = d3.select(this);
-            var connectorLine = trace.connector.line;
+            var cont = trace.connector.line;
 
-            Drawing.lineGroupStyle(sel.selectAll('path'),
-                connectorLine.width,
-                connectorLine.color,
-                connectorLine.dash
+            Drawing.lineGroupStyle(
+                d3.select(this).selectAll('path'),
+                cont.width,
+                cont.color,
+                cont.dash
             );
         });
     });

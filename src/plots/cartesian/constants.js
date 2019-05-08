@@ -65,12 +65,19 @@ module.exports = {
     traceLayerClasses: [
         'heatmaplayer',
         'contourcarpetlayer', 'contourlayer',
-        'waterfalllayer', 'barlayer',
+        'funnellayer', 'waterfalllayer', 'barlayer',
         'carpetlayer',
         'violinlayer',
         'boxlayer',
         'ohlclayer',
         'scattercarpetlayer', 'scatterlayer'
+    ],
+
+    clipOnAxisFalseQuery: [
+        '.scatterlayer',
+        '.barlayer',
+        '.funnellayer',
+        '.waterfalllayer'
     ],
 
     layerValue2layerClass: {

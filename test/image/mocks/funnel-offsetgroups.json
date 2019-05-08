@@ -1,0 +1,89 @@
+{
+  "data": [
+    {
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 4, 3, 2, 1 ],
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1"
+    },
+    {
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 3, 2, 1, 0 ],
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2"
+    },
+    {
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 4, 3, 2, 1 ],
+      "yaxis": "y2",
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1"
+    },
+    {
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 3, 2, 1, 0 ],
+      "yaxis": "y2",
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2"
+    },
+    {
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 4, 3, 2, 1 ],
+      "offsetgroup": 1,
+      "hovertext": "offsetgroup: 1",
+      "xaxis": "x2"
+    },
+    {
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 3, 2, 1, 0 ],
+      "offsetgroup": 2,
+      "hovertext": "offsetgroup: 2",
+      "xaxis": "x2"
+    },
+    {
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 4, 3, 2, 1 ],
+      "yaxis": "y2",
+      "offsetgroup": 3,
+      "hovertext": "offsetgroup: 3",
+      "xaxis": "x2"
+    },
+    {
+      "type": "funnel", "opacity": 0.8, "orientation": "v",
+      "x": [ "A", "B", "C", "D" ],
+      "y": [ 3, 2, 1, 0 ],
+      "yaxis": "y2",
+      "offsetgroup": 4,
+      "hovertext": "offsetgroup: 4",
+      "xaxis": "x2"
+    }
+  ],
+  "layout": {
+    "funnelmode": "group",
+    "showlegend": false,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "title": {
+      "text": "funnel offset groups"
+    },
+    "xaxis": {
+      "title": {
+        "text": "two distinct offset groups"
+      }
+    },
+    "xaxis2": {
+      "title": {
+        "text": "four distinct offset groups"
+      }
+    }
+  }
+}

@@ -1,0 +1,113 @@
+{
+    "data": [
+        {
+            "name": "plotly.js",
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "All tickets",
+                "Pull requests",
+                "Author: etpinard",
+                "Label: bug",
+                "Status: open"
+            ],
+            "y": [
+                3756,
+                1580,
+                663,
+                343,
+                1
+            ],
+            "textposition": "outside",
+            "connector": {
+                "fillcolor": "rgba(0, 0, 0, 0)",
+                "line": {
+                    "color": "rgb(127, 127, 127)",
+                    "dash": 10,
+                    "width": 2
+                }
+            },
+            "marker": {
+                "color": [
+                    "rgb(0, 127, 127)",
+                    "rgb(0, 0, 127)",
+                    "rgb(127, 0, 127)",
+                    "rgb(127, 0, 0)",
+                    "rgb(127, 127, 0)"
+                ],
+                "line": {
+                    "color": [
+                        "rgb(255, 127, 127)",
+                        "rgb(255, 255, 127)",
+                        "rgb(127, 255, 127)",
+                        "rgb(127, 255, 255)",
+                        "rgb(127, 127, 255)"
+                    ],
+                    "dash": 10,
+                    "width": [
+                        8,
+                        6,
+                        4,
+                        2,
+                        0
+                    ]
+                }
+            }
+        },
+        {
+            "name": "orca",
+            "type": "funnel",
+            "orientation": "v",
+            "x": [
+                "All tickets",
+                "Pull requests",
+                "Author: etpinard",
+                "Label: bug",
+                "Status: open"
+            ],
+            "y": [
+                224,
+                107,
+                31,
+                2,
+                0
+            ],
+            "textposition": "inside",
+            "text": [
+                "224",
+                "107",
+                "31",
+                "2",
+                "0"
+            ],
+            "connector": {
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "dash": 0,
+                    "width": 1
+                }
+            },
+            "marker": {
+                "color": "rgb(255, 255, 0)",
+                "line": {
+                    "color": "rgb(255, 0, 0)",
+                    "dash": 10,
+                    "width": 3
+                }
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "plotly repos | April 10 2019"
+        },
+        "xaxis": {
+            "autorange": "reversed"
+        },
+        "margin": { "l": 0 },
+        "height": 800,
+        "width": 800,
+        "funnelmode": "overlay",
+        "showlegend": true
+    }
+}

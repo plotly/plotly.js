@@ -42,19 +42,15 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         }
     }
 
-    // waterfall version of 'barmode', 'bargap' and 'bargroupgap'
-    var mockGd = {
-        _fullLayout: {
-            _axisMatchGroups: fullLayout._axisMatchGroups,
-            _alignmentOpts: fullLayout._alignmentOpts,
-            barmode: fullLayout.waterfallmode,
-            bargap: fullLayout.waterfallgap,
-            bargroupgap: fullLayout.waterfallgroupgap
-        }
+    var opts = {
+        mode: fullLayout.waterfallmode,
+        norm: fullLayout.waterfallnorm,
+        gap: fullLayout.waterfallgap,
+        groupgap: fullLayout.waterfallgroupgap
     };
 
-    setGroupPositions(mockGd, xa, ya, waterfallsVert);
-    setGroupPositions(mockGd, ya, xa, waterfallsHorz);
+    setGroupPositions(gd, xa, ya, waterfallsVert, opts);
+    setGroupPositions(gd, ya, xa, waterfallsHorz, opts);
 
     for(i = 0; i < waterfalls.length; i++) {
         cd = waterfalls[i];

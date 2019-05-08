@@ -2813,7 +2813,7 @@ function hasBarsOrFill(gd, ax) {
 
         if(trace.visible === true && (trace.xaxis + trace.yaxis) === subplot) {
             if(
-                (Registry.traceIs(trace, 'bar') || trace.type === 'waterfall') &&
+                Registry.traceIs(trace, 'bar-like') &&
                 trace.orientation === {x: 'h', y: 'v'}[axLetter]
             ) return true;
 

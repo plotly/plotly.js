@@ -1,0 +1,161 @@
+{
+    "data": [
+        {
+            "type": "bar",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                3,
+                2,
+                1
+            ],
+            "text": [
+                "()",
+                "void main()",
+                "public static void main()"
+            ],
+            "textposition": "outside",
+            "cliponaxis": false,
+            "textangle": -15,
+            "textinfo": "value+percent initial+percent previous+percent total"
+        },
+        {
+            "type": "bar",
+            "orientation": "v",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                300,
+                200,
+                100
+            ],
+            "text": [
+                "()",
+                "void main()",
+                "public static void main()"
+            ],
+            "textposition": "outside",
+            "cliponaxis": false,
+            "textangle": 135,
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "bar",
+            "orientation": "h",
+            "x": [
+                30000,
+                20000,
+                10000
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "text": [
+                "()",
+                "void main()",
+                "public static void main()"
+            ],
+            "textposition": "outside",
+            "cliponaxis": false,
+            "textangle": 30,
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "bar",
+            "orientation": "h",
+            "x": [
+                1000000,
+                2000000,
+                3000000
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "text": [
+                "()",
+                "void main()",
+                "public static void main()"
+            ],
+            "textposition": "outside",
+            "cliponaxis": false,
+            "textangle": -90,
+            "textinfo": "value+percent initial+percent previous+percent total",
+            "xaxis": "x4",
+            "yaxis": "y4"
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "dragmode": "pan",
+        "xaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [
+                0,
+                0.48
+            ]
+        }
+    }
+}

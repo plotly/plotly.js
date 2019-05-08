@@ -45,10 +45,15 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('width');
 
     coerce('text');
+
     coerce('hovertext');
     coerce('hovertemplate');
 
     handleText(traceIn, traceOut, layout, coerce, false);
+
+    if(traceOut.textposition !== 'none') {
+        coerce('textinfo');
+    }
 
     handleDirection(coerce, 'increasing', INCREASING_COLOR);
     handleDirection(coerce, 'decreasing', DECREASING_COLOR);
@@ -84,6 +89,5 @@ function crossTraceDefaults(fullData, fullLayout) {
 
 module.exports = {
     supplyDefaults: supplyDefaults,
-    crossTraceDefaults: crossTraceDefaults,
-    handleGroupingDefaults: handleGroupingDefaults
+    crossTraceDefaults: crossTraceDefaults
 };

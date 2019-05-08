@@ -24,7 +24,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'waterfall',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'],
+    categories: ['bar-like', 'cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'],
     meta: {
         description: [
             'Draws waterfall trace which is useful graph to displays the',

@@ -1,0 +1,160 @@
+{
+    "data": [
+        {
+            "type": "waterfall",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                5,
+                -4,
+                3
+            ],
+            "measure": [
+                "a",
+                "r",
+                "r"
+            ],
+            "textposition": "auto",
+            "textinfo": "initial+delta+final",
+            "xaxis": "x",
+            "yaxis": "y"
+        },
+        {
+            "type": "waterfall",
+            "x": [
+                "A",
+                "B",
+                "C"
+            ],
+            "y": [
+                500,
+                -400,
+                300
+            ],
+            "base": 100,
+            "measure": [
+                "a",
+                "r",
+                "r"
+            ],
+            "textposition": "auto",
+            "textinfo": "initial+delta+final",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "waterfall",
+            "orientation": "h",
+            "x": [
+                50000,
+                -40000,
+                30000
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "base": 10000,
+            "measure": [
+                "a",
+                "r",
+                "r"
+            ],
+            "textposition": "auto",
+            "textinfo": "initial+delta+final",
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "waterfall",
+            "orientation": "h",
+            "x": [
+                5000000,
+                -4000000,
+                3000000
+            ],
+            "y": [
+                "A",
+                "B",
+                "C"
+            ],
+            "base": 1000000,
+            "measure": [
+                "a",
+                "r",
+                "r"
+            ],
+            "textposition": "auto",
+            "textinfo": "initial+delta+final",
+            "xaxis": "x4",
+            "yaxis": "y4"
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "dragmode": "pan",
+        "xaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": "reversed"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": "reversed"
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.48
+            ],
+            "autorange": "reversed"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [
+                0.52,
+                1
+            ],
+            "autorange": "reversed"
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [
+                0,
+                0.48
+            ]
+        }
+    }
+}

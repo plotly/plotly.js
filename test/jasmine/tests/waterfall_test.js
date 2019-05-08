@@ -125,6 +125,25 @@ describe('Waterfall.supplyDefaults', function() {
         expect(traceOut.constraintext).toBeUndefined();
     });
 
+    it('should not coerce textinfo when textposition is none', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            textinfo: 'text'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textinfo).toBeUndefined();
+    });
+
+    it('should coerce textinfo when textposition is not none', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            textposition: 'auto',
+            textinfo: 'text'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textinfo).not.toBeUndefined();
+    });
+
     it('should default textfont to layout.font except for insidetextfont.color', function() {
         traceIn = {
             textposition: 'inside',
@@ -1103,6 +1122,23 @@ describe('A waterfall plot', function() {
         })
         .then(function() {
             _assertNumberOfWaterfallTextNodes(3);
+            return Plotly.restyle(gd, 'textinfo', 'text');
+        })
+        .then(function() {
+            _assertNumberOfWaterfallTextNodes(3);
+            return Plotly.restyle(gd, 'text', [[null, 0, '']]);
+        })
+        .then(function() {
+            // N.B. that '0' should be there!
+            _assertNumberOfWaterfallTextNodes(1);
+            return Plotly.restyle(gd, 'textinfo', 'delta');
+        })
+        .then(function() {
+            _assertNumberOfWaterfallTextNodes(3);
+            return Plotly.restyle(gd, 'textposition', 'none');
+        })
+        .then(function() {
+            _assertNumberOfWaterfallTextNodes(0);
         })
         .catch(failTest)
         .then(done);
@@ -1265,7 +1301,10 @@ describe('waterfall hover', function() {
         return {
             style: [pt.index, pt.color, pt.xLabelVal, pt.yLabelVal],
             pos: [pt.x0, pt.x1, pt.y0, pt.y1],
-            text: pt.text
+            text: pt.text,
+            extraText: pt.extraText,
+            xLabelVal: pt.xLabelVal,
+            yLabelVal: pt.yLabelVal
         };
     }
 
@@ -1371,32 +1410,88 @@ describe('waterfall hover', function() {
             .then(done);
         });
 
-        describe('round hover precision', function() {
-            it('should format numbers', function(done) {
-                gd = createGraphDiv();
+        it('should format numbers - round hover precision', function(done) {
+            gd = createGraphDiv();
 
-                Plotly.plot(gd, {
-                    data: [{
-                        x: ['A', 'B', 'C', 'D', 'E'],
-                        y: [0, -1.1, 2.2, -3.3, 4.4],
-                        type: 'waterfall'
-                    }],
-                    layout: {width: 400, height: 400}
-                })
-                .then(function() {
-                    var evt = { xpx: 200, ypx: 350 };
-                    Fx.hover('graph', evt, 'xy');
-                })
-                .then(function() {
-                    assertHoverLabelContent({
-                        nums: '2.2\n4.4 ▲\nInitial: −2.2',
-                        name: '',
-                        axis: 'E'
-                    });
-                })
-                .catch(failTest)
-                .then(done);
-            });
+            Plotly.plot(gd, {
+                data: [{
+                    x: ['A', 'B', 'C', 'D', 'E'],
+                    y: [0, -1.1, 2.2, -3.3, 4.4],
+                    type: 'waterfall'
+                }],
+                layout: {width: 400, height: 400}
+            })
+            .then(function() {
+                var evt = { xpx: 200, ypx: 350 };
+                Fx.hover('graph', evt, 'xy');
+            })
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '2.2\n4.4 ▲\nInitial: −2.2',
+                    name: '',
+                    axis: 'E'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('hover measure categories with axis prefix and suffix', function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, {
+                data: [{
+                    x: ['A', 'B', 'C', 'D', 'E'],
+                    y: [2.2, -1.1, null, 3.3, null],
+                    measure: ['a', 'r', 't', 'r', 't'],
+                    base: 1000.001,
+                    type: 'waterfall'
+                }],
+                layout: {
+                    xaxis: {
+                        tickprefix: '[',
+                        ticksuffix: ']'
+                    },
+                    yaxis: {
+                        tickprefix: '$',
+                        ticksuffix: 'm'
+                    },
+                    width: 400,
+                    height: 400
+                }
+            })
+            .then(function() {
+                var out = _hover(gd, 0, 1000.5, 'closest');
+                expect(out.yLabelVal).toEqual(1002.201);
+                expect(out.extraText).toEqual(undefined);
+                expect(out.style).toEqual([0, '#4499FF', 0, 1002.201]);
+            })
+            .then(function() {
+                var out = _hover(gd, 1, 1000.5, 'closest');
+                expect(out.yLabelVal).toEqual(1001.101);
+                expect(out.extraText).toEqual('($1.1m) ▼<br>Initial: $1,002.201m');
+                expect(out.style).toEqual([1, '#FF4136', 1, 1001.101]);
+            })
+            .then(function() {
+                var out = _hover(gd, 2, 1000.5, 'closest');
+                expect(out.yLabelVal).toEqual(1001.101);
+                expect(out.extraText).toEqual(undefined);
+                expect(out.style).toEqual([2, '#4499FF', 2, 1001.101]);
+            })
+            .then(function() {
+                var out = _hover(gd, 3, 1000.5, 'closest');
+                expect(out.yLabelVal).toEqual(1004.401);
+                expect(out.extraText).toEqual('$3.3m ▲<br>Initial: $1,001.101m');
+                expect(out.style).toEqual([3, '#3D9970', 3, 1004.401]);
+            })
+            .then(function() {
+                var out = _hover(gd, 4, 1000.5, 'closest');
+                expect(out.yLabelVal).toEqual(1004.401);
+                expect(out.extraText).toEqual(undefined);
+                expect(out.style).toEqual([4, '#4499FF', 4, 1004.401]);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 

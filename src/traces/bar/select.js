@@ -13,6 +13,8 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
     var trace = cd[0].trace;
+    var isFunnel = (trace.type === 'funnel');
+    var isHorizontal = (trace.orientation === 'h');
     var selection = [];
     var i;
 
@@ -22,13 +24,9 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
             cd[i].selected = 0;
         }
     } else {
-        var getCentroid = trace.orientation === 'h' ?
-            function(d) { return [xa.c2p(d.s1, true), (ya.c2p(d.p0, true) + ya.c2p(d.p1, true)) / 2]; } :
-            function(d) { return [(xa.c2p(d.p0, true) + xa.c2p(d.p1, true)) / 2, ya.c2p(d.s1, true)]; };
-
         for(i = 0; i < cd.length; i++) {
             var di = cd[i];
-            var ct = 'ct' in di ? di.ct : getCentroid(di);
+            var ct = 'ct' in di ? di.ct : getCentroid(di, xa, ya, isHorizontal, isFunnel);
 
             if(selectionTester.contains(ct, false, i, searchInfo)) {
                 selection.push({
@@ -45,3 +43,20 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
 
     return selection;
 };
+
+function getCentroid(d, xa, ya, isHorizontal, isFunnel) {
+    var x0 = xa.c2p(isHorizontal ? d.s0 : d.p0, true);
+    var x1 = xa.c2p(isHorizontal ? d.s1 : d.p1, true);
+    var y0 = ya.c2p(isHorizontal ? d.p0 : d.s0, true);
+    var y1 = ya.c2p(isHorizontal ? d.p1 : d.s1, true);
+
+    if(isFunnel) {
+        return [(x0 + x1) / 2, (y0 + y1) / 2];
+    } else {
+        if(isHorizontal) {
+            return [x1, (y0 + y1) / 2];
+        } else {
+            return [(x0 + x1) / 2, y1];
+        }
+    }
+}
