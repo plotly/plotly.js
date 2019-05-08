@@ -27,7 +27,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     crossTraceDefaults: require('./cross_trace_defaults'),
     supplyLayoutDefaults: require('../bar/layout_defaults'),
-    calc: require('./calc'),
+    calc: require('./calc').calc,
     crossTraceCalc: require('../bar/cross_trace_calc').crossTraceCalc,
     plot: require('../bar/plot'),
     layerName: 'barlayer',

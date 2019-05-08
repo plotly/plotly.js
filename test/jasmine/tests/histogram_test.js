@@ -5,7 +5,7 @@ var setConvert = require('@src/plots/cartesian/set_convert');
 var supplyDefaults = require('@src/traces/histogram/defaults');
 var supplyDefaults2D = require('@src/traces/histogram2d/defaults');
 var supplyDefaults2DC = require('@src/traces/histogram2dcontour/defaults');
-var calc = require('@src/traces/histogram/calc');
+var calc = require('@src/traces/histogram/calc').calc;
 var getBinSpanLabelRound = require('@src/traces/histogram/bin_label_vals');
 
 var createGraphDiv = require('../assets/create_graph_div');
