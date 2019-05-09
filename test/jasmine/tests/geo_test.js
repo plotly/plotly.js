@@ -1251,7 +1251,7 @@ describe('Test geo interactions', function() {
         .then(done);
     });
 
-    it('should reset viewInitial when update *scope*', function(done) {
+    it('should reset viewInitial when updating *scope*', function(done) {
         var gd = createGraphDiv();
 
         function _assertViewInitial(msg, exp) {
@@ -1326,6 +1326,20 @@ describe('Test geo interactions', function() {
                 'projection.scale': 1,
                 'projection.rotation.lon': 0
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not make request for topojson when not needed', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/geo_skymap.json'));
+
+        spyOn(d3, 'json').and.callThrough();
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            expect(d3.json).toHaveBeenCalledTimes(0);
         })
         .catch(failTest)
         .then(done);

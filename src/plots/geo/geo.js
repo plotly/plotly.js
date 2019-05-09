@@ -72,6 +72,18 @@ module.exports = function createGeo(opts) {
 proto.plot = function(geoCalcData, fullLayout, promises) {
     var _this = this;
     var geoLayout = fullLayout[this.id];
+
+    var needsTopojson = false;
+    for(var k in constants.layerNameToAdjective) {
+        if(k !== 'frame' && geoLayout['show' + k]) {
+            needsTopojson = true;
+            break;
+        }
+    }
+    if(!needsTopojson) {
+        return _this.update(geoCalcData, fullLayout);
+    }
+
     var topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
     if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
