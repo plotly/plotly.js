@@ -53,7 +53,7 @@ jobs:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:10.9.0-browsers
-    parallelism: 2
+    parallelism: 5
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -77,7 +77,7 @@ jobs:
   test-image:
     docker:
       - image: plotly/testbed:latest
-    parallelism: 4
+    parallelism: 3
     working_directory: /var/www/streambed/image_server/plotly.js/
     steps:
       - attach_workspace:
