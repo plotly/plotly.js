@@ -68,8 +68,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer, opts) {
         var plotGroup = d3.select(this);
         var trace = cd[0].trace;
         var isWaterfall = (trace.type === 'waterfall');
-        var isFunnel = (trace.type === 'funnel');
-        var isBar = !(isWaterfall || isFunnel);
+        var isBar = (trace.type === 'bar');
 
         var adjustPixel = 0;
         if(isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
