@@ -42,6 +42,7 @@ function Geo(opts) {
     this.topojson = null;
 
     this.projection = null;
+    this.scope = null;
     this.viewInitial = null;
     this.fitScale = null;
     this.bounds = null;
@@ -133,9 +134,10 @@ proto.update = function(geoCalcData, fullLayout) {
         }
     }
 
-    if(!this.viewInitial) {
+    if(!this.viewInitial || this.scope !== geoLayout.scope) {
         this.saveViewInitial(geoLayout);
     }
+    this.scope = geoLayout.scope;
 
     this.updateBaseLayers(fullLayout, geoLayout);
     this.updateDims(fullLayout, geoLayout);
