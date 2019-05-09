@@ -67,9 +67,12 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer, opts) {
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
         var trace = cd[0].trace;
+        var isWaterfall = (trace.type === 'waterfall');
+        var isFunnel = (trace.type === 'funnel');
+        var isBar = !(isWaterfall || isFunnel);
 
         var adjustPixel = 0;
-        if(trace.type === 'waterfall' && trace.connector.visible && trace.connector.mode === 'between') {
+        if(isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
             adjustPixel = trace.connector.line.width / 2;
         }
 
@@ -101,10 +104,11 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer, opts) {
             var y0 = xy[1][0];
             var y1 = xy[1][1];
 
-            var isBlank = di.isBlank = (
-                !isNumeric(x0) || !isNumeric(x1) ||
-                !isNumeric(y0) || !isNumeric(y1) ||
-                x0 === x1 || y0 === y1
+            var isBlank = di.isBlank = !(
+                isNumeric(x0) && isNumeric(x1) &&
+                isNumeric(y0) && isNumeric(y1) &&
+                (x0 !== x1 || (isBar && isHorizontal)) &&
+                (y0 !== y1 || (isBar && !isHorizontal))
             );
 
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
@@ -231,7 +235,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
 
     if(!text ||
         textPosition === 'none' ||
-        (calcBar.isBlank && (
+        ((calcBar.isBlank || x0 === x1 || y0 === y1) && (
             textPosition === 'auto' ||
             textPosition === 'inside'))) {
         bar.select('text').remove();
@@ -513,6 +517,8 @@ function getTextPosition(trace, index) {
 function calcTextinfo(calcTrace, index, xa, ya) {
     var trace = calcTrace[0].trace;
     var isHorizontal = (trace.orientation === 'h');
+    var isWaterfall = (trace.type === 'waterfall');
+    var isFunnel = (trace.type === 'funnel');
 
     function formatLabel(u) {
         var pAxis = isHorizontal ? ya : xa;
@@ -542,7 +548,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
         if(tx === 0 || tx) text.push(tx);
     }
 
-    if(trace.type === 'waterfall') {
+    if(isWaterfall) {
         var delta = +cdi.rawS || cdi.s;
         var final = cdi.v;
         var initial = final - delta;
@@ -552,7 +558,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
         if(hasFlag('final')) text.push(formatNumber(final));
     }
 
-    if(trace.type === 'funnel') {
+    if(isFunnel) {
         if(hasFlag('value')) text.push(formatNumber(cdi.s));
 
         var nPercent = 0;
