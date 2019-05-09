@@ -29,7 +29,7 @@ var setFirstScatter = scatterCalc.setFirstScatter;
 var calcColorscale = require('../scatter/colorscale_calc');
 var linkTraces = require('../scatter/link_traces');
 var getTraceColor = require('../scatter/get_trace_color');
-var fillHoverText = require('../scatter/fill_hover_text');
+var fillText = Lib.fillText;
 var convert = require('./convert');
 
 var BADNUM = require('../../constants/numerical').BADNUM;
@@ -853,7 +853,7 @@ function calcHover(pointData, x, y, trace) {
     else if(di.tx) pointData.text = di.tx;
     else if(trace.text) pointData.text = trace.text;
 
-    fillHoverText(di, trace, pointData);
+    fillText(di, trace, pointData);
     Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
     return pointData;

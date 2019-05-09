@@ -14,6 +14,7 @@ var tinycolor = require('tinycolor2');
 
 var Color = require('../../components/color');
 var helpers = require('./helpers');
+var isValidTextValue = require('../../lib').isValidTextValue;
 
 var pieExtendedColorWays = {};
 
@@ -99,8 +100,8 @@ function calc(gd, trace) {
             pt = cd[i];
             thisText = hasLabel ? [pt.label] : [];
             if(hasText) {
-                var texti = helpers.getFirstFilled(trace.text, pt.pts);
-                if(texti) thisText.push(texti);
+                var tx = helpers.getFirstFilled(trace.text, pt.pts);
+                if(isValidTextValue(tx)) thisText.push(tx);
             }
             if(hasValue) thisText.push(helpers.formatPieValue(pt.v, separators));
             if(hasPercent) thisText.push(helpers.formatPiePercent(pt.v / vTotal, separators));

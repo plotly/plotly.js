@@ -12,7 +12,7 @@
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
-var fillHoverText = require('../scatter/fill_hover_text');
+var fillText = Lib.fillText;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
@@ -99,7 +99,7 @@ function getExtraText(trace, di, labels) {
     }
 
     if(isAll || parts.indexOf('text') !== -1) {
-        fillHoverText(di, trace, text);
+        fillText(di, trace, text);
     }
 
     return text.join('<br>');

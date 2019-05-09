@@ -352,8 +352,8 @@ function attachFxHandlers(sliceTop, gd, cd) {
             if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
             pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
             if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
-                var texti = pt.text;
-                if(texti) thisText.push(texti);
+                var tx = pt.text;
+                if(Lib.isValidTextValue(tx)) thisText.push(tx);
             }
             pt.value = pt.v;
             pt.valueLabel = helpers.formatPieValue(pt.v, separators);

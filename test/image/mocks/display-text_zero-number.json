@@ -1,0 +1,80 @@
+{
+    "data": [
+        {
+            "name": "pie",
+            "type": "pie",
+            "labels": ["A", "B", "C", "D", "E", "F", "G"],
+            "values": [7, 6, 5, 4, 3, 2, 1],
+            "text": [null, "", "0", 0, 1, true, false],
+            "textinfo": "label+text+value",
+            "domain": {
+                "x": [0, 0.48],
+                "y": [0.52, 1]
+            }
+        },
+        {
+            "name": "sunburst",
+            "type": "sunburst",
+            "parents": ["", "A", "B", "C", "D", "E", "F"],
+            "labels": ["A", "B", "C", "D", "E", "F", "G"],
+            "values": [7, 6, 5, 4, 3, 2, 1],
+            "text": [null, "", "0", 0, 1, true, false],
+            "textinfo": "label+text+value",
+            "domain": {
+                "x": [0.52, 1],
+                "y": [0, 0.48]
+            }
+        },
+        {
+            "name": "funnel",
+            "type": "funnel",
+            "y": ["A", "B", "C", "D", "E", "F", "G"],
+            "x": [7, 6, 5, 4, 3, 2, 1],
+            "text": [null, "", "0", 0, 1, true, false],
+            "textinfo": "label+text+value"
+        },
+        {
+            "name": "waterfall",
+            "type": "waterfall",
+            "x": ["A", "B", "C", "D", "E", "F", "G"],
+            "y": [5, -4, 3, -2, 1, null, 3.14],
+            "measure": ["r", "r", "r", "r", "r", "t", "a"],
+            "text": [null, "", "0", 0, 1, true, false],
+            "textinfo": "label+text+final",
+            "textposition": "auto",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "dragmode": "pan",
+        "xaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.52,
+                1
+            ]
+        }
+    }
+}

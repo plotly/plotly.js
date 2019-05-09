@@ -578,7 +578,10 @@ function attachFxHandlers(sliceTop, gd, cd) {
             }
 
             hoverPt.text = _cast('hovertext') || _cast('text');
-            if(hasFlag('text') && hoverPt.text) thisText.push(hoverPt.text);
+            if(hasFlag('text')) {
+                var tx = hoverPt.text;
+                if(Lib.isValidTextValue(tx)) thisText.push(tx);
+            }
 
             Fx.loneHover({
                 trace: traceNow,
@@ -736,7 +739,7 @@ function formatSliceLabel(pt, trace, fullLayout) {
 
     if(hasFlag('text')) {
         var tx = Lib.castOption(trace, cdi.i, 'text');
-        if(tx) thisText.push(tx);
+        if(Lib.isValidTextValue(tx)) thisText.push(tx);
     }
 
     return thisText.join('<br>');
