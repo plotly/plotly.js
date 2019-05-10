@@ -6,7 +6,7 @@ set +o pipefail
 
 ROOT=$(dirname $0)/..
 EXIT_STATE=0
-MAX_AUTO_RETRY=5
+MAX_AUTO_RETRY=1
 
 log () {
     echo -e "\n$1"
@@ -44,14 +44,18 @@ case $1 in
     jasmine)
         set_tz
 
+        MAX_AUTO_RETRY=10
+
         SUITE=$(circleci tests glob "$ROOT/test/jasmine/tests/*" | circleci tests split)
-        npm run test-jasmine -- $SUITE --skip-tags=gl,noCI,flaky --showSkipped || EXIT_STATE=$?
+        npm run test-jasmine -- $SUITE --skip-tags=dbgl,gl,noCI,flaky --showSkipped || EXIT_STATE=$?
 
         exit $EXIT_STATE
         ;;
 
     jasmine2)
         set_tz
+
+        MAX_AUTO_RETRY=5
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=gl | circleci tests split))
         for s in ${SHARDS[@]}; do
@@ -64,10 +68,25 @@ case $1 in
     jasmine3)
         set_tz
 
+        MAX_AUTO_RETRY=5
+
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=flaky | circleci tests split))
 
         for s in ${SHARDS[@]}; do
             retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI --showSkipped
+        done
+
+        exit $EXIT_STATE
+        ;;
+
+    jasmine4)
+        set_tz
+
+        MAX_AUTO_RETRY=10
+
+        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=dbgl | circleci tests split))
+        for s in ${SHARDS[@]}; do
+            retry npm run test-jasmine -- "$s" --tags=dbgl --skip-tags=noCI --showSkipped
         done
 
         exit $EXIT_STATE

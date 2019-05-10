@@ -88,7 +88,7 @@ describe('Test gl2d lasso/select:', function() {
         destroyGraphDiv();
     });
 
-    it('@gl should work under fast mode with *select* dragmode', function(done) {
+    it('@dbgl should work under fast mode with *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFast);
         _mock.layout.dragmode = 'select';
         gd = createGraphDiv();
@@ -114,7 +114,7 @@ describe('Test gl2d lasso/select:', function() {
             .then(done);
     });
 
-    it('@gl should work under fast mode with *lasso* dragmode', function(done) {
+    it('@dbgl should work under fast mode with *lasso* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFast);
         _mock.layout.dragmode = 'lasso';
         gd = createGraphDiv();
@@ -138,7 +138,7 @@ describe('Test gl2d lasso/select:', function() {
             .then(done);
     });
 
-    it('@gl should work under fancy mode with *select* dragmode', function(done) {
+    it('@dbgl should work under fancy mode with *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFancy);
         _mock.layout.dragmode = 'select';
         gd = createGraphDiv();
@@ -158,7 +158,7 @@ describe('Test gl2d lasso/select:', function() {
             .then(done);
     });
 
-    it('@gl should work under fancy mode with *lasso* dragmode', function(done) {
+    it('@dbgl should work under fancy mode with *lasso* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFancy);
         _mock.layout.dragmode = 'lasso';
         gd = createGraphDiv();
@@ -177,7 +177,7 @@ describe('Test gl2d lasso/select:', function() {
             .then(done);
     });
 
-    it('@gl should work on trace with enabled transforms', function(done) {
+    it('@dbgl should work on trace with enabled transforms', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl2d_transforms.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = { t: 0, b: 0, l: 0, r: 0 };
@@ -200,7 +200,7 @@ describe('Test gl2d lasso/select:', function() {
             .then(done);
     });
 
-    it('@gl should work on gl text charts', function(done) {
+    it('@dbgl should work on gl text charts', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_basic.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = { t: 0, b: 0, l: 0, r: 0 };
@@ -283,7 +283,7 @@ describe('Test gl2d lasso/select:', function() {
             .then(done);
     });
 
-    it('@gl should work on gl text charts with array textfont.color', function(done) {
+    it('@dbgl should work on gl text charts with array textfont.color', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_arrays.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = { t: 0, b: 0, l: 0, r: 0 };
@@ -363,7 +363,7 @@ describe('Test gl2d lasso/select:', function() {
             .then(done);
     });
 
-    it('@gl should work after a width/height relayout', function(done) {
+    it('@dbgl should work after a width/height relayout', function(done) {
         gd = createGraphDiv();
 
         var w = 500;
@@ -489,7 +489,7 @@ describe('select+doubleclick+pan scenarios:', function() {
         scene.scatter2d.draw.calls.reset();
     }
 
-    it('@gl should behave correctly during select -> doubleclick -> pan:', function(done) {
+    it('@dbgl should behave correctly during select -> doubleclick -> pan:', function(done) {
         gd = createGraphDiv();
 
         // See https://github.com/plotly/plotly.js/issues/2767
@@ -591,7 +591,7 @@ describe('select+doubleclick+pan scenarios:', function() {
             .then(done);
     });
 
-    it('@gl should behave correctly when doubleclick before selecting anything', function(done) {
+    it('@dbgl should behave correctly when doubleclick before selecting anything', function(done) {
         gd = createGraphDiv();
 
         Plotly.newPlot(gd, [{
@@ -627,7 +627,7 @@ describe('select+doubleclick+pan scenarios:', function() {
             .then(done);
     });
 
-    it('@gl should behave correctly during select -> doubleclick -> dragmode:mode -> dragmode:select', function(done) {
+    it('@dbgl should behave correctly during select -> doubleclick -> dragmode:mode -> dragmode:select', function(done) {
         gd = createGraphDiv();
 
         // https://github.com/plotly/plotly.js/issues/2958
@@ -680,7 +680,7 @@ describe('select+doubleclick+pan scenarios:', function() {
     });
 
 
-    it('@gl should draw parts in correct order during selections', function(done) {
+    it('@dbgl should draw parts in correct order during selections', function(done) {
         gd = createGraphDiv();
 
         // https://github.com/plotly/plotly.js/issues/3740
@@ -759,7 +759,7 @@ describe('select+doubleclick+pan scenarios:', function() {
             .then(done);
     });
 
-    it('@gl should work on overlaid subplots', function(done) {
+    it('@dbgl should work on overlaid subplots', function(done) {
         gd = createGraphDiv();
 
         var scene, scene2;

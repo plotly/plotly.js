@@ -33,7 +33,7 @@ assertES5();
 // check for for focus and exclude jasmine blocks
 function assertJasmineSuites() {
     var BLACK_LIST = ['fdescribe', 'fit', 'xdescribe', 'xit'];
-    var TAGS = ['noCI', 'noCIdep', 'gl', 'flaky'];
+    var TAGS = ['noCI', 'noCIdep', 'gl', 'dbgl', 'flaky'];
     var IT_ONLY_TAGS = ['gl', 'flaky'];
     var logs = [];
 
