@@ -1160,4 +1160,39 @@ describe('Test sunburst interactions edge cases', function() {
         })
         .then(done);
     });
+
+    it('should transition sunburst traces only', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/sunburst_pie_cartesian.json'));
+        mock.data[0].visible = false;
+
+        function _assert(msg, exp) {
+            var gd3 = d3.select(gd);
+            expect(gd3.select('.cartesianlayer').selectAll('.trace').size())
+                .toBe(exp.cartesianTraceCnt, '# of cartesian traces');
+            expect(gd3.select('.pielayer').selectAll('.trace').size())
+                .toBe(exp.pieTraceCnt, '# of pie traces');
+            expect(gd3.select('.sunburstlayer').selectAll('.trace').size())
+                .toBe(exp.sunburstTraceCnt, '# of sunburst traces');
+        }
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            _assert('base', {
+                cartesianTraceCnt: 2,
+                pieTraceCnt: 0,
+                sunburstTraceCnt: 1
+            });
+        })
+        .then(click(gd, 2))
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(function() {
+            _assert('after sunburst click', {
+                cartesianTraceCnt: 2,
+                pieTraceCnt: 0,
+                sunburstTraceCnt: 1
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

@@ -2309,7 +2309,7 @@ plots.extendLayout = function(destLayout, srcLayout) {
  */
 plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts) {
     var opts = {redraw: frameOpts.redraw};
-    var transitionedTraces = [];
+    var transitionedTraces = {};
     var axEdits = [];
 
     opts.prepareFn = function() {
@@ -2319,16 +2319,18 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         for(var i = 0; i < traceIndices.length; i++) {
             var traceIdx = traceIndices[i];
             var trace = gd._fullData[traceIdx];
-            var module = trace._module;
+            var _module = trace._module;
 
             // There's nothing to do if this module is not defined:
-            if(!module) continue;
+            if(!_module) continue;
 
             // Don't register the trace as transitioned if it doesn't know what to do.
             // If it *is* registered, it will receive a callback that it's responsible
             // for calling in order to register the transition as having completed.
-            if(module.animatable) {
-                transitionedTraces.push(traceIdx);
+            if(_module.animatable) {
+                var n = _module.basePlotModule.name;
+                if(!transitionedTraces[n]) transitionedTraces[n] = [];
+                transitionedTraces[n].push(traceIdx);
             }
 
             gd.data[traceIndices[i]] = plots.extendTrace(gd.data[traceIndices[i]], data[i]);
@@ -2427,19 +2429,21 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         if(hasAxisTransition) {
             traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
             traceTransitionOpts.duration = 0;
-            // This means do not transition traces,
+            // This means do not transition cartesian traces,
             // this happens on layout-only (e.g. axis range) animations
-            transitionedTraces = null;
+            delete transitionedTraces.cartesian;
         } else {
             traceTransitionOpts = transitionOpts;
         }
 
-        for(i = 0; i < basePlotModules.length; i++) {
-            // Note that we pass a callback to *create* the callback that must be invoked on completion.
-            // This is since not all traces know about transitions, so it greatly simplifies matters if
-            // the trace is responsible for creating a callback, if needed, and then executing it when
-            // the time is right.
-            basePlotModules[i].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+        // Note that we pass a callback to *create* the callback that must be invoked on completion.
+        // This is since not all traces know about transitions, so it greatly simplifies matters if
+        // the trace is responsible for creating a callback, if needed, and then executing it when
+        // the time is right.
+        for(var n in transitionedTraces) {
+            var traceIndices = transitionedTraces[n];
+            var _module = gd._fullData[traceIndices[0]]._module;
+            _module.basePlotModule.plot(gd, traceIndices, traceTransitionOpts, makeCallback);
         }
     };
 
