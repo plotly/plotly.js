@@ -9,7 +9,7 @@ describe('Test mesh3d', function() {
     describe('restyle', function() {
         afterEach(destroyGraphDiv);
 
-        it('should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
+        it('@gl should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
             var gd = createGraphDiv();
 
             function _assert(user, full) {
