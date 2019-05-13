@@ -1195,4 +1195,23 @@ describe('Test sunburst interactions edge cases', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to transition sunburst traces via `Plotly.react`', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/sunburst_pie_cartesian.json'));
+        mock.layout.transition = {duration: 200};
+
+        spyOn(Plots, 'transitionFromReact').and.callThrough();
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            gd.data[1].level = 'B';
+            return Plotly.react(gd, gd.data, gd.layout);
+        })
+        .then(delay(202))
+        .then(function() {
+            expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
