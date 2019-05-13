@@ -1162,7 +1162,7 @@ describe('Test sunburst interactions edge cases', function() {
     });
 
     it('should transition sunburst traces only', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_pie_cartesian.json'));
+        var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
         mock.data[0].visible = false;
 
         function _assert(msg, exp) {
@@ -1197,7 +1197,7 @@ describe('Test sunburst interactions edge cases', function() {
     });
 
     it('should be able to transition sunburst traces via `Plotly.react`', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_pie_cartesian.json'));
+        var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
         mock.layout.transition = {duration: 200};
 
         spyOn(Plots, 'transitionFromReact').and.callThrough();
