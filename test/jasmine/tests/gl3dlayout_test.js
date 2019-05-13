@@ -277,10 +277,10 @@ describe('Test Gl3d layout defaults', function() {
 describe('Gl3d layout edge cases', function() {
     var gd;
 
-    beforeEach(function() {gd = createGraphDiv(); });
+    beforeEach(function() { gd = createGraphDiv(); });
     afterEach(destroyGraphDiv);
 
-    it('should handle auto aspect ratio correctly on data changes', function(done) {
+    it('@gl should handle auto aspect ratio correctly on data changes', function(done) {
         Plotly.plot(gd, [{x: [1, 2], y: [1, 3], z: [1, 4], type: 'scatter3d'}])
         .then(function() {
             var aspect = gd.layout.scene.aspectratio;

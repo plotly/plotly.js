@@ -1,5 +1,3 @@
-'use strict';
-
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var d3 = require('d3');
@@ -197,25 +195,25 @@ describe('contourgl plots', function() {
         makePlot(gd, mockCopy, done);
     });
 
-    it('render without raising an error (coloring: "lines")', function(done) {
+    it('@gl render without raising an error (coloring: "lines")', function(done) {
         var mock = Lib.extendDeep({}, plotDataElliptical(0));
         mock.data[0].contours.coloring = 'lines'; // 'fill' is the default
         makePlot(gd, mock, done);
     });
 
-    it('render smooth, regular ellipses without raising an error (coloring: "fill")', function(done) {
+    it('@gl render smooth, regular ellipses without raising an error (coloring: "fill")', function(done) {
         var mock = plotDataElliptical(0);
         makePlot(gd, mock, done);
     });
 
-    it('render ellipses with added noise without raising an error (coloring: "fill")', function(done) {
+    it('@gl render ellipses with added noise without raising an error (coloring: "fill")', function(done) {
         var mock = plotDataElliptical(0.5);
         mock.data[0].contours.coloring = 'fill'; // 'fill' is the default
         mock.data[0].line = {smoothing: 0};
         makePlot(gd, mock, done);
     });
 
-    it('should update properly', function(done) {
+    it('@gl should update properly', function(done) {
         var mock = plotDataElliptical(0);
         var scene2d;
 

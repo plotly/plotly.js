@@ -264,7 +264,7 @@ describe('Test volume', function() {
             destroyGraphDiv();
         });
 
-        it('should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
+        it('@gl should clear *cauto* when restyle *cmin* and/or *cmax*', function(done) {
             function _assert(user, full) {
                 var trace = gd.data[0];
                 var fullTrace = gd._fullData[0];
