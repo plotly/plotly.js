@@ -204,9 +204,10 @@ function plot(gd, cdpie) {
                     s.attr('data-notex', 1);
                 });
 
-                var txt = fullLayout.meta ?
-                    Lib.templateString(trace.title.text, {meta: fullLayout.meta}) :
-                    trace.title.text;
+                var txt = trace.title.text;
+                if(trace._meta) {
+                    txt = Lib.templateString(txt, trace._meta);
+                }
 
                 titleText.text(txt)
                     .attr({
@@ -481,18 +482,18 @@ function determineInsideTextFont(trace, pt, layoutFont) {
 }
 
 function prerenderTitles(cdpie, gd) {
-    var fullLayout = gd._fullLayout;
-
     var cd0, trace;
+
     // Determine the width and height of the title for each pie.
     for(var i = 0; i < cdpie.length; i++) {
         cd0 = cdpie[i][0];
         trace = cd0.trace;
 
         if(trace.title.text) {
-            var txt = fullLayout.meta ?
-                Lib.templateString(trace.title.text, {meta: fullLayout.meta}) :
-                trace.title.text;
+            var txt = trace.title.text;
+            if(trace._meta) {
+                txt = Lib.templateString(txt, trace._meta);
+            }
 
             var dummyTitle = Drawing.tester.append('text')
               .attr('data-notex', 1)
