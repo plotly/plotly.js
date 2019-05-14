@@ -412,6 +412,7 @@ module.exports = {
     meta: {
         valType: 'any',
         arrayOk: true,
+        role: 'info',
         editType: 'plot',
         description: [
             'Assigns extra meta information that can be used in various `text` attributes.',

@@ -105,6 +105,7 @@ module.exports = {
     meta: {
         valType: 'any',
         arrayOk: true,
+        role: 'info',
         editType: 'plot',
         description: [
             'Assigns extra meta information associated with this trace',
