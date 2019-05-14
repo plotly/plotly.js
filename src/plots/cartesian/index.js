@@ -125,10 +125,9 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
  * Cartesian.plot
  *
  * @param {DOM div | object} gd
- * @param {array | null} (optional) traces
+ * @param {array (optional)} traces
  *  array of traces indices to plot
  *  if undefined, plots all cartesian traces,
- *  if null, plots no traces
  * @param {object} (optional) transitionOpts
  *  transition option object
  * @param {function} (optional) makeOnCompleteCallback
@@ -140,11 +139,7 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var calcdata = gd.calcdata;
     var i;
 
-    if(traces === null) {
-        // this means no updates required, must return here
-        // so that plotOne doesn't remove the trace layers
-        return;
-    } else if(!Array.isArray(traces)) {
+    if(!Array.isArray(traces)) {
         // If traces is not provided, then it's a complete replot and missing
         // traces are removed
         traces = [];

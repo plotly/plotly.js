@@ -61,6 +61,7 @@ module.exports = {
     level: {
         valType: 'any',
         editType: 'plot',
+        anim: true,
         role: 'info',
         description: [
             'Sets the level from which this sunburst trace hierarchy is rendered.',
