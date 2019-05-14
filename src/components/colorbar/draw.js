@@ -140,6 +140,7 @@ function makeColorBarData(gd) {
                     opts._id = 'cb' + trace.uid + (allowsMultiplotCbs && contName ? '-' + contName : '');
                     opts._traceIndex = trace.index;
                     opts._propPrefix = (contName ? contName + '.' : '') + 'colorbar.';
+                    opts._meta = trace._meta;
                     calcOpts();
                     out.push(opts);
                 }
@@ -156,6 +157,7 @@ function makeColorBarData(gd) {
             opts = initOpts(cont.colorbar);
             opts._id = 'cb' + k;
             opts._propPrefix = k + '.colorbar.';
+            opts._meta = fullLayout._meta;
 
             cbOpt = {min: 'cmin', max: 'cmax'};
             if(colorAxOpts[0] !== 'heatmap') {
@@ -281,6 +283,7 @@ function drawColorBar(g, opts, gd) {
             propContainer: ax,
             propName: opts._propPrefix + 'title',
             traceIndex: opts._traceIndex,
+            _meta: opts._meta,
             placeholder: fullLayout._dfltTitle.colorbar,
             containerGroup: g.select('.' + cn.cbtitle)
         };
