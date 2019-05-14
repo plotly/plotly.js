@@ -1067,7 +1067,6 @@ describe('legend interaction', function() {
         });
     });
 
-
     describe('editable mode interactions', function() {
         var gd;
 
@@ -1663,6 +1662,68 @@ describe('legend interaction', function() {
                         label: 'A'
                     });
                 })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        describe('should honor *itemclick* and *itemdoubleclick* settings', function() {
+            var _assert;
+
+            function run() {
+                return Promise.resolve()
+                    .then(click(0, 1)).then(_assert(['legendonly', true]))
+                    .then(click(0, 1)).then(_assert([true, true]))
+                    .then(click(0, 2)).then(_assert([true, 'legendonly']))
+                    .then(click(0, 2)).then(_assert([true, true]))
+                    .then(function() {
+                        return Plotly.relayout(gd, {
+                            'legend.itemclick': false,
+                            'legend.itemdoubleclick': false
+                        });
+                    })
+                    .then(click(0, 1)).then(_assert([true, true]))
+                    .then(click(0, 2)).then(_assert([true, true]))
+                    .then(function() {
+                        return Plotly.relayout(gd, {
+                            'legend.itemclick': 'focus',
+                            'legend.itemdoubleclick': 'toggle'
+                        });
+                    })
+                    .then(click(0, 1)).then(_assert([true, 'legendonly']))
+                    .then(click(0, 1)).then(_assert([true, true]))
+                    .then(click(0, 2)).then(_assert(['legendonly', true]))
+                    .then(click(0, 2)).then(_assert([true, true]));
+            }
+
+            it('- regular trace case', function(done) {
+                _assert = assertVisible;
+
+                Plotly.plot(gd, [
+                    { y: [1, 2, 1] },
+                    { y: [2, 1, 2] }
+                ])
+                .then(run)
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('- pie case', function(done) {
+                _assert = function(exp) {
+                    return function() {
+                        var actual = [];
+                        if(exp[0] === 'legendonly') actual.push('B');
+                        if(exp[1] === 'legendonly') actual.push('A');
+                        expect(actual).toEqual(gd._fullLayout.hiddenlabels || []);
+                    };
+                };
+
+                Plotly.plot(gd, [{
+                    type: 'pie',
+                    labels: ['A', 'B'],
+                    values: [1, 2]
+                }])
+                .then(run)
                 .catch(failTest)
                 .then(done);
             });

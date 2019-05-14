@@ -104,6 +104,9 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     coerce('itemsizing');
 
+    coerce('itemclick');
+    coerce('itemdoubleclick');
+
     coerce('x', defaultX);
     coerce('xanchor', defaultXAnchor);
     coerce('y', defaultY);

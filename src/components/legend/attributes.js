@@ -90,6 +90,33 @@ module.exports = {
         ].join(' ')
     },
 
+    itemclick: {
+        valType: 'enumerated',
+        values: ['toggle', 'focus', false],
+        dflt: 'toggle',
+        role: 'info',
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend item click.',
+            '*toggle* toggles the visible of the item clicked on the graph.',
+            '*focus* makes the clicked item the sole visible item on the graph.',
+            '*false* disable legend item click interactions.'
+        ].join(' ')
+    },
+    itemdoubleclick: {
+        valType: 'enumerated',
+        values: ['toggle', 'focus', false],
+        dflt: 'focus',
+        role: 'info',
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend item double-click.',
+            '*toggle* toggles the visible of the item clicked on the graph.',
+            '*focus* makes the clicked item the sole visible item on the graph.',
+            '*false* disable legend item double-click interactions.'
+        ].join(' ')
+    },
+
     x: {
         valType: 'number',
         min: -2,
