@@ -2877,13 +2877,14 @@ function sortAxisCategoriesByValue(axList, gd) {
             // Collect values across traces
             for(j = 0; j < ax._traceIndices.length; j++) {
                 var traceIndex = ax._traceIndices[j];
-                var fullData = gd._fullData[traceIndex];
+                var fullTrace = gd._fullData[traceIndex];
+                var axLetter = ax._id.charAt(0);
 
                 // Skip over invisible traces
-                if(fullData.visible !== true) continue;
+                if(fullTrace.visible !== true) continue;
 
-                var type = fullData.type;
-                if(type === 'histogram') delete fullData._autoBinFinished;
+                var type = fullTrace.type;
+                if(Registry.traceIs(fullTrace, 'histogram')) delete fullTrace._autoBinFinished;
 
                 var cd = gd.calcdata[traceIndex];
                 for(k = 0; k < cd.length; k++) {
@@ -2893,10 +2894,10 @@ function sortAxisCategoriesByValue(axList, gd) {
                     // If `splom`, collect values across dimensions
                     if(type === 'splom') {
                         // Find which dimension the current axis is representing
-                        var currentDimensionIndex = cdi.trace[ax._id.charAt(0) + 'axes'].indexOf(ax._id);
+                        var currentDimensionIndex = cdi.trace[axLetter + 'axes'].indexOf(ax._id);
 
                         // Apply logic to associated x axis
-                        if(ax._id.charAt(0) === 'y') {
+                        if(axLetter === 'y') {
                             var associatedXAxis = ax._id.split('');
                             associatedXAxis[0] = 'x';
                             associatedXAxis = associatedXAxis.join('');
@@ -2918,13 +2919,13 @@ function sortAxisCategoriesByValue(axList, gd) {
                     // If `scattergl`, collect all values stashed under cdi.t
                     } else if(type === 'scattergl') {
                         for(l = 0; l < cdi.t.x.length; l++) {
-                            if(ax._id.charAt(0) === 'x') {
+                            if(axLetter === 'x') {
                                 cat = cdi.t.x[l];
                                 catIndex = cat;
                                 value = cdi.t.y[l];
                             }
 
-                            if(ax._id.charAt(0) === 'y') {
+                            if(axLetter === 'y') {
                                 cat = cdi.t.y[l];
                                 catIndex = cat;
                                 value = cdi.t.x[l];
@@ -2938,10 +2939,10 @@ function sortAxisCategoriesByValue(axList, gd) {
                         }
                     // For all other 2d cartesian traces
                     } else {
-                        if(ax._id.charAt(0) === 'x') {
+                        if(axLetter === 'x') {
                             cat = cdi.p + 1 ? cdi.p : cdi.x;
                             value = cdi.s || cdi.v || cdi.y;
-                        } else if(ax._id.charAt(0) === 'y') {
+                        } else if(axLetter === 'y') {
                             cat = cdi.p + 1 ? cdi.p : cdi.y;
                             value = cdi.s || cdi.v || cdi.x;
                         }

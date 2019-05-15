@@ -4,26 +4,12 @@
     "orientation": "v",
     "x": ["a", "b", "c"],
     "y": [7, 2, 3],
-
-    "z": [
-      [7, 2, 3],
-      [0, 0, 0],
-      [0, 0, 0]
-    ],
-    "dimensions": [{
-      "label": "DimensionA",
-      "values": ["a", "b", "c"]
-    }, {
-      "label": "DimensionB",
-      "values": [7, 2, 3]
-    }]
   }, {
     "type": "bar",
     "x": ["a", "b", "c"],
     "y": [10, 20, 30],
     "yaxis": "y2",
     "xaxis": "x2"
-
   }],
   "layout": {
     "xaxis": {
