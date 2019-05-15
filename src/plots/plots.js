@@ -706,21 +706,20 @@ function fillMetaTextHelpers(newFullData, newFullLayout) {
     var meta4data = [];
 
     if(newFullLayout.meta) {
-        _meta = newFullLayout._meta = {};
-        _meta.meta = newFullLayout.meta;
-        _meta.layout = {meta: newFullLayout.meta};
+        _meta = newFullLayout._meta = {
+            meta: newFullLayout.meta,
+            layout: {meta: newFullLayout.meta}
+        };
     }
 
     for(var i = 0; i < newFullData.length; i++) {
         var trace = newFullData[i];
 
         if(trace.meta) {
-            meta4data[trace.index] = {meta: trace.meta};
+            meta4data[trace.index] = trace._meta = {meta: trace.meta};
+        } else if(newFullLayout.meta) {
+            trace._meta = {meta: newFullLayout.meta};
         }
-
-        trace._meta = {
-            meta: Lib.extendFlat({}, newFullLayout.meta || {}, trace.meta)
-        };
         if(newFullLayout.meta) {
             trace._meta.layout = {meta: newFullLayout.meta};
         }
