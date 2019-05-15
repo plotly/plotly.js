@@ -1672,28 +1672,28 @@ describe('legend interaction', function() {
 
             function run() {
                 return Promise.resolve()
-                    .then(click(0, 1)).then(_assert(['legendonly', true]))
-                    .then(click(0, 1)).then(_assert([true, true]))
-                    .then(click(0, 2)).then(_assert([true, 'legendonly']))
-                    .then(click(0, 2)).then(_assert([true, true]))
+                    .then(click(0, 1)).then(_assert(['legendonly', true, true]))
+                    .then(click(0, 1)).then(_assert([true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, 'legendonly', 'legendonly']))
+                    .then(click(0, 2)).then(_assert([true, true, true]))
                     .then(function() {
                         return Plotly.relayout(gd, {
                             'legend.itemclick': false,
                             'legend.itemdoubleclick': false
                         });
                     })
-                    .then(click(0, 1)).then(_assert([true, true]))
-                    .then(click(0, 2)).then(_assert([true, true]))
+                    .then(click(0, 1)).then(_assert([true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true]))
                     .then(function() {
                         return Plotly.relayout(gd, {
                             'legend.itemclick': 'focus',
                             'legend.itemdoubleclick': 'toggle'
                         });
                     })
-                    .then(click(0, 1)).then(_assert([true, 'legendonly']))
-                    .then(click(0, 1)).then(_assert([true, true]))
-                    .then(click(0, 2)).then(_assert(['legendonly', true]))
-                    .then(click(0, 2)).then(_assert([true, true]));
+                    .then(click(0, 1)).then(_assert([true, 'legendonly', 'legendonly']))
+                    .then(click(0, 1)).then(_assert([true, true, true]))
+                    .then(click(0, 2)).then(_assert(['legendonly', true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true]));
             }
 
             it('- regular trace case', function(done) {
@@ -1701,7 +1701,8 @@ describe('legend interaction', function() {
 
                 Plotly.plot(gd, [
                     { y: [1, 2, 1] },
-                    { y: [2, 1, 2] }
+                    { y: [2, 1, 2] },
+                    { y: [3, 5, 0] }
                 ])
                 .then(run)
                 .catch(failTest)
@@ -1709,19 +1710,20 @@ describe('legend interaction', function() {
             });
 
             it('- pie case', function(done) {
-                _assert = function(exp) {
+                _assert = function(_exp) {
                     return function() {
-                        var actual = [];
-                        if(exp[0] === 'legendonly') actual.push('B');
-                        if(exp[1] === 'legendonly') actual.push('A');
-                        expect(actual).toEqual(gd._fullLayout.hiddenlabels || []);
+                        var exp = [];
+                        if(_exp[0] === 'legendonly') exp.push('C');
+                        if(_exp[1] === 'legendonly') exp.push('B');
+                        if(_exp[2] === 'legendonly') exp.push('A');
+                        expect(gd._fullLayout.hiddenlabels || []).toEqual(exp);
                     };
                 };
 
                 Plotly.plot(gd, [{
                     type: 'pie',
-                    labels: ['A', 'B'],
-                    values: [1, 2]
+                    labels: ['A', 'B', 'C'],
+                    values: [1, 2, 3]
                 }])
                 .then(run)
                 .catch(failTest)
