@@ -1240,11 +1240,11 @@ describe('Test select box and lasso in general:', function() {
             rng: ['2000-01-20 19:48', '2000-04-06 01:48']
         }, {
             axType: 'category',
-            rng: [undefined, undefined]
+            rng: [-0.6208, 0.8375]
         }, {
             axType: 'multicategory',
-            rng: [undefined, undefined]
-        }]
+            rng: [-0.6208, 0.8375]
+        }];
 
         specs.forEach(function(s) {
             it('- @flaky on ' + s.axType + ' axes', function(done) {
@@ -1282,11 +1282,11 @@ describe('Test select box and lasso in general:', function() {
             pts: ['2000-12-25 21:36', '2000-12-28 22:48', '2001-01-01', '2001-01-01']
         }, {
             axType: 'category',
-            pts: [undefined, undefined, undefined, undefined]
+            pts: [5.8833, 5.9416, 6, 6]
         }, {
             axType: 'multicategory',
-            pts: [undefined, undefined, undefined, undefined]
-        }]
+            pts: [5.8833, 5.9416, 6, 6]
+        }];
 
         specs.forEach(function(s) {
             it('- @flaky on ' + s.axType + ' axes', function(done) {
