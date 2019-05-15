@@ -1160,4 +1160,58 @@ describe('Test sunburst interactions edge cases', function() {
         })
         .then(done);
     });
+
+    it('should transition sunburst traces only', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
+        mock.data[0].visible = false;
+
+        function _assert(msg, exp) {
+            var gd3 = d3.select(gd);
+            expect(gd3.select('.cartesianlayer').selectAll('.trace').size())
+                .toBe(exp.cartesianTraceCnt, '# of cartesian traces');
+            expect(gd3.select('.pielayer').selectAll('.trace').size())
+                .toBe(exp.pieTraceCnt, '# of pie traces');
+            expect(gd3.select('.sunburstlayer').selectAll('.trace').size())
+                .toBe(exp.sunburstTraceCnt, '# of sunburst traces');
+        }
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            _assert('base', {
+                cartesianTraceCnt: 2,
+                pieTraceCnt: 0,
+                sunburstTraceCnt: 1
+            });
+        })
+        .then(click(gd, 2))
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(function() {
+            _assert('after sunburst click', {
+                cartesianTraceCnt: 2,
+                pieTraceCnt: 0,
+                sunburstTraceCnt: 1
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to transition sunburst traces via `Plotly.react`', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
+        mock.layout.transition = {duration: 200};
+
+        spyOn(Plots, 'transitionFromReact').and.callThrough();
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            gd.data[1].level = 'B';
+            return Plotly.react(gd, gd.data, gd.layout);
+        })
+        .then(delay(202))
+        .then(function() {
+            expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

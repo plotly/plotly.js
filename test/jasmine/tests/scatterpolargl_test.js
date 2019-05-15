@@ -108,7 +108,7 @@ describe('Test scatterpolargl hover:', function() {
         name: 'Trial 3'
     }]
     .forEach(function(specs) {
-        it('should generate correct hover labels ' + specs.desc, function(done) {
+        it('@gl should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);
         });
     });

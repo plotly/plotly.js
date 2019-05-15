@@ -6,20 +6,61 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test.js');
 
-// cartesian click events events use the hover data
-// from the mousemove events and then simulate
-// a click event on mouseup
 var doubleClick = require('../assets/double_click');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 var readPixel = require('../assets/read_pixel');
 
-// contourgl is not part of the dist plotly.js bundle initially
-Plotly.register([
-    require('@lib/contourgl')
-]);
+function drag(gd, path) {
+    var len = path.length;
+    var el = d3.select(gd).select('rect.nsewdrag').node();
+    var opts = {element: el};
+
+    Lib.clearThrottle();
+    mouseEvent('mousemove', path[0][0], path[0][1], opts);
+    mouseEvent('mousedown', path[0][0], path[0][1], opts);
+
+    path.slice(1, len).forEach(function(pt) {
+        Lib.clearThrottle();
+        mouseEvent('mousemove', pt[0], pt[1], opts);
+    });
+
+    mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], opts);
+}
+
+function select(gd, path) {
+    return new Promise(function(resolve, reject) {
+        gd.once('plotly_selected', resolve);
+        setTimeout(function() { reject('did not trigger *plotly_selected*');}, 200);
+        drag(gd, path);
+    });
+}
 
 describe('Test gl2d lasso/select:', function() {
+    var gd;
+    var selectPath = [[98, 193], [108, 193]];
+    var selectPath2 = [[118, 193], [128, 193]];
+    var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
+    var lassoPath2 = [[98, 193], [108, 193], [108, 500], [98, 500], [98, 193]];
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+        setTimeout(done, 500);
+    });
+
+    function assertEventData(actual, expected) {
+        expect(actual.points.length).toBe(expected.points.length);
+
+        expected.points.forEach(function(e, i) {
+            var a = actual.points[i];
+            if(a) {
+                expect(a.x).toBe(e.x, 'x');
+                expect(a.y).toBe(e.y, 'y');
+            }
+        });
+    }
+
     var mockFancy = require('@mocks/gl2d_14.json');
     delete mockFancy.layout.xaxis.autorange;
     delete mockFancy.layout.yaxis.autorange;
@@ -40,53 +81,6 @@ describe('Test gl2d lasso/select:', function() {
         }
     });
 
-    var gd;
-    var selectPath = [[98, 193], [108, 193]];
-    var selectPath2 = [[118, 193], [128, 193]];
-    var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
-    var lassoPath2 = [[98, 193], [108, 193], [108, 500], [98, 500], [98, 193]];
-
-    afterEach(function() {
-        Plotly.purge(gd);
-        destroyGraphDiv();
-    });
-
-    function drag(path) {
-        var len = path.length;
-        var el = d3.select(gd).select('rect.nsewdrag').node();
-        var opts = {element: el};
-
-        Lib.clearThrottle();
-        mouseEvent('mousemove', path[0][0], path[0][1], opts);
-        mouseEvent('mousedown', path[0][0], path[0][1], opts);
-
-        path.slice(1, len).forEach(function(pt) {
-            Lib.clearThrottle();
-            mouseEvent('mousemove', pt[0], pt[1], opts);
-        });
-
-        mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], opts);
-    }
-
-    function select(path) {
-        return new Promise(function(resolve, reject) {
-            gd.once('plotly_selected', resolve);
-            setTimeout(function() { reject('did not trigger *plotly_selected*');}, 200);
-            drag(path);
-        });
-    }
-
-    function assertEventData(actual, expected) {
-        expect(actual.points.length).toBe(expected.points.length);
-
-        expected.points.forEach(function(e, i) {
-            var a = actual.points[i];
-            if(a) {
-                expect(a.x).toBe(e.x, 'x');
-                expect(a.y).toBe(e.y, 'y');
-            }
-        });
-    }
 
     it('@gl should work under fast mode with *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFast);
@@ -98,7 +92,7 @@ describe('Test gl2d lasso/select:', function() {
         .then(function() {
             expect(gd._fullLayout._plots.xy._scene.select2d).not.toBe(undefined, 'scatter2d renderer');
 
-            return select(selectPath);
+            return select(gd, selectPath);
         })
         .then(delay(20))
         .then(function(eventData) {
@@ -122,7 +116,7 @@ describe('Test gl2d lasso/select:', function() {
         Plotly.plot(gd, _mock)
         .then(delay(20))
         .then(function() {
-            return select(lassoPath2);
+            return select(gd, lassoPath2);
         })
         .then(delay(20))
         .then(function(eventData) {
@@ -146,7 +140,7 @@ describe('Test gl2d lasso/select:', function() {
         Plotly.plot(gd, _mock)
         .then(delay(20))
         .then(function() {
-            return select(selectPath2);
+            return select(gd, selectPath2);
         })
         .then(delay(20))
         .then(function(eventData) {
@@ -166,7 +160,7 @@ describe('Test gl2d lasso/select:', function() {
         Plotly.plot(gd, _mock)
         .then(delay(20))
         .then(function() {
-            return select(lassoPath);
+            return select(gd, lassoPath);
         })
         .then(function(eventData) {
             assertEventData(eventData, {
@@ -187,7 +181,7 @@ describe('Test gl2d lasso/select:', function() {
 
         Plotly.plot(gd, fig)
         .then(delay(20))
-        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function() { return select(gd, [[100, 100], [250, 250]]); })
         .then(function(eventData) {
             assertEventData(eventData, {
                 points: [
@@ -227,7 +221,7 @@ describe('Test gl2d lasso/select:', function() {
                 ]
             });
         })
-        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function() { return select(gd, [[100, 100], [250, 250]]); })
         .then(function(eventData) {
             assertEventData(eventData, {
                 points: [{x: 1, y: 2}]
@@ -256,7 +250,7 @@ describe('Test gl2d lasso/select:', function() {
         .then(function() {
             return Plotly.restyle(gd, 'selected.textfont.color', 'red');
         })
-        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function() { return select(gd, [[100, 100], [250, 250]]); })
         .then(function() {
             _assertGlTextOpts('after selection - with set selected.textfont.color', {
                 rgba: [
@@ -317,7 +311,7 @@ describe('Test gl2d lasso/select:', function() {
                 ]
             });
         })
-        .then(function() { return select([[100, 10], [250, 100]]); })
+        .then(function() { return select(gd, [[100, 10], [250, 100]]); })
         .then(function(eventData) {
             assertEventData(eventData, {
                 points: [{x: 1, y: 2}]
@@ -341,7 +335,7 @@ describe('Test gl2d lasso/select:', function() {
         .then(function() {
             return Plotly.restyle(gd, 'selected.textfont.color', 'red');
         })
-        .then(function() { return select([[100, 10], [250, 100]]); })
+        .then(function() { return select(gd, [[100, 10], [250, 100]]); })
         .then(function() {
             _assertGlTextOpts('after selection - with set selected.textfont.color', {
                 rgba: [
@@ -362,10 +356,22 @@ describe('Test gl2d lasso/select:', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('Test displayed selections:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+        setTimeout(done, 500);
+    });
 
     it('@gl should work after a width/height relayout', function(done) {
-        gd = createGraphDiv();
-
         var w = 500;
         var h = 500;
         var w2 = 800;
@@ -396,7 +402,7 @@ describe('Test gl2d lasso/select:', function() {
             expect(readContext()).toBeGreaterThan(1e4, 'base context');
             expect(readFocus()).toBe(0, 'base focus');
         })
-        .then(function() { return select([[pad, pad], [w - pad, h - pad]]); })
+        .then(function() { return select(gd, [[pad, pad], [w - pad, h - pad]]); })
         .then(function() {
             expect(readContext()).toBe(0, 'select context');
             expect(readFocus()).toBeGreaterThan(1e4, 'select focus');
@@ -411,7 +417,7 @@ describe('Test gl2d lasso/select:', function() {
             expect(readContext()).toBeGreaterThan(1e4, 'update context');
             expect(readFocus()).toBe(0, 'update focus');
         })
-        .then(function() { return select([[pad, pad], [w2 - pad, h2 - pad]]); })
+        .then(function() { return select(gd, [[pad, pad], [w2 - pad, h2 - pad]]); })
         .then(function() {
             // make sure full w2/h2 context canvas is cleared!
             // from https://github.com/plotly/plotly.js/issues/2731<Paste>
@@ -420,6 +426,92 @@ describe('Test gl2d lasso/select:', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    it('@gl should display selection of big number of regular points', function(done) {
+        // generate large number of points
+        var x = [];
+        var y = [];
+        var n = 2e2;
+        var N = n * n;
+        for(var i = 0; i < N; i++) {
+            x.push((i % n) / n);
+            y.push(i / N);
+        }
+
+        var mock = {
+            data: [{
+                x: x, y: y, type: 'scattergl', mode: 'markers'
+            }],
+            layout: {
+                dragmode: 'select'
+            }
+        };
+
+        Plotly.plot(gd, mock)
+        .then(select(gd, [[160, 100], [180, 100]]))
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display selection of big number of miscellaneous points', function(done) {
+        var colorList = [
+            '#006385', '#F06E75', '#90ed7d', '#f7a35c', '#8085e9',
+            '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1',
+            '#5DA5DA', '#F06E75', '#F15854', '#B2912F', '#B276B2',
+            '#DECF3F', '#FAA43A', '#4D4D4D', '#F17CB0', '#60BD68'
+        ];
+
+        // generate large number of points
+        var x = [];
+        var y = [];
+        var n = 2e2;
+        var N = n * n;
+        var color = [];
+        var symbol = [];
+        var size = [];
+        for(var i = 0; i < N; i++) {
+            x.push((i % n) / n);
+            y.push(i / N);
+            color.push(colorList[i % colorList.length]);
+            symbol.push('x');
+            size.push(6);
+        }
+
+        var mock = {
+            data: [{
+                x: x, y: y, type: 'scattergl', mode: 'markers',
+                marker: {symbol: symbol, size: size, color: color}
+            }],
+            layout: {
+                dragmode: 'select'
+            }
+        };
+
+        Plotly.plot(gd, mock)
+        .then(select(gd, [[160, 100], [180, 100]]))
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Test selections during funky scenarios', function() {
+    var gd;
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+        setTimeout(done, 500);
     });
 
     function grabScene() {
@@ -514,7 +606,7 @@ describe('Test gl2d lasso/select:', function() {
                     drawArgs: []
                 });
             })
-            .then(function() { return select([[20, 20], [480, 250]]); })
+            .then(function() { return select(gd, [[20, 20], [480, 250]]); })
             .then(function() {
                 var scene = grabScene();
                 _assert('after select', {
@@ -556,7 +648,7 @@ describe('Test gl2d lasso/select:', function() {
                     drawArgs: []
                 });
             })
-            .then(function() { return drag([[200, 200], [250, 250]]); })
+            .then(function() { return drag(gd, [[200, 200], [250, 250]]); })
             .then(function() {
                 var scene = grabScene();
                 _assert('after pan', {
@@ -652,7 +744,7 @@ describe('Test gl2d lasso/select:', function() {
                     drawArgs: []
                 });
             })
-            .then(function() { return select([[20, 20], [480, 250]]); })
+            .then(function() { return select(gd, [[20, 20], [480, 250]]); })
             .then(function() { return doubleClick(250, 250); })
             .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
             .then(function() { return Plotly.relayout(gd, 'dragmode', 'select'); })
@@ -738,7 +830,7 @@ describe('Test gl2d lasso/select:', function() {
                 ['select2d', [[[], []]]]
             ]);
         })
-        .then(function() { return select([[20, 20], [480, 250]]); })
+        .then(function() { return select(gd, [[20, 20], [480, 250]]); })
         .then(function() {
             _assert('on selection', [
                 ['scatter2d', [[[0, 2], []]]],
@@ -791,7 +883,7 @@ describe('Test gl2d lasso/select:', function() {
             spyOn(scene.scatter2d, 'draw');
             spyOn(scene2.scatter2d, 'draw');
         })
-        .then(function() { return select([[20, 20], [380, 250]]); })
+        .then(function() { return select(gd, [[20, 20], [380, 250]]); })
         .then(function() {
             expect(scene.scatter2d.draw).toHaveBeenCalledTimes(1);
             expect(scene2.scatter2d.draw).toHaveBeenCalledTimes(1);
