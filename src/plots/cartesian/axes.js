@@ -1317,7 +1317,12 @@ function numFormat(v, ax, fmtoverride, hover) {
         if(ax.hoverformat) tickformat = ax.hoverformat;
     }
 
-    if(tickformat) return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN);
+    if(tickformat && tickformat !== 'p') {
+        return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN);
+    }
+
+    // special case for 'p' to have use rounding precision algo
+    if(tickformat === 'p') v *= 100;
 
     // 'epsilon' - rounding increment
     var e = Math.pow(10, -tickRound) / 2;
@@ -1385,7 +1390,10 @@ function numFormat(v, ax, fmtoverride, hover) {
     // put sign back in and return
     // replace standard minus character (which is technically a hyphen)
     // with a true minus sign
-    if(isNeg) return MINUS_SIGN + v;
+    if(isNeg) v = MINUS_SIGN + v;
+
+    if(tickformat === 'p') v += '%';
+
     return v;
 }
 

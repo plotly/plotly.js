@@ -1,0 +1,13 @@
+{
+  "data": [
+    {
+      "y": [0, 1]
+    }
+  ],
+  "layout": {
+    "yaxis": {
+      "tickformat": "p",
+      "automargin": true
+    }
+  }
+}
