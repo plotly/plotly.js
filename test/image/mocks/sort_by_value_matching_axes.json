@@ -3,7 +3,7 @@
     "type": "scatter",
     "orientation": "v",
     "x": ["a", "b", "c"],
-    "y": [7, 2, 3],
+    "y": [7, 2, 3]
   }, {
     "type": "bar",
     "x": ["a", "b", "c"],
