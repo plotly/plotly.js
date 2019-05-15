@@ -98,7 +98,7 @@ module.exports = {
         editType: 'legend',
         description: [
             'Determines the behavior on legend item click.',
-            '*toggle* toggles the visible of the item clicked on the graph.',
+            '*toggle* toggles the visibility of the item clicked on the graph.',
             '*focus* makes the clicked item the sole visible item on the graph.',
             '*false* disable legend item click interactions.'
         ].join(' ')
@@ -111,7 +111,7 @@ module.exports = {
         editType: 'legend',
         description: [
             'Determines the behavior on legend item double-click.',
-            '*toggle* toggles the visible of the item clicked on the graph.',
+            '*toggle* toggles the visibility of the item clicked on the graph.',
             '*focus* makes the clicked item the sole visible item on the graph.',
             '*false* disable legend item double-click interactions.'
         ].join(' ')
