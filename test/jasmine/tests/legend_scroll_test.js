@@ -110,7 +110,7 @@ describe('The legend', function() {
                 'translate(0, ' + -finalDataScroll + ')');
         });
 
-        function dragScroll(element, rightClick) {
+        function dragScroll(element, rightClick, mainClick) {
             var scrollBar = getScrollBar();
             var scrollBarBB = scrollBar.getBoundingClientRect();
             var legendHeight = getLegendHeight(gd);
@@ -131,6 +131,10 @@ describe('The legend', function() {
             var x = elBB.left + elBB.width / 2;
 
             var opts = {element: element};
+            if(mainClick) {
+                opts.button = 0;
+                opts.buttons = 2;
+            }
             if(rightClick) {
                 opts.button = 2;
                 opts.buttons = 2;
@@ -155,9 +159,9 @@ describe('The legend', function() {
                 'translate(0, ' + -dataScroll + ')');
         });
 
-        it('should not scroll on dragging the scrollbox', function() {
+        it('should not scroll on dragging the scrollbox with a mouse', function() {
             var scrollBox = getScrollBox();
-            var finalDataScroll = dragScroll(scrollBox);
+            var finalDataScroll = dragScroll(scrollBox, false, true);
 
             var dataScroll = getScroll(gd);
             expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
