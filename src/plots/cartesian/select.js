@@ -85,9 +85,15 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var searchTraces = determineSearchTraces(gd, dragOptions.xaxes,
       dragOptions.yaxes, dragOptions.subplot);
 
+    // in v2 (once log ranges are fixed),
+    // we'll be able to p2r here for all axis types
+    function p2r(ax, v) {
+        return ax.type === 'log' ? ax.p2d(v) : ax.p2r(v);
+    }
+
     function axValue(ax) {
         var index = (ax._id.charAt(0) === 'y') ? 1 : 0;
-        return function(v) { return ax.p2d(v[index]); };
+        return function(v) { return p2r(ax, v[index]); };
     }
 
     function ascending(a, b) { return a - b; }
@@ -107,8 +113,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     var axLetter = ax._id.charAt(0);
 
                     ranges[ax._id] = [
-                        ax.p2d(poly[axLetter + 'min']),
-                        ax.p2d(poly[axLetter + 'max'])
+                        p2r(ax, poly[axLetter + 'min']),
+                        p2r(ax, poly[axLetter + 'max'])
                     ].sort(ascending);
                 }
             };
