@@ -2891,7 +2891,7 @@ function sortAxisCategoriesByValue(axList, gd) {
         'sum': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         'value': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         'mean': function(values) {return Lib.mean(values);},
-        'median': function(values) {values.sort(); var mid = Math.round((values.length - 1) / 2); return values[mid];}
+        'median': function(values) {return Lib.median(values);}
     };
 
     for(i = 0; i < axList.length; i++) {
