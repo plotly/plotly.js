@@ -42,21 +42,16 @@ function locationToFeature(locationmode, location, features) {
 
     if(locationId) {
         if(locationmode === 'USA-states') {
-            // Filter out features south of the equator
+            // Filter out features out in USA
             //
             // This is important as the Natural Earth files
             // include state/provinces from USA, Canada, Australia and Brazil
             // which have some overlay in their two-letter ids. For example,
             // 'WA' is used for both Washington state and Western Australia.
-            // As subunits from USA and Canada never conflict, filtering out features
-            // south of the equator suffices to fix https://github.com/plotly/plotly.js/issues/3779
-            //
-            // A better fix would have us add a "governing unit" properties in subunit features
-            // in the `sane-topojson` package to avoid conflicts.
             features2 = [];
             for(i = 0; i < features.length; i++) {
                 f = features[i];
-                if(f.properties && f.properties.ct && f.properties.ct[1] > 0) {
+                if(f.properties && f.properties.gu && f.properties.gu === 'USA') {
                     features2.push(f);
                 }
             }
