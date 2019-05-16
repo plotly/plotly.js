@@ -2919,14 +2919,12 @@ function sortAxisCategoriesByValue(axList, gd) {
                     // If `splom`, collect values across dimensions
                     if(type === 'splom') {
                         // Find which dimension the current axis is representing
-                        var currentDimensionIndex = cdi.trace[axLetter + 'axes'].indexOf(ax._id);
+                        var currentDimensionIndex = fullTrace._axesDim[ax._id];
 
                         // Apply logic to associated x axis
                         if(axLetter === 'y') {
-                            var associatedXAxis = ax._id.split('');
-                            associatedXAxis[0] = 'x';
-                            associatedXAxis = associatedXAxis.join('');
-                            ax = gd._fullLayout[axisIDs.id2name(associatedXAxis)];
+                            var associatedXAxisID = fullTrace._diag[currentDimensionIndex][0];
+                            ax = gd._fullLayout[axisIDs.id2name(associatedXAxisID)];
                         }
 
                         var categories = cdi.trace.dimensions[currentDimensionIndex].values;
@@ -2934,7 +2932,7 @@ function sortAxisCategoriesByValue(axList, gd) {
                             cat = categories[l];
                             catIndex = ax._categoriesMap[cat];
 
-                            // Collect values over all other dimensions
+                            // Collect associated values at index `l` over all other dimensions
                             for(o = 0; o < cdi.trace.dimensions.length; o++) {
                                 if(o === currentDimensionIndex) continue;
                                 var dimension = cdi.trace.dimensions[o];

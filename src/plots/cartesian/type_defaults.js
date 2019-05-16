@@ -80,14 +80,8 @@ function setAutoType(ax, data) {
         ax.type = autoType(boxPositions, calendar, opts);
     } else if(d0.type === 'splom') {
         var dimensions = d0.dimensions;
-        var diag = d0._diag;
-        for(i = 0; i < dimensions.length; i++) {
-            var dim = dimensions[i];
-            if(dim.visible && (diag[i][0] === id || diag[i][1] === id)) {
-                ax.type = autoType(dim.values, calendar, opts);
-                break;
-            }
-        }
+        var dim = dimensions[d0._axesDim[id]];
+        if(dim.visible) ax.type = autoType(dim.values, calendar, opts);
     } else {
         ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar, opts);
     }
