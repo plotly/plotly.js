@@ -2861,6 +2861,31 @@ var sortAxisCategoriesByValueRegex = /(value|sum|min|max) (ascending|descending)
 function sortAxisCategoriesByValue(axList, gd) {
     var affectedTraces = [];
     var i, j, k, l, o;
+
+    function zMapCategory(type, ax, value) {
+        var axLetter = ax._id.charAt(0);
+        if(type === 'histogram2dcontour') {
+            var counterAxLetter = ax._counterAxes[0];
+            var counterAx = axisIDs.getFromId(gd, counterAxLetter);
+
+            var xCategorical = axLetter === 'x' || (counterAxLetter === 'x' && counterAx.type === 'category');
+            var yCategorical = axLetter === 'y' || (counterAxLetter === 'y' && counterAx.type === 'category');
+
+            return function(o, l) {
+                if(o === 0 || l === 0) return -1; // Skip first row and column
+                if(xCategorical && o === value[l].length - 1) return -1;
+                if(yCategorical && l === value.length - 1) return -1;
+
+                var catIndex = axLetter === 'y' ? l : o;
+                return catIndex - 1;
+            };
+        } else {
+            return function(o, l) {
+                return axLetter === 'y' ? l : o;
+            };
+        }
+    }
+
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         if(ax.type !== 'category') continue;
@@ -2950,11 +2975,12 @@ function sortAxisCategoriesByValue(axList, gd) {
                         // If 2dMap, collect values in `z`
                         if(cdi.hasOwnProperty('z')) {
                             value = cdi.z;
+                            var mapping = zMapCategory(fullTrace.type, ax, value);
 
                             for(l = 0; l < value.length; l++) {
                                 for(o = 0; o < value[l].length; o++) {
-                                    catIndex = ax._id.charAt(0) === 'y' ? l : o;
-                                    categoriesValue[catIndex][1].push(value[l][o]);
+                                    catIndex = mapping(o, l);
+                                    if(catIndex + 1) categoriesValue[catIndex][1].push(value[l][o]);
                                 }
                             }
                         } else {

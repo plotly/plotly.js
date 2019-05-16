@@ -885,9 +885,7 @@ describe('calculated data and points', function() {
             });
 
             // excludedTraces are traces that do not support sorting by value
-            var excludedTraces = [ 'carpet', 'contourcarpet',
-                // TODO: add support for the following
-                'histogram2dcontour'];
+            var excludedTraces = [ 'carpet', 'contourcarpet'];
 
             var supportedCartesianTraces = cartesianTraces.filter(function(t) {
                 if(excludedTraces.indexOf(t.type) === -1) return true;
@@ -975,12 +973,12 @@ describe('calculated data and points', function() {
                         Plotly.newPlot(gd, mock)
                         .then(function(gd) {
                             var agg = gd._fullLayout[trace.type === 'splom' ? 'xaxis' : axName]._categoriesAggregatedValue.sort(function(a, b) {
-                                return a[0] > b[0];
+                                return a[0] > b[0] ? 1 : -1;
                             });
                             expect(agg).toEqual(expectedAgg, 'wrong aggregation for ' + axName);
 
                             if(finalOrder) {
-                                expect(gd._fullLayout[trace.type === 'splom' ? 'xaxis' : axName]._categories).toEqual(finalOrder, 'for trace ' + trace.type);
+                                expect(gd._fullLayout[trace.type === 'splom' ? 'xaxis' : axName]._categories).toEqual(finalOrder, 'wrong order');
                             }
                         })
                         .catch(failTest)
