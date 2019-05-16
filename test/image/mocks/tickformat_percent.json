@@ -1,13 +1,33 @@
 {
-  "data": [
-    {
-      "y": [0, 1]
-    }
-  ],
+  "data": [{
+    "y": [0, 1]
+  }, {
+    "y": [1, 0],
+    "yaxis": "y4"
+  }, {
+    "y": [0, 0.0001],
+    "yaxis": "y2"
+  }, {
+    "y": [0.0001, 0],
+    "yaxis": "y5"
+  }, {
+    "y": [0, 1.000121321321321],
+    "yaxis": "y3"
+  }, {
+    "y": [1.0001321321321121, 0],
+    "yaxis": "y6"
+  }],
   "layout": {
-    "yaxis": {
-      "tickformat": "p",
-      "automargin": true
-    }
+    "grid": {"rows": 3, "columns": 1},
+    "title": {"text": "left: 'p' tickformat | right dflt tickformat"},
+    "showlegend": false,
+
+    "yaxis": {"tickformat": "p"},
+    "yaxis2": {"tickformat": "p"},
+    "yaxis3": {"tickformat": "p"},
+
+    "yaxis4": {"overlaying": "y", "side": "right"},
+    "yaxis5": {"overlaying": "y2", "side": "right"},
+    "yaxis6": {"overlaying": "y3", "side": "right"}
   }
 }
