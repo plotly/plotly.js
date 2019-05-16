@@ -896,7 +896,7 @@ describe('calculated data and points', function() {
             // oneOrientationTraces are traces for which swapping x/y is not supported
             var oneOrientationTraces = ['ohlc', 'candlestick'];
 
-            function makeData(type, a, b, axName) {
+            function makeData(type, axName, a, b) {
                 var input = [a, b];
                 var cat = input[axName === 'yaxis' ? 1 : 0];
                 var data = input[axName === 'yaxis' ? 0 : 1];
@@ -938,6 +938,10 @@ describe('calculated data and points', function() {
                     close: data,
                     high: data,
                     low: data,
+
+                    // For histogram
+                    nbinsx: cat.length,
+                    nbinsy: data.length,
 
                     // For waterfall
                     measure: measure,
@@ -988,7 +992,7 @@ describe('calculated data and points', function() {
                     ['value ascending', 'value descending'].forEach(function(categoryorder) {
                         it('sorts ' + axName + ' by ' + categoryorder + ' for trace type ' + trace.type, function(done) {
                             var data = [7, 2, 3];
-                            var baseMock = {data: [makeData(trace.type, cat, data, axName)], layout: {}};
+                            var baseMock = {data: [makeData(trace.type, axName, cat, data)], layout: {}};
                             baseMock.layout[axName] = { type: 'category', categoryorder: categoryorder};
 
                             // Set expectations
@@ -1007,7 +1011,7 @@ describe('calculated data and points', function() {
                         var type = trace.type;
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
-                        var baseMock = { data: [makeData(type, cat, data, axName), makeData(type, cat, data2, axName)], layout: {}};
+                        var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
                         baseMock.layout[axName] = { type: 'category', categoryorder: 'value ascending'};
 
                         var expectedAgg = [['a', data[0] + data2[0]], ['b', data[1] + data2[1]], ['c', data[2] + data2[2]]];
@@ -1021,7 +1025,7 @@ describe('calculated data and points', function() {
                         var type = trace.type;
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
-                        var baseMock = { data: [makeData(type, cat, data, axName), makeData(type, cat, data2, axName)], layout: {}};
+                        var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
                         baseMock.layout[axName] = { type: 'category', categoryorder: 'value ascending'};
 
                         // Hide second trace
@@ -1037,7 +1041,7 @@ describe('calculated data and points', function() {
                         var type = trace.type;
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
-                        var baseMock = { data: [makeData(type, cat, data, axName), makeData(type, cat, data2, axName)], layout: {}};
+                        var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
                         baseMock.layout[axName] = { type: 'category', categoryorder: 'min ascending'};
 
                         var expectedAgg = [['a', Math.min(data[0], data2[0])], ['b', Math.min(data[1], data2[1])], ['c', Math.min(data[2], data2[2])]];
@@ -1051,13 +1055,43 @@ describe('calculated data and points', function() {
                         var type = trace.type;
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
-                        var baseMock = { data: [makeData(type, cat, data, axName), makeData(type, cat, data2, axName)], layout: {}};
+                        var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
                         baseMock.layout[axName] = { type: 'category', categoryorder: 'max ascending'};
 
                         var expectedAgg = [['a', Math.max(data[0], data2[0])], ['b', Math.max(data[1], data2[1])], ['c', Math.max(data[2], data2[2])]];
-                        if(type === 'ohlc' || type === 'candlestick') expectedAgg = [['a', expectedAgg[0][1]], ['b', expectedAgg[1][1]], ['c', expectedAgg[2][1]]];
                         if(type.match(/histogram/)) expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
 
+                        checkAggregatedValue(baseMock, expectedAgg, false, done);
+                    });
+
+                    it('take the mean of all values per category across traces of type ' + trace.type, function(done) {
+                        var type = trace.type;
+                        var data = [7, 2, 3];
+                        var data2 = [5, 4, 2];
+                        var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
+                        baseMock.layout[axName] = { type: 'category', categoryorder: 'mean ascending'};
+
+                        var expectedAgg = [['a', (data[0] + data2[0]) / 2 ], ['b', (data[1] + data2[1]) / 2], ['c', (data[2] + data2[2]) / 2]];
+                        if(type === 'histogram') expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                        if(type === 'histogram2d') expectedAgg = [['a', 2 / 3], ['b', 1 / 3], ['c', 1 / 3]];
+                        if(type === 'contour' || type === 'heatmap') expectedAgg = [['a', expectedAgg[0][1] / 3], ['b', expectedAgg[1][1] / 3], ['c', expectedAgg[2][1] / 3]];
+                        if(type === 'histogram2dcontour') expectedAgg = [['a', 2 / 4], ['b', 1 / 4], ['c', 1 / 4]]; // TODO: this result is inintuitive
+
+                        checkAggregatedValue(baseMock, expectedAgg, false, done);
+                    });
+
+                    it('take the median of all values per category across traces of type ' + trace.type, function(done) {
+                        var type = trace.type;
+                        var data = [7, 2, 3];
+                        var data2 = [5, 4, 2];
+                        var data3 = [6, 5, 7];
+                        var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2), makeData(type, axName, cat, data3)], layout: {}};
+                        baseMock.layout[axName] = { type: 'category', categoryorder: 'median ascending'};
+
+                        var expectedAgg = [['a', 6], ['b', 4], ['c', 3]];
+                        if(type === 'histogram') expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                        if(type === 'histogram2d') expectedAgg = [['a', 1], ['b', 0], ['c', 0]];
+                        if(type === 'histogram2dcontour' || type === 'contour' || type === 'heatmap') expectedAgg = [['a', 0], ['b', 0], ['c', 0]];
                         checkAggregatedValue(baseMock, expectedAgg, false, done);
                     });
                 });

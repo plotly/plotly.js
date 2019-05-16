@@ -2856,7 +2856,7 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
-var sortAxisCategoriesByValueRegex = /(value|sum|min|max) (ascending|descending)/;
+var sortAxisCategoriesByValueRegex = /(value|sum|min|max|mean|median) (ascending|descending)/;
 
 function sortAxisCategoriesByValue(axList, gd) {
     var affectedTraces = [];
@@ -2876,8 +2876,7 @@ function sortAxisCategoriesByValue(axList, gd) {
                 if(xCategorical && o === value[l].length - 1) return -1;
                 if(yCategorical && l === value.length - 1) return -1;
 
-                var catIndex = axLetter === 'y' ? l : o;
-                return catIndex - 1;
+                return (axLetter === 'y' ? l : o) - 1;
             };
         } else {
             return function(o, l) {
@@ -2886,6 +2885,15 @@ function sortAxisCategoriesByValue(axList, gd) {
         }
     }
 
+    var aggFn = {
+        'min': function(values) {return Lib.aggNums(Math.min, null, values);},
+        'max': function(values) {return Lib.aggNums(Math.max, null, values);},
+        'sum': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        'value': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        'mean': function(values) {return Lib.mean(values);},
+        'median': function(values) {values.sort(); var mid = Math.round((values.length - 1) / 2); return values[mid];}
+    };
+
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         if(ax.type !== 'category') continue;
@@ -2893,6 +2901,9 @@ function sortAxisCategoriesByValue(axList, gd) {
         // Order by value
         var match = ax.categoryorder.match(sortAxisCategoriesByValueRegex);
         if(match) {
+            var aggregator = match[1];
+            var order = match[2];
+
             // Store values associated with each category
             var categoriesValue = [];
             for(j = 0; j < ax._categories.length; j++) {
@@ -2991,26 +3002,13 @@ function sortAxisCategoriesByValue(axList, gd) {
                 }
             }
 
-            // Aggregate values
-            var aggFn;
-            switch(match[1]) {
-                case 'min':
-                    aggFn = Math.min;
-                    break;
-                case 'max':
-                    aggFn = Math.max;
-                    break;
-                default:
-                    aggFn = function(a, b) { return a + b;};
-            }
-
             ax._categoriesValue = categoriesValue;
 
             var categoriesAggregatedValue = [];
             for(j = 0; j < categoriesValue.length; j++) {
                 categoriesAggregatedValue.push([
                     categoriesValue[j][0],
-                    Lib.aggNums(aggFn, null, categoriesValue[j][1])
+                    aggFn[aggregator](categoriesValue[j][1])
                 ]);
             }
 
@@ -3027,7 +3025,7 @@ function sortAxisCategoriesByValue(axList, gd) {
             });
 
             // Reverse if descending
-            if(match[2] === 'descending') {
+            if(order === 'descending') {
                 ax._initialCategories.reverse();
             }
 

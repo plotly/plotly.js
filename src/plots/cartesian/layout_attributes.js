@@ -821,7 +821,9 @@ module.exports = {
             'value ascending', 'value descending',
             'min ascending', 'min descending',
             'max ascending', 'max descending',
-            'sum ascending', 'sum descending'
+            'sum ascending', 'sum descending',
+            'mean ascending', 'mean descending',
+            'median ascending', 'median descending'
         ],
         dflt: 'trace',
         role: 'info',
@@ -836,7 +838,7 @@ module.exports = {
             'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.',
             'Set `categoryorder` to *value ascending* or *value descending* if order should be determined by the',
             'numerical order of the values.',
-            'Similarly, the order can be determined by the min, max or the sums of the values.'
+            'Similarly, the order can be determined by the min, max, sum, mean or media of all the values.'
         ].join(' ')
     },
     categoryarray: {
