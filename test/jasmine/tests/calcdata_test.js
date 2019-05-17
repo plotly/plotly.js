@@ -1007,7 +1007,7 @@ describe('calculated data and points', function() {
                         });
                     });
 
-                    it('sum values across traces of type ' + trace.type, function(done) {
+                    it('sums values across traces of type ' + trace.type, function(done) {
                         var type = trace.type;
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
@@ -1064,7 +1064,7 @@ describe('calculated data and points', function() {
                         checkAggregatedValue(baseMock, expectedAgg, false, done);
                     });
 
-                    it('take the mean of all values per category across traces of type ' + trace.type, function(done) {
+                    it('takes the mean of all values per category across traces of type ' + trace.type, function(done) {
                         var type = trace.type;
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
@@ -1080,7 +1080,7 @@ describe('calculated data and points', function() {
                         checkAggregatedValue(baseMock, expectedAgg, false, done);
                     });
 
-                    it('take the median of all values per category across traces of type ' + trace.type, function(done) {
+                    it('takes the median of all values per category across traces of type ' + trace.type, function(done) {
                         var type = trace.type;
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
@@ -1095,6 +1095,27 @@ describe('calculated data and points', function() {
                         checkAggregatedValue(baseMock, expectedAgg, false, done);
                     });
                 });
+            });
+
+            it('works on asymmetric splom', function(done) {
+                var mock = require('@mocks/splom_multi-axis-type');
+                var mockCopy = Lib.extendDeep(mock, {});
+
+                var order = ['donald', 'georgeW', 'bill', 'ronald', 'richard', 'jimmy', 'george', 'barack', 'gerald', 'lyndon'];
+
+                Plotly.newPlot(gd, mockCopy)
+                .then(function() {
+                    return Plotly.relayout(gd, 'yaxis5.categoryorder', 'total descending');
+                })
+                .then(function() {
+                    expect(gd._fullLayout.yaxis5._categories).toEqual(order, 'wrong order');
+                    return Plotly.relayout(gd, 'yaxis5.categoryorder', 'total ascending');
+                })
+                .then(function() {
+                    expect(gd._fullLayout.yaxis5._categories).toEqual(order.reverse(), 'wrong order');
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
     });

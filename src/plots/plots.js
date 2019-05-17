@@ -2932,10 +2932,10 @@ function sortAxisCategoriesByValue(axList, gd) {
                         // Find which dimension the current axis is representing
                         var currentDimensionIndex = fullTrace._axesDim[ax._id];
 
-                        // Apply logic to associated x axis
+                        // Apply logic to associated x axis if it's defined
                         if(axLetter === 'y') {
                             var associatedXAxisID = fullTrace._diag[currentDimensionIndex][0];
-                            ax = gd._fullLayout[axisIDs.id2name(associatedXAxisID)];
+                            if(associatedXAxisID) ax = gd._fullLayout[axisIDs.id2name(associatedXAxisID)];
                         }
 
                         var categories = cdi.trace.dimensions[currentDimensionIndex].values;
