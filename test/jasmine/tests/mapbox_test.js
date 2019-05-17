@@ -351,9 +351,9 @@ describe('@noCI, mapbox plots', function() {
         })
         .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(1);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to delete and add traces', function(done) {
@@ -392,9 +392,9 @@ describe('@noCI, mapbox plots', function() {
         })
         .then(function() {
             expect(gd._fullLayout.mapbox === undefined).toBe(true);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to restyle', function(done) {
@@ -453,6 +453,7 @@ describe('@noCI, mapbox plots', function() {
                 [1, 0, 0, 1]
             ]);
         })
+        .catch(failTest)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
