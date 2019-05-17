@@ -78,16 +78,9 @@ exports.stdev = function(data, len, mean) {
  * median of a finite set of numbers
  * reference page: https://en.wikipedia.org/wiki/Median#Finite_set_of_numbers
 **/
-exports.median = function(data, len) {
-    if(!len) len = exports.len(data);
+exports.median = function(data) {
     var b = data.slice().sort();
-    if(len % 2 === 0) {
-        // If even
-        return (b[len / 2 - 1] + b[len / 2]) / 2;
-    } else {
-        // If odd
-        return b[(len - 1) / 2];
-    }
+    return exports.interp(b, 0.5);
 };
 
 /**

@@ -178,13 +178,13 @@ describe('Test lib.js:', function() {
 
     describe('median() should', function() {
         it('return the middle value exactly for odd number of observations:', function() {
-            var input = [1, 3, 3, 6, 7, 8, 9];
+            var input = [1, 8, 9, 2, 7, 6, 3];
             var res = Lib.median(input);
             expect(res).toEqual(6);
         });
 
         it('return the mean of the two middle values for even number of observations', function() {
-            var input = [1, 2, 3, 4, 5, 6, 8, 9];
+            var input = [4, 3, 2, 1, 5, 6, 8, 9];
             var res = Lib.median(input);
             expect(res).toEqual(4.5);
         });
