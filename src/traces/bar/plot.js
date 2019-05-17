@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
@@ -50,7 +49,7 @@ function getXY(di, xa, ya, isHorizontal) {
     return isHorizontal ? [s, p] : [p, s];
 }
 
-module.exports = function plot(gd, plotinfo, cdModule, traceLayer, opts) {
+function plot(gd, plotinfo, cdModule, traceLayer, opts) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
@@ -188,7 +187,7 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer, opts) {
 
     // error bars are on the top
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo);
-};
+}
 
 function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
     var xa = plotinfo.xaxis;
@@ -332,15 +331,22 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
             trace.constraintext === 'both' ||
             trace.constraintext === 'outside';
 
-        transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
-            isHorizontal, constrained, trace.textangle);
+        transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, {
+            isHorizontal: isHorizontal,
+            constrained: constrained,
+            angle: trace.textangle
+        });
     } else {
         constrained =
             trace.constraintext === 'both' ||
             trace.constraintext === 'inside';
 
-        transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
-            isHorizontal, constrained, trace.textangle, trace.insidetextanchor);
+        transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, {
+            isHorizontal: isHorizontal,
+            constrained: constrained,
+            angle: trace.textangle,
+            anchor: trace.insidetextanchor
+        });
     }
 
     textSelection.attr('transform', transform);
@@ -350,7 +356,12 @@ function getRotationFromAngle(angle) {
     return (angle === 'auto') ? 0 : angle;
 }
 
-function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, constrained, angle, anchor) {
+function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
+    var isHorizontal = !!opts.isHorizontal;
+    var constrained = !!opts.constrained;
+    var angle = opts.angle || 0;
+    var anchor = opts.anchor || 0;
+
     var textWidth = textBB.width;
     var textHeight = textBB.height;
     var lx = Math.abs(x1 - x0);
@@ -423,7 +434,11 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, isHorizontal, const
     return getTransform(textX, textY, targetX, targetY, scale, rotation);
 }
 
-function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, isHorizontal, constrained, angle) {
+function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
+    var isHorizontal = !!opts.isHorizontal;
+    var constrained = !!opts.constrained;
+    var angle = opts.angle || 0;
+
     var textWidth = textBB.width;
     var textHeight = textBB.height;
     var lx = Math.abs(x1 - x0);
@@ -563,17 +578,17 @@ function calcTextinfo(calcTrace, index, xa, ya) {
         var hasMultiplePercents = nPercent > 1;
 
         if(hasFlag('percent initial')) {
-            tx = formatPercent(cdi.begR);
+            tx = Lib.formatPercent(cdi.begR);
             if(hasMultiplePercents) tx += ' of initial';
             text.push(tx);
         }
         if(hasFlag('percent previous')) {
-            tx = formatPercent(cdi.difR);
+            tx = Lib.formatPercent(cdi.difR);
             if(hasMultiplePercents) tx += ' of previous';
             text.push(tx);
         }
         if(hasFlag('percent total')) {
-            tx = formatPercent(cdi.sumR);
+            tx = Lib.formatPercent(cdi.sumR);
             if(hasMultiplePercents) tx += ' of total';
             text.push(tx);
         }
@@ -582,6 +597,8 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     return text.join('<br>');
 }
 
-function formatPercent(ratio) {
-    return Math.round(100 * ratio) + '%';
-}
+module.exports = {
+    plot: plot,
+    getTransformToMoveInsideBar: getTransformToMoveInsideBar,
+    getTransformToMoveOutsideBar: getTransformToMoveOutsideBar
+};

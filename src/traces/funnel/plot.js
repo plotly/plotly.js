@@ -11,7 +11,7 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
-var barPlot = require('../bar/plot');
+var barPlot = require('../bar/plot').plot;
 
 module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var fullLayout = gd._fullLayout;

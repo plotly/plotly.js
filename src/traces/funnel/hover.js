@@ -10,6 +10,7 @@
 
 var opacity = require('../../components/color').opacity;
 var hoverOnBars = require('../bar/hover').hoverOnBars;
+var formatPercent = require('../../lib').formatPercent;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var point = hoverOnBars(pointData, xval, yval, hovermode);
@@ -29,9 +30,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     // display ratio to initial value
     point.extraText = [
-        formatPercent(di.begR) + ' of initial',
-        formatPercent(di.difR) + ' of previous',
-        formatPercent(di.sumR) + ' of total'
+        formatPercent(di.begR, 1) + ' of initial',
+        formatPercent(di.difR, 1) + ' of previous',
+        formatPercent(di.sumR, 1) + ' of total'
     ].join('<br>');
     // TODO: Should we use pieHelpers.formatPieValue instead ?
 
@@ -47,8 +48,4 @@ function getTraceColor(trace, di) {
     var mlw = di.mlw || cont.line.width;
     if(opacity(mc)) return mc;
     else if(opacity(mlc) && mlw) return mlc;
-}
-
-function formatPercent(ratio) {
-    return ((Math.round(1000 * ratio) * 0.1).toFixed(1) + '%').replace('.0%', '%');
 }

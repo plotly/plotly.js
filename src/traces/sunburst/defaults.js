@@ -11,8 +11,7 @@
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
-
-var coerceFont = Lib.coerceFont;
+var handleText = require('../bar/defaults').handleText;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -46,15 +45,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hovertemplate');
 
-    var dfltFont = coerceFont(coerce, 'textfont', layout.font);
-    var insideTextFontDefault = Lib.extendFlat({}, dfltFont);
-    var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
-    var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
-    if(isColorInheritedFromLayoutFont) {
-        delete insideTextFontDefault.color;
-    }
-    coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
-    coerceFont(coerce, 'outsidetextfont', dfltFont);
+    var textposition = 'auto';
+    handleText(traceIn, traceOut, layout, coerce, textposition, {
+        moduleHasSelected: false,
+        moduleHasUnSelected: false,
+        moduleHasConstrain: false,
+        moduleHasCliponaxis: false,
+        moduleHasTextangle: false,
+        moduleHasInsideanchor: false
+    });
 
     handleDomainDefaults(traceOut, layout, coerce);
 

@@ -8,11 +8,11 @@
 
 'use strict';
 
-var colorAttrs = require('../../components/color/attributes');
-var fontAttrs = require('../../plots/font_attributes');
 var plotAttrs = require('../../plots/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
+var fontAttrs = require('../../plots/font_attributes');
+var colorAttrs = require('../../components/color/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -60,7 +60,7 @@ module.exports = {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'Sets the values of the sectors of this pie chart.',
+            'Sets the values of the sectors.',
             'If omitted, we count occurrences of each label.'
         ].join(' ')
     },
@@ -70,7 +70,7 @@ module.exports = {
             valType: 'data_array',  // TODO 'color_array' ?
             editType: 'calc',
             description: [
-                'Sets the color of each sector of this pie chart.',
+                'Sets the color of each sector.',
                 'If not specified, the default trace color set is used',
                 'to pick the sector colors.'
             ].join(' ')
@@ -140,7 +140,7 @@ module.exports = {
         dflt: '',
         editType: 'calc',
         description: [
-            'If there are multiple pies that should be sized according to',
+            'If there are multiple pie charts that should be sized according to',
             'their totals, link them by providing a non-empty group id here',
             'shared by every trace in the same group.'
         ].join(' ')
@@ -178,10 +178,10 @@ module.exports = {
         description: 'Sets the font used for `textinfo`.'
     }),
     insidetextfont: extendFlat({}, textFontAttrs, {
-        description: 'Sets the font used for `textinfo` lying inside the pie.'
+        description: 'Sets the font used for `textinfo` lying inside the sector.'
     }),
     outsidetextfont: extendFlat({}, textFontAttrs, {
-        description: 'Sets the font used for `textinfo` lying outside the pie.'
+        description: 'Sets the font used for `textinfo` lying outside the sector.'
     }),
 
     title: {
@@ -191,7 +191,7 @@ module.exports = {
             role: 'info',
             editType: 'calc',
             description: [
-                'Sets the title of the pie chart.',
+                'Sets the title of the chart.',
                 'If it is empty, no title is displayed.',
                 'Note that before the existence of `title.text`, the title\'s',
                 'contents used to be defined as the `title` attribute itself.',

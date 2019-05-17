@@ -29,7 +29,7 @@ module.exports = {
     supplyLayoutDefaults: require('../bar/layout_defaults'),
     calc: require('./calc'),
     crossTraceCalc: require('../bar/cross_trace_calc').crossTraceCalc,
-    plot: require('../bar/plot'),
+    plot: require('../bar/plot').plot,
     layerName: 'barlayer',
     style: require('../bar/style').style,
     styleOnSelect: require('../bar/style').styleOnSelect,

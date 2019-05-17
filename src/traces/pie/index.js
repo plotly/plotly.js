@@ -24,7 +24,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'pie',
     basePlotModule: require('./base_plot'),
-    categories: ['pie', 'showLegend'],
+    categories: ['pie-like', 'pie', 'showLegend', 'hiddenLabels'],
     meta: {
         description: [
             'A data visualized by the sectors of the pie is set in `values`.',
