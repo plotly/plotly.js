@@ -1,0 +1,29 @@
+{
+  "data": [{
+    "type": "scatter",
+    "orientation": "v",
+    "x": ["a", "b", "c"],
+    "y": [7, 2, 3]
+  }, {
+    "type": "bar",
+    "x": ["a", "b", "c"],
+    "y": [10, 20, 30],
+    "yaxis": "y2",
+    "xaxis": "x2"
+  }],
+  "layout": {
+    "xaxis": {
+        "type": "category",
+        "categoryorder": "total ascending"
+    },
+    "xaxis2": {
+        "matches": "x"
+    },
+    "yaxis": {
+      "domain": [0, 0.45]
+    },
+    "yaxis2": {
+      "domain": [0.55, 1]
+    }
+  }
+}

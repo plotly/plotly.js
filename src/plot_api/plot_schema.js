@@ -503,6 +503,8 @@ function getTraceAttributes(type) {
 
     var out = {
         meta: _module.meta || {},
+        categories: _module.categories || {},
+        type: type,
         attributes: formatAttributes(attributes),
     };
 

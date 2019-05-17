@@ -176,6 +176,20 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('median() should', function() {
+        it('return the middle value exactly for odd number of observations:', function() {
+            var input = [1, 8, 9, 2, 7, 6, 3];
+            var res = Lib.median(input);
+            expect(res).toEqual(6);
+        });
+
+        it('return the mean of the two middle values for even number of observations', function() {
+            var input = [4, 3, 2, 1, 5, 6, 8, 9];
+            var res = Lib.median(input);
+            expect(res).toEqual(4.5);
+        });
+    });
+
     describe('stdev() should', function() {
         it('return 0 on input [2, 2, 2, 2, 2]:', function() {
             var input = [2, 2, 2, 2];
