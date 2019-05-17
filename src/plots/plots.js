@@ -2927,8 +2927,8 @@ function sortAxisCategoriesByValue(axList, gd) {
                     var cdi = cd[k];
                     var cat, catIndex, value;
 
-                    // If `splom`, collect values across dimensions
                     if(type === 'splom') {
+                        // If `splom`, collect values across dimensions
                         // Find which dimension the current axis is representing
                         var currentDimensionIndex = fullTrace._axesDim[ax._id];
 
@@ -2950,8 +2950,8 @@ function sortAxisCategoriesByValue(axList, gd) {
                                 categoriesValue[catIndex][1].push(dimension.values[l]);
                             }
                         }
-                    // If `scattergl`, collect all values stashed under cdi.t
                     } else if(type === 'scattergl') {
+                        // If `scattergl`, collect all values stashed under cdi.t
                         for(l = 0; l < cdi.t.x.length; l++) {
                             if(axLetter === 'x') {
                                 cat = cdi.t.x[l];
@@ -2971,8 +2971,19 @@ function sortAxisCategoriesByValue(axList, gd) {
                         if(cdi.t && cdi.t._scene) {
                             delete cdi.t._scene.dirty;
                         }
-                    // For all other 2d cartesian traces
+                    } else if(cdi.hasOwnProperty('z')) {
+                        // If 2dMap, collect values in `z`
+                        value = cdi.z;
+                        var mapping = zMapCategory(fullTrace.type, ax, value);
+
+                        for(l = 0; l < value.length; l++) {
+                            for(o = 0; o < value[l].length; o++) {
+                                catIndex = mapping(o, l);
+                                if(catIndex + 1) categoriesValue[catIndex][1].push(value[l][o]);
+                            }
+                        }
                     } else {
+                        // For all other 2d cartesian traces
                         if(axLetter === 'x') {
                             cat = cdi.p + 1 ? cdi.p : cdi.x;
                             value = cdi.s || cdi.v || cdi.y;
@@ -2980,23 +2991,9 @@ function sortAxisCategoriesByValue(axList, gd) {
                             cat = cdi.p + 1 ? cdi.p : cdi.y;
                             value = cdi.s || cdi.v || cdi.x;
                         }
-
-                        // If 2dMap, collect values in `z`
-                        if(cdi.hasOwnProperty('z')) {
-                            value = cdi.z;
-                            var mapping = zMapCategory(fullTrace.type, ax, value);
-
-                            for(l = 0; l < value.length; l++) {
-                                for(o = 0; o < value[l].length; o++) {
-                                    catIndex = mapping(o, l);
-                                    if(catIndex + 1) categoriesValue[catIndex][1].push(value[l][o]);
-                                }
-                            }
-                        } else {
-                            if(!Array.isArray(value)) value = [value];
-                            for(l = 0; l < value.length; l++) {
-                                categoriesValue[cat][1].push(value[l]);
-                            }
+                        if(!Array.isArray(value)) value = [value];
+                        for(l = 0; l < value.length; l++) {
+                            categoriesValue[cat][1].push(value[l]);
                         }
                     }
                 }
