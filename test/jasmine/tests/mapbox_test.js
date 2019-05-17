@@ -8,6 +8,8 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var click = require('../assets/click');
+var delay = require('../assets/delay');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -272,8 +274,13 @@ describe('mapbox credentials', function() {
         var cnt = 0;
         var msg = [
             'An API access token is required to use Mapbox GL.',
-            'See https://www.mapbox.com/api-documentation/#access-tokens'
+            'See https://www.mapbox.com/api-documentation/#access-tokens-and-token-scopes'
         ].join(' ');
+
+        // TODO potential new way of doing this:
+        // https://github.com/mapbox/mapbox-gl-js/pull/7594
+        //
+        // https://www.mapbox.com/atlas/#developing-with-atlas
 
         Plotly.plot(gd, [{
             type: 'scattermapbox',
@@ -288,6 +295,11 @@ describe('mapbox credentials', function() {
         })
         .catch(function(err) {
             cnt++;
+            // Note that we get an error here on `new mapboxgl.Map`
+            // as we don't have an Atlas server running.
+            //
+            // In essence, we test that the `new mapboxgl.Map` throws
+            // as oppose to `findAccessToken`
             expect(err).toEqual(new Error(msg));
         })
         .then(function() {
@@ -524,6 +536,11 @@ describe('@noCI, mapbox plots', function() {
             expect(mapInfo.style.name).toEqual(style);
         }
 
+        // TODO
+        // this one now logs:
+        // 'Unable to perform style diff: Unimplemented: setSprite..  Rebuilding the style from scratch.'
+        // https://github.com/mapbox/mapbox-gl-js/issues/6933
+
         assertLayout('Mapbox Dark');
 
         Plotly.relayout(gd, 'mapbox.style', 'light').then(function() {
@@ -735,6 +752,11 @@ describe('@noCI, mapbox plots', function() {
             expect(String(layer.paint._values['fill-color'].value.value)).toBe(color, 'layer color');
         }
 
+        // TODO
+        // this one now logs:
+        // 'Unable to perform style diff: Unimplemented: setSprite, setLayerProperty..  Rebuilding the style from scratch.'
+        // github.com/mapbox/mapbox-gl-js/issues/6933/
+
         Plotly.react(gd, makeFigure('blue')).then(function() {
             _assert('rgba(0,0,255,1)');
             return Plotly.react(gd, makeFigure('red'));
@@ -936,7 +958,7 @@ describe('@noCI, mapbox plots', function() {
 
         _drag(pointPos, p1, function() {
             expect(relayoutCnt).toBe(1, 'relayout cnt');
-            expect(relayoutingCnt).toBe(2, 'relayouting cnt');
+            expect(relayoutingCnt).toBe(1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(0, 'double click cnt');
             _assert([-19.651, 13.751], 1.234);
 
@@ -944,7 +966,7 @@ describe('@noCI, mapbox plots', function() {
         })
         .then(function() {
             expect(relayoutCnt).toBe(2, 'relayout cnt');
-            expect(relayoutingCnt).toBe(2, 'relayouting cnt');
+            expect(relayoutingCnt).toBe(1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
             _assert([-4.710, 19.475], 1.234);
 
@@ -968,18 +990,21 @@ describe('@noCI, mapbox plots', function() {
             ptData = eventData.points[0];
         });
 
-        _click(blankPos, function() {
+        Promise.resolve()
+        .then(function() { return click(blankPos[0], blankPos[1]); })
+        .then(delay(100))
+        .then(function() {
             expect(ptData).toBe(undefined, 'not firing on blank points');
         })
+        .then(delay(100))
+        .then(function() { return click(pointPos[0], pointPos[1]); })
         .then(function() {
-            return _click(pointPos, function() {
-                expect(ptData).not.toBe(undefined, 'firing on data points');
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-                ], 'returning the correct event data keys');
-                expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
-                expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');
-            });
+            expect(ptData).not.toBe(undefined, 'firing on data points');
+            expect(Object.keys(ptData)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
+            ], 'returning the correct event data keys');
+            expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
+            expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');
         })
         .catch(failTest)
         .then(done);
@@ -1148,11 +1173,6 @@ describe('@noCI, mapbox plots', function() {
                 resolve();
             }, MOUSE_DELAY);
         });
-    }
-
-    function _click(pos, cb) {
-        mouseEvent('mousemove', pos[0], pos[1]);
-        return _mouseEvent('click', pos, cb);
     }
 
     function _doubleClick(pos) {
