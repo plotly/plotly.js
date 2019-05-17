@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var mapboxgl = require('mapbox-gl');
@@ -107,11 +106,6 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         doubleClickZoom: false,
         boxZoom: false
     });
-
-    // clear navigation container
-    var className = constants.controlContainerClassName;
-    var controlContainer = self.div.getElementsByClassName(className)[0];
-    self.div.removeChild(controlContainer);
 
     // make sure canvas does not inherit left and top css
     map._canvas.style.left = '0px';
