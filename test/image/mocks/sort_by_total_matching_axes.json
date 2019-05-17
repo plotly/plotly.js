@@ -14,7 +14,7 @@
   "layout": {
     "xaxis": {
         "type": "category",
-        "categoryorder": "value ascending"
+        "categoryorder": "total ascending"
     },
     "xaxis2": {
         "matches": "x"

@@ -20,20 +20,20 @@
     "yaxis": "y2"
   }],
   "layout": {
-    "title": "categoryorder: \"value ascending\"",
+    "title": "categoryorder: \"total ascending\"",
     "height": 400,
     "width": 600,
     "barmode": "stack",
     "xaxis": {
       "domain": [0, 0.45],
-      "categoryorder": "value ascending"
+      "categoryorder": "total ascending"
     },
     "xaxis2": {
       "domain": [0.55, 1]
     },
     "yaxis2": {
       "anchor": "x2",
-      "categoryorder": "value ascending"
+      "categoryorder": "total ascending"
     }
   }
 }
