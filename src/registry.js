@@ -12,6 +12,7 @@ var Loggers = require('./lib/loggers');
 var noop = require('./lib/noop');
 var pushUnique = require('./lib/push_unique');
 var isPlainObject = require('./lib/is_plain_object');
+var addStyleRule = require('./lib/dom').addStyleRule;
 var ExtendModule = require('./lib/extend');
 
 var basePlotAttributes = require('./plots/attributes');
@@ -266,6 +267,15 @@ function registerTraceModule(_module) {
      */
     if(_module.layoutAttributes) {
         extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
+    }
+
+    // add mapbox-gl CSS here to avoid console warning on instantiation
+    var basePlotModule = _module.basePlotModule;
+    if(basePlotModule.name === 'mapbox') {
+        var styleRules = basePlotModule.constants.styleRules;
+        for(var k in styleRules) {
+            addStyleRule('.mapboxgl-' + k, styleRules[k]);
+        }
     }
 }
 

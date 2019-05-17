@@ -42,6 +42,7 @@ module.exports = {
     // a subset of node_modules/mapbox-gl/dist/mapbox-gl.css
     styleRules: {
         map: 'overflow:hidden;position:relative;',
-        'missing-css': 'display:none',
+        'missing-css': 'display:none;',
+        'canary': 'background-color:salmon;'
     }
 };

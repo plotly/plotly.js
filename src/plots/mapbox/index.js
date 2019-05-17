@@ -15,13 +15,10 @@ var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var createMapbox = require('./mapbox');
-var constants = require('./constants');
 
 var MAPBOX = 'mapbox';
 
-for(var k in constants.styleRules) {
-    Lib.addStyleRule('.mapboxgl-' + k, constants.styleRules[k]);
-}
+var constants = exports.constants = require('./constants');
 
 exports.name = MAPBOX;
 
