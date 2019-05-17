@@ -68,7 +68,9 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer, opts) {
         var plotGroup = d3.select(this);
         var trace = cd[0].trace;
         var isWaterfall = (trace.type === 'waterfall');
+        var isFunnel = (trace.type === 'funnel');
         var isBar = (trace.type === 'bar');
+        var shouldDisplayZeros = isBar || isFunnel;
 
         var adjustPixel = 0;
         if(isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
@@ -106,8 +108,8 @@ module.exports = function plot(gd, plotinfo, cdModule, traceLayer, opts) {
             var isBlank = di.isBlank = !(
                 isNumeric(x0) && isNumeric(x1) &&
                 isNumeric(y0) && isNumeric(y1) &&
-                (x0 !== x1 || (isBar && isHorizontal)) &&
-                (y0 !== y1 || (isBar && !isHorizontal))
+                (x0 !== x1 || (shouldDisplayZeros && isHorizontal)) &&
+                (y0 !== y1 || (shouldDisplayZeros && !isHorizontal))
             );
 
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
