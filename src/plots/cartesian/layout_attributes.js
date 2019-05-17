@@ -818,7 +818,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'trace', 'category ascending', 'category descending', 'array',
-            'value ascending', 'value descending',
+            'total ascending', 'total descending',
             'min ascending', 'min descending',
             'max ascending', 'max descending',
             'sum ascending', 'sum descending',
@@ -836,9 +836,9 @@ module.exports = {
             'Set `categoryorder` to *array* to derive the ordering from the attribute `categoryarray`. If a category',
             'is not found in the `categoryarray` array, the sorting behavior for that attribute will be identical to',
             'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.',
-            'Set `categoryorder` to *value ascending* or *value descending* if order should be determined by the',
+            'Set `categoryorder` to *total ascending* or *total descending* if order should be determined by the',
             'numerical order of the values.',
-            'Similarly, the order can be determined by the min, max, sum, mean or media of all the values.'
+            'Similarly, the order can be determined by the min, max, sum, mean or median of all the values.'
         ].join(' ')
     },
     categoryarray: {

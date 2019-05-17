@@ -989,7 +989,7 @@ describe('calculated data and points', function() {
                         .then(done);
                     }
 
-                    ['value ascending', 'value descending'].forEach(function(categoryorder) {
+                    ['total ascending', 'total descending'].forEach(function(categoryorder) {
                         it('sorts ' + axName + ' by ' + categoryorder + ' for trace type ' + trace.type, function(done) {
                             var data = [7, 2, 3];
                             var baseMock = {data: [makeData(trace.type, axName, cat, data)], layout: {}};
@@ -997,7 +997,7 @@ describe('calculated data and points', function() {
 
                             // Set expectations
                             var finalOrder = ['b', 'c', 'a'];
-                            if(categoryorder === 'value descending') finalOrder.reverse();
+                            if(categoryorder === 'total descending') finalOrder.reverse();
                             var expectedAgg = [['a', 7], ['b', 2], ['c', 3]];
 
                             if(trace.type === 'ohlc' || trace.type === 'candlestick') expectedAgg = [['a', 14], ['b', 4], ['c', 6]];
@@ -1012,7 +1012,7 @@ describe('calculated data and points', function() {
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
                         var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
-                        baseMock.layout[axName] = { type: 'category', categoryorder: 'value ascending'};
+                        baseMock.layout[axName] = { type: 'category', categoryorder: 'total ascending'};
 
                         var expectedAgg = [['a', data[0] + data2[0]], ['b', data[1] + data2[1]], ['c', data[2] + data2[2]]];
                         if(type === 'ohlc' || type === 'candlestick') expectedAgg = [['a', 2 * expectedAgg[0][1]], ['b', 2 * expectedAgg[1][1]], ['c', 2 * expectedAgg[2][1]]];
@@ -1026,7 +1026,7 @@ describe('calculated data and points', function() {
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
                         var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
-                        baseMock.layout[axName] = { type: 'category', categoryorder: 'value ascending'};
+                        baseMock.layout[axName] = { type: 'category', categoryorder: 'total ascending'};
 
                         // Hide second trace
                         baseMock.data[1].visible = 'legendonly';

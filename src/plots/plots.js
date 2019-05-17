@@ -2856,7 +2856,7 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
-var sortAxisCategoriesByValueRegex = /(value|sum|min|max|mean|median) (ascending|descending)/;
+var sortAxisCategoriesByValueRegex = /(total|sum|min|max|mean|median) (ascending|descending)/;
 
 function sortAxisCategoriesByValue(axList, gd) {
     var affectedTraces = [];
@@ -2889,7 +2889,7 @@ function sortAxisCategoriesByValue(axList, gd) {
         'min': function(values) {return Lib.aggNums(Math.min, null, values);},
         'max': function(values) {return Lib.aggNums(Math.max, null, values);},
         'sum': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
-        'value': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        'total': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         'mean': function(values) {return Lib.mean(values);},
         'median': function(values) {return Lib.median(values);}
     };
