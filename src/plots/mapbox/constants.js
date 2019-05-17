@@ -31,6 +31,12 @@ module.exports = {
         'More info here: https://www.mapbox.com/help/define-access-token/'
     ].join('\n'),
 
+    multipleTokensErrorMsg: [
+        'Set multiple mapbox access token across different mapbox subplot,',
+        'using first token found as mapbox-gl does not allow multiple' +
+        'access tokens on the same page.'
+    ].join('\n'),
+
     mapOnErrorMsg: 'Mapbox error.',
 
     // a subset of node_modules/mapbox-gl/dist/mapbox-gl.css

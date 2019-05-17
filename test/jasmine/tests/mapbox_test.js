@@ -196,10 +196,31 @@ describe('mapbox defaults', function() {
 });
 
 describe('mapbox credentials', function() {
-    'use strict';
+    var gd;
 
     var dummyToken = 'asfdsa124331wersdsa1321q3';
-    var gd;
+
+    var osmStyle = {
+        id: 'osm',
+        version: 8,
+        sources: {
+            'osm-tiles': {
+                type: 'raster',
+                tiles: [
+                    'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                ],
+                tileSize: 256
+            }
+        },
+        layers: [{
+            id: 'osm-tiles',
+            type: 'raster',
+            source: 'osm-tiles',
+            minzoom: 0,
+            maxzoom: 22
+        }]
+    };
 
     beforeEach(function() {
         gd = createGraphDiv();
@@ -219,6 +240,8 @@ describe('mapbox credentials', function() {
     });
 
     it('should throw error if token is not registered', function() {
+        spyOn(Lib, 'error');
+
         expect(function() {
             Plotly.plot(gd, [{
                 type: 'scattermapbox',
@@ -226,6 +249,8 @@ describe('mapbox credentials', function() {
                 lat: [10, 20, 30]
             }]);
         }).toThrow(new Error(constants.noAccessTokenErrorMsg));
+
+        expect(Lib.error).toHaveBeenCalledWith('Uses Mapbox map style, but did not set an access token.');
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should throw error if token is invalid', function(done) {
@@ -266,6 +291,76 @@ describe('mapbox credentials', function() {
         }).then(function() {
             expect(cnt).toEqual(0);
             expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
+            done();
+        });
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should warn when multiple tokens in mapbox layout options are present', function(done) {
+        spyOn(Lib, 'warn');
+        var cnt = 0;
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        }, {
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30],
+            subplot: 'mapbox2'
+        }], {
+            mapbox: { accesstoken: MAPBOX_ACCESS_TOKEN },
+            mapbox2: { accesstoken: dummyToken }
+        }).catch(function() {
+            cnt++;
+        }).then(function() {
+            expect(cnt).toEqual(0);
+            expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
+            expect(Lib.warn).toHaveBeenCalledWith(constants.multipleTokensErrorMsg);
+            done();
+        });
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should not throw when using a custom non-mapbox style', function(done) {
+        var cnt = 0;
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        }], {
+            mapbox: { style: osmStyle }
+        }).catch(function() {
+            cnt++;
+        }).then(function() {
+            expect(cnt).toEqual(0);
+            expect(gd._fullLayout.mapbox.accesstoken).toBe(undefined);
+            done();
+        });
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should log when an access token is set while using a custom non-mapbox style', function(done) {
+        spyOn(Lib, 'log');
+        var cnt = 0;
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        }], {
+            mapbox: {
+                style: osmStyle,
+                accesstoken: MAPBOX_ACCESS_TOKEN
+            }
+        }).catch(function() {
+            cnt++;
+        }).then(function() {
+            expect(cnt).toEqual(0);
+            expect(Lib.log).toHaveBeenCalledWith([
+                'Listed mapbox access token(s)',
+                MAPBOX_ACCESS_TOKEN,
+                'but did not use a Mapbox map style, ignoring token(s).'
+            ].join(' '));
             done();
         });
     }, LONG_TIMEOUT_INTERVAL);

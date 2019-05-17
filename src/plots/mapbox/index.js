@@ -46,7 +46,7 @@ exports.attributes = {
     }
 };
 
-exports.layoutAttributes = require('./layout_attributes');
+var layoutAttrs = exports.layoutAttributes = require('./layout_attributes');
 
 exports.supplyLayoutDefaults = require('./layout_defaults');
 
@@ -132,6 +132,8 @@ exports.toSVG = function(gd) {
     }
 };
 
+// N.B. mapbox-gl only allows one accessToken to be set per page:
+// https://github.com/mapbox/mapbox-gl-js/issues/6331
 function findAccessToken(gd, mapboxIds) {
     var fullLayout = gd._fullLayout;
     var context = gd._context;
@@ -139,17 +141,49 @@ function findAccessToken(gd, mapboxIds) {
     // special case for Mapbox Atlas users
     if(context.mapboxAccessToken === '') return '';
 
+    var tokensUseful = [];
+    var tokensListed = [];
+    var wontWork = false;
+
     // Take the first token we find in a mapbox subplot.
     // These default to the context value but may be overridden.
     for(var i = 0; i < mapboxIds.length; i++) {
         var opts = fullLayout[mapboxIds[i]];
+        var style = opts.style;
+        var token = opts.accesstoken;
 
-        if(opts.accesstoken) {
-            return opts.accesstoken;
+        if(typeof style === 'string' && layoutAttrs.style.values.indexOf(style) !== -1) {
+            if(token) {
+                Lib.pushUnique(tokensUseful, token);
+            } else {
+                Lib.error('Uses Mapbox map style, but did not set an access token.');
+                wontWork = true;
+            }
+        }
+
+        if(token) {
+            Lib.pushUnique(tokensListed, token);
         }
     }
 
-    throw new Error(constants.noAccessTokenErrorMsg);
+    if(wontWork) {
+        throw new Error(constants.noAccessTokenErrorMsg);
+    }
+
+    if(tokensUseful.length) {
+        if(tokensUseful.length > 1) {
+            Lib.warn(constants.multipleTokensErrorMsg);
+        }
+        return tokensUseful[0];
+    } else {
+        if(tokensListed.length) {
+            Lib.log([
+                'Listed mapbox access token(s)', tokensListed.join(','),
+                'but did not use a Mapbox map style, ignoring token(s).'
+            ].join(' '));
+        }
+        return '';
+    }
 }
 
 exports.updateFx = function(gd) {
