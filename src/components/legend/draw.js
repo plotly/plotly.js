@@ -58,8 +58,8 @@ module.exports = function draw(gd) {
         for(var j = 0; j < legendData[i].length; j++) {
             var item = legendData[i][j][0];
             var trace = item.trace;
-            var isPie = Registry.traceIs(trace, 'pie');
-            var name = isPie ? item.label : trace.name;
+            var isPieLike = Registry.traceIs(trace, 'pie-like');
+            var name = isPieLike ? item.label : trace.name;
             maxLength = Math.max(maxLength, name && name.length || 0);
         }
     }
@@ -110,7 +110,7 @@ module.exports = function draw(gd) {
 
     traces.style('opacity', function(d) {
         var trace = d[0].trace;
-        if(Registry.traceIs(trace, 'pie')) {
+        if(Registry.traceIs(trace, 'pie-like')) {
             return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
         } else {
             return trace.visible === 'legendonly' ? 0.5 : 1;
@@ -375,7 +375,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     if(trace._group) {
         evtData.group = trace._group;
     }
-    if(trace.type === 'pie') {
+    if(Registry.traceIs(trace, 'pie-like')) {
         evtData.label = legendItem.datum()[0].label;
     }
 
@@ -399,11 +399,11 @@ function drawTexts(g, gd, maxLength) {
     var legendItem = g.data()[0][0];
     var fullLayout = gd._fullLayout;
     var trace = legendItem.trace;
-    var isPie = Registry.traceIs(trace, 'pie');
+    var isPieLike = Registry.traceIs(trace, 'pie-like');
     var traceIndex = trace.index;
-    var isEditable = gd._context.edits.legendText && !isPie;
+    var isEditable = gd._context.edits.legendText && !isPieLike;
 
-    var name = isPie ? legendItem.label : trace.name;
+    var name = isPieLike ? legendItem.label : trace.name;
     if(fullLayout.meta) {
         name = Lib.templateString(name, {meta: fullLayout.meta});
     }

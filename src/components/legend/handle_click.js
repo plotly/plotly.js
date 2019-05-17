@@ -92,7 +92,7 @@ module.exports = function handleClick(g, gd, numClicks) {
         SHOWISOLATETIP = false;
     }
 
-    if(Registry.traceIs(fullTrace, 'pie')) {
+    if(Registry.traceIs(fullTrace, 'pie-like')) {
         var thisLabel = legendItem.label;
         var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 

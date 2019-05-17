@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -42,7 +41,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
                 legendReallyHasATrace = true;
                 // Always show the legend by default if there's a pie,
                 // or if there's only one trace but it's explicitly shown
-                if(Registry.traceIs(trace, 'pie') ||
+                if(Registry.traceIs(trace, 'pie-like') ||
                     trace._input.showlegend === true
                 ) {
                     legendTraceCount++;

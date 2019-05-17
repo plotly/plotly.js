@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
@@ -467,6 +466,7 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._hasGL2D = newFullLayout._has('gl2d');
     newFullLayout._hasTernary = newFullLayout._has('ternary');
     newFullLayout._hasPie = newFullLayout._has('pie');
+    newFullLayout._hasFunnelarea = newFullLayout._has('funnelarea');
 
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
@@ -2722,9 +2722,10 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies / sunbursts (and for legend)
+    // for sharing colors across pies / sunbursts / funnelarea (and for legend)
     fullLayout._piecolormap = {};
     fullLayout._sunburstcolormap = {};
+    fullLayout._funnelareacolormap = {};
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:

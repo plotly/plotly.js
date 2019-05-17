@@ -87,6 +87,7 @@ module.exports = function style(s, gd) {
     .each(styleFunnels)
     .each(styleBars)
     .each(styleBoxes)
+    .each(styleFunnelareas)
     .each(stylePies)
     .each(styleLines)
     .each(stylePoints)
@@ -307,14 +308,14 @@ module.exports = function style(s, gd) {
     }
 
     function styleBars(d) {
-        styleBarFamily(d, this);
+        styleBarLike(d, this);
     }
 
     function styleFunnels(d) {
-        styleBarFamily(d, this, 'funnel');
+        styleBarLike(d, this, 'funnel');
     }
 
-    function styleBarFamily(d, lThis, desiredType) {
+    function styleBarLike(d, lThis, desiredType) {
         var trace = d[0].trace;
         var marker = trace.marker || {};
         var markerLine = marker.line || {};
@@ -420,13 +421,24 @@ module.exports = function style(s, gd) {
     }
 
     function stylePies(d) {
+        stylePieLike(d, this, 'pie');
+    }
+
+    function styleFunnelareas(d) {
+        stylePieLike(d, this, 'funnelarea');
+    }
+
+    function stylePieLike(d, lThis, desiredType) {
         var d0 = d[0];
         var trace = d0.trace;
 
-        var pts = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legendpie')
-            .data(Registry.traceIs(trace, 'pie') && trace.visible ? [d] : []);
-        pts.enter().append('path').classed('legendpie', true)
+        var isVisible = (!desiredType) ? Registry.traceIs(trace, desiredType) :
+            (trace.type === desiredType && trace.visible);
+
+        var pts = d3.select(lThis).select('g.legendpoints')
+            .selectAll('path.legend' + desiredType)
+            .data(isVisible ? [d] : []);
+        pts.enter().append('path').classed('legend' + desiredType, true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');
         pts.exit().remove();

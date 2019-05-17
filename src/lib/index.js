@@ -1158,3 +1158,31 @@ lib.fillText = function(calcPt, trace, contOut) {
 lib.isValidTextValue = function(v) {
     return v || v === 0;
 };
+
+lib.formatPercent = function(ratio, n) {
+    n = n || 0;
+    var str = (Math.round(100 * ratio * Math.pow(10, n)) * Math.pow(0.1, n)).toFixed(n) + '%';
+    for(var i = 0; i < n; i++) {
+        if(str.indexOf('.') !== -1) {
+            str = str.replace('0%', '%');
+            str = str.replace('.%', '%');
+        }
+    }
+    return str;
+};
+
+lib.convexPolygonArea = function(points) {
+    var s1 = 0;
+    var s2 = 0;
+    var n = points.length;
+    for(var i = 0; i < n; i++) {
+        var k = (i + 1) % n;
+        var x0 = points[i][0];
+        var y0 = points[i][1];
+        var x1 = points[k][0];
+        var y1 = points[k][1];
+        s1 += x0 * y1;
+        s2 += x1 * y0;
+    }
+    return 0.5 * Math.abs(s1 - s2);
+};
