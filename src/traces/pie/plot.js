@@ -814,6 +814,11 @@ function scalePies(cdModule, plotSize) {
 
         cd0.r = Math.min(pieBoxWidth, pieBoxHeight) / (2 + 2 * maxPull);
 
+        if(trace.type === 'funnelarea' && cd0.trace.scalegroup) {
+            var aspectratio = trace.aspectratio;
+            cd0.r *= Math.sqrt(aspectratio < 1 ? 1 / aspectratio : aspectratio);
+        }
+
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
         cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - pieBoxHeight / 2;
         if(trace.title.text && trace.title.position.indexOf('bottom') !== -1) {
