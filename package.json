@@ -107,7 +107,7 @@
     "regl-splom": "^1.0.6",
     "right-now": "^1.0.0",
     "robust-orientation": "^1.1.3",
-    "sane-topojson": "git://github.com/etpinard/sane-topojson#6f5cf440eb466f8563ffdd32788b7575d282d7fc",
+    "sane-topojson": "^3.0.1",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
     "svg-path-sdf": "^1.1.3",
