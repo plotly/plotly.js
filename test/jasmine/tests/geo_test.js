@@ -18,6 +18,11 @@ var click = require('../assets/click');
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
+// use local topojson files
+Plotly.setPlotConfig({
+    topojsonURL: '/base/dist/topojson/'
+});
+
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {
         mouseEvent('mousemove', fromX, fromY);
