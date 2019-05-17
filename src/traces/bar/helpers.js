@@ -14,7 +14,7 @@ var tinycolor = require('tinycolor2');
 exports.coerceString = function(attributeDefinition, value, defaultValue) {
     if(typeof value === 'string') {
         if(value || !attributeDefinition.noBlank) return value;
-    } else if(typeof value === 'number') {
+    } else if(typeof value === 'number' || value === true) {
         if(!attributeDefinition.strict) return String(value);
     }
 
