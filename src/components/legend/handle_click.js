@@ -21,7 +21,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     var itemClick = fullLayout.legend.itemclick;
     var itemDoubleClick = fullLayout.legend.itemdoubleclick;
 
-    if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'focus' &&
+    if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
     ) {
         Lib.notifier(Lib._(gd, 'Double-click on legend to isolate one trace'), 'long');
@@ -111,7 +111,7 @@ module.exports = function handleClick(g, gd, numClicks) {
         if(mode === 'toggle') {
             if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);
             else hiddenSlices.splice(thisLabelIndex, 1);
-        } else if(mode === 'focus') {
+        } else if(mode === 'toggleothers') {
             hiddenSlices = [];
             gd.calcdata[0].forEach(function(d) {
                 if(thisLabel !== d.label) {
@@ -162,7 +162,7 @@ module.exports = function handleClick(g, gd, numClicks) {
             } else {
                 setVisibility(fullTrace, nextVisibility);
             }
-        } else if(mode === 'focus') {
+        } else if(mode === 'toggleothers') {
             // Compute the clicked index. expandedIndex does what we want for expanded traces
             // but also culls hidden traces. That means we have some work to do.
             var isClicked, isInGroup, otherState;

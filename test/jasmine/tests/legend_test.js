@@ -1686,7 +1686,7 @@ describe('legend interaction', function() {
                     .then(click(0, 2)).then(_assert([true, true, true]))
                     .then(function() {
                         return Plotly.relayout(gd, {
-                            'legend.itemclick': 'focus',
+                            'legend.itemclick': 'toggleothers',
                             'legend.itemdoubleclick': 'toggle'
                         });
                     })
