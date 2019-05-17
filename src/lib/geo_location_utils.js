@@ -37,7 +37,7 @@ function locationToFeature(locationmode, location, features) {
     if(!location || typeof location !== 'string') return false;
 
     var locationId = locationmodeToIdFinder[locationmode](location);
-    var features2;
+    var filteredFeatures;
     var f, i;
 
     if(locationId) {
@@ -48,19 +48,19 @@ function locationToFeature(locationmode, location, features) {
             // include state/provinces from USA, Canada, Australia and Brazil
             // which have some overlay in their two-letter ids. For example,
             // 'WA' is used for both Washington state and Western Australia.
-            features2 = [];
+            filteredFeatures = [];
             for(i = 0; i < features.length; i++) {
                 f = features[i];
                 if(f.properties && f.properties.gu && f.properties.gu === 'USA') {
-                    features2.push(f);
+                    filteredFeatures.push(f);
                 }
             }
         } else {
-            features2 = features;
+            filteredFeatures = features;
         }
 
-        for(i = 0; i < features2.length; i++) {
-            f = features2[i];
+        for(i = 0; i < filteredFeatures.length; i++) {
+            f = filteredFeatures[i];
             if(f.id === locationId) return f;
         }
 
