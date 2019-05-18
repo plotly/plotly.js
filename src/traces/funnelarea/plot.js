@@ -253,14 +253,24 @@ function setCoords(cd) {
 
     var lastX = allPoints[allPoints.length - 1][0];
 
+    // get pie r
     var r = cd0.r;
-    var scaleX = r / lastX;
-    var scaleY = r / aspectratio * 2 / (maxY - minY);
+    if(cd0.trace.scalegroup) {
+        r *= Math.sqrt(Math.PI / 4);
+        r /= Math.sqrt(1 + h);
+        r *= Math.sqrt((aspectratio < 1) ? 1 / aspectratio : aspectratio);
+    }
 
+    var rY = (maxY - minY) / 2;
+    var scaleX = r / lastX;
+    var scaleY = r / (aspectratio * rY);
     if(aspectratio < 1) {
         scaleX *= aspectratio;
         scaleY *= aspectratio;
     }
+
+    // set funnelarea r
+    cd0.r = scaleY * rY;
 
     // scale the shape
     for(i = 0; i < allPoints.length; i++) {

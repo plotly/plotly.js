@@ -20,10 +20,10 @@
             "aspectratio": 0.5,
             "type": "funnelarea",
             "scalegroup": "one",
-            "values": [16, 15, 14, 13, 12, 11],
+            "values": [60, 50, 40, 30, 20, 10],
             "title": {
                 "position": "top right",
-                "text": "11 - 16 in one group"
+                "text": "10 - 60 in one group"
             },
             "domain": {
                 "x": [0.7, 1],
@@ -67,9 +67,9 @@
             "scalegroup": "one",
             "title": {
                 "position": "top center",
-                "text": "11 - 16 in one group"
+                "text": "10 - 60 in one group"
             },
-            "values": [16, 15, 14, 13, 12, 11],
+            "values": [60, 50, 40, 30, 20, 10],
             "domain": {
                 "x": [0.35, 0.65],
                 "y": [0.35, 0.65]
@@ -110,10 +110,10 @@
             "aspectratio": 2,
             "type": "funnelarea",
             "scalegroup": "one",
-            "values": [16, 15, 14, 13, 12, 11],
+            "values": [60, 50, 40, 30, 20, 10],
             "title": {
                 "position": "top left",
-                "text": "11 - 16 in one group"
+                "text": "10 - 60 in one group"
             },
             "domain": {
                 "x": [0, 0.3],

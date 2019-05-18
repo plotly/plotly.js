@@ -614,7 +614,7 @@ function positionTitleInside(cd0) {
 function positionTitleOutside(cd0, plotSize) {
     var scaleX = 1;
     var scaleY = 1;
-    var maxWidth, maxPull;
+    var maxPull;
 
     var trace = cd0.trace;
     // position of the baseline point of the text box in the plot, before scaling.
@@ -643,16 +643,19 @@ function positionTitleOutside(cd0, plotSize) {
         topMiddle.y += (1 + maxPull) * cd0.r;
     }
 
+    var rx = applyAspectRatio(cd0.r, cd0.trace.aspectratio);
+
+    var maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2;
     if(trace.title.position.indexOf('left') !== -1) {
         // we start the text at the left edge of the pie
-        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2 + cd0.r;
-        topMiddle.x -= (1 + maxPull) * cd0.r;
+        maxWidth = maxWidth + rx;
+        topMiddle.x -= (1 + maxPull) * rx;
         translate.tx += cd0.titleBox.width / 2;
     } else if(trace.title.position.indexOf('center') !== -1) {
-        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
+        maxWidth *= 2;
     } else if(trace.title.position.indexOf('right') !== -1) {
-        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2 + cd0.r;
-        topMiddle.x += (1 + maxPull) * cd0.r;
+        maxWidth = maxWidth + rx;
+        topMiddle.x += (1 + maxPull) * rx;
         translate.tx -= cd0.titleBox.width / 2;
     }
     scaleX = maxWidth / cd0.titleBox.width;
@@ -664,6 +667,10 @@ function positionTitleOutside(cd0, plotSize) {
         tx: translate.tx,
         ty: translate.ty
     };
+}
+
+function applyAspectRatio(x, aspectratio) {
+    return x * ((aspectratio === undefined) ? 1 : aspectratio);
 }
 
 function getTitleSpace(cd0, plotSize) {
@@ -813,11 +820,6 @@ function scalePies(cdModule, plotSize) {
         maxPull = getMaxPull(trace);
 
         cd0.r = Math.min(pieBoxWidth, pieBoxHeight) / (2 + 2 * maxPull);
-
-        if(trace.type === 'funnelarea' && cd0.trace.scalegroup) {
-            var aspectratio = trace.aspectratio;
-            cd0.r *= Math.sqrt(aspectratio < 1 ? 1 / aspectratio : aspectratio);
-        }
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
         cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - pieBoxHeight / 2;
