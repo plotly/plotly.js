@@ -734,7 +734,7 @@ describe('funnelarea hovering', function() {
                 'curveNumber', 'pointNumber', 'pointNumbers',
                 'data', 'fullData',
                 'label', 'color', 'value',
-                'i', 'v', 'percent', 'text'
+                'percent', 'text'
             ];
 
             expect(Object.keys(hoverData.points[0]).sort()).toEqual(fields.sort());
@@ -1060,9 +1060,9 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         expect(point.id).toEqual(['maggie']);
         expect(point.customdata).toEqual([{9: 10}]);
 
-        // for backward compat - i/v to be removed at some point?
-        expect(point.i).toBe(point.pointNumber);
-        expect(point.v).toBe(point.value);
+        // no need for backward compat i/v
+        expect('i' in point).toBe(false);
+        expect('v' in point).toBe(false);
 
         var evt = data.event;
         expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
