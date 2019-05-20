@@ -47,11 +47,6 @@ module.exports = function plot(gd, cdModule) {
                 .classed('slice', true);
             slices.exit().remove();
 
-            var quadrants = [
-                [[], []], // y<0: x<0, x>=0
-                [[], []] // y>=0: x<0, x>=0
-            ];
-
             slices.each(function(pt) {
                 if(pt.hidden) {
                     d3.select(this).selectAll('path,g').remove();
@@ -61,8 +56,6 @@ module.exports = function plot(gd, cdModule) {
                 // to have consistent event data compared to other traces
                 pt.pointNumber = pt.i;
                 pt.curveNumber = trace.index;
-
-                quadrants[pt.pxmid[1] < 0 ? 0 : 1][pt.pxmid[0] < 0 ? 0 : 1].push(pt);
 
                 var cx = cd0.cx;
                 var cy = cd0.cy;
@@ -76,8 +69,7 @@ module.exports = function plot(gd, cdModule) {
                 sliceTop.call(attachFxHandlers, gd, cd);
 
                 var shape =
-                    'M' + cx + ',' + cy +
-                    move(pt.TR) +
+                    'M' + (cx + pt.TR[0]) + ',' + (cy + pt.TR[1]) +
                     line(pt.TR, pt.BR) +
                     line(pt.BR, pt.BL) +
                     line(pt.BL, pt.TL) +
@@ -172,10 +164,6 @@ module.exports = function plot(gd, cdModule) {
     });
 };
 
-function move(a) {
-    return 'm' + a[0] + ',' + a[1];
-}
-
 function line(a, b) {
     var dx = b[0] - a[0];
     var dy = b[1] - a[1];
@@ -197,7 +185,7 @@ function setCoords(cd) {
 
     var aspectratio = cd0.trace.aspectratio;
     var h = cd0.trace.baseratio;
-    if(h > 0.999) h = 0.999;
+    if(h > 0.999) h = 0.999; // TODO: may handle this case separately
     var h2 = Math.pow(h, 2);
 
     var v1 = cd0.vTotal;
