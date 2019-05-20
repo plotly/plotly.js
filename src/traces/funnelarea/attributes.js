@@ -9,7 +9,6 @@
 'use strict';
 
 var pieAttrs = require('../pie/attributes');
-var sunburstMarker = require('../sunburst/attributes').marker;
 var plotAttrs = require('../../plots/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
@@ -22,7 +21,23 @@ module.exports = {
     label0: pieAttrs.label0,
     dlabel: pieAttrs.dlabel,
     values: pieAttrs.values,
-    marker: sunburstMarker,
+
+    marker: {
+        colors: pieAttrs.marker.colors,
+        line: {
+            color: extendFlat({}, pieAttrs.marker.line.color, {
+                dflt: null,
+                description: [
+                    'Sets the color of the line enclosing each sector.',
+                    'Defaults to the `paper_bgcolor` value.'
+                ].join(' ')
+            }),
+            width: extendFlat({}, pieAttrs.marker.line.width, {dflt: 1}),
+            editType: 'calc'
+        },
+        editType: 'calc'
+    },
+
     text: pieAttrs.text,
     hovertext: pieAttrs.hovertext,
 
