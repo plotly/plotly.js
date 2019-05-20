@@ -378,7 +378,6 @@ describe('Test histogram', function() {
             ]);
         });
 
-        // TODO figure out what to do in this case!
         it('should be able to group histogram and histogram2d* traces together', function() {
             gd = {
                 data: [
@@ -447,7 +446,6 @@ describe('Test histogram', function() {
                     {bingroup: '1', type: 'histogram', y: [2, 3], xaxis: 'x2', yaxis: 'y2'},
                     // this one does not have to match either
                     // (it's a histogram2d* traces), but it can be grouped
-                    // TODO should this be just "bingroup"???
                     {xbingroup: '1', ybingroup: '1', type: 'histogram2d', x: [3, 4], y: [3, 4]}
                 ],
                 layout: {}

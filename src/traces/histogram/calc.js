@@ -292,6 +292,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         }
 
         // TODO how does work with bingroup ????
+        // - https://github.com/plotly/plotly.js/issues/3881
         //
         // Edge case: single-valued histogram overlaying others
         // Use them all together to calculate the bin size for the single-valued one
