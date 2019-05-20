@@ -466,7 +466,6 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._hasGL2D = newFullLayout._has('gl2d');
     newFullLayout._hasTernary = newFullLayout._has('ternary');
     newFullLayout._hasPie = newFullLayout._has('pie');
-    newFullLayout._hasFunnelarea = newFullLayout._has('funnelarea');
 
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
