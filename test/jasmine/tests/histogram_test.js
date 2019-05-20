@@ -239,18 +239,18 @@ describe('Test histogram', function() {
             barModes.forEach(function(mode) {
                 gd = {
                     data: [
-                        {type: 'histogram', y: [1]},
-                        {type: 'histogram', y: [2]},
+                        {type: 'histogram', y: [1, 2]},
+                        {type: 'histogram', y: [2, 3]},
 
-                        {type: 'histogram', y: [1], xaxis: 'x2'},
-                        {type: 'histogram', y: [3], xaxis: 'x2'},
+                        {type: 'histogram', y: [1, 2], xaxis: 'x2'},
+                        {type: 'histogram', y: [3, 4], xaxis: 'x2'},
 
-                        {type: 'histogram', y: [3]},
-                        {type: 'histogram', y: [2], xaxis: 'x2'},
+                        {type: 'histogram', y: [3, 4]},
+                        {type: 'histogram', y: [2, 4], xaxis: 'x2'},
 
-                        {type: 'histogram', x: [1]},
-                        {uid: 'solo', type: 'histogram', x: [2], yaxis: 'y2'},
-                        {type: 'histogram', x: [2]}
+                        {type: 'histogram', x: [1, 3]},
+                        {uid: 'solo', type: 'histogram', x: [2, 2], yaxis: 'y2'},
+                        {type: 'histogram', x: [2, 3]}
                     ],
                     layout: {barmode: mode}
                 };
@@ -270,10 +270,10 @@ describe('Test histogram', function() {
             barModes.forEach(function(mode) {
                 gd = {
                     data: [
-                        {type: 'histogram', y: [1]},
-                        {type: 'histogram', y: [2], xaxis: 'x2'},
-                        {type: 'histogram', x: [1], yaxis: 'y2'},
-                        {type: 'histogram', x: [2], yaxis: 'y2'},
+                        {type: 'histogram', y: [1, 2]},
+                        {type: 'histogram', y: [2, 3], xaxis: 'x2'},
+                        {type: 'histogram', x: [1, 2], yaxis: 'y2'},
+                        {type: 'histogram', x: [2, 3], yaxis: 'y2'},
                     ],
                     layout: {
                         barmode: mode,
@@ -292,18 +292,18 @@ describe('Test histogram', function() {
         it('should not group traces by default under barmode:overlay ', function() {
             gd = {
                 data: [
-                    {uid: 'a', type: 'histogram', y: [1]},
-                    {uid: 'b', type: 'histogram', y: [2]},
+                    {uid: 'a', type: 'histogram', y: [1, 2]},
+                    {uid: 'b', type: 'histogram', y: [2, 3]},
 
-                    {uid: 'c', type: 'histogram', y: [1], xaxis: 'x2'},
-                    {uid: 'd', type: 'histogram', y: [3], xaxis: 'x2'},
+                    {uid: 'c', type: 'histogram', y: [1, 2], xaxis: 'x2'},
+                    {uid: 'd', type: 'histogram', y: [3, 4], xaxis: 'x2'},
 
-                    {uid: 'e', type: 'histogram', y: [3]},
-                    {uid: 'f', type: 'histogram', y: [2], xaxis: 'x2'},
+                    {uid: 'e', type: 'histogram', y: [3, 1]},
+                    {uid: 'f', type: 'histogram', y: [2, 1], xaxis: 'x2'},
 
-                    {uid: 'g', type: 'histogram', x: [1]},
-                    {uid: 'h', type: 'histogram', x: [2], yaxis: 'y2'},
-                    {uid: 'i', type: 'histogram', x: [2]}
+                    {uid: 'g', type: 'histogram', x: [1, 2]},
+                    {uid: 'h', type: 'histogram', x: [2, 3], yaxis: 'y2'},
+                    {uid: 'i', type: 'histogram', x: [2, 4]}
                 ],
                 layout: {barmode: 'overlay'}
             };
@@ -318,10 +318,10 @@ describe('Test histogram', function() {
         it('should not group histogram2d* traces by default', function() {
             gd = {
                 data: [
-                    {uid: 'a', type: 'histogram2d', x: [1], y: [1]},
-                    {uid: 'b', type: 'histogram2d', x: [2], y: [2]},
-                    {uid: 'c', type: 'histogram2dcontour', x: [1], y: [1], xaxis: 'x2', yaxis: 'y2'},
-                    {uid: 'd', type: 'histogram2dcontour', x: [2], y: [2], xaxis: 'x2', yaxis: 'y2'},
+                    {uid: 'a', type: 'histogram2d', x: [1, 2], y: [1, 3]},
+                    {uid: 'b', type: 'histogram2d', x: [2, 3], y: [2, 3]},
+                    {uid: 'c', type: 'histogram2dcontour', x: [1, 3], y: [1, 2], xaxis: 'x2', yaxis: 'y2'},
+                    {uid: 'd', type: 'histogram2dcontour', x: [2, 3], y: [2, 4], xaxis: 'x2', yaxis: 'y2'},
                 ],
                 layout: {}
             };
@@ -337,15 +337,15 @@ describe('Test histogram', function() {
         it('should be able to group traces by *bingroup* under barmode:overlay ', function() {
             gd = {
                 data: [
-                    {bingroup: '1', type: 'histogram', y: [1]},
-                    {uid: 'b', type: 'histogram', y: [2]},
-                    {bingroup: '2', type: 'histogram', y: [1], xaxis: 'x2'},
-                    {bingroup: '1', type: 'histogram', y: [3], xaxis: 'x2'},
-                    {bingroup: '2', type: 'histogram', y: [3]},
-                    {uid: 'f', type: 'histogram', y: [2], xaxis: 'x2'},
-                    {bingroup: '3', type: 'histogram', x: [1]},
-                    {bingroup: '1', type: 'histogram', x: [2], yaxis: 'y2'},
-                    {bingroup: '3', type: 'histogram', x: [2]}
+                    {bingroup: '1', type: 'histogram', y: [1, 2]},
+                    {uid: 'b', type: 'histogram', y: [2, 3]},
+                    {bingroup: '2', type: 'histogram', y: [1, 4], xaxis: 'x2'},
+                    {bingroup: '1', type: 'histogram', y: [3, 4], xaxis: 'x2'},
+                    {bingroup: '2', type: 'histogram', y: [3, 4]},
+                    {uid: 'f', type: 'histogram', y: [2, 4], xaxis: 'x2'},
+                    {bingroup: '3', type: 'histogram', x: [1, 5]},
+                    {bingroup: '1', type: 'histogram', x: [2, 5], yaxis: 'y2'},
+                    {bingroup: '3', type: 'histogram', x: [2, 5]}
                 ],
                 layout: {barmode: 'overlay'}
             };
@@ -362,11 +362,11 @@ describe('Test histogram', function() {
         it('should be able to group histogram2d traces by *bingroup*', function() {
             gd = {
                 data: [
-                    {uid: 'a', type: 'histogram2d', x: [1], y: [1]},
-                    {uid: 'b', type: 'histogram2d', x: [1], y: [1]},
-                    {bingroup: '1', type: 'histogram2d', x: [1], y: [1]},
-                    {bingroup: '1', type: 'histogram2d', x: [1], y: [1]},
-                    {uid: 'e', type: 'histogram2d', x: [1], y: [1]},
+                    {uid: 'a', type: 'histogram2d', x: [1, 2], y: [1, 2]},
+                    {uid: 'b', type: 'histogram2d', x: [1, 3], y: [1, 1]},
+                    {bingroup: '1', type: 'histogram2d', x: [1, 2], y: [1, 2]},
+                    {bingroup: '1', type: 'histogram2d', x: [1, 2], y: [1, 2]},
+                    {uid: 'e', type: 'histogram2d', x: [1, 3], y: [1, 3]},
                 ]
             };
             supplyAllDefaults(gd);
@@ -382,10 +382,10 @@ describe('Test histogram', function() {
         it('should be able to group histogram and histogram2d* traces together', function() {
             gd = {
                 data: [
-                    {bingroup: '1', type: 'histogram', y: [1]},
-                    {bingroup: '1', type: 'histogram', y: [3], xaxis: 'x2'},
-                    {bingroup: '1', type: 'histogram2d', x: [1], y: [3]},
-                    {bingroup: '1', type: 'histogram2dcontour', x: [1], y: [3]}
+                    {bingroup: '1', type: 'histogram', y: [1, 3]},
+                    {bingroup: '1', type: 'histogram', y: [3, 3], xaxis: 'x2'},
+                    {bingroup: '1', type: 'histogram2d', x: [1, 3], y: [3, 2]},
+                    {bingroup: '1', type: 'histogram2dcontour', x: [1, 2], y: [3, 4]}
                 ],
                 layout: {barmode: 'overlay'}
             };
@@ -400,8 +400,8 @@ describe('Test histogram', function() {
         it('should not group traces across axes of different types', function() {
             gd = {
                 data: [
-                    {uid: 'a', bingroup: '1', type: 'histogram', y: [1]},
-                    {uid: 'b', bingroup: '1', type: 'histogram', y: ['cats'], yaxis: 'y2'},
+                    {uid: 'a', bingroup: '1', type: 'histogram', y: [1, 2]},
+                    {uid: 'b', bingroup: '1', type: 'histogram', y: ['cats', 'dogs'], yaxis: 'y2'},
                 ],
                 layout: {barmode: 'overlay'}
             };
@@ -420,9 +420,9 @@ describe('Test histogram', function() {
             gd = {
                 data: [
                     // these 3 traces "have to match"
-                    {bingroup: '1', type: 'histogram', y: [1]},
-                    {type: 'histogram', y: [1]},
-                    {bingroup: '2', type: 'histogram', y: [2]}
+                    {bingroup: '1', type: 'histogram', y: [1, 2]},
+                    {type: 'histogram', y: [1, 3]},
+                    {bingroup: '2', type: 'histogram', y: [2, 3]}
                 ],
                 layout: {barmode: 'stack'}
             };
@@ -440,15 +440,15 @@ describe('Test histogram', function() {
             gd = {
                 data: [
                     // these 2 traces "have to match"
-                    {bingroup: '1', type: 'histogram', y: [1]},
-                    {type: 'histogram', y: [1]},
+                    {bingroup: '1', type: 'histogram', y: [1, 3]},
+                    {type: 'histogram', y: [1, 3]},
                     // this one does not have to match with the above two,
                     // (it's on another subplot), but it can be grouped
-                    {bingroup: '1', type: 'histogram', y: [2], xaxis: 'x2', yaxis: 'y2'},
+                    {bingroup: '1', type: 'histogram', y: [2, 3], xaxis: 'x2', yaxis: 'y2'},
                     // this one does not have to match either
                     // (it's a histogram2d* traces), but it can be grouped
                     // TODO should this be just "bingroup"???
-                    {xbingroup: '1', ybingroup: '1', type: 'histogram2d', x: [3], y: [3]}
+                    {xbingroup: '1', ybingroup: '1', type: 'histogram2d', x: [3, 4], y: [3, 4]}
                 ],
                 layout: {}
             };
@@ -486,7 +486,7 @@ describe('Test histogram', function() {
                 traces = [{}, {}, {yaxis: 'y2'}, {yaxis: 'y2'}];
                 traces.forEach(function(t) {
                     t.type = 'histogram';
-                    t.x = [1];
+                    t.x = [1, 2];
                 });
             }
 
