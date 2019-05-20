@@ -1,0 +1,26 @@
+{
+    "data": [
+        {
+            "x": ["a", "b", "c", "d"],
+            "y": [4, 2, 3, 1],
+            "type": "scatter",
+            "mode": "markers"
+        },
+        {
+            "x": ["a", "b", "c", "d", "c", "c"],
+            "type": "histogram"
+        }
+    ],
+    "layout": {
+        "title": "xaxis.categoryorder: \"total descending\"",
+        "width": 400,
+        "height": 400,
+        "xaxis": {
+            "domain": [
+                0,
+                1
+            ],
+            "categoryorder": "total descending"
+        }
+    }
+}

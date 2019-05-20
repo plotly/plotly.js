@@ -2847,9 +2847,195 @@ plots.doCalcdata = function(gd, traces) {
 
     doCrossTraceCalc(gd);
 
+    // Sort axis categories per value if specified
+    var sorted = sortAxisCategoriesByValue(axList, gd);
+    if(sorted.length) {
+        // If a sort operation was performed, run calc() again
+        for(i = 0; i < sorted.length; i++) calci(sorted[i], true);
+        for(i = 0; i < sorted.length; i++) calci(sorted[i], false);
+        doCrossTraceCalc(gd);
+    }
+
     Registry.getComponentMethod('fx', 'calc')(gd);
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
+
+var sortAxisCategoriesByValueRegex = /(total|sum|min|max|mean|median) (ascending|descending)/;
+
+function sortAxisCategoriesByValue(axList, gd) {
+    var affectedTraces = [];
+    var i, j, k, l, o;
+
+    function zMapCategory(type, ax, value) {
+        var axLetter = ax._id.charAt(0);
+        if(type === 'histogram2dcontour') {
+            var counterAxLetter = ax._counterAxes[0];
+            var counterAx = axisIDs.getFromId(gd, counterAxLetter);
+
+            var xCategorical = axLetter === 'x' || (counterAxLetter === 'x' && counterAx.type === 'category');
+            var yCategorical = axLetter === 'y' || (counterAxLetter === 'y' && counterAx.type === 'category');
+
+            return function(o, l) {
+                if(o === 0 || l === 0) return -1; // Skip first row and column
+                if(xCategorical && o === value[l].length - 1) return -1;
+                if(yCategorical && l === value.length - 1) return -1;
+
+                return (axLetter === 'y' ? l : o) - 1;
+            };
+        } else {
+            return function(o, l) {
+                return axLetter === 'y' ? l : o;
+            };
+        }
+    }
+
+    var aggFn = {
+        'min': function(values) {return Lib.aggNums(Math.min, null, values);},
+        'max': function(values) {return Lib.aggNums(Math.max, null, values);},
+        'sum': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        'total': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        'mean': function(values) {return Lib.mean(values);},
+        'median': function(values) {return Lib.median(values);}
+    };
+
+    for(i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+        if(ax.type !== 'category') continue;
+
+        // Order by value
+        var match = ax.categoryorder.match(sortAxisCategoriesByValueRegex);
+        if(match) {
+            var aggregator = match[1];
+            var order = match[2];
+
+            // Store values associated with each category
+            var categoriesValue = [];
+            for(j = 0; j < ax._categories.length; j++) {
+                categoriesValue.push([ax._categories[j], []]);
+            }
+
+            // Collect values across traces
+            for(j = 0; j < ax._traceIndices.length; j++) {
+                var traceIndex = ax._traceIndices[j];
+                var fullTrace = gd._fullData[traceIndex];
+                var axLetter = ax._id.charAt(0);
+
+                // Skip over invisible traces
+                if(fullTrace.visible !== true) continue;
+
+                var type = fullTrace.type;
+                if(Registry.traceIs(fullTrace, 'histogram')) delete fullTrace._autoBinFinished;
+
+                var cd = gd.calcdata[traceIndex];
+                for(k = 0; k < cd.length; k++) {
+                    var cdi = cd[k];
+                    var cat, catIndex, value;
+
+                    if(type === 'splom') {
+                        // If `splom`, collect values across dimensions
+                        // Find which dimension the current axis is representing
+                        var currentDimensionIndex = fullTrace._axesDim[ax._id];
+
+                        // Apply logic to associated x axis if it's defined
+                        if(axLetter === 'y') {
+                            var associatedXAxisID = fullTrace._diag[currentDimensionIndex][0];
+                            if(associatedXAxisID) ax = gd._fullLayout[axisIDs.id2name(associatedXAxisID)];
+                        }
+
+                        var categories = cdi.trace.dimensions[currentDimensionIndex].values;
+                        for(l = 0; l < categories.length; l++) {
+                            cat = categories[l];
+                            catIndex = ax._categoriesMap[cat];
+
+                            // Collect associated values at index `l` over all other dimensions
+                            for(o = 0; o < cdi.trace.dimensions.length; o++) {
+                                if(o === currentDimensionIndex) continue;
+                                var dimension = cdi.trace.dimensions[o];
+                                categoriesValue[catIndex][1].push(dimension.values[l]);
+                            }
+                        }
+                    } else if(type === 'scattergl') {
+                        // If `scattergl`, collect all values stashed under cdi.t
+                        for(l = 0; l < cdi.t.x.length; l++) {
+                            if(axLetter === 'x') {
+                                cat = cdi.t.x[l];
+                                catIndex = cat;
+                                value = cdi.t.y[l];
+                            }
+
+                            if(axLetter === 'y') {
+                                cat = cdi.t.y[l];
+                                catIndex = cat;
+                                value = cdi.t.x[l];
+                            }
+                            categoriesValue[catIndex][1].push(value);
+                        }
+                        // must clear scene 'batches', so that 2nd
+                        // _module.calc call starts from scratch
+                        if(cdi.t && cdi.t._scene) {
+                            delete cdi.t._scene.dirty;
+                        }
+                    } else if(cdi.hasOwnProperty('z')) {
+                        // If 2dMap, collect values in `z`
+                        value = cdi.z;
+                        var mapping = zMapCategory(fullTrace.type, ax, value);
+
+                        for(l = 0; l < value.length; l++) {
+                            for(o = 0; o < value[l].length; o++) {
+                                catIndex = mapping(o, l);
+                                if(catIndex + 1) categoriesValue[catIndex][1].push(value[l][o]);
+                            }
+                        }
+                    } else {
+                        // For all other 2d cartesian traces
+                        if(axLetter === 'x') {
+                            cat = cdi.p + 1 ? cdi.p : cdi.x;
+                            value = cdi.s || cdi.v || cdi.y;
+                        } else if(axLetter === 'y') {
+                            cat = cdi.p + 1 ? cdi.p : cdi.y;
+                            value = cdi.s || cdi.v || cdi.x;
+                        }
+                        if(!Array.isArray(value)) value = [value];
+                        for(l = 0; l < value.length; l++) {
+                            categoriesValue[cat][1].push(value[l]);
+                        }
+                    }
+                }
+            }
+
+            ax._categoriesValue = categoriesValue;
+
+            var categoriesAggregatedValue = [];
+            for(j = 0; j < categoriesValue.length; j++) {
+                categoriesAggregatedValue.push([
+                    categoriesValue[j][0],
+                    aggFn[aggregator](categoriesValue[j][1])
+                ]);
+            }
+
+            // Sort by aggregated value
+            categoriesAggregatedValue.sort(function(a, b) {
+                return a[1] - b[1];
+            });
+
+            ax._categoriesAggregatedValue = categoriesAggregatedValue;
+
+            // Set new category order
+            ax._initialCategories = categoriesAggregatedValue.map(function(c) {
+                return c[0];
+            });
+
+            // Reverse if descending
+            if(order === 'descending') {
+                ax._initialCategories.reverse();
+            }
+
+            // Sort all matching axes
+            affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());
+        }
+    }
+    return affectedTraces;
+}
 
 function setupAxisCategories(axList, fullData) {
     for(var i = 0; i < axList.length; i++) {

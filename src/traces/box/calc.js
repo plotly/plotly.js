@@ -80,6 +80,10 @@ module.exports = function calc(gd, trace) {
             cdi.pos = posDistinct[i];
             cdi.pts = pts;
 
+            // Sort categories by values
+            cdi[posLetter] = cdi.pos;
+            cdi[valLetter] = cdi.pts.map(function(pt) { return pt.v; });
+
             cdi.min = boxVals[0];
             cdi.max = boxVals[bvLen - 1];
             cdi.mean = Lib.mean(boxVals, bvLen);

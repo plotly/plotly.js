@@ -86,6 +86,10 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
             pt.i = i;
             pt.dir = increasing ? 'increasing' : 'decreasing';
 
+            // For categoryorder, store low and high
+            pt.x = pt.pos;
+            pt.y = [li, hi];
+
             if(hasTextArray) pt.tx = trace.text[i];
             if(hasHovertextArray) pt.htx = trace.hovertext[i];
 

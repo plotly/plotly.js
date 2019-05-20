@@ -127,6 +127,7 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     var mustShiftX = !showDiag && !showLower;
     var mustShiftY = !showDiag && !showUpper;
 
+    traceOut._axesDim = {};
     for(i = 0; i < dimLength; i++) {
         var dim = dimensions[i];
         var i0 = i === 0;
@@ -143,6 +144,8 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
         fillAxisStashes(xaId, yaId, dim, xList);
         fillAxisStashes(yaId, xaId, dim, yList);
         diag[i] = [xaId, yaId];
+        traceOut._axesDim[xaId] = i;
+        traceOut._axesDim[yaId] = i;
     }
 
     // fill in splom subplot keys

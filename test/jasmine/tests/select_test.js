@@ -1228,6 +1228,90 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
+    describe('should return correct range data on dragmode *select*', function() {
+        var specs = [{
+            axType: 'linear',
+            rng: [-0.6208, 0.8375]
+        }, {
+            axType: 'log',
+            rng: [0.2394, 6.8785]
+        }, {
+            axType: 'date',
+            rng: ['2000-01-20 19:48', '2000-04-06 01:48']
+        }, {
+            axType: 'category',
+            rng: [-0.6208, 0.8375]
+        }, {
+            axType: 'multicategory',
+            rng: [-0.6208, 0.8375]
+        }];
+
+        specs.forEach(function(s) {
+            it('- @flaky on ' + s.axType + ' axes', function(done) {
+                var gd = createGraphDiv();
+
+                Plotly.plot(gd, [], {
+                    xaxis: {type: s.axType},
+                    dragmode: 'select',
+                    width: 400,
+                    height: 400
+                })
+                .then(function() {
+                    resetEvents(gd);
+                    drag(selectPath);
+                    return selectedPromise;
+                })
+                .then(function() {
+                    expect(selectedData.range.x).toBeCloseToArray(s.rng, 2);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
+    describe('should return correct range data on dragmode *lasso*', function() {
+        var specs = [{
+            axType: 'linear',
+            pts: [5.883, 5.941, 6, 6]
+        }, {
+            axType: 'log',
+            pts: [764422.2742, 874312.4580, 1000000, 1000000]
+        }, {
+            axType: 'date',
+            pts: ['2000-12-25 21:36', '2000-12-28 22:48', '2001-01-01', '2001-01-01']
+        }, {
+            axType: 'category',
+            pts: [5.8833, 5.9416, 6, 6]
+        }, {
+            axType: 'multicategory',
+            pts: [5.8833, 5.9416, 6, 6]
+        }];
+
+        specs.forEach(function(s) {
+            it('- @flaky on ' + s.axType + ' axes', function(done) {
+                var gd = createGraphDiv();
+
+                Plotly.plot(gd, [], {
+                    xaxis: {type: s.axType},
+                    dragmode: 'lasso',
+                    width: 400,
+                    height: 400
+                })
+                .then(function() {
+                    resetEvents(gd);
+                    drag(lassoPath);
+                    return selectedPromise;
+                })
+                .then(function() {
+                    expect(selectedData.lassoPoints.x).toBeCloseToArray(s.pts, 2);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
     it('@flaky should have their selection outlines cleared during *axrange* relayout calls', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, mock);
@@ -2471,7 +2555,7 @@ describe('Test select box and lasso per trace:', function() {
                         2: [1, 4, 5]
                     });
                     assertLassoPoints([
-                        ['day 1', 'day 2', 'day 2', 'day 1', 'day 1'],
+                        [0.0423, 1.0546, 1.0546, 0.0423, 0.0423],
                         [0.71, 0.71, 0.1875, 0.1875, 0.71]
                     ]);
                 },
@@ -2495,7 +2579,7 @@ describe('Test select box and lasso per trace:', function() {
                         1: [11, 8, 6, 10],
                         2: [1, 4, 5]
                     });
-                    assertRanges([['day 1', 'day 2'], [0.1875, 0.71]]);
+                    assertRanges([[0.04235, 1.0546], [0.1875, 0.71]]);
                 },
                 null, BOXEVENTS, 'box select'
             );
@@ -2533,7 +2617,7 @@ describe('Test select box and lasso per trace:', function() {
                         2: [1, 4, 5, 3]
                     });
                     assertLassoPoints([
-                        ['day 1', 'day 2', 'day 2', 'day 1', 'day 1'],
+                        [0.07777, 1.0654, 1.0654, 0.07777, 0.07777],
                         [1.02, 1.02, 0.27, 0.27, 1.02]
                     ]);
                 },
@@ -2558,7 +2642,7 @@ describe('Test select box and lasso per trace:', function() {
                         1: [8, 6, 10, 9, 7],
                         2: [1, 4, 5, 3]
                     });
-                    assertRanges([['day 1', 'day 2'], [0.27, 1.02]]);
+                    assertRanges([[0.07777, 1.0654], [0.27, 1.02]]);
                 },
                 null, BOXEVENTS, 'violin select'
             );
