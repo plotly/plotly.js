@@ -1849,6 +1849,10 @@ describe('A bar plot', function() {
         })
         .then(function() {
             _assertNumberOfBarTextNodes(3);
+            return Plotly.restyle(gd, 'text', [[null, true, '']]);
+        })
+        .then(function() {
+            _assertNumberOfBarTextNodes(1);
         })
         .catch(failTest)
         .then(done);

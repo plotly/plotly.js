@@ -75,6 +75,15 @@ exports.stdev = function(data, len, mean) {
 };
 
 /**
+ * median of a finite set of numbers
+ * reference page: https://en.wikipedia.org/wiki/Median#Finite_set_of_numbers
+**/
+exports.median = function(data) {
+    var b = data.slice().sort();
+    return exports.interp(b, 0.5);
+};
+
+/**
  * interp() computes a percentile (quantile) for a given distribution.
  * We interpolate the distribution (to compute quantiles, we follow method #10 here:
  * http://www.amstat.org/publications/jse/v14n3/langford.html).

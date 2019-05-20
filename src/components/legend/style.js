@@ -357,12 +357,27 @@ module.exports = function style(s, gd) {
 
         pts.each(function() {
             var p = d3.select(this);
-            var w = boundLineWidth(undefined, trace.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            p.style('stroke-width', w + 'px')
-                .call(Color.fill, trace.fillcolor);
+            if((trace.boxpoints === 'all' || trace.points === 'all') &&
+                Color.opacity(trace.fillcolor) === 0 && Color.opacity((trace.line || {}).color) === 0
+            ) {
+                var tMod = Lib.minExtend(trace, {
+                    marker: {
+                        size: constantItemSizing ? CST_MARKER_SIZE : Lib.constrain(trace.marker.size, 2, 16),
+                        sizeref: 1,
+                        sizemin: 1,
+                        sizemode: 'diameter'
+                    }
+                });
+                pts.call(Drawing.pointStyle, tMod, gd);
+            } else {
+                var w = boundLineWidth(undefined, trace.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            if(w) Color.stroke(p, trace.line.color);
+                p.style('stroke-width', w + 'px')
+                    .call(Color.fill, trace.fillcolor);
+
+                if(w) Color.stroke(p, trace.line.color);
+            }
         });
     }
 
