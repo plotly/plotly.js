@@ -40,10 +40,6 @@ module.exports = function plot(gd, cdModule) {
 
         setCoords(cd);
 
-        // TODO: miter might look better but can sometimes cause problems
-        // maybe miter with a small-ish stroke-miterlimit?
-        plotGroup.attr('stroke-linejoin', 'round');
-
         plotGroup.each(function() {
             var slices = d3.select(this).selectAll('g.slice').data(cd);
 
