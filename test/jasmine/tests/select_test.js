@@ -2555,7 +2555,7 @@ describe('Test select box and lasso per trace:', function() {
                         2: [1, 4, 5]
                     });
                     assertLassoPoints([
-                        ['day 1', 'day 2', 'day 2', 'day 1', 'day 1'],
+                        [0.0423, 1.0546, 1.0546, 0.0423, 0.0423],
                         [0.71, 0.71, 0.1875, 0.1875, 0.71]
                     ]);
                 },
@@ -2579,7 +2579,7 @@ describe('Test select box and lasso per trace:', function() {
                         1: [11, 8, 6, 10],
                         2: [1, 4, 5]
                     });
-                    assertRanges([['day 1', 'day 2'], [0.1875, 0.71]]);
+                    assertRanges([[0.04235, 1.0546], [0.1875, 0.71]]);
                 },
                 null, BOXEVENTS, 'box select'
             );
@@ -2617,7 +2617,7 @@ describe('Test select box and lasso per trace:', function() {
                         2: [1, 4, 5, 3]
                     });
                     assertLassoPoints([
-                        ['day 1', 'day 2', 'day 2', 'day 1', 'day 1'],
+                        [0.07777, 1.0654, 1.0654, 0.07777, 0.07777],
                         [1.02, 1.02, 0.27, 0.27, 1.02]
                     ]);
                 },
@@ -2642,7 +2642,7 @@ describe('Test select box and lasso per trace:', function() {
                         1: [8, 6, 10, 9, 7],
                         2: [1, 4, 5, 3]
                     });
-                    assertRanges([['day 1', 'day 2'], [0.27, 1.02]]);
+                    assertRanges([[0.07777, 1.0654], [0.27, 1.02]]);
                 },
                 null, BOXEVENTS, 'violin select'
             );
