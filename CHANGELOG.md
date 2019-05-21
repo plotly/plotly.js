@@ -10,6 +10,61 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.48.0] -- 2019-05-28
+
+### Added
+- Add `funnel` traces [#3817, #3911]
+- Add `funnelarea` traces [#3876, #3912]
+- Add support for shared color axes via `coloraxis` attributes
+  in the layout [#3803, #3786, #3901, #3916]
+- Add support for sorting categorical cartesian axes by value [#3864]
+- Add `bingroup` to `histogram`, `histogram2d` and `histogram2dcontour` to group
+  traces to have compatible auto-bin values [#3845]
+- Add legend `itemclick` and `itemdoubleclick` attributes to set or disable
+  the legend item click and double-click behavior [#3862]
+- Add `insidetextanchor` attribute for `bar` and `waterfall` traces [#3817]
+- Add `textangele` attribute for `bar` and `waterfall` traces [#3817]
+- Add `textinfo` to `waterfall` traces [#3790]
+- Add support for side-by-side `scatter3d` `marker` and `line` colorbars [#3803]
+- Add `meta` attribute to traces to complement `layout.meta` [#3865]
+- Emit `plotly_relayouting` during drag motion on subplots [#3888]
+- Add Swedish locale (`sv`) [#3821]
+
+### Changed
+- Use `sane-topojson@v3.0.1` (backed by Natural Earth v4.1.0 shapefiles)
+  to generate geographic features in `geo` subplots. Most notably, the Russia/Ukraine
+  border has been updated [#3856]
+- Draw `box` and `violin` points as legend item when other parts have opacity `0` [#3846]
+- Draw `marker.line` for bars with no-span [#3848]
+- Do not make request for topojson files when drawing geo subplot
+  without geographic features [#3856]
+
+### Fixed
+- Fix `categoryarray` ordering for `heatmap` and `contour` traces [#3827]
+- Fix `heatmap` brick positioning for non-overlapping categories [#3827]
+- Fix `Plotly.update` calls that resulted in removal of modebar buttons [#3825]
+- Fix auto-range for one-sided `violin` with set `width` [#3842]
+- Fix hover label placement for one-sided `violin` with set `width` [#3842]
+- Fix `scattergl` mode ordering in/out of selections [#3810]
+- Fix `scattergl` unselected styling in/out of select/lasso dragmode [#3810]
+- Fix `automargin` edge cases where draw code can be stuck in infinite loops [#3811]
+- Fix `locationmode: 'USA-states'` on world scope under `50m` resolution [#3856]
+- Fix reset view interactions on geo subplots following `geo.scope` updates [#3856]
+- Fix `Plotly.animate`  on graphs with multiple subplot types [#3860]
+- Fix `filter` transforms that result in empty coordinate arrays [#3766]
+- Fix handling of `0` number in `pie` and `sunburst` text and hover [#3847]
+- Fix `sunburst`  text in sectors centered around theta=180 [#3907]
+- Fix handling of number `0` in `sunburst` ids/parents [#3903]
+- Fix selection range event data on category axes [#3869]
+- Fix `contour` with heatmap coloring rendering after graph resize [#3803]
+- Fix `histogram2d` hover label content for trace with bins spanning multiple `y` sample values [#3890]
+- Fix `parcoords` rendering of first value when it is part of own `constraintrange` [#3915]
+- Fix rgba colorscale fallback for `parcoords` traces [#3917]
+- Fix de-selected style of error bar on `bar` traces [#3644]
+- Fix hover labels rendering for some zoomed-in `violin` traces [#3889]
+- Fix `mesh3d` `vertexcolor` attribute description [#3688]
+
+
 ## [1.47.4] -- 2019-04-25
 
 ### Fixed
