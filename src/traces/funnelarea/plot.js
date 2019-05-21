@@ -140,9 +140,10 @@ module.exports = function plot(gd, cdModule) {
                     s.attr('data-notex', 1);
                 });
 
-                var txt = fullLayout.meta ?
-                    Lib.templateString(trace.title.text, {meta: fullLayout.meta}) :
-                    trace.title.text;
+                var txt = trace.title.text;
+                if(trace._meta) {
+                    txt = Lib.templateString(txt, trace._meta);
+                }
 
                 titleText.text(txt)
                     .attr({
