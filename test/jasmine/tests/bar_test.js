@@ -1900,6 +1900,110 @@ describe('A bar plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should show/hide text in clipped and non-clipped layers', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/bar_cliponaxis-false.json'));
+        gd = createGraphDiv();
+
+        // only show one bar trace
+        fig.data = [fig.data[0]];
+
+        // add a non-bar trace to make sure its module layer gets clipped
+        fig.data.push({
+            type: 'contour',
+            z: [[0, 0.5, 1], [0.5, 1, 3]]
+        });
+
+        function _assertClip(sel, exp, size, msg) {
+            if(exp === null) {
+                expect(sel.size()).toBe(0, msg + 'selection should not exist');
+            } else {
+                assertClip(sel, exp, size, msg);
+            }
+        }
+
+        function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
+            var subplotLayer = d3.select('.plot');
+            var barLayer = subplotLayer.select('.barlayer');
+
+            _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
+            _assertClip(subplotLayer.select('.contourlayer'), layerClips[1], 1, 'some other trace layer');
+            _assertClip(barLayer, layerClips[2], 1, 'bar layer');
+
+            assertNodeDisplay(
+                barLayer.selectAll('.point'),
+                barDisplays,
+                'bar points (never hidden by display attr)'
+            );
+            assertNodeDisplay(
+                barLayer.selectAll('.bartext'),
+                barTextDisplays,
+                'bar text'
+            );
+
+            assertClip(
+                barLayer.selectAll('.point > path'),
+                barClips[0], barClips[1],
+                'bar clips'
+            );
+        }
+
+        Plotly.newPlot(gd, fig).then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, 'none'],
+                [true, 3]
+            );
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert(
+                [true, null, null],
+                [],
+                [],
+                [false, 0]
+            );
+            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [null, null, null],
+                [null, null, null],
+                [false, 3]
+            );
+            return Plotly.restyle(gd, 'cliponaxis', false);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, 'none'],
+                [true, 3]
+            );
+            return Plotly.relayout(gd, 'yaxis.range', [0, 1]);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                ['none', 'none', 'none'],
+                [true, 3]
+            );
+            return Plotly.relayout(gd, 'yaxis.range', [0, 4]);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, null],
+                [true, 3]
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('bar visibility toggling:', function() {
@@ -2317,109 +2421,7 @@ describe('bar hover', function() {
         });
     });
 
-    it('should show/hide text in clipped and non-clipped layers', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/bar_cliponaxis-false.json'));
-        gd = createGraphDiv();
 
-        // only show one bar trace
-        fig.data = [fig.data[0]];
-
-        // add a non-bar trace to make sure its module layer gets clipped
-        fig.data.push({
-            type: 'contour',
-            z: [[0, 0.5, 1], [0.5, 1, 3]]
-        });
-
-        function _assertClip(sel, exp, size, msg) {
-            if(exp === null) {
-                expect(sel.size()).toBe(0, msg + 'selection should not exist');
-            } else {
-                assertClip(sel, exp, size, msg);
-            }
-        }
-
-        function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
-            var subplotLayer = d3.select('.plot');
-            var barLayer = subplotLayer.select('.barlayer');
-
-            _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
-            _assertClip(subplotLayer.select('.contourlayer'), layerClips[1], 1, 'some other trace layer');
-            _assertClip(barLayer, layerClips[2], 1, 'bar layer');
-
-            assertNodeDisplay(
-                barLayer.selectAll('.point'),
-                barDisplays,
-                'bar points (never hidden by display attr)'
-            );
-            assertNodeDisplay(
-                barLayer.selectAll('.bartext'),
-                barTextDisplays,
-                'bar text'
-            );
-
-            assertClip(
-                barLayer.selectAll('.point > path'),
-                barClips[0], barClips[1],
-                'bar clips'
-            );
-        }
-
-        Plotly.newPlot(gd, fig).then(function() {
-            _assert(
-                [false, true, false],
-                [null, null, null],
-                [null, null, 'none'],
-                [true, 3]
-            );
-            return Plotly.restyle(gd, 'visible', false);
-        })
-        .then(function() {
-            _assert(
-                [true, null, null],
-                [],
-                [],
-                [false, 0]
-            );
-            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
-        })
-        .then(function() {
-            _assert(
-                [true, false, false],
-                [null, null, null],
-                [null, null, null],
-                [false, 3]
-            );
-            return Plotly.restyle(gd, 'cliponaxis', false);
-        })
-        .then(function() {
-            _assert(
-                [false, true, false],
-                [null, null, null],
-                [null, null, 'none'],
-                [true, 3]
-            );
-            return Plotly.relayout(gd, 'yaxis.range', [0, 1]);
-        })
-        .then(function() {
-            _assert(
-                [false, true, false],
-                [null, null, null],
-                ['none', 'none', 'none'],
-                [true, 3]
-            );
-            return Plotly.relayout(gd, 'yaxis.range', [0, 4]);
-        })
-        .then(function() {
-            _assert(
-                [false, true, false],
-                [null, null, null],
-                [null, null, null],
-                [true, 3]
-            );
-        })
-        .catch(failTest)
-        .then(done);
-    });
 });
 
 describe('event data', function() {
