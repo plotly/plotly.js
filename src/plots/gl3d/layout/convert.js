@@ -83,8 +83,8 @@ proto.merge = function(fullLayout, sceneLayout) {
         }
 
         // Axes labels
-        opts.labels[i] = fullLayout.meta ?
-            Lib.templateString(axes.title.text, {meta: fullLayout.meta}) :
+        opts.labels[i] = fullLayout._meta ?
+            Lib.templateString(axes.title.text, fullLayout._meta) :
             axes.title.text;
 
         if('font' in axes.title) {

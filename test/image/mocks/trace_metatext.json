@@ -1,0 +1,131 @@
+{
+  "data": [{
+    "x": ["2019-01-01", "2019-02-10", "2019-03-24"],
+    "y": [1, 2, 1],
+    "meta": {"colname": "A", "colname2": "B"},
+    "name": "TRACE %{meta.colname} | %{meta.colname2} ( %{layout.meta.global} )"
+  }, {
+    "type": "scatterpolar",
+    "r": [1, 2, 1],
+    "meta": {"radii": "Rz"},
+    "name": "%{meta.radii} !!"
+  }, {
+    "type": "scatterternary",
+    "a": [2, 1, 1],
+    "b": [1, 2, 1],
+    "c": [1, 1, 2.12],
+    "meta": {"hello": "HeLlO"},
+    "name": "!! %{meta.hello} !!"
+  }, {
+    "type": "surface",
+    "z": [[1, 2, 3], [1, 2, 1], [3, 2, 1]],
+    "meta": {"d": "Z"},
+    "colorbar": {
+      "title": {"text": "Product %{meta.d}", "side": "right"},
+      "len": 0.3
+    }
+  }, {
+    "type": "pie",
+    "labels": ["a", "b", "c"],
+    "values": [1, 2, 3],
+    "domain": {"row": 0, "column": 1},
+    "meta": {"column": "full-time"},
+    "title": {"text": "Employee %{meta.column} -- %{layout.meta.global}"}
+  }],
+  "layout": {
+    "meta": {
+      "global": "GrApH",
+      "item": "mEtA"
+    },
+
+    "grid": {"rows": 3, "columns": 2, "xgap": 0.2, "ygap": 0.3},
+    "width": 700,
+    "height": 860,
+    "margin": {"b": 100},
+
+    "title": {"text": "%{meta.global} using trace %{meta.item}"},
+    "xaxis": {
+      "domain": {"row": 0, "column": 0},
+      "title": {"text": "Worth more than %{data[0].meta.colname} | %{data[0].meta.colname2}"},
+      "rangeselector": {
+        "buttons": [{
+          "step": "all"
+        }, {
+          "step": "month",
+          "count": 2,
+          "label": "backup %{data[0].meta.colname2}"
+        }]
+      }
+    },
+    "yaxis": {
+      "domain": {"row": 0, "column": 0},
+      "title": {"text": "$ by %{data[0].meta.colname2}"}
+    },
+    "polar": {
+      "bgcolor": "#d3d3d3",
+      "domain": {"row": 1, "column": 0},
+      "angularaxis": {
+        "showticklabels": false
+      },
+      "radialaxis": {
+        "title": {
+          "text": "%{data[1].meta.radii} ->",
+          "font": {"color": "red"}
+        }
+      }
+    },
+    "ternary": {
+      "domain": {"row": 2, "column": 0},
+      "aaxis": {"title": {"text": "%{data[2].meta.hello}"}},
+      "baxis": {"title": {"text": "%{meta.global} | %{data[2].meta.hello}"}},
+      "caxis": {"title": {"text": "%{data[2].meta.hello} | %{meta.item}"}}
+    },
+    "scene": {
+      "domain": {"row": 1, "column": 1},
+      "camera": {"eye": {"x": -0.05, "y": 3.07, "z": 0.105}},
+      "zaxis": {"title": {"text": "___ %{data[3].meta.d} ___"}},
+      "annotations": [{
+        "text": "Look at %{data[3].meta.d}",
+        "bgcolor": "#d3d3d3",
+        "borderpad": 2,
+        "bordercolor": "#000",
+        "borderwidth": "1",
+        "x": 1,
+        "y": 1,
+        "z": 2
+      }]
+    },
+
+    "annotations": [{
+      "text": "<i>N.B.</i> --- %{data[0].meta.colname2}",
+      "xref": "x",
+      "yref": "y",
+      "x": "2019-02-10",
+      "y": 2
+    }],
+
+    "updatemenus": [{
+      "buttons": [{
+        "label": "Btn-%{data[1].meta.radii}",
+        "method": "restyle",
+        "args": ["visible", false]
+      }],
+      "y": 1,
+      "yanchor": "bottom"
+    }],
+
+    "sliders": [{
+      "len": 0.3,
+      "x": 0.7,
+      "steps": [{
+        "label": "step-%{data[2].meta.hello}",
+        "method": "restyle",
+        "args": ["marker.color", "red"]
+      }, {
+        "label": "step-%{data[4].meta.column}",
+        "method": "restyle",
+        "args": ["marker.color", "blue"]
+      }]
+    }]
+  }
+}

@@ -53,6 +53,8 @@ var numStripRE = / [XY][0-9]* /;
  *          offset - shift up/down in the rotated frame (unused?)
  *      containerGroup - if an svg <g> element already exists to hold this
  *          title, include here. Otherwise it will go in fullLayout._infolayer
+ *      _meta {object (optional} - meta key-value to for title with
+ *          Lib.templateString, default to fullLayout._meta, if not provided
  *
  *  @return {selection} d3 selection of title container group
  */
@@ -97,8 +99,10 @@ function draw(gd, titleClass, options) {
         if(!editable) txt = '';
     }
 
-    if(fullLayout.meta) {
-        txt = Lib.templateString(txt, {meta: fullLayout.meta});
+    if(options._meta) {
+        txt = Lib.templateString(txt, options._meta);
+    } else if(fullLayout._meta) {
+        txt = Lib.templateString(txt, fullLayout._meta);
     }
 
     var elShouldExist = txt || editable;

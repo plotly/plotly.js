@@ -212,8 +212,8 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var font = options.font;
 
-    var text = fullLayout.meta ?
-        Lib.templateString(options.text, {meta: fullLayout.meta}) :
+    var text = fullLayout._meta ?
+        Lib.templateString(options.text, fullLayout._meta) :
         options.text;
 
     var annText = annTextGroupInner.append('text')

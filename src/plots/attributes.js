@@ -102,6 +102,25 @@ module.exports = {
             'DOM elements'
         ].join(' ')
     },
+    meta: {
+        valType: 'any',
+        arrayOk: true,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Assigns extra meta information associated with this trace',
+            'that can be used in various text attributes.',
+            'Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text`',
+            '`rangeselector`, `updatemenues` and `sliders` `label` text',
+            'all support `meta`.',
+            'To access the trace `meta` values in an attribute in the same trace, simply use',
+            '`%{meta[i]}` where `i` is the index or key of the `meta`',
+            'item in question.',
+            'To access trace `meta` in layout attributes, use',
+            '`%{data[n[.meta[i]}` where `i` is the index or key of the `meta`',
+            'and `n` is the trace index.'
+        ].join(' ')
+    },
 
     // N.B. these cannot be 'data_array' as they do not have the same length as
     // other data arrays and arrayOk attributes in general

@@ -149,14 +149,14 @@ function drawButtonText(button, selectorLayout, d, gd) {
     });
 
     text.call(Drawing.font, selectorLayout.font)
-        .text(getLabel(d, gd._fullLayout.meta))
+        .text(getLabel(d, gd._fullLayout._meta))
         .call(textLayout);
 }
 
-function getLabel(opts, meta) {
+function getLabel(opts, _meta) {
     if(opts.label) {
-        return meta ?
-            Lib.templateString(opts.label, {meta: meta}) :
+        return _meta ?
+            Lib.templateString(opts.label, _meta) :
             opts.label;
     }
 
