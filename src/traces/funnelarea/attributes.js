@@ -63,7 +63,6 @@ module.exports = {
 
     textfont: pieAttrs.textfont,
     insidetextfont: pieAttrs.insidetextfont,
-    outsidetextfont: pieAttrs.outsidetextfont,
 
     title: {
         text: extendFlat({}, pieAttrs.title.text, {
