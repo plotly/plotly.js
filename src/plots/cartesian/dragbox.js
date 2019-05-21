@@ -85,7 +85,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // graph-wide optimization flags
     var hasScatterGl, hasSplom, hasSVG;
     // collected changes to be made to the plot by relayout at the end
-    var updates;
+    var updates = {};
 
     function recomputeAxisLists() {
         xa0 = plotinfo.xaxis;
@@ -409,7 +409,21 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         gd._dragged = zoomDragged;
 
         updateZoombox(zb, corners, box, path0, dimmed, lum);
+        computeZoomUpdates();
+        gd.emit('plotly_relayouting', updates);
         dimmed = true;
+    }
+
+    function computeZoomUpdates() {
+        // TODO: edit linked axes in zoomAxRanges and in dragTail
+        if(zoomMode === 'xy' || zoomMode === 'x') {
+            zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes);
+            updateMatchedAxRange('x', updates);
+        }
+        if(zoomMode === 'xy' || zoomMode === 'y') {
+            zoomAxRanges(yaxes, (ph - box.b) / ph, (ph - box.t) / ph, updates, links.yaxes);
+            updateMatchedAxRange('y', updates);
+        }
     }
 
     function zoomDone() {
@@ -421,15 +435,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return removeZoombox(gd);
         }
 
-        // TODO: edit linked axes in zoomAxRanges and in dragTail
-        if(zoomMode === 'xy' || zoomMode === 'x') {
-            zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes);
-            updateMatchedAxRange('x', updates);
-        }
-        if(zoomMode === 'xy' || zoomMode === 'y') {
-            zoomAxRanges(yaxes, (ph - box.b) / ph, (ph - box.t) / ph, updates, links.yaxes);
-            updateMatchedAxRange('y', updates);
-        }
+        computeZoomUpdates();
 
         removeZoombox(gd);
         dragTail();
@@ -515,6 +521,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         updateSubplots(scrollViewBox);
         ticksAndAnnotations();
 
+        gd.emit('plotly_relayouting', updates);
+
         // then replot after a delay to make sure
         // no more scrolling is coming
         redrawTimer = setTimeout(function() {
@@ -552,6 +560,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
             updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
             ticksAndAnnotations();
+            gd.emit('plotly_relayouting', updates);
             return;
         }
 
@@ -626,6 +635,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         updateMatchedAxRange('y');
         updateSubplots([xStart, yStart, pw - dx, ph - dy]);
         ticksAndAnnotations();
+        gd.emit('plotly_relayouting', updates);
     }
 
     function updateMatchedAxRange(axLetter, out) {

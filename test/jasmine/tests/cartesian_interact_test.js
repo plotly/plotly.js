@@ -188,6 +188,48 @@ describe('main plot pan', function() {
         .then(done);
     });
 
+    it('should emit plotly_relayouting events during pan interactions', function(done) {
+        var mock = require('@mocks/10.json');
+
+        function _drag(x0, y0, x1, y1, n) {
+            mouseEvent('mousedown', x0, y0);
+            var dx = (x1 - x0) / n;
+            var dy = (y1 - y0) / n;
+            for(var i = 0; i <= n; i++) {
+                mouseEvent('mousemove', x0 + dx * i, y0 + dy * i);
+            }
+            mouseEvent('mouseup', x1, y1);
+        }
+
+        var nsteps = 10; var events = []; var relayoutCallback;
+        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            // Switch to pan mode
+            modeBar = gd._fullLayout._modeBar;
+            var buttonPan = selectButton(modeBar, 'pan2d');
+            buttonPan.click();
+            expect(buttonPan.isActive()).toBe(true); // switched on dragmode
+        })
+        .then(function() {
+            relayoutCallback = jasmine.createSpy('relayoutCallback');
+            gd.on('plotly_relayout', relayoutCallback);
+            gd.on('plotly_relayouting', function(e) {
+                events.push(e);
+            });
+            _drag(100, 150, 220, 250, nsteps);
+        })
+        .then(function() {
+            expect(events.length).toEqual(nsteps);
+            var first = events.splice(0, 1)[0];
+            var last = events.splice(-1, 1)[0];
+            expect(first['xaxis.range[1]'] - first['xaxis.range[0]']).toBeCloseTo(6, 0);
+            expect(last['xaxis.range[1]'] - last['xaxis.range[0]']).toBeCloseTo(6, 0);
+
+            expect(first['xaxis.range[1]'] - last['xaxis.range[1]']).toBeCloseTo(1, 0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should show/hide `cliponaxis: false` pts according to range', function(done) {
         function _assert(markerDisplay, textDisplay, barTextDisplay) {
             var gd3 = d3.select(gd);
@@ -289,10 +331,10 @@ describe('axis zoom/pan and main plot zoom', function() {
         return document.querySelector('.' + directions + 'drag[data-subplot="' + subplot + '"]');
     }
 
-    function doDrag(subplot, directions, dx, dy) {
+    function doDrag(subplot, directions, dx, dy, nsteps) {
         return function() {
             var dragger = getDragger(subplot, directions);
-            return drag(dragger, dx, dy);
+            return drag(dragger, dx, dy, undefined, undefined, undefined, nsteps);
         };
     }
 
@@ -311,7 +353,11 @@ describe('axis zoom/pan and main plot zoom', function() {
             var dy = opts.dy || 0;
             var dragger = getDragger(subplot, directions);
             var coords = getNodeCoords(dragger, edge);
-            mouseEvent('scroll', coords.x + dx, coords.y + dy, {deltaY: deltaY, element: dragger});
+            var nsteps = opts.nsteps || 1;
+
+            for(var i = 1; i <= nsteps; i++) {
+                mouseEvent('scroll', coords.x + dx, coords.y + dy, {deltaY: deltaY / nsteps * i, element: dragger});
+            }
             return delay(constants.REDRAWDELAY + 10)();
         };
     }
@@ -624,6 +670,44 @@ describe('axis zoom/pan and main plot zoom', function() {
         })
         .then(function() {
             return _run('full-y w/ fixed yaxis', [5, 30], {cornerCnt: 0});
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should emit plotly_relayouting events when drawing zoom selection', function(done) {
+        var nsteps = 10; var events = []; var relayoutCallback;
+        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        .then(function() {
+            relayoutCallback = jasmine.createSpy('relayoutCallback');
+            gd.on('plotly_relayout', relayoutCallback);
+            gd.on('plotly_relayouting', function(e) {
+                events.push(e);
+            });
+        })
+        .then(doDrag('xy', 'nsew', 100, 100, nsteps))
+        .then(function() {
+            expect(events.length).toEqual(nsteps);
+            expect(relayoutCallback).toHaveBeenCalledTimes(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should emit plotly_relayouting events when zooming via mouse wheel', function(done) {
+        var nsteps = 10; var events = []; var relayoutCallback;
+        Plotly.plot(gd, [{ y: [1, 2, 1] }], {}, {scrollZoom: true})
+        .then(function() {
+            relayoutCallback = jasmine.createSpy('relayoutCallback');
+            gd.on('plotly_relayout', relayoutCallback);
+            gd.on('plotly_relayouting', function(e) {
+                events.push(e);
+            });
+        })
+        .then(doScroll('xy', 'nsew', 100, {edge: 'se', nsteps: nsteps}))
+        .then(function() {
+            expect(events.length).toEqual(nsteps);
+            expect(relayoutCallback).toHaveBeenCalledTimes(1);
         })
         .catch(failTest)
         .then(done);
