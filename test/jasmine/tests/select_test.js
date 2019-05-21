@@ -2208,7 +2208,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@noCI should work for waterfall traces', function(done) {
+    it('@flaky should work for waterfall traces', function(done) {
         var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
         var assertSelectedPoints = makeAssertSelectedPoints();
         var assertRanges = makeAssertRanges();
@@ -2233,8 +2233,8 @@ describe('Test select box and lasso per trace:', function() {
                         0: [5, 6, 7, 8]
                     });
                     assertLassoPoints([
-                        [289.8550724637681, 57.97101449275362, 289.8550724637681, 521.7391304347826, 405.7971014492753],
-                        ['Net revenue', 'Personnel expenses', 'Operating profit', 'Personnel expenses', 'Material expenses']
+                        [288.8086, 57.7617, 288.8086, 519.8555, 404.3321],
+                        [4.33870, 6.7580, 9.1774, 6.75806, 5.54838]
                     ]);
                 },
                 null, LASSOEVENTS, 'waterfall lasso'
@@ -2255,8 +2255,8 @@ describe('Test select box and lasso per trace:', function() {
                         0: [5, 6]
                     });
                     assertRanges([
-                        [173.91304347826087, 289.8550724637681],
-                        ['Net revenue', 'Personnel expenses']
+                        [173.28519, 288.8086],
+                        [4.3387, 6.7580]
                     ]);
                 },
                 null, BOXEVENTS, 'waterfall select'
@@ -2266,7 +2266,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     });
 
-    it('@noCI should work for funnel traces', function(done) {
+    it('@flaky should work for funnel traces', function(done) {
         var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
         var assertSelectedPoints = makeAssertSelectedPoints();
         var assertRanges = makeAssertRanges();
@@ -2291,8 +2291,8 @@ describe('Test select box and lasso per trace:', function() {
                         1: [1, 2]
                     });
                     assertLassoPoints([
-                        [-154.56790123456787, -1700.2469, -154.5679, 1391.1111, 618.2716],
-                        ['Pull requests', 'Author: etpinard', 'Label: bug', 'Author: etpinard', 'Author: etpinard']
+                        [-161.6974, -1701.6728, -161.6974, 1378.2779, 608.2902],
+                        [1.1129, 1.9193, 2.7258, 1.9193, 1.5161]
                     ]);
                 },
                 null, LASSOEVENTS, 'funnel lasso'
@@ -2315,8 +2315,8 @@ describe('Test select box and lasso per trace:', function() {
                         1: [1, 2]
                     });
                     assertRanges([
-                        [-927.4074, 618.2716],
-                        ['Pull requests', 'Label: bug']
+                        [-931.6851, 608.2902],
+                        [1.1129, 2.7258]
                     ]);
                 },
                 null, BOXEVENTS, 'funnel select'
