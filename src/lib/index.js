@@ -1171,19 +1171,3 @@ lib.formatPercent = function(ratio, n) {
     }
     return str;
 };
-
-lib.convexPolygonArea = function(points) {
-    var s1 = 0;
-    var s2 = 0;
-    var n = points.length;
-    for(var i = 0; i < n; i++) {
-        var k = (i + 1) % n;
-        var x0 = points[i][0];
-        var y0 = points[i][1];
-        var x1 = points[k][0];
-        var y1 = points[k][1];
-        s1 += x0 * y1;
-        s2 += x1 * y0;
-    }
-    return 0.5 * Math.abs(s1 - s2);
-};

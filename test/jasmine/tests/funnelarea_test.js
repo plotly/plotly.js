@@ -19,6 +19,22 @@ var SLICES_SELECTOR = '.slice path';
 var SLICES_TEXT_SELECTOR = '.funnelarealayer text.slicetext';
 var LEGEND_ENTRIES_SELECTOR = '.legendpoints path';
 
+function convexPolygonArea(points) {
+    var s1 = 0;
+    var s2 = 0;
+    var n = points.length;
+    for(var i = 0; i < n; i++) {
+        var k = (i + 1) % n;
+        var x0 = points[i][0];
+        var y0 = points[i][1];
+        var x1 = points[k][0];
+        var y1 = points[k][1];
+        s1 += x0 * y1;
+        s2 += x1 * y0;
+    }
+    return 0.5 * Math.abs(s1 - s2);
+}
+
 describe('Funnelarea defaults', function() {
     function _supply(trace, layout) {
         var gd = {
@@ -1346,7 +1362,7 @@ describe('Test funnelarea calculated areas', function() {
             for(i = 0; i < 4; i++) {
                 var cdi = gd.calcdata[0][i];
 
-                var area = Lib.convexPolygonArea([cdi.TR, cdi.TL, cdi.BL, cdi.BR]);
+                var area = convexPolygonArea([cdi.TR, cdi.TL, cdi.BL, cdi.BR]);
                 areas.push(area);
                 totalArea += area;
             }
@@ -1392,14 +1408,119 @@ describe('Test funnelarea calculated areas', function() {
             '(baseratio ' + spec.baseratio + ')';
 
         it(desc, function(done) {
-            var data = {
+            var data = [{
                 values: [4, 3, 2, 1],
                 type: 'funnelarea',
                 aspectratio: spec.aspectratio,
                 baseratio: spec.baseratio
-            };
+            }];
 
-            Plotly.plot(gd, [data])
+            Plotly.plot(gd, data)
+              .then(_checkCalculatedAreaRatios([0.4, 0.3, 0.2, 0.1]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+});
+
+describe('Test funnelarea calculated areas with scalegroup', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    function _checkCalculatedAreaRatios(expRatios) {
+        return function() {
+            var i, k;
+            var areas = [[], [], [], []];
+            var totalArea = [0, 0, 0, 0];
+            for(k = 0; k < 4; k++) {
+                for(i = 0; i < 4; i++) {
+                    var cdi = gd.calcdata[k][i];
+
+                    var area = convexPolygonArea([cdi.TR, cdi.TL, cdi.BL, cdi.BR]);
+                    areas[k].push(area);
+                    totalArea[k] += area;
+                }
+            }
+
+            for(k = 0; k < 4; k++) {
+                var ratios = [];
+                for(i = 0; i < 4; i++) {
+                    ratios[i] = areas[k][i] / totalArea[k];
+                }
+                expect(ratios).toBeCloseToArray(expRatios);
+            }
+
+            for(i = 0; i < 4; i++) {
+                expect(areas[0][i] / areas[1][i]).toBeCloseTo(1);
+                expect(areas[0][i] / areas[2][i]).toBeCloseTo(10);
+                expect(areas[0][i] / areas[3][i]).toBeCloseTo(1);
+            }
+        };
+    }
+
+    [
+        {aspectratio: 0.25, baseratio: 0},
+        {aspectratio: 0.25, baseratio: 0.25},
+        {aspectratio: 0.25, baseratio: 0.5},
+        {aspectratio: 0.25, baseratio: 0.75},
+        {aspectratio: 0.25, baseratio: 1},
+        {aspectratio: 0.5, baseratio: 0},
+        {aspectratio: 0.5, baseratio: 0.25},
+        {aspectratio: 0.5, baseratio: 0.5},
+        {aspectratio: 0.5, baseratio: 0.75},
+        {aspectratio: 0.5, baseratio: 1},
+        {aspectratio: 1, baseratio: 0},
+        {aspectratio: 1, baseratio: 0.25},
+        {aspectratio: 1, baseratio: 0.5},
+        {aspectratio: 1, baseratio: 0.75},
+        {aspectratio: 1, baseratio: 1},
+        {aspectratio: 2, baseratio: 0},
+        {aspectratio: 2, baseratio: 0.25},
+        {aspectratio: 2, baseratio: 0.5},
+        {aspectratio: 2, baseratio: 0.75},
+        {aspectratio: 2, baseratio: 1},
+        {aspectratio: 4, baseratio: 0},
+        {aspectratio: 4, baseratio: 0.25},
+        {aspectratio: 4, baseratio: 0.5},
+        {aspectratio: 4, baseratio: 0.75},
+        {aspectratio: 4, baseratio: 1}
+    ].forEach(function(spec) {
+        var desc = 'calculate correct area with ' +
+            '(aspectratio ' + spec.aspectratio + ') and ' +
+            '(baseratio ' + spec.baseratio + ')';
+
+        it(desc, function(done) {
+            var data = [{
+                scalegroup: 'x',
+                values: [40, 30, 20, 10],
+                type: 'funnelarea'
+            },
+            {
+                scalegroup: 'x',
+                values: [40, 30, 20, 10],
+                type: 'funnelarea',
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio,
+            },
+            {
+                scalegroup: 'x',
+                values: [4, 3, 2, 1],
+                type: 'funnelarea',
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio
+            },
+            {
+                scalegroup: '10x',
+                values: [4, 3, 2, 1],
+                type: 'funnelarea',
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio
+            }];
+
+            Plotly.plot(gd, data)
               .then(_checkCalculatedAreaRatios([0.4, 0.3, 0.2, 0.1]))
               .catch(failTest)
               .then(done);
