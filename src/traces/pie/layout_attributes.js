@@ -11,7 +11,7 @@
 module.exports = {
     hiddenlabels: {
         valType: 'data_array',
-        role: 'info', // TODO: or style ?
+        role: 'info',
         editType: 'calc',
         description: [
             'hiddenlabels is the funnelarea & pie chart analog of',
