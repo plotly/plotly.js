@@ -38,7 +38,7 @@ module.exports = function plot(gd, cdModule) {
         var cd0 = cd[0];
         var trace = cd0.trace;
 
-        setCoords(cd);
+        setCoords(cd, fullLayout);
 
         plotGroup.each(function() {
             var slices = d3.select(this).selectAll('g.slice').data(cd);
@@ -179,12 +179,18 @@ function getBetween(a, b) {
     ];
 }
 
-function setCoords(cd) {
+function setCoords(cd, fullLayout) {
     if(!cd.length) return;
 
     var cd0 = cd[0];
 
+    var size = fullLayout._size;
+    var domain = cd0.trace.domain;
+    var width = size.w * Math.abs(domain.x[1] - domain.x[0]);
+    var height = size.h * Math.abs(domain.y[1] - domain.y[0]);
+
     var aspectratio = cd0.trace.aspectratio;
+
     var h = cd0.trace.baseratio;
     if(h > 0.999) h = 0.999; // TODO: may handle this case separately
     var h2 = Math.pow(h, 2);
@@ -243,13 +249,13 @@ function setCoords(cd) {
     if(cd0.trace.scalegroup) {
         r *= Math.sqrt(Math.PI / 4);
         r /= Math.sqrt(1 + h);
-        r *= Math.sqrt((aspectratio < 1) ? 1 / aspectratio : aspectratio);
+        r *= Math.sqrt((aspectratio < height / width) ? 1 / aspectratio : aspectratio);
     }
 
     var rY = (maxY - minY) / 2;
     var scaleX = r / lastX;
     var scaleY = r / (aspectratio * rY);
-    if(aspectratio < 1) {
+    if(aspectratio < height / width) {
         scaleX *= aspectratio;
         scaleY *= aspectratio;
     }

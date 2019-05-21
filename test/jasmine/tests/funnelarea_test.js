@@ -1510,3 +1510,196 @@ describe('Test funnelarea calculated areas with scalegroup', function() {
         });
     });
 });
+
+describe('Test funnelarea calculated areas with scalegroup on various domain ratios', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    function _checkCalculatedAreaRatios(expRatios) {
+        return function() {
+            var i, k;
+            var areas = [[], [], [], [], [], [], [], [], [], []];
+            var totalArea = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            for(k = 0; k < 10; k++) {
+                for(i = 0; i < 4; i++) {
+                    var cdi = gd.calcdata[k][i];
+
+                    var area = convexPolygonArea([cdi.TR, cdi.TL, cdi.BL, cdi.BR]);
+                    areas[k].push(area);
+                    totalArea[k] += area;
+                }
+            }
+
+            for(k = 0; k < 10; k++) {
+                var ratios = [];
+                for(i = 0; i < 4; i++) {
+                    ratios[i] = areas[k][i] / totalArea[k];
+                }
+                expect(ratios).toBeCloseToArray(expRatios);
+            }
+
+            for(i = 0; i < 4; i++) {
+                expect(areas[0][i] / areas[1][i]).toBeCloseTo(1);
+                expect(areas[0][i] / areas[2][i]).toBeCloseTo(1);
+                expect(areas[0][i] / areas[3][i]).toBeCloseTo(1);
+                expect(areas[0][i] / areas[4][i]).toBeCloseTo(10);
+                expect(areas[0][i] / areas[5][i]).toBeCloseTo(10);
+                expect(areas[0][i] / areas[6][i]).toBeCloseTo(10);
+                expect(areas[0][i] / areas[7][i]).toBeCloseTo(1);
+                expect(areas[0][i] / areas[8][i]).toBeCloseTo(1);
+                expect(areas[0][i] / areas[9][i]).toBeCloseTo(1);
+            }
+        };
+    }
+
+    [
+        {aspectratio: 0.25, baseratio: 0},
+        {aspectratio: 0.25, baseratio: 0.25},
+        {aspectratio: 0.25, baseratio: 0.5},
+        {aspectratio: 0.25, baseratio: 0.75},
+        {aspectratio: 0.25, baseratio: 1},
+        {aspectratio: 0.5, baseratio: 0},
+        {aspectratio: 0.5, baseratio: 0.25},
+        {aspectratio: 0.5, baseratio: 0.5},
+        {aspectratio: 0.5, baseratio: 0.75},
+        {aspectratio: 0.5, baseratio: 1},
+        {aspectratio: 1, baseratio: 0},
+        {aspectratio: 1, baseratio: 0.25},
+        {aspectratio: 1, baseratio: 0.5},
+        {aspectratio: 1, baseratio: 0.75},
+        {aspectratio: 1, baseratio: 1},
+        {aspectratio: 2, baseratio: 0},
+        {aspectratio: 2, baseratio: 0.25},
+        {aspectratio: 2, baseratio: 0.5},
+        {aspectratio: 2, baseratio: 0.75},
+        {aspectratio: 2, baseratio: 1},
+        {aspectratio: 4, baseratio: 0},
+        {aspectratio: 4, baseratio: 0.25},
+        {aspectratio: 4, baseratio: 0.5},
+        {aspectratio: 4, baseratio: 0.75},
+        {aspectratio: 4, baseratio: 1}
+    ].forEach(function(spec) {
+        var desc = 'calculate correct area with ' +
+            '(aspectratio ' + spec.aspectratio + ') and ' +
+            '(baseratio ' + spec.baseratio + ')';
+
+        it(desc, function(done) {
+            var data = [{
+                scalegroup: 'x',
+                values: [40, 30, 20, 10],
+                type: 'funnelarea',
+                domain: {
+                    x: [0.5, 1],
+                    y: [0.5, 1]
+                }
+            },
+            {
+                scalegroup: 'x',
+                values: [40, 30, 20, 10],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.25],
+                    y: [0, 0.5]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio,
+            },
+            {
+                scalegroup: 'x',
+                values: [40, 30, 20, 10],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.5],
+                    y: [0, 0.25]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio,
+            },
+            {
+                scalegroup: 'x',
+                values: [40, 30, 20, 10],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.5],
+                    y: [0, 0.5]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio,
+            },
+            {
+                scalegroup: 'x',
+                values: [4, 3, 2, 1],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.25],
+                    y: [0, 0.5]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio
+            },
+            {
+                scalegroup: 'x',
+                values: [4, 3, 2, 1],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.5],
+                    y: [0, 0.25]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio
+            },
+            {
+                scalegroup: 'x',
+                values: [4, 3, 2, 1],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.5],
+                    y: [0, 0.5]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio
+            },
+            {
+                scalegroup: '10x',
+                values: [4, 3, 2, 1],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.25],
+                    y: [0, 0.5]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio
+            },
+            {
+                scalegroup: '10x',
+                values: [4, 3, 2, 1],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.5],
+                    y: [0, 0.25]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio
+            },
+            {
+                scalegroup: '10x',
+                values: [4, 3, 2, 1],
+                type: 'funnelarea',
+                domain: {
+                    x: [0, 0.5],
+                    y: [0, 0.5]
+                },
+                aspectratio: spec.aspectratio,
+                baseratio: spec.baseratio
+            }];
+
+            Plotly.plot(gd, data)
+              .then(_checkCalculatedAreaRatios([0.4, 0.3, 0.2, 0.1]))
+              .catch(failTest)
+              .then(done);
+        });
+    });
+});
