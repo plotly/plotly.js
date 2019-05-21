@@ -65,11 +65,20 @@ module.exports = {
     insidetextfont: pieAttrs.insidetextfont,
     outsidetextfont: pieAttrs.outsidetextfont,
 
-    title: extendFlat({}, pieAttrs.title, {
+    title: {
+        text: extendFlat({}, pieAttrs.title.text, {
+            editType: 'plot'
+        }),
+        font: extendFlat({}, pieAttrs.title.font, {
+            editType: 'plot'
+        }),
         position: extendFlat({}, pieAttrs.title.position, {
-            values: ['top left', 'top center', 'top right']
-        })
-    }),
+            values: ['top left', 'top center', 'top right'],
+            dflt: 'top center',
+            editType: 'plot'
+        }),
+        editType: 'plot'
+    },
 
     domain: domainAttrs({name: 'funnelarea', trace: true, editType: 'calc'}),
 

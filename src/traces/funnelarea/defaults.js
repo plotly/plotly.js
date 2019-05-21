@@ -66,7 +66,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var title = coerce('title.text');
     if(title) {
-        coerce('title.position', 'top center');
+        coerce('title.position');
         Lib.coerceFont(coerce, 'title.font', layout.font);
     }
 

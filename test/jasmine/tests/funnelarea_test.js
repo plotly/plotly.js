@@ -537,22 +537,6 @@ describe('Funnelarea traces', function() {
           .then(done);
     });
 
-    it('still support the deprecated `title` structure (backwards-compatibility)', function(done) {
-        Plotly.plot(gd, [{
-            type: 'funnelarea',
-            values: [1, 2, 3],
-            title: 'yo',
-            titlefont: {color: 'blue'},
-            titleposition: 'top left'
-        }])
-          .then(function() {
-              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
-              _verifyTitle(true, false, true, false, false);
-          })
-          .catch(failTest)
-          .then(done);
-    });
-
     it('should be able to restyle title', function(done) {
         Plotly.plot(gd, [{
             type: 'funnelarea',
