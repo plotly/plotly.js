@@ -51,7 +51,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertemplate');
 
     if(textInfo && textInfo !== 'none') {
-        var textposition = 'inside';
+        var textposition = coerce('textposition');
         handleText(traceIn, traceOut, layout, coerce, textposition, {
             moduleHasSelected: false,
             moduleHasUnselected: false,

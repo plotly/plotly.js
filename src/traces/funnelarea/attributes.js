@@ -61,20 +61,20 @@ module.exports = {
         keys: ['label', 'color', 'value', 'percent', 'text']
     }),
 
+    textposition: extendFlat({}, pieAttrs.textposition, {
+        values: ['inside', 'none'],
+        dflt: 'inside'
+    }),
+
     textfont: pieAttrs.textfont,
     insidetextfont: pieAttrs.insidetextfont,
 
     title: {
-        text: extendFlat({}, pieAttrs.title.text, {
-            editType: 'plot'
-        }),
-        font: extendFlat({}, pieAttrs.title.font, {
-            editType: 'plot'
-        }),
+        text: pieAttrs.title.text,
+        font: pieAttrs.title.font,
         position: extendFlat({}, pieAttrs.title.position, {
             values: ['top left', 'top center', 'top right'],
-            dflt: 'top center',
-            editType: 'plot'
+            dflt: 'top center'
         }),
         editType: 'plot'
     },

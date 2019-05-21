@@ -17,7 +17,7 @@ var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes')
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var textFontAttrs = fontAttrs({
-    editType: 'calc',
+    editType: 'plot', // TODO: test
     arrayOk: true,
     colorEditType: 'plot',
     description: 'Sets the font used for `textinfo`.'
@@ -169,7 +169,7 @@ module.exports = {
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'auto',
         arrayOk: true,
-        editType: 'calc',
+        editType: 'plot', // TODO: test
         description: [
             'Specifies the location of the `textinfo`.'
         ].join(' ')
@@ -189,7 +189,7 @@ module.exports = {
             valType: 'string',
             dflt: '',
             role: 'info',
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: [
                 'Sets the title of the chart.',
                 'If it is empty, no title is displayed.',
@@ -213,7 +213,7 @@ module.exports = {
                 'bottom left', 'bottom center', 'bottom right'
             ],
             role: 'info',
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: [
                 'Specifies the location of the `title`.',
                 'Note that the title\'s position used to be set',
@@ -221,7 +221,7 @@ module.exports = {
             ].join(' ')
         },
 
-        editType: 'calc'
+        editType: 'plot' // TODO: test
     },
 
     // position and shape
