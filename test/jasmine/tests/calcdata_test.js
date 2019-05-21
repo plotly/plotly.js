@@ -4,6 +4,7 @@ var BADNUM = require('@src/constants/numerical').BADNUM;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var delay = require('../assets/delay');
 var Lib = require('@src/lib');
 
 describe('calculated data and points', function() {
@@ -985,6 +986,7 @@ describe('calculated data and points', function() {
                                 expect(gd._fullLayout[trace.type === 'splom' ? 'xaxis' : axName]._categories).toEqual(finalOrder, 'wrong order');
                             }
                         })
+                        .then(delay(100))
                         .catch(failTest)
                         .then(done);
                     }
