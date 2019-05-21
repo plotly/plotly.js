@@ -1975,6 +1975,26 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should work with trace meta references', function(done) {
+            var gd = document.getElementById('graph');
+
+            Plotly.update(gd, {
+                meta: {yname: 'Yy', xname: 'Xx'},
+                hovertemplate: 'TRACE -- %{meta.yname}<extra>%{meta.xname}</extra>'
+            })
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                assertHoverLabelContent({
+                    nums: 'TRACE -- Yy',
+                    name: 'Xx',
+                    axis: '0.388'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     it('should work with trace.name linked to layout.meta', function(done) {

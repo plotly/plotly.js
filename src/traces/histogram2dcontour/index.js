@@ -11,7 +11,7 @@
 module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
-    crossTraceDefaults: require('../histogram2d/cross_trace_defaults'),
+    crossTraceDefaults: require('../histogram/cross_trace_defaults'),
     calc: require('../contour/calc'),
     plot: require('../contour/plot').plot,
     layerName: 'contourlayer',

@@ -315,10 +315,8 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
         str += valueOverride;
     } else {
         var curVal = sliderOpts.steps[sliderOpts.active].label;
-        var meta = sliderOpts._gd._fullLayout.meta;
-        if(meta) {
-            curVal = Lib.templateString(curVal, {meta: meta});
-        }
+        var _meta = sliderOpts._gd._fullLayout._meta;
+        if(_meta) curVal = Lib.templateString(curVal, _meta);
         str += curVal;
     }
 
@@ -367,10 +365,8 @@ function drawLabel(item, data, sliderOpts) {
     });
 
     var tx = data.step.label;
-    var meta = sliderOpts._gd._fullLayout.meta;
-    if(meta) {
-        tx = Lib.templateString(tx, {meta: meta});
-    }
+    var _meta = sliderOpts._gd._fullLayout._meta;
+    if(_meta) tx = Lib.templateString(tx, _meta);
 
     text.call(Drawing.font, sliderOpts.font)
         .text(tx)

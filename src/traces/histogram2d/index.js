@@ -12,7 +12,7 @@ module.exports = {
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
-    crossTraceDefaults: require('./cross_trace_defaults'),
+    crossTraceDefaults: require('../histogram/cross_trace_defaults'),
     calc: require('../heatmap/calc'),
     plot: require('../heatmap/plot'),
     layerName: 'heatmaplayer',

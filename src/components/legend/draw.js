@@ -404,8 +404,8 @@ function drawTexts(g, gd, maxLength) {
     var isEditable = gd._context.edits.legendText && !isPieLike;
 
     var name = isPieLike ? legendItem.label : trace.name;
-    if(fullLayout.meta) {
-        name = Lib.templateString(name, {meta: fullLayout.meta});
+    if(trace._meta) {
+        name = Lib.templateString(name, trace._meta);
     }
 
     var textEl = Lib.ensureSingle(g, 'text', 'legendtext');

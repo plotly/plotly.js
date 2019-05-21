@@ -482,6 +482,10 @@ plots.supplyDefaults = function(gd, opts) {
         oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
     }
 
+
+    // fill in meta helpers
+    fillMetaTextHelpers(newFullData, newFullLayout);
+
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
@@ -695,6 +699,38 @@ function getFormatter(formatObj, separators) {
     formatObj.thousands = separators.charAt(1);
 
     return d3.locale(formatObj);
+}
+
+function fillMetaTextHelpers(newFullData, newFullLayout) {
+    var _meta;
+    var meta4data = [];
+
+    if(newFullLayout.meta) {
+        _meta = newFullLayout._meta = {
+            meta: newFullLayout.meta,
+            layout: {meta: newFullLayout.meta}
+        };
+    }
+
+    for(var i = 0; i < newFullData.length; i++) {
+        var trace = newFullData[i];
+
+        if(trace.meta) {
+            meta4data[trace.index] = trace._meta = {meta: trace.meta};
+        } else if(newFullLayout.meta) {
+            trace._meta = {meta: newFullLayout.meta};
+        }
+        if(newFullLayout.meta) {
+            trace._meta.layout = {meta: newFullLayout.meta};
+        }
+    }
+
+    if(meta4data.length) {
+        if(!_meta) {
+            _meta = newFullLayout._meta = {};
+        }
+        _meta.data = meta4data;
+    }
 }
 
 // Create storage for all of the data related to frames and transitions:
@@ -1235,6 +1271,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
     if(visible) {
         coerce('customdata');
         coerce('ids');
+        coerce('meta');
 
         if(Registry.traceIs(traceOut, 'showLegend')) {
             traceOut._dfltShowLegend = true;

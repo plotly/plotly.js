@@ -410,7 +410,9 @@ module.exports = {
     },
 
     meta: {
-        valType: 'data_array',
+        valType: 'any',
+        arrayOk: true,
+        role: 'info',
         editType: 'plot',
         description: [
             'Assigns extra meta information that can be used in various `text` attributes.',
@@ -418,7 +420,9 @@ module.exports = {
             '`trace.name` in legend items, `rangeselector`, `updatemenues` and `sliders` `label` text',
             'all support `meta`. One can access `meta` fields using template strings:',
             '`%{meta[i]}` where `i` is the index of the `meta`',
-            'item in question.'
+            'item in question.',
+            '`meta` can also be an object for example `{key: value}` which can be accessed',
+            '%{meta[key]}.'
         ].join(' ')
     },
 

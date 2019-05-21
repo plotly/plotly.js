@@ -1,0 +1,103 @@
+{
+  "data": [
+    {
+      "type": "histogram2d",
+      "name": "smaple 1",
+      "x": [ 1, 2, 2, 2, 3 ],
+      "y": [ 1, 2, 2, 2, 3 ],
+      "coloraxis": "coloraxis"
+    },
+    {
+      "type": "histogram2d",
+      "name": "sample 2",
+      "x": [ 4, 5, 5, 5, 6 ],
+      "y": [ 4, 5, 5, 5, 6 ],
+      "coloraxis": "coloraxis",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "histogram2d",
+      "name": "sample 1",
+      "x": [ 1, 2, 2, 2, 3 ],
+      "y": [ 1, 2, 2, 2, 3 ],
+      "coloraxis": "coloraxis",
+      "bingroup": "1",
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "histogram2d",
+      "name": "sample 2",
+      "x": [ 4, 5, 5, 5, 6 ],
+      "y": [ 4, 5, 5, 5, 6 ],
+      "coloraxis": "coloraxis",
+      "bingroup": "1",
+      "xaxis": "x4",
+      "yaxis": "y4"
+    },
+    {
+      "type": "histogram2d",
+      "name": "combined sample",
+      "x": [ 1, 2, 2, 2, 3, 4, 5, 5, 5, 6 ],
+      "y": [ 1, 2, 2, 2, 3, 4, 5, 5, 5, 6 ],
+      "coloraxis": "coloraxis",
+      "xaxis": "x5",
+      "yaxis": "y5"
+    },
+    {
+      "type": "histogram2d",
+      "name": "sample 1",
+      "x": [ 1, 2, 2, 2, 3 ],
+      "y": [ 1, 2, 2, 2, 3 ],
+      "coloraxis": "coloraxis",
+      "bingroup": "2",
+      "xbins": {"size": 1},
+      "xaxis": "x7",
+      "yaxis": "y7"
+    },
+    {
+      "type": "histogram2d",
+      "name": "sample 2",
+      "x": [ 4, 5, 5, 5, 6 ],
+      "y": [ 4, 5, 5, 5, 6 ],
+      "coloraxis": "coloraxis",
+      "bingroup": "2",
+      "ybins": {"size": 1},
+      "xaxis": "x8",
+      "yaxis": "y8"
+    }
+  ],
+  "layout": {
+    "grid": {
+      "rows": 4,
+      "columns": 2,
+      "pattern": "independent"
+    },
+    "yaxis": {
+      "title": {
+        "text": "no set<br>bingroup"
+      }
+    },
+    "yaxis3": {
+      "title": {
+        "text": "<b>bingroup:1</b>"
+      }
+    },
+    "yaxis5": {
+      "title": {
+        "text": "combined<br>samples"
+      }
+    },
+    "yaxis7": {
+      "title": {
+        "text": "<b>bingroup:2<br>(x|y)bins.size:1</b>"
+      }
+    },
+    "coloraxis": {
+      "colorbar": {"len": 0.6}
+    },
+    "height": 600,
+    "width": 500
+  }
+}

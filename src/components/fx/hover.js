@@ -887,8 +887,8 @@ function createHoverText(hoverData, opts, gd) {
         if(d.nameOverride !== undefined) d.name = d.nameOverride;
 
         if(d.name) {
-            if(fullLayout.meta) {
-                d.name = Lib.templateString(d.name, {meta: fullLayout.meta});
+            if(d.trace._meta) {
+                d.name = Lib.templateString(d.name, d.trace._meta);
             }
             name = plainText(d.name, d.nameLength);
         }
@@ -925,7 +925,7 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         // hovertemplate
-        var d3locale = gd._fullLayout._d3locale;
+        var d3locale = fullLayout._d3locale;
         var hovertemplate = d.hovertemplate || false;
         var hovertemplateLabels = d.hovertemplateLabels || d;
         var eventData = d.eventData[0] || {};
@@ -935,7 +935,7 @@ function createHoverText(hoverData, opts, gd) {
                 hovertemplateLabels,
                 d3locale,
                 eventData,
-                {meta: fullLayout.meta}
+                d.trace._meta
             );
 
             text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {

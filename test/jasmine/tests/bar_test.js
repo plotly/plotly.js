@@ -211,7 +211,7 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
 
-    it('should not include alignementgroup/offsetgroup when barmode is not *group*', function() {
+    it('should not include alignmentgroup/offsetgroup when barmode is not *group*', function() {
         var gd = {
             data: [{type: 'bar', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
             layout: {barmode: 'group'}
