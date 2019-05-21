@@ -86,6 +86,7 @@ function zoomScoped(geo, projection) {
             .scale(d3.event.scale)
             .translate(d3.event.translate);
         geo.render();
+        geo.graphDiv.emit('plotly_relayouting', {'projection.scale': projection.scale() / geo.fitScale});
     }
 
     function syncCb(set) {
@@ -164,6 +165,7 @@ function zoomNonClipped(geo, projection) {
 
         didZoom = true;
         geo.render();
+        geo.graphDiv.emit('plotly_relayouting', {'projection.scale': projection.scale() / geo.fitScale});
     }
 
     function handleZoomend() {

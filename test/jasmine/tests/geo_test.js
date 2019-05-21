@@ -2066,4 +2066,31 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    describe('plotly_relayouting', function() {
+        ['pan', 'zoom'].forEach(function(dragmode) {
+            it('should emit plotly_relayouting events on', function(done) {
+                var events = []; var path = [[300, 300], [350, 300], [350, 400]]; var relayoutCallback;
+                var fig = Lib.extendDeep({}, require('@mocks/geo_choropleth-usa'));
+                fig.layout.dragmode = dragmode;
+
+                gd = createGraphDiv();
+                Plotly.plot(gd, fig)
+                .then(function() {
+                    relayoutCallback = jasmine.createSpy('relayoutCallback');
+                    gd.on('plotly_relayout', relayoutCallback);
+                    gd.on('plotly_relayouting', function(e) {
+                        events.push(e);
+                    });
+                    return drag(path);
+                })
+                .then(function() {
+                    expect(events.length).toEqual(path.length - 1);
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
 });
