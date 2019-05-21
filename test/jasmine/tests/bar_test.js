@@ -2136,15 +2136,17 @@ describe('bar hover', function() {
 
     afterEach(destroyGraphDiv);
 
-    function getPointData(gd) {
+    function getPointData(gd, curveNumber) {
+        curveNumber = curveNumber || 0;
+
         var cd = gd.calcdata;
         var subplot = gd._fullLayout._plots.xy;
 
         return {
             index: false,
             distance: 20,
-            cd: cd[0],
-            trace: cd[0][0].trace,
+            cd: cd[curveNumber],
+            trace: cd[curveNumber][0].trace,
             xa: subplot.xaxis,
             ya: subplot.yaxis,
             maxHoverDistance: 20
@@ -2421,7 +2423,34 @@ describe('bar hover', function() {
         });
     });
 
+    describe('should include info of height=0 bars on hover', function() {
+        var modes = ['stack', 'overlay', 'group'];
 
+        modes.forEach(function(m) {
+            it('- under barmode:' + m, function(done) {
+                gd = createGraphDiv();
+
+                Plotly.plot(gd, [{
+                    type: 'bar',
+                    y: [0, 1, 0]
+                }, {
+                    type: 'bar',
+                    y: [1, 0, 1]
+                }], {
+                    barmode: m
+                })
+                .then(function() {
+                    var pt0 = Bar.hoverPoints(getPointData(gd, 0), 0, 1, 'x')[0];
+                    var pt1 = Bar.hoverPoints(getPointData(gd, 1), 0, 1, 'x')[0];
+
+                    expect(pt0.yLabelVal).toBe(0, 'y label value for data[0]');
+                    expect(pt1.yLabelVal).toBe(1, 'y label value for data[1]');
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
 });
 
 describe('event data', function() {
