@@ -102,7 +102,5 @@ module.exports = {
         description: [
             'Sets the ratio between bottom length and maximum top length.'
         ].join(' ')
-    },
-
-    sort: extendFlat({}, pieAttrs.sort, { dflt: false })
+    }
 };

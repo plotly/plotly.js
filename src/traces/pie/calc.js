@@ -42,6 +42,7 @@ function calc(gd, trace) {
     var pullColor = makePullColorFn(fullLayout['_' + trace.type + 'colormap']);
     var seriesLen = (hasVals ? vals : labels).length;
     var vTotal = 0;
+    var isAggregated = false;
 
     for(i = 0; i < seriesLen; i++) {
         var v, label, hidden;
@@ -73,6 +74,8 @@ function calc(gd, trace) {
                 hidden: hidden
             });
         } else {
+            isAggregated = true;
+
             pt = cd[thisLabelIndex];
             pt.v += v;
             pt.pts.push(i);
@@ -84,7 +87,8 @@ function calc(gd, trace) {
         }
     }
 
-    if(trace.sort) cd.sort(function(a, b) { return b.v - a.v; });
+    var shouldSort = (trace.type === 'funnelarea') ? isAggregated : trace.sort;
+    if(shouldSort) cd.sort(function(a, b) { return b.v - a.v; });
 
     // include the sum of all values in the first point
     if(cd[0]) cd[0].vTotal = vTotal;

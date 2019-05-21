@@ -105,7 +105,6 @@ describe('Funnelarea traces', function() {
         Plotly.newPlot(gd, [{
             values: [1, 2, 3, 4, 5],
             type: 'funnelarea',
-            sort: false,
             marker: {
                 line: {width: 3, color: 'rgba(100,100,100,0.7)'},
                 colors: [
@@ -206,17 +205,17 @@ describe('Funnelarea traces', function() {
 
     it('propagate explicit colors to the same labels in earlier OR later traces', function(done) {
         var data1 = [
-            {type: 'funnelarea', sort: true, values: [3, 2], marker: {colors: ['red', 'black']}, domain: {x: [0.5, 1]}},
-            {type: 'funnelarea', sort: true, values: [2, 5], domain: {x: [0, 0.5]}}
+            {type: 'funnelarea', values: [3, 2], marker: {colors: ['red', 'black']}, domain: {x: [0.5, 1]}},
+            {type: 'funnelarea', values: [2, 5], domain: {x: [0, 0.5]}}
         ];
         var data2 = Lib.extendDeep([], [data1[1], data1[0]]);
 
         Plotly.newPlot(gd, data1)
-        .then(_checkSliceColors(['255,0,0', '0,0,0', '0,0,0', '255,0,0']))
+        .then(_checkSliceColors(['255,0,0', '0,0,0', '255,0,0', '0,0,0']))
         .then(function() {
             return Plotly.newPlot(gd, data2);
         })
-        .then(_checkSliceColors(['0,0,0', '255,0,0', '255,0,0', '0,0,0']))
+        .then(_checkSliceColors(['255,0,0', '0,0,0', '255,0,0', '0,0,0']))
         .catch(failTest)
         .then(done);
     });
@@ -724,8 +723,8 @@ describe('funnelarea hovering', function() {
                 unhoverData = data;
             });
 
-            mouseEvent('mouseover', width / 2 - 7, height / 2 - 7);
-            mouseEvent('mouseout', width / 2 - 7, height / 2 - 7);
+            mouseEvent('mouseover', width / 2 - 7, height / 2 + 50);
+            mouseEvent('mouseout', width / 2 - 7, height / 2 + 50);
 
             expect(hoverData.points.length).toEqual(1);
             expect(unhoverData.points.length).toEqual(1);
@@ -822,29 +821,29 @@ describe('funnelarea hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', '5', '33.3%'].join('\n'),
+                    ['0', '5', '33.3%'].join('\n'),
                     ['rgb(31, 119, 180)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)'],
                     'initial'
                 );
 
-                return Plotly.restyle(gd, 'text', [['A', 'B', 'C', 'D', 'E']]);
+                return Plotly.restyle(gd, 'text', [['E', 'D', 'C', 'B', 'A']]);
             })
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', 'E', '5', '33.3%'].join('\n'),
+                    ['0', 'E', '5', '33.3%'].join('\n'),
                     null,
                     'added text'
                 );
 
                 return Plotly.restyle(gd, 'hovertext', [[
-                    'Apple', 'Banana', 'Clementine', 'Dragon Fruit', 'Eggplant'
+                    'Eggplant', 'Dragon Fruit', 'Clementine', 'Banana', 'Apple'
                 ]]);
             })
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', 'Eggplant', '5', '33.3%'].join('\n'),
+                    ['0', 'Eggplant', '5', '33.3%'].join('\n'),
                     null,
                     'added hovertext'
                 );
@@ -854,7 +853,7 @@ describe('funnelarea hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', 'SUP', '5', '33.3%'].join('\n'),
+                    ['0', 'SUP', '5', '33.3%'].join('\n'),
                     null,
                     'constant hovertext'
                 );
@@ -870,23 +869,23 @@ describe('funnelarea hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', 'SUP', '5', '33.3%'].join('\n'),
+                    ['0', 'SUP', '5', '33.3%'].join('\n'),
                     ['rgb(255, 0, 0)', 'rgb(255, 255, 0)', 15, 'Roboto', 'rgb(0, 0, 255)'],
                     'new styles'
                 );
 
-                return Plotly.restyle(gd, 'hoverinfo', [[null, null, null, null, 'label+percent']]);
+                return Plotly.restyle(gd, 'hoverinfo', [['label+percent', null, null, null, null]]);
             })
             .then(_hover)
             .then(function() {
-                assertLabel(['4', '33.3%'].join('\n'), null, 'new hoverinfo');
+                assertLabel(['0', '33.3%'].join('\n'), null, 'new hoverinfo');
 
-                return Plotly.restyle(gd, 'hoverinfo', [[null, null, null, null, 'dont+know+what+im-doing']]);
+                return Plotly.restyle(gd, 'hoverinfo', [['dont+know+what+im-doing', null, null, null, null]]);
             })
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', 'SUP', '5', '33.3%'].join('\n'),
+                    ['0', 'SUP', '5', '33.3%'].join('\n'),
                     null,
                     'garbage hoverinfo'
                 );
@@ -935,7 +934,7 @@ describe('funnelarea hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', '5', '33.3%'].join('\n'),
+                    ['0', '5', '33.3%'].join('\n'),
                     ['rgb(31, 119, 180)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)'],
                     'initial'
                 );
@@ -951,7 +950,7 @@ describe('funnelarea hovering', function() {
                 );
 
                 return Plotly.restyle(gd, {
-                    'text': [['A', 'B', 'C', 'D', 'E']],
+                    'text': [['E', 'D', 'C', 'B', 'A']],
                     'hovertemplate': '%{text}<extra></extra>'
                 });
             })
@@ -978,12 +977,12 @@ describe('funnelarea hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4'].join('\n'),
+                    ['0'].join('\n'),
                     null,
                     'hovertemplate %{label}'
                 );
             })
-            .then(function() { return Plotly.restyle(gd, 'hovertemplate', [['', '', '', '', 'ht 5 %{percent:0.2%}<extra></extra>']]); })
+            .then(function() { return Plotly.restyle(gd, 'hovertemplate', [['ht 5 %{percent:0.2%}<extra></extra>', '', '', '', '']]); })
             .then(_hover)
             .then(function() {
                 assertLabel(
@@ -1003,12 +1002,12 @@ describe('funnelarea hovering', function() {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout)
             .then(_hover)
             .then(function() {
-                assertHoverLabelContent({nums: '4\n5\n33.3%', name: 'looooooooooo...'}, 'base');
+                assertHoverLabelContent({nums: '0\n5\n33.3%', name: 'looooooooooo...'}, 'base');
             })
             .then(function() { return Plotly.restyle(gd, 'hoverlabel.namelength', 2); })
             .then(_hover)
             .then(function() {
-                assertHoverLabelContent({nums: '4\n5\n33.3%', name: 'lo'}, 'base');
+                assertHoverLabelContent({nums: '0\n5\n33.3%', name: 'lo'}, 'base');
             })
             .catch(failTest)
             .then(done);
@@ -1050,15 +1049,15 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var point = data.points[0];
 
         expect(point.curveNumber).toBe(0);
-        expect(point.pointNumber).toBe(4);
-        expect(point.pointNumbers).toEqual([4]);
+        expect(point.pointNumber).toBe(0);
+        expect(point.pointNumbers).toEqual([0]);
         expect(point.data).toBe(gd.data[0]);
         expect(point.fullData).toBe(gd._fullData[0]);
-        expect(point.label).toBe('4');
+        expect(point.label).toBe('0');
         expect(point.value).toBe(5);
         expect(point.color).toBe('#1f77b4');
-        expect(point.id).toEqual(['maggie']);
-        expect(point.customdata).toEqual([{9: 10}]);
+        expect(point.id).toEqual(['marge']);
+        expect(point.customdata).toEqual([{1: 2}]);
 
         // no need for backward compat i/v
         expect('i' in point).toBe(false);
@@ -1106,7 +1105,7 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
 
             expect(futureData.points[0].pointNumber).toBeUndefined();
             expect(futureData.points[0].i).toBeUndefined();
-            expect(futureData.points[0].pointNumbers).toEqual([4, 9]);
+            expect(futureData.points[0].pointNumbers).toEqual([0, 5]);
         });
     });
 

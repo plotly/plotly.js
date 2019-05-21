@@ -70,7 +70,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         Lib.coerceFont(coerce, 'title.font', layout.font);
     }
 
-    coerce('sort');
     coerce('aspectratio');
     coerce('baseratio');
 };
