@@ -42,7 +42,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var textposition = coerce('textposition');
     handleText(traceIn, traceOut, layout, coerce, textposition, {
         moduleHasSelected: true,
-        moduleHasUnSelected: true,
+        moduleHasUnselected: true,
         moduleHasConstrain: true,
         moduleHasCliponaxis: true,
         moduleHasTextangle: true,
@@ -122,7 +122,7 @@ function crossTraceDefaults(fullData, fullLayout) {
 function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
     opts = opts || {};
     var moduleHasSelected = !(opts.moduleHasSelected === false);
-    var moduleHasUnSelected = !(opts.moduleHasUnSelected === false);
+    var moduleHasUnselected = !(opts.moduleHasUnselected === false);
     var moduleHasConstrain = !(opts.moduleHasConstrain === false);
     var moduleHasCliponaxis = !(opts.moduleHasCliponaxis === false);
     var moduleHasTextangle = !(opts.moduleHasTextangle === false);
@@ -151,7 +151,7 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
 
 
         if(moduleHasSelected) coerce('selected.textfont.color');
-        if(moduleHasUnSelected) coerce('unselected.textfont.color');
+        if(moduleHasUnselected) coerce('unselected.textfont.color');
         if(moduleHasConstrain) coerce('constraintext');
         if(moduleHasCliponaxis) coerce('cliponaxis');
         if(moduleHasTextangle) coerce('textangle');

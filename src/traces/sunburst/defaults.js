@@ -48,7 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var textposition = 'auto';
     handleText(traceIn, traceOut, layout, coerce, textposition, {
         moduleHasSelected: false,
-        moduleHasUnSelected: false,
+        moduleHasUnselected: false,
         moduleHasConstrain: false,
         moduleHasCliponaxis: false,
         moduleHasTextangle: false,

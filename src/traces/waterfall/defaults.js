@@ -52,7 +52,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var textposition = coerce('textposition');
     handleText(traceIn, traceOut, layout, coerce, textposition, {
         moduleHasSelected: false,
-        moduleHasUnSelected: false,
+        moduleHasUnselected: false,
         moduleHasConstrain: true,
         moduleHasCliponaxis: true,
         moduleHasTextangle: true,
