@@ -4,6 +4,7 @@
             "type": "funnelarea",
             "scalegroup": "first",
             "values": [6, 5, 4, 3, 2, 1],
+            "textinfo": "value",
             "title": {
                 "position": "top right",
                 "text": "1 - 6 in first group"
@@ -17,6 +18,7 @@
             "type": "funnelarea",
             "scalegroup": "first",
             "values": [16, 15, 14, 13, 12, 11],
+            "textinfo": "value",
             "title": {
                 "position": "top right",
                 "text": "11 - 16 in first group"
@@ -30,6 +32,7 @@
             "type": "funnelarea",
             "scalegroup": "first",
             "values": [60, 50, 40, 30, 20, 10],
+            "textinfo": "value",
             "title": {
                 "position": "top right",
                 "text": "10 - 60 in first group"
@@ -43,6 +46,7 @@
             "type": "funnelarea",
             "scalegroup": "first",
             "values": [60, 50, 40, 30, 20, 10],
+            "textinfo": "value",
             "title": {
                 "position": "top center",
                 "text": "10 - 60 in first group"
@@ -60,6 +64,7 @@
                 "text": "110 - 160 in first group"
             },
             "values": [160, 150, 140, 130, 120, 110],
+            "textinfo": "value",
             "domain": {
                 "x": [0.35, 0.65],
                 "y": [0.35, 0.65]
@@ -69,6 +74,7 @@
             "type": "funnelarea",
             "scalegroup": "first",
             "values": [600, 500, 400, 300, 200, 100],
+            "textinfo": "value",
             "title": {
                 "position": "top center",
                 "text": "100 - 600 in first group"
@@ -82,6 +88,7 @@
             "type": "funnelarea",
             "scalegroup": "second",
             "values": [6, 5, 4, 3, 2, 1],
+            "textinfo": "value",
             "title": {
                 "position": "top left",
                 "text": "1 - 6 in second group"
@@ -95,6 +102,7 @@
             "type": "funnelarea",
             "scalegroup": "second",
             "values": [16, 15, 14, 13, 12, 11],
+            "textinfo": "value",
             "title": {
                 "position": "top left",
                 "text": "11 - 16 in second group"
@@ -108,6 +116,7 @@
             "type": "funnelarea",
             "scalegroup": "second",
             "values": [60, 50, 40, 30, 20, 10],
+            "textinfo": "value",
             "title": {
                 "position": "top left",
                 "text": "10 - 60 in second group"

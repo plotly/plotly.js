@@ -21,6 +21,7 @@
         "4th",
         "include 0!"
       ],
+      "textinfo": "value+percent",
       "type": "funnelarea"
     }
   ],
