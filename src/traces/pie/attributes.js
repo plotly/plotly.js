@@ -213,7 +213,7 @@ module.exports = {
                 'bottom left', 'bottom center', 'bottom right'
             ],
             role: 'info',
-            editType: 'plot', // TODO: test
+            editType: 'plot',
             description: [
                 'Specifies the location of the `title`.',
                 'Note that the title\'s position used to be set',
