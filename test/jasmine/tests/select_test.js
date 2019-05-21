@@ -1895,7 +1895,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     });
 
-    it('@noCI @flaky should work on scattermapbox traces', function(done) {
+    it('@noCI should work on scattermapbox traces', function(done) {
         var assertPoints = makeAssertPoints(['lon', 'lat']);
         var assertRanges = makeAssertRanges('mapbox');
         var assertLassoPoints = makeAssertLassoPoints('mapbox');
