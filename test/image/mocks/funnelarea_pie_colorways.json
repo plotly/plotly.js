@@ -1,0 +1,64 @@
+{
+    "data": [
+        {
+            "type": "pie",
+            "labels": [
+                "Lead",
+                "Pipeline",
+                "Proposal",
+                "Negotiation",
+                "Closed (Won)"
+            ],
+            "values": [
+                23,
+                15,
+                11,
+                6,
+                2.1
+            ],
+            "domain": {
+                "row": 0,
+                "column": 0
+            }
+        },
+        {
+            "type": "funnelarea",
+            "labels": [
+                "Lead",
+                "Pipeline",
+                "Proposal",
+                "Negotiation",
+                "Closed (Won)"
+            ],
+            "values": [
+                23,
+                15,
+                11,
+                6,
+                2.1
+            ],
+            "domain": {
+                "row": 0,
+                "column": 1
+            }
+        }
+    ],
+    "layout": {
+        "grid": {
+            "rows": 1,
+            "columns": 2
+        },
+        "piecolorway": [
+            "#7fc97f",
+            "#beaed4",
+            "#fdc086"
+        ],
+        "funnelareacolorway": [
+            "#1b9e77",
+            "#d95f02",
+            "#7570b3"
+        ],
+        "width": 500,
+        "height": 300
+    }
+}
