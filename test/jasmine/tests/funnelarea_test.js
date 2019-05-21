@@ -610,7 +610,7 @@ describe('Funnelarea traces', function() {
         })
         .then(_checkFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
         .then(function() {
-            gd.data[0].textposition = 'outside';
+            gd.data[0].textposition = 'none';
             return Plotly.react(gd, gd.data);
         })
         .then(_checkFontColors(['rgb(0, 0, 255)', 'rgb(0, 0, 255)', 'rgb(0, 0, 255)']))
