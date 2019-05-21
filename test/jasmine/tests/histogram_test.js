@@ -5,7 +5,7 @@ var setConvert = require('@src/plots/cartesian/set_convert');
 var supplyDefaults = require('@src/traces/histogram/defaults');
 var supplyDefaults2D = require('@src/traces/histogram2d/defaults');
 var supplyDefaults2DC = require('@src/traces/histogram2dcontour/defaults');
-var calc = require('@src/traces/histogram/calc');
+var calc = require('@src/traces/histogram/calc').calc;
 var getBinSpanLabelRound = require('@src/traces/histogram/bin_label_vals');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -186,6 +186,341 @@ describe('Test histogram', function() {
         });
     });
 
+    describe('cross-trace bingroup logic:', function() {
+        var gd;
+
+        beforeEach(function() {
+            spyOn(Lib, 'warn');
+        });
+
+        function _assert(msg, exp, warnMsg) {
+            var allBinOpts = gd._fullLayout._histogramBinOpts;
+            var groups = Object.keys(allBinOpts);
+
+            expect(groups.length).toBe(exp.length, 'same # of bin groups| ' + msg);
+
+            var eGroups = exp.map(function(expi) { return expi[0]; });
+            expect(groups).toEqual(eGroups, 'same bin groups| ' + msg);
+
+            exp.forEach(function(expi) {
+                var k = expi[0];
+                var binOpts = allBinOpts[k];
+
+                if(!binOpts) {
+                    return fail('bingroup ' + k + ' does NOT exist| ' + msg);
+                }
+
+                var traces = binOpts.traces || [];
+
+                if(!traces.length) {
+                    return fail('traces list for bingroup ' + k + ' is empty| ' + msg);
+                }
+
+                expect(traces.length).toBe(expi[1].length, 'same # of tracked traces|' + msg);
+
+                traces.forEach(function(t, i) {
+                    expect(t.index)
+                        .toBe(expi[1][i], 'tracks same traces[' + i + ']|' + msg);
+                    expect(t['_' + binOpts.dirs[i] + 'bingroup'])
+                        .toBe(k, '_(x|y)bingroup key in trace' + i + '| ' + msg);
+                });
+            });
+
+            if(warnMsg) {
+                expect(Lib.warn).toHaveBeenCalledWith(warnMsg);
+            } else {
+                expect(Lib.warn).toHaveBeenCalledTimes(0);
+            }
+        }
+
+        it('should group traces w/ same axes and w/ same orientation', function() {
+            var barModes = ['group', 'stack'];
+
+            barModes.forEach(function(mode) {
+                gd = {
+                    data: [
+                        {type: 'histogram', y: [1, 2]},
+                        {type: 'histogram', y: [2, 3]},
+
+                        {type: 'histogram', y: [1, 2], xaxis: 'x2'},
+                        {type: 'histogram', y: [3, 4], xaxis: 'x2'},
+
+                        {type: 'histogram', y: [3, 4]},
+                        {type: 'histogram', y: [2, 4], xaxis: 'x2'},
+
+                        {type: 'histogram', x: [1, 3]},
+                        {uid: 'solo', type: 'histogram', x: [2, 2], yaxis: 'y2'},
+                        {type: 'histogram', x: [2, 3]}
+                    ],
+                    layout: {barmode: mode}
+                };
+                supplyAllDefaults(gd);
+                _assert('under barmode:' + mode, [
+                    ['xyy', [0, 1, 4]],
+                    ['x2yy', [2, 3, 5]],
+                    ['xyx', [6, 8]],
+                    ['solo__x', [7]]
+                ]);
+            });
+        });
+
+        it('should group traces on matching axes and w/ same orientation', function() {
+            var barModes = ['group', 'stack'];
+
+            barModes.forEach(function(mode) {
+                gd = {
+                    data: [
+                        {type: 'histogram', y: [1, 2]},
+                        {type: 'histogram', y: [2, 3], xaxis: 'x2'},
+                        {type: 'histogram', x: [1, 2], yaxis: 'y2'},
+                        {type: 'histogram', x: [2, 3], yaxis: 'y2'},
+                    ],
+                    layout: {
+                        barmode: mode,
+                        xaxis2: {matches: 'x'},
+                        yaxis2: {matches: 'x'}
+                    }
+                };
+                supplyAllDefaults(gd);
+                _assert('under barmode:' + mode, [
+                    ['g0yy', [0, 1]],
+                    ['g0g0x', [2, 3]]
+                ]);
+            });
+        });
+
+        it('should not group traces by default under barmode:overlay ', function() {
+            gd = {
+                data: [
+                    {uid: 'a', type: 'histogram', y: [1, 2]},
+                    {uid: 'b', type: 'histogram', y: [2, 3]},
+
+                    {uid: 'c', type: 'histogram', y: [1, 2], xaxis: 'x2'},
+                    {uid: 'd', type: 'histogram', y: [3, 4], xaxis: 'x2'},
+
+                    {uid: 'e', type: 'histogram', y: [3, 1]},
+                    {uid: 'f', type: 'histogram', y: [2, 1], xaxis: 'x2'},
+
+                    {uid: 'g', type: 'histogram', x: [1, 2]},
+                    {uid: 'h', type: 'histogram', x: [2, 3], yaxis: 'y2'},
+                    {uid: 'i', type: 'histogram', x: [2, 4]}
+                ],
+                layout: {barmode: 'overlay'}
+            };
+            supplyAllDefaults(gd);
+            _assert('', [
+                ['a__y', [0]], ['b__y', [1]], ['c__y', [2]],
+                ['d__y', [3]], ['e__y', [4]], ['f__y', [5]],
+                ['g__x', [6]], ['h__x', [7]], ['i__x', [8]]
+            ]);
+        });
+
+        it('should not group histogram2d* traces by default', function() {
+            gd = {
+                data: [
+                    {uid: 'a', type: 'histogram2d', x: [1, 2], y: [1, 3]},
+                    {uid: 'b', type: 'histogram2d', x: [2, 3], y: [2, 3]},
+                    {uid: 'c', type: 'histogram2dcontour', x: [1, 3], y: [1, 2], xaxis: 'x2', yaxis: 'y2'},
+                    {uid: 'd', type: 'histogram2dcontour', x: [2, 3], y: [2, 4], xaxis: 'x2', yaxis: 'y2'},
+                ],
+                layout: {}
+            };
+            supplyAllDefaults(gd);
+            _assert('N.B. one bingroup for x, one bingroup for y for each trace', [
+                ['a__x', [0]], ['a__y', [0]],
+                ['b__x', [1]], ['b__y', [1]],
+                ['c__x', [2]], ['c__y', [2]],
+                ['d__x', [3]], ['d__y', [3]]
+            ]);
+        });
+
+        it('should be able to group traces by *bingroup* under barmode:overlay ', function() {
+            gd = {
+                data: [
+                    {bingroup: '1', type: 'histogram', y: [1, 2]},
+                    {uid: 'b', type: 'histogram', y: [2, 3]},
+                    {bingroup: '2', type: 'histogram', y: [1, 4], xaxis: 'x2'},
+                    {bingroup: '1', type: 'histogram', y: [3, 4], xaxis: 'x2'},
+                    {bingroup: '2', type: 'histogram', y: [3, 4]},
+                    {uid: 'f', type: 'histogram', y: [2, 4], xaxis: 'x2'},
+                    {bingroup: '3', type: 'histogram', x: [1, 5]},
+                    {bingroup: '1', type: 'histogram', x: [2, 5], yaxis: 'y2'},
+                    {bingroup: '3', type: 'histogram', x: [2, 5]}
+                ],
+                layout: {barmode: 'overlay'}
+            };
+            supplyAllDefaults(gd);
+            _assert('', [
+                ['1', [0, 3, 7]],
+                ['2', [2, 4]],
+                ['3', [6, 8]],
+                ['b__y', [1]],
+                ['f__y', [5]]
+            ]);
+        });
+
+        it('should be able to group histogram2d traces by *bingroup*', function() {
+            gd = {
+                data: [
+                    {uid: 'a', type: 'histogram2d', x: [1, 2], y: [1, 2]},
+                    {uid: 'b', type: 'histogram2d', x: [1, 3], y: [1, 1]},
+                    {bingroup: '1', type: 'histogram2d', x: [1, 2], y: [1, 2]},
+                    {bingroup: '1', type: 'histogram2d', x: [1, 2], y: [1, 2]},
+                    {uid: 'e', type: 'histogram2d', x: [1, 3], y: [1, 3]},
+                ]
+            };
+            supplyAllDefaults(gd);
+            _assert('', [
+                ['a__x', [0]], ['a__y', [0]],
+                ['b__x', [1]], ['b__y', [1]],
+                ['1__x', [2, 3]], ['1__y', [2, 3]],
+                ['e__x', [4]], ['e__y', [4]]
+            ]);
+        });
+
+        it('should be able to group histogram and histogram2d* traces together', function() {
+            gd = {
+                data: [
+                    {bingroup: '1', type: 'histogram', y: [1, 3]},
+                    {bingroup: '1', type: 'histogram', y: [3, 3], xaxis: 'x2'},
+                    {bingroup: '1', type: 'histogram2d', x: [1, 3], y: [3, 2]},
+                    {bingroup: '1', type: 'histogram2dcontour', x: [1, 2], y: [3, 4]}
+                ],
+                layout: {barmode: 'overlay'}
+            };
+            supplyAllDefaults(gd);
+            _assert('N.B. histogram2d* indices show up twice, once for x-bins, once for y-bins', [
+                ['1', [0, 1]],
+                ['1__x', [2, 3]],
+                ['1__y', [2, 3]]
+            ]);
+        });
+
+        it('should not group traces across axes of different types', function() {
+            gd = {
+                data: [
+                    {uid: 'a', bingroup: '1', type: 'histogram', y: [1, 2]},
+                    {uid: 'b', bingroup: '1', type: 'histogram', y: ['cats', 'dogs'], yaxis: 'y2'},
+                ],
+                layout: {barmode: 'overlay'}
+            };
+            supplyAllDefaults(gd);
+
+            _assert('', [
+                ['1', [0]],
+                ['b__y', [1]]
+            ],
+                'Attempted to group the bins of trace 1 set on a type:category axis ' +
+                'with bins on type:linear axis.'
+            );
+        });
+
+        it('should force traces that "have to match" to have same bingroup (stack case)', function() {
+            gd = {
+                data: [
+                    // these 3 traces "have to match"
+                    {bingroup: '1', type: 'histogram', y: [1, 2]},
+                    {type: 'histogram', y: [1, 3]},
+                    {bingroup: '2', type: 'histogram', y: [2, 3]}
+                ],
+                layout: {barmode: 'stack'}
+            };
+            supplyAllDefaults(gd);
+
+            _assert('used first valid bingroup to identify bin opts', [
+                ['1', [0, 1, 2]]
+            ],
+                'Trace 2 must match within bingroup 1.' +
+                ' Ignoring its bingroup: 2 setting.'
+            );
+        });
+
+        it('traces that "have to match" can be grouped with traces that do not have to match using *bingroup*', function() {
+            gd = {
+                data: [
+                    // these 2 traces "have to match"
+                    {bingroup: '1', type: 'histogram', y: [1, 3]},
+                    {type: 'histogram', y: [1, 3]},
+                    // this one does not have to match with the above two,
+                    // (it's on another subplot), but it can be grouped
+                    {bingroup: '1', type: 'histogram', y: [2, 3], xaxis: 'x2', yaxis: 'y2'},
+                    // this one does not have to match either
+                    // (it's a histogram2d* traces), but it can be grouped
+                    {xbingroup: '1', ybingroup: '1', type: 'histogram2d', x: [3, 4], y: [3, 4]}
+                ],
+                layout: {}
+            };
+            supplyAllDefaults(gd);
+
+            _assert('', [
+                // N.B ordering in *binOpts.traces* does not matter
+                ['1', [0, 1, 3, 3, 2]]
+            ]);
+        });
+
+        it('should not group traces across different calendars', function() {
+            gd = {
+                data: [
+                    {uid: 'a', bingroup: '1', type: 'histogram', x: ['2000-01-01']},
+                    {uid: 'b', bingroup: '1', type: 'histogram', x: ['2000-01-01'], xcalendar: 'julian'},
+                ],
+                layout: {barmode: 'overlay'}
+            };
+            supplyAllDefaults(gd);
+
+            _assert('', [
+                ['1', [0]],
+                ['b__x', [1]]
+            ],
+                'Attempted to group the bins of trace 1 set with a julian calendar ' +
+                'with bins on a gregorian calendar'
+            );
+        });
+
+        it('should force traces that "have to match" to have same bingroup (alignmentgroup case)', function() {
+            var traces;
+
+            function initTraces() {
+                traces = [{}, {}, {yaxis: 'y2'}, {yaxis: 'y2'}];
+                traces.forEach(function(t) {
+                    t.type = 'histogram';
+                    t.x = [1, 2];
+                });
+            }
+
+            function _supply() {
+                gd = {
+                    data: traces,
+                    layout: {
+                        barmode: 'group',
+                        grid: {rows: 2, columns: 1}
+                    }
+                };
+                supplyAllDefaults(gd);
+            }
+
+            initTraces();
+            _supply(gd);
+            _assert('base (separate subplot w/o alignmentgroup)', [
+                ['xyx', [0, 1]],
+                ['xy2x', [2, 3]]
+            ]);
+
+            initTraces();
+            [
+                {alignmentgroup: 'a', offsetgroup: '-'},
+                {alignmentgroup: 'a', offsetgroup: '--'},
+                {alignmentgroup: 'a', offsetgroup: '-'},
+                {alignmentgroup: 'a', offsetgroup: '--'}
+            ].forEach(function(patch, i) {
+                Lib.extendFlat(traces[i], patch);
+            });
+            _supply(gd);
+            _assert('all in same alignmentgroup, must match', [
+                ['xv', [0, 1, 2, 3]]
+            ]);
+        });
+    });
 
     describe('calc', function() {
         function _calc(opts, extraTraces, layout, prependExtras) {

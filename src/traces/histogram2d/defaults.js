@@ -26,8 +26,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.visible === false) return;
 
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
-    colorscaleDefaults(
-        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-    );
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
     coerce('hovertemplate');
 };

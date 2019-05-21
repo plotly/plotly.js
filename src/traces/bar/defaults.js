@@ -55,7 +55,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
 function handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce) {
     var orientation = traceOut.orientation;
-    // N.B. grouping is done across all trace trace types that support it
+    // N.B. grouping is done across all trace types that support it
     var posAxId = traceOut[{v: 'x', h: 'y'}[orientation] + 'axis'];
     var groupId = getAxisGroup(fullLayout, posAxId) + orientation;
 

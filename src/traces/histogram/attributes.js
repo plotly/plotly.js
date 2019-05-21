@@ -193,6 +193,21 @@ module.exports = {
         ].join(' ')
     },
 
+    bingroup: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'Set a group of histogram traces which will have compatible bin settings.',
+            'Note that traces on the same subplot and with the same *orientation*',
+            'under `barmode` *stack*, *relative* and *group* are forced into the same bingroup,',
+            'Using `bingroup`, traces under `barmode` *overlay* and on different axes',
+            '(of the same axis type) can have compatible bin settings.',
+            'Note that histogram and histogram2d* trace can share the same `bingroup`'
+        ].join(' ')
+    },
+
     hovertemplate: hovertemplateAttrs({}, {
         keys: constants.eventDataKeys
     }),

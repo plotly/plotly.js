@@ -6,12 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
@@ -20,16 +20,10 @@ var normFunctions = require('./norm_functions');
 var doAvg = require('./average');
 var getBinSpanLabelRound = require('./bin_label_vals');
 
-module.exports = function calc(gd, trace) {
-    // ignore as much processing as possible (and including in autorange) if not visible
-    if(trace.visible !== true) return;
-
-    // depending on orientation, set position and size axes and data ranges
-    // note: this logic for choosing orientation is duplicated in graph_obj->setstyles
+function calc(gd, trace) {
     var pos = [];
     var size = [];
-    var pa = Axes.getFromId(gd, trace.orientation === 'h' ?
-        (trace.yaxis || 'y') : (trace.xaxis || 'x'));
+    var pa = Axes.getFromId(gd, trace.orientation === 'h' ? trace.yaxis : trace.xaxis);
     var mainData = trace.orientation === 'h' ? 'y' : 'x';
     var counterData = {x: 'y', y: 'x'}[mainData];
     var calendar = trace[mainData + 'calendar'];
@@ -143,7 +137,6 @@ module.exports = function calc(gd, trace) {
     // after all normalization etc, now we can accumulate if desired
     if(cumulativeSpec.enabled) cdf(size, cumulativeSpec.direction, cumulativeSpec.currentbin);
 
-
     var seriesLen = Math.min(pos.length, size.length);
     var cd = [];
     var firstNonzero = 0;
@@ -201,23 +194,30 @@ module.exports = function calc(gd, trace) {
     }
 
     return cd;
-};
+}
 
 /*
- * calcAllAutoBins: we want all histograms on the same axes to share bin specs
- * if they're grouped or stacked. If the user has explicitly specified differing
+ * calcAllAutoBins: we want all histograms inside the same bingroup
+ * (see logic in Histogram.crossTraceDefaults) to share bin specs
+ *
+ * If the user has explicitly specified differing
  * bin specs, there's nothing we can do, but if possible we will try to use the
- * smallest bins of any of the auto values for all histograms grouped/stacked
- * together.
+ * smallest bins of any of the auto values for all histograms inside the same
+ * bingroup.
  */
 function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
     var binAttr = mainData + 'bins';
     var fullLayout = gd._fullLayout;
+    var groupName = trace['_' + mainData + 'bingroup'];
+    var binOpts = fullLayout._histogramBinOpts[groupName];
     var isOverlay = fullLayout.barmode === 'overlay';
     var i, traces, tracei, calendar, pos0, autoVals, cumulativeSpec;
 
-    var cleanBound = (pa.type === 'date') ?
-        function(v) { return (v || v === 0) ? Lib.cleanDate(v, null, pa.calendar) : null; } :
+    var r2c = function(v) { return pa.r2c(v, 0, calendar); };
+    var c2r = function(v) { return pa.c2r(v, 0, calendar); };
+
+    var cleanBound = pa.type === 'date' ?
+        function(v) { return (v || v === 0) ? Lib.cleanDate(v, null, calendar) : null; } :
         function(v) { return isNumeric(v) ? Number(v) : null; };
 
     function setBound(attr, bins, newBins) {
@@ -230,28 +230,31 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         }
     }
 
-    var binOpts = fullLayout._histogramBinOpts[trace._groupName];
-
     // all but the first trace in this group has already been marked finished
     // clear this flag, so next time we run calc we will run autobin again
     if(trace._autoBinFinished) {
         delete trace._autoBinFinished;
     } else {
         traces = binOpts.traces;
-        var sizeFound = binOpts.sizeFound;
         var allPos = [];
-        autoVals = traces[0]._autoBin = {};
+
         // Note: we're including `legendonly` traces here for autobin purposes,
         // so that showing & hiding from the legend won't affect bins.
         // But this complicates things a bit since those traces don't `calc`,
         // hence `isFirstVisible`.
         var isFirstVisible = true;
+        var has2dMap = false;
+        var hasHist2dContour = false;
         for(i = 0; i < traces.length; i++) {
             tracei = traces[i];
+
             if(tracei.visible) {
-                pos0 = tracei._pos0 = pa.makeCalcdata(tracei, mainData);
+                var mainDatai = binOpts.dirs[i];
+                pos0 = tracei['_' + mainDatai + 'pos0'] = pa.makeCalcdata(tracei, mainDatai);
+
                 allPos = Lib.concat(allPos, pos0);
                 delete tracei._autoBinFinished;
+
                 if(trace.visible === true) {
                     if(isFirstVisible) {
                         isFirstVisible = false;
@@ -259,16 +262,41 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
                         delete tracei._autoBin;
                         tracei._autoBinFinished = 1;
                     }
+                    if(Registry.traceIs(tracei, '2dMap')) {
+                        has2dMap = true;
+                    }
+                    if(tracei.type === 'histogram2dcontour') {
+                        hasHist2dContour = true;
+                    }
                 }
             }
         }
-        calendar = traces[0][mainData + 'calendar'];
-        var newBinSpec = Axes.autoBin(
-            allPos, pa, binOpts.nbins, false, calendar, sizeFound && binOpts.size);
 
+        calendar = traces[0][mainData + 'calendar'];
+        var newBinSpec = Axes.autoBin(allPos, pa, binOpts.nbins, has2dMap, calendar, binOpts.sizeFound && binOpts.size);
+
+        var autoBin = traces[0]._autoBin = {};
+        autoVals = autoBin[binOpts.dirs[0]] = {};
+
+        if(hasHist2dContour) {
+            // the "true" 2nd argument reverses the tick direction (which we can't
+            // just do with a minus sign because of month bins)
+            if(!binOpts.size) {
+                newBinSpec.start = c2r(Axes.tickIncrement(
+                    r2c(newBinSpec.start), newBinSpec.size, true, calendar));
+            }
+            if(binOpts.end === undefined) {
+                newBinSpec.end = c2r(Axes.tickIncrement(
+                    r2c(newBinSpec.end), newBinSpec.size, false, calendar));
+            }
+        }
+
+        // TODO how does work with bingroup ????
+        // - https://github.com/plotly/plotly.js/issues/3881
+        //
         // Edge case: single-valued histogram overlaying others
         // Use them all together to calculate the bin size for the single-valued one
-        if(isOverlay && newBinSpec._dataSpan === 0 &&
+        if(isOverlay && !Registry.traceIs(trace, '2dMap') && newBinSpec._dataSpan === 0 &&
             pa.type !== 'category' && pa.type !== 'multicategory') {
             // Several single-valued histograms! Stop infinite recursion,
             // just return an extra flag that tells handleSingleValueOverlays
@@ -279,23 +307,19 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         }
 
         // adjust for CDF edge cases
-        cumulativeSpec = tracei.cumulative;
+        cumulativeSpec = tracei.cumulative || {};
         if(cumulativeSpec.enabled && (cumulativeSpec.currentbin !== 'include')) {
             if(cumulativeSpec.direction === 'decreasing') {
-                newBinSpec.start = pa.c2r(Axes.tickIncrement(
-                    pa.r2c(newBinSpec.start, 0, calendar),
-                    newBinSpec.size, true, calendar
-                ));
+                newBinSpec.start = c2r(Axes.tickIncrement(
+                    r2c(newBinSpec.start), newBinSpec.size, true, calendar));
             } else {
-                newBinSpec.end = pa.c2r(Axes.tickIncrement(
-                    pa.r2c(newBinSpec.end, 0, calendar),
-                    newBinSpec.size, false, calendar
-                ));
+                newBinSpec.end = c2r(Axes.tickIncrement(
+                    r2c(newBinSpec.end), newBinSpec.size, false, calendar));
             }
         }
 
         binOpts.size = newBinSpec.size;
-        if(!sizeFound) {
+        if(!binOpts.sizeFound) {
             autoVals.size = newBinSpec.size;
             Lib.nestedProperty(traces[0], binAttr + '.size').set(newBinSpec.size);
         }
@@ -304,8 +328,8 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         setBound('end', binOpts, newBinSpec);
     }
 
-    pos0 = trace._pos0;
-    delete trace._pos0;
+    pos0 = trace['_' + mainData + 'pos0'];
+    delete trace['_' + mainData + 'pos0'];
 
     // Each trace can specify its own start/end, or if omitted
     // we ensure they're beyond the bounds of this trace's data,
@@ -398,7 +422,7 @@ function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
             // so we can use this result when we get to tracei in the normal
             // course of events, mark it as done and put _pos0 back
             tracei._autoBinFinished = 1;
-            tracei._pos0 = resulti[1];
+            tracei['_' + mainData + 'pos0'] = resulti[1];
 
             if(isSingleValued) {
                 singleValuedTraces.push(tracei);
@@ -412,7 +436,7 @@ function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
     // hunt through pos0 for the first valid value
     var dataVals = new Array(singleValuedTraces.length);
     for(i = 0; i < singleValuedTraces.length; i++) {
-        var pos0 = singleValuedTraces[i]._pos0;
+        var pos0 = singleValuedTraces[i]['_' + mainData + 'pos0'];
         for(var j = 0; j < pos0.length; j++) {
             if(pos0[j] !== undefined) {
                 dataVals[i] = pos0[j];
@@ -470,7 +494,6 @@ function getConnectedHistograms(gd, trace) {
     return out;
 }
 
-
 function cdf(size, direction, currentBin) {
     var i, vi, prevSum;
 
@@ -518,3 +541,8 @@ function cdf(size, direction, currentBin) {
         }
     }
 }
+
+module.exports = {
+    calc: calc,
+    calcAllAutoBins: calcAllAutoBins
+};
