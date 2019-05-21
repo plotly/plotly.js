@@ -277,8 +277,13 @@ module.exports = function draw(gd) {
 
                 var eventY0, eventY1, scrollBoxY0;
 
-                var getScrollBoxDragY = function(scrollBoxY0, eventY0, eventY1) {
+                var getScrollBarDragY = function(scrollBoxY0, eventY0, eventY1) {
                     var y = ((eventY1 - eventY0) / scrollRatio) + scrollBoxY0;
+                    return Lib.constrain(y, 0, scrollBoxYMax);
+                };
+
+                var getNaturalDragY = function(scrollBoxY0, eventY0, eventY1) {
+                    var y = ((eventY0 - eventY1) / scrollRatio) + scrollBoxY0;
                     return Lib.constrain(y, 0, scrollBoxYMax);
                 };
 
@@ -301,7 +306,7 @@ module.exports = function draw(gd) {
                     } else {
                         eventY1 = e.clientY;
                     }
-                    scrollBoxY = getScrollBoxDragY(scrollBoxY0, eventY0, eventY1);
+                    scrollBoxY = getScrollBarDragY(scrollBoxY0, eventY0, eventY1);
                     scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
                 });
                 scrollBar.call(scrollBarDrag);
@@ -319,9 +324,8 @@ module.exports = function draw(gd) {
                     var e = d3.event.sourceEvent;
                     if(e.type === 'touchmove') {
                         eventY1 = e.changedTouches[0].clientY;
-                        scrollBoxY = getScrollBoxDragY(scrollBoxY0, eventY0, eventY1);
-                        var naturalScrollBoxY = scrollBoxYMax - scrollBoxY; // inverted for natural-scroll
-                        scrollHandler(naturalScrollBoxY, scrollBarHeight, scrollRatio);
+                        scrollBoxY = getNaturalDragY(scrollBoxY0, eventY0, eventY1);
+                        scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
                     }
                 });
                 scrollBox.call(scrollBoxTouchDrag);
