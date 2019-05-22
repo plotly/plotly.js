@@ -130,6 +130,17 @@
     "layout": {
         "hiddenlabels": ["1", "4"],
         "width": 800,
-        "height": 800
+        "height": 800,
+        "shapes": [
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.3, "y0": 0, "y1": 0.3 },
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.3, "y0": 0.35, "y1": 0.65 },
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.3, "y0": 0.7, "y1": 1 },
+            { "type": "rect", "layer": "below", "x0": 0.35, "x1": 0.65, "y0": 0, "y1": 0.3 },
+            { "type": "rect", "layer": "below", "x0": 0.35, "x1": 0.65, "y0": 0.35, "y1": 0.65 },
+            { "type": "rect", "layer": "below", "x0": 0.35, "x1": 0.65, "y0": 0.7, "y1": 1 },
+            { "type": "rect", "layer": "below", "x0": 0.7, "x1": 1, "y0": 0, "y1": 0.3 },
+            { "type": "rect", "layer": "below", "x0": 0.7, "x1": 1, "y0": 0.35, "y1": 0.65 },
+            { "type": "rect", "layer": "below", "x0": 0.7, "x1": 1, "y0": 0.7, "y1": 1 }
+        ]
     }
 }

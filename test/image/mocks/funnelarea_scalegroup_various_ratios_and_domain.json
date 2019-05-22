@@ -148,6 +148,17 @@
     "layout": {
         "hiddenlabels": ["1", "4"],
         "width": 800,
-        "height": 800
+        "height": 800,
+        "shapes": [
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.5, "y0": 0, "y1": 0.5 },
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.5, "y0": 0.5, "y1": 0.8 },
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.5, "y0": 0.8, "y1": 1 },
+            { "type": "rect", "layer": "below", "x0": 0.5, "x1": 0.8, "y0": 0, "y1": 0.5 },
+            { "type": "rect", "layer": "below", "x0": 0.5, "x1": 0.8, "y0": 0.5, "y1": 0.8 },
+            { "type": "rect", "layer": "below", "x0": 0.5, "x1": 0.8, "y0": 0.8, "y1": 1 },
+            { "type": "rect", "layer": "below", "x0": 0.8, "x1": 1, "y0": 0, "y1": 0.5 },
+            { "type": "rect", "layer": "below", "x0": 0.8, "x1": 1, "y0": 0.5, "y1": 0.8 },
+            { "type": "rect", "layer": "below", "x0": 0.8, "x1": 1, "y0": 0.8, "y1": 1 }
+        ]
     }
 }
