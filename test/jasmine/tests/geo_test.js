@@ -2068,28 +2068,43 @@ describe('Test geo zoom/pan/drag interactions:', function() {
     });
 
     describe('plotly_relayouting', function() {
-        ['pan', 'zoom'].forEach(function(dragmode) {
-            it('should emit plotly_relayouting events on', function(done) {
-                var events = []; var path = [[300, 300], [350, 300], [350, 400]]; var relayoutCallback;
-                var fig = Lib.extendDeep({}, require('@mocks/geo_choropleth-usa'));
-                fig.layout.dragmode = dragmode;
+        var mocks = {
+            'non-clipped': require('@mocks/geo_winkel-tripel'),
+            'clipped': require('@mocks/geo_orthographic'),
+            'scoped': require('@mocks/geo_europe-bubbles')
+        };
+        ['non-clipped', 'clipped', 'scoped'].forEach(function(zoomHandler) {
+            ['pan'].forEach(function(dragmode) {
+                it('should emit events on ' + dragmode + ' for ' + zoomHandler, function(done) {
+                    var events = []; var path = [[300, 300], [350, 300], [350, 400]];
+                    var relayoutCnt = 0; var relayoutEvent;
+                    var fig = Lib.extendDeep({}, mocks[zoomHandler]);
+                    fig.layout.dragmode = dragmode;
+                    fig.layout.width = 700;
+                    fig.layout.height = 500;
 
-                gd = createGraphDiv();
-                Plotly.plot(gd, fig)
-                .then(function() {
-                    relayoutCallback = jasmine.createSpy('relayoutCallback');
-                    gd.on('plotly_relayout', relayoutCallback);
-                    gd.on('plotly_relayouting', function(e) {
-                        events.push(e);
-                    });
-                    return drag(path);
-                })
-                .then(function() {
-                    expect(events.length).toEqual(path.length - 1);
-                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
-                })
-                .catch(failTest)
-                .then(done);
+                    gd = createGraphDiv();
+                    Plotly.plot(gd, fig)
+                    .then(function() {
+                        gd.on('plotly_relayout', function(e) {
+                            relayoutCnt++;
+                            relayoutEvent = e;
+                        });
+                        gd.on('plotly_relayouting', function(e) {
+                            events.push(e);
+                        });
+                        return drag(path);
+                    })
+                    .then(function() {
+                        expect(events.length).toEqual(path.length - 1);
+                        expect(relayoutCnt).toEqual(1);
+                        Object.keys(relayoutEvent).sort().forEach(function(key) {
+                            expect(Object.keys(events[0])).toContain(key);
+                        });
+                    })
+                    .catch(failTest)
+                    .then(done);
+                });
             });
         });
     });

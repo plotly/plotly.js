@@ -86,7 +86,13 @@ function zoomScoped(geo, projection) {
             .scale(d3.event.scale)
             .translate(d3.event.translate);
         geo.render();
-        geo.graphDiv.emit('plotly_relayouting', {'projection.scale': projection.scale() / geo.fitScale});
+
+        var center = projection.invert(geo.midPt);
+        geo.graphDiv.emit('plotly_relayouting', {
+            'geo.projection.scale': projection.scale() / geo.fitScale,
+            'geo.center.lon': center[0],
+            'geo.center.lat': center[1]
+        });
     }
 
     function syncCb(set) {
@@ -165,7 +171,16 @@ function zoomNonClipped(geo, projection) {
 
         didZoom = true;
         geo.render();
-        geo.graphDiv.emit('plotly_relayouting', {'projection.scale': projection.scale() / geo.fitScale});
+
+        var rotate = projection.rotate();
+        var center = projection.invert(geo.midPt);
+        geo.graphDiv.emit('plotly_relayouting', {
+            'geo.projection.scale': projection.scale() / geo.fitScale,
+            'geo.center.lon': center[0],
+            'geo.center.lat': center[1],
+            'geo.projection.rotation.lon': -rotate[0]
+
+        });
     }
 
     function handleZoomend() {
@@ -263,6 +278,13 @@ function zoomClipped(geo, projection) {
     })
     .on('zoom.redraw', function() {
         geo.render();
+
+        var _rotate = projection.rotate();
+        geo.graphDiv.emit('plotly_relayouting', {
+            'geo.projection.scale': projection.scale() / geo.fitScale,
+            'geo.projection.rotation.lon': -_rotate[0],
+            'geo.projection.rotation.lat': -_rotate[1]
+        });
     });
 
     function zoomstarted(dispatch) {
