@@ -80,6 +80,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
     var hasGL3D = fullLayout._has('gl3d');
     var hasGeo = fullLayout._has('geo');
     var hasPie = fullLayout._has('pie');
+    var hasFunnelarea = fullLayout._has('funnelarea');
     var hasGL2D = fullLayout._has('gl2d');
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
@@ -113,7 +114,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
     var resetGroup = [];
     var dragModeGroup = [];
 
-    if((hasCartesian || hasGL2D || hasPie || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
+    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
         // graphs with more than one plot types get 'union buttons'
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];

@@ -6,9 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
@@ -1634,7 +1632,10 @@ function _restyle(gd, aobj, traces) {
                     doextra(prefixDot + 'len', innerContFull.len *
                         (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
                 }
-            } else if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
+            } else if(ai === 'type' && (
+                (newVal === 'pie') !== (oldVal === 'pie') ||
+                (newVal === 'funnelarea') !== (oldVal === 'funnelarea')
+            )) {
                 var labelsTo = 'x';
                 var valuesTo = 'y';
                 if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
@@ -1645,7 +1646,7 @@ function _restyle(gd, aobj, traces) {
                 Lib.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
                 Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
-                if(oldVal === 'pie') {
+                if(oldVal === 'pie' || oldVal === 'funnelarea') {
                     nestedProperty(cont, 'marker.color')
                         .set(nestedProperty(cont, 'marker.colors').get());
 
@@ -3769,10 +3770,13 @@ function makePlotFramework(gd) {
     // single geo layer for the whole plot
     fullLayout._geolayer = fullLayout._paper.append('g').classed('geolayer', true);
 
+    // single funnelarea layer for the whole plot
+    fullLayout._funnelarealayer = fullLayout._paper.append('g').classed('funnelarealayer', true);
+
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
-    // single sunbursrt layer for the whole plot
+    // single sunburst layer for the whole plot
     fullLayout._sunburstlayer = fullLayout._paper.append('g').classed('sunburstlayer', true);
 
     // fill in image server scrape-svg

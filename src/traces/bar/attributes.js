@@ -88,7 +88,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['end', 'middle', 'start'],
         dflt: 'end',
-        role: 'info', // TODO: or style ?
+        role: 'info',
         editType: 'plot',
         description: [
             'Determines if texts are kept at center or start/end points in `textposition` *inside* mode.'
@@ -98,7 +98,7 @@ module.exports = {
     textangle: {
         valType: 'angle',
         dflt: 'auto',
-        role: 'info', // TODO: or style ?
+        role: 'info',
         editType: 'plot',
         description: [
             'Sets the angle of the tick labels with respect to the bar.',

@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "marker": {
+        "line": {
+          "color": ["#F00", "#FF0", "#0F0", "#0FF", "#00F"],
+          "width": [0, 0, 8, 0, 8]
+        }
+      },
+      "values": [
+        2.02,
+        3.003,
+        4.0004,
+        1.1,
+        0
+      ],
+      "labels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "include 0!"
+      ],
+      "textposition": "none",
+      "type": "funnelarea"
+    }
+  ],
+  "layout": {
+    "showlegend": true,
+    "height": 400,
+    "width": 600
+  }
+}

@@ -16,6 +16,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
+
     coerce('hiddenlabels');
     coerce('piecolorway', layoutOut.colorway);
     coerce('extendpiecolors');

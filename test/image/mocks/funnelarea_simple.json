@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "values": [
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "type": "funnelarea"
+    }
+  ],
+  "layout": {
+    "height": 300,
+    "width": 400
+  }
+}

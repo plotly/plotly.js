@@ -1159,3 +1159,15 @@ lib.fillText = function(calcPt, trace, contOut) {
 lib.isValidTextValue = function(v) {
     return v || v === 0;
 };
+
+lib.formatPercent = function(ratio, n) {
+    n = n || 0;
+    var str = (Math.round(100 * ratio * Math.pow(10, n)) * Math.pow(0.1, n)).toFixed(n) + '%';
+    for(var i = 0; i < n; i++) {
+        if(str.indexOf('.') !== -1) {
+            str = str.replace('0%', '%');
+            str = str.replace('.%', '%');
+        }
+    }
+    return str;
+};
