@@ -1,7 +1,7 @@
 {
     "data": [
         {
-            "aspectratio": 2,
+            "aspectratio": 0.5,
             "baseratio": 0.5,
             "title": { "text": "apsect: 2, base: 0.5" },
             "type": "funnelarea",
@@ -14,7 +14,7 @@
             }
         },
         {
-            "aspectratio": 2,
+            "aspectratio": 0.5,
             "baseratio": 0,
             "title": { "text": "apsect: 2, base: 0" },
             "type": "funnelarea",
@@ -40,7 +40,7 @@
             }
         },
         {
-            "aspectratio": 0.5,
+            "aspectratio": 2,
             "baseratio": 1,
             "title": { "text": "apsect: 0.5, base: 1" },
             "type": "funnelarea",
@@ -53,7 +53,7 @@
             }
         },
         {
-            "aspectratio": 0.5,
+            "aspectratio": 2,
             "baseratio": 0.5,
             "title": { "text": "apsect: 0.5, base: 0.5" },
             "type": "funnelarea",
@@ -66,7 +66,7 @@
             }
         },
         {
-            "aspectratio": 0.5,
+            "aspectratio": 2,
             "baseratio": 0,
             "title": { "text": "apsect: 0.5, base: 0" },
             "type": "funnelarea",
@@ -92,7 +92,7 @@
             }
         },
         {
-            "aspectratio": 2,
+            "aspectratio": 0.5,
             "baseratio": 1,
             "title": { "text": "apsect: 2, base: 1" },
             "type": "funnelarea",

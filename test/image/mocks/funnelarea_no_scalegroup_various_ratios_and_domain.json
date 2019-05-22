@@ -2,7 +2,7 @@
     "data": [
         {
             "baseratio": 0,
-            "aspectratio": 0.5,
+            "aspectratio": 2,
             "type": "funnelarea",
             "values": [6, 5, 4, 3, 2, 1],
             "textinfo": "value",
@@ -17,7 +17,7 @@
         },
         {
             "baseratio": 0.5,
-            "aspectratio": 0.5,
+            "aspectratio": 2,
             "type": "funnelarea",
             "values": [16, 15, 14, 13, 12, 11],
             "textinfo": "value",
@@ -32,7 +32,7 @@
         },
         {
             "baseratio": 1,
-            "aspectratio": 0.5,
+            "aspectratio": 2,
             "type": "funnelarea",
             "values": [60, 50, 40, 30, 20, 10],
             "textinfo": "value",
@@ -92,7 +92,7 @@
         },
         {
             "baseratio": 0,
-            "aspectratio": 2,
+            "aspectratio": 0.5,
             "type": "funnelarea",
             "values": [6, 5, 4, 3, 2, 1],
             "textinfo": "value",
@@ -107,7 +107,7 @@
         },
         {
             "baseratio": 0.5,
-            "aspectratio": 2,
+            "aspectratio": 0.5,
             "type": "funnelarea",
             "values": [16, 15, 14, 13, 12, 11],
             "textinfo": "value",
@@ -122,7 +122,7 @@
         },
         {
             "baseratio": 1,
-            "aspectratio": 2,
+            "aspectratio": 0.5,
             "type": "funnelarea",
             "values": [60, 50, 40, 30, 20, 10],
             "textinfo": "value",

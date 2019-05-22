@@ -245,12 +245,12 @@ function setCoords(cd) {
 
     var rY = (maxY - minY) / 2;
     var scaleX = r / lastX;
-    var scaleY = r / rY / aspectratio;
+    var scaleY = r / rY * aspectratio;
 
     if(!trace.scalegroup) {
-        if(aspectratio < cd0.figMaxH / cd0.figMaxW) {
-            scaleX *= aspectratio;
-            scaleY *= aspectratio;
+        if(aspectratio > cd0.figMaxH / cd0.figMaxW) {
+            scaleX /= aspectratio;
+            scaleY /= aspectratio;
         }
     }
 

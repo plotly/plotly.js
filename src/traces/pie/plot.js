@@ -671,7 +671,7 @@ function positionTitleOutside(cd0, plotSize) {
 }
 
 function applyAspectRatio(x, aspectratio) {
-    return x * ((aspectratio === undefined) ? 1 : aspectratio);
+    return x / ((aspectratio === undefined) ? 1 : aspectratio);
 }
 
 function getTitleSpace(cd0, plotSize) {
@@ -852,12 +852,12 @@ function groupScale(cdModule, scaleGroups) {
                     area = cd0.r * cd0.r;
                 } else if(trace.type === 'funnelarea') {
                     var rx, ry;
-                    if(trace.aspectratio < 1) {
+                    if(trace.aspectratio > 1) {
                         rx = cd0.r;
-                        ry = rx * trace.aspectratio;
+                        ry = rx / trace.aspectratio;
                     } else {
                         ry = cd0.r;
-                        rx = ry / trace.aspectratio;
+                        rx = ry * trace.aspectratio;
                     }
                     rx *= (1 + trace.baseratio) / 2;
 
@@ -875,7 +875,7 @@ function groupScale(cdModule, scaleGroups) {
                 var v = min * cd0.vTotal;
                 if(trace.type === 'funnelarea') {
                     v /= (1 + trace.baseratio) / 2;
-                    v *= trace.aspectratio;
+                    v /= trace.aspectratio;
                 }
 
                 cd0.r = Math.sqrt(v);
