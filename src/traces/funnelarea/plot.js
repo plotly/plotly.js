@@ -247,13 +247,6 @@ function setCoords(cd) {
     var scaleX = r / lastX;
     var scaleY = r / rY * aspectratio;
 
-    if(!trace.scalegroup) {
-        if(aspectratio > cd0.figMaxH / cd0.figMaxW) {
-            scaleX /= aspectratio;
-            scaleY /= aspectratio;
-        }
-    }
-
     // set funnelarea r
     cd0.r = scaleY * rY;
 

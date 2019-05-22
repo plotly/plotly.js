@@ -816,9 +816,13 @@ function layoutAreas(cdModule, plotSize) {
             height -= getTitleSpace(cd0, plotSize);
         }
 
-        cd0.figMaxH = height;
-        cd0.figMaxW = width;
-        cd0.r = Math.min(width / 2, height / 2) / (1 + getMaxPull(trace));
+        var rx = width / 2;
+        var ry = height / 2;
+        if(trace.type === 'funnelarea' && !trace.scalegroup) {
+            ry /= trace.aspectratio;
+        }
+
+        cd0.r = Math.min(rx, ry) / (1 + getMaxPull(trace));
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
         cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - height / 2;
@@ -852,6 +856,7 @@ function groupScale(cdModule, scaleGroups) {
                     area = cd0.r * cd0.r;
                 } else if(trace.type === 'funnelarea') {
                     var rx, ry;
+
                     if(trace.aspectratio > 1) {
                         rx = cd0.r;
                         ry = rx / trace.aspectratio;
@@ -859,6 +864,7 @@ function groupScale(cdModule, scaleGroups) {
                         ry = cd0.r;
                         rx = ry * trace.aspectratio;
                     }
+
                     rx *= (1 + trace.baseratio) / 2;
 
                     area = rx * ry;
