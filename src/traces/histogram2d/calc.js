@@ -149,8 +149,8 @@ module.exports = function calc(gd, trace) {
                 else if(xVals[n] !== xi) uniqueValsPerX = false;
             }
             if(uniqueValsPerY) {
-                if(yVals[n] === undefined) yVals[n] = yi;
-                else if(yVals[n] !== yi) uniqueValsPerY = false;
+                if(yVals[m] === undefined) yVals[m] = yi;
+                else if(yVals[m] !== yi) uniqueValsPerY = false;
             }
 
             xGapLow = Math.min(xGapLow, xi - xEdges[n]);
