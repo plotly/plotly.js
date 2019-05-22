@@ -1177,7 +1177,7 @@ function hoverAvoidOverlaps(hoverLabels, ax, fullLayout) {
         donepositioning = true;
         i = 0;
         while(i < pointgroups.length - 1) {
-                // the higher (g0) and lower (g1) point group
+            // the higher (g0) and lower (g1) point group
             var g0 = pointgroups[i];
             var g1 = pointgroups[i + 1];
 
