@@ -514,6 +514,33 @@ describe('ternary plots', function() {
         .then(done);
     });
 
+    describe('plotly_relayouting', function() {
+        ['pan', 'zoom'].forEach(function(dragmode) {
+            it('should emit plotly_relayouting events on ' + dragmode, function(done) {
+                var events = []; var path = [[350, 250], [375, 250], [375, 225]]; var relayoutCallback;
+                var fig = Lib.extendDeep({}, require('@mocks/ternary_simple'));
+                fig.layout.dragmode = dragmode;
+
+                var gd = createGraphDiv();
+                Plotly.plot(gd, fig)
+                .then(function() {
+                    relayoutCallback = jasmine.createSpy('relayoutCallback');
+                    gd.on('plotly_relayout', relayoutCallback);
+                    gd.on('plotly_relayouting', function(e) {
+                        events.push(e);
+                    });
+                    return drag(path);
+                })
+                .then(function() {
+                    expect(events.length).toEqual(path.length - 1);
+                    // expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
     function countTernarySubplot() {
         return d3.selectAll('.ternary').size();
     }
