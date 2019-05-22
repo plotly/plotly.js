@@ -42,6 +42,7 @@ function Geo(opts) {
     this.topojson = null;
 
     this.projection = null;
+    this.scope = null;
     this.viewInitial = null;
     this.fitScale = null;
     this.bounds = null;
@@ -71,6 +72,18 @@ module.exports = function createGeo(opts) {
 proto.plot = function(geoCalcData, fullLayout, promises) {
     var _this = this;
     var geoLayout = fullLayout[this.id];
+
+    var needsTopojson = false;
+    for(var k in constants.layerNameToAdjective) {
+        if(k !== 'frame' && geoLayout['show' + k]) {
+            needsTopojson = true;
+            break;
+        }
+    }
+    if(!needsTopojson) {
+        return _this.update(geoCalcData, fullLayout);
+    }
+
     var topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
     if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
@@ -133,9 +146,10 @@ proto.update = function(geoCalcData, fullLayout) {
         }
     }
 
-    if(!this.viewInitial) {
+    if(!this.viewInitial || this.scope !== geoLayout.scope) {
         this.saveViewInitial(geoLayout);
     }
+    this.scope = geoLayout.scope;
 
     this.updateBaseLayers(fullLayout, geoLayout);
     this.updateDims(fullLayout, geoLayout);

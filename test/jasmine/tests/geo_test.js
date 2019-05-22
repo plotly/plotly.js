@@ -18,6 +18,11 @@ var click = require('../assets/click');
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
+// use local topojson files
+Plotly.setPlotConfig({
+    topojsonURL: '/base/dist/topojson/'
+});
+
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {
         mouseEvent('mousemove', fromX, fromY);
@@ -1250,6 +1255,100 @@ describe('Test geo interactions', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should reset viewInitial when updating *scope*', function(done) {
+        var gd = createGraphDiv();
+
+        function _assertViewInitial(msg, exp) {
+            var viewInitial = gd._fullLayout.geo._subplot.viewInitial;
+
+            expect(Object.keys(viewInitial).length)
+                .toBe(Object.keys(exp).length, 'same # of viewInitial keys |' + msg);
+
+            for(var k in viewInitial) {
+                expect(viewInitial[k]).toBe(exp[k], k + ' |' + msg);
+            }
+        }
+
+        var figWorld = {
+            data: [{
+                type: 'choropleth',
+                locationmode: 'country names',
+                locations: ['canada', 'china', 'russia'],
+                z: ['10', '20', '15']
+            }],
+            layout: {geo: {scope: 'world'}}
+        };
+        var figUSA = {
+            data: [{
+                type: 'choropleth',
+                locationmode: 'USA-states',
+                locations: ['CA', 'CO', 'NY'],
+                z: ['10', '20', '15']
+            }],
+            layout: {geo: {scope: 'usa'}}
+        };
+        var figNA = {
+            data: [{
+                type: 'choropleth',
+                locationmode: 'country names',
+                locations: ['Canada', 'USA', 'Mexico'],
+                z: ['10', '20', '15']
+            }],
+            layout: {geo: {scope: 'north america'}}
+        };
+
+        Plotly.react(gd, figWorld)
+        .then(function() {
+            _assertViewInitial('world scope', {
+                'center.lon': 0,
+                'center.lat': 0,
+                'projection.scale': 1,
+                'projection.rotation.lon': 0
+            });
+        })
+        .then(function() { return Plotly.react(gd, figUSA); })
+        .then(function() {
+            _assertViewInitial('react to usa scope', {
+                'center.lon': -96.6,
+                'center.lat': 38.7,
+                'projection.scale': 1
+            });
+        })
+        .then(function() { return Plotly.react(gd, figNA); })
+        .then(function() {
+            _assertViewInitial('react to NA scope', {
+                'center.lon': -112.5,
+                'center.lat': 45,
+                'projection.scale': 1
+            });
+        })
+        .then(function() { return Plotly.react(gd, figWorld); })
+        .then(function() {
+            _assertViewInitial('react back to world scope', {
+                'center.lon': 0,
+                'center.lat': 0,
+                'projection.scale': 1,
+                'projection.rotation.lon': 0
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not make request for topojson when not needed', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/geo_skymap.json'));
+
+        spyOn(d3, 'json').and.callThrough();
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            expect(d3.json).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test event property of interactions on a geo plot:', function() {
@@ -1999,7 +2098,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         .then(done);
     });
 
-    it('should guard againt undefined projection.invert result in some projections', function(done) {
+    it('should guard against undefined projection.invert result in some projections', function(done) {
         // e.g. aitoff
         var fig = Lib.extendDeep({}, require('@mocks/geo_aitoff-sinusoidal.json'));
         fig.layout.dragmode = 'pan';
