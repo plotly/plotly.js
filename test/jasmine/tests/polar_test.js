@@ -1251,38 +1251,83 @@ describe('Test polar interactions:', function() {
     describe('plotly_relayouting', function() {
         afterEach(destroyGraphDiv);
 
-        ['zoom'].forEach(function(dragmode) {
+        it('should emit events on radial drag area', function(done) {
+            var events = []; var path = [[375, 200], [-100, 0]]; var nsteps = 10;
+            var relayoutEvents = [];
+            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            // to avoid dragging on hover labels
+            fig.layout.hovermode = false;
+
+            // adjust margins so that middle of plot area is at 300x300
+            // with its middle at [200,200]
+            fig.layout.width = 400;
+            fig.layout.height = 400;
+            fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+            function _drag(p0, dp, nsteps) {
+                var node = d3.select('.polar > .draglayer > .radialdrag').node();
+                return drag(node, dp[0], dp[1], null, p0[0], p0[1], nsteps);
+            }
+
+            var gd = createGraphDiv();
+            Plotly.plot(gd, fig)
+            .then(function() {
+                gd.on('plotly_relayout', function(e) {
+                    relayoutEvents.push(e);
+                });
+                gd.on('plotly_relayouting', function(e) {
+                    events.push(e);
+                });
+                return _drag(path[0], path[1], nsteps);
+            })
+            .then(function() {
+                var len = events.length;
+                expect(len).toEqual(nsteps);
+                expect(events[len - 1]['polar.radialaxis.range[1]']).toBeCloseTo(16, -1);
+                expect(relayoutEvents.length).toEqual(1);
+                Object.keys(relayoutEvents[0]).sort().forEach(function(key) {
+                    expect(Object.keys(events[len - 1])).toContain(key);
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should emit events on inner radial drag area', function(done) {
+            var events = []; var path = [[150, 250], [175, 250]];
+            var relayoutEvents = [];
+            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
             function _drag(p0, dp, nsteps) {
                 var node = d3.select('.polar > .draglayer > .maindrag').node();
                 return drag(node, dp[0], dp[1], null, p0[0], p0[1], nsteps);
             }
 
-            it('should emit plotly_relayouting events on ' + dragmode, function(done) {
-                var events = []; var path = [[150, 250], [175, 250]]; var relayoutCallback;
-                var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
-                fig.layout.dragmode = dragmode;
-
-                var gd = createGraphDiv();
-                Plotly.plot(gd, fig)
-                .then(function() {
-                    relayoutCallback = jasmine.createSpy('relayoutCallback');
-                    gd.on('plotly_relayout', relayoutCallback);
-                    gd.on('plotly_relayouting', function(e) {
-                        events.push(e);
-                    });
-                    return _drag(path[0], path[1]);
-                })
-                .then(function() {
-                    expect(events.length).toEqual(path.length - 1);
-                    expect(events[0]['polar.radialaxis.range']).toBeCloseToArray([6, 11], 0.1);
-                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
-                })
-                .catch(failTest)
-                .then(done);
-            });
+            var gd = createGraphDiv();
+            Plotly.plot(gd, fig)
+            .then(function() {
+                gd.on('plotly_relayout', function(e) {
+                    relayoutEvents.push(e);
+                });
+                gd.on('plotly_relayouting', function(e) {
+                    events.push(e);
+                });
+                return _drag(path[0], path[1]);
+            })
+            .then(function() {
+                expect(events.length).toEqual(path.length - 1);
+                expect(events[0]['polar.radialaxis.range']).toBeCloseToArray([6, 11], 0.1);
+                expect(relayoutEvents.length).toEqual(1);
+                Object.keys(relayoutEvents[0]).sort().forEach(function(key) {
+                    expect(Object.keys(events[0])).toContain(key);
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
-        it('should emit plotly_relayouting events on angular drag', function(done) {
-            var events = []; var relayoutCallback;
+
+        it('should emit events on angular drag area', function(done) {
+            var events = []; var relayoutEvents = []; var nsteps = 10;
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
             function _drag(p0, dp, nsteps) {
@@ -1295,17 +1340,21 @@ describe('Test polar interactions:', function() {
             var gd = createGraphDiv();
             Plotly.plot(gd, fig)
             .then(function() {
-                relayoutCallback = jasmine.createSpy('relayoutCallback');
-                gd.on('plotly_relayout', relayoutCallback);
+                gd.on('plotly_relayout', function(e) {
+                    relayoutEvents.push(e);
+                });
                 gd.on('plotly_relayouting', function(e) {
                     events.push(e);
                 });
-                return _drag(dragPos0, [0, -110], 10);
+                return _drag(dragPos0, [0, -110], nsteps);
             })
             .then(function() {
-                expect(events.length).toEqual(10);
+                expect(events.length).toEqual(nsteps);
                 expect(events.splice(-1, 1)[0]['polar.angularaxis.rotation']).toBeCloseTo(29, 0);
-                expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                expect(relayoutEvents.length).toEqual(1);
+                Object.keys(relayoutEvents[0]).sort().forEach(function(key) {
+                    expect(Object.keys(events[0])).toContain(key);
+                });
             })
             .catch(failTest)
             .then(done);

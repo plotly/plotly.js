@@ -189,7 +189,8 @@ describe('main plot pan', function() {
     });
 
     it('should emit plotly_relayouting events during pan interactions', function(done) {
-        var mock = require('@mocks/10.json');
+        var mock = Lib.extendDeep({}, require('@mocks/10.json'));
+        mock.layout.dragmode = 'pan';
 
         function _drag(x0, y0, x1, y1, n) {
             mouseEvent('mousedown', x0, y0);
@@ -202,13 +203,7 @@ describe('main plot pan', function() {
         }
 
         var nsteps = 10; var events = []; var relayoutCallback;
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
-            // Switch to pan mode
-            modeBar = gd._fullLayout._modeBar;
-            var buttonPan = selectButton(modeBar, 'pan2d');
-            buttonPan.click();
-            expect(buttonPan.isActive()).toBe(true); // switched on dragmode
-        })
+        Plotly.plot(gd, mock.data, mock.layout)
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
             gd.on('plotly_relayout', relayoutCallback);

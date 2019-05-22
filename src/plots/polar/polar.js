@@ -1047,6 +1047,18 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
                 moveFn2 = comp < 0.5 ? rotateMove : rerangeMove;
             }
         }
+
+        var update = {};
+        computeRadialAxisUpdates(update);
+        gd.emit('plotly_relayouting', update);
+    }
+
+    function computeRadialAxisUpdates(update) {
+        if(angle1 !== null) {
+            update[_this.id + '.radialaxis.angle'] = angle1;
+        } else if(rprime !== null) {
+            update[_this.id + '.radialaxis.range[' + rngIndex + ']'] = rprime;
+        }
     }
 
     function doneFn() {
