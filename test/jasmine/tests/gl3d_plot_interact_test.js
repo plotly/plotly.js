@@ -929,6 +929,54 @@ describe('Test gl3d drag and wheel interactions', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should fire plotly_relayouting events', function(done) {
+        var sceneLayout, sceneTarget, relayoutCallback, relayoutingCallback;
+
+        var mock = {
+            data: [
+                { type: 'scatter3d', x: [1, 2, 3], y: [2, 3, 1], z: [3, 1, 2] }
+            ],
+            layout: {
+                scene: { camera: { projection: {type: 'orthographic'}, eye: { x: 0.1, y: 0.1, z: 1 }}},
+                width: 400, height: 400
+            }
+        };
+
+        var nsteps = 10;
+        function _drag(target, start, end, n) {
+            return new Promise(function(resolve) {
+                mouseEvent('mousedown', start[0], start[1], {element: target, buttons: 1});
+                var dx = (end[0] - start[0]) / n;
+                var dy = (end[1] - start[1]) / n;
+                for(var i = 1; i <= n; i++) {
+                    mouseEvent('mousemove', start[0] + dx * n, start[1] + dy * n, {element: target, buttons: 1});
+                }
+                mouseEvent('mouseup', end[0], end[1], {element: target, buttons: 1});
+                setTimeout(resolve, 0);
+            });
+        }
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            relayoutCallback = jasmine.createSpy('relayoutCallback');
+            gd.on('plotly_relayout', relayoutCallback);
+
+            relayoutingCallback = jasmine.createSpy('relayoutingCallback');
+            gd.on('plotly_relayouting', relayoutingCallback);
+
+            sceneLayout = gd._fullLayout.scene;
+            sceneTarget = gd.querySelector('.svg-container .gl-container #scene canvas');
+
+            return _drag(sceneTarget, [200, 200], [100, 100], nsteps);
+        })
+        .then(function() {
+            expect(relayoutCallback).toHaveBeenCalledTimes(1);
+            expect(relayoutingCallback).toHaveBeenCalledTimes(nsteps);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl3d relayout calls', function() {
