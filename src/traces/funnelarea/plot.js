@@ -23,7 +23,7 @@ var piePlot = require('../pie/plot');
 var attachFxHandlers = piePlot.attachFxHandlers;
 var determineInsideTextFont = piePlot.determineInsideTextFont;
 
-var scalePies = piePlot.scalePies;
+var layoutAreas = piePlot.layoutAreas;
 var prerenderTitles = piePlot.prerenderTitles;
 var positionTitleOutside = piePlot.positionTitleOutside;
 
@@ -31,14 +31,14 @@ module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
 
     prerenderTitles(cdModule, gd);
-    scalePies(cdModule, fullLayout._size);
+    layoutAreas(cdModule, fullLayout._size);
 
     Lib.makeTraceGroups(fullLayout._funnelarealayer, cdModule, 'trace').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
 
-        setCoords(cd, fullLayout);
+        setCoords(cd);
 
         plotGroup.each(function() {
             var slices = d3.select(this).selectAll('g.slice').data(cd);
@@ -179,19 +179,15 @@ function getBetween(a, b) {
     ];
 }
 
-function setCoords(cd, fullLayout) {
+function setCoords(cd) {
     if(!cd.length) return;
 
     var cd0 = cd[0];
+    var trace = cd0.trace;
 
-    var size = fullLayout._size;
-    var domain = cd0.trace.domain;
-    var width = size.w * Math.abs(domain.x[1] - domain.x[0]);
-    var height = size.h * Math.abs(domain.y[1] - domain.y[0]);
+    var aspectratio = trace.aspectratio;
 
-    var aspectratio = cd0.trace.aspectratio;
-
-    var h = cd0.trace.baseratio;
+    var h = trace.baseratio;
     if(h > 0.999) h = 0.999; // TODO: may handle this case separately
     var h2 = Math.pow(h, 2);
 
@@ -246,18 +242,16 @@ function setCoords(cd, fullLayout) {
 
     // get pie r
     var r = cd0.r;
-    if(cd0.trace.scalegroup) {
-        r *= Math.sqrt(Math.PI / 4);
-        r /= Math.sqrt(1 + h);
-        r *= Math.sqrt((aspectratio < height / width) ? 1 / aspectratio : aspectratio);
-    }
 
     var rY = (maxY - minY) / 2;
     var scaleX = r / lastX;
-    var scaleY = r / (aspectratio * rY);
-    if(aspectratio < height / width) {
-        scaleX *= aspectratio;
-        scaleY *= aspectratio;
+    var scaleY = r / rY / aspectratio;
+
+    if(!trace.scalegroup) {
+        if(aspectratio < cd0.figMaxH / cd0.figMaxW) {
+            scaleX *= aspectratio;
+            scaleY *= aspectratio;
+        }
     }
 
     // set funnelarea r

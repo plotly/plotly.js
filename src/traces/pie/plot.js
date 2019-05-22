@@ -23,7 +23,7 @@ function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
 
     prerenderTitles(cdModule, gd);
-    scalePies(cdModule, fullLayout._size);
+    layoutAreas(cdModule, fullLayout._size);
 
     var plotGroups = Lib.makeTraceGroups(fullLayout._pielayer, cdModule, 'trace').each(function(cd) {
         var plotGroup = d3.select(this);
@@ -800,30 +800,28 @@ function scootLabels(quadrants, trace) {
     }
 }
 
-function scalePies(cdModule, plotSize) {
+function layoutAreas(cdModule, plotSize) {
     var scaleGroups = [];
 
-    var pieBoxWidth, pieBoxHeight, i, j, cd0, trace,
-        maxPull, scaleGroup, minPxPerValUnit;
+    // figure out the center and maximum radius
+    for(var i = 0; i < cdModule.length; i++) {
+        var cd0 = cdModule[i][0];
+        var trace = cd0.trace;
 
-    // first figure out the center and maximum radius for each pie
-    for(i = 0; i < cdModule.length; i++) {
-        cd0 = cdModule[i][0];
-        trace = cd0.trace;
-
-        pieBoxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
-        pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
+        var domain = trace.domain;
+        var width = plotSize.w * (domain.x[1] - domain.x[0]);
+        var height = plotSize.h * (domain.y[1] - domain.y[0]);
         // leave some space for the title, if it will be displayed outside
         if(trace.title.text && trace.title.position !== 'middle center') {
-            pieBoxHeight -= getTitleSpace(cd0, plotSize);
+            height -= getTitleSpace(cd0, plotSize);
         }
 
-        maxPull = getMaxPull(trace);
-
-        cd0.r = Math.min(pieBoxWidth, pieBoxHeight) / (2 + 2 * maxPull);
+        cd0.figMaxH = height;
+        cd0.figMaxW = width;
+        cd0.r = Math.min(width / 2, height / 2) / (1 + getMaxPull(trace));
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
-        cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - pieBoxHeight / 2;
+        cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - height / 2;
         if(trace.title.text && trace.title.position.indexOf('bottom') !== -1) {
             cd0.cy -= getTitleSpace(cd0, plotSize);
         }
@@ -833,23 +831,54 @@ function scalePies(cdModule, plotSize) {
         }
     }
 
-    // Then scale any pies that are grouped
-    for(j = 0; j < scaleGroups.length; j++) {
-        minPxPerValUnit = Infinity;
-        scaleGroup = scaleGroups[j];
+    groupScale(cdModule, scaleGroups);
+}
+
+function groupScale(cdModule, scaleGroups) {
+    var cd0, i, trace;
+
+    // scale those that are grouped
+    for(var k = 0; k < scaleGroups.length; k++) {
+        var min = Infinity;
+        var g = scaleGroups[k];
 
         for(i = 0; i < cdModule.length; i++) {
             cd0 = cdModule[i][0];
-            if(cd0.trace.scalegroup === scaleGroup) {
-                minPxPerValUnit = Math.min(minPxPerValUnit,
-                    cd0.r * cd0.r / cd0.vTotal);
+            trace = cd0.trace;
+
+            if(trace.scalegroup === g) {
+                var area;
+                if(trace.type === 'pie') {
+                    area = cd0.r * cd0.r;
+                } else if(trace.type === 'funnelarea') {
+                    var rx, ry;
+                    if(trace.aspectratio < 1) {
+                        rx = cd0.r;
+                        ry = rx * trace.aspectratio;
+                    } else {
+                        ry = cd0.r;
+                        rx = ry / trace.aspectratio;
+                    }
+                    rx *= (1 + trace.baseratio) / 2;
+
+                    area = rx * ry;
+                }
+
+                min = Math.min(min, area / cd0.vTotal);
             }
         }
 
         for(i = 0; i < cdModule.length; i++) {
             cd0 = cdModule[i][0];
-            if(cd0.trace.scalegroup === scaleGroup) {
-                cd0.r = Math.sqrt(minPxPerValUnit * cd0.vTotal);
+            trace = cd0.trace;
+            if(trace.scalegroup === g) {
+                var v = min * cd0.vTotal;
+                if(trace.type === 'funnelarea') {
+                    v /= (1 + trace.baseratio) / 2;
+                    v *= trace.aspectratio;
+                }
+
+                cd0.r = Math.sqrt(v);
             }
         }
     }
@@ -912,6 +941,6 @@ module.exports = {
     determineInsideTextFont: determineInsideTextFont,
     positionTitleOutside: positionTitleOutside,
     prerenderTitles: prerenderTitles,
-    scalePies: scalePies,
+    layoutAreas: layoutAreas,
     attachFxHandlers: attachFxHandlers,
 };
