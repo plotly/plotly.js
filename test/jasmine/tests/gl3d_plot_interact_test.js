@@ -931,7 +931,9 @@ describe('Test gl3d drag and wheel interactions', function() {
     });
 
     it('@gl should fire plotly_relayouting events', function(done) {
-        var sceneLayout, sceneTarget, relayoutCallback, relayoutingCallback;
+        var sceneTarget, relayoutEvent;
+        var relayoutCnt = 0;
+        var events = [];
 
         var mock = {
             data: [
@@ -959,20 +961,24 @@ describe('Test gl3d drag and wheel interactions', function() {
 
         Plotly.plot(gd, mock)
         .then(function() {
-            relayoutCallback = jasmine.createSpy('relayoutCallback');
-            gd.on('plotly_relayout', relayoutCallback);
+            gd.on('plotly_relayout', function(e) {
+                relayoutCnt++;
+                relayoutEvent = e;
+            });
+            gd.on('plotly_relayouting', function(e) {
+                events.push(e);
+            });
 
-            relayoutingCallback = jasmine.createSpy('relayoutingCallback');
-            gd.on('plotly_relayouting', relayoutingCallback);
-
-            sceneLayout = gd._fullLayout.scene;
             sceneTarget = gd.querySelector('.svg-container .gl-container #scene canvas');
 
             return _drag(sceneTarget, [200, 200], [100, 100], nsteps);
         })
         .then(function() {
-            expect(relayoutCallback).toHaveBeenCalledTimes(1);
-            expect(relayoutingCallback).toHaveBeenCalledTimes(nsteps);
+            expect(events.length).toEqual(nsteps);
+            expect(relayoutCnt).toEqual(1);
+            Object.keys(relayoutEvent).sort().forEach(function(key) {
+                expect(Object.keys(events[0])).toContain(key);
+            });
         })
         .catch(failTest)
         .then(done);
