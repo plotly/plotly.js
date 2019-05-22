@@ -1247,6 +1247,70 @@ describe('Test polar interactions:', function() {
             });
         });
     });
+
+    describe('plotly_relayouting', function() {
+        afterEach(destroyGraphDiv);
+
+        ['zoom'].forEach(function(dragmode) {
+            function _drag(p0, dp, nsteps) {
+                var node = d3.select('.polar > .draglayer > .maindrag').node();
+                return drag(node, dp[0], dp[1], null, p0[0], p0[1], nsteps);
+            }
+
+            it('should emit plotly_relayouting events on ' + dragmode, function(done) {
+                var events = []; var path = [[150, 250], [175, 250]]; var relayoutCallback;
+                var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+                fig.layout.dragmode = dragmode;
+
+                var gd = createGraphDiv();
+                Plotly.plot(gd, fig)
+                .then(function() {
+                    relayoutCallback = jasmine.createSpy('relayoutCallback');
+                    gd.on('plotly_relayout', relayoutCallback);
+                    gd.on('plotly_relayouting', function(e) {
+                        events.push(e);
+                    });
+                    return _drag(path[0], path[1]);
+                })
+                .then(function() {
+                    expect(events.length).toEqual(path.length - 1);
+                    expect(events[0]['polar.radialaxis.range']).toBeCloseToArray([6, 11], 0.1);
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+        it('should emit plotly_relayouting events on angular drag', function(done) {
+            var events = []; var relayoutCallback;
+            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
+            function _drag(p0, dp, nsteps) {
+                var node = d3.select('.polar > .draglayer > .angulardrag').node();
+                return drag(node, dp[0], dp[1], null, p0[0], p0[1], nsteps);
+            }
+
+            var dragPos0 = [360, 180];
+
+            var gd = createGraphDiv();
+            Plotly.plot(gd, fig)
+            .then(function() {
+                relayoutCallback = jasmine.createSpy('relayoutCallback');
+                gd.on('plotly_relayout', relayoutCallback);
+                gd.on('plotly_relayouting', function(e) {
+                    events.push(e);
+                });
+                return _drag(dragPos0, [0, -110], 10);
+            })
+            .then(function() {
+                expect(events.length).toEqual(10);
+                expect(events.splice(-1, 1)[0]['polar.angularaxis.rotation']).toBeCloseTo(29, 0);
+                expect(relayoutCallback).toHaveBeenCalledTimes(1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('Test polar *gridshape linear* interactions', function() {
