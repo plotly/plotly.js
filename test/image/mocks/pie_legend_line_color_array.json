@@ -1,0 +1,41 @@
+{
+    "data": [
+        {
+            "type": "pie",
+            "labels": [
+                "a",
+                "b",
+                "c",
+                "yellow"
+            ],
+            "values": [
+                1,
+                3,
+                5,
+                7
+            ],
+            "marker": {
+                "colors": [
+                    "pink",
+                    "lightgreen",
+                    "skyblue",
+                    "orange"
+                ],
+                "line": {
+                    "width": 5,
+                    "color": [
+                        "red",
+                        "green",
+                        "blue",
+                        "yellow"
+                    ]
+                }
+            }
+        }
+    ],
+    "layout": {
+        "width": 400,
+        "height": 400,
+        "title": { "text": "pie-like legend with line.color array of length > 3" }
+    }
+}
