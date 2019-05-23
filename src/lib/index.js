@@ -644,7 +644,7 @@ lib.minExtend = function(obj1, obj2) {
         if(k.charAt(0) === '_' || typeof v === 'function') continue;
         else if(k === 'module') objOut[k] = v;
         else if(Array.isArray(v)) {
-            if(k === 'color' || k === 'colorscale') {
+            if(k === 'colorscale') {
                 objOut[k] = v.slice();
             } else {
                 objOut[k] = v.slice(0, arrayLen);

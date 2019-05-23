@@ -461,8 +461,13 @@ module.exports = function style(s, gd) {
         if(pts.size()) {
             var cont = (trace.marker || {}).line;
             var lw = boundLineWidth(pieCastOption(cont.width, d0.pts), cont, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+
             var tMod = Lib.minExtend(trace, {marker: {line: {width: lw}}});
+            // since minExtend do not slice more than 3 items we need to patch line.color here
+            tMod.marker.line.color = cont.color;
+
             var d0Mod = Lib.minExtend(d0, {trace: tMod});
+
             stylePie(pts, d0Mod, tMod);
         }
     }
