@@ -1,0 +1,181 @@
+{
+  "data": [
+    {
+      "type": "choropleth",
+      "zmax": 80,
+      "zmin": 0,
+      "z": [
+        "2",
+        "6",
+        "1",
+        "138",
+        "7",
+        "6",
+        "2",
+        "5",
+        "19",
+        "17",
+        "22",
+        "6",
+        "2",
+        "1",
+        "7",
+        "5",
+        "12",
+        "18",
+        "40",
+        "13",
+        "1",
+        "1",
+        "2",
+        "14",
+        "74",
+        "3",
+        "1",
+        "19",
+        "16",
+        "21",
+        "4",
+        "6",
+        "26",
+        "3",
+        "6",
+        "15",
+        "2",
+        "3"
+      ],
+      "marker": {
+        "line": {
+          "color": "rgb(27, 88, 114)",
+          "width": 0.2
+        }
+      },
+      "text": [
+        "Alabama",
+        "Arizona",
+        "Arkansas",
+        "California",
+        "Colorado",
+        "Connecticut",
+        "Delaware",
+        "District of Columbia",
+        "Florida",
+        "Georgia",
+        "Illinois",
+        "Indiana",
+        "Iowa",
+        "Kansas",
+        "Kentucky",
+        "Louisiana",
+        "Maryland",
+        "Massachusetts",
+        "Michigan",
+        "Minnesota",
+        "Missouri",
+        "Nebraska",
+        "Nevada",
+        "New Jersey",
+        "New York",
+        "North Carolina",
+        "North Dakota",
+        "Ohio",
+        "Oregon",
+        "Pennsylvania",
+        "Rhode Island",
+        "Tennessee",
+        "Texas",
+        "Utah",
+        "Virginia",
+        "Washington",
+        "West Virginia",
+        "Wisconsin"
+      ],
+      "colorbar": {
+        "len": 0.5,
+        "ticksuffix": "+",
+        "showticksuffix": "last"
+      },
+      "hoverinfo": "z+text",
+      "colorscale": [
+        [
+          0,
+          "rgb(234,241,247)"
+        ],
+        [
+          0.25,
+          "rgb(131,222,147)"
+        ],
+        [
+          0.5,
+          "rgb(70,176,150)"
+        ],
+        [
+          0.75,
+          "rgb(31,138,171)"
+        ],
+        [
+          1,
+          "rgb(77,60,176)"
+        ]
+      ],
+      "locationmode": "USA-states",
+      "locations": [
+        "AL",
+        "AZ",
+        "AR",
+        "CA",
+        "CO",
+        "CT",
+        "DE",
+        "DC",
+        "FL",
+        "GA",
+        "IL",
+        "IN",
+        "IA",
+        "KS",
+        "KY",
+        "LA",
+        "MD",
+        "MA",
+        "MI",
+        "MN",
+        "MO",
+        "NE",
+        "NV",
+        "NJ",
+        "NY",
+        "NC",
+        "ND",
+        "OH",
+        "OR",
+        "PA",
+        "RI",
+        "TN",
+        "TX",
+        "UT",
+        "VA",
+        "WA",
+        "WV",
+        "WI"
+      ]
+    }
+  ],
+  "layout": {
+    "geo": {
+      "showland": true,
+      "landcolor": "rgb(163,213,235)",
+      "showframe": false,
+      "showocean": true,
+      "oceancolor": "rgb(131, 199, 227)",
+      "projection": {
+        "type": "miller"
+      },
+      "resolution": 50,
+      "showcoastlines": false
+    },
+    "title": {
+      "text": "Number of artists by country or region"
+    }
+  }
+}

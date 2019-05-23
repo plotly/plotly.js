@@ -6,11 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var appendArrayMultiPointValues = require('../../components/fx/helpers').appendArrayMultiPointValues;
-
 
 // Note: like other eventData routines, this creates the data for hover/unhover/click events
 // but it has a different API and goes through a totally different pathway.
@@ -38,6 +36,12 @@ module.exports = function eventData(pt, trace) {
     // notice that this is the multi-point version ('s' on the end!)
     // so added data will be arrays matching the pointNumbers array.
     appendArrayMultiPointValues(out, trace, pt.pts);
+
+    // don't include obsolete fields in new funnelarea traces
+    if(trace.type === 'funnelarea') {
+        delete out.v;
+        delete out.i;
+    }
 
     return out;
 };

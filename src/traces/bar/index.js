@@ -8,34 +8,32 @@
 
 'use strict';
 
-var Bar = {};
+module.exports = {
+    attributes: require('./attributes'),
+    layoutAttributes: require('./layout_attributes'),
+    supplyDefaults: require('./defaults').supplyDefaults,
+    crossTraceDefaults: require('./defaults').crossTraceDefaults,
+    supplyLayoutDefaults: require('./layout_defaults'),
+    calc: require('./calc'),
+    crossTraceCalc: require('./cross_trace_calc').crossTraceCalc,
+    colorbar: require('../scatter/marker_colorbar'),
+    arraysToCalcdata: require('./arrays_to_calcdata'),
+    plot: require('./plot').plot,
+    style: require('./style').style,
+    styleOnSelect: require('./style').styleOnSelect,
+    hoverPoints: require('./hover').hoverPoints,
+    selectPoints: require('./select'),
 
-Bar.attributes = require('./attributes');
-Bar.layoutAttributes = require('./layout_attributes');
-Bar.supplyDefaults = require('./defaults').supplyDefaults;
-Bar.crossTraceDefaults = require('./defaults').crossTraceDefaults;
-Bar.supplyLayoutDefaults = require('./layout_defaults');
-Bar.calc = require('./calc');
-Bar.crossTraceCalc = require('./cross_trace_calc').crossTraceCalc;
-Bar.colorbar = require('../scatter/marker_colorbar');
-Bar.arraysToCalcdata = require('./arrays_to_calcdata');
-Bar.plot = require('./plot');
-Bar.style = require('./style').style;
-Bar.styleOnSelect = require('./style').styleOnSelect;
-Bar.hoverPoints = require('./hover').hoverPoints;
-Bar.selectPoints = require('./select');
-
-Bar.moduleType = 'trace';
-Bar.name = 'bar';
-Bar.basePlotModule = require('../../plots/cartesian');
-Bar.categories = ['bar-like', 'cartesian', 'svg', 'bar', 'oriented', 'errorBarsOK', 'showLegend', 'zoomScale'];
-Bar.meta = {
-    description: [
-        'The data visualized by the span of the bars is set in `y`',
-        'if `orientation` is set th *v* (the default)',
-        'and the labels are set in `x`.',
-        'By setting `orientation` to *h*, the roles are interchanged.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'bar',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['bar-like', 'cartesian', 'svg', 'bar', 'oriented', 'errorBarsOK', 'showLegend', 'zoomScale'],
+    meta: {
+        description: [
+            'The data visualized by the span of the bars is set in `y`',
+            'if `orientation` is set th *v* (the default)',
+            'and the labels are set in `x`.',
+            'By setting `orientation` to *h*, the roles are interchanged.'
+        ].join(' ')
+    }
 };
-
-module.exports = Bar;

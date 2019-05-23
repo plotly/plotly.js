@@ -1225,6 +1225,26 @@ describe('hover info', function() {
             .then(done);
         });
 
+        it('shows the data range when bins have multiple values (case 2)', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'histogram2d',
+                x: ['a', 'b', 'c', 'a'],
+                y: [7, 2, 3, 7],
+                nbinsy: 3
+            }], {
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({nums: ['x: b', 'y: 4 - 5', 'z: 0'].join('\n')});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('shows the exact data when bins have single values', function(done) {
             var gd = createGraphDiv();
 

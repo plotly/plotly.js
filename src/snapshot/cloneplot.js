@@ -6,9 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
+var Registry = require('../registry');
 var Lib = require('../lib');
 
 var extendFlat = Lib.extendFlat;
@@ -89,7 +89,7 @@ module.exports = function clonePlot(graphObj, options) {
             var trace = newData[i];
             trace.showscale = false;
             if(trace.marker) trace.marker.showscale = false;
-            if(trace.type === 'pie') trace.textposition = 'none';
+            if(Registry.traceIs(trace, 'pie-like')) trace.textposition = 'none';
         }
     }
 

@@ -19,14 +19,14 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var helpers = require('./helpers');
 var eventData = require('./event_data');
 
-function plot(gd, cdpie) {
+function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
 
-    prerenderTitles(cdpie, gd);
-    scalePies(cdpie, fullLayout._size);
+    prerenderTitles(cdModule, gd);
+    layoutAreas(cdModule, fullLayout._size);
 
-    var pieGroups = Lib.makeTraceGroups(fullLayout._pielayer, cdpie, 'trace').each(function(cd) {
-        var pieGroup = d3.select(this);
+    var plotGroups = Lib.makeTraceGroups(fullLayout._pielayer, cdModule, 'trace').each(function(cd) {
+        var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
 
@@ -34,9 +34,9 @@ function plot(gd, cdpie) {
 
         // TODO: miter might look better but can sometimes cause problems
         // maybe miter with a small-ish stroke-miterlimit?
-        pieGroup.attr('stroke-linejoin', 'round');
+        plotGroup.attr('stroke-linejoin', 'round');
 
-        pieGroup.each(function() {
+        plotGroup.each(function() {
             var slices = d3.select(this).selectAll('g.slice').data(cd);
 
             slices.enter().append('g')
@@ -84,9 +84,12 @@ function plot(gd, cdpie) {
                 pt.cyFinal = cy;
 
                 function arc(start, finish, cw, scale) {
-                    return 'a' + (scale * cd0.r) + ',' + (scale * cd0.r) + ' 0 ' +
-                        pt.largeArc + (cw ? ' 1 ' : ' 0 ') +
-                        (scale * (finish[0] - start[0])) + ',' + (scale * (finish[1] - start[1]));
+                    var dx = scale * (finish[0] - start[0]);
+                    var dy = scale * (finish[1] - start[1]);
+
+                    return 'a' +
+                        (scale * cd0.r) + ',' + (scale * cd0.r) + ' 0 ' +
+                        pt.largeArc + (cw ? ' 1 ' : ' 0 ') + dx + ',' + dy;
                 }
 
                 var hole = trace.hole;
@@ -246,7 +249,7 @@ function plot(gd, cdpie) {
     // I have no idea why we haven't seen this in other contexts. Also, sometimes
     // it gets the initial draw correct but on redraw it gets confused.
     setTimeout(function() {
-        pieGroups.selectAll('tspan').each(function() {
+        plotGroups.selectAll('tspan').each(function() {
             var s = d3.select(this);
             if(s.attr('dy')) s.attr('dy', s.attr('dy'));
         });
@@ -344,24 +347,24 @@ function attachFxHandlers(sliceTop, gd, cd) {
         // in case we dragged over the pie from another subplot,
         // or if hover is turned off
         if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
-            var rInscribed = pt.rInscribed;
+            var rInscribed = pt.rInscribed || 0;
             var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
             var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
             var separators = fullLayout2.separators;
-            var thisText = [];
+            var text = [];
 
-            if(hoverinfo && hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+            if(hoverinfo && hoverinfo.indexOf('label') !== -1) text.push(pt.label);
             pt.text = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
             if(hoverinfo && hoverinfo.indexOf('text') !== -1) {
                 var tx = pt.text;
-                if(Lib.isValidTextValue(tx)) thisText.push(tx);
+                if(Lib.isValidTextValue(tx)) text.push(tx);
             }
             pt.value = pt.v;
             pt.valueLabel = helpers.formatPieValue(pt.v, separators);
-            if(hoverinfo && hoverinfo.indexOf('value') !== -1) thisText.push(pt.valueLabel);
+            if(hoverinfo && hoverinfo.indexOf('value') !== -1) text.push(pt.valueLabel);
             pt.percent = pt.v / cd0.vTotal;
             pt.percentLabel = helpers.formatPiePercent(pt.percent, separators);
-            if(hoverinfo && hoverinfo.indexOf('percent') !== -1) thisText.push(pt.percentLabel);
+            if(hoverinfo && hoverinfo.indexOf('percent') !== -1) text.push(pt.percentLabel);
 
             var hoverLabel = trace2.hoverlabel;
             var hoverFont = hoverLabel.font;
@@ -371,7 +374,7 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 x0: hoverCenterX - rInscribed * cd0.r,
                 x1: hoverCenterX + rInscribed * cd0.r,
                 y: hoverCenterY,
-                text: thisText.join('<br>'),
+                text: text.join('<br>'),
                 name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                 idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
                 color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
@@ -437,17 +440,20 @@ function attachFxHandlers(sliceTop, gd, cd) {
 }
 
 function determineOutsideTextFont(trace, pt, layoutFont) {
-    var color = helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
-      helpers.castOption(trace.textfont.color, pt.pts) ||
-      layoutFont.color;
+    var color =
+        helpers.castOption(trace.outsidetextfont.color, pt.pts) ||
+        helpers.castOption(trace.textfont.color, pt.pts) ||
+        layoutFont.color;
 
-    var family = helpers.castOption(trace.outsidetextfont.family, pt.pts) ||
-      helpers.castOption(trace.textfont.family, pt.pts) ||
-      layoutFont.family;
+    var family =
+        helpers.castOption(trace.outsidetextfont.family, pt.pts) ||
+        helpers.castOption(trace.textfont.family, pt.pts) ||
+        layoutFont.family;
 
-    var size = helpers.castOption(trace.outsidetextfont.size, pt.pts) ||
-      helpers.castOption(trace.textfont.size, pt.pts) ||
-      layoutFont.size;
+    var size =
+        helpers.castOption(trace.outsidetextfont.size, pt.pts) ||
+        helpers.castOption(trace.textfont.size, pt.pts) ||
+        layoutFont.size;
 
     return {
         color: color,
@@ -466,13 +472,15 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         customColor = helpers.castOption(trace._input.textfont.color, pt.pts);
     }
 
-    var family = helpers.castOption(trace.insidetextfont.family, pt.pts) ||
-      helpers.castOption(trace.textfont.family, pt.pts) ||
-      layoutFont.family;
+    var family =
+        helpers.castOption(trace.insidetextfont.family, pt.pts) ||
+        helpers.castOption(trace.textfont.family, pt.pts) ||
+        layoutFont.family;
 
-    var size = helpers.castOption(trace.insidetextfont.size, pt.pts) ||
-      helpers.castOption(trace.textfont.size, pt.pts) ||
-      layoutFont.size;
+    var size =
+        helpers.castOption(trace.insidetextfont.size, pt.pts) ||
+        helpers.castOption(trace.textfont.size, pt.pts) ||
+        layoutFont.size;
 
     return {
         color: customColor || Color.contrast(pt.color),
@@ -481,12 +489,12 @@ function determineInsideTextFont(trace, pt, layoutFont) {
     };
 }
 
-function prerenderTitles(cdpie, gd) {
+function prerenderTitles(cdModule, gd) {
     var cd0, trace;
 
     // Determine the width and height of the title for each pie.
-    for(var i = 0; i < cdpie.length; i++) {
-        cd0 = cdpie[i][0];
+    for(var i = 0; i < cdModule.length; i++) {
+        cd0 = cdModule[i][0];
         trace = cd0.trace;
 
         if(trace.title.text) {
@@ -607,7 +615,7 @@ function positionTitleInside(cd0) {
 function positionTitleOutside(cd0, plotSize) {
     var scaleX = 1;
     var scaleY = 1;
-    var maxWidth, maxPull;
+    var maxPull;
 
     var trace = cd0.trace;
     // position of the baseline point of the text box in the plot, before scaling.
@@ -636,16 +644,19 @@ function positionTitleOutside(cd0, plotSize) {
         topMiddle.y += (1 + maxPull) * cd0.r;
     }
 
+    var rx = applyAspectRatio(cd0.r, cd0.trace.aspectratio);
+
+    var maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2;
     if(trace.title.position.indexOf('left') !== -1) {
         // we start the text at the left edge of the pie
-        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2 + cd0.r;
-        topMiddle.x -= (1 + maxPull) * cd0.r;
+        maxWidth = maxWidth + rx;
+        topMiddle.x -= (1 + maxPull) * rx;
         translate.tx += cd0.titleBox.width / 2;
     } else if(trace.title.position.indexOf('center') !== -1) {
-        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
+        maxWidth *= 2;
     } else if(trace.title.position.indexOf('right') !== -1) {
-        maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2 + cd0.r;
-        topMiddle.x += (1 + maxPull) * cd0.r;
+        maxWidth = maxWidth + rx;
+        topMiddle.x += (1 + maxPull) * rx;
         translate.tx -= cd0.titleBox.width / 2;
     }
     scaleX = maxWidth / cd0.titleBox.width;
@@ -659,6 +670,10 @@ function positionTitleOutside(cd0, plotSize) {
     };
 }
 
+function applyAspectRatio(x, aspectratio) {
+    return x / ((aspectratio === undefined) ? 1 : aspectratio);
+}
+
 function getTitleSpace(cd0, plotSize) {
     var trace = cd0.trace;
     var pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
@@ -668,6 +683,8 @@ function getTitleSpace(cd0, plotSize) {
 
 function getMaxPull(trace) {
     var maxPull = trace.pull;
+    if(!maxPull) return 0;
+
     var j;
     if(Array.isArray(maxPull)) {
         maxPull = 0;
@@ -783,30 +800,32 @@ function scootLabels(quadrants, trace) {
     }
 }
 
-function scalePies(cdpie, plotSize) {
+function layoutAreas(cdModule, plotSize) {
     var scaleGroups = [];
 
-    var pieBoxWidth, pieBoxHeight, i, j, cd0, trace,
-        maxPull, scaleGroup, minPxPerValUnit;
+    // figure out the center and maximum radius
+    for(var i = 0; i < cdModule.length; i++) {
+        var cd0 = cdModule[i][0];
+        var trace = cd0.trace;
 
-    // first figure out the center and maximum radius for each pie
-    for(i = 0; i < cdpie.length; i++) {
-        cd0 = cdpie[i][0];
-        trace = cd0.trace;
-
-        pieBoxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
-        pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
+        var domain = trace.domain;
+        var width = plotSize.w * (domain.x[1] - domain.x[0]);
+        var height = plotSize.h * (domain.y[1] - domain.y[0]);
         // leave some space for the title, if it will be displayed outside
         if(trace.title.text && trace.title.position !== 'middle center') {
-            pieBoxHeight -= getTitleSpace(cd0, plotSize);
+            height -= getTitleSpace(cd0, plotSize);
         }
 
-        maxPull = getMaxPull(trace);
+        var rx = width / 2;
+        var ry = height / 2;
+        if(trace.type === 'funnelarea' && !trace.scalegroup) {
+            ry /= trace.aspectratio;
+        }
 
-        cd0.r = Math.min(pieBoxWidth, pieBoxHeight) / (2 + 2 * maxPull);
+        cd0.r = Math.min(rx, ry) / (1 + getMaxPull(trace));
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
-        cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - pieBoxHeight / 2;
+        cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - height / 2;
         if(trace.title.text && trace.title.position.indexOf('bottom') !== -1) {
             cd0.cy -= getTitleSpace(cd0, plotSize);
         }
@@ -816,23 +835,56 @@ function scalePies(cdpie, plotSize) {
         }
     }
 
-    // Then scale any pies that are grouped
-    for(j = 0; j < scaleGroups.length; j++) {
-        minPxPerValUnit = Infinity;
-        scaleGroup = scaleGroups[j];
+    groupScale(cdModule, scaleGroups);
+}
 
-        for(i = 0; i < cdpie.length; i++) {
-            cd0 = cdpie[i][0];
-            if(cd0.trace.scalegroup === scaleGroup) {
-                minPxPerValUnit = Math.min(minPxPerValUnit,
-                    cd0.r * cd0.r / cd0.vTotal);
+function groupScale(cdModule, scaleGroups) {
+    var cd0, i, trace;
+
+    // scale those that are grouped
+    for(var k = 0; k < scaleGroups.length; k++) {
+        var min = Infinity;
+        var g = scaleGroups[k];
+
+        for(i = 0; i < cdModule.length; i++) {
+            cd0 = cdModule[i][0];
+            trace = cd0.trace;
+
+            if(trace.scalegroup === g) {
+                var area;
+                if(trace.type === 'pie') {
+                    area = cd0.r * cd0.r;
+                } else if(trace.type === 'funnelarea') {
+                    var rx, ry;
+
+                    if(trace.aspectratio > 1) {
+                        rx = cd0.r;
+                        ry = rx / trace.aspectratio;
+                    } else {
+                        ry = cd0.r;
+                        rx = ry * trace.aspectratio;
+                    }
+
+                    rx *= (1 + trace.baseratio) / 2;
+
+                    area = rx * ry;
+                }
+
+                min = Math.min(min, area / cd0.vTotal);
             }
         }
 
-        for(i = 0; i < cdpie.length; i++) {
-            cd0 = cdpie[i][0];
-            if(cd0.trace.scalegroup === scaleGroup) {
-                cd0.r = Math.sqrt(minPxPerValUnit * cd0.vTotal);
+        for(i = 0; i < cdModule.length; i++) {
+            cd0 = cdModule[i][0];
+            trace = cd0.trace;
+            if(trace.scalegroup === g) {
+                var v = min * cd0.vTotal;
+                if(trace.type === 'funnelarea') {
+                    v /= (1 + trace.baseratio) / 2;
+                    v /= trace.aspectratio;
+                }
+
+                cd0.r = Math.sqrt(v);
             }
         }
     }
@@ -891,5 +943,10 @@ function setCoords(cd) {
 
 module.exports = {
     plot: plot,
-    transformInsideText: transformInsideText
+    transformInsideText: transformInsideText,
+    determineInsideTextFont: determineInsideTextFont,
+    positionTitleOutside: positionTitleOutside,
+    prerenderTitles: prerenderTitles,
+    layoutAreas: layoutAreas,
+    attachFxHandlers: attachFxHandlers,
 };

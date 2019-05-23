@@ -28,7 +28,7 @@ module.exports = function calc(gd) {
         // don't include hover calc fields for pie traces
         // as calcdata items might be sorted by value and
         // won't match the data array order.
-        if(Registry.traceIs(trace, 'pie')) continue;
+        if(Registry.traceIs(trace, 'pie-like')) continue;
 
         var fillFn = Registry.traceIs(trace, '2dMap') ? paste : Lib.fillArray;
 

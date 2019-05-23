@@ -1,0 +1,155 @@
+{
+    "data": [
+        {
+            "baseratio": 0,
+            "aspectratio": 2,
+            "type": "funnelarea",
+            "values": [6, 5, 4, 3, 2, 1],
+            "textinfo": "value",
+            "title": {
+                "position": "top right",
+                "text": "1 - 6 no group"
+            },
+            "domain": {
+                "x": [0.7, 1],
+                "y": [0.7, 1]
+            }
+        },
+        {
+            "baseratio": 0.5,
+            "aspectratio": 2,
+            "type": "funnelarea",
+            "values": [16, 15, 14, 13, 12, 11],
+            "textinfo": "value",
+            "title": {
+                "position": "top right",
+                "text": "11 - 16 no group"
+            },
+            "domain": {
+                "x": [0.7, 1],
+                "y": [0.35, 0.65]
+            }
+        },
+        {
+            "baseratio": 1,
+            "aspectratio": 2,
+            "type": "funnelarea",
+            "values": [60, 50, 40, 30, 20, 10],
+            "textinfo": "value",
+            "title": {
+                "position": "top right",
+                "text": "10 - 60 no group"
+            },
+            "domain": {
+                "x": [0.7, 1],
+                "y": [0, 0.3]
+            }
+        },
+        {
+            "baseratio": 0,
+            "aspectratio": 1,
+            "type": "funnelarea",
+            "values": [6, 5, 4, 3, 2, 1],
+            "textinfo": "value",
+            "title": {
+                "position": "top center",
+                "text": "1 - 6 no group"
+            },
+            "domain": {
+                "x": [0.35, 0.65],
+                "y": [0.7, 1]
+            }
+        },
+        {
+            "baseratio": 0.5,
+            "aspectratio": 1,
+            "type": "funnelarea",
+            "title": {
+                "position": "top center",
+                "text": "11 - 16 no group"
+            },
+            "values": [16, 15, 14, 13, 12, 11],
+            "textinfo": "value",
+            "domain": {
+                "x": [0.35, 0.65],
+                "y": [0.35, 0.65]
+            }
+        },
+        {
+            "baseratio": 1,
+            "aspectratio": 1,
+            "type": "funnelarea",
+            "values": [60, 50, 40, 30, 20, 10],
+            "textinfo": "value",
+            "title": {
+                "position": "top center",
+                "text": "10 - 60 no group"
+            },
+            "domain": {
+                "x": [0.35, 0.65],
+                "y": [0, 0.3]
+            }
+        },
+        {
+            "baseratio": 0,
+            "aspectratio": 0.5,
+            "type": "funnelarea",
+            "values": [6, 5, 4, 3, 2, 1],
+            "textinfo": "value",
+            "title": {
+                "position": "top left",
+                "text": "1 - 6 no group"
+            },
+            "domain": {
+                "x": [0, 0.3],
+                "y": [0.7, 1]
+            }
+        },
+        {
+            "baseratio": 0.5,
+            "aspectratio": 0.5,
+            "type": "funnelarea",
+            "values": [16, 15, 14, 13, 12, 11],
+            "textinfo": "value",
+            "title": {
+                "position": "top left",
+                "text": "11 - 16 no group"
+            },
+            "domain": {
+                "x": [0, 0.3],
+                "y": [0.35, 0.65]
+            }
+        },
+        {
+            "baseratio": 1,
+            "aspectratio": 0.5,
+            "type": "funnelarea",
+            "values": [60, 50, 40, 30, 20, 10],
+            "textinfo": "value",
+            "title": {
+                "position": "top left",
+                "text": "10 - 60 no group"
+            },
+            "domain": {
+                "x": [0, 0.3],
+                "y": [0, 0.3]
+            }
+        }
+    ],
+    "layout": {
+        "hiddenlabels": ["1", "4"],
+        "width": 800,
+        "height": 800,
+        "shapes": [
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.3, "y0": 0, "y1": 0.3 },
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.3, "y0": 0.35, "y1": 0.65 },
+            { "type": "rect", "layer": "below", "x0": 0, "x1": 0.3, "y0": 0.7, "y1": 1 },
+            { "type": "rect", "layer": "below", "x0": 0.35, "x1": 0.65, "y0": 0, "y1": 0.3 },
+            { "type": "rect", "layer": "below", "x0": 0.35, "x1": 0.65, "y0": 0.35, "y1": 0.65 },
+            { "type": "rect", "layer": "below", "x0": 0.35, "x1": 0.65, "y0": 0.7, "y1": 1 },
+            { "type": "rect", "layer": "below", "x0": 0.7, "x1": 1, "y0": 0, "y1": 0.3 },
+            { "type": "rect", "layer": "below", "x0": 0.7, "x1": 1, "y0": 0.35, "y1": 0.65 },
+            { "type": "rect", "layer": "below", "x0": 0.7, "x1": 1, "y0": 0.7, "y1": 1 }
+        ]
+    }
+}

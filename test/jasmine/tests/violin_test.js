@@ -724,6 +724,40 @@ describe('Test violin hover:', function() {
             .then(done);
         });
     });
+
+    it('labels should avoid overlaps', function(done) {
+        gd = createGraphDiv();
+
+        var fig = Lib.extendDeep({}, require('@mocks/violin_zoomed-in.json'));
+        fig.layout.width = 700;
+        fig.layout.height = 450;
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            mouseEvent('mousemove', 350, 225);
+
+            var actual = [];
+            d3.selectAll('g.hovertext').each(function() {
+                var bbox = this.getBoundingClientRect();
+                var tx = d3.select(this).text();
+                actual.push([tx, bbox]);
+            });
+
+            actual = actual.sort(function(a, b) { return a[1].top - b[1].top; });
+
+            expect(actual.length).toBe(7, '# of value hover labels');
+
+            for(var i = 0; i < actual.length - 1; i++) {
+                var a = actual[i];
+                var b = actual[i + 1];
+                if(b[1].top < a[1].bottom) {
+                    fail('Labels ' + a[0] + ' and ' + b[1] + ' overlap.');
+                }
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test violin restyle:', function() {

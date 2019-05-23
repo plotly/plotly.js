@@ -428,6 +428,30 @@ describe('Pie traces', function() {
         .then(done);
     });
 
+    it('should be able to restyle title position', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [3, 2, 1],
+            title: 'Test<BR>Title',
+            titleposition: 'top left',
+            titlefont: {
+                size: 12
+            },
+            type: 'pie',
+            textinfo: 'none'
+        }], {height: 300, width: 300})
+        .then(_verifyTitle(true, false, true, false, false))
+        .then(function() { return Plotly.restyle(gd, 'titleposition', 'top right'); })
+        .then(_verifyTitle(false, true, true, false, false))
+        .then(function() { return Plotly.restyle(gd, 'titleposition', 'bottom left'); })
+        .then(_verifyTitle(true, false, false, true, false))
+        .then(function() { return Plotly.restyle(gd, 'titleposition', 'bottom center'); })
+        .then(_verifyTitle(false, false, false, true, true))
+        .then(function() { return Plotly.restyle(gd, 'titleposition', 'bottom right'); })
+        .then(_verifyTitle(false, true, false, true, false))
+        .catch(failTest)
+        .then(done);
+    });
+
     it('does not intersect pulled slices', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],

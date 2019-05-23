@@ -6,12 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
 var helpers = require('./helpers');
-
 
 module.exports = function getLegendData(calcdata, opts) {
     var lgroupToTraces = {};
@@ -45,7 +43,7 @@ module.exports = function getLegendData(calcdata, opts) {
 
         if(!trace.visible || !trace.showlegend) continue;
 
-        if(Registry.traceIs(trace, 'pie')) {
+        if(Registry.traceIs(trace, 'pie-like')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
 
             for(j = 0; j < cd.length; j++) {

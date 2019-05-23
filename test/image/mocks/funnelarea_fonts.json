@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "values": [
+        3,
+        1
+      ],
+      "text": [
+        "inherit from<br><b>global...</b>",
+        "font"
+      ],
+      "type": "funnelarea",
+      "domain": {
+        "x": [
+          0,
+          0.4
+        ]
+      }
+    },
+    {
+      "values": [
+        3,
+        1
+      ],
+      "text": [
+        "a font of...",
+        "my own"
+      ],
+      "type": "funnelarea",
+      "domain": {
+        "x": [
+          0.6,
+          1
+        ]
+      },
+      "textfont": {
+        "family": "Times New Roman, Times, serif",
+        "size": 15,
+        "color": "#700"
+      }
+    }
+
+  ],
+  "layout": {
+    "height": 300,
+    "width": 500,
+    "font": {
+      "family": "Old Standard TT, serif",
+      "size": 20
+    },
+    "showlegend": true,
+    "separators": "∆|"
+  }
+}
