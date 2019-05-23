@@ -691,6 +691,45 @@ describe('Click-to-select', function() {
         }
     });
 
+    it('should maintain style of errorbars after double click cleared selection (bar case)', function(done) {
+        Plotly.newPlot(gd, { // Note: this call should be newPlot not plot
+            data: [{
+                x: [0, 1, 2],
+                y: [100, 200, 400],
+                type: 'bar',
+                marker: {
+                    color: 'yellow'
+                },
+                error_y: {
+                    type: 'sqrt'
+                }
+            }],
+            layout: {
+                dragmode: 'select'
+            }
+        })
+        .then(function() {
+            var x = 100;
+            var y = 100;
+            drag([[x, y], [x, y]]); // first empty drag
+            return doubleClick(x, y); // then double click
+        })
+        .then(function() {
+            assertSelectionCleared();
+        })
+        .then(function() {
+            d3.select(gd).select('g.plot').each(function() {
+                d3.select(this).selectAll('g.errorbar').selectAll('path').each(function() {
+                    expect(d3.select(this).attr('style'))
+                        .toBe('vector-effect: non-scaling-stroke; stroke-width: 2px; stroke: rgb(68, 68, 68); stroke-opacity: 1; opacity: 1; fill: rgb(255, 255, 0); fill-opacity: 1;', 'to be visible'
+                    );
+                });
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     describe('triggers \'plotly_selected\' before \'plotly_click\'', function() {
         [
             testCase('cartesian', require('@mocks/14.json'), 270, 160, [7]),
