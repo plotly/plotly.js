@@ -1545,7 +1545,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 return drag.start()
                     .then(_assert('just after start of zoombox', {
                         nodeCnt: 4,
-                        xrng: [-0.1927, 3.1927],
+                        xrng: [1.5, 1.6880],
                         hasDragData: true,
                         zoombox: 'M269.5,114.5h-3v41h3ZM300.5,114.5h3v41h-3Z',
                         clipTranslate: [0, 0]
@@ -1553,7 +1553,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     .then(delay(step))
                     .then(_assert('during zoombox drag', {
                         nodeCnt: 5,
-                        xrng: [-0.257, 4.257],
+                        xrng: [2, 2.2507],
                         hasDragData: true,
                         zoombox: 'M269.5,114.5h-3v41h3ZM300.5,114.5h3v41h-3Z',
                         clipTranslate: [0, 0]
