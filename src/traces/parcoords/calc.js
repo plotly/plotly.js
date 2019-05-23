@@ -46,5 +46,5 @@ function constHalf(len) {
 }
 
 function convertTypedArray(a) {
-    return (Lib.isTypedArray(a)) ? Array.prototype.slice.call(a) : a;
+    return Lib.isTypedArray(a) ? Array.prototype.slice.call(a) : a;
 }
