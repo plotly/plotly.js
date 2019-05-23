@@ -182,6 +182,14 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     map.on('dragstart', unhover);
     map.on('zoomstart', unhover);
 
+    function emitUpdate() {
+        var viewNow = self.getView();
+        gd.emit('plotly_relayouting', self.getViewEdits(viewNow));
+    }
+
+    map.on('drag', emitUpdate);
+    map.on('zoom', emitUpdate);
+
     map.on('dblclick', function() {
         var optsNow = gd._fullLayout[self.id];
         Registry.call('_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, self.getViewEdits(optsNow));

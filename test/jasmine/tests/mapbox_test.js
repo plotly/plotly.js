@@ -887,11 +887,16 @@ describe('@noCI, mapbox plots', function() {
     it('should respond drag / scroll / double-click interactions', function(done) {
         var relayoutCnt = 0;
         var doubleClickCnt = 0;
+        var relayoutingCnt = 0;
         var evtData;
 
         gd.on('plotly_relayout', function(d) {
             relayoutCnt++;
             evtData = d;
+        });
+
+        gd.on('plotly_relayouting', function() {
+            relayoutingCnt++;
         });
 
         gd.on('plotly_doubleclick', function() {
@@ -930,6 +935,7 @@ describe('@noCI, mapbox plots', function() {
 
         _drag(pointPos, p1, function() {
             expect(relayoutCnt).toBe(1, 'relayout cnt');
+            expect(relayoutingCnt).toBe(2, 'relayouting cnt');
             expect(doubleClickCnt).toBe(0, 'double click cnt');
             _assert([-19.651, 13.751], 1.234);
 
@@ -937,6 +943,7 @@ describe('@noCI, mapbox plots', function() {
         })
         .then(function() {
             expect(relayoutCnt).toBe(2, 'relayout cnt');
+            expect(relayoutingCnt).toBe(2, 'relayouting cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
             _assert([-4.710, 19.475], 1.234);
 
@@ -944,6 +951,7 @@ describe('@noCI, mapbox plots', function() {
         })
         .then(function() {
             expect(relayoutCnt).toBe(3, 'relayout cnt');
+            expect(relayoutingCnt).toBeCloseTo(10, -1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
             expect(getMapInfo(gd).zoom).toBeGreaterThan(1.234);
         })

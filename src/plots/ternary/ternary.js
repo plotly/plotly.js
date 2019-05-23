@@ -644,6 +644,8 @@ proto.initInteractions = function() {
                 .duration(200);
             dimmed = true;
         }
+
+        gd.emit('plotly_relayouting', makeUpdate(mins));
     }
 
     function zoomDone() {
@@ -720,6 +722,8 @@ proto.initInteractions = function() {
                 .select('.scatterlayer').selectAll('.trace')
                 .call(Drawing.hideOutsideRangePoints, _this);
         }
+
+        gd.emit('plotly_relayouting', makeUpdate(mins));
     }
 
     function dragDone() {

@@ -272,6 +272,15 @@ function initializeGLPlot(scene, pixelRatio, canvas, gl) {
         }
     }, passiveSupported ? {passive: false} : false);
 
+    scene.glplot.canvas.addEventListener('mousemove', function() {
+        if(scene.fullSceneLayout.dragmode === false) return;
+        if(scene.camera.mouseListener.buttons === 0) return;
+
+        var update = {};
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
+        scene.graphDiv.emit('plotly_relayouting', update);
+    });
+
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
             if(gd && gd.emit) {

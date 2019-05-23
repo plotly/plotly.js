@@ -836,6 +836,10 @@ proto.updateMainDrag = function(fullLayout) {
         corners.attr('d', cpath);
         dragBox.transitionZoombox(zb, corners, dimmed, lum);
         dimmed = true;
+
+        var updateObj = {};
+        computeZoomUpdates(updateObj);
+        gd.emit('plotly_relayouting', updateObj);
     }
 
     function zoomMove(dx, dy) {
@@ -889,16 +893,22 @@ proto.updateMainDrag = function(fullLayout) {
         dragBox.removeZoombox(gd);
 
         if(r0 === null || r1 === null) return;
+        var updateObj = {};
+        computeZoomUpdates(updateObj);
 
         dragBox.showDoubleClickNotifier(gd);
 
+        Registry.call('_guiRelayout', gd, updateObj);
+    }
+
+    function computeZoomUpdates(update) {
         var rl = radialAxis._rl;
         var m = (rl[1] - rl[0]) / (1 - innerRadius / radius) / radius;
         var newRng = [
             rl[0] + (r0 - innerRadius) * m,
             rl[0] + (r1 - innerRadius) * m
         ];
-        Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.range', newRng);
+        update[_this.id + '.radialaxis.range'] = newRng;
     }
 
     function zoomClick(numClicks, evt) {
@@ -1036,6 +1046,18 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
             if(!isNaN(comp)) {
                 moveFn2 = comp < 0.5 ? rotateMove : rerangeMove;
             }
+        }
+
+        var update = {};
+        computeRadialAxisUpdates(update);
+        gd.emit('plotly_relayouting', update);
+    }
+
+    function computeRadialAxisUpdates(update) {
+        if(angle1 !== null) {
+            update[_this.id + '.radialaxis.angle'] = angle1;
+        } else if(rprime !== null) {
+            update[_this.id + '.radialaxis.range[' + rngIndex + ']'] = rprime;
         }
     }
 
@@ -1236,18 +1258,25 @@ proto.updateAngularDrag = function(fullLayout) {
             clearGlCanvases(gd);
             redrawReglTraces(gd);
         }
+
+        var update = {};
+        computeRotationUpdates(update);
+        gd.emit('plotly_relayouting', update);
+    }
+
+    function computeRotationUpdates(updateObj) {
+        updateObj[_this.id + '.angularaxis.rotation'] = rot1;
+
+        if(_this.vangles) {
+            updateObj[_this.id + '.radialaxis.angle'] = rrot1;
+        }
     }
 
     function doneFn() {
         scatterTextPoints.select('text').attr('transform', null);
 
         var updateObj = {};
-        updateObj[_this.id + '.angularaxis.rotation'] = rot1;
-
-        if(_this.vangles) {
-            updateObj[_this.id + '.radialaxis.angle'] = rrot1;
-        }
-
+        computeRotationUpdates(updateObj);
         Registry.call('_guiRelayout', gd, updateObj);
     }
 
