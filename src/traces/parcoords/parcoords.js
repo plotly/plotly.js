@@ -132,7 +132,8 @@ function model(layout, d, i) {
     var trace = cd0.trace;
     var lineColor = cd0.lineColor;
     var line = trace.line;
-    var cscale = line.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
+    var cOpts = Colorscale.extractOpts(line);
+    var cscale = cOpts.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
     var domain = trace.domain;
     var dimensions = trace.dimensions;
     var width = layout.width;
@@ -143,7 +144,7 @@ function model(layout, d, i) {
     var lines = Lib.extendDeepNoArrays({}, line, {
         color: lineColor.map(d3.scale.linear().domain(dimensionExtent({
             values: lineColor,
-            range: [line.cmin, line.cmax],
+            range: [cOpts.min, cOpts.max],
             _length: trace._length
         }))),
         blockLineCount: c.blockLineCount,

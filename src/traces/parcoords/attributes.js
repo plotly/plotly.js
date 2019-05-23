@@ -114,7 +114,7 @@ module.exports = {
     line: extendFlat({editType: 'calc'},
         colorScaleAttrs('line', {
             // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
-            // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
+            // autocolorscale therefore defaults to false too, to avoid being overridden by the blue-white-red autocolor palette
             colorscaleDflt: 'Viridis',
             autoColorDflt: false,
             editTypeOverride: 'calc'
