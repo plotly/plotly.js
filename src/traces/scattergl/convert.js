@@ -10,13 +10,12 @@
 
 var isNumeric = require('fast-isnumeric');
 var svgSdf = require('svg-path-sdf');
-var rgba = require('color-normalize');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
-
+var filterRGBA = require('../../lib/gl_format_color').filterRGBA;
 var formatColor = require('../../lib/gl_format_color').formatColor;
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
@@ -229,12 +228,12 @@ function convertMarkerStyle(trace) {
         optsOut.opacity = trace.opacity;
     } else {
         if(isOpen) {
-            optsOut.color = rgba(optsIn.color, 'uint8');
+            optsOut.color = filterRGBA(optsIn.color, 'uint8');
             optsOut.color[3] = 0;
-            optsOut.borderColor = rgba(optsIn.color, 'uint8');
+            optsOut.borderColor = filterRGBA(optsIn.color, 'uint8');
         } else {
-            optsOut.color = rgba(optsIn.color, 'uint8');
-            optsOut.borderColor = rgba(optsIn.line.color, 'uint8');
+            optsOut.color = filterRGBA(optsIn.color, 'uint8');
+            optsOut.borderColor = filterRGBA(optsIn.line.color, 'uint8');
         }
 
         optsOut.opacity = trace.opacity * optsIn.opacity;
