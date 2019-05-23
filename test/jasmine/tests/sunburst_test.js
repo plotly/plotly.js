@@ -268,6 +268,28 @@ describe('Test sunburst calc:', function() {
         expect(Lib.warn).toHaveBeenCalledTimes(1);
         expect(Lib.warn).toHaveBeenCalledWith('Failed to build sunburst hierarchy. Error: ambiguous: b');
     });
+
+    it('should accept numbers (even `0`) are ids/parents items', function() {
+        _calc({
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            ids: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            parents: ['', 0, 0, 2, 2, 0, 0, 6, 0]
+        });
+
+        expect(extract('id')).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8']);
+        expect(extract('pid')).toEqual(['', '0', '0', '2', '2', '0', '0', '6', '0']);
+    });
+
+    it('should accept mix typed are ids/parents items', function() {
+        _calc({
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            ids: [true, 1, '2', 3, 4, 5, 6, 7, 8],
+            parents: ['', true, true, 2, 2, 'true', 'true', '6', true]
+        });
+
+        expect(extract('id')).toEqual(['true', '1', '2', '3', '4', '5', '6', '7', '8']);
+        expect(extract('pid')).toEqual(['', 'true', 'true', '2', '2', 'true', 'true', '6', 'true']);
+    });
 });
 
 describe('Test sunburst hover:', function() {
