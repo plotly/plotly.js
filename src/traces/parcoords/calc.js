@@ -8,8 +8,7 @@
 
 'use strict';
 
-var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
-var calcColorscale = require('../../components/colorscale/calc');
+var Colorscale = require('../../components/colorscale');
 var Lib = require('../../lib');
 var wrap = require('../../lib/gup').wrap;
 
@@ -19,22 +18,24 @@ module.exports = function calc(gd, trace) {
     }
     trace.line.color = convertTypedArray(trace.line.color);
 
-    var cs = !!trace.line.colorscale && Array.isArray(trace.line.color);
-    var color = cs ? trace.line.color : constHalf(trace._length);
-    var cscale = cs ? trace.line.colorscale : [[0, trace.line.color], [1, trace.line.color]];
+    var lineColor;
+    var cscale;
 
-    if(hasColorscale(trace, 'line')) {
-        calcColorscale(gd, trace, {
-            vals: color,
+    if(Colorscale.hasColorscale(trace, 'line') && Array.isArray(trace.line.color)) {
+        lineColor = trace.line.color;
+        cscale = Colorscale.extractOpts(trace.line).colorscale;
+
+        Colorscale.calc(gd, trace, {
+            vals: lineColor,
             containerStr: 'line',
             cLetter: 'c'
         });
+    } else {
+        lineColor = constHalf(trace._length);
+        cscale = [[0, trace.line.color], [1, trace.line.color]];
     }
 
-    return wrap({
-        lineColor: color,
-        cscale: cscale
-    });
+    return wrap({lineColor: lineColor, cscale: cscale});
 };
 
 function constHalf(len) {
