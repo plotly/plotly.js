@@ -26,10 +26,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     if(hasHoveronViolins || hasHoveronKDE) {
         var closeBoxData = boxHoverPoints.hoverOnBoxes(pointData, xval, yval, hovermode);
 
-        if(hasHoveronViolins) {
-            closeData = closeData.concat(closeBoxData);
-        }
-
         if(hasHoveronKDE && closeBoxData.length > 0) {
             var xa = pointData.xa;
             var ya = pointData.ya;
@@ -81,6 +77,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
                 violinLineAttrs[pLetter + '2'] = Lib.constrain(paOffset + pOnPath[1], paOffset, paOffset + paLength);
                 violinLineAttrs[vLetter + '1'] = violinLineAttrs[vLetter + '2'] = vAxis._offset + vValPx;
             }
+        }
+
+        if(hasHoveronViolins) {
+            closeData = closeData.concat(closeBoxData);
         }
     }
 
