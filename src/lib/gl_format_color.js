@@ -16,35 +16,20 @@ var Colorscale = require('../components/colorscale');
 var colorDflt = require('../components/color/attributes').defaultLine;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 
-function filterRGBA(colorIn, desiredType) {
-    var colorOut = rgba(colorIn, desiredType);
-
-    if(typeof colorIn === 'string' &&
-        !colorIn.indexOf('rgb') &&
-        colorIn.indexOf('rgba')
-    ) {
-        // drop alpha if not having rgb
-        colorOut = [colorOut[0], colorOut[1], colorOut[2]];
-    }
-    return colorOut;
-}
-
-var colorDfltRgba = filterRGBA(colorDflt);
+var colorDfltRgba = rgba(colorDflt);
 var opacityDflt = 1;
 
 function calculateColor(colorIn, opacityIn) {
     var colorOut = colorIn;
-
-    if(colorOut.length > 3) colorOut[3] *= opacityIn;
-    else if(opacityIn < 1) colorOut[3] = opacityIn;
-
+    colorOut[3] *= opacityIn;
     return colorOut;
 }
 
 function validateColor(colorIn) {
     if(isNumeric(colorIn)) return colorDfltRgba;
 
-    var colorOut = filterRGBA(colorIn);
+    var colorOut = rgba(colorIn);
+
     return colorOut.length ? colorOut : colorDfltRgba;
 }
 
@@ -69,7 +54,7 @@ function formatColor(containerIn, opacityIn, len) {
     if(isArrayColorIn) {
         getColor = function(c, i) {
             // FIXME: there is double work, considering that sclFunc does the opposite
-            return c[i] === undefined ? colorDfltRgba : filterRGBA(sclFunc(c[i]));
+            return c[i] === undefined ? colorDfltRgba : rgba(sclFunc(c[i]));
         };
     } else getColor = validateColor;
 
@@ -85,7 +70,7 @@ function formatColor(containerIn, opacityIn, len) {
             opacityi = getOpacity(opacityIn, i);
             colorOut[i] = calculateColor(colori, opacityi);
         }
-    } else colorOut = calculateColor(filterRGBA(colorIn), opacityIn);
+    } else colorOut = calculateColor(rgba(colorIn), opacityIn);
 
     return colorOut;
 }
@@ -111,7 +96,6 @@ function parseColorScale(cont, alpha) {
 }
 
 module.exports = {
-    filterRGBA: filterRGBA,
     formatColor: formatColor,
     parseColorScale: parseColorScale
 };
