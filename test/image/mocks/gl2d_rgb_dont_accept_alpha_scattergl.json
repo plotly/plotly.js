@@ -1,0 +1,128 @@
+{
+    "data": [
+        {
+            "name": "rgb(r,g,b,a)",
+            "type": "scattergl",
+            "x": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "y": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "mode": "marker+line",
+            "marker": {
+                "size": 20,
+                "color": [
+                    "rgb(0, 0, 0, 0.5)",
+                    "rgb(255, 0, 0, 0.5)",
+                    "rgb(0, 255, 0, 0.5)",
+                    "rgb(0, 0, 255, 0.5)"
+                ],
+                "line": {
+                    "width": 10,
+                    "color": [
+                        "rgb(191, 191, 191, 0.5)",
+                        "rgb(0, 255, 255, 0.5)",
+                        "rgb(255, 0, 255, 0.5)",
+                        "rgb(255, 255, 0, 0.5)"
+                    ]
+                }
+            },
+            "line": {
+                "width": 20
+            }
+        },
+        {
+            "name": "rgb(r,g,b,a)+opacity",
+            "type": "scattergl",
+            "x": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "y": [
+                0.5,
+                0.5,
+                0.5,
+                0.5
+            ],
+            "opacity": 0.5,
+            "mode": "marker+line",
+            "marker": {
+                "size": 20,
+                "color": [
+                    "rgb(0, 0, 0, 0.5)",
+                    "rgb(255, 0, 0, 0.5)",
+                    "rgb(0, 255, 0, 0.5)",
+                    "rgb(0, 0, 255, 0.5)"
+                ],
+                "line": {
+                    "width": 10,
+                    "color": [
+                        "rgb(191, 191, 191, 0.5)",
+                        "rgb(0, 255, 255, 0.5)",
+                        "rgb(255, 0, 255, 0.5)",
+                        "rgb(255, 255, 0, 0.5)"
+                    ]
+                }
+            },
+            "line": {
+                "width": 20
+            }
+        },
+        {
+            "name": "rgba(r,g,b,a)",
+            "type": "scattergl",
+            "x": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "y": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "mode": "marker+line",
+            "marker": {
+                "size": 20,
+                "color": [
+                    "rgba(0, 0, 0, 0.5)",
+                    "rgba(255, 0, 0, 0.5)",
+                    "rgba(0, 255, 0, 0.5)",
+                    "rgba(0, 0, 255, 0.5)"
+                ],
+                "line": {
+                    "width": 10,
+                    "color": [
+                        "rgba(191, 191, 191, 0.5)",
+                        "rgba(0, 255, 255, 0.5)",
+                        "rgba(255, 0, 255, 0.5)",
+                        "rgba(255, 255, 0, 0.5)"
+                    ]
+                }
+            },
+            "line": {
+                "width": 20
+            }
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 400,
+        "xaxis": { "nticks": 20 },
+        "yaxis": { "nticks": 20 },
+        "title": {
+            "text": "Should not display alpha<br>when having rgb not rgba"
+        }
+    }
+}
