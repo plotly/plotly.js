@@ -1283,11 +1283,11 @@ describe('Test splom update switchboard:', function() {
             ]);
 
             expect(toPlainArray(scene.matrixOptions.colors[0]))
-                .toBeCloseToArray([0.890, 0.6, 0.4078, 1], 1, msg + '- 0');
+                .toBeCloseToArray([0.890, 0.6, 0.4078], 1, msg + '- 0');
             expect(toPlainArray(scene.matrixOptions.colors[1]))
-                .toBeCloseToArray([0.81176, 0.3333, 0.2431, 1], 1, msg + '- 1');
+                .toBeCloseToArray([0.81176, 0.3333, 0.2431], 1, msg + '- 1');
             expect(toPlainArray(scene.matrixOptions.colors[2]))
-                .toBeCloseToArray([0.6980, 0.0392, 0.1098, 1], 1, msg + '- 2');
+                .toBeCloseToArray([0.6980, 0.0392, 0.1098], 1, msg + '- 2');
 
             return Plotly.restyle(gd, 'marker.size', 20);
         })
