@@ -797,7 +797,7 @@ function determineInsideTextFont(trace, pt, layoutFont) {
 }
 
 function getInscribedRadiusFraction(pt) {
-    if(pt.rpx0 === 0 && pt.xmid === Math.PI) {
+    if(pt.rpx0 === 0 && Lib.isFullCircle([pt.x0, pt.x1])) {
         // special case of 100% with no hole
         return 1;
     } else {
