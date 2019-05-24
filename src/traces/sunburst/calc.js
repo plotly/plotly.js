@@ -37,6 +37,11 @@ exports.calc = function(gd, trace) {
         refs[v] = 1;
     };
 
+    // treat number `0` as valid
+    var isValidKey = function(k) {
+        return k || typeof k === 'number';
+    };
+
     var isValidVal = function(i) {
         return !hasVals || (isNumeric(vals[i]) && vals[i] >= 0);
     };
@@ -47,11 +52,11 @@ exports.calc = function(gd, trace) {
 
     if(hasIds) {
         len = Math.min(ids.length, parents.length);
-        isValid = function(i) { return ids[i] && isValidVal(i); };
+        isValid = function(i) { return isValidKey(ids[i]) && isValidVal(i); };
         getId = function(i) { return String(ids[i]); };
     } else {
         len = Math.min(labels.length, parents.length);
-        isValid = function(i) { return labels[i] && isValidVal(i); };
+        isValid = function(i) { return isValidKey(labels[i]) && isValidVal(i); };
         // TODO We could allow some label / parent duplication
         //
         // From AJ:
@@ -67,13 +72,13 @@ exports.calc = function(gd, trace) {
     for(var i = 0; i < len; i++) {
         if(isValid(i)) {
             var id = getId(i);
-            var pid = parents[i] ? String(parents[i]) : '';
+            var pid = isValidKey(parents[i]) ? String(parents[i]) : '';
 
             var cdi = {
                 i: i,
                 id: id,
                 pid: pid,
-                label: labels[i] ? String(labels[i]) : ''
+                label: isValidKey(labels[i]) ? String(labels[i]) : ''
             };
 
             if(hasVals) cdi.v = +vals[i];
