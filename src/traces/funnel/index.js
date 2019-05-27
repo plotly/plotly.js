@@ -26,7 +26,7 @@ module.exports = {
     basePlotModule: require('../../plots/cartesian'),
     categories: ['bar-like', 'cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'],
     meta: {
-        description: [ 
+        description: [
             'Visualize stages in a process using length-encoded bars. This trace can be used',
             'to show data in either a part-to-whole representation wherein each item appears',
             'in a single stage, or in a "drop-off" representation wherein each item appears in',
