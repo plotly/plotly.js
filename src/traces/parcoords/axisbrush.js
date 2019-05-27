@@ -28,34 +28,36 @@ function closeToCovering(v, vAdjacent) { return v * (1 - snapClose) + vAdjacent 
 function ordinalScaleSnapLo(a, v, existingRanges) {
     if(overlappingExisting(v, existingRanges)) return v;
 
-    var aPrev = a[0];
-    var aPrevPrev = aPrev;
-    for(var i = 1; i < a.length; i++) {
-        var aNext = a[i];
+    var aHere = a[0];
+    var aPrev = aHere;
+    for(var i = 0; i < a.length - 1; i++) {
+        var nextI = i + 1;
+        var aNext = a[nextI];
 
         // very close to the previous - snap down to it
-        if(v < closeToCovering(aPrev, aNext)) return snapOvershoot(aPrev, aPrevPrev);
-        if(v < aNext || i === a.length - 1) return snapOvershoot(aNext, aPrev);
+        if(v < closeToCovering(aHere, aNext)) return snapOvershoot(aHere, aPrev);
+        if(v < aNext || nextI === a.length - 1) return snapOvershoot(aNext, aHere);
 
-        aPrevPrev = aPrev;
-        aPrev = aNext;
+        aPrev = aHere;
+        aHere = aNext;
     }
 }
 
 function ordinalScaleSnapHi(a, v, existingRanges) {
     if(overlappingExisting(v, existingRanges)) return v;
 
-    var aPrev = a[a.length - 1];
-    var aPrevPrev = aPrev;
-    for(var i = a.length - 2; i >= 0; i--) {
-        var aNext = a[i];
+    var aHere = a[a.length - 1];
+    var aPrev = aHere;
+    for(var i = a.length - 1; i > 0; i--) {
+        var nextI = i - 1;
+        var aNext = a[nextI];
 
         // very close to the previous - snap down to it
-        if(v > closeToCovering(aPrev, aNext)) return snapOvershoot(aPrev, aPrevPrev);
-        if(v > aNext || i === a.length - 1) return snapOvershoot(aNext, aPrev);
+        if(v > closeToCovering(aHere, aNext)) return snapOvershoot(aHere, aPrev);
+        if(v > aNext || nextI === 0) return snapOvershoot(aNext, aHere);
 
-        aPrevPrev = aPrev;
-        aPrev = aNext;
+        aPrev = aHere;
+        aHere = aNext;
     }
 }
 
