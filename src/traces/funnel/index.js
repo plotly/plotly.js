@@ -26,12 +26,12 @@ module.exports = {
     basePlotModule: require('../../plots/cartesian'),
     categories: ['bar-like', 'cartesian', 'svg', 'oriented', 'showLegend', 'zoomScale'],
     meta: {
-        description: [ // TODO: update description
-            'Draws funnel trace.',
-            '"Funnel charts are a type of chart, often used to represent stages in a sales process',
-            'and show the amount of potential revenue for each stage. This type of chart can also',
-            'be useful in identifying potential problem areas in an organization’s sales processes.',
-            'A funnel chart is similar to a stacked percent bar chart." (https://en.wikipedia.org/wiki/Funnel_chart)'
+        description: [
+            'Visualize stages in a process using length-encoded bars. This trace can be used',
+            'to show data in either a part-to-whole representation wherein each item appears',
+            'in a single stage, or in a "drop-off" representation wherein each item appears in',
+            'each stage it traversed. See also the "funnelarea" trace type for a different',
+            'approach to visualizing funnel data.'
         ].join(' ')
     }
 };
