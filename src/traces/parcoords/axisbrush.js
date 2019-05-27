@@ -25,36 +25,28 @@ function closeToCovering(v, vAdjacent) { return v * (1 - snapClose) + vAdjacent 
 // so it's clear we're covering it
 // find the interval we're in, and snap to 1/4 the distance to the next
 // these two could be unified at a slight loss of readability / perf
-function ordinalScaleSnapLo(a, v, existingRanges) {
+function ordinalScaleSnap(isHigh, a, v, existingRanges) {
     if(overlappingExisting(v, existingRanges)) return v;
 
-    var aHere = a[0];
-    var aPrev = aHere;
-    for(var i = 0; i < a.length - 1; i++) {
-        var nextI = i + 1;
-        var aNext = a[nextI];
+    var dir = isHigh ? -1 : 1;
 
-        // very close to the previous - snap down to it
-        if(v < closeToCovering(aHere, aNext)) return snapOvershoot(aHere, aPrev);
-        if(v < aNext || nextI === a.length - 1) return snapOvershoot(aNext, aHere);
-
-        aPrev = aHere;
-        aHere = aNext;
+    var first = 0;
+    var last = a.length - 1;
+    if(dir < 0) {
+        var tmp = first;
+        first = last;
+        last = tmp;
     }
-}
 
-function ordinalScaleSnapHi(a, v, existingRanges) {
-    if(overlappingExisting(v, existingRanges)) return v;
-
-    var aHere = a[a.length - 1];
+    var aHere = a[first];
     var aPrev = aHere;
-    for(var i = a.length - 1; i > 0; i--) {
-        var nextI = i - 1;
+    for(var i = first; dir * i < dir * last; i += dir) {
+        var nextI = i + dir;
         var aNext = a[nextI];
 
         // very close to the previous - snap down to it
-        if(v > closeToCovering(aHere, aNext)) return snapOvershoot(aHere, aPrev);
-        if(v > aNext || nextI === 0) return snapOvershoot(aNext, aHere);
+        if(dir * v < dir * closeToCovering(aHere, aNext)) return snapOvershoot(aHere, aPrev);
+        if(dir * v < dir * aNext || nextI === last) return snapOvershoot(aNext, aHere);
 
         aPrev = aHere;
         aHere = aNext;
@@ -335,8 +327,8 @@ function attachDragBehavior(selection) {
                     var a = d.unitTickvals;
                     if(a[a.length - 1] < a[0]) a.reverse();
                     s.newExtent = [
-                        ordinalScaleSnapLo(a, s.newExtent[0], s.stayingIntervals),
-                        ordinalScaleSnapHi(a, s.newExtent[1], s.stayingIntervals)
+                        ordinalScaleSnap(0, a, s.newExtent[0], s.stayingIntervals),
+                        ordinalScaleSnap(1, a, s.newExtent[1], s.stayingIntervals)
                     ];
                     var hasNewExtent = s.newExtent[1] > s.newExtent[0];
                     s.extent = s.stayingIntervals.concat(hasNewExtent ? [s.newExtent] : []);
@@ -507,8 +499,8 @@ function cleanRanges(ranges, dimension) {
         var sortedTickVals = dimension.tickvals.slice().sort(sortAsc);
         ranges = ranges.map(function(ri) {
             var rSnapped = [
-                ordinalScaleSnapLo(sortedTickVals, ri[0], []),
-                ordinalScaleSnapHi(sortedTickVals, ri[1], [])
+                ordinalScaleSnap(0, sortedTickVals, ri[0], []),
+                ordinalScaleSnap(1, sortedTickVals, ri[1], [])
             ];
             if(rSnapped[1] > rSnapped[0]) return rSnapped;
         })

@@ -1,0 +1,85 @@
+{
+    "data": [
+        {
+            "type": "parcoords",
+            "line": {
+                "colorscale": "Portland",
+                "showscale": true,
+                "reversescale": true,
+                "color": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "dimensions": [
+                {
+                    "label": "A",
+                    "values": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8
+                    ],
+                    "tickvals": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8
+                    ],
+                    "constraintrange": [
+                        [
+                            1,
+                            1
+                        ],
+                        [
+                            3,
+                            3
+                        ],
+                        [
+                            5,
+                            6
+                        ],
+                        [
+                            8,
+                            8
+                        ]
+                    ]
+                },
+                {
+                    "label": "B",
+                    "values": [
+                        1,
+                        2,
+                        3,
+                        5,
+                        8,
+                        13,
+                        22,
+                        35
+                    ]
+                }
+            ]
+        }
+    ],
+    "layout": {
+        "width": 400,
+        "height": 400,
+        "title": {
+            "text": "should select first and last enum"
+        }
+    }
+}
