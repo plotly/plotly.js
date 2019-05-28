@@ -1088,7 +1088,7 @@ describe('Test histogram', function() {
                 expect(gd._fullLayout.height).toBe(400);
 
                 gd._fullData.forEach(function(trace, i) {
-                    expect(trace._autoBinFinished).toBeUndefined(i);
+                    expect(trace._xautoBinFinished).toBeUndefined(i);
                 });
 
                 return Plotly.relayout(gd, {width: 500, height: 500});
@@ -1098,7 +1098,7 @@ describe('Test histogram', function() {
                 expect(gd._fullLayout.height).toBe(500);
 
                 gd._fullData.forEach(function(trace, i) {
-                    expect(trace._autoBinFinished).toBeUndefined(i);
+                    expect(trace._xautoBinFinished).toBeUndefined(i);
                 });
             })
             .catch(failTest)
