@@ -479,5 +479,53 @@ describe('Test histogram2d hover:', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('shows the data range when bins have no value in it', function(done) {
+            function _check(msg, xpx, ypx, lines) {
+                _hover(xpx, ypx);
+                assertHoverLabelContent({nums: lines.join('\n')}, msg);
+            }
+
+            Plotly.newPlot('graph', [{
+                type: 'histogram2d',
+                x: [18.78],
+                y: [3],
+                xbins: {
+                    start: 0,
+                    end: 55,
+                    size: 5
+                },
+                ybins: {
+                    start: 0,
+                    end: 11,
+                    size: 1
+                }
+            }], {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                expect(gd.calcdata[0][0].xRanges).toBeCloseTo2DArray([
+                    [0, 4], [5, 9], [10, 14],
+                    [18.78, 18.78],
+                    [20, 24], [25, 29], [30, 34],
+                    [35, 39], [40, 44], [45, 49], [50, 54]
+                ], 2, 'x-bins with some spread');
+                expect(gd.calcdata[0][0].yRanges).toBeCloseTo2DArray([
+                    [0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5],
+                    [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]
+                ], 2, 'y-bins with single values');
+
+                _check('on pt (!)', 100, 275, ['x: 18.78', 'y: 3', 'z: 1']);
+                _check('on x of pt, above it', 100, 200, ['x: 18.78', 'y: 5', 'z: 0']);
+                _check('off left/top of pt', 50, 100, ['x: 5 - 9', 'y: 8', 'z: 0']);
+                _check('off right/top of pt', 300, 100, ['x: 50 - 54', 'y: 8', 'z: 0']);
+                _check('off left/bottom of pt', 50, 325, ['x: 5 - 9', 'y: 2', 'z: 0']);
+                _check('off right/bottom of pt', 300, 325, ['x: 50 - 54', 'y: 2', 'z: 0']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
