@@ -41,11 +41,12 @@ function formatColor(containerIn, opacityIn, len) {
     var colorIn = containerIn.color;
     var isArrayColorIn = isArrayOrTypedArray(colorIn);
     var isArrayOpacityIn = isArrayOrTypedArray(opacityIn);
+    var cOpts = Colorscale.extractOpts(containerIn);
     var colorOut = [];
 
     var sclFunc, getColor, getOpacity, colori, opacityi;
 
-    if(containerIn.colorscale !== undefined) {
+    if(cOpts.colorscale !== undefined) {
         sclFunc = Colorscale.makeColorScaleFuncFromTrace(containerIn);
     } else {
         sclFunc = validateColor;
