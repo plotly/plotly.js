@@ -62,14 +62,17 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     } else {
         var calendar = trace[ax._id.charAt(0) + 'calendar'];
 
-        if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) {
-            v0 = arrayIn[0];
-        } else if(v0In === undefined) {
-            v0 = 0;
-        } else if(isHist || ax.type === 'category' || ax.type === 'multicategory') {
+        if(isHist) {
             v0 = ax.r2c(v0In, 0, calendar);
         } else {
-            v0 = ax.d2c(v0In, 0, calendar);
+            if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) {
+                v0 = arrayIn[0];
+            } else if(v0In === undefined) {
+                v0 = 0;
+            } else {
+                var fn = ax.type === 'log' ? ax.d2c : ax.r2c;
+                v0 = fn(v0In, 0, calendar);
+            }
         }
 
         dv = dvIn || 1;
