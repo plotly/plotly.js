@@ -9,6 +9,7 @@
 'use strict';
 
 var d3 = require('d3');
+var rgba = require('color-rgba');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
@@ -102,7 +103,10 @@ function ordinalScale(dimension) {
 
 function unitToColorScale(cscale) {
     var colorStops = cscale.map(function(d) { return d[0]; });
-    var colorTuples = cscale.map(function(d) { return d3.rgb(d[1]); });
+    var colorTuples = cscale.map(function(d) {
+        var RGBA = rgba(d[1]);
+        return d3.rgb('rgb(' + RGBA[0] + ',' + RGBA[1] + ',' + RGBA[2] + ')');
+    });
     var prop = function(n) { return function(o) { return o[n]; }; };
 
     // We can't use d3 color interpolation as we may have non-uniform color palette raster
