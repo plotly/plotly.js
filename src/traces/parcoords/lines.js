@@ -373,7 +373,7 @@ module.exports = function(canvasGL, d) {
     function makeConstraints() {
         var loHi, abcd, d;
 
-        var lims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
+        var limits = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
 
         for(loHi = 0; loHi < 2; loHi++) {
             for(abcd = 0; abcd < 4; abcd++) {
@@ -383,7 +383,7 @@ module.exports = function(canvasGL, d) {
                     if(dimP < initialDims.length) {
                         lim = initialDims[dimP].brush.filter.getBounds()[loHi];
                     } else lim = loHi;
-                    lims[loHi][abcd][d] = lim + (2 * loHi - 1) * filterEpsilon;
+                    limits[loHi][abcd][d] = lim + (2 * loHi - 1) * filterEpsilon;
                 }
             }
         }
@@ -432,14 +432,14 @@ module.exports = function(canvasGL, d) {
         return {
             maskTexture: maskTexture,
             maskHeight: maskHeight,
-            loA: lims[0][0],
-            loB: lims[0][1],
-            loC: lims[0][2],
-            loD: lims[0][3],
-            hiA: lims[1][0],
-            hiB: lims[1][1],
-            hiC: lims[1][2],
-            hiD: lims[1][3]
+            loA: limits[0][0],
+            loB: limits[0][1],
+            loC: limits[0][2],
+            loD: limits[0][3],
+            hiA: limits[1][0],
+            hiB: limits[1][1],
+            hiC: limits[1][2],
+            hiD: limits[1][3]
         };
     }
 
