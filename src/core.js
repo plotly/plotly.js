@@ -9,7 +9,7 @@
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.47.4';
+exports.version = '1.48.0';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
