@@ -1,0 +1,47 @@
+{
+    "data": [
+        {
+            "dimensions": [
+                {
+                    "values": [
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "values": [
+                        1,
+                        0
+                    ]
+                }
+            ],
+            "line": {
+                "cmax": 1,
+                "cmin": 0,
+                "color": [
+                    0,
+                    1
+                ],
+                "colorscale": [
+                    [
+                        0,
+                        "rgba(255,0,0,1)"
+                    ],
+                    [
+                        1,
+                        "rgba(0,0,255,1)"
+                    ]
+                ],
+                "showscale": true
+            },
+            "type": "parcoords"
+        }
+    ],
+    "layout": {
+        "width": 400,
+        "height": 400,
+        "title": {
+            "text": "should work with rgba colorscale"
+        }
+    }
+}
