@@ -7,7 +7,7 @@ attribute vec4 p0, p1, p2, p3,
 
 attribute vec4 pf;
 
-uniform mat4 dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D;
+uniform mat4 dim0A, dim2A, dim0B, dim2B, dim0C, dim2C, dim0D, dim2D;
 
 uniform vec2 resolution,
              viewBoxPosition,
@@ -36,7 +36,7 @@ void main() {
         resolution, viewBoxPosition, viewBoxSize,
         p,
         sign(pf[3]),
-        dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D
+        dim0A, dim2A, dim0B, dim2B, dim0C, dim2C, dim0D, dim2D
     );
 
     float clampedColorIndex = clamp((prominence - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0);

@@ -64,13 +64,13 @@ vec4 position(
         vec2 resolution, vec2 viewBoxPosition, vec2 viewBoxSize,
         mat4 dims[4],
         float signum,
-        mat4 dim1A, mat4 dim2A, mat4 dim1B, mat4 dim2B, mat4 dim1C, mat4 dim2C, mat4 dim1D, mat4 dim2D,
+        mat4 dim0A, mat4 dim2A, mat4 dim0B, mat4 dim2B, mat4 dim0C, mat4 dim2C, mat4 dim0D, mat4 dim2D,
         mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD,
         sampler2D mask, float maskHeight
     ) {
 
     float x = 0.5 * signum + 0.5;
-    float y = axisY(x, dims, dim1A, dim2A, dim1B, dim2B, dim1C, dim2C, dim1D, dim2D);
+    float y = axisY(x, dims, dim0A, dim2A, dim0B, dim2B, dim0C, dim2C, dim0D, dim2D);
 
     float show = float(
                             withinBoundingBox(dims, loA, hiA, loB, hiB, loC, hiC, loD, hiD)

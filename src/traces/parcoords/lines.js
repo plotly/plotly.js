@@ -265,13 +265,13 @@ module.exports = function(canvasGL, d) {
             resolution: regl.prop('resolution'),
             viewBoxPosition: regl.prop('viewBoxPosition'),
             viewBoxSize: regl.prop('viewBoxSize'),
-            dim1A: regl.prop('dim1A'),
+            dim0A: regl.prop('dim0A'),
             dim2A: regl.prop('dim2A'),
-            dim1B: regl.prop('dim1B'),
+            dim0B: regl.prop('dim0B'),
             dim2B: regl.prop('dim2B'),
-            dim1C: regl.prop('dim1C'),
+            dim0C: regl.prop('dim0C'),
             dim2C: regl.prop('dim2C'),
-            dim1D: regl.prop('dim1D'),
+            dim0D: regl.prop('dim0D'),
             dim2D: regl.prop('dim2D'),
             loA: regl.prop('loA'),
             hiA: regl.prop('hiA'),
@@ -345,10 +345,10 @@ module.exports = function(canvasGL, d) {
             i0: i0,
             i1: i1,
 
-            dim1A: dims[0][0],
-            dim1B: dims[0][1],
-            dim1C: dims[0][2],
-            dim1D: dims[0][3],
+            dim0A: dims[0][0],
+            dim0B: dims[0][1],
+            dim0C: dims[0][2],
+            dim0D: dims[0][3],
             dim2A: dims[1][0],
             dim2B: dims[1][1],
             dim2C: dims[1][2],
@@ -460,8 +460,8 @@ module.exports = function(canvasGL, d) {
                 highestX = panels[I].dim2.canvasX;
                 rightmost = I;
             }
-            if(panels[I].dim1.canvasX < lowestX) {
-                lowestX = panels[I].dim1.canvasX;
+            if(panels[I].dim0.canvasX < lowestX) {
+                lowestX = panels[I].dim0.canvasX;
                 leftmost = I;
             }
         }
@@ -474,9 +474,9 @@ module.exports = function(canvasGL, d) {
 
         for(I = 0; I < panelCount; I++) {
             var panel = panels[I];
-            var dim1 = panel.dim1;
+            var dim0 = panel.dim0;
             var dim2 = panel.dim2;
-            var i0 = dim1.crossfilterDimensionIndex;
+            var i0 = dim0.crossfilterDimensionIndex;
             var i1 = dim2.crossfilterDimensionIndex;
             var x = panel.canvasX;
             var y = panel.canvasY;
@@ -485,7 +485,7 @@ module.exports = function(canvasGL, d) {
             var xTo = x + panelSizeX;
             if(setChanged || !previousAxisOrder[i0] || previousAxisOrder[i0][0] !== x || previousAxisOrder[i0][1] !== xTo) {
                 previousAxisOrder[i0] = [x, xTo];
-                var item = makeItem(i0, i1, x, y, panelSizeX, panelSizeY, dim1.crossfilterDimensionIndex, I, leftmost, rightmost, constraints);
+                var item = makeItem(i0, i1, x, y, panelSizeX, panelSizeY, dim0.crossfilterDimensionIndex, I, leftmost, rightmost, constraints);
                 renderState.clearOnly = clearOnly;
                 renderBlock(regl, glAes, renderState, setChanged ? model.lines.blockLineCount : sampleCount, sampleCount, item);
             }
