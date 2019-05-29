@@ -383,6 +383,7 @@ module.exports = function(canvasGL, d) {
                     if(dimP < initialDims.length) {
                         lim = initialDims[dimP].brush.filter.getBounds()[loHi];
                     } else lim = loHi;
+
                     limits[loHi][abcd][d] = lim + (2 * loHi - 1) * filterEpsilon;
                 }
             }
@@ -396,9 +397,11 @@ module.exports = function(canvasGL, d) {
             ];
         }
 
-        var mask = Array.apply(null, new Array(maskHeight * channelCount)).map(function() {
-            return 255;
-        });
+        var mask = [];
+        for(var i = 0; i < maskHeight * channelCount; i++) {
+            mask[i] = 255;
+        }
+
         for(var dimIndex = 0; dimIndex < initialDims.length; dimIndex++) {
             var bitIndex = dimIndex % bitsPerByte;
             var byteIndex = (dimIndex - bitIndex) / bitsPerByte;
