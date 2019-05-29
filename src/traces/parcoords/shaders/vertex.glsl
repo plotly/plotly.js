@@ -40,12 +40,16 @@ int iMod(int a, int b) {
     return a - b * (a / b);
 }
 
+bool vHide(vec4 p, vec4 lo, vec4 hi) {
+    return clamp(p, lo, hi) != p;
+}
+
 bool mShow(mat4 p, mat4 lo, mat4 hi) {
     return !(
-        clamp(p[0], lo[0], hi[0]) != p[0] ||
-        clamp(p[1], lo[1], hi[1]) != p[1] ||
-        clamp(p[2], lo[2], hi[2]) != p[2] ||
-        clamp(p[3], lo[3], hi[3]) != p[3]
+        vHide(p[0], lo[0], hi[0]) ||
+        vHide(p[1], lo[1], hi[1]) ||
+        vHide(p[2], lo[2], hi[2]) ||
+        vHide(p[3], lo[3], hi[3])
     );
 }
 
