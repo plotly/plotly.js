@@ -25,25 +25,25 @@ float val(mat4 p, mat4 v) {
 
 float axisY(
         float x,
-        mat4 d[4],
+        mat4 A, mat4 B, mat4 C, mat4 D,
         mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D
     ) {
 
-    float y1 = val(d[0], dim0A) + val(d[1], dim0B) + val(d[2], dim0C) + val(d[3], dim0D);
-    float y2 = val(d[0], dim1A) + val(d[1], dim1B) + val(d[2], dim1C) + val(d[3], dim1D);
+    float y1 = val(A, dim0A) + val(B, dim0B) + val(C, dim0C) + val(D, dim0D);
+    float y2 = val(A, dim1A) + val(B, dim1B) + val(C, dim1C) + val(D, dim1D);
     return y1 * (1.0 - x) + y2 * x;
 }
 
 vec4 unfilteredPosition(
         vec2 resolution,
-        mat4 dims[4],
+        mat4 A, mat4 B, mat4 C, mat4 D,
         float v
     ) {
 
     float depth = 1.0 - abs(v);
 
     float x = 0.5 * sign(v) + 0.5;
-    float y = axisY(x, dims, dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D);
+    float y = axisY(x, A, B, C, D, dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D);
 
     vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);
 
@@ -56,15 +56,14 @@ vec4 unfilteredPosition(
 
 void main() {
 
-    mat4 dims[4];
-    dims[0] = mat4(p0, p1, p2, p3);
-    dims[1] = mat4(p4, p5, p6, p7);
-    dims[2] = mat4(p8, p9, pa, pb);
-    dims[3] = mat4(pc, pd, pe, abs(pf));
+    mat4 A = mat4(p0, p1, p2, p3);
+    mat4 B = mat4(p4, p5, p6, p7);
+    mat4 C = mat4(p8, p9, pa, pb);
+    mat4 D = mat4(pc, pd, pe, abs(pf));
 
     gl_Position = unfilteredPosition(
         resolution,
-        dims,
+        A, B, C, D,
         pf[3]
     );
 

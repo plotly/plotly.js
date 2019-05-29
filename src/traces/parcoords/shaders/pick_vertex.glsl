@@ -23,17 +23,14 @@ varying vec4 fragColor;
 
 void main() {
 
-    float prominence = abs(pf[3]);
-
-    mat4 dims[4];
-    dims[0] = mat4(p0, p1, p2, p3);
-    dims[1] = mat4(p4, p5, p6, p7);
-    dims[2] = mat4(p8, p9, pa, pb);
-    dims[3] = mat4(pc, pd, pe, abs(pf));
+    mat4 A = mat4(p0, p1, p2, p3);
+    mat4 B = mat4(p4, p5, p6, p7);
+    mat4 C = mat4(p8, p9, pa, pb);
+    mat4 D = mat4(pc, pd, pe, abs(pf));
 
     gl_Position = position(
         resolution,
-        dims,
+        A, B, C, D,
         pf[3],
 
         dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
