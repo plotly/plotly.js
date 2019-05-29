@@ -41,7 +41,7 @@ vec4 unfilteredPosition(
     vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);
 
     return vec4(
-        2.0 * viewBoxXY,
+        2.0 * viewBoxXY / resolution - 1.0,
         depth,
         1.0
     );
@@ -54,17 +54,10 @@ void main() {
     mat4 C = mat4(p8, p9, pa, pb);
     mat4 D = mat4(pc, pd, pe, abs(pf));
 
-    vec4 pos = unfilteredPosition(
-        pf[3],
-        A, B, C, D
-    );
+    float v = pf[3];
 
-    gl_Position = vec4(
-        pos.xy / resolution - 1.0,
-        pos.zw
-    );
+    gl_Position = unfilteredPosition(v, A, B, C, D);
 
-    float prominence = abs(pf[3]);
-    float clampedColorIndex = clamp((prominence - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0);
+    float clampedColorIndex = clamp((abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0);
     fragColor = texture2D(palette, vec2((clampedColorIndex * 255.0 + 0.5) / 256.0, 0.5));
 }

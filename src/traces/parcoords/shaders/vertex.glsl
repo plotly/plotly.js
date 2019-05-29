@@ -28,8 +28,7 @@ float val(mat4 p, mat4 v) {
 
 float axisY(
         float ratio,
-        mat4 A, mat4 B, mat4 C, mat4 D,
-        mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D
+        mat4 A, mat4 B, mat4 C, mat4 D
     ) {
 
     float y1 = val(A, dim0A) + val(B, dim0B) + val(C, dim0C) + val(D, dim0D);
@@ -59,8 +58,7 @@ bool mshow(mat4 p, mat4 lo, mat4 hi) {
 }
 
 bool withinBoundingBox(
-        mat4 A, mat4 B, mat4 C, mat4 D,
-        mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD
+        mat4 A, mat4 B, mat4 C, mat4 D
     ) {
 
     return mshow(A, loA, hiA) &&
@@ -69,7 +67,7 @@ bool withinBoundingBox(
            mshow(D, loD, hiD);
 }
 
-bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D, sampler2D mask, float height) {
+bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
 
     mat4 pnts[4];
     pnts[0] = A;
@@ -87,9 +85,9 @@ bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D, sampler2D mask, float heig
                 bitInByteStepper = mod8(j * 4 + k);
                 valX = i * 2 + j / 2;
                 valY = pnts[i][j][k];
-                valueY = valY * (height - 1.0) + 0.5;
+                valueY = valY * (maskHeight - 1.0) + 0.5;
                 scaleX = (float(valX) + 0.5) / 8.0;
-                hit = int(texture2D(mask, vec2(scaleX, (valueY + 0.5) / height))[3] * 255.0) / int(pow(2.0, float(bitInByteStepper)));
+                hit = int(texture2D(mask, vec2(scaleX, (valueY + 0.5) / maskHeight))[3] * 255.0) / int(pow(2.0, float(bitInByteStepper)));
                 result = result && mod2(hit) == 1;
             }
         }
@@ -99,28 +97,24 @@ bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D, sampler2D mask, float heig
 
 vec4 position(
         float v,
-        mat4 A, mat4 B, mat4 C, mat4 D,
-        mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D,
-        mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD,
-        vec2 viewBoxPosition, vec2 viewBoxSize,
-        sampler2D mask, float maskHeight
+        mat4 A, mat4 B, mat4 C, mat4 D
     ) {
 
     float depth = 1.0 - abs(v);
 
     float x = 0.5 * sign(v) + 0.5;
-    float y = axisY(x, A, B, C, D, dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D);
+    float y = axisY(x, A, B, C, D);
 
     float show = float(
-        withinBoundingBox(A, B, C, D, loA, hiA, loB, hiB, loC, hiC, loD, hiD) &&
-        withinRasterMask(A, B, C, D, mask, maskHeight)
+        withinBoundingBox(A, B, C, D) &&
+        withinRasterMask(A, B, C, D)
     );
 
     vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);
     float depthOrHide = depth + 2.0 * (1.0 - show);
 
     return vec4(
-        2.0 * viewBoxXY,
+        2.0 * viewBoxXY / resolution - 1.0,
         depthOrHide,
         1.0
     );
@@ -135,20 +129,7 @@ void main() {
 
     float v = pf[3];
 
-    vec4 pos = position(
-        v,
-        A, B, C, D,
-
-        dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
-        loA, hiA, loB, hiB, loC, hiC, loD, hiD,
-        viewBoxPosition, viewBoxSize,
-        mask, maskHeight
-    );
-
-    gl_Position = vec4(
-        pos.xy / resolution - 1.0,
-        pos.zw
-    );
+    gl_Position = position(v, A, B, C, D);
 
     fragColor = (isPickLayer > 0.0) ? vec4(pf.rgb, 1.0) : texture2D(palette, vec2(
         (clamp((abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0) * 255.0 + 0.5) / 256.0, 0.5
