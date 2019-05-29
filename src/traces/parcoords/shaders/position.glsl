@@ -61,10 +61,9 @@ bool withinRasterMask(mat4 d[4], sampler2D mask, float height) {
 }
 
 vec4 position(
-        float depth,
         vec2 resolution,
         mat4 dims[4],
-        float signum,
+        float v,
 
         mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D,
         mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD,
@@ -72,7 +71,9 @@ vec4 position(
         sampler2D mask, float maskHeight
     ) {
 
-    float x = 0.5 * signum + 0.5;
+    float depth = 1.0 - abs(v);
+
+    float x = 0.5 * sign(v) + 0.5;
     float y = axisY(x, dims, dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D);
 
     float show = float(

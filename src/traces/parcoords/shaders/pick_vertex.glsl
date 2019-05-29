@@ -34,10 +34,9 @@ void main() {
     dims[3] = mat4(pc, pd, pe, abs(pf));
 
     gl_Position = position(
-        1.0 - prominence,
         resolution,
         dims,
-        sign(pf[3]),
+        pf[3],
 
         dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
         loA, hiA, loB, hiB, loC, hiC, loD, hiD,
