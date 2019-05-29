@@ -437,11 +437,11 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         for(var p = 0; p < panelCount; p++) {
             var panel = panels[p] || (panels[p] = {});
             var dim0 = dimData[p];
-            var dim2 = dimData[p + 1];
+            var dim1 = dimData[p + 1];
             panel.dim0 = dim0;
-            panel.dim2 = dim2;
+            panel.dim1 = dim1;
             panel.canvasX = dim0.canvasX;
-            panel.panelSizeX = dim2.canvasX - dim0.canvasX;
+            panel.panelSizeX = dim1.canvasX - dim0.canvasX;
             panel.panelSizeY = vm.model.canvasHeight;
             panel.y = 0;
             panel.canvasY = 0;

@@ -7,7 +7,7 @@ attribute vec4 p0, p1, p2, p3,
 
 attribute vec4 pf;
 
-uniform mat4 dim0A, dim2A, dim0B, dim2B, dim0C, dim2C, dim0D, dim2D,
+uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
              loA, hiA, loB, hiB, loC, hiC, loD, hiD;
 
 uniform vec2 resolution,
@@ -39,7 +39,7 @@ void main() {
         resolution, viewBoxPosition, viewBoxSize,
         p,
         sign(pf[3]),
-        dim0A, dim2A, dim0B, dim2B, dim0C, dim2C, dim0D, dim2D,
+        dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
         loA, hiA, loB, hiB, loC, hiC, loD, hiD,
         mask, maskHeight
     );

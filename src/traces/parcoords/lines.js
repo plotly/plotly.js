@@ -266,13 +266,13 @@ module.exports = function(canvasGL, d) {
             viewBoxPosition: regl.prop('viewBoxPosition'),
             viewBoxSize: regl.prop('viewBoxSize'),
             dim0A: regl.prop('dim0A'),
-            dim2A: regl.prop('dim2A'),
+            dim1A: regl.prop('dim1A'),
             dim0B: regl.prop('dim0B'),
-            dim2B: regl.prop('dim2B'),
+            dim1B: regl.prop('dim1B'),
             dim0C: regl.prop('dim0C'),
-            dim2C: regl.prop('dim2C'),
+            dim1C: regl.prop('dim1C'),
             dim0D: regl.prop('dim0D'),
-            dim2D: regl.prop('dim2D'),
+            dim1D: regl.prop('dim1D'),
             loA: regl.prop('loA'),
             hiA: regl.prop('hiA'),
             loB: regl.prop('loB'),
@@ -349,10 +349,10 @@ module.exports = function(canvasGL, d) {
             dim0B: dims[0][1],
             dim0C: dims[0][2],
             dim0D: dims[0][3],
-            dim2A: dims[1][0],
-            dim2B: dims[1][1],
-            dim2C: dims[1][2],
-            dim2D: dims[1][3],
+            dim1A: dims[1][0],
+            dim1B: dims[1][1],
+            dim1C: dims[1][2],
+            dim1D: dims[1][3],
 
             colorClamp: colorClamp,
 
@@ -456,8 +456,8 @@ module.exports = function(canvasGL, d) {
         var highestX = -Infinity;
 
         for(I = 0; I < panelCount; I++) {
-            if(panels[I].dim2.canvasX > highestX) {
-                highestX = panels[I].dim2.canvasX;
+            if(panels[I].dim1.canvasX > highestX) {
+                highestX = panels[I].dim1.canvasX;
                 rightmost = I;
             }
             if(panels[I].dim0.canvasX < lowestX) {
@@ -475,9 +475,9 @@ module.exports = function(canvasGL, d) {
         for(I = 0; I < panelCount; I++) {
             var panel = panels[I];
             var dim0 = panel.dim0;
-            var dim2 = panel.dim2;
+            var dim1 = panel.dim1;
             var i0 = dim0.crossfilterDimensionIndex;
-            var i1 = dim2.crossfilterDimensionIndex;
+            var i1 = dim1.crossfilterDimensionIndex;
             var x = panel.canvasX;
             var y = panel.canvasY;
             var panelSizeX = panel.panelSizeX;
