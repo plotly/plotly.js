@@ -12,27 +12,19 @@ uniform sampler2D palette;
 
 varying vec4 fragColor;
 
-vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
+const vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
 
 float val(mat4 p, mat4 v) {
     return dot(matrixCompMult(p, v) * unit, unit);
 }
 
-float axisY(
-        float ratio,
-        mat4 A, mat4 B, mat4 C, mat4 D
-    ) {
-
+float axisY(float ratio, mat4 A, mat4 B, mat4 C, mat4 D) {
     float y1 = val(A, dim0A) + val(B, dim0B) + val(C, dim0C) + val(D, dim0D);
     float y2 = val(A, dim1A) + val(B, dim1B) + val(C, dim1C) + val(D, dim1D);
     return y1 * (1.0 - ratio) + y2 * ratio;
 }
 
-vec4 unfilteredPosition(
-        float v,
-        mat4 A, mat4 B, mat4 C, mat4 D
-    ) {
-
+vec4 unfilteredPosition(float v, mat4 A, mat4 B, mat4 C, mat4 D) {
     float depth = 1.0 - abs(v);
 
     float x = 0.5 * sign(v) + 0.5;
@@ -48,7 +40,6 @@ vec4 unfilteredPosition(
 }
 
 void main() {
-
     mat4 A = mat4(p0, p1, p2, p3);
     mat4 B = mat4(p4, p5, p6, p7);
     mat4 C = mat4(p8, p9, pa, pb);

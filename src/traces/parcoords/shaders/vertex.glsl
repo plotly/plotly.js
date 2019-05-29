@@ -19,18 +19,14 @@ precision highp float;
 
 const int bitsPerByte = 8;
 
-vec4 zero = vec4(0.0, 0.0, 0.0, 0.0);
-vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
+const vec4 zero = vec4(0.0, 0.0, 0.0, 0.0);
+const vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
 
 float val(mat4 p, mat4 v) {
     return dot(matrixCompMult(p, v) * unit, unit);
 }
 
-float axisY(
-        float ratio,
-        mat4 A, mat4 B, mat4 C, mat4 D
-    ) {
-
+float axisY(float ratio, mat4 A, mat4 B, mat4 C, mat4 D) {
     float y1 = val(A, dim0A) + val(B, dim0B) + val(C, dim0C) + val(D, dim0D);
     float y2 = val(A, dim1A) + val(B, dim1B) + val(C, dim1C) + val(D, dim1D);
     return y1 * (1.0 - ratio) + y2 * ratio;
@@ -41,7 +37,7 @@ int iMod(int a, int b) {
 }
 
 bool vHide(vec4 p, vec4 lo, vec4 hi) {
-    return clamp(p, lo, hi) != p;
+    return (clamp(p, lo, hi) != p);
 }
 
 bool mShow(mat4 p, mat4 lo, mat4 hi) {
@@ -53,9 +49,7 @@ bool mShow(mat4 p, mat4 lo, mat4 hi) {
     );
 }
 
-bool withinBoundingBox(
-        mat4 A, mat4 B, mat4 C, mat4 D
-    ) {
+bool withinBoundingBox(mat4 A, mat4 B, mat4 C, mat4 D) {
 
     return mShow(A, loA, hiA) &&
            mShow(B, loB, hiB) &&
@@ -64,7 +58,6 @@ bool withinBoundingBox(
 }
 
 bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
-
     mat4 pnts[4];
     pnts[0] = A;
     pnts[1] = B;
@@ -91,11 +84,7 @@ bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
     return result;
 }
 
-vec4 position(
-        float v,
-        mat4 A, mat4 B, mat4 C, mat4 D
-    ) {
-
+vec4 position(float v, mat4 A, mat4 B, mat4 C, mat4 D) {
     float depth = 1.0 - abs(v);
 
     float x = 0.5 * sign(v) + 0.5;
@@ -117,7 +106,6 @@ vec4 position(
 }
 
 void main() {
-
     mat4 A = mat4(p0, p1, p2, p3);
     mat4 B = mat4(p4, p5, p6, p7);
     mat4 C = mat4(p8, p9, pa, pb);
