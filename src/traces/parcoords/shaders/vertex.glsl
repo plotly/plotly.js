@@ -40,27 +40,23 @@ int iMod(int a, int b) {
     return a - b * (a / b);
 }
 
-mat4 mclamp(mat4 m, mat4 lo, mat4 hi) {
-    return mat4(
-        clamp(m[0], lo[0], hi[0]),
-        clamp(m[1], lo[1], hi[1]),
-        clamp(m[2], lo[2], hi[2]),
-        clamp(m[3], lo[3], hi[3])
+bool mShow(mat4 p, mat4 lo, mat4 hi) {
+    return !(
+        clamp(p[0], lo[0], hi[0]) != p[0] ||
+        clamp(p[1], lo[1], hi[1]) != p[1] ||
+        clamp(p[2], lo[2], hi[2]) != p[2] ||
+        clamp(p[3], lo[3], hi[3]) != p[3]
     );
-}
-
-bool mshow(mat4 p, mat4 lo, mat4 hi) {
-    return mclamp(p, lo, hi) == p;
 }
 
 bool withinBoundingBox(
         mat4 A, mat4 B, mat4 C, mat4 D
     ) {
 
-    return mshow(A, loA, hiA) &&
-           mshow(B, loB, hiB) &&
-           mshow(C, loC, hiC) &&
-           mshow(D, loD, hiD);
+    return mShow(A, loA, hiA) &&
+           mShow(B, loB, hiB) &&
+           mShow(C, loC, hiC) &&
+           mShow(D, loD, hiD);
 }
 
 bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
@@ -84,7 +80,7 @@ bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
                 valueY = valY * (maskHeight - 1.0) + 0.5;
                 scaleX = (float(valX) + 0.5) / 8.0;
                 hit = int(texture2D(mask, vec2(scaleX, (valueY + 0.5) / maskHeight))[3] * 255.0) / int(pow(2.0, float(bitInByteStepper)));
-                result = result && iMod(hit, 2) == 1;
+                result = result && iMod(hit, 2) > 0;
             }
         }
     }
