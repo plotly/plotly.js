@@ -6,18 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
 
 var Events = require('../../lib/events');
 var throttle = require('../../lib/throttle');
-var getGraphDiv = require('../../lib/get_graph_div');
+var getGraphDiv = require('../../lib/dom').getGraphDiv;
 
 var hoverConstants = require('../fx/constants');
 
 var unhover = module.exports = {};
-
 
 unhover.wrapped = function(gd, evt, subplot) {
     gd = getGraphDiv(gd);
