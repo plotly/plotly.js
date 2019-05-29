@@ -31,10 +31,12 @@ int mod8(int a) {
 }
 
 mat4 mclamp(mat4 m, mat4 lo, mat4 hi) {
-    return mat4(clamp(m[0], lo[0], hi[0]),
-                clamp(m[1], lo[1], hi[1]),
-                clamp(m[2], lo[2], hi[2]),
-                clamp(m[3], lo[3], hi[3]));
+    return mat4(
+        clamp(m[0], lo[0], hi[0]),
+        clamp(m[1], lo[1], hi[1]),
+        clamp(m[2], lo[2], hi[2]),
+        clamp(m[3], lo[3], hi[3])
+    );
 }
 
 bool mshow(mat4 p, mat4 lo, mat4 hi) {
@@ -81,7 +83,6 @@ bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D, sampler2D mask, float heig
 }
 
 vec4 position(
-        vec2 resolution,
         mat4 A, mat4 B, mat4 C, mat4 D,
         float v,
 
@@ -97,15 +98,15 @@ vec4 position(
     float y = axisY(x, A, B, C, D, dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D);
 
     float show = float(
-                        withinBoundingBox(A, B, C, D, loA, hiA, loB, hiB, loC, hiC, loD, hiD) &&
-                        withinRasterMask(A, B, C, D, mask, maskHeight)
-                      );
+        withinBoundingBox(A, B, C, D, loA, hiA, loB, hiB, loC, hiC, loD, hiD) &&
+        withinRasterMask(A, B, C, D, mask, maskHeight)
+    );
 
     vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);
     float depthOrHide = depth + 2.0 * (1.0 - show);
 
     return vec4(
-        2.0 * viewBoxXY / resolution - 1.0,
+        2.0 * viewBoxXY,
         depthOrHide,
         1.0
     );

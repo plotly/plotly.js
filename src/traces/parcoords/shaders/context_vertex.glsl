@@ -7,13 +7,8 @@ attribute vec4 p0, p1, p2, p3,
 
 uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D;
 
-uniform vec2 resolution,
-             viewBoxPosition,
-             viewBoxSize;
-
+uniform vec2 resolution, viewBoxPosition, viewBoxSize, colorClamp;
 uniform sampler2D palette;
-
-uniform vec2 colorClamp;
 
 varying vec4 fragColor;
 
@@ -35,7 +30,6 @@ float axisY(
 }
 
 vec4 unfilteredPosition(
-        vec2 resolution,
         mat4 A, mat4 B, mat4 C, mat4 D,
         float v
     ) {
@@ -48,7 +42,7 @@ vec4 unfilteredPosition(
     vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);
 
     return vec4(
-        2.0 * viewBoxXY / resolution - 1.0,
+        2.0 * viewBoxXY,
         depth,
         1.0
     );
@@ -61,14 +55,17 @@ void main() {
     mat4 C = mat4(p8, p9, pa, pb);
     mat4 D = mat4(pc, pd, pe, abs(pf));
 
-    gl_Position = unfilteredPosition(
-        resolution,
+    vec4 pos = unfilteredPosition(
         A, B, C, D,
         pf[3]
     );
 
-    float prominence = abs(pf[3]);
+    gl_Position = vec4(
+        pos.xy / resolution - 1.0,
+        pos.zw
+    );
 
+    float prominence = abs(pf[3]);
     float clampedColorIndex = clamp((prominence - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0);
     fragColor = texture2D(palette, vec2((clampedColorIndex * 255.0 + 0.5) / 256.0, 0.5));
 }
