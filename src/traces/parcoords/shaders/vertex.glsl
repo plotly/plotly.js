@@ -13,6 +13,7 @@ uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
 uniform vec2 resolution, viewBoxPosition, viewBoxSize, colorClamp;
 uniform sampler2D mask, palette;
 uniform float maskHeight;
+uniform float isPickLayer;
 
 varying vec4 fragColor;
 
@@ -23,8 +24,10 @@ void main() {
     mat4 C = mat4(p8, p9, pa, pb);
     mat4 D = mat4(pc, pd, pe, abs(pf));
 
+    float v = pf[3];
+
     vec4 pos = position(
-        pf[3],
+        v,
         A, B, C, D,
 
         dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
@@ -38,7 +41,7 @@ void main() {
         pos.zw
     );
 
-    float prominence = abs(pf[3]);
-    float clampedColorIndex = clamp((prominence - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0);
-    fragColor = texture2D(palette, vec2((clampedColorIndex * 255.0 + 0.5) / 256.0, 0.5));
+    fragColor = (isPickLayer > 0.0) ? vec4(pf.rgb, 1.0) : texture2D(palette, vec2(
+        (clamp((abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0) * 255.0 + 0.5) / 256.0, 0.5
+    ));
 }

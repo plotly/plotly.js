@@ -11,7 +11,6 @@
 var glslify = require('glslify');
 var vertexShaderSource = glslify('./shaders/vertex.glsl');
 var contextShaderSource = glslify('./shaders/context_vertex.glsl');
-var pickVertexShaderSource = glslify('./shaders/pick_vertex.glsl');
 var fragmentShaderSource = glslify('./shaders/fragment.glsl');
 
 var Lib = require('../../lib');
@@ -254,7 +253,7 @@ module.exports = function(canvasGL, d) {
 
         dither: false,
 
-        vert: pick ? pickVertexShaderSource : context ? contextShaderSource : vertexShaderSource,
+        vert: context ? contextShaderSource : vertexShaderSource,
 
         frag: fragmentShaderSource,
 
@@ -283,6 +282,7 @@ module.exports = function(canvasGL, d) {
             hiD: regl.prop('hiD'),
             palette: paletteTexture,
             mask: regl.prop('maskTexture'),
+            isPickLayer: regl.prop('isPickLayer'),
             maskHeight: regl.prop('maskHeight'),
             colorClamp: regl.prop('colorClamp')
         },
@@ -317,7 +317,7 @@ module.exports = function(canvasGL, d) {
 
     var previousAxisOrder = [];
 
-    function makeItem(i0, i1, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, I, leftmost, rightmost, constraints) {
+    function makeItem(i0, i1, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, I, leftmost, rightmost, constraints, isPickLayer) {
         var loHi, abcd, d, index;
         var leftRight = [i0, i1];
 
@@ -355,6 +355,7 @@ module.exports = function(canvasGL, d) {
             dim1D: dims[1][3],
 
             colorClamp: colorClamp,
+            isPickLayer: +isPickLayer,
 
             scissorX: (I === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
             scissorWidth: (I === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (I === leftmost ? x + overdrag : 0),
@@ -485,7 +486,7 @@ module.exports = function(canvasGL, d) {
             var xTo = x + panelSizeX;
             if(setChanged || !previousAxisOrder[i0] || previousAxisOrder[i0][0] !== x || previousAxisOrder[i0][1] !== xTo) {
                 previousAxisOrder[i0] = [x, xTo];
-                var item = makeItem(i0, i1, x, y, panelSizeX, panelSizeY, dim0.crossfilterDimensionIndex, I, leftmost, rightmost, constraints);
+                var item = makeItem(i0, i1, x, y, panelSizeX, panelSizeY, dim0.crossfilterDimensionIndex, I, leftmost, rightmost, constraints, !!d.pick);
                 renderState.clearOnly = clearOnly;
                 renderBlock(regl, glAes, renderState, setChanged ? model.lines.blockLineCount : sampleCount, sampleCount, item);
             }
