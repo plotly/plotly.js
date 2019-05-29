@@ -36,12 +36,8 @@ float axisY(
     return y1 * (1.0 - ratio) + y2 * ratio;
 }
 
-int mod2(int a) {
-    return a - 2 * (a / 2);
-}
-
-int mod8(int a) {
-    return a - 8 * (a / 8);
+int iMod(int a, int b) {
+    return a - b * (a / b);
 }
 
 mat4 mclamp(mat4 m, mat4 lo, mat4 hi) {
@@ -82,13 +78,13 @@ bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
     for(int i = 0; i < 4; ++i) {
         for(int j = 0; j < 4; ++j) {
             for(int k = 0; k < 4; ++k) {
-                bitInByteStepper = mod8(j * 4 + k);
+                bitInByteStepper = iMod(j * 4 + k, 8);
                 valX = i * 2 + j / 2;
                 valY = pnts[i][j][k];
                 valueY = valY * (maskHeight - 1.0) + 0.5;
                 scaleX = (float(valX) + 0.5) / 8.0;
                 hit = int(texture2D(mask, vec2(scaleX, (valueY + 0.5) / maskHeight))[3] * 255.0) / int(pow(2.0, float(bitInByteStepper)));
-                result = result && mod2(hit) == 1;
+                result = result && iMod(hit, 2) == 1;
             }
         }
     }
