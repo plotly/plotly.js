@@ -1,9 +1,26 @@
 precision highp float;
 
-#pragma glslify: axisY = require("./y.glsl", mats=mats)
 #pragma glslify: export(position)
 
 const int bitsPerByte = 8;
+
+vec4 zero = vec4(0.0, 0.0, 0.0, 0.0);
+vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
+
+float val(mat4 p, mat4 v) {
+    return dot(matrixCompMult(p, v) * unit, unit);
+}
+
+float axisY(
+        float x,
+        mat4 d[4],
+        mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D
+    ) {
+
+    float y1 = val(d[0], dim0A) + val(d[1], dim0B) + val(d[2], dim0C) + val(d[3], dim0D);
+    float y2 = val(d[0], dim1A) + val(d[1], dim1B) + val(d[2], dim1C) + val(d[3], dim1D);
+    return y1 * (1.0 - x) + y2 * x;
+}
 
 int mod2(int a) {
     return a - 2 * (a / 2);
@@ -12,10 +29,6 @@ int mod2(int a) {
 int mod8(int a) {
     return a - 8 * (a / 8);
 }
-
-vec4 zero = vec4(0.0, 0.0, 0.0, 0.0);
-vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
-vec2 xyProjection = vec2(1.0, 1.0);
 
 mat4 mclamp(mat4 m, mat4 lo, mat4 hi) {
     return mat4(clamp(m[0], lo[0], hi[0]),
@@ -85,7 +98,7 @@ vec4 position(
     float depthOrHide = depth + 2.0 * (1.0 - show);
 
     return vec4(
-        xyProjection * (2.0 * viewBoxXY / resolution - 1.0),
+        2.0 * viewBoxXY / resolution - 1.0,
         depthOrHide,
         1.0
     );

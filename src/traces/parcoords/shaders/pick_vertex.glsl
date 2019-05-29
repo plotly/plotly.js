@@ -5,9 +5,7 @@ precision highp float;
 attribute vec4 p0, p1, p2, p3,
                p4, p5, p6, p7,
                p8, p9, pa, pb,
-               pc, pd, pe;
-
-attribute vec4 pf;
+               pc, pd, pe, pf;
 
 uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
              loA, hiA, loB, hiB, loC, hiC, loD, hiD;

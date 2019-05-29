@@ -1,13 +1,9 @@
 precision highp float;
 
-#pragma glslify: axisY = require("./y.glsl", mats=mats)
-
 attribute vec4 p0, p1, p2, p3,
                p4, p5, p6, p7,
                p8, p9, pa, pb,
-               pc, pd, pe;
-
-attribute vec4 pf;
+               pc, pd, pe, pf;
 
 uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D;
 
@@ -21,7 +17,22 @@ uniform vec2 colorClamp;
 
 varying vec4 fragColor;
 
-vec2 xyProjection = vec2(1.0, 1.0);
+vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
+
+float val(mat4 p, mat4 v) {
+    return dot(matrixCompMult(p, v) * unit, unit);
+}
+
+float axisY(
+        float x,
+        mat4 d[4],
+        mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D
+    ) {
+
+    float y1 = val(d[0], dim0A) + val(d[1], dim0B) + val(d[2], dim0C) + val(d[3], dim0D);
+    float y2 = val(d[0], dim1A) + val(d[1], dim1B) + val(d[2], dim1C) + val(d[3], dim1D);
+    return y1 * (1.0 - x) + y2 * x;
+}
 
 vec4 unfilteredPosition(
         vec2 resolution,
@@ -37,7 +48,7 @@ vec4 unfilteredPosition(
     vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);
 
     return vec4(
-        xyProjection * (2.0 * viewBoxXY / resolution - 1.0),
+        2.0 * viewBoxXY / resolution - 1.0,
         depth,
         1.0
     );
