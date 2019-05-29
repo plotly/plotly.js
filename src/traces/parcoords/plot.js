@@ -98,9 +98,10 @@ module.exports = function plot(gd, cdparcoords) {
 
         function sorter(orig) {
             return function sorter(d1, d2) {
-                var i1 = newIdx(visibleIndices, orig, d1);
-                var i2 = newIdx(visibleIndices, orig, d2);
-                return i1 - i2;
+                return (
+                    newIdx(visibleIndices, orig, d1) -
+                    newIdx(visibleIndices, orig, d2)
+                );
             };
         }
 
