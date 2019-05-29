@@ -317,7 +317,7 @@ module.exports = function(canvasGL, d) {
 
     var previousAxisOrder = [];
 
-    function makeItem(i0, i1, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, I, leftmost, rightmost, constraints, isPickLayer) {
+    function makeItem(leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, constraints, isPickLayer) {
         var loHi, abcd, d, index;
         var leftRight = [i0, i1];
 
@@ -357,8 +357,8 @@ module.exports = function(canvasGL, d) {
             colorClamp: colorClamp,
             isPickLayer: +isPickLayer,
 
-            scissorX: (I === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
-            scissorWidth: (I === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (I === leftmost ? x + overdrag : 0),
+            scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
+            scissorWidth: (itemNumber === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (itemNumber === leftmost ? x + overdrag : 0),
             scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
             scissorHeight: canvasPanelSizeY,
 
@@ -449,21 +449,21 @@ module.exports = function(canvasGL, d) {
 
     function renderGLParcoords(panels, setChanged, clearOnly) {
         var panelCount = panels.length;
-        var I;
+        var i;
 
         var leftmost;
         var rightmost;
         var lowestX = Infinity;
         var highestX = -Infinity;
 
-        for(I = 0; I < panelCount; I++) {
-            if(panels[I].dim1.canvasX > highestX) {
-                highestX = panels[I].dim1.canvasX;
-                rightmost = I;
+        for(i = 0; i < panelCount; i++) {
+            if(panels[i].dim1.canvasX > highestX) {
+                highestX = panels[i].dim1.canvasX;
+                rightmost = i;
             }
-            if(panels[I].dim0.canvasX < lowestX) {
-                lowestX = panels[I].dim0.canvasX;
-                leftmost = I;
+            if(panels[i].dim0.canvasX < lowestX) {
+                lowestX = panels[i].dim0.canvasX;
+                leftmost = i;
             }
         }
 
@@ -473,8 +473,8 @@ module.exports = function(canvasGL, d) {
         }
         var constraints = context ? {} : makeConstraints();
 
-        for(I = 0; I < panelCount; I++) {
-            var panel = panels[I];
+        for(i = 0; i < panelCount; i++) {
+            var panel = panels[i];
             var dim0 = panel.dim0;
             var dim1 = panel.dim1;
             var i0 = dim0.crossfilterDimensionIndex;
@@ -486,7 +486,7 @@ module.exports = function(canvasGL, d) {
             var xTo = x + panelSizeX;
             if(setChanged || !previousAxisOrder[i0] || previousAxisOrder[i0][0] !== x || previousAxisOrder[i0][1] !== xTo) {
                 previousAxisOrder[i0] = [x, xTo];
-                var item = makeItem(i0, i1, x, y, panelSizeX, panelSizeY, dim0.crossfilterDimensionIndex, I, leftmost, rightmost, constraints, !!d.pick);
+                var item = makeItem(leftmost, rightmost, i, i0, i1, x, y, panelSizeX, panelSizeY, dim0.crossfilterDimensionIndex, constraints, !!d.pick);
                 renderState.clearOnly = clearOnly;
                 renderBlock(regl, glAes, renderState, setChanged ? model.lines.blockLineCount : sampleCount, sampleCount, item);
             }
