@@ -17,8 +17,6 @@ varying vec4 fragColor;
 
 precision highp float;
 
-const int bitsPerByte = 8;
-
 const vec4 zero = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
 
@@ -65,19 +63,20 @@ bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
     pnts[3] = D;
 
     bool result = true;
-    int bitInByteStepper;
-    float valY, valueY, scaleX;
-    int hit, bitmask, valX;
+    float x, y;
+
     for(int i = 0; i < 4; ++i) {
         for(int j = 0; j < 4; ++j) {
             for(int k = 0; k < 4; ++k) {
-                bitInByteStepper = iMod(j * 4 + k, 8);
-                valX = i * 2 + j / 2;
-                valY = pnts[i][j][k];
-                valueY = valY * (maskHeight - 1.0) + 0.5;
-                scaleX = (float(valX) + 0.5) / 8.0;
-                hit = int(texture2D(mask, vec2(scaleX, (valueY + 0.5) / maskHeight))[3] * 255.0) / int(pow(2.0, float(bitInByteStepper)));
-                result = result && iMod(hit, 2) > 0;
+                x = (float(i * 2 + j / 2) + 0.5) / 8.0;
+                y = (pnts[i][j][k] * (maskHeight - 1.0) + 1.0) / maskHeight;
+
+                result = result &&
+                    0 < iMod(
+                        int(255.0 * texture2D(mask, vec2(x, y))[3]) /
+                        int(pow(2.0, float(iMod(j * 4 + k, 8)))),
+                        2
+                    );
             }
         }
     }
