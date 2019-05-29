@@ -317,9 +317,9 @@ module.exports = function(canvasGL, d) {
 
     var previousAxisOrder = [];
 
-    function makeItem(i, ii, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, I, leftmost, rightmost, constraints) {
+    function makeItem(i0, i1, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, I, leftmost, rightmost, constraints) {
         var loHi, abcd, d, index;
-        var leftRight = [i, ii];
+        var leftRight = [i0, i1];
 
         var dims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
 
@@ -342,8 +342,8 @@ module.exports = function(canvasGL, d) {
             resolution: [canvasWidth, canvasHeight],
             viewBoxPosition: [x + overdrag, y],
             viewBoxSize: [panelSizeX, canvasPanelSizeY],
-            i: i,
-            ii: ii,
+            i0: i0,
+            i1: i1,
 
             dim1A: dims[0][0],
             dim1B: dims[0][1],
@@ -475,17 +475,17 @@ module.exports = function(canvasGL, d) {
         for(I = 0; I < panelCount; I++) {
             var panel = panels[I];
             var dim1 = panel.dim1;
-            var i = dim1.crossfilterDimensionIndex;
+            var dim2 = panel.dim2;
+            var i0 = dim1.crossfilterDimensionIndex;
+            var i1 = dim2.crossfilterDimensionIndex;
             var x = panel.canvasX;
             var y = panel.canvasY;
-            var dim2 = panel.dim2;
-            var ii = dim2.crossfilterDimensionIndex;
             var panelSizeX = panel.panelSizeX;
             var panelSizeY = panel.panelSizeY;
             var xTo = x + panelSizeX;
-            if(setChanged || !previousAxisOrder[i] || previousAxisOrder[i][0] !== x || previousAxisOrder[i][1] !== xTo) {
-                previousAxisOrder[i] = [x, xTo];
-                var item = makeItem(i, ii, x, y, panelSizeX, panelSizeY, dim1.crossfilterDimensionIndex, I, leftmost, rightmost, constraints);
+            if(setChanged || !previousAxisOrder[i0] || previousAxisOrder[i0][0] !== x || previousAxisOrder[i0][1] !== xTo) {
+                previousAxisOrder[i0] = [x, xTo];
+                var item = makeItem(i0, i1, x, y, panelSizeX, panelSizeY, dim1.crossfilterDimensionIndex, I, leftmost, rightmost, constraints);
                 renderState.clearOnly = clearOnly;
                 renderBlock(regl, glAes, renderState, setChanged ? model.lines.blockLineCount : sampleCount, sampleCount, item);
             }

@@ -497,7 +497,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
             yAxis.filter(function(dd) { return Math.abs(d.xIndex - dd.xIndex) !== 0; })
                 .attr('transform', function(d) { return 'translate(' + d.xScale(d.xIndex) + ', 0)'; });
             d3.select(this).attr('transform', 'translate(' + d.x + ', 0)');
-            yAxis.each(function(dd, i, ii) { if(ii === d.parent.key) p.dimensions[i] = dd; });
+            yAxis.each(function(dd, i0, i1) { if(i1 === d.parent.key) p.dimensions[i0] = dd; });
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
             p.focusLayer.render && p.focusLayer.render(p.panels);
         })
