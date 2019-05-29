@@ -1,5 +1,6 @@
-#pragma glslify: axisY = require("./y.glsl", mats=mats)
+precision highp float;
 
+#pragma glslify: axisY = require("./y.glsl", mats=mats)
 #pragma glslify: export(position)
 
 const int bitsPerByte = 8;
@@ -12,9 +13,9 @@ int mod8(int a) {
     return a - 8 * (a / 8);
 }
 
-vec4 zero = vec4(0, 0, 0, 0);
-vec4 unit = vec4(1, 1, 1, 1);
-vec2 xyProjection = vec2(1, 1);
+vec4 zero = vec4(0.0, 0.0, 0.0, 0.0);
+vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
+vec2 xyProjection = vec2(1.0, 1.0);
 
 mat4 mclamp(mat4 m, mat4 lo, mat4 hi) {
     return mat4(clamp(m[0], lo[0], hi[0]),
@@ -61,11 +62,13 @@ bool withinRasterMask(mat4 d[4], sampler2D mask, float height) {
 
 vec4 position(
         float depth,
-        vec2 resolution, vec2 viewBoxPosition, vec2 viewBoxSize,
+        vec2 resolution,
         mat4 dims[4],
         float signum,
+
         mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D,
         mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD,
+        vec2 viewBoxPosition, vec2 viewBoxSize,
         sampler2D mask, float maskHeight
     ) {
 
@@ -73,8 +76,8 @@ vec4 position(
     float y = axisY(x, dims, dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D);
 
     float show = float(
-                            withinBoundingBox(dims, loA, hiA, loB, hiB, loC, hiC, loD, hiD)
-                         && withinRasterMask(dims, mask, maskHeight)
+                        withinBoundingBox(dims, loA, hiA, loB, hiB, loC, hiC, loD, hiD) &&
+                        withinRasterMask(dims, mask, maskHeight)
                       );
 
     vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);

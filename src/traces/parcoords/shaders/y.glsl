@@ -1,10 +1,13 @@
-vec4 unit = vec4(1, 1, 1, 1);
+precision highp float;
+
+#pragma glslify: export(axisY)
+
+vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
 
 float val(mat4 p, mat4 v) {
     return dot(matrixCompMult(p, v) * unit, unit);
 }
 
-#pragma glslify: export(axisY)
 float axisY(
         float x,
         mat4 d[4],

@@ -1,5 +1,7 @@
 precision highp float;
 
+#pragma glslify: position = require("./position.glsl")
+
 attribute vec4 p0, p1, p2, p3,
                p4, p5, p6, p7,
                p8, p9, pa, pb,
@@ -21,25 +23,25 @@ uniform vec2 colorClamp;
 
 varying vec4 fragColor;
 
-#pragma glslify: position = require("./position.glsl")
-
 void main() {
 
     float prominence = abs(pf[3]);
 
-    mat4 p[4];
-    p[0] = mat4(p0, p1, p2, p3);
-    p[1] = mat4(p4, p5, p6, p7);
-    p[2] = mat4(p8, p9, pa, pb);
-    p[3] = mat4(pc, pd, pe, abs(pf));
+    mat4 dims[4];
+    dims[0] = mat4(p0, p1, p2, p3);
+    dims[1] = mat4(p4, p5, p6, p7);
+    dims[2] = mat4(p8, p9, pa, pb);
+    dims[3] = mat4(pc, pd, pe, abs(pf));
 
     gl_Position = position(
         1.0 - prominence,
-        resolution, viewBoxPosition, viewBoxSize,
-        p,
+        resolution,
+        dims,
         sign(pf[3]),
+
         dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
         loA, hiA, loB, hiB, loC, hiC, loD, hiD,
+        viewBoxPosition, viewBoxSize,
         mask, maskHeight
     );
 
