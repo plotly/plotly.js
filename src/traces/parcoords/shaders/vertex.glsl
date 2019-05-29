@@ -11,7 +11,7 @@ uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
              loA, hiA, loB, hiB, loC, hiC, loD, hiD;
 
 uniform vec2 resolution, viewBoxPosition, viewBoxSize, colorClamp;
-uniform sampler2D palette, mask;
+uniform sampler2D mask, palette;
 uniform float maskHeight;
 
 varying vec4 fragColor;
@@ -24,8 +24,8 @@ void main() {
     mat4 D = mat4(pc, pd, pe, abs(pf));
 
     vec4 pos = position(
-        A, B, C, D,
         pf[3],
+        A, B, C, D,
 
         dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
         loA, hiA, loB, hiB, loC, hiC, loD, hiD,

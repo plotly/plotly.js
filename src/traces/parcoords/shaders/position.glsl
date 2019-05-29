@@ -12,14 +12,14 @@ float val(mat4 p, mat4 v) {
 }
 
 float axisY(
-        float x,
+        float ratio,
         mat4 A, mat4 B, mat4 C, mat4 D,
         mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D
     ) {
 
     float y1 = val(A, dim0A) + val(B, dim0B) + val(C, dim0C) + val(D, dim0D);
     float y2 = val(A, dim1A) + val(B, dim1B) + val(C, dim1C) + val(D, dim1D);
-    return y1 * (1.0 - x) + y2 * x;
+    return y1 * (1.0 - ratio) + y2 * ratio;
 }
 
 int mod2(int a) {
@@ -83,9 +83,8 @@ bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D, sampler2D mask, float heig
 }
 
 vec4 position(
-        mat4 A, mat4 B, mat4 C, mat4 D,
         float v,
-
+        mat4 A, mat4 B, mat4 C, mat4 D,
         mat4 dim0A, mat4 dim1A, mat4 dim0B, mat4 dim1B, mat4 dim0C, mat4 dim1C, mat4 dim0D, mat4 dim1D,
         mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD,
         vec2 viewBoxPosition, vec2 viewBoxSize,
