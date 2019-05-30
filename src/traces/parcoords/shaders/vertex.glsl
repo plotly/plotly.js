@@ -108,6 +108,6 @@ void main() {
     gl_Position = position(v, A, B, C, D);
 
     fragColor = (isPickLayer > 0.0) ? vec4(pf.rgb, 1.0) : texture2D(palette, vec2(
-        (clamp((abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.0, 1.0) * 255.0 + 0.5) / 256.0, 0.5
+        ((abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]) * 255.0 + 0.5) / 256.0, 0.5
     ));
 }
