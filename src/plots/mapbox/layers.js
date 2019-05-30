@@ -120,7 +120,7 @@ proto.removeLayer = function() {
     }
 };
 
-proto.dispose = function dispose() {
+proto.dispose = function() {
     var map = this.map;
     map.removeLayer(this.idLayer);
     map.removeSource(this.idSource);

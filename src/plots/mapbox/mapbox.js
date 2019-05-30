@@ -20,13 +20,15 @@ var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var createMapboxLayer = require('./layers');
 
-function Mapbox(opts) {
-    this.id = opts.id;
-    this.gd = opts.gd;
-    this.container = opts.container;
-    this.isStatic = opts.staticPlot;
+function Mapbox(gd, id) {
+    this.id = id;
+    this.gd = gd;
 
-    var fullLayout = opts.fullLayout;
+    var fullLayout = gd._fullLayout;
+    var context = gd._context;
+
+    this.container = fullLayout._glcontainer.node();
+    this.isStatic = context.staticPlot;
 
     // unique id for this Mapbox instance
     this.uid = fullLayout._uid + '-' + this.id;
@@ -46,10 +48,6 @@ function Mapbox(opts) {
 }
 
 var proto = Mapbox.prototype;
-
-module.exports = function createMapbox(opts) {
-    return new Mapbox(opts);
-};
 
 proto.plot = function(calcData, fullLayout, promises) {
     var self = this;
@@ -570,3 +568,5 @@ function convertStyleVal(val) {
 function convertCenter(center) {
     return [center.lon, center.lat];
 }
+
+module.exports = Mapbox;
