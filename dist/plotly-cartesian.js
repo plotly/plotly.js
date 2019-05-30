@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.48.0
+* plotly.js (cartesian) v1.48.1
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -34232,7 +34232,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.48.0';
+exports.version = '1.48.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -63037,7 +63037,10 @@ function sortAxisCategoriesByValue(axList, gd) {
                 if(fullTrace.visible !== true) continue;
 
                 var type = fullTrace.type;
-                if(Registry.traceIs(fullTrace, 'histogram')) delete fullTrace._autoBinFinished;
+                if(Registry.traceIs(fullTrace, 'histogram')) {
+                    delete fullTrace._xautoBinFinished;
+                    delete fullTrace._yautoBinFinished;
+                }
 
                 var cd = gd.calcdata[traceIndex];
                 for(k = 0; k < cd.length; k++) {
@@ -74989,14 +74992,17 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     } else {
         var calendar = trace[ax._id.charAt(0) + 'calendar'];
 
-        if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) {
-            v0 = arrayIn[0];
-        } else if(v0In === undefined) {
-            v0 = 0;
-        } else if(isHist || ax.type === 'category' || ax.type === 'multicategory') {
+        if(isHist) {
             v0 = ax.r2c(v0In, 0, calendar);
         } else {
-            v0 = ax.d2c(v0In, 0, calendar);
+            if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) {
+                v0 = arrayIn[0];
+            } else if(v0In === undefined) {
+                v0 = 0;
+            } else {
+                var fn = ax.type === 'log' ? ax.d2c : ax.r2c;
+                v0 = fn(v0In, 0, calendar);
+            }
         }
 
         dv = dvIn || 1;
@@ -76241,8 +76247,8 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
 
     // all but the first trace in this group has already been marked finished
     // clear this flag, so next time we run calc we will run autobin again
-    if(trace._autoBinFinished) {
-        delete trace._autoBinFinished;
+    if(trace['_' + mainData + 'autoBinFinished']) {
+        delete trace['_' + mainData + 'autoBinFinished'];
     } else {
         traces = binOpts.traces;
         var allPos = [];
@@ -76262,14 +76268,14 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
                 pos0 = tracei['_' + mainDatai + 'pos0'] = pa.makeCalcdata(tracei, mainDatai);
 
                 allPos = Lib.concat(allPos, pos0);
-                delete tracei._autoBinFinished;
+                delete tracei['_' + mainData + 'autoBinFinished'];
 
                 if(trace.visible === true) {
                     if(isFirstVisible) {
                         isFirstVisible = false;
                     } else {
                         delete tracei._autoBin;
-                        tracei._autoBinFinished = 1;
+                        tracei['_' + mainData + 'autoBinFinished'] = 1;
                     }
                     if(Registry.traceIs(tracei, '2dMap')) {
                         has2dMap = true;
@@ -76430,7 +76436,7 @@ function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
 
             // so we can use this result when we get to tracei in the normal
             // course of events, mark it as done and put _pos0 back
-            tracei._autoBinFinished = 1;
+            tracei['_' + mainData + 'autoBinFinished'] = 1;
             tracei['_' + mainData + 'pos0'] = resulti[1];
 
             if(isSingleValued) {
@@ -76681,7 +76687,8 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
 
             // TODO: this shouldn't be relinked as it's only used within calc
             // https://github.com/plotly/plotly.js/issues/749
-            delete traceOut._autoBinFinished;
+            delete traceOut._xautoBinFinished;
+            delete traceOut._yautoBinFinished;
 
             // N.B. need to coerce *alignmentgroup* before *bingroup*, as traces
             // in same alignmentgroup "have to match"
@@ -77366,11 +77373,13 @@ function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
     var i;
     var len = edges.length - 1;
     var out = new Array(len);
-    if(uniqueVals) {
-        for(i = 0; i < len; i++) out[i] = [uniqueVals[i], uniqueVals[i]];
-    } else {
-        var roundFn = getBinSpanLabelRound(gapLow, gapHigh, edges, ax, calendar);
-        for(i = 0; i < len; i++) out[i] = [roundFn(edges[i]), roundFn(edges[i + 1], true)];
+    var roundFn = getBinSpanLabelRound(gapLow, gapHigh, edges, ax, calendar);
+
+    for(i = 0; i < len; i++) {
+        var v = (uniqueVals || [])[i];
+        out[i] = v === undefined ?
+            [roundFn(edges[i]), roundFn(edges[i + 1], true)] :
+            [v, v];
     }
     return out;
 }
