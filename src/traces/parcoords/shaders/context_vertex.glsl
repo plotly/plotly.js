@@ -7,7 +7,7 @@ attribute vec4 p0, p1, p2, p3,
 
 uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D;
 
-uniform vec2 resolution, viewBoxPosition, viewBoxSize, colorClamp;
+uniform vec2 resolution, viewBoxPos, viewBoxSize, colorClamp;
 uniform sampler2D palette;
 
 varying vec4 fragColor;
@@ -25,16 +25,13 @@ float axisY(float ratio, mat4 A, mat4 B, mat4 C, mat4 D) {
 }
 
 vec4 unfilteredPosition(float v, mat4 A, mat4 B, mat4 C, mat4 D) {
-    float depth = 1.0 - abs(v);
-
     float x = 0.5 * sign(v) + 0.5;
     float y = axisY(x, A, B, C, D);
-
-    vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);
+    float z = 1.0 - abs(v);
 
     return vec4(
-        2.0 * viewBoxXY / resolution - 1.0,
-        depth,
+        2.0 * (vec2(x, y) * viewBoxSize + viewBoxPos) / resolution - 1.0,
+        z,
         1.0
     );
 }

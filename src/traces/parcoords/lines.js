@@ -262,7 +262,7 @@ module.exports = function(canvasGL, d) {
         attributes: attributes,
         uniforms: {
             resolution: regl.prop('resolution'),
-            viewBoxPosition: regl.prop('viewBoxPosition'),
+            viewBoxPos: regl.prop('viewBoxPos'),
             viewBoxSize: regl.prop('viewBoxSize'),
             dim0A: regl.prop('dim0A'),
             dim1A: regl.prop('dim1A'),
@@ -340,7 +340,7 @@ module.exports = function(canvasGL, d) {
         var itemModel = Lib.extendFlat({
             key: crossfilterDimensionIndex,
             resolution: [canvasWidth, canvasHeight],
-            viewBoxPosition: [x + overdrag, y],
+            viewBoxPos: [x + overdrag, y],
             viewBoxSize: [panelSizeX, canvasPanelSizeY],
             i0: i0,
             i1: i1,

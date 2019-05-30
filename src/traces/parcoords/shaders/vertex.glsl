@@ -8,7 +8,7 @@ attribute vec4 p0, p1, p2, p3,
 uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
              loA, hiA, loB, hiB, loC, hiC, loD, hiD;
 
-uniform vec2 resolution, viewBoxPosition, viewBoxSize, colorClamp;
+uniform vec2 resolution, viewBoxPos, viewBoxSize, colorClamp;
 uniform sampler2D mask, palette;
 uniform float maskHeight;
 uniform float isPickLayer;
@@ -34,72 +34,65 @@ int iMod(int a, int b) {
     return a - b * (a / b);
 }
 
-bool vHide(vec4 p, vec4 lo, vec4 hi) {
+bool vOutside(vec4 p, vec4 lo, vec4 hi) {
     return (clamp(p, lo, hi) != p);
 }
 
-bool mShow(mat4 p, mat4 lo, mat4 hi) {
-    return !(
-        vHide(p[0], lo[0], hi[0]) ||
-        vHide(p[1], lo[1], hi[1]) ||
-        vHide(p[2], lo[2], hi[2]) ||
-        vHide(p[3], lo[3], hi[3])
+bool mOutside(mat4 p, mat4 lo, mat4 hi) {
+    return (
+        vOutside(p[0], lo[0], hi[0]) ||
+        vOutside(p[1], lo[1], hi[1]) ||
+        vOutside(p[2], lo[2], hi[2]) ||
+        vOutside(p[3], lo[3], hi[3])
     );
 }
 
-bool withinBoundingBox(mat4 A, mat4 B, mat4 C, mat4 D) {
+bool outsideBoundingBox(mat4 A, mat4 B, mat4 C, mat4 D) {
 
-    return mShow(A, loA, hiA) &&
-           mShow(B, loB, hiB) &&
-           mShow(C, loC, hiC) &&
-           mShow(D, loD, hiD);
+    return mOutside(A, loA, hiA) ||
+           mOutside(B, loB, hiB) ||
+           mOutside(C, loC, hiC) ||
+           mOutside(D, loD, hiD);
 }
 
-bool withinRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
+bool outsideRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
     mat4 pnts[4];
     pnts[0] = A;
     pnts[1] = B;
     pnts[2] = C;
     pnts[3] = D;
 
-    bool result = true;
-    float x, y;
-
     for(int i = 0; i < 4; ++i) {
         for(int j = 0; j < 4; ++j) {
             for(int k = 0; k < 4; ++k) {
-                x = (float(i * 2 + j / 2) + 0.5) / 8.0;
-                y = (pnts[i][j][k] * (maskHeight - 1.0) + 1.0) / maskHeight;
-
-                result = result &&
-                    0 < iMod(
-                        int(255.0 * texture2D(mask, vec2(x, y))[3]) /
-                        int(pow(2.0, float(iMod(j * 4 + k, 8)))),
-                        2
-                    );
+                if(0 == iMod(
+                    int(255.0 * texture2D(mask,
+                        vec2(
+                            (float(i * 2 + j / 2) + 0.5) / 8.0,
+                            (pnts[i][j][k] * (maskHeight - 1.0) + 1.0) / maskHeight
+                        ))[3]
+                    ) / int(pow(2.0, float(iMod(j * 4 + k, 8)))),
+                    2
+                )) return true;
             }
         }
     }
-    return result;
+    return false;
 }
 
 vec4 position(float v, mat4 A, mat4 B, mat4 C, mat4 D) {
-    float depth = 1.0 - abs(v);
-
     float x = 0.5 * sign(v) + 0.5;
     float y = axisY(x, A, B, C, D);
+    float z = 1.0 - abs(v);
 
-    float show = float(
-        withinBoundingBox(A, B, C, D) &&
-        withinRasterMask(A, B, C, D)
+    z += 2.0 * float(
+        outsideBoundingBox(A, B, C, D) ||
+        outsideRasterMask(A, B, C, D)
     );
 
-    vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);
-    float depthOrHide = depth + 2.0 * (1.0 - show);
-
     return vec4(
-        2.0 * viewBoxXY / resolution - 1.0,
-        depthOrHide,
+        2.0 * (vec2(x, y) * viewBoxSize + viewBoxPos) / resolution - 1.0,
+        z,
         1.0
     );
 }
