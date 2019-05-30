@@ -2961,7 +2961,10 @@ function sortAxisCategoriesByValue(axList, gd) {
                 if(fullTrace.visible !== true) continue;
 
                 var type = fullTrace.type;
-                if(Registry.traceIs(fullTrace, 'histogram')) delete fullTrace._autoBinFinished;
+                if(Registry.traceIs(fullTrace, 'histogram')) {
+                    delete fullTrace._xautoBinFinished;
+                    delete fullTrace._yautoBinFinished;
+                }
 
                 var cd = gd.calcdata[traceIndex];
                 for(k = 0; k < cd.length; k++) {

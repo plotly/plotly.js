@@ -106,7 +106,8 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
 
             // TODO: this shouldn't be relinked as it's only used within calc
             // https://github.com/plotly/plotly.js/issues/749
-            delete traceOut._autoBinFinished;
+            delete traceOut._xautoBinFinished;
+            delete traceOut._yautoBinFinished;
 
             // N.B. need to coerce *alignmentgroup* before *bingroup*, as traces
             // in same alignmentgroup "have to match"

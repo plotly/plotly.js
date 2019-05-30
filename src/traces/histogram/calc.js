@@ -232,8 +232,8 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
 
     // all but the first trace in this group has already been marked finished
     // clear this flag, so next time we run calc we will run autobin again
-    if(trace._autoBinFinished) {
-        delete trace._autoBinFinished;
+    if(trace['_' + mainData + 'autoBinFinished']) {
+        delete trace['_' + mainData + 'autoBinFinished'];
     } else {
         traces = binOpts.traces;
         var allPos = [];
@@ -253,14 +253,14 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
                 pos0 = tracei['_' + mainDatai + 'pos0'] = pa.makeCalcdata(tracei, mainDatai);
 
                 allPos = Lib.concat(allPos, pos0);
-                delete tracei._autoBinFinished;
+                delete tracei['_' + mainData + 'autoBinFinished'];
 
                 if(trace.visible === true) {
                     if(isFirstVisible) {
                         isFirstVisible = false;
                     } else {
                         delete tracei._autoBin;
-                        tracei._autoBinFinished = 1;
+                        tracei['_' + mainData + 'autoBinFinished'] = 1;
                     }
                     if(Registry.traceIs(tracei, '2dMap')) {
                         has2dMap = true;
@@ -421,7 +421,7 @@ function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
 
             // so we can use this result when we get to tracei in the normal
             // course of events, mark it as done and put _pos0 back
-            tracei._autoBinFinished = 1;
+            tracei['_' + mainData + 'autoBinFinished'] = 1;
             tracei['_' + mainData + 'pos0'] = resulti[1];
 
             if(isSingleValued) {
