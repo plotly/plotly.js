@@ -24,7 +24,6 @@
 var fileSaver = function(url, name) {
     var saveLink = document.createElement('a');
     var canUseSaveLink = 'download' in saveLink;
-    var isSafari = /Version\/[\d\.]+.*Safari/.test(navigator.userAgent);
     var promise = new Promise(function(resolve, reject) {
         // IE <10 is explicitly unsupported
         if(typeof navigator !== 'undefined' && /MSIE [1-9]\./.test(navigator.userAgent)) {
@@ -32,10 +31,10 @@ var fileSaver = function(url, name) {
         }
 
         // First try a.download, then web filesystem, then object URLs
-        if(isSafari) {
             // Safari doesn't allow downloading of blob urls
             document.location.href = 'data:application/octet-stream' + url.slice(url.search(/[,;]/));
             resolve(name);
+        if(Lib.isSafari()) {
         }
 
         if(!name) {
