@@ -15,23 +15,23 @@ var toImage = require('../plot_api/to_image');
 var fileSaver = require('./filesaver');
 var helpers = require('./helpers');
 
-/** Plotly.downloadImage
+/**
+ * Plotly.downloadImage
  *
  * @param {object | string | HTML div} gd
  *   can either be a data/layout/config object
  *   or an existing graph <div>
  *   or an id to an existing graph <div>
- * @param {object} opts (see ../plot_api/to_image)
+ * @param {object} opts (see Plotly.toImage in ../plot_api/to_image)
  * @return {promise}
  */
 function downloadImage(gd, opts) {
     var _gd;
     if(!Lib.isPlainObject(gd)) _gd = Lib.getGraphDiv(gd);
 
-    // check for undefined opts
     opts = opts || {};
-    // default to png
     opts.format = opts.format || 'png';
+    opts.imageDataOnly = true;
 
     return new Promise(function(resolve, reject) {
         if(_gd && _gd._snapshotInProgress) {
@@ -55,7 +55,7 @@ function downloadImage(gd, opts) {
 
         promise.then(function(result) {
             if(_gd) _gd._snapshotInProgress = false;
-            return fileSaver(result, filename);
+            return fileSaver(result, filename, opts.format);
         }).then(function(name) {
             resolve(name);
         }).catch(function(err) {

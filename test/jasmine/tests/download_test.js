@@ -180,12 +180,8 @@ function downloadTest(gd, format) {
         var linkadded = domchanges[domchanges.length - 2].addedNodes[0];
         var linkdeleted = domchanges[domchanges.length - 1].removedNodes[0];
 
-        // check for a <a element and proper file type
-        expect(linkadded.getAttribute('href').split(format)[0]).toEqual('data:image/');
-        // check that filename option handled properly
-        expect(filename).toEqual('plotly_download.' + format);
-
-        // check that link removed
+        expect(linkadded.getAttribute('href').split(':')[0]).toBe('blob');
+        expect(filename).toBe('plotly_download.' + format);
         expect(linkadded).toBe(linkdeleted);
     });
 }
