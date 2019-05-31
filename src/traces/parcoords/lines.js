@@ -24,13 +24,8 @@ var filterEpsilon = 1e-7;
 // precision of multiselect is the full range divided into this many parts
 var maskHeight = 2048;
 
-var gpuDimensionCount = 64;
-var sectionVertexCount = 2;
-var vec4NumberCount = 4;
-var bitsPerByte = 8;
-var channelCount = gpuDimensionCount / bitsPerByte; // == 8 bytes needed to have 64 bits
-
-var contextColor = [119, 119, 119]; // middle gray to not drawn the focus; looks good on a black or white background
+// middle gray to not drawn the focus; looks good on a black or white background
+var contextColor = [119, 119, 119];
 
 var dummyPixel = new Uint8Array(4);
 var pickPixel = new Uint8Array(4);
@@ -68,8 +63,8 @@ function renderBlock(regl, glAes, renderState, blockLineCount, sampleCount, item
 
         count = Math.min(blockLineCount, sampleCount - blockNumber * blockLineCount);
 
-        item.offset = sectionVertexCount * blockNumber * blockLineCount;
-        item.count = sectionVertexCount * count;
+        item.offset = 2 * blockNumber * blockLineCount;
+        item.count = 2 * count;
         if(blockNumber === 0) {
             // stop drawing possibly stale glyphs before clearing
             window.cancelAnimationFrame(renderState.currentRafs[rafKey]);
@@ -130,11 +125,11 @@ function makePoints(sampleCount, dims, color) {
     var len = dims.length;
     var points = [];
     for(var j = 0; j < sampleCount; j++) {
-        for(var k = 0; k < gpuDimensionCount; k++) {
+        for(var k = 0; k < 64; k++) {
             points.push(
                 k < len ? dims[k].paddedUnitValues[j] :
-                    k === gpuDimensionCount - 1 ? adjustDepth(color[j]) :
-                        k >= gpuDimensionCount - 4 ? calcPickColor(j, gpuDimensionCount - 2 - k) : 0.5
+                    k === 64 - 1 ? adjustDepth(color[j]) :
+                        k >= 64 - 4 ? calcPickColor(j, 64 - 2 - k) : 0.5
             );
         }
     }
@@ -144,11 +139,11 @@ function makePoints(sampleCount, dims, color) {
 function makeVecAttr(vecIndex, sampleCount, points) {
     var pointPairs = [];
     for(var i = 0; i < sampleCount; i++) {
-        for(var j = 0; j < sectionVertexCount; j++) {
-            for(var k = 0; k < vec4NumberCount; k++) {
-                var q = vecIndex * vec4NumberCount + k;
-                pointPairs.push(points[i * gpuDimensionCount + q]);
-                if(q === gpuDimensionCount - 1 && j % 2 === 0) {
+        for(var j = 0; j < 2; j++) {
+            for(var k = 0; k < 4; k++) {
+                var q = vecIndex * 4 + k;
+                pointPairs.push(points[i * 64 + q]);
+                if(q === 64 - 1 && j % 2 === 0) {
                     pointPairs[pointPairs.length - 1] *= -1;
                 }
             }
@@ -382,13 +377,13 @@ module.exports = function(canvasGL, d) {
         }
 
         var mask = [];
-        for(var i = 0; i < maskHeight * channelCount; i++) {
+        for(var i = 0; i < maskHeight * 8; i++) {
             mask[i] = 255;
         }
 
         for(var dimIndex = 0; dimIndex < initialDims.length; dimIndex++) {
-            var bitIndex = dimIndex % bitsPerByte;
-            var byteIndex = (dimIndex - bitIndex) / bitsPerByte;
+            var bitIndex = dimIndex % 8;
+            var byteIndex = (dimIndex - bitIndex) / 8;
             var bitMask = Math.pow(2, bitIndex);
             var dim = initialDims[dimIndex];
             var ranges = dim.brush.filter.get();
@@ -398,7 +393,7 @@ module.exports = function(canvasGL, d) {
             for(var ri = 1; ri < ranges.length; ri++) {
                 var nextRange = expandedPixelRange(ranges[ri]);
                 for(var pi = prevEnd + 1; pi < nextRange[0]; pi++) {
-                    mask[pi * channelCount + byteIndex] &= ~bitMask;
+                    mask[pi * 8 + byteIndex] &= ~bitMask;
                 }
                 prevEnd = Math.max(prevEnd, nextRange[1]);
             }
@@ -406,7 +401,7 @@ module.exports = function(canvasGL, d) {
 
         var textureData = {
             // 8 units x 8 bits = 64 bits, just sufficient for the almost 64 dimensions we support
-            shape: [channelCount, maskHeight],
+            shape: [8, maskHeight],
             format: 'alpha',
             type: 'uint8',
             mag: 'nearest',
