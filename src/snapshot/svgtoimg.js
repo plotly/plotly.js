@@ -11,6 +11,8 @@
 var Lib = require('../lib');
 var EventEmitter = require('events').EventEmitter;
 
+var helpers = require('./helpers');
+
 function svgToImg(opts) {
     var ev = opts.emitter || new EventEmitter();
 
@@ -21,7 +23,7 @@ function svgToImg(opts) {
 
         // IE only support svg
         if(Lib.isIE() && format !== 'svg') {
-            var ieSvgError = new Error('Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.');
+            var ieSvgError = new Error(helpers.MSG_IE_BAD_FORMAT);
             reject(ieSvgError);
             // eventually remove the ev
             //  in favor of promises
@@ -45,7 +47,7 @@ function svgToImg(opts) {
         // for Safari support, eliminate createObjectURL
         //  this decision could cause problems if content
         //  is not restricted to svg
-        var url = 'data:image/svg+xml,' + encodeURIComponent(svg);
+        var url = helpers.encodeSVG(svg);
 
         canvas.width = w1;
         canvas.height = h1;

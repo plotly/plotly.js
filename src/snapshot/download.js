@@ -8,9 +8,12 @@
 
 'use strict';
 
-var toImage = require('../plot_api/to_image');
 var Lib = require('../lib');
+
+var toImage = require('../plot_api/to_image');
+
 var fileSaver = require('./filesaver');
+var helpers = require('./helpers');
 
 /** Plotly.downloadImage
  *
@@ -41,7 +44,7 @@ function downloadImage(gd, opts) {
         //   does not allow toDataURL
         //   svg format will work though
         if(Lib.isIE() && opts.format !== 'svg') {
-            reject(new Error('Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.'));
+            reject(new Error(helpers.MSG_IE_BAD_FORMAT));
         }
 
         if(_gd) _gd._snapshotInProgress = true;
