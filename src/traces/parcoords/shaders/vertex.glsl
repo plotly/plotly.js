@@ -34,8 +34,17 @@ int iMod(int a, int b) {
     return a - b * (a / b);
 }
 
+bool fOutside(float p, float lo, float hi) {
+    return ((lo > p) || (p > hi));
+}
+
 bool vOutside(vec4 p, vec4 lo, vec4 hi) {
-    return (clamp(p, lo, hi) != p);
+    return (
+        fOutside(p[0], lo[0], hi[0]) ||
+        fOutside(p[1], lo[1], hi[1]) ||
+        fOutside(p[2], lo[2], hi[2]) ||
+        fOutside(p[3], lo[3], hi[3])
+    );
 }
 
 bool mOutside(mat4 p, mat4 lo, mat4 hi) {
@@ -48,7 +57,6 @@ bool mOutside(mat4 p, mat4 lo, mat4 hi) {
 }
 
 bool outsideBoundingBox(mat4 A, mat4 B, mat4 C, mat4 D) {
-
     return mOutside(A, loA, hiA) ||
            mOutside(B, loB, hiB) ||
            mOutside(C, loC, hiC) ||

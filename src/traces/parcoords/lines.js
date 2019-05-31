@@ -114,7 +114,6 @@ function palette(unitToColor, context, opacity) {
         var c = unitToColor(j / 255);
         result.push((context ? contextColor : c).concat(opacity));
     }
-
     return result;
 }
 
@@ -127,46 +126,40 @@ function calcPickColor(j, rgbIndex) {
     return (j >>> 8 * rgbIndex) % 256 / 255;
 }
 
-function makePoints(sampleCount, dimensions, color) {
-    var dimensionCount = dimensions.length;
-
+function makePoints(sampleCount, dims, color) {
+    var len = dims.length;
     var points = [];
     for(var j = 0; j < sampleCount; j++) {
-        for(var i = 0; i < gpuDimensionCount; i++) {
-            points.push(i < dimensionCount ?
-                dimensions[i].paddedUnitValues[j] :
-                i === (gpuDimensionCount - 1) ?
-                    adjustDepth(color[j]) :
-                    i >= gpuDimensionCount - 4 ?
-                        calcPickColor(j, gpuDimensionCount - 2 - i) :
-                        0.5);
+        for(var k = 0; k < gpuDimensionCount; k++) {
+            points.push(
+                k < len ? dims[k].paddedUnitValues[j] :
+                    k === gpuDimensionCount - 1 ? adjustDepth(color[j]) :
+                        k >= gpuDimensionCount - 4 ? calcPickColor(j, gpuDimensionCount - 2 - k) : 0.5
+            );
         }
     }
-
     return points;
 }
 
-function makeVecAttr(sampleCount, points, vecIndex) {
-    var i, j, k;
+function makeVecAttr(vecIndex, sampleCount, points) {
     var pointPairs = [];
-
-    for(j = 0; j < sampleCount; j++) {
-        for(k = 0; k < sectionVertexCount; k++) {
-            for(i = 0; i < vec4NumberCount; i++) {
-                pointPairs.push(points[j * gpuDimensionCount + vecIndex * vec4NumberCount + i]);
-                if(vecIndex * vec4NumberCount + i === gpuDimensionCount - 1 && k % 2 === 0) {
+    for(var i = 0; i < sampleCount; i++) {
+        for(var j = 0; j < sectionVertexCount; j++) {
+            for(var k = 0; k < vec4NumberCount; k++) {
+                var q = vecIndex * vec4NumberCount + k;
+                pointPairs.push(points[i * gpuDimensionCount + q]);
+                if(q === gpuDimensionCount - 1 && j % 2 === 0) {
                     pointPairs[pointPairs.length - 1] *= -1;
                 }
             }
         }
     }
-
     return pointPairs;
 }
 
 function setAttributes(attributes, sampleCount, points) {
     for(var i = 0; i < 16; i++) {
-        attributes['p' + i.toString(16)](makeVecAttr(sampleCount, points, i));
+        attributes['p' + i.toString(16)](makeVecAttr(i, sampleCount, points));
     }
 }
 
@@ -318,17 +311,13 @@ module.exports = function(canvasGL, d) {
     var previousAxisOrder = [];
 
     function makeItem(leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, constraints, isPickLayer) {
-        var loHi, abcd, d, index;
-        var leftRight = [i0, i1];
-
         var dims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
 
-        for(loHi = 0; loHi < 2; loHi++) {
-            index = leftRight[loHi];
-            for(abcd = 0; abcd < 4; abcd++) {
-                for(d = 0; d < 16; d++) {
-                    dims[loHi][abcd][d] = d + 16 * abcd === index ? 1 : 0;
-                }
+        for(var j = 0; j < 4; j++) {
+            for(var k = 0; k < 16; k++) {
+                var id = 16 * j + k;
+                dims[0][j][k] = id === i0 ? 1 : 0;
+                dims[1][j][k] = id === i1 ? 1 : 0;
             }
         }
 
@@ -372,25 +361,19 @@ module.exports = function(canvasGL, d) {
     }
 
     function makeConstraints() {
-        var loHi, abcd, d;
-
         var limits = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
+        for(var j = 0; j < 4; j++) {
+            for(var k = 0; k < 16; k++) {
+                var id = 16 * j + k;
+                var p = (id < initialDims.length) ?
+                    initialDims[id].brush.filter.getBounds() : [0, 1];
 
-        for(loHi = 0; loHi < 2; loHi++) {
-            for(abcd = 0; abcd < 4; abcd++) {
-                for(d = 0; d < 16; d++) {
-                    var dimP = d + 16 * abcd;
-                    var lim;
-                    if(dimP < initialDims.length) {
-                        lim = initialDims[dimP].brush.filter.getBounds()[loHi];
-                    } else lim = loHi;
-
-                    limits[loHi][abcd][d] = lim + (2 * loHi - 1) * filterEpsilon;
-                }
+                limits[0][j][k] = p[0] - filterEpsilon;
+                limits[1][j][k] = p[1] + filterEpsilon;
             }
         }
 
-        function expandedPixelRange(dim, bounds) {
+        function expandedPixelRange(bounds) {
             var maskHMinus = maskHeight - 1;
             return [
                 Math.max(0, Math.floor(bounds[0] * maskHMinus)),
@@ -411,9 +394,9 @@ module.exports = function(canvasGL, d) {
             var ranges = dim.brush.filter.get();
             if(ranges.length < 2) continue; // bail if the bounding box based filter is sufficient
 
-            var prevEnd = expandedPixelRange(dim, ranges[0])[1];
+            var prevEnd = expandedPixelRange(ranges[0])[1];
             for(var ri = 1; ri < ranges.length; ri++) {
-                var nextRange = expandedPixelRange(dim, ranges[ri]);
+                var nextRange = expandedPixelRange(ranges[ri]);
                 for(var pi = prevEnd + 1; pi < nextRange[0]; pi++) {
                     mask[pi * channelCount + byteIndex] &= ~bitMask;
                 }
@@ -457,13 +440,13 @@ module.exports = function(canvasGL, d) {
         var highestX = -Infinity;
 
         for(i = 0; i < panelCount; i++) {
-            if(panels[i].dim1.canvasX > highestX) {
-                highestX = panels[i].dim1.canvasX;
-                rightmost = i;
-            }
             if(panels[i].dim0.canvasX < lowestX) {
                 lowestX = panels[i].dim0.canvasX;
                 leftmost = i;
+            }
+            if(panels[i].dim1.canvasX > highestX) {
+                highestX = panels[i].dim1.canvasX;
+                rightmost = i;
             }
         }
 
@@ -483,9 +466,9 @@ module.exports = function(canvasGL, d) {
             var y = panel.canvasY;
             var panelSizeX = panel.panelSizeX;
             var panelSizeY = panel.panelSizeY;
-            var xTo = x + panelSizeX;
-            if(setChanged || !previousAxisOrder[i0] || previousAxisOrder[i0][0] !== x || previousAxisOrder[i0][1] !== xTo) {
-                previousAxisOrder[i0] = [x, xTo];
+            var nextX = x + panelSizeX;
+            if(setChanged || !previousAxisOrder[i0] || previousAxisOrder[i0][0] !== x || previousAxisOrder[i0][1] !== nextX) {
+                previousAxisOrder[i0] = [x, nextX];
                 var item = makeItem(leftmost, rightmost, i, i0, i1, x, y, panelSizeX, panelSizeY, dim0.crossfilterDimensionIndex, constraints, !!d.pick);
                 renderState.clearOnly = clearOnly;
                 renderBlock(regl, glAes, renderState, setChanged ? model.lines.blockLineCount : sampleCount, sampleCount, item);
