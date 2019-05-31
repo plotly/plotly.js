@@ -434,17 +434,17 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         var panels = vm.panels || (vm.panels = []);
         var dimData = yAxis.data();
         var panelCount = dimData.length - 1;
-        for(var p = 0; p < panelCount; p++) {
-            var panel = panels[p] || (panels[p] = {});
-            var dim0 = dimData[p];
-            var dim1 = dimData[p + 1];
-            panel.dim0 = dim0;
-            panel.dim1 = dim1;
-            panel.canvasX = dim0.canvasX;
-            panel.panelSizeX = dim1.canvasX - dim0.canvasX;
-            panel.panelSizeY = vm.model.canvasHeight;
-            panel.y = 0;
-            panel.canvasY = 0;
+        for(var i = 0; i < panelCount; i++) {
+            var p = panels[i] || (panels[i] = {});
+            var dim0 = dimData[i];
+            var dim1 = dimData[i + 1];
+            p.dim0 = dim0;
+            p.dim1 = dim1;
+            p.canvasX = dim0.canvasX;
+            p.panelSizeX = dim1.canvasX - dim0.canvasX;
+            p.panelSizeY = vm.model.canvasHeight;
+            p.y = 0;
+            p.canvasY = 0;
         }
     }
 
