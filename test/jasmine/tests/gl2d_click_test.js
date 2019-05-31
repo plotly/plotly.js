@@ -346,6 +346,47 @@ describe('Test hover and click interactions', function() {
         .then(done);
     });
 
+    it('@gl should show last point data for overlapped scattergl points with hovermode set to closest', function(done) {
+        var _mock = Lib.extendDeep({}, mock1);
+        _mock.data[0].hovertext = 'text';
+        _mock.data[0].hovertext = 'HoVeRtExT';
+        _mock.layout.hovermode = 'closest';
+
+        var run = makeRunner([200, 200], {
+            x: 2,
+            y: 0,
+            label: ['(2, 0)\nTRUE', null],
+            curveNumber: 0,
+            pointNumber: 3,
+            bgcolor: 'rgb(31, 119, 180)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'scattergl with hovertext'
+        });
+
+        Plotly.plot(gd, {
+            data: [{
+                text: ['', 'FALSE', '', 'TRUE'],
+                x: [1, 2, 3, 2],
+                y: [0, 0, 0, 0],
+                type: 'scattergl',
+                mode: 'markers',
+                marker: { size: 40 }
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                hovermode: 'closest'
+            }
+        })
+        .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should output correct event data for pointcloud', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
