@@ -9,7 +9,6 @@ var Lib = require('@src/lib');
 var LONG_TIMEOUT_INTERVAL = 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('Plotly.downloadImage', function() {
-    'use strict';
     var gd;
 
     var createElement = document.createElement;
@@ -32,7 +31,7 @@ describe('Plotly.downloadImage', function() {
 
     afterEach(function() {
         destroyGraphDiv();
-        delete navigator.msSaveBlob;
+        delete window.navigator.msSaveBlob;
     });
 
     it('should be attached to Plotly', function() {
@@ -40,17 +39,23 @@ describe('Plotly.downloadImage', function() {
     });
 
     it('should create link, remove link, accept options', function(done) {
-        downloadTest(gd, 'jpeg', done);
+        downloadTest(gd, 'jpeg')
+        .catch(failTest)
+        .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
-        downloadTest(gd, 'png', done);
+        downloadTest(gd, 'png')
+        .catch(failTest)
+        .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         checkWebp(function(supported) {
             if(supported) {
-                downloadTest(gd, 'webp', done);
+                downloadTest(gd, 'webp')
+                .catch(failTest)
+                .then(done);
             } else {
                 done();
             }
@@ -58,11 +63,15 @@ describe('Plotly.downloadImage', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
-        downloadTest(gd, 'svg', done);
+        downloadTest(gd, 'svg')
+        .catch(failTest)
+        .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should work when passing graph div id', function(done) {
-        downloadTest('graph', 'svg', done);
+        downloadTest('graph', 'svg')
+        .catch(failTest)
+        .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should work when passing a figure object', function(done) {
@@ -87,7 +96,7 @@ describe('Plotly.downloadImage', function() {
                 .replace(/(\(#)([^")]*)(\))/gi, '(\"#$2\")');
         });
         var savedBlob;
-        navigator.msSaveBlob = function(blob) { savedBlob = blob; };
+        window.navigator.msSaveBlob = function(blob) { savedBlob = blob; };
 
         var expectedStart = '<svg class=\'main-svg\' xmlns=\'http://www.w3.org/2000/svg\' xmlns:xlink=\'http://www.w3.org/1999/xlink\'';
         var plotClip = /clip-path='url\("#clip[0-9a-f]{6}xyplot"\)/;
@@ -129,7 +138,7 @@ describe('Plotly.downloadImage', function() {
     }, LONG_TIMEOUT_INTERVAL);
 });
 
-function downloadTest(gd, format, done) {
+function downloadTest(gd, format) {
     // use MutationObserver to monitor the DOM
     // for changes
     // code modeled after
@@ -145,7 +154,7 @@ function downloadTest(gd, format, done) {
         });
     });
 
-    Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function(_gd) {
+    return Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function(_gd) {
         // start observing dom
         // configuration of the observer:
         var config = { childList: true };
@@ -165,8 +174,8 @@ function downloadTest(gd, format, done) {
         return promise;
     })
     .then(function(filename) {
-        // stop observing
         observer.disconnect();
+
         // look for an added and removed link
         var linkadded = domchanges[domchanges.length - 2].addedNodes[0];
         var linkdeleted = domchanges[domchanges.length - 1].removedNodes[0];
@@ -178,9 +187,7 @@ function downloadTest(gd, format, done) {
 
         // check that link removed
         expect(linkadded).toBe(linkdeleted);
-    })
-    .catch(failTest)
-    .then(done);
+    });
 }
 
 // Only chrome supports webp at the time of writing
