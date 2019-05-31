@@ -17,9 +17,6 @@ var Lib = require('../../lib');
 
 // don't change; otherwise near/far plane lines are lost
 var depthLimitEpsilon = 1e-6;
-// just enough buffer for an extra bit at single-precision floating point
-// which on [0, 1] is 6e-8 (1/2^24)
-var filterEpsilon = 1e-7;
 
 // precision of multiselect is the full range divided into this many parts
 var maskHeight = 2048;
@@ -367,8 +364,8 @@ module.exports = function(canvasGL, d) {
                 var p = (id < initialDims.length) ?
                     initialDims[id].brush.filter.getBounds() : [0, 1];
 
-                limits[0][j][k] = p[0] - filterEpsilon;
-                limits[1][j][k] = p[1] + filterEpsilon;
+                limits[0][j][k] = p[0];
+                limits[1][j][k] = p[1];
             }
         }
 

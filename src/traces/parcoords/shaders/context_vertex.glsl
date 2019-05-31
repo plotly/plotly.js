@@ -47,6 +47,6 @@ void main() {
     gl_Position = unfilteredPosition(v, A, B, C, D);
 
     fragColor = texture2D(palette, vec2(
-        ((abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]) * 255.0 + 0.5) / 256.0, 0.5
+        (abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.5
     ));
 }
