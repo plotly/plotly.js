@@ -732,7 +732,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             }
         }
     } else {
-        for(i = 0; i < ids.length; i++) {
+        for(i = ids.length - 1; i > -1; i--) {
             ptx = x[ids[i]];
             pty = y[ids[i]];
             dx = xa.c2p(ptx) - xpx;
