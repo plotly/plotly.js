@@ -41,8 +41,18 @@ module.exports = {
         },
         // TODO: better way to determine ordinal vs continuous axes,
         // so users can use tickvals/ticktext with a continuous axis.
-        tickvals: extendFlat({}, axesAttrs.tickvals, {editType: 'calc'}),
-        ticktext: extendFlat({}, axesAttrs.ticktext, {editType: 'calc'}),
+        tickvals: extendFlat({}, axesAttrs.tickvals, {
+            editType: 'calc',
+            description: [
+                'Sets the values at which ticks on this axis appear.'
+            ].join(' ')
+        }),
+        ticktext: extendFlat({}, axesAttrs.ticktext, {
+            editType: 'calc',
+            description: [
+                'Sets the text displayed at the ticks position via `tickvals`.'
+            ].join(' ')
+        }),
         tickformat: {
             valType: 'string',
             dflt: '3s',
