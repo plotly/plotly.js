@@ -100,8 +100,8 @@ function adjustDepth(d) {
 
 function palette(unitToColor, context, opacity) {
     var result = [];
-    for(var j = 0; j < 256; j++) {
-        var c = unitToColor(j / 255);
+    for(var i = 0; i < 256; i++) {
+        var c = unitToColor(i / 255);
         result.push((context ? contextColor : c).concat(opacity));
     }
     return result;
@@ -112,21 +112,22 @@ function palette(unitToColor, context, opacity) {
 // with the end result that each line will be of a unique color, making it possible for the pick handler
 // to uniquely identify which line is hovered over (bijective mapping).
 // The inverse, i.e. readPixel is invoked from 'parcoords.js'
-function calcPickColor(j, rgbIndex) {
-    return (j >>> 8 * rgbIndex) % 256 / 255;
+function calcPickColor(i, rgbIndex) {
+    return (i >>> 8 * rgbIndex) % 256 / 255;
 }
 
 function makePoints(sampleCount, dims, color) {
-    var len = dims.length;
     var points = [];
-    for(var j = 0; j < sampleCount; j++) {
-        for(var k = 0; k < 64; k++) {
+    for(var i = 0; i < sampleCount; i++) {
+        for(var k = 0; k < 60; k++) {
             points.push(
-                k < len ? dims[k].paddedUnitValues[j] :
-                    k === 63 ? adjustDepth(color[j]) :
-                        k > 59 ? calcPickColor(j, 62 - k) : 0.5
+                k < dims.length ? dims[k].paddedUnitValues[i] : 0.5
             );
         }
+        points.push(calcPickColor(i, 2));
+        points.push(calcPickColor(i, 1));
+        points.push(calcPickColor(i, 0));
+        points.push(adjustDepth(color[i]));
     }
     return points;
 }
@@ -137,10 +138,11 @@ function makeVecAttr(vecIndex, sampleCount, points) {
         for(var j = 0; j < 2; j++) {
             for(var k = 0; k < 4; k++) {
                 var q = vecIndex * 4 + k;
-                pointPairs.push(points[i * 64 + q]);
-                if(q === 64 - 1 && j % 2 === 0) {
-                    pointPairs[pointPairs.length - 1] *= -1;
+                var v = points[i * 64 + q];
+                if(q === 63 && j === 0) {
+                    v *= -1;
                 }
+                pointPairs.push(v);
             }
         }
     }
@@ -301,7 +303,11 @@ module.exports = function(canvasGL, d) {
     var prevAxisOrder = [];
 
     function makeItem(leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, constraints, isPickLayer) {
-        var dims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
+        var dims = [0, 1].map(function() {
+            return [0, 1, 2, 3].map(function() {
+                return new Float32Array(16);
+            });
+        });
 
         for(var j = 0; j < 4; j++) {
             for(var k = 0; k < 16; k++) {
