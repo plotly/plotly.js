@@ -218,7 +218,7 @@ function viewModel(state, callbacks, model) {
         }
         var filterRange = filterRangeSpecified ?
             specifiedConstraint.map(function(d) { return d.map(domainToPaddedUnit); }) :
-            [[0, 1]];
+            [[-Infinity, Infinity]];
         var brushMove = function() {
             var p = viewModel;
             p.focusLayer && p.focusLayer.render(p.panels, true);

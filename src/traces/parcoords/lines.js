@@ -368,7 +368,7 @@ module.exports = function(canvasGL, d) {
             for(k = 0; k < 16; k++) {
                 var id = 16 * j + k;
                 var p = (id < initialDims.length) ?
-                    initialDims[id].brush.filter.getBounds() : [0, 1];
+                    initialDims[id].brush.filter.getBounds() : [-Infinity, Infinity];
 
                 limits[0][j][k] = p[0];
                 limits[1][j][k] = p[1];

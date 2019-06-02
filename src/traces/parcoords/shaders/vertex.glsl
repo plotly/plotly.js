@@ -35,7 +35,7 @@ int iMod(int a, int b) {
 }
 
 bool fOutside(float p, float lo, float hi) {
-    return ((lo > p) || (p > hi));
+    return (lo < hi) && (lo > p || p > hi);
 }
 
 bool vOutside(vec4 p, vec4 lo, vec4 hi) {
