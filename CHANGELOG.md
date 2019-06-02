@@ -10,6 +10,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.48.1] -- 2019-05-30
+
+### Fixed
+- Fix single-sample-point `histogram2d` traces with set bins settings [#3922]
+- Fix bingroup attributes for `histogram2dcontour` traces [#3922]
+- Fix hover label content on empty `histogram2d` bins [#3922]
+
+
 ## [1.48.0] -- 2019-05-28
 
 ### Added

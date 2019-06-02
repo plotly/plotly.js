@@ -173,8 +173,11 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
 function drawAxisTitles(gd, layer, trace, t, xa, ya, labelOrientationA, labelOrientationB) {
     var a, b, xy, dxy;
 
-    a = 0.5 * (trace.a[0] + trace.a[trace.a.length - 1]);
-    b = trace.b[0];
+    var _a = trace.a.slice().sort(Lib.sorterAsc);
+    var _b = trace.b.slice().sort(Lib.sorterAsc);
+
+    a = 0.5 * (_a[0] + _a[_a.length - 1]);
+    b = _b[0];
     xy = trace.ab2xy(a, b, true);
     dxy = trace.dxyda_rough(a, b);
     if(labelOrientationA.angle === undefined) {
@@ -182,8 +185,8 @@ function drawAxisTitles(gd, layer, trace, t, xa, ya, labelOrientationA, labelOri
     }
     drawAxisTitle(gd, layer, trace, t, xy, dxy, trace.aaxis, xa, ya, labelOrientationA, 'a-title');
 
-    a = trace.a[0];
-    b = 0.5 * (trace.b[0] + trace.b[trace.b.length - 1]);
+    a = _a[0];
+    b = 0.5 * (_b[0] + _b[_b.length - 1]);
     xy = trace.ab2xy(a, b, true);
     dxy = trace.dxydb_rough(a, b);
     if(labelOrientationB.angle === undefined) {
