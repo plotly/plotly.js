@@ -131,7 +131,7 @@ function isVisible(opts) {
 
     return opts.visible && (
         Lib.isPlainObject(source) ||
-        (typeof source === 'string' && source.length > 0)
+        ((typeof source === 'string' || Array.isArray(source)) && source.length > 0)
     );
 }
 
@@ -193,22 +193,35 @@ function convertOpts(opts) {
             break;
     }
 
-    return { layout: layout, paint: paint };
+    return {
+        layout: layout,
+        paint: paint
+    };
 }
 
 function convertSourceOpts(opts) {
     var sourceType = opts.sourcetype;
     var source = opts.source;
-    var sourceOpts = {type: sourceType};
+    var sourceOpts = {
+        type: sourceType
+    };
     var field;
-
-    if(sourceType === 'geojson') {
+    if (sourceType === 'geojson') {
         field = 'data';
-    } else if(sourceType === 'vector') {
+    } else if (sourceType === 'vector') {
         field = typeof source === 'string' ? 'url' : 'tiles';
+    } else if (sourceType === 'raster') {
+        field = 'tiles';
+        sourceOpts['tileSize'] = 256;
+        for (let index = 0; index < source.length; index++) {
+            const url = source[index];
+            source[index] = decodeURIComponent(url);
+
+        }
     }
 
     sourceOpts[field] = source;
+
     return sourceOpts;
 }
 
@@ -216,6 +229,6 @@ module.exports = function createMapboxLayer(mapbox, index, opts) {
     var mapboxLayer = new MapboxLayer(mapbox, index);
 
     mapboxLayer.update(opts);
-
+    
     return mapboxLayer;
 };
