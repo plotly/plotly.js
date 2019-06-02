@@ -102,7 +102,7 @@ var attrs = module.exports = overrideAll({
         },
         sourcetype: {
             valType: 'enumerated',
-            values: ['geojson', 'vector'],
+            values: ['geojson', 'vector', 'raster'],
             dflt: 'geojson',
             role: 'info',
             description: [
@@ -134,7 +134,7 @@ var attrs = module.exports = overrideAll({
 
         type: {
             valType: 'enumerated',
-            values: ['circle', 'line', 'fill', 'symbol'],
+            values: ['circle', 'line', 'fill', 'symbol', 'raster'],
             dflt: 'circle',
             role: 'info',
             description: [
