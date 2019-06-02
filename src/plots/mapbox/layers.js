@@ -206,17 +206,16 @@ function convertSourceOpts(opts) {
         type: sourceType
     };
     var field;
-    if (sourceType === 'geojson') {
+    if(sourceType === 'geojson') {
         field = 'data';
-    } else if (sourceType === 'vector') {
+    } else if(sourceType === 'vector') {
         field = typeof source === 'string' ? 'url' : 'tiles';
-    } else if (sourceType === 'raster') {
+    } else if(sourceType === 'raster') {
         field = 'tiles';
-        sourceOpts['tileSize'] = 256;
-        for (let index = 0; index < source.length; index++) {
-            const url = source[index];
+        sourceOpts.tileSize = 256;
+        for(var index = 0; index < source.length; index++) {
+            var url = source[index];
             source[index] = decodeURIComponent(url);
-
         }
     }
 
@@ -229,6 +228,6 @@ module.exports = function createMapboxLayer(mapbox, index, opts) {
     var mapboxLayer = new MapboxLayer(mapbox, index);
 
     mapboxLayer.update(opts);
-    
+
     return mapboxLayer;
 };
