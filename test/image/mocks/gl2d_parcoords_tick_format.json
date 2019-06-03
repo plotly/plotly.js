@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "type": "parcoords",
+            "dimensions": [
+                {
+                    "label": "A",
+                    "values": [
+                        -1,
+                        1
+                    ]
+                },
+                {
+                    "label": "B",
+                    "values": [
+                        -0.99999,
+                        0.99999
+                    ]
+                },
+                {
+                    "label": "C",
+                    "values": [
+                        -0.99999,
+                        1
+                    ]
+                }
+            ]
+        }
+    ],
+    "layout": {
+        "width": 400,
+        "height": 400,
+        "title": {
+            "text": "Tick formatting"
+        }
+    }
+}

@@ -24,6 +24,17 @@ var c = require('./constants');
 var brush = require('./axisbrush');
 var lineLayerMaker = require('./lines');
 
+var tickText = require('../../plots/cartesian/axes').tickText;
+var parcoordsLayout;
+
+function linearFormat(v) {
+    return tickText(
+        parcoordsLayout.linearAxis,
+        parcoordsLayout.linearAxis.d2l(v),
+        true
+    ).text;
+}
+
 function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
 
 function dimensionExtent(dimension) {
@@ -336,10 +347,12 @@ function parcoordsInteractionState() {
     };
 }
 
-module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, callbacks) {
+module.exports = function(root, svg, parcoordsLineLayers, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
-    var vm = styledData
+    parcoordsLayout = layout;
+
+    var vm = cdModule
         .filter(function(d) { return unwrap(d).trace.visible; })
         .map(model.bind(0, layout))
         .map(viewModel.bind(0, state, callbacks));
@@ -552,7 +565,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
                     .tickValues(d.ordinal ? // and this works for ordinal scales
                         sdom :
                         null)
-                    .tickFormat(d.ordinal ? function(d) { return d; } : null)
+                    .tickFormat(d.ordinal ? function(d) { return d; } : function(d) { return linearFormat(d); })
                     .scale(scale));
             Drawing.font(axis.selectAll('text'), d.model.tickFont);
         });
@@ -614,7 +627,8 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     function extremeText(d, isTop) {
         if(d.ordinal) return '';
         var domain = d.domainScale.domain();
-        return d3.format(d.tickFormat)(domain[isTop ? domain.length - 1 : 0]);
+        var v = (domain[isTop ? domain.length - 1 : 0]);
+        return linearFormat(v);
     }
 
     axisExtentTopText.enter()
