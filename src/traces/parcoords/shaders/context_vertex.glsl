@@ -40,7 +40,7 @@ void main() {
     mat4 A = mat4(p0, p1, p2, p3);
     mat4 B = mat4(p4, p5, p6, p7);
     mat4 C = mat4(p8, p9, pa, pb);
-    mat4 D = mat4(pc, pd, pe, abs(pf));
+    mat4 D = mat4(pc, pd, pe, vec4(0.0, 0.0, 0.0, 0.0));
 
     float v = pf[3];
 
