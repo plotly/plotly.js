@@ -11,7 +11,7 @@
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
 
-module.exports = function plot(gd, cdparcoords) {
+module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var root = fullLayout._paperdiv;
@@ -27,7 +27,7 @@ module.exports = function plot(gd, cdparcoords) {
 
     var size = fullLayout._size;
 
-    cdparcoords.forEach(function(d, i) {
+    cdModule.forEach(function(d, i) {
         var trace = d[0].trace;
         fullIndices[i] = trace.index;
         var iIn = inputIndices[i] = trace._fullInput.index;
@@ -138,7 +138,7 @@ module.exports = function plot(gd, cdparcoords) {
         root,
         svg,
         container,
-        cdparcoords,
+        cdModule,
         {
             width: size.w,
             height: size.h,
