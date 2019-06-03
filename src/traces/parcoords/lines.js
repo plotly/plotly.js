@@ -268,8 +268,7 @@ module.exports = function(canvasGL, d) {
             palette: paletteTexture,
             mask: regl.prop('maskTexture'),
             isPickLayer: regl.prop('isPickLayer'),
-            maskHeight: regl.prop('maskHeight'),
-            colorClamp: regl.prop('colorClamp')
+            maskHeight: regl.prop('maskHeight')
         },
         offset: regl.prop('offset'),
         count: regl.prop('count')
@@ -291,13 +290,6 @@ module.exports = function(canvasGL, d) {
         paletteTexture = regl.texture(Lib.extendFlat({
             data: palette(model.unitToColor, context, Math.round((context ? contextOpacity : 1) * 255))
         }, paletteTextureConfig));
-    }
-
-    var colorClamp = [0, 1];
-
-    function setColorDomain(unitDomain) {
-        colorClamp[0] = unitDomain[0];
-        colorClamp[1] = unitDomain[1];
     }
 
     var prevAxisOrder = [];
@@ -339,7 +331,6 @@ module.exports = function(canvasGL, d) {
             dim1C: dims[1][2],
             dim1D: dims[1][3],
 
-            colorClamp: colorClamp,
             isPickLayer: +isPickLayer,
 
             scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
@@ -519,7 +510,6 @@ module.exports = function(canvasGL, d) {
     }
 
     return {
-        setColorDomain: setColorDomain,
         render: renderGLParcoords,
         readPixel: readPixel,
         readPixels: readPixels,

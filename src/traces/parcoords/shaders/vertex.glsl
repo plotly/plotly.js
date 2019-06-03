@@ -8,14 +8,12 @@ attribute vec4 p0, p1, p2, p3,
 uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
              loA, hiA, loB, hiB, loC, hiC, loD, hiD;
 
-uniform vec2 resolution, viewBoxPos, viewBoxSize, colorClamp;
+uniform vec2 resolution, viewBoxPos, viewBoxSize;
 uniform sampler2D mask, palette;
 uniform float maskHeight;
 uniform float isPickLayer;
 
 varying vec4 fragColor;
-
-precision highp float;
 
 const vec4 zero = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 unit = vec4(1.0, 1.0, 1.0, 1.0);
@@ -115,7 +113,5 @@ void main() {
 
     gl_Position = position(v, A, B, C, D);
 
-    fragColor = (isPickLayer > 0.0) ? vec4(pf.rgb, 1.0) : texture2D(palette, vec2(
-        (abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.5
-    ));
+    fragColor = (isPickLayer > 0.0) ? vec4(pf.rgb, 1.0) : texture2D(palette, vec2(abs(v), 0.5));
 }

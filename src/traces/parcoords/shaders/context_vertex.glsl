@@ -7,7 +7,7 @@ attribute vec4 p0, p1, p2, p3,
 
 uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D;
 
-uniform vec2 resolution, viewBoxPos, viewBoxSize, colorClamp;
+uniform vec2 resolution, viewBoxPos, viewBoxSize;
 uniform sampler2D palette;
 
 varying vec4 fragColor;
@@ -46,7 +46,5 @@ void main() {
 
     gl_Position = unfilteredPosition(v, A, B, C, D);
 
-    fragColor = texture2D(palette, vec2(
-        (abs(v) - colorClamp[0]) / (colorClamp[1] - colorClamp[0]), 0.5
-    ));
+    fragColor = texture2D(palette, vec2(abs(v), 0.5));
 }
