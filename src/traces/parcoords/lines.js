@@ -12,6 +12,7 @@ var glslify = require('glslify');
 var vertexShaderSource = glslify('./shaders/vertex.glsl');
 var contextShaderSource = glslify('./shaders/context_vertex.glsl');
 var fragmentShaderSource = glslify('./shaders/fragment.glsl');
+var maxDim = require('./constants').maxDimensionCount;
 
 var Lib = require('../../lib');
 
@@ -119,7 +120,7 @@ function calcPickColor(i, rgbIndex) {
 function makePoints(sampleCount, dims, color) {
     var points = [];
     for(var i = 0; i < sampleCount; i++) {
-        for(var k = 0; k < 60; k++) {
+        for(var k = 0; k < maxDim; k++) {
             points.push(
                 k < dims.length ? dims[k].paddedUnitValues[i] : 0.5
             );
@@ -149,16 +150,25 @@ function makeVecAttr(vecIndex, sampleCount, points) {
     return pointPairs;
 }
 
+function pad2(num) {
+    var s = '0' + num;
+    return s.substr(s.length - 2);
+}
+
+function getAttrName(i) {
+    return (i < maxDim) ? 'p' + pad2(i + 1) + '_' + pad2(i + 4) : 'colors';
+}
+
 function setAttributes(attributes, sampleCount, points) {
-    for(var i = 0; i < 16; i++) {
-        attributes['p' + i.toString(16)](makeVecAttr(i, sampleCount, points));
+    for(var i = 0; i <= maxDim; i += 4) {
+        attributes[getAttrName(i)](makeVecAttr(i / 4, sampleCount, points));
     }
 }
 
 function emptyAttributes(regl) {
     var attributes = {};
-    for(var i = 0; i < 16; i++) {
-        attributes['p' + i.toString(16)] = regl.buffer({usage: 'dynamic', type: 'float', data: new Uint8Array(0)});
+    for(var i = 0; i <= maxDim; i += 4) {
+        attributes[getAttrName(i)] = regl.buffer({usage: 'dynamic', type: 'float', data: new Uint8Array(0)});
     }
     return attributes;
 }
