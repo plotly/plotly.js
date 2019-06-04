@@ -70,7 +70,7 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         // draw everything
         makeBackground(plotGroup, perimeter, contours);
         makeFills(plotGroup, fillPathinfo, perimeter, contours);
-        makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours, perimeter);
+        makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours);
         clipGaps(plotGroup, plotinfo, gd, cd0, perimeter);
     });
 };
@@ -209,7 +209,7 @@ function joinAllPaths(pi, perimeter) {
     return fullpath;
 }
 
-function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
+function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
     var lineContainer = Lib.ensureSingle(plotgroup, 'g', 'contourlines');
     var showLines = contours.showlines !== false;
     var showLabels = contours.showlabels;
@@ -244,16 +244,19 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
             .attr('data-notex', 1)
             .call(Drawing.font, contours.labelfont);
 
+        var _x = cd0.x.slice().sort(Lib.sorterAsc);
+        var _y = cd0.y.slice().sort(Lib.sorterAsc);
+
         var xa = pathinfo[0].xaxis;
         var ya = pathinfo[0].yaxis;
         var xLen = xa._length;
         var yLen = ya._length;
         var xRng = xa.range;
         var yRng = ya.range;
-        var x0 = Math.max(perimeter[0][0], 0);
-        var x1 = Math.min(perimeter[2][0], xLen);
-        var y0 = Math.max(perimeter[0][1], 0);
-        var y1 = Math.min(perimeter[2][1], yLen);
+        var x0 = Math.max(xa.c2p(_x[0], true), 0);
+        var x1 = Math.min(xa.c2p(_x[_x.length - 1], true), xLen);
+        var y0 = Math.max(ya.c2p(_y[_y.length - 1], true), 0);
+        var y1 = Math.min(ya.c2p(_y[0], true), yLen);
 
         // visible bounds of the contour trace (and the midpoints, to
         // help with cost calculations)
