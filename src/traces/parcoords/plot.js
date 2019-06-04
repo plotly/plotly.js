@@ -139,6 +139,7 @@ module.exports = function plot(gd, cdModule) {
     };
 
     parcoords(
+        gd,
         svg,
         container,
         cdModule,

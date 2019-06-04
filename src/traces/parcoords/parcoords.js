@@ -348,7 +348,7 @@ function parcoordsInteractionState() {
     };
 }
 
-module.exports = function(svg, parcoordsLineLayers, cdModule, layout, callbacks) {
+module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
     parcoordsLayout = layout;
@@ -606,7 +606,7 @@ module.exports = function(svg, parcoordsLineLayers, cdModule, layout, callbacks)
         .each(function(d) {
             var e = d3.select(this);
             Drawing.font(e, d.model.labelFont);
-            svgTextUtils.convertToTspans(e);
+            svgTextUtils.convertToTspans(e, gd);
         });
 
     var axisExtent = axisOverlays.selectAll('.' + c.cn.axisExtent)
