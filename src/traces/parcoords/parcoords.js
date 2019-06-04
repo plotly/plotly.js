@@ -12,6 +12,7 @@ var d3 = require('d3');
 var rgba = require('color-rgba');
 
 var Lib = require('../../lib');
+var svgTextUtils = require('../../lib/svg_text_utils');
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
 
@@ -602,7 +603,11 @@ module.exports = function(svg, parcoordsLineLayers, cdModule, layout, callbacks)
     axisTitle
         .attr('transform', 'translate(0,' + -c.axisTitleOffset + ')')
         .text(function(d) { return d.label; })
-        .each(function(d) { Drawing.font(d3.select(this), d.model.labelFont); });
+        .each(function(d) {
+            var e = d3.select(this);
+            Drawing.font(e, d.model.labelFont);
+            svgTextUtils.convertToTspans(e);
+        });
 
     var axisExtent = axisOverlays.selectAll('.' + c.cn.axisExtent)
         .data(repeat, keyFun);

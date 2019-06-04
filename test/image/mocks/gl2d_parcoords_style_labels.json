@@ -1,0 +1,79 @@
+{
+    "data": [
+        {
+            "type": "parcoords",
+            "labelfont": {
+                "color": "rgba(255,0,0,0.5)",
+                "family": "Arial, sans-serif",
+                "size": 16
+            },
+            "rangefont": {
+                "color": "hsv(191,191,63)",
+                "family": "Times New Roman",
+                "size": 14
+            },
+            "tickfont": {
+                "color": "green",
+                "family": "'Open sans', verdana, arial, sans-serif",
+                "size": 12
+            },
+            "dimensions": [
+                {
+                    "label": "<b>e<sup>iπ</sup> = cos i + i sin π</b>",
+                    "values": [
+                        -1,
+                        -1,
+                        -1,
+                        -1,
+                        -1,
+                        -1
+                    ],
+                    "range": [
+                        1,
+                        -1
+                    ]
+                },
+                {
+                    "label": "<i>Rien ne se perd,<br>rien ne se crée,<br>tout se <b>transforme</b>.</i><sub>",
+                    "values": [
+                        1,
+                        2,
+                        3,
+                        5,
+                        8,
+                        13
+                    ],
+                    "range": [
+                        0,
+                        20
+                    ]
+                },
+                {
+                    "label": "$\\varphi ={\\frac {1+{\\sqrt {5}}}{2}}$",
+                    "values": [
+                        1,
+                        2,
+                        1.5,
+                        1.667,
+                        1.6,
+                        1.625
+                    ],
+                    "constraintrange": [
+                        1.55,
+                        1.7
+                    ]
+                }
+            ]
+        }
+    ],
+    "layout": {
+        "margin": {
+            "t": 50,
+            "b": 25,
+            "l": 100,
+            "r": 100
+        },
+        "width": 500,
+        "height": 400
+    }
+}
