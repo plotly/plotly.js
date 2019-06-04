@@ -305,18 +305,10 @@ module.exports = function(canvasGL, d) {
     var prevAxisOrder = [];
 
     function makeItem(leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, constraints, isPickLayer) {
-        var dims = [0, 1].map(function() {
-            return [0, 1, 2, 3].map(function() {
-                return new Float32Array(16);
-            });
-        });
-
-        for(var j = 0; j < 4; j++) {
-            for(var k = 0; k < 16; k++) {
-                var id = 16 * j + k;
-                dims[0][j][k] = id === i0 ? 1 : 0;
-                dims[1][j][k] = id === i1 ? 1 : 0;
-            }
+        var dims = [[], []];
+        for(var k = 0; k < 64; k++) {
+            dims[0][k] = (k === i0) ? 1 : 0;
+            dims[1][k] = (k === i1) ? 1 : 0;
         }
 
         var overdrag = model.lines.canvasOverdrag;
@@ -332,14 +324,14 @@ module.exports = function(canvasGL, d) {
             i0: i0,
             i1: i1,
 
-            dim0A: dims[0][0],
-            dim0B: dims[0][1],
-            dim0C: dims[0][2],
-            dim0D: dims[0][3],
-            dim1A: dims[1][0],
-            dim1B: dims[1][1],
-            dim1C: dims[1][2],
-            dim1D: dims[1][3],
+            dim0A: dims[0].slice(0, 16),
+            dim0B: dims[0].slice(16, 32),
+            dim0C: dims[0].slice(32, 48),
+            dim0D: dims[0].slice(48, 64),
+            dim1A: dims[1].slice(0, 16),
+            dim1B: dims[1].slice(16, 32),
+            dim1C: dims[1].slice(32, 48),
+            dim1D: dims[1].slice(48, 64),
 
             isPickLayer: +isPickLayer,
 
@@ -360,20 +352,13 @@ module.exports = function(canvasGL, d) {
     function makeConstraints() {
         var i, j, k;
 
-        var limits = [0, 1].map(function() {
-            return [0, 1, 2, 3].map(function() {
-                return new Float32Array(16);
-            });
-        });
-        for(j = 0; j < 4; j++) {
-            for(k = 0; k < 16; k++) {
-                var id = 16 * j + k;
-                var p = (id < initialDims.length) ?
-                    initialDims[id].brush.filter.getBounds() : [-Infinity, Infinity];
+        var limits = [[], []];
+        for(k = 0; k < 64; k++) {
+            var p = (k < initialDims.length) ?
+                initialDims[k].brush.filter.getBounds() : [-Infinity, Infinity];
 
-                limits[0][j][k] = p[0];
-                limits[1][j][k] = p[1];
-            }
+            limits[0][k] = p[0];
+            limits[1][k] = p[1];
         }
 
         function expandedPixelRange(bounds) {
@@ -421,14 +406,14 @@ module.exports = function(canvasGL, d) {
         return {
             maskTexture: maskTexture,
             maskHeight: maskHeight,
-            loA: limits[0][0],
-            loB: limits[0][1],
-            loC: limits[0][2],
-            loD: limits[0][3],
-            hiA: limits[1][0],
-            hiB: limits[1][1],
-            hiC: limits[1][2],
-            hiD: limits[1][3]
+            loA: limits[0].slice(0, 16),
+            loB: limits[0].slice(16, 32),
+            loC: limits[0].slice(32, 48),
+            loD: limits[0].slice(48, 64),
+            hiA: limits[1].slice(0, 16),
+            hiB: limits[1].slice(16, 32),
+            hiC: limits[1].slice(32, 48),
+            hiD: limits[1].slice(48, 64),
         };
     }
 
