@@ -347,7 +347,7 @@ function parcoordsInteractionState() {
     };
 }
 
-module.exports = function(root, svg, parcoordsLineLayers, cdModule, layout, callbacks) {
+module.exports = function(svg, parcoordsLineLayers, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
     parcoordsLayout = layout;

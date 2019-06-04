@@ -15,7 +15,6 @@ var setConvert = require('../../plots/cartesian/axes').setConvert;
 module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
-    var root = fullLayout._paperdiv;
     var container = fullLayout._glcontainer;
 
     var success = prepareRegl(gd);
@@ -140,7 +139,6 @@ module.exports = function plot(gd, cdModule) {
     };
 
     parcoords(
-        root,
         svg,
         container,
         cdModule,
