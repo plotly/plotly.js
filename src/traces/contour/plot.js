@@ -244,19 +244,20 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
             .attr('data-notex', 1)
             .call(Drawing.font, contours.labelfont);
 
-        var _x = cd0.x.slice().sort(Lib.sorterAsc);
-        var _y = cd0.y.slice().sort(Lib.sorterAsc);
-
         var xa = pathinfo[0].xaxis;
         var ya = pathinfo[0].yaxis;
         var xLen = xa._length;
         var yLen = ya._length;
         var xRng = xa.range;
         var yRng = ya.range;
-        var x0 = Math.max(xa.c2p(_x[0], true), 0);
-        var x1 = Math.min(xa.c2p(_x[_x.length - 1], true), xLen);
-        var y0 = Math.max(ya.c2p(_y[_y.length - 1], true), 0);
-        var y1 = Math.min(ya.c2p(_y[0], true), yLen);
+        var xMin = Lib.aggNums(Math.min, null, cd0.x);
+        var xMax = Lib.aggNums(Math.max, null, cd0.x);
+        var yMin = Lib.aggNums(Math.min, null, cd0.y);
+        var yMax = Lib.aggNums(Math.max, null, cd0.y);
+        var x0 = Math.max(xa.c2p(xMin, true), 0);
+        var x1 = Math.min(xa.c2p(xMax, true), xLen);
+        var y0 = Math.max(ya.c2p(yMax, true), 0);
+        var y1 = Math.min(ya.c2p(yMin, true), yLen);
 
         // visible bounds of the contour trace (and the midpoints, to
         // help with cost calculations)
