@@ -693,6 +693,14 @@ describe('Test histogram', function() {
             ]);
         });
 
+        it('handles multiple single-valued overlaid autobinned traces', function() {
+            var out = _calc({x: [1]}, [{x: [1]}], {barmode: 'overlay'}, true);
+
+            expect(out).toEqual([
+                {p: 1, s: 1, b: 0, pts: [0], ph1: 1, ph0: 1, width1: 1, i: 0}
+            ]);
+        });
+
         it('handles multiple single-valued overlaid autobinned traces with different values', function() {
             var out = _calc({x: [null, 13, '', 13]}, [
                 {x: [5]},
