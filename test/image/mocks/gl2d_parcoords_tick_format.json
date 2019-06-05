@@ -2,23 +2,24 @@
     "data": [
         {
             "type": "parcoords",
+            "labelangle": -90,
             "dimensions": [
                 {
-                    "label": "A",
+                    "label": "Apples",
                     "values": [
                         -1,
                         1
                     ]
                 },
                 {
-                    "label": "B",
+                    "label": "Bananas",
                     "values": [
                         -0.99999,
                         0.99999
                     ]
                 },
                 {
-                    "label": "C",
+                    "label": "Cherries",
                     "values": [
                         -0.99999,
                         1
@@ -31,7 +32,11 @@
         "width": 400,
         "height": 400,
         "title": {
-            "text": "Tick formatting"
+            "text": "<sup>Tick formatting and <i><b>labelangle</b></i></sup>"
+        },
+        "margin": {
+            "t": 150,
+            "b": 25
         }
     }
 }

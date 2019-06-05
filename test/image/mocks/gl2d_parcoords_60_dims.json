@@ -2,8 +2,10 @@
     "data": [
         {
             "type": "parcoords",
+            "labelangle": -45,
             "dimensions": [
                 {
+                    "label": "one",
                     "range": [
                         0,
                         1
@@ -29,6 +31,7 @@
                     ]
                 },
                 {
+                    "label": "two",
                     "range": [
                         0,
                         2
@@ -54,6 +57,7 @@
                     ]
                 },
                 {
+                    "label": "three",
                     "range": [
                         0,
                         3
@@ -79,6 +83,7 @@
                     ]
                 },
                 {
+                    "label": "four",
                     "range": [
                         0,
                         4
@@ -104,6 +109,7 @@
                     ]
                 },
                 {
+                    "label": "five",
                     "range": [
                         0,
                         5
@@ -129,6 +135,7 @@
                     ]
                 },
                 {
+                    "label": "six",
                     "range": [
                         0,
                         6
@@ -154,6 +161,7 @@
                     ]
                 },
                 {
+                    "label": "seven",
                     "range": [
                         0,
                         7
@@ -179,6 +187,7 @@
                     ]
                 },
                 {
+                    "label": "eight",
                     "range": [
                         0,
                         8
@@ -204,6 +213,7 @@
                     ]
                 },
                 {
+                    "label": "nine",
                     "range": [
                         0,
                         9
@@ -229,6 +239,7 @@
                     ]
                 },
                 {
+                    "label": "ten",
                     "range": [
                         0,
                         10
@@ -254,6 +265,7 @@
                     ]
                 },
                 {
+                    "label": "eleven",
                     "range": [
                         0,
                         11
@@ -279,6 +291,7 @@
                     ]
                 },
                 {
+                    "label": "twelve",
                     "range": [
                         0,
                         12
@@ -304,6 +317,7 @@
                     ]
                 },
                 {
+                    "label": "thirteen",
                     "range": [
                         0,
                         13
@@ -329,6 +343,7 @@
                     ]
                 },
                 {
+                    "label": "fourteen",
                     "range": [
                         0,
                         14
@@ -354,6 +369,7 @@
                     ]
                 },
                 {
+                    "label": "fifteen",
                     "range": [
                         0,
                         15
@@ -379,6 +395,7 @@
                     ]
                 },
                 {
+                    "label": "sixteen",
                     "range": [
                         0,
                         16
@@ -404,6 +421,7 @@
                     ]
                 },
                 {
+                    "label": "seventeen",
                     "range": [
                         0,
                         17
@@ -429,6 +447,7 @@
                     ]
                 },
                 {
+                    "label": "eighteen",
                     "range": [
                         0,
                         18
@@ -454,6 +473,7 @@
                     ]
                 },
                 {
+                    "label": "nineteen",
                     "range": [
                         0,
                         19
@@ -479,6 +499,7 @@
                     ]
                 },
                 {
+                    "label": "twenty",
                     "range": [
                         0,
                         20
@@ -504,6 +525,7 @@
                     ]
                 },
                 {
+                    "label": "twenty one",
                     "range": [
                         0,
                         21
@@ -529,6 +551,7 @@
                     ]
                 },
                 {
+                    "label": "twenty two",
                     "range": [
                         0,
                         22
@@ -554,6 +577,7 @@
                     ]
                 },
                 {
+                    "label": "twenty three",
                     "range": [
                         0,
                         23
@@ -579,6 +603,7 @@
                     ]
                 },
                 {
+                    "label": "twenty four",
                     "range": [
                         0,
                         24
@@ -604,6 +629,7 @@
                     ]
                 },
                 {
+                    "label": "twenty five",
                     "range": [
                         0,
                         25
@@ -629,6 +655,7 @@
                     ]
                 },
                 {
+                    "label": "twenty six",
                     "range": [
                         0,
                         26
@@ -654,6 +681,7 @@
                     ]
                 },
                 {
+                    "label": "twenty seven",
                     "range": [
                         0,
                         27
@@ -679,6 +707,7 @@
                     ]
                 },
                 {
+                    "label": "twenty eight",
                     "range": [
                         0,
                         28
@@ -704,6 +733,7 @@
                     ]
                 },
                 {
+                    "label": "twenty nine",
                     "range": [
                         0,
                         29
@@ -729,6 +759,7 @@
                     ]
                 },
                 {
+                    "label": "thirty",
                     "range": [
                         0,
                         30
@@ -754,6 +785,7 @@
                     ]
                 },
                 {
+                    "label": "thirty one",
                     "range": [
                         0,
                         31
@@ -779,6 +811,7 @@
                     ]
                 },
                 {
+                    "label": "thirty two",
                     "range": [
                         0,
                         32
@@ -804,6 +837,7 @@
                     ]
                 },
                 {
+                    "label": "thirty three",
                     "range": [
                         0,
                         33
@@ -829,6 +863,7 @@
                     ]
                 },
                 {
+                    "label": "thirty four",
                     "range": [
                         0,
                         34
@@ -854,6 +889,7 @@
                     ]
                 },
                 {
+                    "label": "thirty five",
                     "range": [
                         0,
                         35
@@ -879,6 +915,7 @@
                     ]
                 },
                 {
+                    "label": "thirty six",
                     "range": [
                         0,
                         36
@@ -904,6 +941,7 @@
                     ]
                 },
                 {
+                    "label": "thirty seven",
                     "range": [
                         0,
                         37
@@ -929,6 +967,7 @@
                     ]
                 },
                 {
+                    "label": "thirty eight",
                     "range": [
                         0,
                         38
@@ -954,6 +993,7 @@
                     ]
                 },
                 {
+                    "label": "thirty nine",
                     "range": [
                         0,
                         39
@@ -979,6 +1019,7 @@
                     ]
                 },
                 {
+                    "label": "forty",
                     "range": [
                         0,
                         40
@@ -1004,6 +1045,7 @@
                     ]
                 },
                 {
+                    "label": "forty one",
                     "range": [
                         0,
                         41
@@ -1029,6 +1071,7 @@
                     ]
                 },
                 {
+                    "label": "forty two",
                     "range": [
                         0,
                         42
@@ -1054,6 +1097,7 @@
                     ]
                 },
                 {
+                    "label": "forty three",
                     "range": [
                         0,
                         43
@@ -1079,6 +1123,7 @@
                     ]
                 },
                 {
+                    "label": "forty four",
                     "range": [
                         0,
                         44
@@ -1104,6 +1149,7 @@
                     ]
                 },
                 {
+                    "label": "forty five",
                     "range": [
                         0,
                         45
@@ -1129,6 +1175,7 @@
                     ]
                 },
                 {
+                    "label": "forty six",
                     "range": [
                         0,
                         46
@@ -1154,6 +1201,7 @@
                     ]
                 },
                 {
+                    "label": "forty seven",
                     "range": [
                         0,
                         47
@@ -1179,6 +1227,7 @@
                     ]
                 },
                 {
+                    "label": "forty eight",
                     "range": [
                         0,
                         48
@@ -1204,6 +1253,7 @@
                     ]
                 },
                 {
+                    "label": "forty nine",
                     "range": [
                         0,
                         49
@@ -1229,6 +1279,7 @@
                     ]
                 },
                 {
+                    "label": "fifty ",
                     "range": [
                         0,
                         50
@@ -1254,6 +1305,7 @@
                     ]
                 },
                 {
+                    "label": "fifty one",
                     "range": [
                         0,
                         51
@@ -1279,6 +1331,7 @@
                     ]
                 },
                 {
+                    "label": "fifty two",
                     "range": [
                         0,
                         52
@@ -1304,6 +1357,7 @@
                     ]
                 },
                 {
+                    "label": "fifty three",
                     "range": [
                         0,
                         53
@@ -1329,6 +1383,7 @@
                     ]
                 },
                 {
+                    "label": "fifty four",
                     "range": [
                         0,
                         54
@@ -1354,6 +1409,7 @@
                     ]
                 },
                 {
+                    "label": "fifty five",
                     "range": [
                         0,
                         55
@@ -1379,6 +1435,7 @@
                     ]
                 },
                 {
+                    "label": "fifty six",
                     "range": [
                         0,
                         56
@@ -1404,6 +1461,7 @@
                     ]
                 },
                 {
+                    "label": "fifty seven",
                     "range": [
                         0,
                         57
@@ -1429,6 +1487,7 @@
                     ]
                 },
                 {
+                    "label": "fifty eight",
                     "range": [
                         0,
                         58
@@ -1454,6 +1513,7 @@
                     ]
                 },
                 {
+                    "label": "fifty nine",
                     "range": [
                         0,
                         59
@@ -1479,6 +1539,7 @@
                     ]
                 },
                 {
+                    "label": "sixty",
                     "range": [
                         0,
                         60
@@ -1542,9 +1603,13 @@
     ],
     "layout": {
         "width": 1600,
-        "height": 400,
+        "height": 500,
         "title": {
             "text": "60 dimensions"
+        },
+        "margin": {
+            "t": 200,
+            "b": 25
         }
     }
 }

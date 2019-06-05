@@ -153,6 +153,7 @@ function model(layout, d, i) {
     var domain = trace.domain;
     var dimensions = trace.dimensions;
     var width = layout.width;
+    var labelAngle = trace.labelangle;
     var labelFont = trace.labelfont;
     var tickFont = trace.tickfont;
     var rangeFont = trace.rangefont;
@@ -181,6 +182,7 @@ function model(layout, d, i) {
         tickDistance: c.tickDistance,
         unitToColor: unitToColorScale(cscale),
         lines: lines,
+        labelAngle: labelAngle,
         labelFont: labelFont,
         tickFont: tickFont,
         rangeFont: rangeFont,
@@ -345,6 +347,17 @@ function parcoordsInteractionState() {
     return {
         linePickActive: function(val) {return arguments.length ? linePickActive = !!val : linePickActive;},
         contextShown: function(val) {return arguments.length ? contextShown = !!val : contextShown;}
+    };
+}
+
+function calcTilt(angle) {
+    var radians = angle * Math.PI / 180;
+    var dx = Math.sin(radians);
+    var dy = Math.cos(radians);
+    return {
+        dx: dx,
+        dy: dy,
+        degrees: angle
     };
 }
 
@@ -601,12 +614,29 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
         .style('pointer-events', 'auto');
 
     axisTitle
-        .attr('transform', 'translate(0,' + -c.axisTitleOffset + ')')
         .text(function(d) { return d.label; })
         .each(function(d) {
             var e = d3.select(this);
             Drawing.font(e, d.model.labelFont);
             svgTextUtils.convertToTspans(e, gd);
+        })
+        .attr('transform', function(d) {
+            var tilt = calcTilt(d.model.labelAngle);
+            var r = c.axisTitleOffset;
+            return (
+                'rotate(' + tilt.degrees + ')' +
+                'translate(' + -r * tilt.dx + ',' + -r * tilt.dy + ')'
+            );
+        })
+        .attr('text-anchor', function(d) {
+            var tilt = calcTilt(d.model.labelAngle);
+            var adx = Math.abs(tilt.dx);
+            var ady = Math.abs(tilt.dy);
+            if(2 * adx > ady) {
+                return (tilt.dx < 0) ? 'start' : 'end';
+            } else {
+                return 'middle';
+            }
         });
 
     var axisExtent = axisOverlays.selectAll('.' + c.cn.axisExtent)

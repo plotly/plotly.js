@@ -19,6 +19,17 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 module.exports = {
     domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
 
+    labelangle: {
+        valType: 'angle',
+        dflt: 0,
+        role: 'style',
+        editType: 'plot',
+        description: [
+            'Sets the angle of the labels with respect to the horizontal.',
+            'For example, a `tickangle` of -90 draws the labels vertically.'
+        ].join(' ')
+    },
+
     labelfont: fontAttrs({
         editType: 'calc',
         description: 'Sets the font for the `dimension` labels.'
