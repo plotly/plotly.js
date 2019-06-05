@@ -1,4 +1,5 @@
 var Plotly = require('@lib/index');
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var setConvert = require('@src/plots/cartesian/set_convert');
 
@@ -693,6 +694,14 @@ describe('Test histogram', function() {
             ]);
         });
 
+        it('handles multiple single-valued overlaid autobinned traces', function() {
+            var out = _calc({x: [1]}, [{x: [1]}], {barmode: 'overlay'}, true);
+
+            expect(out).toEqual([
+                {p: 1, s: 1, b: 0, pts: [0], ph1: 1, ph0: 1, width1: 1, i: 0}
+            ]);
+        });
+
         it('handles multiple single-valued overlaid autobinned traces with different values', function() {
             var out = _calc({x: [null, 13, '', 13]}, [
                 {x: [5]},
@@ -750,6 +759,60 @@ describe('Test histogram', function() {
             expect(out).toEqual([
                 {i: 0, b: 0, p: 5, s: 1, width1: 5, pts: [0], ph0: 5, ph1: 5}
             ]);
+        });
+
+        // from issue #3881
+        it('handle single-value edge case 1', function() {
+            var gd = {
+                data: [
+                    {uid: 'a', type: 'histogram', y: [1]},
+                    {uid: 'b', type: 'histogram', y: [2]},
+
+                    {uid: 'c', type: 'histogram', y: [1], xaxis: 'x2'},
+                    {uid: 'd', type: 'histogram', y: [3], xaxis: 'x2'},
+
+                    {uid: 'e', type: 'histogram', y: [3]},
+                    {uid: 'f', type: 'histogram', y: [2], xaxis: 'x2'},
+
+                    {uid: 'g', type: 'histogram', x: [1]},
+                    {uid: 'h', type: 'histogram', x: [2], yaxis: 'y2'},
+                    {uid: 'i', type: 'histogram', x: [2]}
+                ],
+                layout: {barmode: 'overlay'}
+            };
+            supplyAllDefaults(gd);
+            Plots.doCalcdata(gd);
+
+            var allBinOpts = gd._fullLayout._histogramBinOpts;
+            var groups = Object.keys(allBinOpts);
+            expect(groups).toEqual(
+                ['a__y', 'b__y', 'c__y', 'd__y', 'e__y', 'f__y', 'g__x', 'h__x', 'i__x'],
+                'bin groups'
+            );
+        });
+
+        // from issue #3881
+        it('handle single-value edge case 2', function() {
+            var gd = {
+                data: [
+                    {bingroup: '1', type: 'histogram', y: [1]},
+                    {uid: 'b', type: 'histogram', y: [2]},
+                    {bingroup: '2', type: 'histogram', y: [1], xaxis: 'x2'},
+                    {bingroup: '1', type: 'histogram', y: [3], xaxis: 'x2'},
+                    {bingroup: '2', type: 'histogram', y: [3]},
+                    {uid: 'f', type: 'histogram', y: [2], xaxis: 'x2'},
+                    {bingroup: '3', type: 'histogram', x: [1]},
+                    {bingroup: '1', type: 'histogram', x: [2], yaxis: 'y2'},
+                    {bingroup: '3', type: 'histogram', x: [2]}
+                ],
+                layout: {barmode: 'overlay'}
+            };
+            supplyAllDefaults(gd);
+            Plots.doCalcdata(gd);
+
+            var allBinOpts = gd._fullLayout._histogramBinOpts;
+            var groups = Object.keys(allBinOpts);
+            expect(groups).toEqual(['1', '2', '3', 'b__y', 'f__y'], 'bin groups');
         });
 
         function calcPositions(opts, extraTraces, prepend) {
