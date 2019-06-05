@@ -17,7 +17,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 module.exports = {
-    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
+    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'plot'}), // TODO: test
 
     labelangle: {
         valType: 'angle',
@@ -31,15 +31,15 @@ module.exports = {
     },
 
     labelfont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot', // TODO: test
         description: 'Sets the font for the `dimension` labels.'
     }),
     tickfont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot', // TODO: test
         description: 'Sets the font for the `dimension` tick values.'
     }),
     rangefont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot', // TODO: test
         description: 'Sets the font for the `dimension` range values.'
     }),
 
@@ -47,19 +47,19 @@ module.exports = {
         label: {
             valType: 'string',
             role: 'info',
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: 'The shown name of the dimension.'
         },
         // TODO: better way to determine ordinal vs continuous axes,
         // so users can use tickvals/ticktext with a continuous axis.
         tickvals: extendFlat({}, axesAttrs.tickvals, {
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: [
                 'Sets the values at which ticks on this axis appear.'
             ].join(' ')
         }),
         ticktext: extendFlat({}, axesAttrs.ticktext, {
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: [
                 'Sets the text displayed at the ticks position via `tickvals`.'
             ].join(' ')
@@ -68,7 +68,7 @@ module.exports = {
             valType: 'string',
             dflt: '3s',
             role: 'style',
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: [ // TODO: should update this description?
                 'Sets the tick label formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
@@ -79,17 +79,17 @@ module.exports = {
             valType: 'boolean',
             dflt: true,
             role: 'info',
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: 'Shows the dimension when set to `true` (the default). Hides the dimension for `false`.'
         },
         range: {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', editType: 'calc'},
-                {valType: 'number', editType: 'calc'}
+                {valType: 'number', editType: 'plot'}, // TODO: test
+                {valType: 'number', editType: 'plot'} // TODO: test
             ],
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: [
                 'The domain range that represents the full, shown axis extent. Defaults to the `values` extent.',
                 'Must be an array of `[fromValue, toValue]` with finite numbers as elements.'
@@ -101,10 +101,10 @@ module.exports = {
             freeLength: true,
             dimensions: '1-2',
             items: [
-                {valType: 'number', editType: 'calc'},
-                {valType: 'number', editType: 'calc'}
+                {valType: 'number', editType: 'plot'}, // TODO: test
+                {valType: 'number', editType: 'plot'} // TODO: test
             ],
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: [
                 'The domain range to which the filter on the dimension is constrained. Must be an array',
                 'of `[fromValue, toValue]` with `fromValue <= toValue`, or if `multiselect` is not',
@@ -115,7 +115,7 @@ module.exports = {
             valType: 'boolean',
             dflt: true,
             role: 'info',
-            editType: 'calc',
+            editType: 'plot', // TODO: test
             description: 'Do we allow multiple selection ranges or just a single range?'
         },
         values: {

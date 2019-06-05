@@ -21,7 +21,7 @@ module.exports = function calc(gd, trace) {
     var lineColor;
     var cscale;
 
-    if(Colorscale.hasColorscale(trace, 'line') && Array.isArray(trace.line.color)) {
+    if(Colorscale.hasColorscale(trace, 'line') && Array.isArray(trace.line.color)) { // TODO: should we support typed arrays here?
         lineColor = trace.line.color;
         cscale = Colorscale.extractOpts(trace.line).colorscale;
 
