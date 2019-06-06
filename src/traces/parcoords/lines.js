@@ -168,6 +168,59 @@ function emptyAttributes(regl) {
     return attributes;
 }
 
+function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, constraints, drwLayer) {
+    var dims = [[], []];
+    for(var k = 0; k < 64; k++) {
+        dims[0][k] = (k === i0) ? 1 : 0;
+        dims[1][k] = (k === i1) ? 1 : 0;
+    }
+
+    var overdrag = model.lines.canvasOverdrag;
+    var domain = model.domain;
+    var canvasWidth = model.canvasWidth;
+    var canvasHeight = model.canvasHeight;
+
+    var itemModel = Lib.extendFlat({
+        key: crossfilterDimensionIndex,
+        resolution: [canvasWidth, canvasHeight],
+        viewBoxPos: [x + overdrag, y],
+        viewBoxSize: [panelSizeX, panelSizeY],
+        i0: i0,
+        i1: i1,
+
+        dim0A: dims[0].slice(0, 16),
+        dim0B: dims[0].slice(16, 32),
+        dim0C: dims[0].slice(32, 48),
+        dim0D: dims[0].slice(48, 64),
+        dim1A: dims[1].slice(0, 16),
+        dim1B: dims[1].slice(16, 32),
+        dim1C: dims[1].slice(32, 48),
+        dim1D: dims[1].slice(48, 64),
+
+        drwLayer: drwLayer,
+
+        scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
+        scissorWidth: (itemNumber === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (itemNumber === leftmost ? x + overdrag : 0),
+        scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
+        scissorHeight: panelSizeY,
+
+        viewportX: model.pad.l - overdrag + model.layoutWidth * domain.x[0],
+        viewportY: model.pad.b + model.layoutHeight * domain.y[0],
+        viewportWidth: canvasWidth,
+        viewportHeight: canvasHeight
+    }, constraints);
+
+    return itemModel;
+}
+
+function expandedPixelRange(bounds) {
+    var dh = maskHeight - 1;
+    return [
+        Math.max(0, Math.floor(bounds[0] * dh), 0),
+        Math.min(dh, Math.ceil(bounds[1] * dh), dh)
+    ];
+}
+
 module.exports = function(canvasGL, d) {
     // context & pick describe which canvas we're talking about - won't change with new data
     var context = d.context;
@@ -189,6 +242,8 @@ module.exports = function(canvasGL, d) {
     var attributes = emptyAttributes(regl);
     var maskTexture;
     var paletteTexture = regl.texture(paletteTextureConfig);
+
+    var prevAxisOrder = [];
 
     update(d);
 
@@ -299,53 +354,6 @@ module.exports = function(canvasGL, d) {
         }
     }
 
-    var prevAxisOrder = [];
-
-    function makeItem(leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, constraints, drwLayer) {
-        var dims = [[], []];
-        for(var k = 0; k < 64; k++) {
-            dims[0][k] = (k === i0) ? 1 : 0;
-            dims[1][k] = (k === i1) ? 1 : 0;
-        }
-
-        var overdrag = model.lines.canvasOverdrag;
-        var domain = model.domain;
-        var canvasWidth = model.canvasWidth;
-        var canvasHeight = model.canvasHeight;
-
-        var itemModel = Lib.extendFlat({
-            key: crossfilterDimensionIndex,
-            resolution: [canvasWidth, canvasHeight],
-            viewBoxPos: [x + overdrag, y],
-            viewBoxSize: [panelSizeX, panelSizeY],
-            i0: i0,
-            i1: i1,
-
-            dim0A: dims[0].slice(0, 16),
-            dim0B: dims[0].slice(16, 32),
-            dim0C: dims[0].slice(32, 48),
-            dim0D: dims[0].slice(48, 64),
-            dim1A: dims[1].slice(0, 16),
-            dim1B: dims[1].slice(16, 32),
-            dim1C: dims[1].slice(32, 48),
-            dim1D: dims[1].slice(48, 64),
-
-            drwLayer: drwLayer,
-
-            scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
-            scissorWidth: (itemNumber === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (itemNumber === leftmost ? x + overdrag : 0),
-            scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
-            scissorHeight: panelSizeY,
-
-            viewportX: model.pad.l - overdrag + model.layoutWidth * domain.x[0],
-            viewportY: model.pad.b + model.layoutHeight * domain.y[0],
-            viewportWidth: canvasWidth,
-            viewportHeight: canvasHeight
-        }, constraints);
-
-        return itemModel;
-    }
-
     function makeConstraints(isContext) {
         var i, j, k;
 
@@ -356,14 +364,6 @@ module.exports = function(canvasGL, d) {
 
             limits[0][k] = p[0];
             limits[1][k] = p[1];
-        }
-
-        function expandedPixelRange(bounds) {
-            var dh = maskHeight - 1;
-            return [
-                Math.max(0, Math.floor(bounds[0] * dh), 0),
-                Math.min(dh, Math.ceil(bounds[1] * dh), dh)
-            ];
         }
 
         var mask = [];
@@ -458,6 +458,7 @@ module.exports = function(canvasGL, d) {
                 prevAxisOrder[i0] = [x, nextX];
 
                 var item = makeItem(
+                    model,
                     leftmost, rightmost, i, i0, i1, x, y,
                     p.panelSizeX, p.panelSizeY,
                     p.dim0.crossfilterDimensionIndex,
