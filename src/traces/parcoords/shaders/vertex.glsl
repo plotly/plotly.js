@@ -11,9 +11,12 @@ uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
 uniform vec2 resolution, viewBoxPos, viewBoxSize;
 uniform sampler2D mask, palette;
 uniform float maskHeight;
-uniform float isPickLayer;
+uniform float drwLayer; // 0: context, 1: focus, 2: pick
 
 varying vec4 fragColor;
+
+bool isPick    = (drwLayer > 1.5);
+bool isContext = (drwLayer < 0.5);
 
 const vec4 ZEROS = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 UNITS = vec4(1.0, 1.0, 1.0, 1.0);
@@ -86,12 +89,12 @@ bool outsideRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
     return false;
 }
 
-vec4 position(float v, mat4 A, mat4 B, mat4 C, mat4 D) {
+vec4 position(bool isContext, float v, mat4 A, mat4 B, mat4 C, mat4 D) {
     float x = 0.5 * sign(v) + 0.5;
     float y = axisY(x, A, B, C, D);
     float z = 1.0 - abs(v);
 
-    z += 2.0 * float(
+    z += isContext ? 0.0 : 2.0 * float(
         outsideBoundingBox(A, B, C, D) ||
         outsideRasterMask(A, B, C, D)
     );
@@ -111,7 +114,7 @@ void main() {
 
     float v = colors[3];
 
-    gl_Position = position(v, A, B, C, D);
+    gl_Position = position(isContext, v, A, B, C, D);
 
-    fragColor = (isPickLayer > 0.0) ? vec4(colors.rgb, 1.0) : texture2D(palette, vec2(abs(v), 0.5));
+    fragColor = isPick ? vec4(colors.rgb, 1.0) : texture2D(palette, vec2(abs(v), 0.5));
 }

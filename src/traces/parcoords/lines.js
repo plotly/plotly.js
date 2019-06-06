@@ -10,7 +10,6 @@
 
 var glslify = require('glslify');
 var vertexShaderSource = glslify('./shaders/vertex.glsl');
-var contextShaderSource = glslify('./shaders/context_vertex.glsl');
 var fragmentShaderSource = glslify('./shaders/fragment.glsl');
 var maxDim = require('./constants').maxDimensionCount;
 
@@ -102,8 +101,9 @@ function adjustDepth(d) {
 function palette(unitToColor, context, opacity) {
     var result = [];
     for(var i = 0; i < 256; i++) {
-        var c = unitToColor(i / 255);
-        result.push((context ? contextColor : c).concat(opacity));
+        result[i] = (context ?
+            contextColor : unitToColor(i / 255)
+        ).concat(opacity);
     }
     return result;
 }
@@ -248,7 +248,7 @@ module.exports = function(canvasGL, d) {
 
         dither: false,
 
-        vert: context ? contextShaderSource : vertexShaderSource,
+        vert: vertexShaderSource,
 
         frag: fragmentShaderSource,
 
@@ -277,7 +277,7 @@ module.exports = function(canvasGL, d) {
             hiD: regl.prop('hiD'),
             palette: paletteTexture,
             mask: regl.prop('maskTexture'),
-            isPickLayer: regl.prop('isPickLayer'),
+            drwLayer: regl.prop('drwLayer'),
             maskHeight: regl.prop('maskHeight')
         },
         offset: regl.prop('offset'),
@@ -304,7 +304,7 @@ module.exports = function(canvasGL, d) {
 
     var prevAxisOrder = [];
 
-    function makeItem(leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, constraints, isPickLayer) {
+    function makeItem(leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, constraints, drwLayer) {
         var dims = [[], []];
         for(var k = 0; k < 64; k++) {
             dims[0][k] = (k === i0) ? 1 : 0;
@@ -333,7 +333,7 @@ module.exports = function(canvasGL, d) {
             dim1C: dims[1].slice(32, 48),
             dim1D: dims[1].slice(48, 64),
 
-            isPickLayer: +isPickLayer,
+            drwLayer: drwLayer,
 
             scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
             scissorWidth: (itemNumber === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (itemNumber === leftmost ? x + overdrag : 0),
@@ -349,12 +349,12 @@ module.exports = function(canvasGL, d) {
         return itemModel;
     }
 
-    function makeConstraints() {
+    function makeConstraints(isContext) {
         var i, j, k;
 
         var limits = [[], []];
         for(k = 0; k < 64; k++) {
-            var p = (k < initialDims.length) ?
+            var p = (!isContext && k < initialDims.length) ?
                 initialDims[k].brush.filter.getBounds() : [-Infinity, Infinity];
 
             limits[0][k] = p[0];
@@ -373,21 +373,23 @@ module.exports = function(canvasGL, d) {
         for(i = 0; i < maskHeight * 8; i++) {
             mask[i] = 255;
         }
-        for(i = 0; i < initialDims.length; i++) {
-            var u = i % 8;
-            var v = (i - u) / 8;
-            var bitMask = Math.pow(2, u);
-            var dim = initialDims[i];
-            var ranges = dim.brush.filter.get();
-            if(ranges.length < 2) continue; // bail if the bounding box based filter is sufficient
+        if(!isContext) {
+            for(i = 0; i < initialDims.length; i++) {
+                var u = i % 8;
+                var v = (i - u) / 8;
+                var bitMask = Math.pow(2, u);
+                var dim = initialDims[i];
+                var ranges = dim.brush.filter.get();
+                if(ranges.length < 2) continue; // bail if the bounding box based filter is sufficient
 
-            var prevEnd = expandedPixelRange(ranges[0])[1];
-            for(j = 1; j < ranges.length; j++) {
-                var nextRange = expandedPixelRange(ranges[j]);
-                for(k = prevEnd + 1; k < nextRange[0]; k++) {
-                    mask[k * 8 + v] &= ~bitMask;
+                var prevEnd = expandedPixelRange(ranges[0])[1];
+                for(j = 1; j < ranges.length; j++) {
+                    var nextRange = expandedPixelRange(ranges[j]);
+                    for(k = prevEnd + 1; k < nextRange[0]; k++) {
+                        mask[k * 8 + v] &= ~bitMask;
+                    }
+                    prevEnd = Math.max(prevEnd, nextRange[1]);
                 }
-                prevEnd = Math.max(prevEnd, nextRange[1]);
             }
         }
 
@@ -441,7 +443,7 @@ module.exports = function(canvasGL, d) {
             // clear canvas here, as the panel iteration below will not enter the loop body
             clear(regl, 0, 0, model.canvasWidth, model.canvasHeight);
         }
-        var constraints = context ? {} : makeConstraints();
+        var constraints = makeConstraints(context);
 
         for(i = 0; i < panelCount; i++) {
             var p = panels[i];
@@ -461,7 +463,8 @@ module.exports = function(canvasGL, d) {
                     leftmost, rightmost, i, i0, i1, x, y,
                     p.panelSizeX, p.panelSizeY,
                     p.dim0.crossfilterDimensionIndex,
-                    constraints, !!d.pick
+                    constraints,
+                    context ? 0 : pick ? 2 : 1
                 );
 
                 renderState.clearOnly = clearOnly;
