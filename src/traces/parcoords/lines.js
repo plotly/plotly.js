@@ -22,7 +22,7 @@ var depthLimitEpsilon = 1e-6;
 var maskHeight = 2048;
 
 var dummyPixel = new Uint8Array(4);
-var pickPixel = new Uint8Array(4);
+var dataPixel = new Uint8Array(4);
 
 var paletteTextureConfig = {
     shape: [256, 1],
@@ -223,8 +223,8 @@ function expandedPixelRange(bounds) {
 
 module.exports = function(canvasGL, d) {
     // context & pick describe which canvas we're talking about - won't change with new data
-    var context = d.context;
-    var pick = d.pick;
+    var isContext = d.context;
+    var isPick = d.pick;
 
     var regl = d.regl;
 
@@ -252,7 +252,7 @@ module.exports = function(canvasGL, d) {
         profile: false,
 
         blend: {
-            enable: context,
+            enable: isContext,
             func: {
                 srcRGB: 'src alpha',
                 dstRGB: 'one minus src alpha',
@@ -267,7 +267,7 @@ module.exports = function(canvasGL, d) {
         },
 
         depth: {
-            enable: !context,
+            enable: !isContext,
             mask: true,
             func: 'less',
             range: [0, 1]
@@ -342,12 +342,12 @@ module.exports = function(canvasGL, d) {
         sampleCount = initialDims[0] ? initialDims[0].values.length : 0;
 
         var lines = model.lines;
-        var color = pick ? lines.color.map(function(_, i) {return i / lines.color.length;}) : lines.color;
+        var color = isPick ? lines.color.map(function(_, i) {return i / lines.color.length;}) : lines.color;
 
         var points = makePoints(sampleCount, initialDims, color);
         setAttributes(attributes, sampleCount, points);
 
-        if(!context && !pick) {
+        if(!isContext && !isPick) {
             paletteTexture = regl.texture(Lib.extendFlat({
                 data: palette(model.unitToColor, 255)
             }, paletteTextureConfig));
@@ -441,7 +441,7 @@ module.exports = function(canvasGL, d) {
             // clear canvas here, as the panel iteration below will not enter the loop body
             clear(regl, 0, 0, model.canvasWidth, model.canvasHeight);
         }
-        var constraints = makeConstraints(context);
+        var constraints = makeConstraints(isContext);
 
         for(i = 0; i < panelCount; i++) {
             var p = panels[i];
@@ -463,7 +463,7 @@ module.exports = function(canvasGL, d) {
                     p.panelSizeX, p.panelSizeY,
                     p.dim0.crossfilterDimensionIndex,
                     constraints,
-                    context ? 0 : pick ? 2 : 1
+                    isContext ? 0 : isPick ? 2 : 1
                 );
 
                 renderState.clearOnly = clearOnly;
@@ -482,9 +482,9 @@ module.exports = function(canvasGL, d) {
             y: canvasY,
             width: 1,
             height: 1,
-            data: pickPixel
+            data: dataPixel
         });
-        return pickPixel;
+        return dataPixel;
     }
 
     function readPixels(canvasX, canvasY, width, height) {
