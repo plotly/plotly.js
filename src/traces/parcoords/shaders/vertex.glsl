@@ -1,5 +1,7 @@
 precision highp float;
 
+varying vec4 fragColor;
+
 attribute vec4 p01_04, p05_08, p09_12, p13_16,
                p17_20, p21_24, p25_28, p29_32,
                p33_36, p37_40, p41_44, p45_48,
@@ -12,11 +14,16 @@ uniform vec2 resolution, viewBoxPos, viewBoxSize;
 uniform sampler2D mask, palette;
 uniform float maskHeight;
 uniform float drwLayer; // 0: context, 1: focus, 2: pick
-
-varying vec4 fragColor;
+uniform float contextOpacity;
 
 bool isPick    = (drwLayer > 1.5);
 bool isContext = (drwLayer < 0.5);
+
+const vec3 contextColor = vec3(
+    119.0 / 255.0,
+    119.0 / 255.0,
+    119.0 / 255.0
+);
 
 const vec4 ZEROS = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 UNITS = vec4(1.0, 1.0, 1.0, 1.0);
@@ -116,5 +123,7 @@ void main() {
 
     gl_Position = position(isContext, v, A, B, C, D);
 
-    fragColor = isPick ? vec4(colors.rgb, 1.0) : texture2D(palette, vec2(abs(v), 0.5));
+    fragColor =
+        isContext ? vec4(contextColor, contextOpacity) :
+        isPick ? vec4(colors.rgb, 1.0) : texture2D(palette, vec2(abs(v), 0.5));
 }

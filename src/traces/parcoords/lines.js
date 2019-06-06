@@ -21,9 +21,6 @@ var depthLimitEpsilon = 1e-6;
 // precision of multiselect is the full range divided into this many parts
 var maskHeight = 2048;
 
-// middle gray to not drawn the focus; looks good on a black or white background
-var contextColor = [119, 119, 119];
-
 var dummyPixel = new Uint8Array(4);
 var pickPixel = new Uint8Array(4);
 
@@ -98,12 +95,10 @@ function adjustDepth(d) {
     return Math.max(depthLimitEpsilon, Math.min(1 - depthLimitEpsilon, d));
 }
 
-function palette(unitToColor, context, opacity) {
+function palette(unitToColor, opacity) {
     var result = [];
     for(var i = 0; i < 256; i++) {
-        result[i] = (context ?
-            contextColor : unitToColor(i / 255)
-        ).concat(opacity);
+        result[i] = unitToColor(i / 255).concat(opacity);
     }
     return result;
 }
@@ -276,6 +271,7 @@ module.exports = function(canvasGL, d) {
             loD: regl.prop('loD'),
             hiD: regl.prop('hiD'),
             palette: paletteTexture,
+            contextOpacity: regl.prop('contextOpacity'),
             mask: regl.prop('maskTexture'),
             drwLayer: regl.prop('drwLayer'),
             maskHeight: regl.prop('maskHeight')
@@ -292,14 +288,15 @@ module.exports = function(canvasGL, d) {
 
         var lines = model.lines;
         var color = pick ? lines.color.map(function(_, i) {return i / lines.color.length;}) : lines.color;
-        var contextOpacity = Math.max(1 / 255, Math.pow(1 / color.length, 1 / 3));
 
         var points = makePoints(sampleCount, initialDims, color);
         setAttributes(attributes, sampleCount, points);
 
-        paletteTexture = regl.texture(Lib.extendFlat({
-            data: palette(model.unitToColor, context, Math.round((context ? contextOpacity : 1) * 255))
-        }, paletteTextureConfig));
+        if(!context && !pick) {
+            paletteTexture = regl.texture(Lib.extendFlat({
+                data: palette(model.unitToColor, 255)
+            }, paletteTextureConfig));
+        }
     }
 
     var prevAxisOrder = [];
@@ -406,6 +403,7 @@ module.exports = function(canvasGL, d) {
         else maskTexture = regl.texture(textureData);
 
         return {
+            contextOpacity: Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3)),
             maskTexture: maskTexture,
             maskHeight: maskHeight,
             loA: limits[0].slice(0, 16),
