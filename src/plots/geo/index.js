@@ -37,14 +37,6 @@ function plotGeo(gd) {
     var calcData = gd.calcdata;
     var geoIds = fullLayout._subplots[GEO];
 
-    /**
-     * If 'plotly-geo-assets.js' is not included,
-     * initialize object to keep reference to every loaded topojson
-     */
-    if(window.PlotlyGeoAssets === undefined) {
-        window.PlotlyGeoAssets = {topojson: {}};
-    }
-
     for(var i = 0; i < geoIds.length; i++) {
         var geoId = geoIds[i];
         var geoCalcData = getSubplotCalcData(calcData, GEO, geoId);
