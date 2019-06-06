@@ -19,7 +19,37 @@
             },
             "dimensions": [
                 {
-                    "label": "$\\varphi ={\\frac {1+{\\sqrt {5}}}{2}}$",
+                    "label": "<i>Rien ne se perd,<br>rien ne se crée,<br>tout se <b>transforme</b>.</i><sub>",
+                    "values": [
+                        1,
+                        2,
+                        3,
+                        5,
+                        8,
+                        13
+                    ],
+                    "range": [
+                        0,
+                        20
+                    ]
+                },
+                {
+                    "label": "<b>e<sup>iπ</sup> = cos i + i sin π</b>",
+                    "values": [
+                        -1,
+                        -1,
+                        -1,
+                        -1,
+                        -1,
+                        -1
+                    ],
+                    "range": [
+                        1,
+                        -1
+                    ]
+                },
+                {
+                    "label": "<i>Golden ratio</i><br>1.618",
                     "values": [
                         1,
                         2,
@@ -47,36 +77,6 @@
                     "constraintrange": [
                         1.55,
                         1.7
-                    ]
-                },
-                {
-                    "label": "<b>e<sup>iπ</sup> = cos i + i sin π</b>",
-                    "values": [
-                        -1,
-                        -1,
-                        -1,
-                        -1,
-                        -1,
-                        -1
-                    ],
-                    "range": [
-                        1,
-                        -1
-                    ]
-                },
-                {
-                    "label": "<i>Rien ne se perd,<br>rien ne se crée,<br>tout se <b>transforme</b>.</i><sub>",
-                    "values": [
-                        1,
-                        2,
-                        3,
-                        5,
-                        8,
-                        13
-                    ],
-                    "range": [
-                        0,
-                        20
                     ]
                 }
             ]

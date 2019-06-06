@@ -1180,17 +1180,17 @@ describe('parcoords react more attributes', function() {
         m0.labelfont = { size: '24', family: 'Times', color: 'orange' };
         m0.rangefont = { size: '20', family: 'Times', color: 'brown' };
         m0.tickfont = { size: '16', family: 'Times', color: 'yellow' };
-        m0.dimensions[2].label = 'Changed!';
+        m0.dimensions[0].label = 'Changed!';
         m0.dimensions[1].range = ['-2', '2'];
-        m0.dimensions[0].constraintrange = [];
+        m0.dimensions[2].constraintrange = [];
         m0.dimensions[1].multiselect = false;
         m0.dimensions[1].constraintrange = [
           [-1.5, -0.5],
           [0, 1.5] // won't be selected because multiselect is tuned off.
         ];
-        m0.dimensions[2].constraintrange = [[2, 4], [7, 10], [11, 12]];
-        m0.dimensions[2].tickvals = ['1', '2', '3', '5', '8', '13'];
-        m0.dimensions[2].ticktext = ['1/1', '2/1', '3/2', '5/3', '8/5', '13/8'];
+        m0.dimensions[0].constraintrange = [[2, 4], [7, 10], [11, 12]];
+        m0.dimensions[0].tickvals = ['1', '2', '3', '5', '8', '13'];
+        m0.dimensions[0].ticktext = ['1/1', '2/1', '3/2', '5/3', '8/5', '13/8'];
         m0.domain = { x: [0, 0.5], y: [0, 0.5] };
 
         Plotly.react(gd, mockCopy.data).then(function() {
@@ -1246,9 +1246,9 @@ describe('parcoords react more attributes', function() {
                     highlight.getAttribute('stroke-dasharray').split(',').length
                 );
             });
-            expect(nHighlight[0]).toBe(2);
-            expect(nHighlight[1]).toBe(4);
             expect(nHighlight[2]).toBe(6);
+            expect(nHighlight[1]).toBe(2);
+            expect(nHighlight[0]).toBe(4);
         })
         .catch(failTest)
         .then(done);
