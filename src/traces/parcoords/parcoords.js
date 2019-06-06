@@ -26,6 +26,10 @@ var c = require('./constants');
 var brush = require('./axisbrush');
 var lineLayerMaker = require('./lines');
 
+function convertTypedArray(a) {
+    return Lib.isTypedArray(a) ? Array.prototype.slice.call(a) : a;
+}
+
 function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
 
 function dimensionExtent(dimension) {
@@ -136,7 +140,7 @@ function someFiltersActive(view) {
 function model(layout, d, i) {
     var cd0 = unwrap(d);
     var trace = cd0.trace;
-    var lineColor = cd0.lineColor;
+    var lineColor = convertTypedArray(cd0.lineColor);
     var line = trace.line;
     var cOpts = Colorscale.extractOpts(line);
     var cscale = cOpts.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
@@ -269,6 +273,9 @@ function viewModel(state, callbacks, model) {
                 }
             }
         } else tickvals = undefined;
+
+        truncatedValues = convertTypedArray(truncatedValues);
+        truncatedValues = convertTypedArray(truncatedValues);
 
         return {
             key: key,
