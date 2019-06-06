@@ -10,7 +10,6 @@
 
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
-var setConvert = require('../../plots/cartesian/axes').setConvert;
 
 module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
@@ -19,10 +18,6 @@ module.exports = function plot(gd, cdModule) {
 
     var success = prepareRegl(gd);
     if(!success) return;
-
-    // mock linear and category axes for tick formatting
-    var linearAxis = { type: 'linear', showexponent: 'all', exponentformat: 'B' };
-    setConvert(linearAxis, fullLayout);
 
     var gdDimensions = {};
     var gdDimensionsOriginalOrder = {};
@@ -151,8 +146,7 @@ module.exports = function plot(gd, cdModule) {
                 r: size.r,
                 b: size.b,
                 l: size.l
-            },
-            linearAxis: linearAxis
+            }
         },
         { // callbacks
             filterChanged: filterChanged,

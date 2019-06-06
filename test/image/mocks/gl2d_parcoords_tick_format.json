@@ -12,6 +12,7 @@
                     ]
                 },
                 {
+                    "tickformat": ".3f",
                     "label": "Bananas",
                     "values": [
                         -0.99999,
@@ -19,6 +20,7 @@
                     ]
                 },
                 {
+                    "tickformat": ".6s",
                     "label": "Cherries",
                     "values": [
                         -0.99999,

@@ -11,6 +11,7 @@
 var d3 = require('d3');
 var rgba = require('color-rgba');
 
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Drawing = require('../../components/drawing');
@@ -24,17 +25,6 @@ var unwrap = gup.unwrap;
 var c = require('./constants');
 var brush = require('./axisbrush');
 var lineLayerMaker = require('./lines');
-
-var tickText = require('../../plots/cartesian/axes').tickText;
-var parcoordsLayout;
-
-function linearFormat(v) {
-    return tickText(
-        parcoordsLayout.linearAxis,
-        parcoordsLayout.linearAxis.d2l(v),
-        true
-    ).text;
-}
 
 function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
 
@@ -364,7 +354,21 @@ function calcTilt(angle) {
 module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
-    parcoordsLayout = layout;
+    var fullLayout = gd._fullLayout;
+
+    // mock one linear axes for tick formatting
+    var linearAxis = { type: 'linear', showexponent: 'all', exponentformat: 'B' };
+    Axes.setConvert(linearAxis, fullLayout);
+
+    function linearFormat(v, tickformat) {
+        linearAxis.tickformat = tickformat;
+
+        return Axes.tickText(
+            linearAxis,
+            linearAxis.d2l(v),
+            true
+        ).text;
+    }
 
     var vm = cdModule
         .filter(function(d) { return unwrap(d).trace.visible; })
@@ -579,7 +583,9 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
                     .tickValues(d.ordinal ? // and this works for ordinal scales
                         sdom :
                         null)
-                    .tickFormat(d.ordinal ? function(d) { return d; } : function(d) { return linearFormat(d); })
+                    .tickFormat(function(v) {
+                        return d.ordinal ? v : linearFormat(v, d.tickFormat);
+                    })
                     .scale(scale));
             Drawing.font(axis.selectAll('text'), d.model.tickFont);
         });
@@ -663,7 +669,7 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
         if(d.ordinal) return '';
         var domain = d.domainScale.domain();
         var v = (domain[isTop ? domain.length - 1 : 0]);
-        return linearFormat(v);
+        return linearFormat(v, d.tickFormat);
     }
 
     axisExtentTopText.enter()

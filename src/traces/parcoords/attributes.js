@@ -69,7 +69,7 @@ module.exports = {
             dflt: '3s',
             role: 'style',
             editType: 'plot',
-            description: [ // TODO: should update this description?
+            description: [
                 'Sets the tick label formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
                 'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
