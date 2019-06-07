@@ -14,16 +14,10 @@ uniform vec2 resolution, viewBoxPos, viewBoxSize;
 uniform sampler2D mask, palette;
 uniform float maskHeight;
 uniform float drwLayer; // 0: context, 1: focus, 2: pick
-uniform float contextOpacity;
+uniform vec4 contextColor;
 
 bool isPick    = (drwLayer > 1.5);
 bool isContext = (drwLayer < 0.5);
-
-const vec3 contextColor = vec3(
-    119.0 / 255.0,
-    119.0 / 255.0,
-    119.0 / 255.0
-);
 
 const vec4 ZEROS = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 UNITS = vec4(1.0, 1.0, 1.0, 1.0);
@@ -124,6 +118,6 @@ void main() {
     gl_Position = position(isContext, v, A, B, C, D);
 
     fragColor =
-        isContext ? vec4(contextColor, contextOpacity) :
+        isContext ? vec4(contextColor) :
         isPick ? vec4(colors.rgb, 1.0) : texture2D(palette, vec2(abs(v), 0.5));
 }

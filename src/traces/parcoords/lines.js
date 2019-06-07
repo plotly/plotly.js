@@ -168,7 +168,7 @@ function emptyAttributes(regl) {
     return attributes;
 }
 
-function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, constraints, drwLayer) {
+function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, drwLayer, constraints) {
     var dims = [[], []];
     for(var k = 0; k < 64; k++) {
         dims[0][k] = (k === i0) ? 1 : 0;
@@ -198,6 +198,12 @@ function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSiz
         dim1D: dims[1].slice(48, 64),
 
         drwLayer: drwLayer,
+        contextColor: [
+            119 / 255,
+            119 / 255,
+            119 / 255,
+            Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))
+        ],
 
         scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
         scissorWidth: (itemNumber === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (itemNumber === leftmost ? x + overdrag : 0),
@@ -326,7 +332,7 @@ module.exports = function(canvasGL, d) {
             loD: regl.prop('loD'),
             hiD: regl.prop('hiD'),
             palette: paletteTexture,
-            contextOpacity: regl.prop('contextOpacity'),
+            contextColor: regl.prop('contextColor'),
             mask: regl.prop('maskTexture'),
             drwLayer: regl.prop('drwLayer'),
             maskHeight: regl.prop('maskHeight')
@@ -403,7 +409,6 @@ module.exports = function(canvasGL, d) {
         else maskTexture = regl.texture(textureData);
 
         return {
-            contextOpacity: Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3)),
             maskTexture: maskTexture,
             maskHeight: maskHeight,
             loA: limits[0].slice(0, 16),
@@ -462,8 +467,8 @@ module.exports = function(canvasGL, d) {
                     leftmost, rightmost, i, i0, i1, x, y,
                     p.panelSizeX, p.panelSizeY,
                     p.dim0.crossfilterDimensionIndex,
-                    constraints,
-                    isContext ? 0 : isPick ? 2 : 1
+                    isContext ? 0 : isPick ? 2 : 1,
+                    constraints
                 );
 
                 renderState.clearOnly = clearOnly;
