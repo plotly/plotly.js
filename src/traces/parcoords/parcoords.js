@@ -359,24 +359,50 @@ function calcTilt(angle, position) {
     };
 }
 
+function updatePanelLayout(yAxis, vm) {
+    var panels = vm.panels || (vm.panels = []);
+    var data = yAxis.data();
+    for(var i = 0; i < data.length - 1; i++) {
+        var p = panels[i] || (panels[i] = {});
+        var dim0 = data[i];
+        var dim1 = data[i + 1];
+        p.dim0 = dim0;
+        p.dim1 = dim1;
+        p.canvasX = dim0.canvasX;
+        p.panelSizeX = dim1.canvasX - dim0.canvasX;
+        p.panelSizeY = vm.model.canvasHeight;
+        p.y = 0;
+        p.canvasY = 0;
+    }
+}
+
+var linearAxis;
+
+function linearFormat(v, tickformat) {
+    linearAxis.tickformat = tickformat;
+
+    return Axes.tickText(
+        linearAxis,
+        linearAxis.d2l(v),
+        true
+    ).text;
+}
+
+function extremeText(d, isTop) {
+    if(d.ordinal) return '';
+    var domain = d.domainScale.domain();
+    var v = (domain[isTop ? domain.length - 1 : 0]);
+    return linearFormat(v, d.tickFormat);
+}
+
 module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
     var fullLayout = gd._fullLayout;
 
     // mock one linear axes for tick formatting
-    var linearAxis = { type: 'linear', showexponent: 'all', exponentformat: 'B' };
+    linearAxis = { type: 'linear', showexponent: 'all', exponentformat: 'B' };
     Axes.setConvert(linearAxis, fullLayout);
-
-    function linearFormat(v, tickformat) {
-        linearAxis.tickformat = tickformat;
-
-        return Axes.tickText(
-            linearAxis,
-            linearAxis.d2l(v),
-            true
-        ).text;
-    }
 
     var vm = cdModule
         .filter(function(d) { return unwrap(d).trace.visible; })
@@ -468,24 +494,6 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
 
     var yAxis = parcoordsControlView.selectAll('.' + c.cn.yAxis)
         .data(function(vm) { return vm.dimensions; }, keyFun);
-
-    function updatePanelLayout(yAxis, vm) {
-        var panels = vm.panels || (vm.panels = []);
-        var dimData = yAxis.data();
-        var panelCount = dimData.length - 1;
-        for(var i = 0; i < panelCount; i++) {
-            var p = panels[i] || (panels[i] = {});
-            var dim0 = dimData[i];
-            var dim1 = dimData[i + 1];
-            p.dim0 = dim0;
-            p.dim1 = dim1;
-            p.canvasX = dim0.canvasX;
-            p.panelSizeX = dim1.canvasX - dim0.canvasX;
-            p.panelSizeY = vm.model.canvasHeight;
-            p.y = 0;
-            p.canvasY = 0;
-        }
-    }
 
     yAxis.enter()
         .append('g')
@@ -674,13 +682,6 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
 
     var axisExtentTopText = axisExtentTop.selectAll('.' + c.cn.axisExtentTopText)
         .data(repeat, keyFun);
-
-    function extremeText(d, isTop) {
-        if(d.ordinal) return '';
-        var domain = d.domainScale.domain();
-        var v = (domain[isTop ? domain.length - 1 : 0]);
-        return linearFormat(v, d.tickFormat);
-    }
 
     axisExtentTopText.enter()
         .append('text')
