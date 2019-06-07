@@ -533,18 +533,18 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
             d.canvasX = d.x * d.model.canvasPixelRatio;
             yAxis
                 .sort(function(a, b) { return a.x - b.x; })
-                .each(function(dd, i) {
-                    dd.xIndex = i;
-                    dd.x = d === dd ? dd.x : dd.xScale(dd.xIndex);
-                    dd.canvasX = dd.x * dd.model.canvasPixelRatio;
+                .each(function(e, i) {
+                    e.xIndex = i;
+                    e.x = d === e ? e.x : e.xScale(e.xIndex);
+                    e.canvasX = e.x * e.model.canvasPixelRatio;
                 });
 
             updatePanelLayout(yAxis, p);
 
-            yAxis.filter(function(dd) { return Math.abs(d.xIndex - dd.xIndex) !== 0; })
+            yAxis.filter(function(e) { return Math.abs(d.xIndex - e.xIndex) !== 0; })
                 .attr('transform', function(d) { return 'translate(' + d.xScale(d.xIndex) + ', 0)'; });
             d3.select(this).attr('transform', 'translate(' + d.x + ', 0)');
-            yAxis.each(function(dd, i0, i1) { if(i1 === d.parent.key) p.dimensions[i0] = dd; });
+            yAxis.each(function(e, i0, i1) { if(i1 === d.parent.key) p.dimensions[i0] = e; });
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
             p.focusLayer.render && p.focusLayer.render(p.panels);
         })
@@ -561,7 +561,7 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
             state.linePickActive(true);
 
             if(callbacks && callbacks.axesMoved) {
-                callbacks.axesMoved(p.key, p.dimensions.map(function(dd) {return dd.crossfilterDimensionIndex;}));
+                callbacks.axesMoved(p.key, p.dimensions.map(function(e) {return e.crossfilterDimensionIndex;}));
             }
         })
     );
