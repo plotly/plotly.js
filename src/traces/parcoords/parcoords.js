@@ -148,6 +148,7 @@ function model(layout, d, i) {
     var dimensions = trace.dimensions;
     var width = layout.width;
     var labelAngle = trace.labelangle;
+    var labelSide = trace.labelside;
     var labelFont = trace.labelfont;
     var tickFont = trace.tickfont;
     var rangeFont = trace.rangefont;
@@ -177,6 +178,7 @@ function model(layout, d, i) {
         unitToColor: unitToColorScale(cscale),
         lines: lines,
         labelAngle: labelAngle,
+        labelSide: labelSide,
         labelFont: labelFont,
         tickFont: tickFont,
         rangeFont: rangeFont,
@@ -347,11 +349,13 @@ function parcoordsInteractionState() {
     };
 }
 
-function calcTilt(angle) {
+function calcTilt(angle, position) {
+    var dir = (position === 'top') ? 1 : -1;
     var radians = angle * Math.PI / 180;
     var dx = Math.sin(radians);
     var dy = Math.cos(radians);
     return {
+        dir: dir,
         dx: dx,
         dy: dy,
         degrees: angle
@@ -634,19 +638,21 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
             svgTextUtils.convertToTspans(e, gd);
         })
         .attr('transform', function(d) {
-            var tilt = calcTilt(d.model.labelAngle);
+            var tilt = calcTilt(d.model.labelAngle, d.model.labelSide);
             var r = c.axisTitleOffset;
             return (
+                (tilt.dir > 0 ? '' : 'translate(0,' + (2 * r + d.model.height) + ')') +
                 'rotate(' + tilt.degrees + ')' +
-                'translate(' + -r * tilt.dx + ',' + -r * tilt.dy + ')'
+                'translate(' + (-r * tilt.dx) + ',' + (-r * tilt.dy) + ')'
             );
         })
         .attr('text-anchor', function(d) {
-            var tilt = calcTilt(d.model.labelAngle);
+            var tilt = calcTilt(d.model.labelAngle, d.model.labelSide);
             var adx = Math.abs(tilt.dx);
             var ady = Math.abs(tilt.dy);
+
             if(2 * adx > ady) {
-                return (tilt.dx < 0) ? 'start' : 'end';
+                return (tilt.dir * tilt.dx < 0) ? 'start' : 'end';
             } else {
                 return 'middle';
             }

@@ -3,6 +3,7 @@
         {
             "type": "parcoords",
             "labelangle": -45,
+            "labelside": "bottom",
             "dimensions": [
                 {
                     "label": "one",
@@ -1606,10 +1607,6 @@
         "height": 500,
         "title": {
             "text": "60 dimensions"
-        },
-        "margin": {
-            "t": 200,
-            "b": 25
         }
     }
 }

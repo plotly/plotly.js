@@ -102,4 +102,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceFont(coerce, 'rangefont', fontDflt);
 
     coerce('labelangle');
+    coerce('labelside');
 };

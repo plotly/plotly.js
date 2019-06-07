@@ -3,6 +3,7 @@
         {
             "type": "parcoords",
             "labelangle": -90,
+            "labelside": "bottom",
             "dimensions": [
                 {
                     "label": "Apples",
@@ -35,10 +36,6 @@
         "height": 400,
         "title": {
             "text": "<sup>Tick formatting and <i><b>labelangle</b></i></sup>"
-        },
-        "margin": {
-            "t": 150,
-            "b": 25
         }
     }
 }
