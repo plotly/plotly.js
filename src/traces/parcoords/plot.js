@@ -11,6 +11,29 @@
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
 
+function visible(dimension) {
+    return dimension.visible || !('visible' in dimension);
+}
+
+function newIndex(visibleIndices, orig, dim) {
+    var origIndex = orig.indexOf(dim);
+    var currentIndex = visibleIndices.indexOf(origIndex);
+    if(currentIndex === -1) {
+        // invisible dimensions initially go to the end
+        currentIndex += orig.length;
+    }
+    return currentIndex;
+}
+
+function sorter(visibleIndices, orig) {
+    return function sorter(d1, d2) {
+        return (
+            newIndex(visibleIndices, orig, d1) -
+            newIndex(visibleIndices, orig, d2)
+        );
+    };
+}
+
 module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
@@ -83,29 +106,8 @@ module.exports = function plot(gd, cdModule) {
         // Have updated order data on `gd.data` and raise `Plotly.restyle` event
         // without having to incur heavy UI blocking due to an actual `Plotly.restyle` call
 
-        function visible(dimension) {return !('visible' in dimension) || dimension.visible;}
-
-        function newIndex(visibleIndices, orig, dim) {
-            var origIndex = orig.indexOf(dim);
-            var currentIndex = visibleIndices.indexOf(origIndex);
-            if(currentIndex === -1) {
-                // invisible dimensions initially go to the end
-                currentIndex += orig.length;
-            }
-            return currentIndex;
-        }
-
-        function sorter(orig) {
-            return function sorter(d1, d2) {
-                return (
-                    newIndex(visibleIndices, orig, d1) -
-                    newIndex(visibleIndices, orig, d2)
-                );
-            };
-        }
-
         // drag&drop sorting of the visible dimensions
-        var orig = sorter(initialDims[i].filter(visible));
+        var orig = sorter(visibleIndices, initialDims[i].filter(visible));
         currentDims[i].sort(orig);
 
         // invisible dimensions are not interpreted in the context of drag&drop sorting as an invisible dimension
