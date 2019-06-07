@@ -10,10 +10,7 @@
 
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
-
-function visible(dimension) {
-    return dimension.visible || !('visible' in dimension);
-}
+var isVisible = require('./helpers').isVisible;
 
 function newIndex(visibleIndices, orig, dim) {
     var origIndex = orig.indexOf(dim);
@@ -107,12 +104,12 @@ module.exports = function plot(gd, cdModule) {
         // without having to incur heavy UI blocking due to an actual `Plotly.restyle` call
 
         // drag&drop sorting of the visible dimensions
-        var orig = sorter(visibleIndices, initialDims[i].filter(visible));
+        var orig = sorter(visibleIndices, initialDims[i].filter(isVisible));
         currentDims[i].sort(orig);
 
         // invisible dimensions are not interpreted in the context of drag&drop sorting as an invisible dimension
         // cannot be dragged; they're interspersed into their original positions by this subsequent merging step
-        initialDims[i].filter(function(d) {return !visible(d);})
+        initialDims[i].filter(function(d) {return !isVisible(d);})
              .sort(function(d) {
                  // subsequent splicing to be done left to right, otherwise indices may be incorrect
                  return initialDims[i].indexOf(d);

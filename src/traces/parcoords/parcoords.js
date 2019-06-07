@@ -22,15 +22,10 @@ var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
 
+var helpers = require('./helpers');
 var c = require('./constants');
 var brush = require('./axisbrush');
 var lineLayerMaker = require('./lines');
-
-function convertTypedArray(a) {
-    return Lib.isTypedArray(a) ? Array.prototype.slice.call(a) : a;
-}
-
-function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
 
 function dimensionExtent(dimension) {
     var lo = dimension.range ? dimension.range[0] : Lib.aggNums(Math.min, null, dimension.values, dimension._length);
@@ -88,7 +83,9 @@ function domainScale(height, padding, dimension, tickvals, ticktext) {
         .range([height - padding, padding]);
 }
 
-function unitToPaddedPx(height, padding) { return d3.scale.linear().range([padding, height - padding]); }
+function unitToPaddedPx(height, padding) {
+    return d3.scale.linear().range([padding, height - padding]);
+}
 
 function domainToPaddedUnitScale(dimension, padFraction) {
     return d3.scale.linear()
@@ -140,7 +137,7 @@ function someFiltersActive(view) {
 function model(layout, d, i) {
     var cd0 = unwrap(d);
     var trace = cd0.trace;
-    var lineColor = convertTypedArray(cd0.lineColor);
+    var lineColor = helpers.convertTypedArray(cd0.lineColor);
     var line = trace.line;
     var cOpts = Colorscale.extractOpts(line);
     var cscale = cOpts.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
@@ -172,7 +169,7 @@ function model(layout, d, i) {
 
     return {
         key: i,
-        colCount: dimensions.filter(visible).length,
+        colCount: dimensions.filter(helpers.isVisible).length,
         dimensions: dimensions,
         tickDistance: c.tickDistance,
         unitToColor: unitToColorScale(cscale),
@@ -216,7 +213,7 @@ function viewModel(state, callbacks, model) {
 
     var uniqueKeys = {};
 
-    viewModel.dimensions = dimensions.filter(visible).map(function(dimension, i) {
+    viewModel.dimensions = dimensions.filter(helpers.isVisible).map(function(dimension, i) {
         var domainToPaddedUnit = domainToPaddedUnitScale(dimension, unitPad);
         var foundKey = uniqueKeys[dimension.label];
         uniqueKeys[dimension.label] = (foundKey || 0) + 1;
@@ -276,8 +273,8 @@ function viewModel(state, callbacks, model) {
             }
         } else tickvals = undefined;
 
-        truncatedValues = convertTypedArray(truncatedValues);
-        truncatedValues = convertTypedArray(truncatedValues);
+        truncatedValues = helpers.convertTypedArray(truncatedValues);
+        truncatedValues = helpers.convertTypedArray(truncatedValues);
 
         return {
             key: key,
@@ -285,7 +282,7 @@ function viewModel(state, callbacks, model) {
             tickFormat: dimension.tickformat,
             tickvals: tickvals,
             ticktext: ticktext,
-            ordinal: !!tickvals,
+            ordinal: helpers.isOrdinal(dimension),
             multiselect: dimension.multiselect,
             xIndex: i,
             crossfilterDimensionIndex: i,
