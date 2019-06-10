@@ -33,8 +33,6 @@ function sorter(visibleIndices, orig) {
 
 module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
-    var svg = fullLayout._toppaper;
-    var container = fullLayout._glcontainer;
 
     var success = prepareRegl(gd);
     if(!success) return;
@@ -134,8 +132,6 @@ module.exports = function plot(gd, cdModule) {
 
     parcoords(
         gd,
-        svg,
-        container,
         cdModule,
         { // layout
             width: size.w,

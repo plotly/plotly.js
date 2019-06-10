@@ -395,10 +395,12 @@ function extremeText(d, isTop) {
     return linearFormat(v, d.tickFormat);
 }
 
-module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callbacks) {
+module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
     var fullLayout = gd._fullLayout;
+    var svg = fullLayout._toppaper;
+    var glContainer = fullLayout._glcontainer;
 
     // mock one linear axes for tick formatting
     linearAxis = { type: 'linear', showexponent: 'all', exponentformat: 'B' };
@@ -409,11 +411,11 @@ module.exports = function(gd, svg, parcoordsLineLayers, cdModule, layout, callba
         .map(model.bind(0, layout))
         .map(viewModel.bind(0, state, callbacks));
 
-    parcoordsLineLayers.each(function(d, i) {
+    glContainer.each(function(d, i) {
         return Lib.extendFlat(d, vm[i]);
     });
 
-    var parcoordsLineLayer = parcoordsLineLayers.selectAll('.gl-canvas')
+    var parcoordsLineLayer = glContainer.selectAll('.gl-canvas')
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
