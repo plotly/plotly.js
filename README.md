@@ -3,6 +3,7 @@
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fplotly%2Fplotly.js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fplotly%2Fplotly.js?ref=badge_shield)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
 plotly.js is a high-level, declarative charting library. plotly.js ships with over 40
@@ -187,3 +188,6 @@ Code and documentation copyright 2019 Plotly, Inc.
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
 
 Docs released under the [Creative Commons license](https://github.com/plotly/documentation/blob/source/LICENSE).
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fplotly%2Fplotly.js.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fplotly%2Fplotly.js?ref=badge_large)
