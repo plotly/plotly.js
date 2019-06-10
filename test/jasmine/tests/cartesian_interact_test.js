@@ -329,7 +329,7 @@ describe('axis zoom/pan and main plot zoom', function() {
     function doDrag(subplot, directions, dx, dy, nsteps) {
         return function() {
             var dragger = getDragger(subplot, directions);
-            return drag(dragger, dx, dy, undefined, undefined, undefined, nsteps);
+            return drag({node: dragger, dpos: [dx, dy], nsteps: nsteps});
         };
     }
 
@@ -359,7 +359,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
     function makeDragFns(subplot, directions, dx, dy, x0, y0) {
         var dragger = getDragger(subplot, directions);
-        return drag.makeFns(dragger, dx, dy, {x0: x0, y0: y0});
+        return drag.makeFns({node: dragger, dpos: [dx, dy], pos0: [x0, y0]});
     }
 
     describe('subplots with shared axes', function() {

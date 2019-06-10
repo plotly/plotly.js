@@ -403,7 +403,7 @@ describe('Test gl2d plot interactions:', function() {
         var node = d3.select('.nsewdrag[data-subplot="xy"]').node();
         var dx = p1[0] - p0[0];
         var dy = p1[1] - p0[1];
-        return drag(node, dx, dy, null, p0[0], p0[1]);
+        return drag({node: node, dpos: [dx, dy], pos0: p0});
     }
 
     it('@gl should respond to drag interactions', function(done) {

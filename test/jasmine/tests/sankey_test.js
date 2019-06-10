@@ -1268,7 +1268,7 @@ describe('sankey tests', function() {
                             node = nodes.item(nodeId);
                             position = getNodeCoords(node);
                             var timeDelay = (arrangement === 'snap') ? 2000 : 0; // Wait for force simulation to finish
-                            return drag(node, move[0], move[1], false, false, false, 10, false, timeDelay);
+                            return drag({node: node, dpos: move, nsteps: 10, timeDelay: timeDelay});
                         })
                         .then(function() {
                             nodes = document.getElementsByClassName('sankey-node');
@@ -1319,7 +1319,7 @@ describe('sankey tests', function() {
 
                           nodes = document.getElementsByClassName('sankey-node');
                           node = nodes.item(nodeId);
-                          return drag(node, move[0], move[1]);
+                          return drag({node: node, dpos: move});
                       })
                       .then(function() {
                           x = gd._fullData[0].node.x.slice();
@@ -1329,7 +1329,7 @@ describe('sankey tests', function() {
 
                           nodes = document.getElementsByClassName('sankey-node');
                           node = nodes.item(nodes.length - 1); // Dragged node is now the last one
-                          return drag(node, move[0], move[1]);
+                          return drag({node: node, dpos: move});
                       })
                       .then(function() {
                           x1 = gd._fullData[0].node.x.slice();
@@ -1384,7 +1384,7 @@ describe('sankey tests', function() {
                           positionBeforeDrag = getNodeCoords(node);
                           positionBeforeDrag = [positionBeforeDrag.x, positionBeforeDrag.y];
                           positionAfterDrag = [positionBeforeDrag[0] + move[0], positionBeforeDrag[1] + move[1]];
-                          return drag(node, move[0], move[1], false, false, false, 10, false, 1000);
+                          return drag({node: node, dpos: move, nsteps: 10, timeDelay: 1000});
                       })
                       .then(function() {
                           // Check that the node was really moved
