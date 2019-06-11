@@ -1274,7 +1274,9 @@ describe('sankey tests', function() {
                             nodes = document.getElementsByClassName('sankey-node');
                             node = nodes.item(nodes.length - 1); // Dragged node is now the last one
                             var newPosition = getNodeCoords(node);
-                            if(arrangement === 'freeform') expect(newPosition.x).toBeCloseTo(position.x + move[0], 2, 'final x position is off');
+                            if(arrangement === 'freeform') {
+                                expect(newPosition.x).toBeCloseTo(position.x + move[0], 0, 'final x position is off');
+                            }
                             expect(newPosition.y).toBeCloseTo(position.y + move[1], 2, 'final y position is off');
                             return Promise.resolve(true);
                         });
@@ -1308,7 +1310,7 @@ describe('sankey tests', function() {
                     var node;
                     var x, x1;
                     var y, y1;
-                    var precision = 3;
+                    var precision = 2;
 
                     Plotly.newPlot(gd, mockCopy)
                       .then(function() {
