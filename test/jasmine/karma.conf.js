@@ -4,10 +4,15 @@ var path = require('path');
 var minimist = require('minimist');
 var constants = require('../../tasks/util/constants');
 
-var isCI = !!process.env.CI;
+var isCI = Boolean(process.env.CI);
+
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
-    'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox', 'IE11'],
+    'boolean': [
+        'info',
+        'nowatch', 'failFast', 'verbose', 'randomize',
+        'Chrome', 'Firefox', 'IE11'
+    ],
     alias: {
         'Chrome': 'chrome',
         'Firefox': ['firefox', 'FF'],
@@ -21,6 +26,7 @@ var argv = minimist(process.argv.slice(4), {
         nowatch: isCI,
         failFast: false,
         verbose: false,
+        randomize: false,
         width: '1035',
         height: '617'
     }
@@ -60,6 +66,7 @@ if(argv.info) {
         '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
         '  - `--showSkipped` (dflt: `false`): show tests that are skipped',
+        '  - `--randomize` (dflt: `false`): randomize test ordering (useful to detect bad test teardown)',
         '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
         '  - `--width`(dflt: 1035): set width of the browser window',
         '  - `--height` (dflt: 617): set height of the browser window',
@@ -224,27 +231,32 @@ func.defaultConfig = {
         debug: true
     },
 
-    // Options for `karma-jasmine-spec-tags`
-    // see https://www.npmjs.com/package/karma-jasmine-spec-tags
-    //
-    // A few tests don't behave well on CI
-    // add @noCI to the spec description to skip a spec on CI
-    //
-    // Although not recommended, some tests "depend" on other
-    // tests to pass (e.g. the Plotly.react tests check that
-    // all available traces and transforms are tested). Tag these
-    // with @noCIdep, so that
-    // - $ npm run test-jasmine -- tags=noCI,noCIdep
-    // can pass.
-    //
-    // Label tests that require a WebGL-context by @gl so that
-    // they can be skipped using:
-    // - $ npm run test-jasmine -- --skip-tags=gl
-    // or run is isolation easily using:
-    // - $ npm run test-jasmine -- --tags=gl
     client: {
+        // Options for `karma-jasmine-spec-tags`
+        // see https://www.npmjs.com/package/karma-jasmine-spec-tags
+        //
+        // A few tests don't behave well on CI
+        // add @noCI to the spec description to skip a spec on CI
+        //
+        // Although not recommended, some tests "depend" on other
+        // tests to pass (e.g. the Plotly.react tests check that
+        // all available traces and transforms are tested). Tag these
+        // with @noCIdep, so that
+        // - $ npm run test-jasmine -- tags=noCI,noCIdep
+        // can pass.
+        //
+        // Label tests that require a WebGL-context by @gl so that
+        // they can be skipped using:
+        // - $ npm run test-jasmine -- --skip-tags=gl
+        // or run is isolation easily using:
+        // - $ npm run test-jasmine -- --tags=gl
         tagPrefix: '@',
-        skipTags: isCI ? 'noCI' : null
+        skipTags: isCI ? 'noCI' : null,
+
+        // See https://jasmine.github.io/api/3.4/Configuration.html
+        jasmine: {
+            random: argv.randomize
+        }
     },
 
     // use 'karma-spec-reporter' to log info about skipped specs
@@ -259,6 +271,7 @@ func.defaultConfig = {
         failFast: false
     },
 
+    // TODO !!!
     // e.g. when a test file does not container a given spec tags
     failOnEmptyTestSuite: false
 };
