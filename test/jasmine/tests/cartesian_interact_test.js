@@ -812,7 +812,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
             tickLabels2.each(function(_, i) {
                 var y = d3.select(this).attr('y');
-                expect(Number(y)).toBeWithin(exp.y[i], 5, msg + ' - node ' + i);
+                expect(Number(y)).toBeWithin(exp.y[i], 5.5, msg + ' - node ' + i);
             });
         }
 
