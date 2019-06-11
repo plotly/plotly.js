@@ -11,6 +11,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var negateIf = require('../assets/negate_if');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
@@ -1571,8 +1572,8 @@ describe('Test geo base layers', function() {
             var cd0 = gd.calcdata[0];
             var subplot = gd._fullLayout.geo._subplot;
 
-            expect(cd0[0].geojson).negateIf(geojson[0]).toBe(null);
-            expect(cd0[1].geojson).negateIf(geojson[1]).toBe(null);
+            negateIf(geojson[0], expect(cd0[0].geojson)).toBe(null);
+            negateIf(geojson[1], expect(cd0[1].geojson)).toBe(null);
 
             expect(Object.keys(subplot.layers).length).toEqual(layers.length, '# of layers');
 
