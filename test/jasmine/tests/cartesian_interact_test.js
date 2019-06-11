@@ -727,6 +727,72 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(done);
     });
 
+    it('handles y-only to xy back to y-only in single zoombox drag motion', function(done) {
+        function _assert(msg, evtData, xrng, yrng) {
+            expect([evtData['xaxis.range[0]'], evtData['xaxis.range[1]']])
+                    .toBeCloseToArray(xrng, 2, 'x evt - ' + msg);
+            expect([evtData['yaxis.range[0]'], evtData['yaxis.range[1]']])
+                    .toBeCloseToArray(yrng, 2, 'y evt - ' + msg);
+        }
+
+        var relayoutingList = [];
+        var relayoutList = [];
+
+        var xrng0 = [-0.1347, 2.1347];
+        var yrng1 = [1.3581, 1.5];
+        var blank = [undefined, undefined];
+
+        Plotly.plot(gd, [{
+            y: [1, 2, 1]
+        }], {
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            width: 400, height: 400
+        })
+        .then(function() {
+            gd.on('plotly_relayouting', function(d) {
+                relayoutingList.push(d);
+
+                // N.B. should not mutate axis range on mousemove
+                expect(gd._fullLayout.xaxis.range)
+                    .toBeCloseToArray(xrng0, 2, 'full x range| relyouting call #' + relayoutingList.length);
+            });
+            gd.on('plotly_relayout', function(d) { relayoutList.push(d); });
+        })
+        .then(function() {
+            return drag({
+                node: getDragger('xy', 'nsew'),
+                path: [
+                    // start in middle
+                    [200, 200],
+                    // y-only zoombox
+                    [200, 250],
+                    // xy zoombox
+                    [250, 250],
+                    // back to y-only
+                    [200, 250]
+                ]
+            });
+        })
+        .then(delay(100))
+        .then(function() {
+            if(relayoutingList.length === 3) {
+                _assert('relayouting y-only', relayoutingList[0], blank, yrng1);
+                _assert('relayouting xy', relayoutingList[1], [0.9999, 1.2836], yrng1);
+                _assert('relayouting back to y-only', relayoutingList[2], blank, yrng1);
+            } else {
+                fail('did not emit correct number of plotly_relayouting events');
+            }
+
+            if(relayoutList.length === 1) {
+                _assert('relayout', relayoutList[0], blank, yrng1);
+            } else {
+                fail('did not emit correct number of plotly_relayout events');
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should compute correct multicategory tick label span during drag', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/multicategory.json'));
 
@@ -1545,7 +1611,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 return drag.start()
                     .then(_assert('just after start of zoombox', {
                         nodeCnt: 4,
-                        xrng: [1.5, 1.6880],
+                        xrng: 'previous',
                         hasDragData: true,
                         zoombox: 'M269.5,114.5h-3v41h3ZM300.5,114.5h3v41h-3Z',
                         clipTranslate: [0, 0]
@@ -1553,7 +1619,8 @@ describe('axis zoom/pan and main plot zoom', function() {
                     .then(delay(step))
                     .then(_assert('during zoombox drag', {
                         nodeCnt: 5,
-                        xrng: [2, 2.2507],
+                        // N.B. x autorange for one more node
+                        xrng: [-0.257, 4.257],
                         hasDragData: true,
                         zoombox: 'M269.5,114.5h-3v41h3ZM300.5,114.5h3v41h-3Z',
                         clipTranslate: [0, 0]
