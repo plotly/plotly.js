@@ -1260,7 +1260,7 @@ describe('legend interaction', function() {
                         item.dispatchEvent(new MouseEvent('mousedown'));
                         item.dispatchEvent(new MouseEvent('mouseup'));
                     }
-                    setTimeout(resolve, DBLCLICKDELAY + 20);
+                    setTimeout(resolve, DBLCLICKDELAY + 100);
                 });
             };
         }
@@ -1682,6 +1682,7 @@ describe('legend interaction', function() {
                             'legend.itemdoubleclick': false
                         });
                     })
+                    .then(delay(100))
                     .then(click(0, 1)).then(_assert([true, true, true]))
                     .then(click(0, 2)).then(_assert([true, true, true]))
                     .then(function() {
@@ -1690,6 +1691,7 @@ describe('legend interaction', function() {
                             'legend.itemdoubleclick': 'toggle'
                         });
                     })
+                    .then(delay(100))
                     .then(click(0, 1)).then(_assert([true, 'legendonly', 'legendonly']))
                     .then(click(0, 1)).then(_assert([true, true, true]))
                     .then(click(0, 2)).then(_assert(['legendonly', true, true]))
@@ -1707,7 +1709,7 @@ describe('legend interaction', function() {
                 .then(run)
                 .catch(failTest)
                 .then(done);
-            });
+            }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
             it('- pie case', function(done) {
                 _assert = function(_exp) {
@@ -1728,7 +1730,7 @@ describe('legend interaction', function() {
                 .then(run)
                 .catch(failTest)
                 .then(done);
-            });
+            }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
         });
     });
 });
