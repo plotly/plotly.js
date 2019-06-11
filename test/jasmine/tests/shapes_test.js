@@ -834,7 +834,7 @@ describe('A fixed size path shape', function() {
     it('is draggable', function(done) {
         Plotly.plot(gd, data, layout, {editable: true})
           .then(function() {
-              drag(getFirstShapeNode(), 50, 50).then(function() {
+              drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 30, 20);
                   done();
               });
@@ -852,7 +852,7 @@ describe('A fixed size path shape', function() {
                 var shapeNodeBeforeDrag = getFirstShapeNode();
                 var widthBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect().width;
 
-                drag(shapeNodeBeforeDrag, 300, 50).then(function() {
+                drag({node: shapeNodeBeforeDrag, dpos: [300, 50]}).then(function() {
                     var shapeNodeAfterDrag = getFirstShapeNode();
                     var bbox = shapeNodeAfterDrag.getBoundingClientRect();
                     expect(bbox.height).toBe(20);
@@ -874,7 +874,7 @@ describe('A fixed size path shape', function() {
                 var shapeNodeBeforeDrag = getFirstShapeNode();
                 var heightBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect().height;
 
-                drag(shapeNodeBeforeDrag, 50, 300).then(function() {
+                drag({node: shapeNodeBeforeDrag, dpos: [50, 300]}).then(function() {
                     var shapeNodeAfterDrag = getFirstShapeNode();
                     var bbox = shapeNodeAfterDrag.getBoundingClientRect();
                     expect(bbox.width).toBe(30);
@@ -1006,7 +1006,7 @@ describe('A fixed size shape', function() {
     it('is draggable', function(done) {
         Plotly.plot(gd, data, layout, {editable: true})
           .then(function() {
-              drag(getFirstShapeNode(), 50, 50).then(function() {
+              drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 25, 25);
                   done();
               });
@@ -1025,7 +1025,7 @@ describe('A fixed size shape', function() {
                 var shapeNodeBeforeDrag = getFirstShapeNode();
                 var widthBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect().width;
 
-                drag(shapeNodeBeforeDrag, 300, 50).then(function() {
+                drag({node: shapeNodeBeforeDrag, dpos: [300, 50]}).then(function() {
                     var shapeNodeAfterDrag = getFirstShapeNode();
                     var bbox = shapeNodeAfterDrag.getBoundingClientRect();
                     expect(bbox.height).toBe(25);
@@ -1048,7 +1048,7 @@ describe('A fixed size shape', function() {
                 var shapeNodeBeforeDrag = getFirstShapeNode();
                 var heightBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect().height;
 
-                drag(shapeNodeBeforeDrag, 50, 300).then(function() {
+                drag({node: shapeNodeBeforeDrag, dpos: [50, 300]}).then(function() {
                     var shapeNodeAfterDrag = getFirstShapeNode();
                     var bbox = shapeNodeAfterDrag.getBoundingClientRect();
                     expect(bbox.width).toBe(25);
@@ -1088,7 +1088,7 @@ describe('A fixed size shape', function() {
                           var dx = shallShrink ? dxToShrinkWidth[direction] : dxToEnlargeWidth[direction];
                           var dy = shallShrink ? dyToShrinkHeight[direction] : dyToEnlargeHeight[direction];
 
-                          drag(shapeNodeBeforeDrag, dx, dy, direction)
+                          drag({node: shapeNodeBeforeDrag, dpos: [dx, dy], edge: direction})
                             .then(function() {
                                 var shapeNodeAfterDrag = getFirstShapeNode();
                                 var bBoxAfterDrag = shapeNodeAfterDrag.getBoundingClientRect();
@@ -1117,7 +1117,7 @@ describe('A fixed size shape', function() {
                   var bBoxBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect();
 
                   var dragSensitiveElement = getMoveLineDragElement(0);
-                  drag(dragSensitiveElement, 10, -10)
+                  drag({node: dragSensitiveElement, dpos: [10, -10]})
                     .then(function() {
                         var shapeNodeAfterDrag = getFirstShapeNode();
                         var bBoxAfterDrag = shapeNodeAfterDrag.getBoundingClientRect();
@@ -1138,7 +1138,7 @@ describe('A fixed size shape', function() {
                   var bBoxBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect();
 
                   var dragSensitiveElement = getResizeLineOverStartPointElement();
-                  drag(dragSensitiveElement, 50, -10)
+                  drag({node: dragSensitiveElement, dpos: [50, -10]})
                     .then(function() {
                         var shapeNodeAfterDrag = getFirstShapeNode();
                         var bBoxAfterDrag = shapeNodeAfterDrag.getBoundingClientRect();
@@ -1161,7 +1161,7 @@ describe('A fixed size shape', function() {
                   var bBoxBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect();
 
                   var dragSensitiveElement = getResizeLineOverEndPointElement();
-                  drag(dragSensitiveElement, 50, -10)
+                  drag({node: dragSensitiveElement, dpos: [50, -10]})
                     .then(function() {
                         var shapeNodeAfterDrag = getFirstShapeNode();
                         var bBoxAfterDrag = shapeNodeAfterDrag.getBoundingClientRect();
@@ -1464,7 +1464,7 @@ describe('Test shapes', function() {
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
-        return drag(node, dx, dy).then(function() {
+        return drag({node: node, dpos: [dx, dy]}).then(function() {
             var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
             expect(finalCoordinates.x0 - initialCoordinates.x0).toBeCloseTo(dx);
@@ -1494,7 +1494,7 @@ describe('Test shapes', function() {
 
         expect(initialCoordinates.length).toBe(6);
 
-        return drag(node, dx, dy).then(function() {
+        return drag({node: node, dpos: [dx, dy]}).then(function() {
             var finalPath = layoutShape.path;
             var finalCoordinates = getPathCoordinates(finalPath, x2p, y2p);
 
@@ -1523,7 +1523,7 @@ describe('Test shapes', function() {
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
-        return drag(node, dx, dy, direction).then(function() {
+        return drag({node: node, dpos: [dx, dy], edge: direction}).then(function() {
             var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
             var keyN, keyS, keyW, keyE;
@@ -1572,7 +1572,7 @@ describe('Test shapes', function() {
               getResizeLineOverEndPointElement();
 
             var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
-            return drag(dragHandle, 10, 10).then(function() {
+            return drag({node: dragHandle, dpos: [10, 10]}).then(function() {
                 var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
                 if(pointToMove === 'start') {

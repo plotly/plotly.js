@@ -1268,13 +1268,15 @@ describe('sankey tests', function() {
                             node = nodes.item(nodeId);
                             position = getNodeCoords(node);
                             var timeDelay = (arrangement === 'snap') ? 2000 : 0; // Wait for force simulation to finish
-                            return drag(node, move[0], move[1], false, false, false, 10, false, timeDelay);
+                            return drag({node: node, dpos: move, nsteps: 10, timeDelay: timeDelay});
                         })
                         .then(function() {
                             nodes = document.getElementsByClassName('sankey-node');
                             node = nodes.item(nodes.length - 1); // Dragged node is now the last one
                             var newPosition = getNodeCoords(node);
-                            if(arrangement === 'freeform') expect(newPosition.x).toBeCloseTo(position.x + move[0], 2, 'final x position is off');
+                            if(arrangement === 'freeform') {
+                                expect(newPosition.x).toBeCloseTo(position.x + move[0], 0, 'final x position is off');
+                            }
                             expect(newPosition.y).toBeCloseTo(position.y + move[1], 2, 'final y position is off');
                             return Promise.resolve(true);
                         });
@@ -1308,7 +1310,7 @@ describe('sankey tests', function() {
                     var node;
                     var x, x1;
                     var y, y1;
-                    var precision = 3;
+                    var precision = 2;
 
                     Plotly.newPlot(gd, mockCopy)
                       .then(function() {
@@ -1319,7 +1321,7 @@ describe('sankey tests', function() {
 
                           nodes = document.getElementsByClassName('sankey-node');
                           node = nodes.item(nodeId);
-                          return drag(node, move[0], move[1]);
+                          return drag({node: node, dpos: move});
                       })
                       .then(function() {
                           x = gd._fullData[0].node.x.slice();
@@ -1329,7 +1331,7 @@ describe('sankey tests', function() {
 
                           nodes = document.getElementsByClassName('sankey-node');
                           node = nodes.item(nodes.length - 1); // Dragged node is now the last one
-                          return drag(node, move[0], move[1]);
+                          return drag({node: node, dpos: move});
                       })
                       .then(function() {
                           x1 = gd._fullData[0].node.x.slice();
@@ -1384,7 +1386,7 @@ describe('sankey tests', function() {
                           positionBeforeDrag = getNodeCoords(node);
                           positionBeforeDrag = [positionBeforeDrag.x, positionBeforeDrag.y];
                           positionAfterDrag = [positionBeforeDrag[0] + move[0], positionBeforeDrag[1] + move[1]];
-                          return drag(node, move[0], move[1], false, false, false, 10, false, 1000);
+                          return drag({node: node, dpos: move, nsteps: 10, timeDelay: 1000});
                       })
                       .then(function() {
                           // Check that the node was really moved

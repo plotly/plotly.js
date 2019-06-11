@@ -9,7 +9,6 @@ var drag = require('../assets/drag');
 var scatterFillMock = require('@mocks/scatter_fill_self_next.json');
 var templateMock = require('@mocks/template.json');
 
-
 describe('makeTemplate', function() {
     it('does not template arrays', function() {
         var template = Plotly.makeTemplate(Lib.extendDeep({}, scatterFillMock));
@@ -243,13 +242,13 @@ describe('template interactions', function() {
 
         var schoolDragger = checkAnnotations(5, 4, 5);
 
-        drag(schoolDragger, 0, -80)
+        drag({node: schoolDragger, dpos: [0, -80]})
         .then(function() {
             // added an item to layout.annotations and put that before the
             // remaining default item in the DOM
             schoolDragger = checkAnnotations(6, 5, 4, 0.25);
 
-            return drag(schoolDragger, 0, -80);
+            return drag({node: schoolDragger, dpos: [0, -80]});
         })
         .then(function() {
             // item count and order are unchanged now, item just moves.
@@ -281,12 +280,12 @@ describe('template interactions', function() {
 
         var rectDragger = checkShapes(1);
 
-        drag(rectDragger, 0, -80, 's')
+        drag({node: rectDragger, dpos: [0, -80], edge: 's'})
         .then(function() {
             // added an item to layout.shapes
             rectDragger = checkShapes(2, 0.15);
 
-            return drag(rectDragger, 0, -80, 's');
+            return drag({node: rectDragger, dpos: [0, -80], edge: 's'});
         })
         .then(function() {
             // item count and order are unchanged now, item just resizes.

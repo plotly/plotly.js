@@ -874,7 +874,7 @@ describe('Test polar interactions:', function() {
 
         function _drag(p0, dp) {
             var node = d3.select('.polar > .draglayer > .maindrag').node();
-            return drag(node, dp[0], dp[1], null, p0[0], p0[1]);
+            return drag({node: node, dpos: dp, pos0: p0});
         }
 
         function _assertRange(rng, msg) {
@@ -984,7 +984,7 @@ describe('Test polar interactions:', function() {
         // to activate the radial drag mode
         function _drag(p0, dp) {
             var node = d3.select('.polar > .draglayer > .radialdrag').node();
-            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+            return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
         }
 
         function _assert(rng, angle, evtRng1, evtAngle, msg) {
@@ -1066,7 +1066,7 @@ describe('Test polar interactions:', function() {
         // to activate the radial drag mode
         function _drag(p0, dp) {
             var node = d3.select('.polar > .draglayer > .radialdrag-inner').node();
-            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+            return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
         }
 
         function _assert(rng, msg) {
@@ -1105,7 +1105,7 @@ describe('Test polar interactions:', function() {
 
         function _drag(p0, dp) {
             var node = d3.select('.polar > .draglayer > .angulardrag').node();
-            return drag(node, dp[0], dp[1], null, p0[0], p0[1]);
+            return drag({node: node, dpos: dp, pos0: p0});
         }
 
         function _assert(rot, msg, noEvent) {
@@ -1161,14 +1161,14 @@ describe('Test polar interactions:', function() {
             var node = d3.select('.polar > .draglayer > .radialdrag').node();
             var p0 = [375, 200];
             var dp = [-50, 0];
-            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+            return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
         }
 
         function _dragAngular() {
             var node = d3.select('.polar > .draglayer > .angulardrag').node();
             var p0 = [350, 150];
             var dp = [-20, 20];
-            return drag(node, dp[0], dp[1], null, p0[0], p0[1]);
+            return drag({node: node, dpos: dp, pos0: p0});
         }
 
         // once on drag, once on mouseup relayout
@@ -1266,7 +1266,7 @@ describe('Test polar interactions:', function() {
 
             function _drag(p0, dp, nsteps) {
                 var node = d3.select('.polar > .draglayer > .radialdrag').node();
-                return drag(node, dp[0], dp[1], null, p0[0], p0[1], nsteps);
+                return drag({node: node, dpos: dp, pos0: p0, nsteps: nsteps});
             }
 
             var gd = createGraphDiv();
@@ -1300,7 +1300,7 @@ describe('Test polar interactions:', function() {
 
             function _drag(p0, dp, nsteps) {
                 var node = d3.select('.polar > .draglayer > .maindrag').node();
-                return drag(node, dp[0], dp[1], null, p0[0], p0[1], nsteps);
+                return drag({node: node, dpos: dp, pos0: p0, nsteps: nsteps});
             }
 
             var gd = createGraphDiv();
@@ -1332,7 +1332,7 @@ describe('Test polar interactions:', function() {
 
             function _drag(p0, dp, nsteps) {
                 var node = d3.select('.polar > .draglayer > .angulardrag').node();
-                return drag(node, dp[0], dp[1], null, p0[0], p0[1], nsteps);
+                return drag({node: node, dpos: dp, pos0: p0, nsteps: nsteps});
             }
 
             var dragPos0 = [360, 180];
@@ -1381,7 +1381,7 @@ describe('Test polar *gridshape linear* interactions', function() {
         // to activate the radial drag mode
         function _drag(p0, dp) {
             var node = d3.select('.polar > .draglayer > .radialdrag').node();
-            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+            return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
         }
 
         function _assert(msg, angle) {
@@ -1441,7 +1441,7 @@ describe('Test polar *gridshape linear* interactions', function() {
 
         function _run(msg, p0, dp, exp) {
             var node = d3.select('.polar > .draglayer > .angulardrag').node();
-            var dragFns = drag.makeFns(node, dp[0], dp[1], {x0: p0[0], y0: p0[1]});
+            var dragFns = drag.makeFns({node: node, dpos: dp, pos0: p0});
 
             return dragFns.start().then(function() {
                 layersRotateFromZero.forEach(function(q) {
@@ -1517,7 +1517,7 @@ describe('Test polar *gridshape linear* interactions', function() {
 
         function _run(msg, p0, dp, exp) {
             var node = d3.select('.polar > .draglayer > .maindrag').node();
-            var dragFns = drag.makeFns(node, dp[0], dp[1], {x0: p0[0], y0: p0[1]});
+            var dragFns = drag.makeFns({node: node, dpos: dp, pos0: p0});
 
             return dragFns.start().then(function() {
                 var zl = d3.select(gd).select('g.zoomlayer');

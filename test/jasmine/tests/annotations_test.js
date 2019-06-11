@@ -1050,7 +1050,7 @@ describe('annotation effects', function() {
     afterEach(destroyGraphDiv);
 
     function dragAndReplot(node, dx, dy, edge) {
-        return drag(node, dx, dy, edge).then(function() {
+        return drag({node: node, dpos: [dx, dy], edge: edge}).then(function() {
             return Plots.previousPromises(gd);
         });
     }

@@ -1501,7 +1501,7 @@ describe('Test splom drag:', function() {
         var node = d3.select('.nsewdrag[data-subplot="xy"]').node();
         var dx = p1[0] - p0[0];
         var dy = p1[1] - p0[1];
-        return drag(node, dx, dy, null, p0[0], p0[1]);
+        return drag({node: node, dpos: [dx, dy], pos0: p0});
     }
 
     it('@gl should update scattermatrix ranges on pan', function(done) {
@@ -1597,17 +1597,9 @@ describe('Test splom select:', function() {
                 resolve();
             });
 
-            Lib.clearThrottle();
-            mouseEvent('mousemove', path[0][0], path[0][1], opts);
-            mouseEvent('mousedown', path[0][0], path[0][1], opts);
-
-            var len = path.length;
-            path.slice(1, len).forEach(function(pt) {
-                Lib.clearThrottle();
-                mouseEvent('mousemove', pt[0], pt[1], opts);
-            });
-
-            mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], opts);
+            opts.path = path;
+            opts.clearThrottle = Lib.clearThrottle;
+            drag(opts);
         });
     }
 

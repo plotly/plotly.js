@@ -1504,8 +1504,7 @@ describe('Plotly.react and uirevision attributes', function() {
         function editSelection() {
             // drag across the upper right quadrant, so we'll select
             // curve 0 point 1 and curve 1 point 2
-            return drag(document.querySelector('.nsewdrag'),
-                148, 100, '', 150, 102);
+            return drag({node: document.querySelector('.nsewdrag'), dpos: [148, 100], pos0: [150, 102]});
         }
 
         var checkNoSelection = checkState([
@@ -1547,8 +1546,7 @@ describe('Plotly.react and uirevision attributes', function() {
         function editSelection() {
             // drag across the upper right quadrant, so we'll select
             // curve 0 point 1 and curve 1 point 2
-            return drag(document.querySelector('.nsewdrag'),
-                148, 148, '', 150, 102);
+            return drag({node: document.querySelector('.nsewdrag'), dpos: [148, 148], pos0: [150, 102]});
         }
 
         var checkNoSelection = checkState([{selectedpoints: undefined}]);
@@ -1800,19 +1798,18 @@ describe('Plotly.react and uirevision attributes', function() {
         }
 
         function editTrace() {
-            var _;
             return Registry.call('_guiRestyle', gd,
                 {'line.colorbar.title.text': 'color', name: 'name'},
                 [0]
             )
             .then(function() {
-                return drag(axisDragNode(0), 0, 50, _, _, _, _, true);
+                return drag({node: axisDragNode(0), dpos: [0, 50], noCover: true});
             })
             .then(function() {
-                return drag(axisDragNode(0), 0, -50, _, _, _, _, true);
+                return drag({node: axisDragNode(0), dpos: [0, -50], noCover: true});
             })
             .then(function() {
-                return drag(axisDragNode(1), 0, -50, _, _, _, _, true);
+                return drag({node: axisDragNode(1), dpos: [0, -50], noCover: true});
             });
         }
 
@@ -1997,13 +1994,6 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             });
         }
 
-        function _drag(x0, y0, dx, dy) {
-            mouseEvent('mousemove', x0, y0);
-            mouseEvent('mousedown', x0, y0);
-            mouseEvent('mousemove', x0 + dx, y0 + dy);
-            mouseEvent('mouseup', x0 + dx, y0 + dy);
-        }
-
         // should be same before & after 2nd react()
         function _assertGUI(msg) {
             var TOL = 2;
@@ -2036,7 +2026,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
 
             expect(gd._fullLayout._preGUI).toEqual({});
         })
-        .then(function() { return _drag(200, 200, 50, 50); })
+        .then(function() { return drag({pos0: [200, 200], dpos: [50, 50], noCover: true}); })
         .then(function() { _assertGUI('before'); })
         .then(_react)
         .then(function() { _assertGUI('after'); })

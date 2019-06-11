@@ -406,7 +406,7 @@ describe('Test colorbar:', function() {
                 expect(gd.data[0].colorbar).toBeUndefined();
                 expect(gd._fullData[0].colorbar.x).toBe(1.02);
                 expect(gd._fullData[0].colorbar.y).toBe(0.5);
-                return drag(getCBNode(), -100, 100);
+                return drag({node: getCBNode(), dpos: [-100, 100]});
             })
             .then(function() {
                 expect(gd.data[0].colorbar.x).toBeWithin(0.591, 0.01);
@@ -426,7 +426,7 @@ describe('Test colorbar:', function() {
                 expect(gd.data[0].marker.colorbar).toBeUndefined();
                 expect(gd._fullData[0].marker.colorbar.x).toBe(1.02);
                 expect(gd._fullData[0].marker.colorbar.y).toBe(0.5);
-                return drag(getCBNode(), -100, 100);
+                return drag({node: getCBNode(), dpos: [-100, 100]});
             })
             .then(function() {
                 expect(gd.data[0].marker.colorbar.x).toBeWithin(0.591, 0.01);
@@ -446,7 +446,7 @@ describe('Test colorbar:', function() {
                 expect(gd.layout.coloraxis.colorbar).toBeUndefined();
                 expect(gd._fullLayout.coloraxis.colorbar.x).toBe(1.02);
                 expect(gd._fullLayout.coloraxis.colorbar.y).toBe(0.5);
-                return drag(getCBNode(), -100, 100);
+                return drag({node: getCBNode(), dpos: [-100, 100]});
             })
             .then(function() {
                 expect(gd.layout.coloraxis.colorbar.x).toBeWithin(0.591, 0.01);

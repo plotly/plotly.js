@@ -192,17 +192,10 @@ describe('main plot pan', function() {
         var mock = Lib.extendDeep({}, require('@mocks/10.json'));
         mock.layout.dragmode = 'pan';
 
-        function _drag(x0, y0, x1, y1, n) {
-            mouseEvent('mousedown', x0, y0);
-            var dx = (x1 - x0) / n;
-            var dy = (y1 - y0) / n;
-            for(var i = 0; i <= n; i++) {
-                mouseEvent('mousemove', x0 + dx * i, y0 + dy * i);
-            }
-            mouseEvent('mouseup', x1, y1);
-        }
+        var nsteps = 10;
+        var events = [];
+        var relayoutCallback;
 
-        var nsteps = 10; var events = []; var relayoutCallback;
         Plotly.plot(gd, mock.data, mock.layout)
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
@@ -210,7 +203,7 @@ describe('main plot pan', function() {
             gd.on('plotly_relayouting', function(e) {
                 events.push(e);
             });
-            _drag(100, 150, 220, 250, nsteps);
+            return drag({pos0: [100, 150], posN: [220, 250], nsteps: nsteps});
         })
         .then(function() {
             expect(events.length).toEqual(nsteps);
@@ -247,12 +240,10 @@ describe('main plot pan', function() {
         }
 
         function _run(p0, p1, markerDisplay, textDisplay, barTextDisplay) {
-            mouseEvent('mousedown', p0[0], p0[1]);
-            mouseEvent('mousemove', p1[0], p1[1]);
-
-            _assert(markerDisplay, textDisplay, barTextDisplay);
-
-            mouseEvent('mouseup', p1[0], p1[1]);
+            var fns = drag.makeFns({pos0: p0, posN: p1});
+            return fns.start()
+                .then(function() { _assert(markerDisplay, textDisplay, barTextDisplay); })
+                .then(fns.end);
         }
 
         Plotly.newPlot(gd, [{
@@ -283,25 +274,29 @@ describe('main plot pan', function() {
             );
         })
         .then(function() {
-            _run(
+            return _run(
                 [250, 250], [250, 150],
                 [null, null, 'none'],
                 [null, null, 'none'],
                 [null, null, 'none']
             );
+        })
+        .then(function() {
             expect(gd._fullLayout.yaxis.range[1]).toBeLessThan(3);
         })
         .then(function() {
-            _run(
+            return _run(
                 [250, 250], [150, 250],
                 ['none', null, 'none'],
                 ['none', null, 'none'],
                 ['none', null, 'none']
             );
+        })
+        .then(function() {
             expect(gd._fullLayout.xaxis.range[0]).toBeGreaterThan(1);
         })
         .then(function() {
-            _run(
+            return _run(
                 [250, 250], [350, 350],
                 [null, null, null],
                 [null, null, null],
@@ -329,7 +324,7 @@ describe('axis zoom/pan and main plot zoom', function() {
     function doDrag(subplot, directions, dx, dy, nsteps) {
         return function() {
             var dragger = getDragger(subplot, directions);
-            return drag(dragger, dx, dy, undefined, undefined, undefined, nsteps);
+            return drag({node: dragger, dpos: [dx, dy], nsteps: nsteps});
         };
     }
 
@@ -359,7 +354,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
     function makeDragFns(subplot, directions, dx, dy, x0, y0) {
         var dragger = getDragger(subplot, directions);
-        return drag.makeFns(dragger, dx, dy, {x0: x0, y0: y0});
+        return drag.makeFns({node: dragger, dpos: [dx, dy], pos0: [x0, y0]});
     }
 
     describe('subplots with shared axes', function() {
@@ -727,6 +722,72 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(done);
     });
 
+    it('handles y-only to xy back to y-only in single zoombox drag motion', function(done) {
+        function _assert(msg, evtData, xrng, yrng) {
+            expect([evtData['xaxis.range[0]'], evtData['xaxis.range[1]']])
+                    .toBeCloseToArray(xrng, 2, 'x evt - ' + msg);
+            expect([evtData['yaxis.range[0]'], evtData['yaxis.range[1]']])
+                    .toBeCloseToArray(yrng, 2, 'y evt - ' + msg);
+        }
+
+        var relayoutingList = [];
+        var relayoutList = [];
+
+        var xrng0 = [-0.1347, 2.1347];
+        var yrng1 = [1.3581, 1.5];
+        var blank = [undefined, undefined];
+
+        Plotly.plot(gd, [{
+            y: [1, 2, 1]
+        }], {
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            width: 400, height: 400
+        })
+        .then(function() {
+            gd.on('plotly_relayouting', function(d) {
+                relayoutingList.push(d);
+
+                // N.B. should not mutate axis range on mousemove
+                expect(gd._fullLayout.xaxis.range)
+                    .toBeCloseToArray(xrng0, 2, 'full x range| relyouting call #' + relayoutingList.length);
+            });
+            gd.on('plotly_relayout', function(d) { relayoutList.push(d); });
+        })
+        .then(function() {
+            return drag({
+                node: getDragger('xy', 'nsew'),
+                path: [
+                    // start in middle
+                    [200, 200],
+                    // y-only zoombox
+                    [200, 250],
+                    // xy zoombox
+                    [250, 250],
+                    // back to y-only
+                    [200, 250]
+                ]
+            });
+        })
+        .then(delay(100))
+        .then(function() {
+            if(relayoutingList.length === 3) {
+                _assert('relayouting y-only', relayoutingList[0], blank, yrng1);
+                _assert('relayouting xy', relayoutingList[1], [0.9999, 1.2836], yrng1);
+                _assert('relayouting back to y-only', relayoutingList[2], blank, yrng1);
+            } else {
+                fail('did not emit correct number of plotly_relayouting events');
+            }
+
+            if(relayoutList.length === 1) {
+                _assert('relayout', relayoutList[0], blank, yrng1);
+            } else {
+                fail('did not emit correct number of plotly_relayout events');
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should compute correct multicategory tick label span during drag', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/multicategory.json'));
 
@@ -746,7 +807,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
             tickLabels2.each(function(_, i) {
                 var y = d3.select(this).attr('y');
-                expect(Number(y)).toBeWithin(exp.y[i], 5, msg + ' - node ' + i);
+                expect(Number(y)).toBeWithin(exp.y[i], 5.5, msg + ' - node ' + i);
             });
         }
 
@@ -1545,7 +1606,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 return drag.start()
                     .then(_assert('just after start of zoombox', {
                         nodeCnt: 4,
-                        xrng: [1.5, 1.6880],
+                        xrng: 'previous',
                         hasDragData: true,
                         zoombox: 'M269.5,114.5h-3v41h3ZM300.5,114.5h3v41h-3Z',
                         clipTranslate: [0, 0]
@@ -1553,7 +1614,8 @@ describe('axis zoom/pan and main plot zoom', function() {
                     .then(delay(step))
                     .then(_assert('during zoombox drag', {
                         nodeCnt: 5,
-                        xrng: [2, 2.2507],
+                        // N.B. x autorange for one more node
+                        xrng: [-0.257, 4.257],
                         hasDragData: true,
                         zoombox: 'M269.5,114.5h-3v41h3ZM300.5,114.5h3v41h-3Z',
                         clipTranslate: [0, 0]
