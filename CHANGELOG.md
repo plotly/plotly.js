@@ -10,6 +10,19 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.48.2] -- 2019-06-11
+
+### Fixed
+- Fix rendering after 1d -> 2d -> 1d drag motion
+  under `dragmode: 'zoom'` (bug introduced in 1.48.0) [#3950]
+- Fix for `scattergl` hover and click events to give the 'top' point
+  instead of the 'bottom' point [#3924]
+- Fix `contour` label rendering for non-monotonically increasing x/y [#3934]
+- Fix `carpet` axis title position for decreasing a/b coords [#3927]
+- Fix multiple single-valued overlaid autobinned `histogram` edge case [#3935]
+- Fix `parcoords` `tickvals` and `ticktext` documentation [#3925]
+
+
 ## [1.48.1] -- 2019-05-30
 
 ### Fixed
