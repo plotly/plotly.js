@@ -9,7 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
-var touchEvent = require('../assets/touch_event');
+var drag = require('../assets/drag');
 var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
 
@@ -650,24 +650,6 @@ describe('Test gl3d drag and wheel interactions', function() {
         });
     }
 
-    function drag(target, start, end) {
-        return new Promise(function(resolve) {
-            mouseEvent('mousedown', start[0], start[1], {element: target});
-            mouseEvent('mousemove', end[0], end[1], {element: target});
-            mouseEvent('mouseup', end[0], end[1], {element: target});
-            setTimeout(resolve, 0);
-        });
-    }
-
-    function touchDrag(target, start, end) {
-        return new Promise(function(resolve) {
-            touchEvent('touchstart', start[0], start[1], {element: target});
-            touchEvent('touchmove', end[0], end[1], {element: target});
-            touchEvent('touchend', end[0], end[1], {element: target});
-            setTimeout(resolve, 0);
-        });
-    }
-
     beforeEach(function() {
         gd = createGraphDiv();
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
@@ -707,10 +689,10 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(function() {
             sceneTarget = gd.querySelector('.svg-container .gl-container #scene');
 
-            return touchDrag(sceneTarget, [100, 100], [0, 0]);
+            return drag({touch: true, node: sceneTarget, pos0: [100, 100], posN: [0, 0], noCover: true});
         })
         .then(function() {
-            return drag(sceneTarget, [100, 100], [0, 0]);
+            return drag({node: sceneTarget, pos0: [100, 100], posN: [0, 0], noCover: true});
         })
         .then(function() {
             return scroll(sceneTarget);
@@ -768,11 +750,11 @@ describe('Test gl3d drag and wheel interactions', function() {
         })
         .then(function() {
             _assertAndReset(1);
-            return drag(sceneTarget2, [0, 0], [100, 100]);
+            return drag({node: sceneTarget2, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
             _assertAndReset(1);
-            return drag(sceneTarget, [0, 0], [100, 100]);
+            return drag({node: sceneTarget, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
             _assertAndReset(1);
@@ -780,10 +762,10 @@ describe('Test gl3d drag and wheel interactions', function() {
         })
         .then(function() {
             _assertAndReset(1);
-            return drag(sceneTarget, [0, 0], [100, 100]);
+            return drag({node: sceneTarget, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
-            return drag(sceneTarget2, [0, 0], [100, 100]);
+            return drag({node: sceneTarget2, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
             _assertAndReset(0);
@@ -794,10 +776,10 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
             relayoutCallback.calls.reset();
 
-            return drag(sceneTarget, [0, 0], [100, 100]);
+            return drag({node: sceneTarget, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
-            return drag(sceneTarget2, [0, 0], [100, 100]);
+            return drag({node: sceneTarget2, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
             _assertAndReset(2);
@@ -872,11 +854,11 @@ describe('Test gl3d drag and wheel interactions', function() {
         })
         .then(function() {
             _assertAndReset(1);
-            return drag(sceneTarget2, [0, 0], [100, 100]);
+            return drag({node: sceneTarget2, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
             _assertAndReset(1);
-            return drag(sceneTarget, [0, 0], [100, 100]);
+            return drag({node: sceneTarget, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
             _assertAndReset(1);
@@ -884,10 +866,10 @@ describe('Test gl3d drag and wheel interactions', function() {
         })
         .then(function() {
             _assertAndReset(1);
-            return drag(sceneTarget, [0, 0], [100, 100]);
+            return drag({node: sceneTarget, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
-            return drag(sceneTarget2, [0, 0], [100, 100]);
+            return drag({node: sceneTarget2, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
             _assertAndReset(0);
@@ -898,10 +880,10 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
             relayoutCallback.calls.reset();
 
-            return drag(sceneTarget, [0, 0], [100, 100]);
+            return drag({node: sceneTarget, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
-            return drag(sceneTarget2, [0, 0], [100, 100]);
+            return drag({node: sceneTarget2, pos0: [0, 0], posN: [100, 100], noCover: true});
         })
         .then(function() {
             _assertAndReset(2);
@@ -932,6 +914,8 @@ describe('Test gl3d drag and wheel interactions', function() {
 
     it('@gl should fire plotly_relayouting events', function(done) {
         var sceneTarget, relayoutEvent;
+
+        var nsteps = 10;
         var relayoutCnt = 0;
         var events = [];
 
@@ -945,20 +929,6 @@ describe('Test gl3d drag and wheel interactions', function() {
             }
         };
 
-        var nsteps = 10;
-        function _drag(target, start, end, n) {
-            return new Promise(function(resolve) {
-                mouseEvent('mousedown', start[0], start[1], {element: target, buttons: 1});
-                var dx = (end[0] - start[0]) / n;
-                var dy = (end[1] - start[1]) / n;
-                for(var i = 1; i <= n; i++) {
-                    mouseEvent('mousemove', start[0] + dx * n, start[1] + dy * n, {element: target, buttons: 1});
-                }
-                mouseEvent('mouseup', end[0], end[1], {element: target, buttons: 1});
-                setTimeout(resolve, 0);
-            });
-        }
-
         Plotly.plot(gd, mock)
         .then(function() {
             gd.on('plotly_relayout', function(e) {
@@ -971,7 +941,14 @@ describe('Test gl3d drag and wheel interactions', function() {
 
             sceneTarget = gd.querySelector('.svg-container .gl-container #scene canvas');
 
-            return _drag(sceneTarget, [200, 200], [100, 100], nsteps);
+            return drag({
+                node: sceneTarget,
+                pos0: [200, 200],
+                posN: [100, 100],
+                nsteps: nsteps,
+                buttons: 1,
+                noCover: true
+            });
         })
         .then(function() {
             expect(events.length).toEqual(nsteps);
@@ -1436,10 +1413,7 @@ describe('Test gl3d annotations', function() {
                     resolve();
                 });
 
-                mouseEvent('mousemove', px, py);
-                mouseEvent('mousedown', px, py);
-                mouseEvent('mousemove', px + dx, py + dy);
-                mouseEvent('mouseup', px + dx, py + dy);
+                drag({pos0: [px, py], dpos: [dx, dy], noCover: true});
             });
         }
 
@@ -1648,30 +1622,23 @@ describe('Test gl3d drag events', function() {
     }
 
     function verifyInteractionEffects(tuple) {
-        // One 'drag': simulating fairly thoroughly as the mouseup event is also needed here
-        mouseEvent('mousemove', 400, 200);
-        mouseEvent('mousedown', 400, 200);
-        mouseEvent('mousemove', 320, 320, {buttons: 1});
-        mouseEvent('mouseup', 320, 320);
+        return drag({pos0: [400, 200], posN: [320, 320], buttons: 1, noCover: true}).then(function() {
+            // Check event emission count
+            expect(tuple.relayoutCallback).toHaveBeenCalledTimes(1);
 
-        // Check event emission count
-        expect(tuple.relayoutCallback).toHaveBeenCalledTimes(1);
+            // Check structure of event callback value contents
+            expect(tuple.relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({'scene.camera': cameraStructure}));
 
-        // Check structure of event callback value contents
-        expect(tuple.relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({'scene.camera': cameraStructure}));
-
-        // Check camera contents on the DIV layout
-        var divCamera = tuple.graphDiv.layout.scene.camera;
-
-        expect(divCamera).toEqual(cameraStructure);
-
-        return tuple.graphDiv;
+            // Check camera contents on the DIV layout
+            var divCamera = tuple.graphDiv.layout.scene.camera;
+            expect(divCamera).toEqual(cameraStructure);
+        });
     }
 
     function testEvents(plot) {
         return plot.then(function(graphDiv) {
             var tuple = addEventCallback(graphDiv);
-            verifyInteractionEffects(tuple);
+            return verifyInteractionEffects(tuple);
         });
     }
 

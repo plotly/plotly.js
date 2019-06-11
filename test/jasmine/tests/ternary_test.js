@@ -11,6 +11,7 @@ var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
+var drag = require('../assets/drag');
 var getClientPosition = require('../assets/get_client_position');
 
 var customAssertions = require('../assets/custom_assertions');
@@ -238,14 +239,12 @@ describe('ternary plots', function() {
         it('should respond zoom drag interactions', function(done) {
             assertRange(gd, [0.231, 0.2, 0.11]);
 
-            drag([[383, 213], [293, 243]]);
-            assertRange(gd, [0.4435, 0.2462, 0.1523]);
-
-            doubleClick(pointPos[0], pointPos[1]).then(function() {
-                assertRange(gd, [0, 0, 0]);
-
-                done();
-            });
+            drag({path: [[383, 213], [293, 243]]})
+            .then(function() { assertRange(gd, [0.4435, 0.2462, 0.1523]); })
+            .then(function() { return doubleClick(pointPos[0], pointPos[1]); })
+            .then(function() { assertRange(gd, [0, 0, 0]); })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -267,14 +266,12 @@ describe('ternary plots', function() {
 
             assertRange(gd, range);
 
-            drag([[390, 220], [300, 250]]);
-            assertRange(gd, range);
-
-            doubleClick(390, 220).then(function() {
-                assertRange(gd, range);
-
-                done();
-            });
+            drag({path: [[390, 220], [300, 250]], noCover: true})
+            .then(function() { assertRange(gd, range); })
+            .then(function() { return doubleClick(390, 220); })
+            .then(function() { assertRange(gd, range); })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -517,7 +514,9 @@ describe('ternary plots', function() {
     describe('plotly_relayouting', function() {
         ['pan', 'zoom'].forEach(function(dragmode) {
             it('should emit plotly_relayouting events on ' + dragmode, function(done) {
-                var events = []; var path = [[350, 250], [375, 250], [375, 225]]; var relayoutCallback;
+                var events = [];
+                var path = [[350, 250], [375, 250], [375, 225]];
+                var relayoutCallback;
                 var fig = Lib.extendDeep({}, require('@mocks/ternary_simple'));
                 fig.layout.dragmode = dragmode;
 
@@ -529,11 +528,11 @@ describe('ternary plots', function() {
                     gd.on('plotly_relayouting', function(e) {
                         events.push(e);
                     });
-                    return drag(path);
+                    return drag({path: path});
                 })
                 .then(function() {
                     expect(events.length).toEqual(path.length - 1);
-                    // expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
                 })
                 .catch(failTest)
                 .then(done);
@@ -549,19 +548,6 @@ describe('ternary plots', function() {
         return d3.selectAll('.ternary').selectAll('g.trace.' + type).size();
     }
 
-    function drag(path) {
-        var len = path.length;
-
-        mouseEvent('mousemove', path[0][0], path[0][1]);
-        mouseEvent('mousedown', path[0][0], path[0][1]);
-
-        path.slice(1, len).forEach(function(pt) {
-            mouseEvent('mousemove', pt[0], pt[1]);
-        });
-
-        mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
-    }
-
     function assertRange(gd, expected) {
         var ternary = gd._fullLayout.ternary;
         var actual = [
@@ -569,7 +555,6 @@ describe('ternary plots', function() {
             ternary.baxis.min,
             ternary.caxis.min
         ];
-
         expect(actual).toBeCloseToArray(expected);
     }
 });

@@ -192,17 +192,10 @@ describe('main plot pan', function() {
         var mock = Lib.extendDeep({}, require('@mocks/10.json'));
         mock.layout.dragmode = 'pan';
 
-        function _drag(x0, y0, x1, y1, n) {
-            mouseEvent('mousedown', x0, y0);
-            var dx = (x1 - x0) / n;
-            var dy = (y1 - y0) / n;
-            for(var i = 0; i <= n; i++) {
-                mouseEvent('mousemove', x0 + dx * i, y0 + dy * i);
-            }
-            mouseEvent('mouseup', x1, y1);
-        }
+        var nsteps = 10;
+        var events = [];
+        var relayoutCallback;
 
-        var nsteps = 10; var events = []; var relayoutCallback;
         Plotly.plot(gd, mock.data, mock.layout)
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
@@ -210,7 +203,7 @@ describe('main plot pan', function() {
             gd.on('plotly_relayouting', function(e) {
                 events.push(e);
             });
-            _drag(100, 150, 220, 250, nsteps);
+            return drag({pos0: [100, 150], posN: [220, 250], nsteps: nsteps});
         })
         .then(function() {
             expect(events.length).toEqual(nsteps);
@@ -247,12 +240,10 @@ describe('main plot pan', function() {
         }
 
         function _run(p0, p1, markerDisplay, textDisplay, barTextDisplay) {
-            mouseEvent('mousedown', p0[0], p0[1]);
-            mouseEvent('mousemove', p1[0], p1[1]);
-
-            _assert(markerDisplay, textDisplay, barTextDisplay);
-
-            mouseEvent('mouseup', p1[0], p1[1]);
+            var fns = drag.makeFns({pos0: p0, posN: p1});
+            return fns.start()
+                .then(function() { _assert(markerDisplay, textDisplay, barTextDisplay); })
+                .then(fns.end);
         }
 
         Plotly.newPlot(gd, [{
@@ -283,25 +274,29 @@ describe('main plot pan', function() {
             );
         })
         .then(function() {
-            _run(
+            return _run(
                 [250, 250], [250, 150],
                 [null, null, 'none'],
                 [null, null, 'none'],
                 [null, null, 'none']
             );
+        })
+        .then(function() {
             expect(gd._fullLayout.yaxis.range[1]).toBeLessThan(3);
         })
         .then(function() {
-            _run(
+            return _run(
                 [250, 250], [150, 250],
                 ['none', null, 'none'],
                 ['none', null, 'none'],
                 ['none', null, 'none']
             );
+        })
+        .then(function() {
             expect(gd._fullLayout.xaxis.range[0]).toBeGreaterThan(1);
         })
         .then(function() {
-            _run(
+            return _run(
                 [250, 250], [350, 350],
                 [null, null, null],
                 [null, null, null],

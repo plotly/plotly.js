@@ -14,6 +14,7 @@ var failTest = require('../assets/fail_test');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
+var drag = require('../assets/drag');
 
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
@@ -1717,20 +1718,6 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         dblClickCnt = 0;
     }
 
-
-    function drag(path) {
-        var len = path.length;
-
-        mouseEvent('mousemove', path[0][0], path[0][1]);
-        mouseEvent('mousedown', path[0][0], path[0][1]);
-
-        path.slice(1, len).forEach(function(pt) {
-            mouseEvent('mousemove', pt[0], pt[1]);
-        });
-
-        mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
-    }
-
     function scroll(pos, delta) {
         return new Promise(function(resolve) {
             mouseEvent('mousemove', pos[0], pos[1]);
@@ -1789,7 +1776,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             ], [
                 [90, 0], [350, 260], [0, 0], 101.9
             ], undefined);
-            return drag([[350, 250], [400, 250]]);
+            return drag({path: [[350, 250], [400, 250]], noCover: true});
         })
         .then(function() {
             _assert('after east-west drag', [
@@ -1799,7 +1786,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             ], [
                 'geo.projection.rotation.lon', 'geo.center.lon'
             ]);
-            return drag([[400, 250], [400, 300]]);
+            return drag({path: [[400, 250], [400, 300]], noCover: true});
         })
         .then(function() {
             _assert('after north-south drag', [
@@ -1880,7 +1867,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             ], [
                 [75, -45], 160
             ], undefined);
-            return drag([[250, 250], [300, 250]]);
+            return drag({path: [[250, 250], [300, 250]], noCover: true});
         })
         .then(function() {
             _assert('after east-west drag', [
@@ -1890,7 +1877,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             ], [
                 'geo.projection.rotation.lon', 'geo.projection.rotation.lat'
             ]);
-            return drag([[250, 250], [300, 300]]);
+            return drag({path: [[250, 250], [300, 300]], noCover: true});
         })
         .then(function() {
             _assert('after NW-SE drag', [
@@ -1973,7 +1960,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             ], [
                 [247, 260], [0, 57.5], 292.2
             ], undefined);
-            return drag([[250, 250], [200, 200]]);
+            return drag({path: [[250, 250], [200, 200]], noCover: true});
         })
         .then(function() {
             _assert('after SW-NE drag', [
@@ -2054,7 +2041,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             ], [
                 [416, 309], 738.5
             ], undefined);
-            return drag([[250, 250], [200, 200]]);
+            return drag({path: [[250, 250], [200, 200]], noCover: true});
         })
         .then(function() {
             _assert('after NW-SE drag', [
@@ -2192,7 +2179,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                         gd.on('plotly_relayouting', function(e) {
                             events.push(e);
                         });
-                        return drag(path);
+                        return drag({path: path, noCover: true});
                     })
                     .then(function() {
                         expect(events.length).toEqual(path.length - 1);

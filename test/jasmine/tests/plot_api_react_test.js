@@ -1994,13 +1994,6 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             });
         }
 
-        function _drag(x0, y0, dx, dy) {
-            mouseEvent('mousemove', x0, y0);
-            mouseEvent('mousedown', x0, y0);
-            mouseEvent('mousemove', x0 + dx, y0 + dy);
-            mouseEvent('mouseup', x0 + dx, y0 + dy);
-        }
-
         // should be same before & after 2nd react()
         function _assertGUI(msg) {
             var TOL = 2;
@@ -2033,7 +2026,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
 
             expect(gd._fullLayout._preGUI).toEqual({});
         })
-        .then(function() { return _drag(200, 200, 50, 50); })
+        .then(function() { return drag({pos0: [200, 200], dpos: [50, 50], noCover: true}); })
         .then(function() { _assertGUI('before'); })
         .then(_react)
         .then(function() { _assertGUI('after'); })
