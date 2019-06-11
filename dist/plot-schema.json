@@ -36337,13 +36337,13 @@
                             "tickvals": {
                                 "valType": "data_array",
                                 "editType": "calc",
-                                "description": "Sets the values at which ticks on this axis appear. Only has an effect if `tickmode` is set to *array*. Used with `ticktext`.",
+                                "description": "Sets the values at which ticks on this axis appear.",
                                 "role": "data"
                             },
                             "ticktext": {
                                 "valType": "data_array",
                                 "editType": "calc",
-                                "description": "Sets the text displayed at the ticks position via `tickvals`. Only has an effect if `tickmode` is set to *array*. Used with `tickvals`.",
+                                "description": "Sets the text displayed at the ticks position via `tickvals`.",
                                 "role": "data"
                             },
                             "tickformat": {

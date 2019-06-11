@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.48.1
+* plotly.js (gl2d) v1.48.2
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -67428,7 +67428,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.48.1';
+exports.version = '1.48.2';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -87251,7 +87251,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // graph-wide optimization flags
     var hasScatterGl, hasSplom, hasSVG;
     // collected changes to be made to the plot by relayout at the end
-    var updates = {};
+    var updates;
 
     function recomputeAxisLists() {
         xa0 = plotinfo.xaxis;
@@ -87581,6 +87581,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function computeZoomUpdates() {
+        updates = {};
+
         // TODO: edit linked axes in zoomAxRanges and in dragTail
         if(zoomMode === 'xy' || zoomMode === 'x') {
             zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes);
@@ -87593,8 +87595,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function zoomDone() {
-        updates = {};
-
         // more strict than dragged, which allows you to come back to where you started
         // and still count as dragged
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
@@ -87820,12 +87820,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var ax2 = constrainedAxes[0] || xaHash[axId2] || yaHash[axId2];
 
             if(ax2) {
-                var rng = ax2.range;
                 if(out) {
-                    out[ax._name + '.range[0]'] = rng[0];
-                    out[ax._name + '.range[1]'] = rng[1];
+                    // zoombox case - don't mutate 'range', just add keys in 'updates'
+                    out[ax._name + '.range[0]'] = out[ax2._name + '.range[0]'];
+                    out[ax._name + '.range[1]'] = out[ax2._name + '.range[1]'];
                 } else {
-                    ax.range = rng;
+                    ax.range = ax2.range.slice();
                 }
             }
         }
@@ -88161,19 +88161,14 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
 
         var axRangeLinear0 = axi._rl[0];
         var axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
-        axi.range = [
-            axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction),
-            axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction)
-        ];
-
-        updates[axi._name + '.range[0]'] = axi.range[0];
-        updates[axi._name + '.range[1]'] = axi.range[1];
+        updates[axi._name + '.range[0]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction);
+        updates[axi._name + '.range[1]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction);
     }
 
     // zoom linked axes about their centers
     if(linkedAxes && linkedAxes.length) {
         var linkedR0Fraction = (r0Fraction + (1 - r1Fraction)) / 2;
-        zoomAxRanges(linkedAxes, linkedR0Fraction, 1 - linkedR0Fraction, updates, [], []);
+        zoomAxRanges(linkedAxes, linkedR0Fraction, 1 - linkedR0Fraction, updates, []);
     }
 }
 
@@ -103804,9 +103799,6 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
             }
         }
 
-        // TODO how does work with bingroup ????
-        // - https://github.com/plotly/plotly.js/issues/3881
-        //
         // Edge case: single-valued histogram overlaying others
         // Use them all together to calculate the bin size for the single-valued one
         if(isOverlay && !Registry.traceIs(trace, '2dMap') && newBinSpec._dataSpan === 0 &&
@@ -103911,22 +103903,27 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
  * Returns the binSpec for the trace that sparked all this
  */
 function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
+    var fullLayout = gd._fullLayout;
     var overlaidTraceGroup = getConnectedHistograms(gd, trace);
     var pastThisTrace = false;
     var minSize = Infinity;
     var singleValuedTraces = [trace];
-    var i, tracei;
+    var i, tracei, binOpts;
 
     // first collect all the:
     // - min bin size from all multi-valued traces
     // - single-valued traces
     for(i = 0; i < overlaidTraceGroup.length; i++) {
         tracei = overlaidTraceGroup[i];
-        if(tracei === trace) pastThisTrace = true;
-        else if(!pastThisTrace) {
-            // This trace has already had its autobins calculated
-            // (so must not have been single-valued).
-            minSize = Math.min(minSize, tracei[binAttr].size);
+
+        if(tracei === trace) {
+            pastThisTrace = true;
+        } else if(!pastThisTrace) {
+            // This trace has already had its autobins calculated, so either:
+            // - it is part of a bingroup
+            // - it is NOT a single-valued trace
+            binOpts = fullLayout._histogramBinOpts[tracei['_' + mainData + 'bingroup']];
+            minSize = Math.min(minSize, binOpts.size || tracei[binAttr].size);
         } else {
             var resulti = calcAllAutoBins(gd, tracei, pa, mainData, true);
             var binSpeci = resulti[0];
@@ -103969,11 +103966,16 @@ function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
         tracei = singleValuedTraces[i];
         var calendar = tracei[mainData + 'calendar'];
 
-        tracei._input[binAttr] = tracei[binAttr] = {
+        var newBins = {
             start: pa.c2r(dataVals[i] - minSize / 2, 0, calendar),
             end: pa.c2r(dataVals[i] + minSize / 2, 0, calendar),
             size: minSize
         };
+
+        tracei._input[binAttr] = tracei[binAttr] = newBins;
+
+        binOpts = fullLayout._histogramBinOpts[tracei['_' + mainData + 'bingroup']];
+        if(binOpts) Lib.extendFlat(binOpts, newBins);
     }
 
     return trace[binAttr];
@@ -104358,8 +104360,14 @@ module.exports = {
         },
         // TODO: better way to determine ordinal vs continuous axes,
         // so users can use tickvals/ticktext with a continuous axis.
-        tickvals: extendFlat({}, axesAttrs.tickvals, {editType: 'calc'}),
-        ticktext: extendFlat({}, axesAttrs.ticktext, {editType: 'calc'}),
+        tickvals: extendFlat({}, axesAttrs.tickvals, {
+            editType: 'calc',
+            
+        }),
+        ticktext: extendFlat({}, axesAttrs.ticktext, {
+            editType: 'calc',
+            
+        }),
         tickformat: {
             valType: 'string',
             dflt: '3s',
@@ -111790,7 +111798,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             }
         }
     } else {
-        for(i = 0; i < ids.length; i++) {
+        for(i = ids.length - 1; i > -1; i--) {
             ptx = x[ids[i]];
             pty = y[ids[i]];
             dx = xa.c2p(ptx) - xpx;
