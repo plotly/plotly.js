@@ -25,16 +25,18 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var di = cd[index];
 
     var sizeLetter = isHorizontal ? 'x' : 'y';
-
     point[sizeLetter + 'LabelVal'] = di.s;
 
-    // display ratio to initial value
-    point.extraText = [
-        formatPercent(di.begR, 1) + ' of initial',
-        formatPercent(di.difR, 1) + ' of previous',
-        formatPercent(di.sumR, 1) + ' of total'
-    ].join('<br>');
-    // TODO: Should we use pieHelpers.formatPieValue instead ?
+    var hoverinfo = trace.hoverinfo;
+    if(hoverinfo !== 'none' && hoverinfo !== 'skip') {
+        var parts = (hoverinfo || '').split('+');
+        var isAll = (hoverinfo === 'all') || (hoverinfo === undefined);
+        var hasFlag = function(flag) { return isAll || parts.indexOf(flag) !== -1; };
+
+        if(hasFlag('percentInitial')) point.percentInitial = formatPercent(di.begR, 1);
+        if(hasFlag('percentPrevious')) point.percentPrevious = formatPercent(di.difR, 1);
+        if(hasFlag('percentTotal')) point.percentTotal = formatPercent(di.sumR, 1);
+    }
 
     point.color = getTraceColor(trace, di);
 

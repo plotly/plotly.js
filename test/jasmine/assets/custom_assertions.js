@@ -98,6 +98,7 @@ function count(selector) {
  *  - vOrder {array of number}
  *  - hOrder {array of number}
  *  - isRotated {boolean}
+ *  - isEmpty {boolean}
  * @param {string} msg
  */
 exports.assertHoverLabelContent = function(expectation, msg) {
@@ -192,11 +193,15 @@ exports.assertHoverLabelContent = function(expectation, msg) {
             }
         });
     } else {
-        if(expectation.nums) {
-            fail(ptMsg + ': expecting *nums* labels, did not find any.');
-        }
-        if(expectation.name) {
-            fail(ptMsg + ': expecting *nums* labels, did not find any.');
+        if(expectation.isEmpty) {
+            return true;
+        } else {
+            if(expectation.nums) {
+                fail(ptMsg + ': expecting *nums* labels, did not find any.');
+            }
+            if(expectation.name) {
+                fail(ptMsg + ': expecting *nums* labels, did not find any.');
+            }
         }
     }
 
