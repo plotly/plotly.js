@@ -137,7 +137,6 @@
     "karma": "^4.1.0",
     "karma-browserify": "^6.0.0",
     "karma-chrome-launcher": "^2.0.0",
-    "karma-fail-fast-reporter": "^1.0.5",
     "karma-firefox-launcher": "^1.0.1",
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^2.0.1",

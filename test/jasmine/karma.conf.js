@@ -120,7 +120,6 @@ var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 var pathToMathJax = path.join(constants.pathToDist, 'extras', 'mathjax');
 
 var reporters = ((isFullSuite && !argv.tags) || argv.showSkipped) ? ['dots', 'spec'] : ['progress'];
-if(argv.failFast) reporters.push('fail-fast');
 if(argv.verbose) reporters.push('verbose');
 
 function func(config) {
@@ -255,7 +254,8 @@ func.defaultConfig = {
 
         // See https://jasmine.github.io/api/3.4/Configuration.html
         jasmine: {
-            random: argv.randomize
+            random: argv.randomize,
+            failFast: argv.failFast
         }
     },
 
@@ -265,15 +265,8 @@ func.defaultConfig = {
         suppressFailed: true,
         suppressPassed: true,
         suppressSkipped: false,
-        showSpecTiming: false,
-        // use 'karma-fail-fast-reporter' to fail fast w/o conflicting
-        // with other karma plugins
-        failFast: false
-    },
-
-    // TODO !!!
-    // e.g. when a test file does not container a given spec tags
-    failOnEmptyTestSuite: false
+        showSpecTiming: false
+    }
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
