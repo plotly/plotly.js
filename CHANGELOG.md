@@ -10,6 +10,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.48.3] -- 2019-06-13
+
+### Fixed
+- Fix `hoverinfo` and `hovertemplate` behavior for `funnel` traces [#3958]
+
+
 ## [1.48.2] -- 2019-06-11
 
 ### Fixed
