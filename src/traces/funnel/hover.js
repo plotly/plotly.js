@@ -25,16 +25,36 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var di = cd[index];
 
     var sizeLetter = isHorizontal ? 'x' : 'y';
-
     point[sizeLetter + 'LabelVal'] = di.s;
 
-    // display ratio to initial value
-    point.extraText = [
-        formatPercent(di.begR, 1) + ' of initial',
-        formatPercent(di.difR, 1) + ' of previous',
-        formatPercent(di.sumR, 1) + ' of total'
-    ].join('<br>');
-    // TODO: Should we use pieHelpers.formatPieValue instead ?
+    point.percentInitial = di.begR;
+    point.percentInitialLabel = formatPercent(di.begR, 1);
+
+    point.percentPrevious = di.difR;
+    point.percentPreviousLabel = formatPercent(di.difR, 1);
+
+    point.percentTotal = di.sumR;
+    point.percentTotalLabel = formatPercent(di.sumR, 1);
+
+    var hoverinfo = di.hi || trace.hoverinfo;
+    var text = [];
+    if(hoverinfo && hoverinfo !== 'none' && hoverinfo !== 'skip') {
+        var isAll = (hoverinfo === 'all');
+        var parts = hoverinfo.split('+');
+
+        var hasFlag = function(flag) { return isAll || parts.indexOf(flag) !== -1; };
+
+        if(hasFlag('percent initial')) {
+            text.push(point.percentInitialLabel + ' of initial');
+        }
+        if(hasFlag('percent previous')) {
+            text.push(point.percentPreviousLabel + ' of previous');
+        }
+        if(hasFlag('percent total')) {
+            text.push(point.percentTotalLabel + ' of total');
+        }
+    }
+    point.extraText = text.join('<br>');
 
     point.color = getTraceColor(trace, di);
 

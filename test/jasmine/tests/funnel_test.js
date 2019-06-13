@@ -1326,14 +1326,42 @@ describe('funnel hover', function() {
             .then(done);
         });
 
-        it('should use hovertemplate if specified', function(done) {
+        it('should turn off percentages with hoveinfo none or skip', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t, i) {
+                t.type = 'funnel';
+                t.orientation = 'v';
+                if(i === 0) {
+                    t.hoverinfo = 'none';
+                } else {
+                    t.hoverinfo = 'skip';
+                }
+            });
+
+            function _hover() {
+                var evt = { xpx: 125, ypx: 150 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.plot(gd, mock)
+            .then(_hover)
+            .then(function() {
+                expect(d3.selectAll('g.hovertext').size()).toBe(0);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should turn on percentages with hoveinfo all', function(done) {
             gd = createGraphDiv();
 
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'funnel';
                 t.orientation = 'v';
-                t.hovertemplate = '%{y}<extra></extra>';
+                t.hoverinfo = 'all';
             });
 
             function _hover() {
@@ -1345,11 +1373,46 @@ describe('funnel hover', function() {
             .then(_hover)
             .then(function() {
                 assertHoverLabelContent({
-                    nums: ['1', '2', '1.5'],
+                    nums: [
+                        '1\nHover text A\n100% of initial\n100% of previous\n33.3% of total',
+                        '2\nHover text G\n100% of initial\n100% of previous\n33.3% of total',
+                        '1.5\na (hover)\n100% of initial\n100% of previous\n33.3% of total'
+                    ],
+                    name: ['Lines, Marke...', 'Lines and Text', 'missing text'],
+                    axis: '0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should use hovertemplate if specified', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) {
+                t.type = 'funnel';
+                t.orientation = 'v';
+                t.hovertemplate = 'Value: %{y}<br>Total percentage: %{percentTotal}<br>Initial percentage: %{percentInitial}<br>Previous percentage: %{percentPrevious}<extra></extra>';
+            });
+
+            function _hover() {
+                var evt = { xpx: 125, ypx: 150 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.plot(gd, mock)
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'Value: 1\nTotal percentage: 33.3%\nInitial percentage: 100%\nPrevious percentage: 100%',
+                        'Value: 2\nTotal percentage: 33.3%\nInitial percentage: 100%\nPrevious percentage: 100%',
+                        'Value: 1.5\nTotal percentage: 33.3%\nInitial percentage: 100%\nPrevious percentage: 100%'
+                    ],
                     name: ['', '', ''],
                     axis: '0'
                 });
-                // return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
             })
             .catch(failTest)
             .then(done);
