@@ -432,9 +432,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             xLabelVal: undefined,
             yLabelVal: undefined,
             zLabelVal: undefined,
-            percentInitial: undefined,
-            percentPrevious: undefined,
-            percentTotal: undefined,
             text: undefined
         };
 
@@ -909,16 +906,6 @@ function createHoverText(hoverData, opts, gd) {
 
         if((d.text || d.text === 0) && !Array.isArray(d.text)) {
             text += (text ? '<br>' : '') + d.text;
-        }
-
-        if(d.percentInitial !== undefined) {
-            text += (text ? '<br>' : '') + d.percentInitial + ' of initial';
-        }
-        if(d.percentPrevious !== undefined) {
-            text += (text ? '<br>' : '') + d.percentPrevious + ' of previous';
-        }
-        if(d.percentTotal !== undefined) {
-            text += (text ? '<br>' : '') + d.percentTotal + ' of total';
         }
 
         // used by other modules (initially just ternary) that
@@ -1396,9 +1383,6 @@ function cleanPoint(d, hovermode) {
         if(infomode.indexOf('z') === -1) d.zLabel = undefined;
         if(infomode.indexOf('text') === -1) d.text = undefined;
         if(infomode.indexOf('name') === -1) d.name = undefined;
-        if(infomode.indexOf('percentInitial') === -1) d.percentInitial = undefined;
-        if(infomode.indexOf('percentPrevious') === -1) d.percentPrevious = undefined;
-        if(infomode.indexOf('percentTotal') === -1) d.percentTotal = undefined;
     }
 
     return d;
