@@ -1348,9 +1348,7 @@ describe('funnel hover', function() {
             Plotly.plot(gd, mock)
             .then(_hover)
             .then(function() {
-                assertHoverLabelContent({
-                    isEmpty: true
-                });
+                expect(d3.selectAll('g.hovertext').size()).toBe(0);
             })
             .catch(failTest)
             .then(done);

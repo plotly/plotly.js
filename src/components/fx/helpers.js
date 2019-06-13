@@ -149,9 +149,6 @@ exports.makeEventData = function makeEventData(pt, trace, cd) {
         if(pt.xa) out.xaxis = pt.xa;
         if(pt.ya) out.yaxis = pt.ya;
         if(pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
-        if(pt.percentInitial !== undefined) out.z = pt.percentInitial;
-        if(pt.percentPrevious !== undefined) out.z = pt.percentPrevious;
-        if(pt.percentTotal !== undefined) out.z = pt.percentTotal;
     }
 
     exports.appendArrayPointValue(out, trace, pointNumber);
