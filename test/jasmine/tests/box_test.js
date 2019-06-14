@@ -437,6 +437,25 @@ describe('Test box hover:', function() {
         },
         nums: '0.6',
         name: 'pt #0'
+    }, {
+        desc: 'when zoomed in, cropping out labels',
+        mock: {
+            data: [{
+                type: 'box',
+                y: [1, 2, 2, 3]
+            }],
+            layout: {
+                // cropping out q1 and max w/o failing during hoverAvoidOverlap
+                // https://github.com/plotly/plotly.js/issues/3962
+                yaxis: {range: [1.6, 2.4]},
+                width: 400,
+                height: 400
+            }
+        },
+        pos: [200, 200],
+        nums: ['median: 2', 'min: 1', 'q3: 2.5'],
+        name: ['', '', ''],
+        axis: 'trace 0'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);
