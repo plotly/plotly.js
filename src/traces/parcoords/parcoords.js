@@ -467,7 +467,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         });
 
     glLayers
-        .style('opacity', function(d) {return d.pick ? 0.01 : 1;});
+        .style('opacity', function(d) {return d.pick ? 0 : 1;});
 
     svg.style('background', 'rgba(255, 255, 255, 0)');
     var controlOverlay = svg.selectAll('.' + c.cn.parcoords)
