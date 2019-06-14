@@ -1444,7 +1444,7 @@ describe('waterfall hover', function() {
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'waterfall';
-                t.hovertemplate = t.hovertemplate = 'Value: %{y}<br>SUM: %{final}<br>START: %{initial}<br>DIFF: %{delta}<extra></extra>';
+                t.hovertemplate = 'Value: %{y}<br>SUM: %{final}<br>START: %{initial}<br>DIFF: %{delta}<extra></extra>';
             });
 
             function _hover() {
