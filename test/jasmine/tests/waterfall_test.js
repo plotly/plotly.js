@@ -1379,13 +1379,41 @@ describe('waterfall hover', function() {
             .then(done);
         });
 
-        it('should use hovertemplate if specified', function(done) {
+        it('should turn off percentages with hoveinfo none or skip', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t, i) {
+                t.type = 'waterfall';
+                if(i === 0) {
+                    t.hoverinfo = 'none';
+                } else {
+                    t.hoverinfo = 'skip';
+                }
+            });
+
+            function _hover() {
+                var evt = { xpx: 125, ypx: 150 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.plot(gd, mock)
+            .then(_hover)
+            .then(function() {
+                expect(d3.selectAll('g.hovertext').size()).toBe(0);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should turn on percentages with hoveinfo all', function(done) {
             gd = createGraphDiv();
 
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'waterfall';
-                t.hovertemplate = '%{y}<extra></extra>';
+                t.base = 1000;
+                t.hoverinfo = 'all';
             });
 
             function _hover() {
@@ -1397,11 +1425,45 @@ describe('waterfall hover', function() {
             .then(_hover)
             .then(function() {
                 assertHoverLabelContent({
-                    nums: ['1', '2', '1.5'],
+                    nums: [
+                        '1001\nHover text A\nFinal: 1001\n1 ▲\nInitial: 1000',
+                        '1002\nHover text G\nFinal: 1002\n2 ▲\nInitial: 1000',
+                        '1,001.5\na (hover)\nFinal: 1,001.5\n1.5 ▲\nInitial: 1000'
+                    ],
+                    name: ['Lines, Marke...', 'Lines and Text', 'missing text'],
+                    axis: '0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should use hovertemplate if specified', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) {
+                t.type = 'waterfall';
+                t.hovertemplate = t.hovertemplate = 'Value: %{y}<br>SUM: %{final}<br>START: %{initial}<br>DIFF: %{delta}<extra></extra>';
+            });
+
+            function _hover() {
+                var evt = { xpx: 125, ypx: 150 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.plot(gd, mock)
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'Value: 1\nSUM: 1\nSTART: 0\nDIFF: 1',
+                        'Value: 2\nSUM: 2\nSTART: 0\nDIFF: 2',
+                        'Value: 1.5\nSUM: 1.5\nSTART: 0\nDIFF: 1.5'
+                    ],
                     name: ['', '', ''],
                     axis: '0'
                 });
-                // return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
             })
             .catch(failTest)
             .then(done);
@@ -1424,7 +1486,7 @@ describe('waterfall hover', function() {
             })
             .then(function() {
                 assertHoverLabelContent({
-                    nums: '2.2\n4.4 ▲\nInitial: −2.2',
+                    nums: '2.2\nFinal: 2.2\n4.4 ▲\nInitial: −2.2',
                     name: '',
                     axis: 'E'
                 });
@@ -1460,31 +1522,31 @@ describe('waterfall hover', function() {
             .then(function() {
                 var out = _hover(gd, 0, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1002.201);
-                expect(out.extraText).toEqual(undefined);
+                expect(out.extraText).toEqual('Final: $1,002.201m<br>$2.2m ▲<br>Initial: $1,000.001m');
                 expect(out.style).toEqual([0, '#4499FF', 0, 1002.201]);
             })
             .then(function() {
                 var out = _hover(gd, 1, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1001.101);
-                expect(out.extraText).toEqual('($1.1m) ▼<br>Initial: $1,002.201m');
+                expect(out.extraText).toEqual('Final: $1,001.101m<br>($1.1m) ▼<br>Initial: $1,002.201m');
                 expect(out.style).toEqual([1, '#FF4136', 1, 1001.101]);
             })
             .then(function() {
                 var out = _hover(gd, 2, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1001.101);
-                expect(out.extraText).toEqual(undefined);
+                expect(out.extraText).toEqual('Final: $1,001.101m<br>$1.1m ▲<br>Initial: $1,000.001m');
                 expect(out.style).toEqual([2, '#4499FF', 2, 1001.101]);
             })
             .then(function() {
                 var out = _hover(gd, 3, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1004.401);
-                expect(out.extraText).toEqual('$3.3m ▲<br>Initial: $1,001.101m');
+                expect(out.extraText).toEqual('Final: $1,004.401m<br>$3.3m ▲<br>Initial: $1,001.101m');
                 expect(out.style).toEqual([3, '#3D9970', 3, 1004.401]);
             })
             .then(function() {
                 var out = _hover(gd, 4, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1004.401);
-                expect(out.extraText).toEqual(undefined);
+                expect(out.extraText).toEqual('Final: $1,004.401m<br>$4.4m ▲<br>Initial: $1,000.001m');
                 expect(out.style).toEqual([4, '#4499FF', 4, 1004.401]);
             })
             .catch(failTest)

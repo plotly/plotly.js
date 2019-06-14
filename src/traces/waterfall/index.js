@@ -19,6 +19,8 @@ module.exports = {
     plot: require('./plot'),
     style: require('./style').style,
     hoverPoints: require('./hover'),
+    eventData: require('./event_data'),
+
     selectPoints: require('../bar/select'),
 
     moduleType: 'trace',
