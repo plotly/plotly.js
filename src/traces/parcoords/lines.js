@@ -180,6 +180,8 @@ function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSiz
     var canvasWidth = model.canvasWidth;
     var canvasHeight = model.canvasHeight;
 
+    var deselectedLinesColor = model.deselectedLines.color;
+
     var itemModel = Lib.extendFlat({
         key: crossfilterDimensionIndex,
         resolution: [canvasWidth, canvasHeight],
@@ -199,10 +201,12 @@ function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSiz
 
         drwLayer: drwLayer,
         contextColor: [
-            119 / 255,
-            119 / 255,
-            119 / 255,
-            Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))
+            deselectedLinesColor[0] / 255,
+            deselectedLinesColor[1] / 255,
+            deselectedLinesColor[2] / 255,
+            deselectedLinesColor[3] < 1 ?
+                deselectedLinesColor[3] :
+                Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))
         ],
 
         scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],

@@ -19,6 +19,7 @@ module.exports = {
     layers: ['contextLineLayer', 'focusLineLayer', 'pickLineLayer'],
     axisTitleOffset: 28,
     axisExtentOffset: 10,
+    deselectedLineColor: '#777',
     bar: {
         width: 4, // Visible width of the filter bar
         captureWidth: 10, // Mouse-sensitive width for interaction (Fitts law)
