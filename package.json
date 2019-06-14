@@ -70,7 +70,6 @@
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.3",
-    "font-atlas-sdf": "^1.3.3",
     "gl-cone3d": "^1.3.1",
     "gl-contour2d": "^1.1.6",
     "gl-error3d": "^1.0.15",
