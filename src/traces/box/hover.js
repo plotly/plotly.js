@@ -151,7 +151,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     // box plots: each "point" gets many labels
     var usedVals = {};
-    var attrs = ['med', 'min', 'q1', 'q3', 'max'];
+    var attrs = ['med', 'q1', 'q3', 'min', 'max'];
 
     if(trace.boxmean || (trace.meanline || {}).visible) {
         attrs.push('mean');

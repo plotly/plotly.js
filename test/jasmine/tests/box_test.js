@@ -274,8 +274,8 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'min: 0.2',
-            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'min: 0.1', 'q3: 0.6', 'max: 0.9'
+            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'q1: 0.1',
+            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'q1: 0.2', 'q3: 0.6', 'max: 0.9'
         ],
         name: [
             '', 'kale', '', '', 'radishes', '', '',
@@ -453,7 +453,7 @@ describe('Test box hover:', function() {
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'min: 1', 'q3: 2.5'],
+        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5'],
         name: ['', '', ''],
         axis: 'trace 0'
     }].forEach(function(specs) {
