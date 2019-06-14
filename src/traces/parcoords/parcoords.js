@@ -417,7 +417,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         return Lib.extendFlat(d, vm[i]);
     });
 
-    var parcoordsLineLayer = glContainer.selectAll('.gl-canvas')
+    var glLayers = glContainer.selectAll('.gl-canvas')
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
@@ -426,7 +426,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
 
     var lastHovered = null;
 
-    var pickLayer = parcoordsLineLayer.filter(function(d) {return d.pick;});
+    var pickLayer = glLayers.filter(function(d) {return d.pick;});
 
     // emit hover / unhover event
     pickLayer
@@ -466,26 +466,26 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             }
         });
 
-    parcoordsLineLayer
+    glLayers
         .style('opacity', function(d) {return d.pick ? 0.01 : 1;});
 
     svg.style('background', 'rgba(255, 255, 255, 0)');
-    var parcoordsControlOverlay = svg.selectAll('.' + c.cn.parcoords)
+    var controlOverlay = svg.selectAll('.' + c.cn.parcoords)
         .data(vm, keyFun);
 
-    parcoordsControlOverlay.exit().remove();
+    controlOverlay.exit().remove();
 
-    parcoordsControlOverlay.enter()
+    controlOverlay.enter()
         .append('g')
         .classed(c.cn.parcoords, true)
         .style('shape-rendering', 'crispEdges')
         .style('pointer-events', 'none');
 
-    parcoordsControlOverlay.attr('transform', function(d) {
+    controlOverlay.attr('transform', function(d) {
         return 'translate(' + d.model.translateX + ',' + d.model.translateY + ')';
     });
 
-    var parcoordsControlView = parcoordsControlOverlay.selectAll('.' + c.cn.parcoordsControlView)
+    var parcoordsControlView = controlOverlay.selectAll('.' + c.cn.parcoordsControlView)
         .data(repeat, keyFun);
 
     parcoordsControlView.enter()
@@ -507,7 +507,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         updatePanelLayout(yAxis, vm);
     });
 
-    parcoordsLineLayer
+    glLayers
         .each(function(d) {
             if(d.viewModel) {
                 if(!d.lineLayer || callbacks) { // recreate in case of having callbacks e.g. restyle. Should we test for callback to be a restyle?
