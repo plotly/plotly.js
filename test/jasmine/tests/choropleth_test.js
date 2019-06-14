@@ -200,6 +200,31 @@ describe('Test choropleth hover:', function() {
         )
         .then(done);
     });
+
+    describe('should preserve z formatting hovetemplate equivalence', function() {
+        var base = function() {
+            return {
+                data: [{
+                    type: 'choropleth',
+                    locations: ['RUS'],
+                    z: [10.02132132143214321]
+                }]
+            };
+        };
+
+        var pos = [400, 160];
+        var exp = ['10.02132', 'RUS'];
+
+        it('- base case (truncate z decimals)', function(done) {
+            run(pos, base(), exp).then(done);
+        });
+
+        it('- hovertemplate case (same z truncation)', function(done) {
+            var fig = base();
+            fig.hovertemplate = '%{z}<extra>%{location}</extra>';
+            run(pos, fig, exp).then(done);
+        });
+    });
 });
 
 describe('choropleth drawing', function() {
