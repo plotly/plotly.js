@@ -745,7 +745,7 @@ describe('Test violin hover:', function() {
 
             actual = actual.sort(function(a, b) { return a[1].top - b[1].top; });
 
-            expect(actual.length).toBe(7, '# of value hover labels');
+            expect(actual.length).toBe(8, '# of value hover labels');
 
             for(var i = 0; i < actual.length - 1; i++) {
                 var a = actual[i];

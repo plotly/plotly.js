@@ -438,23 +438,21 @@ describe('Test box hover:', function() {
         nums: '0.6',
         name: 'pt #0'
     }, {
-        desc: 'when zoomed in, cropping out labels',
+        desc: 'when zoomed in, within q1-q3 making min/q1 and max/q3 overlap',
         mock: {
             data: [{
                 type: 'box',
                 y: [1, 2, 2, 3]
             }],
             layout: {
-                // cropping out q1 and max w/o failing during hoverAvoidOverlap
-                // https://github.com/plotly/plotly.js/issues/3962
                 yaxis: {range: [1.6, 2.4]},
                 width: 400,
                 height: 400
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5'],
-        name: ['', '', ''],
+        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1'],
+        name: ['', '', '', '', ''],
         axis: 'trace 0'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
