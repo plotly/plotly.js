@@ -128,6 +128,8 @@ describe('Test barpolar hover:', function() {
             index: 0,
             x: 263.33,
             y: 200,
+            rLabel: '1',
+            thetaLabel: '0°',
             hovertemplate: 'tpl',
             color: '#1f77b4'
         }

@@ -50,7 +50,7 @@ describe('Test scatterpolargl hover:', function() {
             fig.data[2].hovertemplate = 'template %{r} %{theta}';
             return fig;
         },
-        nums: 'template 3.88601339194 125.282157112',
+        nums: 'template 3.886013 125.2822°',
         name: 'Trial 3'
     }, {
         desc: '(no labels - out of sector)',
