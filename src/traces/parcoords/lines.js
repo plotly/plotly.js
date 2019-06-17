@@ -96,7 +96,7 @@ function adjustDepth(d) {
 }
 
 function palette(unitToColor, opacity) {
-    var result = [];
+    var result = new Array(256);
     for(var i = 0; i < 256; i++) {
         result[i] = unitToColor(i / 255).concat(opacity);
     }
@@ -113,23 +113,23 @@ function calcPickColor(i, rgbIndex) {
 }
 
 function makePoints(sampleCount, dims, color) {
-    var points = [];
+    var points = new Array(sampleCount * (maxDim + 4));
+    var n = 0;
     for(var i = 0; i < sampleCount; i++) {
         for(var k = 0; k < maxDim; k++) {
-            points.push(
-                k < dims.length ? dims[k].paddedUnitValues[i] : 0.5
-            );
+            points[n++] = (k < dims.length) ? dims[k].paddedUnitValues[i] : 0.5;
         }
-        points.push(calcPickColor(i, 2));
-        points.push(calcPickColor(i, 1));
-        points.push(calcPickColor(i, 0));
-        points.push(adjustDepth(color[i]));
+        points[n++] = calcPickColor(i, 2);
+        points[n++] = calcPickColor(i, 1);
+        points[n++] = calcPickColor(i, 0);
+        points[n++] = adjustDepth(color[i]);
     }
     return points;
 }
 
 function makeVecAttr(vecIndex, sampleCount, points) {
-    var pointPairs = [];
+    var pointPairs = new Array(sampleCount * 8);
+    var n = 0;
     for(var i = 0; i < sampleCount; i++) {
         for(var j = 0; j < 2; j++) {
             for(var k = 0; k < 4; k++) {
@@ -138,7 +138,7 @@ function makeVecAttr(vecIndex, sampleCount, points) {
                 if(q === 63 && j === 0) {
                     v *= -1;
                 }
-                pointPairs.push(v);
+                pointPairs[n++] = v;
             }
         }
     }
@@ -376,8 +376,9 @@ module.exports = function(canvasGL, d) {
             limits[1][k] = p[1];
         }
 
-        var mask = [];
-        for(i = 0; i < maskHeight * 8; i++) {
+        var len = maskHeight * 8;
+        var mask = new Array(len);
+        for(i = 0; i < len; i++) {
             mask[i] = 255;
         }
         if(!isContext) {
