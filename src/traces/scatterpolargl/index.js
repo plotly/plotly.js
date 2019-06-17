@@ -11,7 +11,9 @@
 var cluster = require('point-cluster');
 var isNumeric = require('fast-isnumeric');
 
-var ScatterGl = require('../scattergl');
+var scatterglPlot = require('../scattergl/plot');
+var hover = require('../scattergl/hover');
+var sceneUpdate = require('../scattergl/scene_update');
 var calcColorscale = require('../scatter/colorscale_calc');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var convert = require('../scattergl/convert');
@@ -62,7 +64,7 @@ function plot(gd, subplot, cdata) {
 
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
-    var scene = ScatterGl.sceneUpdate(gd, subplot);
+    var scene = sceneUpdate(gd, subplot);
 
     cdata.forEach(function(cdscatter) {
         if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
@@ -170,7 +172,7 @@ function plot(gd, subplot, cdata) {
         scene.count++;
     });
 
-    return ScatterGl.plot(gd, subplot, cdata);
+    return scatterglPlot(gd, subplot, cdata);
 }
 
 function hoverPoints(pointData, xval, yval, hovermode) {
@@ -179,7 +181,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var rArray = stash.r;
     var thetaArray = stash.theta;
 
-    var scatterPointData = ScatterGl.hoverPoints(pointData, xval, yval, hovermode);
+    var scatterPointData = hover.hoverPoints(pointData, xval, yval, hovermode);
     if(!scatterPointData || scatterPointData[0].index === false) return;
 
     var newPointData = scatterPointData[0];
@@ -218,7 +220,7 @@ module.exports = {
     calc: calc,
     plot: plot,
     hoverPoints: hoverPoints,
-    selectPoints: ScatterGl.selectPoints,
+    selectPoints: require('../scattergl/select'),
 
     meta: {
         hrName: 'scatter_polar_gl',
