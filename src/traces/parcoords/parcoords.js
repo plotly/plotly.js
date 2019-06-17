@@ -134,7 +134,7 @@ function someFiltersActive(view) {
     });
 }
 
-function model(layout, d, i) {
+function model(layout, fullLayout, d, i) {
     var cd0 = unwrap(d);
     var trace = cd0.trace;
     var lineColor = helpers.convertTypedArray(cd0.lineColor);
@@ -167,6 +167,16 @@ function model(layout, d, i) {
     var pad = layout.margin || {l: 80, r: 80, t: 100, b: 80};
     var rowContentWidth = groupWidth;
     var rowHeight = groupHeight;
+
+    for(var k = 0; k < dimensions.length; k++) {
+        var dim = dimensions[k];
+        dim._ax = {
+            type: 'linear',
+            showexponent: 'all',
+            exponentformat: 'B'
+        };
+        Axes.setConvert(dim._ax, fullLayout);
+    }
 
     return {
         key: i,
@@ -378,25 +388,6 @@ function updatePanelLayout(yAxis, vm) {
     }
 }
 
-var linearAxis;
-
-function linearFormat(v, tickformat) {
-    linearAxis.tickformat = tickformat;
-
-    return Axes.tickText(
-        linearAxis,
-        linearAxis.d2l(v),
-        true
-    ).text;
-}
-
-function extremeText(d, isTop) {
-    if(d.ordinal) return '';
-    var domain = d.domainScale.domain();
-    var v = (domain[isTop ? domain.length - 1 : 0]);
-    return linearFormat(v, d.tickFormat);
-}
-
 module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
@@ -404,13 +395,21 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
 
-    // mock one linear axes for tick formatting
-    linearAxis = { type: 'linear', showexponent: 'all', exponentformat: 'B' };
-    Axes.setConvert(linearAxis, fullLayout);
+    function linearFormat(dim, v) {
+        return Axes.tickText(dim._ax, v, true).text;
+    }
+
+    function extremeText(d, i, isTop) {
+        if(d.ordinal) return '';
+        var domain = d.domainScale.domain();
+        var v = (domain[isTop ? domain.length - 1 : 0]);
+
+        return linearFormat(d.model.dimensions[i], v);
+    }
 
     var vm = cdModule
         .filter(function(d) { return unwrap(d).trace.visible; })
-        .map(model.bind(0, layout))
+        .map(model.bind(0, layout, fullLayout))
         .map(viewModel.bind(0, state, callbacks));
 
     glContainer.each(function(d, i) {
@@ -590,7 +589,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.axis, true);
 
     axis
-        .each(function(d) {
+        .each(function(d, i) {
             var wantedTickCount = d.model.height / d.model.tickDistance;
             var scale = d.domainScale;
             var sdom = scale.domain();
@@ -604,7 +603,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
                         sdom :
                         null)
                     .tickFormat(function(v) {
-                        return d.ordinal ? v : linearFormat(v, d.tickFormat);
+                        return helpers.isOrdinal(d) ? v : linearFormat(d.model.dimensions[i], v);
                     })
                     .scale(scale));
             Drawing.font(axis.selectAll('text'), d.model.tickFont);
@@ -693,7 +692,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .call(styleExtentTexts);
 
     axisExtentTopText
-        .text(function(d) { return extremeText(d, true); })
+        .text(function(d, i) { return extremeText(d, i, true); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
     var axisExtentBottom = axisExtent.selectAll('.' + c.cn.axisExtentBottom)
@@ -718,7 +717,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .call(styleExtentTexts);
 
     axisExtentBottomText
-        .text(function(d) { return extremeText(d); })
+        .text(function(d, i) { return extremeText(d, i, false); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
     brush.ensureAxisBrush(axisOverlays);
