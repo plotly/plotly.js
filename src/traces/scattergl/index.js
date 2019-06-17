@@ -25,9 +25,6 @@ module.exports = {
     hoverPoints: hover.hoverPoints,
     selectPoints: require('./select'),
 
-    sceneUpdate: require('./scene_update'),
-    calcHover: hover.calcHover,
-
     meta: {
         hrName: 'scatter_gl',
         description: [
