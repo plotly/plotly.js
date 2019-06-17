@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var calcColorscale = require('../scatter/colorscale_calc');
 var convertMarkerStyle = require('../scattergl/convert').markerStyle;
 
-function editStyle(gd, cd0) {
+module.exports = function editStyle(gd, cd0) {
     var trace = cd0.trace;
     var scene = gd._fullLayout._splomScenes[trace.uid];
 
@@ -27,8 +27,4 @@ function editStyle(gd, cd0) {
         // TODO this is too long for arrayOk attributes!
         scene.matrix.update(opts, null);
     }
-}
-
-module.exports = {
-    editStyle: editStyle
 };

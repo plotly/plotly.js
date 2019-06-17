@@ -26,7 +26,7 @@ module.exports = {
     plot: require('./plot'),
     hoverPoints: require('./hover').hoverPoints,
     selectPoints: require('./select'),
-    editStyle: require('./style').editStyle,
+    editStyle: require('./edit_style'),
 
     meta: {
         description: [

@@ -9,7 +9,7 @@
 'use strict';
 
 var subTypes = require('../scatter/subtypes');
-var styleTextSelection = require('./style').styleTextSelection;
+var styleTextSelection = require('./edit_style').styleTextSelection;
 
 module.exports = function select(searchInfo, selectionTester) {
     var cd = searchInfo.cd;

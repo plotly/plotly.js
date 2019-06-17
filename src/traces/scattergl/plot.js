@@ -19,7 +19,7 @@ var prepareRegl = require('../../lib/prepare_regl');
 var subTypes = require('../scatter/subtypes');
 var linkTraces = require('../scatter/link_traces');
 
-var styleTextSelection = require('./style').styleTextSelection;
+var styleTextSelection = require('./edit_style').styleTextSelection;
 
 function getViewport(fullLayout, xaxis, yaxis) {
     var gs = fullLayout._size;
