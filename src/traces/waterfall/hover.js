@@ -28,7 +28,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var vAxis = isHorizontal ? pointData.xa : pointData.ya;
 
     function formatNumber(a) {
-        return (a === undefined) ? '' : hoverLabelText(vAxis, a);
+        return hoverLabelText(vAxis, a);
     }
 
     // the closest data point
@@ -37,20 +37,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     var size = (di.isSum) ? di.b + di.s : di.rawS;
 
-    if(di.isSum) {
-        point.final = undefined;
-        point.initial = undefined;
-        point.delta = size - di.b;
-    } else {
+    if(!di.isSum) {
         point.initial = di.b + di.s - size;
         point.delta = size;
         point.final = point.initial + point.delta;
-    }
 
-    var v = formatNumber(Math.abs(point.delta));
-    point.deltaLabel = size < 0 ? '(' + v + ')' : v;
-    point.finalLabel = formatNumber(point.final);
-    point.initialLabel = formatNumber(point.initial);
+        var v = formatNumber(Math.abs(point.delta));
+        point.deltaLabel = size < 0 ? '(' + v + ')' : v;
+        point.finalLabel = formatNumber(point.final);
+        point.initialLabel = formatNumber(point.initial);
+    }
 
     var hoverinfo = di.hi || trace.hoverinfo;
     var text = [];
@@ -60,18 +56,20 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         var hasFlag = function(flag) { return isAll || parts.indexOf(flag) !== -1; };
 
-        if(hasFlag('final') && point.finalLabel !== '') {
-            text.push(point.finalLabel);
-        }
-        if(hasFlag('delta') && point.deltaLabel !== '') {
-            if(size < 0) {
-                text.push(point.deltaLabel + ' ' + DIRSYMBOL.decreasing);
-            } else {
-                text.push(point.deltaLabel + ' ' + DIRSYMBOL.increasing);
+        if(!di.isSum) {
+            if(hasFlag('final')) {
+                text.push(point.finalLabel);
             }
-        }
-        if(hasFlag('initial') && point.initialLabel !== '') {
-            text.push('Initial: ' + point.initialLabel);
+            if(hasFlag('delta')) {
+                if(size < 0) {
+                    text.push(point.deltaLabel + ' ' + DIRSYMBOL.decreasing);
+                } else {
+                    text.push(point.deltaLabel + ' ' + DIRSYMBOL.increasing);
+                }
+            }
+            if(hasFlag('initial')) {
+                text.push('Initial: ' + point.initialLabel);
+            }
         }
     }
 

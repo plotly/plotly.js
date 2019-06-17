@@ -1522,7 +1522,7 @@ describe('waterfall hover', function() {
             .then(function() {
                 var out = _hover(gd, 0, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1002.201);
-                expect(out.extraText).toEqual('$2.2m ▲');
+                expect(out.extraText).toEqual(undefined);
                 expect(out.style).toEqual([0, '#4499FF', 0, 1002.201]);
             })
             .then(function() {
@@ -1534,7 +1534,7 @@ describe('waterfall hover', function() {
             .then(function() {
                 var out = _hover(gd, 2, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1001.101);
-                expect(out.extraText).toEqual('$1.1m ▲');
+                expect(out.extraText).toEqual(undefined);
                 expect(out.style).toEqual([2, '#4499FF', 2, 1001.101]);
             })
             .then(function() {
@@ -1546,7 +1546,7 @@ describe('waterfall hover', function() {
             .then(function() {
                 var out = _hover(gd, 4, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1004.401);
-                expect(out.extraText).toEqual('$4.4m ▲');
+                expect(out.extraText).toEqual(undefined);
                 expect(out.style).toEqual([4, '#4499FF', 4, 1004.401]);
             })
             .catch(failTest)
