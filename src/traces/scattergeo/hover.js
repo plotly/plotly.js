@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Fx = require('../../components/fx');
@@ -64,17 +63,19 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.lon = lonlat[0];
     pointData.lat = lonlat[1];
 
+    var ax = geo.mockAxis;
+    pointData.lonLabel = Axes.tickText(ax, ax.c2l(pointData.lon), 'hover').text;
+    pointData.latLabel = Axes.tickText(ax, ax.c2l(pointData.lat), 'hover').text;
+
     pointData.color = getTraceColor(trace, di);
-    pointData.extraText = getExtraText(trace, di, geo.mockAxis, cd[0].t.labels);
+    pointData.extraText = getExtraText(trace, di, pointData, cd[0].t.labels);
     pointData.hovertemplate = trace.hovertemplate;
 
     return [pointData];
 };
 
-function getExtraText(trace, pt, axis, labels) {
-    if(trace.hovertemplate) {
-        return;
-    }
+function getExtraText(trace, pt, pointData, labels) {
+    if(trace.hovertemplate) return;
 
     var hoverinfo = pt.hi || trace.hoverinfo;
 
@@ -88,18 +89,16 @@ function getExtraText(trace, pt, axis, labels) {
     var hasText = (parts.indexOf('text') !== -1);
     var text = [];
 
-    function format(val) {
-        return Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
-    }
+    function format(val) { return val + '\u00B0'; }
 
     if(hasLocation) {
         text.push(pt.loc);
     } else if(hasLon && hasLat) {
-        text.push('(' + format(pt.lonlat[0]) + ', ' + format(pt.lonlat[1]) + ')');
+        text.push('(' + format(pointData.lonLabel) + ', ' + format(pointData.latLabel) + ')');
     } else if(hasLon) {
-        text.push(labels.lon + format(pt.lonlat[0]));
+        text.push(labels.lon + format(pointData.lonLabel));
     } else if(hasLat) {
-        text.push(labels.lat + format(pt.lonlat[1]));
+        text.push(labels.lat + format(pointData.latLabel));
     }
 
     if(hasText) {
