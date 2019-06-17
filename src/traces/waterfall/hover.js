@@ -57,7 +57,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         var hasFlag = function(flag) { return isAll || parts.indexOf(flag) !== -1; };
 
         if(!di.isSum) {
-            if(hasFlag('final')) {
+            if(hasFlag('final') &&
+                (isHorizontal ? !hasFlag('x') : !hasFlag('y')) // don't display redundant info.
+            ) {
                 text.push(point.finalLabel);
             }
             if(hasFlag('delta')) {

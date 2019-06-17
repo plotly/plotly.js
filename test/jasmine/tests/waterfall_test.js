@@ -1426,9 +1426,9 @@ describe('waterfall hover', function() {
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
-                        '1001\nHover text A\n1001\n1 ▲\nInitial: 1000',
-                        '1002\nHover text G\n1002\n2 ▲\nInitial: 1000',
-                        '1,001.5\na (hover)\n1,001.5\n1.5 ▲\nInitial: 1000'
+                        '1001\nHover text A\n1 ▲\nInitial: 1000',
+                        '1002\nHover text G\n2 ▲\nInitial: 1000',
+                        '1,001.5\na (hover)\n1.5 ▲\nInitial: 1000'
                     ],
                     name: ['Lines, Marke...', 'Lines and Text', 'missing text'],
                     axis: '0'
@@ -1486,7 +1486,7 @@ describe('waterfall hover', function() {
             })
             .then(function() {
                 assertHoverLabelContent({
-                    nums: '2.2\n2.2\n4.4 ▲\nInitial: −2.2',
+                    nums: '2.2\n4.4 ▲\nInitial: −2.2',
                     name: '',
                     axis: 'E'
                 });
@@ -1528,7 +1528,7 @@ describe('waterfall hover', function() {
             .then(function() {
                 var out = _hover(gd, 1, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1001.101);
-                expect(out.extraText).toEqual('$1,001.101m<br>($1.1m) ▼<br>Initial: $1,002.201m');
+                expect(out.extraText).toEqual('($1.1m) ▼<br>Initial: $1,002.201m');
                 expect(out.style).toEqual([1, '#FF4136', 1, 1001.101]);
             })
             .then(function() {
@@ -1540,7 +1540,7 @@ describe('waterfall hover', function() {
             .then(function() {
                 var out = _hover(gd, 3, 1000.5, 'closest');
                 expect(out.yLabelVal).toEqual(1004.401);
-                expect(out.extraText).toEqual('$1,004.401m<br>$3.3m ▲<br>Initial: $1,001.101m');
+                expect(out.extraText).toEqual('$3.3m ▲<br>Initial: $1,001.101m');
                 expect(out.style).toEqual([3, '#3D9970', 3, 1004.401]);
             })
             .then(function() {
