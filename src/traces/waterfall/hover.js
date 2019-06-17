@@ -38,17 +38,44 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var size = (di.isSum) ? di.b + di.s : di.rawS;
 
     if(!di.isSum) {
-        // format delta numbers:
-        if(size > 0) {
-            point.extraText = formatNumber(size) + ' ' + DIRSYMBOL.increasing;
-        } else if(size < 0) {
-            point.extraText = '(' + (formatNumber(-size)) + ') ' + DIRSYMBOL.decreasing;
-        } else {
-            return;
-        }
-        // display initial value
-        point.extraText += '<br>Initial: ' + formatNumber(di.b + di.s - size);
+        point.initial = di.b + di.s - size;
+        point.delta = size;
+        point.final = point.initial + point.delta;
+
+        var v = formatNumber(Math.abs(point.delta));
+        point.deltaLabel = size < 0 ? '(' + v + ')' : v;
+        point.finalLabel = formatNumber(point.final);
+        point.initialLabel = formatNumber(point.initial);
     }
+
+    var hoverinfo = di.hi || trace.hoverinfo;
+    var text = [];
+    if(hoverinfo && hoverinfo !== 'none' && hoverinfo !== 'skip') {
+        var isAll = (hoverinfo === 'all');
+        var parts = hoverinfo.split('+');
+
+        var hasFlag = function(flag) { return isAll || parts.indexOf(flag) !== -1; };
+
+        if(!di.isSum) {
+            if(hasFlag('final') &&
+                (isHorizontal ? !hasFlag('x') : !hasFlag('y')) // don't display redundant info.
+            ) {
+                text.push(point.finalLabel);
+            }
+            if(hasFlag('delta')) {
+                if(size < 0) {
+                    text.push(point.deltaLabel + ' ' + DIRSYMBOL.decreasing);
+                } else {
+                    text.push(point.deltaLabel + ' ' + DIRSYMBOL.increasing);
+                }
+            }
+            if(hasFlag('initial')) {
+                text.push('Initial: ' + point.initialLabel);
+            }
+        }
+    }
+
+    if(text.length) point.extraText = text.join('<br>');
 
     point.color = getTraceColor(trace, di);
 

@@ -10,6 +10,9 @@
 
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
+var plotAttrs = require('../../plots/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Color = require('../../components/color');
 
@@ -74,7 +77,13 @@ module.exports = {
     dy: barAttrs.dy,
 
     hovertext: barAttrs.hovertext,
-    hovertemplate: barAttrs.hovertemplate,
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
+
+    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+        flags: ['name', 'x', 'y', 'text', 'initial', 'delta', 'final']
+    }),
 
     textinfo: {
         valType: 'flaglist',
