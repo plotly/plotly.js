@@ -8,7 +8,10 @@
 
 'use strict';
 
+/* global PlotlyGeoAssets:false */
+
 var mapboxgl = require('mapbox-gl');
+var d3 = require('d3');
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
@@ -111,7 +114,15 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     self.rejectOnError(reject);
 
-    map.once('load', function() {
+    var promises = [];
+
+    promises.push(new Promise(function(resolve) {
+        map.once('load', resolve);
+    }));
+
+    promises = promises.concat(self.fetchMapData(calcData, fullLayout));
+
+    Promise.all(promises).then(function() {
         self.updateData(calcData);
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
@@ -232,6 +243,38 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     };
 };
 
+proto.fetchMapData = function(calcData) {
+    var promises = [];
+
+    function fetch(url) {
+        return new Promise(function(resolve, reject) {
+            d3.json(url, function(err, d) {
+                if(err) {
+                    var msg = err.status === 404 ?
+                        ('GeoJSON at URL ' + url + ' does not exist.') :
+                        ('Unexpected error while fetching from ' + url);
+                    return reject(new Error(msg));
+                }
+
+                PlotlyGeoAssets[url] = d;
+                resolve(d);
+            });
+        });
+    }
+
+    for(var i = 0; i < calcData.length; i++) {
+        var trace = calcData[i][0].trace;
+        var url = trace.geojson;
+
+        if(typeof url === 'string' && !PlotlyGeoAssets[url]) {
+            PlotlyGeoAssets[url] = 'pending';
+            promises.push(fetch(url));
+        }
+    }
+
+    return promises;
+};
+
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     var self = this;
     var map = self.map;
@@ -239,25 +282,29 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
 
     self.rejectOnError(reject);
 
+    var promises = [];
     var styleObj = getStyleObj(opts.style);
 
     if(self.styleObj.id !== styleObj.id) {
         self.styleObj = styleObj;
         map.setStyle(styleObj.style);
 
-        map.once('styledata', function() {
-            // need to rebuild trace layers on reload
-            // to avoid 'lost event' errors
-            self.traceHash = {};
-            self.updateData(calcData);
-            self.updateLayout(fullLayout);
-            self.resolveOnRender(resolve);
-        });
-    } else {
+        // need to rebuild trace layers on reload
+        // to avoid 'lost event' errors
+        self.traceHash = {};
+
+        promises.push(new Promise(function(resolve) {
+            map.once('styledata', resolve);
+        }));
+    }
+
+    promises = promises.concat(self.fetchMapData(calcData, fullLayout));
+
+    Promise.all(promises).then(function() {
         self.updateData(calcData);
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
-    }
+    });
 };
 
 proto.updateData = function(calcData) {
