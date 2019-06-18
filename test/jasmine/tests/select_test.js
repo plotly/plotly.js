@@ -652,16 +652,25 @@ describe('Click-to-select', function() {
               });
           });
 
-        // The gl and mapbox traces: use @gl and @noCI tag
         [
             testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
-            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []]),
-            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
+              });
+          });
+
+        [
+            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
+            testCase('choroplethmapbox', require('@mocks/mapbox_choropleth0.json'), 270, 220, [[0]], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+        ]
+          .forEach(function(testCase) {
+              it('@noCI trace type ' + testCase.label, function(done) {
                   _run(testCase, done);
               });
           });
@@ -746,6 +755,8 @@ describe('Click-to-select', function() {
         // The mapbox traces: use @noCI annotation cause they are usually too resource-intensive
         [
             testCase('mapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
+            testCase('mapbox', require('@mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ].forEach(function(testCase) {
             it('@noCI for base plot ' + testCase.label, function(done) {
@@ -1985,6 +1996,54 @@ describe('Test select box and lasso per trace:', function() {
         .then(function() {
             return _run(
                 [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermapbox pan'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@noCI should work on choroplethmapbox traces', function(done) {
+        var assertPoints = makeAssertPoints(['location', 'z']);
+        var assertRanges = makeAssertRanges('mapbox');
+        var assertLassoPoints = makeAssertLassoPoints('mapbox');
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth0.json'));
+
+        fig.data[0].locations.push(null);
+
+        fig.layout.dragmode = 'select';
+        fig.config = {
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        };
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig).then(function() {
+            return _run(
+                [[150, 150], [300, 300]],
+                function() {
+                    assertPoints([['NY', 10]]);
+                    assertRanges([[-83.29, 46.13], [-73.97, 39.29]]);
+                    assertSelectedPoints({0: [0]});
+                },
+                null, BOXEVENTS, 'choroplethmapbox select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(
+                [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
+                function() {
+                    assertPoints([['MA', 20]]);
+                    assertSelectedPoints({0: [1]});
+                    assertLassoPoints([
+                        [-73.97, 43.936], [-73.97, 39.293], [-67.756, 39.293],
+                        [-67.756, 43.936], [-73.971, 43.936]
+                    ]);
+                },
+                null, LASSOEVENTS, 'choroplethmapbox lasso'
             );
         })
         .catch(failTest)

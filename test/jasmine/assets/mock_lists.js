@@ -67,7 +67,8 @@ var glMockList = [
 ];
 
 var mapboxMockList = [
-    ['scattermapbox', require('@mocks/mapbox_bubbles-text.json')]
+    ['scattermapbox', require('@mocks/mapbox_bubbles-text.json')],
+    ['choroplethmapbox', require('@mocks/mapbox_choropleth0.json')]
 ];
 
 module.exports = {
