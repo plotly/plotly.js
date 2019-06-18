@@ -53,10 +53,8 @@ function calcGeoJSON(calcTrace, topojson) {
             continue;
         }
 
-
         calcPt.geojson = feature;
         calcPt.ct = feature.properties.ct;
-        calcPt.index = i;
         calcPt._polygons = feature2polygons(feature);
     }
 }

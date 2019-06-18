@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -25,8 +24,15 @@ module.exports = function calc(gd, trace) {
         var loc = trace.locations[i];
         var z = trace.z[i];
 
-        calcPt.loc = typeof loc === 'string' ? loc : null;
-        calcPt.z = isNumeric(z) ? z : BADNUM;
+        if(typeof loc === 'string' && isNumeric(z)) {
+            calcPt.loc = loc;
+            calcPt.z = z;
+        } else {
+            calcPt.loc = null;
+            calcPt.z = BADNUM;
+        }
+
+        calcPt.index = i;
     }
 
     arraysToCalcdata(calcTrace, trace);
