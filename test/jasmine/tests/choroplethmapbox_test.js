@@ -71,10 +71,6 @@ describe('Test choroplethmapbox defaults:', function() {
         ]);
         expectVisibleFalse();
     });
-
-    it('should accept typed arrays', function() {
-
-    });
 });
 
 describe('Test choroplethmapbox convert:', function() {
@@ -217,6 +213,48 @@ describe('Test choroplethmapbox convert:', function() {
         var opts = _convert(trace);
         expect(opts.geojson.features.length).toBe(3, '# of features to be rendered');
         expect(Lib.log).toHaveBeenCalledWith('Location with id d does not have a matching feature');
+    });
+
+    describe('should accept numbers as *locations* items', function() {
+        function _assert(act) {
+            expect(act.fill.layout.visibility).toBe('visible', 'fill layer visibility');
+            expect(act.line.layout.visibility).toBe('visible', 'line layer visibility');
+            expect(act.geojson.features.length).toBe(3, '# of visible features');
+            expect(extract(act, 'fc'))
+                .toEqual(['rgb(178, 10, 28)', 'rgb(220, 220, 220)', 'rgb(240, 149, 99)']);
+        }
+
+        it('- regular array case', function() {
+            var trace = {
+                locations: [1, 2, 3],
+                z: [20, 10, 2],
+                geojson: {
+                    type: 'FeatureCollection',
+                    features: [
+                        {type: 'Feature', id: '1', geometry: {type: 'Polygon', coordinates: []}},
+                        {type: 'Feature', id: '3', geometry: {type: 'Polygon', coordinates: []}},
+                        {type: 'Feature', id: '2', geometry: {type: 'Polygon', coordinates: []}}
+                    ]
+                }
+            };
+            _assert(_convert(trace));
+        });
+
+        it('- typed array case', function() {
+            var trace = {
+                locations: new Float32Array([1, 2, 3]),
+                z: new Float32Array([20, 10, 2]),
+                geojson: {
+                    type: 'FeatureCollection',
+                    features: [
+                        {type: 'Feature', id: 1, geometry: {type: 'Polygon', coordinates: []}},
+                        {type: 'Feature', id: 3, geometry: {type: 'Polygon', coordinates: []}},
+                        {type: 'Feature', id: 2, geometry: {type: 'Polygon', coordinates: []}}
+                    ]
+                }
+            };
+            _assert(_convert(trace));
+        });
     });
 
     it('should handle *Feature* on 1-item *FeatureCollection* the same way', function() {

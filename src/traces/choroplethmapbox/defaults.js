@@ -17,14 +17,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    // TODO locations should now allow numbers !!
-    // update that for `choropleth` too !!
-
     var locations = coerce('locations');
     var z = coerce('z');
     var geojson = coerce('geojson');
 
-    if(!locations || !locations.length ||
+    if(!Lib.isArrayOrTypedArray(locations) || !locations.length ||
         !Lib.isArrayOrTypedArray(z) || !z.length ||
         !((typeof geojson === 'string' && geojson !== '') || Lib.isPlainObject(geojson))
     ) {
