@@ -16,6 +16,7 @@ var d3 = require('d3');
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
+var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
@@ -408,6 +409,14 @@ proto.createFramework = function(fullLayout) {
     };
 
     self.updateFramework(fullLayout);
+
+    // mock axis for hover formatting
+    self.mockAxis = {
+        type: 'linear',
+        showexponent: 'all',
+        exponentformat: 'B'
+    };
+    Axes.setConvert(self.mockAxis, fullLayout);
 };
 
 proto.updateFx = function(fullLayout) {
