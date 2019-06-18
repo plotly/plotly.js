@@ -84,6 +84,7 @@ module.exports = {
         tickformat: {
             valType: 'string',
             dflt: '3s',
+            noBlank: true,
             role: 'style',
             editType: 'plot',
             description: [

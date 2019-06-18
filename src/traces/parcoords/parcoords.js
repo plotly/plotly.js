@@ -134,7 +134,7 @@ function someFiltersActive(view) {
     });
 }
 
-function model(layout, fullLayout, d, i) {
+function model(layout, d, i) {
     var cd0 = unwrap(d);
     var trace = cd0.trace;
     var lineColor = helpers.convertTypedArray(cd0.lineColor);
@@ -167,16 +167,6 @@ function model(layout, fullLayout, d, i) {
     var pad = layout.margin || {l: 80, r: 80, t: 100, b: 80};
     var rowContentWidth = groupWidth;
     var rowHeight = groupHeight;
-
-    for(var k = 0; k < dimensions.length; k++) {
-        var dim = dimensions[k];
-        dim._ax = {
-            type: 'linear',
-            showexponent: 'all',
-            exponentformat: 'B'
-        };
-        Axes.setConvert(dim._ax, fullLayout);
-    }
 
     return {
         key: i,
@@ -388,6 +378,27 @@ function updatePanelLayout(yAxis, vm) {
     }
 }
 
+function attachAxesToCd(cd, fullLayout) {
+    for(var i = 0; i < cd.length; i++) {
+        for(var j = 0; j < cd[i].length; j++) {
+            var dimensions = cd[i][j].trace.dimensions;
+
+            for(var k = 0; k < dimensions.length; k++) {
+                var dim = dimensions[k];
+
+                dim._ax = {
+                    type: 'linear',
+                    showexponent: 'all',
+                    exponentformat: 'B',
+                    tickformat: dim.tickformat
+                };
+
+                Axes.setConvert(dim._ax, fullLayout);
+            }
+        }
+    }
+}
+
 module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
@@ -395,21 +406,23 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
 
+    attachAxesToCd(cdModule, fullLayout);
+
     function linearFormat(dim, v) {
-        return Axes.tickText(dim._ax, v, true).text;
+        return Axes.tickText(dim._ax, v, false).text;
     }
 
-    function extremeText(d, i, isTop) {
+    function extremeText(d, isTop) {
         if(d.ordinal) return '';
         var domain = d.domainScale.domain();
         var v = (domain[isTop ? domain.length - 1 : 0]);
 
-        return linearFormat(d.model.dimensions[i], v);
+        return linearFormat(d.model.dimensions[d.visibleIndex], v);
     }
 
     var vm = cdModule
         .filter(function(d) { return unwrap(d).trace.visible; })
-        .map(model.bind(0, layout, fullLayout))
+        .map(model.bind(0, layout))
         .map(viewModel.bind(0, state, callbacks));
 
     glContainer.each(function(d, i) {
@@ -589,7 +602,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.axis, true);
 
     axis
-        .each(function(d, i) {
+        .each(function(d) {
             var wantedTickCount = d.model.height / d.model.tickDistance;
             var scale = d.domainScale;
             var sdom = scale.domain();
@@ -603,7 +616,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
                         sdom :
                         null)
                     .tickFormat(function(v) {
-                        return helpers.isOrdinal(d) ? v : linearFormat(d.model.dimensions[i], v);
+                        return helpers.isOrdinal(d) ? v : linearFormat(d.model.dimensions[d.visibleIndex], v);
                     })
                     .scale(scale));
             Drawing.font(axis.selectAll('text'), d.model.tickFont);
@@ -692,7 +705,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .call(styleExtentTexts);
 
     axisExtentTopText
-        .text(function(d, i) { return extremeText(d, i, true); })
+        .text(function(d) { return extremeText(d, true); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
     var axisExtentBottom = axisExtent.selectAll('.' + c.cn.axisExtentBottom)
@@ -717,7 +730,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .call(styleExtentTexts);
 
     axisExtentBottomText
-        .text(function(d, i) { return extremeText(d, i, false); })
+        .text(function(d) { return extremeText(d, false); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
     brush.ensureAxisBrush(axisOverlays);
