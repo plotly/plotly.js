@@ -178,15 +178,11 @@ function plot(gd, data, layout, config) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
-    function isHidden(gd) {
-        var display = window.getComputedStyle(gd).display;
-        return !display || display === 'none';
-    }
     // make the figure responsive
     if(gd._context.responsive) {
         if(!gd._responsiveChartHandler) {
             // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function() { if(!isHidden(gd)) Plots.resize(gd).catch(Lib.noop); };
+            gd._responsiveChartHandler = function() { if(!Lib.isHidden(gd)) Plots.resize(gd); };
 
             // Listen to window resize
             window.addEventListener('resize', gd._responsiveChartHandler);

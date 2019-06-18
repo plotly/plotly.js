@@ -210,7 +210,7 @@ function assertSrcContents() {
          * - If you use conforms to these rules, you may update
          *   KNOWN_GET_COMPUTED_STYLE_CALLS to count the new use.
          */
-        var KNOWN_GET_COMPUTED_STYLE_CALLS = 6;
+        var KNOWN_GET_COMPUTED_STYLE_CALLS = 5;
         if(getComputedStyleCnt !== KNOWN_GET_COMPUTED_STYLE_CALLS) {
             logs.push('Expected ' + KNOWN_GET_COMPUTED_STYLE_CALLS +
                 ' window.getComputedStyle calls, found ' + getComputedStyleCnt +
