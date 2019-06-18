@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
@@ -47,6 +46,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.index = pt.index;
     pointData.location = pt.loc;
     pointData.z = pt.z;
+    pointData.zLabel = Axes.tickText(geo.mockAxis, geo.mockAxis.c2l(pt.z), 'hover').text;
     pointData.hovertemplate = pt.hovertemplate;
 
     makeHoverInfo(pointData, trace, pt, geo.mockAxis);
@@ -54,10 +54,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     return [pointData];
 };
 
-function makeHoverInfo(pointData, trace, pt, axis) {
-    if(trace.hovertemplate) {
-        return;
-    }
+function makeHoverInfo(pointData, trace, pt) {
+    if(trace.hovertemplate) return;
 
     var hoverinfo = pt.hi || trace.hoverinfo;
 
@@ -73,10 +71,6 @@ function makeHoverInfo(pointData, trace, pt, axis) {
 
     var text = [];
 
-    function formatter(val) {
-        return Axes.tickText(axis, axis.c2l(val), 'hover').text;
-    }
-
     if(hasIdAsNameLabel) {
         pointData.nameOverride = pt.loc;
     } else {
@@ -84,7 +78,9 @@ function makeHoverInfo(pointData, trace, pt, axis) {
         if(hasLocation) text.push(pt.loc);
     }
 
-    if(hasZ) text.push(formatter(pt.z));
+    if(hasZ) {
+        text.push(pointData.zLabel);
+    }
     if(hasText) {
         fillText(pt, trace, text);
     }

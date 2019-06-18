@@ -358,6 +358,32 @@ describe('Test scattergeo hover', function() {
         .catch(failTest)
         .then(done);
     });
+
+    describe('should preserve lon/lat formatting hovetemplate equivalence', function() {
+        var pos = [381, 221];
+        var exp = ['(10.00012°, 10.00088°)\nA'];
+
+        it('- base case (truncate z decimals)', function(done) {
+            Plotly.restyle(gd, {
+                lon: [[10.0001221321]],
+                lat: [[10.00087683]]
+            })
+            .then(function() { check(pos, exp); })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- hovertemplate case (same lon/lat truncation)', function(done) {
+            Plotly.restyle(gd, {
+                lon: [[10.0001221321]],
+                lat: [[10.00087683]],
+                hovertemplate: '(%{lon}°, %{lat}°)<br>%{text}<extra></extra>'
+            })
+            .then(function() { check(pos, exp); })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('scattergeo drawing', function() {
