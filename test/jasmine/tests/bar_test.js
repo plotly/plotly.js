@@ -12,6 +12,7 @@ var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var negateIf = require('../assets/negate_if');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var color = require('../../../src/components/color');
@@ -1759,7 +1760,7 @@ describe('A bar plot', function() {
                 if(!i) return;
                 var bbox = this.getBoundingClientRect();
                 ['left', 'right', 'top', 'bottom', 'width', 'height'].forEach(function(dim) {
-                    expect(bbox[dim]).negateIf(dims.indexOf(dim) === -1)
+                    negateIf(dims.indexOf(dim) === -1, expect(bbox[dim]))
                         .toBeWithin(bbox1[dim], 0.1, msg + ' (' + i + '): ' + dim);
                 });
             });

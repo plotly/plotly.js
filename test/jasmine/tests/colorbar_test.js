@@ -8,6 +8,7 @@ var subroutines = require('@src/plot_api/subroutines');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var negateIf = require('../assets/negate_if');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 var drag = require('../assets/drag');
@@ -119,7 +120,7 @@ describe('Test colorbar:', function() {
                 var cbbg = colorbars.selectAll('.cbbg');
                 var cbfills = colorbars.selectAll('.cbfill');
 
-                expect(cbfills.size()).negateIf(multiFill).toBe(1);
+                negateIf(multiFill, expect(cbfills.size())).toBe(1);
 
                 if(!cbHeight) cbHeight = 400;
                 var bgHeight = +cbbg.attr('height');

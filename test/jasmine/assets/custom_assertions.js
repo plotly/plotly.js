@@ -1,6 +1,7 @@
 'use strict';
 
 var d3 = require('d3');
+var negateIf = require('./negate_if');
 
 exports.assertDims = function(dims) {
     var traces = d3.selectAll('.trace');
@@ -122,8 +123,7 @@ exports.assertHoverLabelContent = function(expectation, msg) {
         assertLabelContent(nameSel, expectation.name, ptMsg + ' (name)');
 
         if('isRotated' in expectation) {
-            expect(g.attr('transform').match(reRotate))
-                .negateIf(expectation.isRotated)
+            negateIf(expectation.isRotated, expect(g.attr('transform').match(reRotate)))
                 .toBe(null, ptMsg + ' should be rotated');
         }
     } else if(ptCnt > 1) {
@@ -162,8 +162,7 @@ exports.assertHoverLabelContent = function(expectation, msg) {
             });
 
             if('isRotated' in expectation) {
-                expect(g.attr('transform').match(reRotate))
-                    .negateIf(expectation.isRotated)
+                negateIf(expectation.isRotated, expect(g.attr('transform').match(reRotate)))
                     .toBe(null, ptMsg + ' ' + i + ' should be rotated');
             }
         });

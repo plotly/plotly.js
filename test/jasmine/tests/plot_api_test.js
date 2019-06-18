@@ -17,6 +17,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var negateIf = require('../assets/negate_if');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -1110,9 +1111,9 @@ describe('Test plot api', function() {
             var zmax1 = 10;
 
             function check(auto, msg) {
-                expect(gd._fullData[0].zmin).negateIf(auto).toBe(zmin0, msg);
+                negateIf(auto, expect(gd._fullData[0].zmin)).toBe(zmin0, msg);
                 expect(gd._fullData[0].zauto).toBe(auto, msg);
-                expect(gd._fullData[1].zmax).negateIf(auto).toBe(zmax1, msg);
+                negateIf(auto, expect(gd._fullData[1].zmax)).toBe(zmax1, msg);
                 expect(gd._fullData[1].zauto).toBe(auto, msg);
             }
 
@@ -1153,12 +1154,12 @@ describe('Test plot api', function() {
 
             function check(auto, autocolorscale, msg) {
                 expect(gd._fullData[0].marker.cauto).toBe(auto, msg);
-                expect(gd._fullData[0].marker.cmin).negateIf(auto).toBe(mcmin0);
+                negateIf(auto, expect(gd._fullData[0].marker.cmin)).toBe(mcmin0);
                 expect(gd._fullData[0].marker.autocolorscale).toBe(autocolorscale, msg);
                 expect(gd._fullData[0].marker.colorscale).toEqual(auto ? autocscale : scales[mcscl0]);
 
                 expect(gd._fullData[1].marker.line.cauto).toBe(auto, msg);
-                expect(gd._fullData[1].marker.line.cmax).negateIf(auto).toBe(mlcmax1);
+                negateIf(auto, expect(gd._fullData[1].marker.line.cmax)).toBe(mlcmax1);
                 expect(gd._fullData[1].marker.line.autocolorscale).toBe(autocolorscale, msg);
                 expect(gd._fullData[1].marker.line.colorscale).toEqual(auto ? autocscale : scales[mlcscl1]);
             }
@@ -1323,8 +1324,8 @@ describe('Test plot api', function() {
             function check(auto, msg) {
                 expect(gd.data[0].autocontour).toBe(auto, msg);
                 expect(gd.data[1].autocontour).toBe(auto, msg);
-                expect(gd.data[0].contours.start).negateIf(auto).toBe(start0, msg);
-                expect(gd.data[1].contours.size).negateIf(auto).toBe(size1, msg);
+                negateIf(auto, expect(gd.data[0].contours.start)).toBe(start0, msg);
+                negateIf(auto, expect(gd.data[1].contours.size)).toBe(size1, msg);
             }
 
             Plotly.plot(gd, [
@@ -1411,9 +1412,9 @@ describe('Test plot api', function() {
             var dtick1 = 0.8;
 
             function check(auto, msg) {
-                expect(gd._fullData[0].colorbar.tick0).negateIf(auto).toBe(tick00, msg);
+                negateIf(auto, expect(gd._fullData[0].colorbar.tick0)).toBe(tick00, msg);
                 expect(gd._fullData[0].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
-                expect(gd._fullData[1].colorbar.dtick).negateIf(auto).toBe(dtick1, msg);
+                negateIf(auto, expect(gd._fullData[1].colorbar.dtick)).toBe(dtick1, msg);
                 expect(gd._fullData[1].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
             }
 
