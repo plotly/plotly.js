@@ -1292,6 +1292,72 @@ describe('@noCI, mapbox plots', function() {
     }
 });
 
+describe('@noCI Test mapbox GeoJSON fetching:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+        setTimeout(done, 200);
+    });
+
+    it('@gl should fetch GeoJSON using URLs found in the traces', function(done) {
+        var url = 'https://raw.githubusercontent.com/plotly/datasets/master/florida-red-data.json';
+        var url2 = 'https://raw.githubusercontent.com/plotly/datasets/master/florida-blue-data.json';
+        var cnt = 0;
+
+        Plotly.plot(gd, [{
+            type: 'choroplethmapbox',
+            locations: ['a'],
+            z: [1],
+            geojson: url
+        }, {
+            type: 'choroplethmapbox',
+            locations: ['a'],
+            z: [1],
+            geojson: url2
+        }])
+        .catch(function() {
+            cnt++;
+        })
+        .then(function() {
+            expect(cnt).toBe(0, 'no failures!');
+            expect(Lib.isPlainObject(window.PlotlyGeoAssets[url])).toBe(true, 'is a GeoJSON object');
+            expect(Lib.isPlainObject(window.PlotlyGeoAssets[url2])).toBe(true, 'is a GeoJSON object');
+        })
+        .then(done);
+    });
+
+    it('@gl should fetch GeoJSON using URLs found in the traces', function(done) {
+        var actual = '';
+
+        Plotly.plot(gd, [{
+            type: 'choroplethmapbox',
+            locations: ['a'],
+            z: [1],
+            geojson: 'invalidUrl'
+        }, {
+            type: 'choroplethmapbox',
+            locations: ['a'],
+            z: [1],
+            geojson: 'invalidUrl-two'
+        }])
+        .catch(function(reason) {
+            // bails up after first failure
+            actual = reason;
+        })
+        .then(function() {
+            expect(actual).toEqual(new Error('GeoJSON at URL invalidUrl does not exist.'));
+            expect(window.PlotlyGeoAssets.invalidUrl).toBe(undefined);
+        })
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+});
+
 describe('@noCI, mapbox toImage', function() {
     // decreased from 1e5 - perhaps chrome got better at encoding these
     // because I get 99330 and the image still looks correct
