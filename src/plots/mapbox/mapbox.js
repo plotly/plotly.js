@@ -308,13 +308,25 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     });
 };
 
+var traceType2orderIndex = {
+    'choroplethmapbox': 0,
+    'scattermapbox': 1
+};
+
 proto.updateData = function(calcData) {
     var traceHash = this.traceHash;
     var traceObj, trace, i, j;
 
+    var calcDataSorted = calcData.slice().sort(function(a, b) {
+        return (
+            traceType2orderIndex[a[0].trace.type] -
+            traceType2orderIndex[b[0].trace.type]
+        );
+    });
+
     // update or create trace objects
-    for(i = 0; i < calcData.length; i++) {
-        var calcTrace = calcData[i];
+    for(i = 0; i < calcDataSorted.length; i++) {
+        var calcTrace = calcDataSorted[i];
 
         trace = calcTrace[0].trace;
         traceObj = traceHash[trace.uid];
