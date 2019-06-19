@@ -81,18 +81,9 @@ module.exports = {
                 'Sets the text displayed at the ticks position via `tickvals`.'
             ].join(' ')
         }),
-        tickformat: {
-            valType: 'string',
-            dflt: '3s',
-            noBlank: true,
-            role: 'style',
-            editType: 'plot',
-            description: [
-                'Sets the tick label formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
-            ].join(' ')
-        },
+        tickformat: extendFlat({}, axesAttrs.tickformat, {
+            editType: 'plot'
+        }),
         visible: {
             valType: 'boolean',
             dflt: true,

@@ -378,22 +378,22 @@ function updatePanelLayout(yAxis, vm) {
     }
 }
 
-function attachAxesToCd(cd, fullLayout) {
+function calcAllTicks(cd) {
     for(var i = 0; i < cd.length; i++) {
         for(var j = 0; j < cd[i].length; j++) {
             var dimensions = cd[i][j].trace.dimensions;
-
             for(var k = 0; k < dimensions.length; k++) {
-                var dim = dimensions[k];
+                var dim = dimensions[k]._ax;
 
-                dim._ax = {
-                    type: 'linear',
-                    showexponent: 'all',
-                    exponentformat: 'B',
-                    tickformat: dim.tickformat
-                };
+                if(dim) {
+                    if(!dim.range) dim.range = [0, 1];
+                    if(!dim.dtick) dim.dtick = 0.1;
+                    dim.tickformat = dimensions[k].tickformat;
 
-                Axes.setConvert(dim._ax, fullLayout);
+                    Axes.calcTicks(dim);
+
+                    dim.cleanRange();
+                }
             }
         }
     }
@@ -406,8 +406,6 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
 
-    attachAxesToCd(cdModule, fullLayout);
-
     function linearFormat(dim, v) {
         return Axes.tickText(dim._ax, v, false).text;
     }
@@ -419,6 +417,8 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
 
         return linearFormat(d.model.dimensions[d.visibleIndex], v);
     }
+
+    calcAllTicks(cdModule);
 
     var vm = cdModule
         .filter(function(d) { return unwrap(d).trace.visible; })

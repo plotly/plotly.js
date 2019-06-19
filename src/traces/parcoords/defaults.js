@@ -13,6 +13,8 @@ var hasColorscale = require('../../components/colorscale/helpers').hasColorscale
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Axes = require('../../plots/cartesian/axes');
+var axesAttrs = require('../../plots/cartesian/layout_attributes');
 
 var attributes = require('./attributes');
 var axisBrush = require('./axisbrush');
@@ -37,9 +39,13 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     return Infinity;
 }
 
-function dimensionDefaults(dimensionIn, dimensionOut) {
+function dimensionDefaults(dimensionIn, dimensionOut, parentOut, opts) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
+    }
+
+    function axCoerce(attr, dflt) {
+        return Lib.coerce(dimensionIn, dimensionOut._ax, axesAttrs, attr, dflt);
     }
 
     var values = coerce('values');
@@ -53,7 +59,18 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
         coerce('tickvals');
         coerce('ticktext');
         coerce('tickformat');
-        coerce('range');
+
+        dimensionOut._ax = {
+            _id: 'y',
+            type: 'linear',
+            showexponent: 'all',
+            exponentformat: 'B'
+        };
+
+        Axes.setConvert(dimensionOut._ax, opts.layout);
+
+        axCoerce('range');
+        dimensionOut.range = dimensionOut._ax.range;
 
         coerce('multiselect');
         var constraintRange = coerce('constraintrange');
@@ -76,6 +93,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
         name: 'dimensions',
+        layout: layout,
         handleItemDefaults: dimensionDefaults
     });
 

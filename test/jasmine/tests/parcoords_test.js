@@ -165,7 +165,7 @@ describe('parcoords initialization tests', function() {
             expect(fullTrace.dimensions).toEqual([jasmine.objectContaining({
                 values: [1],
                 visible: true,
-                tickformat: '3s',
+                tickformat: '',
                 multiselect: true,
                 _index: 0,
                 _length: 1
