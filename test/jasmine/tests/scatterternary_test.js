@@ -422,6 +422,9 @@ describe('scatterternary hover', function() {
         .then(function() {
             scatterPointData = _hover(gd, xval, yval, hovermode);
             expect(scatterPointData[0].hovertemplate).toEqual('tpl');
+            expect(scatterPointData[0].aLabel).toBe('0.3333333');
+            expect(scatterPointData[0].bLabel).toBe('0.1111111');
+            expect(scatterPointData[0].cLabel).toBe('0.5555556');
         })
         .catch(failTest)
         .then(done);

@@ -47,21 +47,24 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
-    // TODO: nice formatting, and label by axis title, for a, b, and c?
+
+    var ternary = newPointData.subplot;
+    newPointData.aLabel = Axes.tickText(ternary.aaxis, cdi.a, 'hover').text;
+    newPointData.bLabel = Axes.tickText(ternary.baxis, cdi.b, 'hover').text;
+    newPointData.cLabel = Axes.tickText(ternary.caxis, cdi.c, 'hover').text;
 
     var trace = newPointData.trace;
-    var ternary = newPointData.subplot;
     var hoverinfo = cdi.hi || trace.hoverinfo;
     var text = [];
     function textPart(ax, val) {
-        text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
+        text.push(ax._hovertitle + ': ' + val);
     }
     if(!trace.hovertemplate) {
         var parts = hoverinfo.split('+');
         if(parts.indexOf('all') !== -1) parts = ['a', 'b', 'c'];
-        if(parts.indexOf('a') !== -1) textPart(ternary.aaxis, cdi.a);
-        if(parts.indexOf('b') !== -1) textPart(ternary.baxis, cdi.b);
-        if(parts.indexOf('c') !== -1) textPart(ternary.caxis, cdi.c);
+        if(parts.indexOf('a') !== -1) textPart(ternary.aaxis, newPointData.aLabel);
+        if(parts.indexOf('b') !== -1) textPart(ternary.baxis, newPointData.bLabel);
+        if(parts.indexOf('c') !== -1) textPart(ternary.caxis, newPointData.cLabel);
     }
     newPointData.extraText = text.join('<br>');
     newPointData.hovertemplate = trace.hovertemplate;

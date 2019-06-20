@@ -8,6 +8,7 @@ var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
+var negateIf = require('../assets/negate_if');
 var failTest = require('../assets/fail_test');
 var transitions = require('../assets/transitions');
 
@@ -952,7 +953,7 @@ describe('end-to-end scatter tests', function() {
         function checkFill(visible, msg) {
             var fillSelection = d3.select(gd).selectAll('.scatterlayer .js-fill');
             expect(fillSelection.size()).toBe(1, msg);
-            expect(fillSelection.attr('d')).negateIf(visible).toBe('M0,0Z', msg);
+            negateIf(visible, expect(fillSelection.attr('d'))).toBe('M0,0Z', msg);
         }
 
         Plotly.newPlot(gd, [trace0, trace1, trace2], {}, {scrollZoom: true})

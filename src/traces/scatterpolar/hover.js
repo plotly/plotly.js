@@ -42,26 +42,26 @@ function makeHoverPointText(cdi, trace, subplot, pointData) {
     radialAxis._hovertitle = 'r';
     angularAxis._hovertitle = 'θ';
 
+    var rVal = radialAxis.c2l(cdi.r);
+    pointData.rLabel = Axes.tickText(radialAxis, rVal, 'hover').text;
+
+    // N.B here the ° sign is part of the formatted value for thetaunit:'degrees'
+    var thetaVal = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(cdi.theta) : cdi.theta;
+    pointData.thetaLabel = Axes.tickText(angularAxis, thetaVal, 'hover').text;
+
     var hoverinfo = cdi.hi || trace.hoverinfo;
     var text = [];
     function textPart(ax, val) {
-        text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
+        text.push(ax._hovertitle + ': ' + val);
     }
 
     if(!trace.hovertemplate) {
         var parts = hoverinfo.split('+');
 
         if(parts.indexOf('all') !== -1) parts = ['r', 'theta', 'text'];
-        if(parts.indexOf('r') !== -1) {
-            textPart(radialAxis, radialAxis.c2l(cdi.r));
-        }
-        if(parts.indexOf('theta') !== -1) {
-            var theta = cdi.theta;
-            textPart(
-                angularAxis,
-                angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(theta) : theta
-            );
-        }
+        if(parts.indexOf('r') !== -1) textPart(radialAxis, pointData.rLabel);
+        if(parts.indexOf('theta') !== -1) textPart(angularAxis, pointData.thetaLabel);
+
         if(parts.indexOf('text') !== -1 && pointData.text) {
             text.push(pointData.text);
             delete pointData.text;

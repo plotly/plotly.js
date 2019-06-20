@@ -7,6 +7,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var negateIf = require('../assets/negate_if');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
@@ -460,7 +461,7 @@ describe('Test relayout on polar subplots:', function() {
                 expect(txt.text()).toBe(content, 'radial axis title');
             }
 
-            expect(newBBox).negateIf(didBBoxChanged).toEqual(lastBBox, 'did bbox change');
+            negateIf(didBBoxChanged, expect(newBBox)).toEqual(lastBBox, 'did bbox change');
             lastBBox = newBBox;
         }
 
