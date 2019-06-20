@@ -14,7 +14,6 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 var Axes = require('../../plots/cartesian/axes');
-var axesAttrs = require('../../plots/cartesian/layout_attributes');
 
 var attributes = require('./attributes');
 var axisBrush = require('./axisbrush');
@@ -44,10 +43,6 @@ function dimensionDefaults(dimensionIn, dimensionOut, parentOut, opts) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
 
-    function axCoerce(attr, dflt) {
-        return Lib.coerce(dimensionIn, dimensionOut._ax, axesAttrs, attr, dflt);
-    }
-
     var values = coerce('values');
     var visible = coerce('visible');
     if(!(values && values.length)) {
@@ -59,18 +54,17 @@ function dimensionDefaults(dimensionIn, dimensionOut, parentOut, opts) {
         coerce('tickvals');
         coerce('ticktext');
         coerce('tickformat');
+        var range = coerce('range');
 
         dimensionOut._ax = {
             _id: 'y',
             type: 'linear',
             showexponent: 'all',
-            exponentformat: 'B'
+            exponentformat: 'B',
+            range: range
         };
 
         Axes.setConvert(dimensionOut._ax, opts.layout);
-
-        axCoerce('range');
-        dimensionOut.range = dimensionOut._ax.range;
 
         coerce('multiselect');
         var constraintRange = coerce('constraintrange');
