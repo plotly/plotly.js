@@ -1484,7 +1484,7 @@ describe('parcoords constraint interactions', function() {
         .then(done);
     });
 
-    it('@gl will only select one region when multiselect is disabled', function(done) {
+    it('@noCI @gl will only select one region when multiselect is disabled', function(done) {
         var newDashArray;
 
         Plotly.restyle(gd, {'dimensions[1].multiselect': false})

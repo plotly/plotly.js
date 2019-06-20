@@ -1762,7 +1762,7 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editEditable, checkAttrs(true), checkAttrs).then(done);
     });
 
-    it('@gl preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
+    it('@noCI @gl preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
         function fig(mainRev, traceRev) {
             return {
                 data: [{
