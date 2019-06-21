@@ -31,7 +31,7 @@ function fileSaver(url, name, format) {
         var blob;
         var objectUrl;
 
-        if(isIE9orBelow()) {
+        if(Lib.isIE9orBelow()) {
             reject(new Error('IE < 10 unsupported'));
         }
 
@@ -74,12 +74,5 @@ function fileSaver(url, name, format) {
     return promise;
 }
 
-function isIE9orBelow() {
-    return (
-        Lib.isIE() &&
-        typeof window.navigator !== 'undefined' &&
-        /MSIE [1-9]\./.test(window.navigator.userAgent)
-    );
-}
 
 module.exports = fileSaver;

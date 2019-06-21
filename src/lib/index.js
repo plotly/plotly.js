@@ -733,6 +733,11 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
+var IS_IE9_OR_BELOW_REGEX = /MSIE [1-9]\./;
+lib.isIE9orBelow = function() {
+    return lib.isIE() && IS_IE9_OR_BELOW_REGEX.test(window.navigator.userAgent);
+};
+
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;
 lib.isSafari = function() {
     return IS_SAFARI_REGEX.test(window.navigator.userAgent);
