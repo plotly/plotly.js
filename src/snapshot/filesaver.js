@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../lib');
+var helpers = require('./helpers');
 
 /*
 * substantial portions of this code from FileSaver.js
@@ -45,15 +46,15 @@ function fileSaver(url, name, format) {
         if(Lib.isIE()) {
             // At this point we are only dealing with a decoded SVG as
             // a data URL (since IE only supports SVG)
-            blob = createBlob(url, format);
+            blob = helpers.createBlob(url, 'svg');
             window.navigator.msSaveBlob(blob, name);
             blob = null;
             return resolve(name);
         }
 
         if(canUseSaveLink) {
-            blob = createBlob(url, format);
-            objectUrl = window.URL.createObjectURL(blob);
+            blob = helpers.createBlob(url, format);
+            objectUrl = helpers.createObjectURL(blob);
 
             saveLink.href = objectUrl;
             saveLink.download = name;
@@ -61,7 +62,7 @@ function fileSaver(url, name, format) {
             saveLink.click();
 
             document.body.removeChild(saveLink);
-            window.URL.revokeObjectURL(objectUrl);
+            helpers.revokeObjectURL(objectUrl);
             blob = null;
 
             return resolve(name);
@@ -79,26 +80,6 @@ function isIE9orBelow() {
         typeof window.navigator !== 'undefined' &&
         /MSIE [1-9]\./.test(window.navigator.userAgent)
     );
-}
-
-// Taken from https://bl.ocks.org/nolanlawson/0eac306e4dac2114c752
-function fixBinary(b) {
-    var len = b.length;
-    var buf = new ArrayBuffer(len);
-    var arr = new Uint8Array(buf);
-    for(var i = 0; i < len; i++) {
-        arr[i] = b.charCodeAt(i);
-    }
-    return buf;
-}
-
-function createBlob(url, format) {
-    if(format === 'svg') {
-        return new window.Blob([url]);
-    } else {
-        var binary = fixBinary(window.atob(url));
-        return new window.Blob([binary], {type: 'image/' + format});
-    }
 }
 
 module.exports = fileSaver;
