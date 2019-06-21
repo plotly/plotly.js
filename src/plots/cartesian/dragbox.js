@@ -410,7 +410,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         updateZoombox(zb, corners, box, path0, dimmed, lum);
         computeZoomUpdates();
-        gd.emit('plotly_relayouting', updates);
         dimmed = true;
     }
 
