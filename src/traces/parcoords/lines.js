@@ -168,6 +168,14 @@ function emptyAttributes(regl) {
     return attributes;
 }
 
+function autoOpacity(n) {
+    // 0 -> 0.4,
+    // 128 -> 0.3,
+    // 256 -> 0.2,
+    // Infinity -> 0.1
+    return 0.3 - 0.4 * Math.atan((n - 128) / 128) / Math.PI;
+}
+
 function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, drwLayer, constraints) {
     var dims = [[], []];
     for(var k = 0; k < 64; k++) {
@@ -206,7 +214,7 @@ function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSiz
             deselectedLinesColor[2] / 255,
             deselectedLinesColor[3] < 1 ?
                 deselectedLinesColor[3] :
-                Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))
+                autoOpacity(model.lines.color.length)
         ],
 
         scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
