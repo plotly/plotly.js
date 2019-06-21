@@ -1,0 +1,252 @@
+{
+  "data": [{
+    "domain": {
+      "x": [0, 0.4],
+      "y": [0.5, 1]
+    },
+    "value": 450,
+    "title": {"text": "Speed"},
+    "type": "indicator",
+    "mode": "gauge+number",
+    "vmax": 500,
+    "delta": {"reference": 400},
+    "gauge": {
+      "axis": {
+        "tickwidth": 1,
+        "tickcolor": "white"
+      },
+      "bgcolor": "rgba(255, 255, 255, 0.25)",
+      "borderwidth": 2,
+      "bordercolor": "rgba(255, 255, 255, 0.5)",
+      "steps": [{
+        "range": [0, 250],
+        "color": "rgba(255, 255, 0, 0.5)"
+      }, {
+        "range": [250, 400],
+        "color": "rgba(0, 0, 255, 0.75)"
+      }],
+      "threshold": {
+        "line": {
+          "color": "rgba(255, 0, 0, 1)",
+          "width": 4
+        },
+        "thickness": 0.75,
+        "value": 490
+      }
+    }
+  }, {
+    "domain": {
+      "x": [0.474, 0.789],
+      "y": [0.5, 0.83333]
+    },
+    "value": 450,
+    "title": {"text": "Speed<br><span style='font-size:0.8em;color:gray'>Subtitle</span>"},
+    "type": "indicator",
+    "mode": "gauge+delta",
+    "vmax": 500,
+    "delta": {"reference": 400},
+    "gauge": {
+      "axis": {
+        "tickwidth": 1,
+        "tickcolor": "white"
+      },
+      "bgcolor": "rgba(255, 255, 255, 0.25)",
+      "borderwidth": 2,
+      "bordercolor": "rgba(255, 255, 255, 0.5)",
+      "steps": [{
+        "range": [0, 250],
+        "color": "rgba(255, 255, 0, 0.5)"
+      }, {
+        "range": [250, 400],
+        "color": "rgba(0, 0, 255, 0.75)"
+      }],
+      "threshold": {
+        "line": {
+          "color": "rgba(255, 0, 0, 1)",
+          "width": 4
+        },
+        "thickness": 0.75,
+        "value": 490
+      }
+    }
+  }, {
+    "domain": {
+      "x": [0, 0.789],
+      "y": [0, 0.4]
+    },
+    "value": 240,
+    "title": {"text": "Speed"},
+    "type": "indicator",
+    "mode": "gauge+number+delta",
+    "vmax": 500,
+    "delta": {"reference": 400},
+    "gauge": {
+      "axis": {
+        "tickwidth": 1,
+        "tickcolor": "white"
+      },
+      "bgcolor": "rgba(255, 255, 255, 0.25)",
+      "borderwidth": 2,
+      "bordercolor": "rgba(255, 255, 255, 0.5)",
+      "steps": [{
+        "range": [0, 250],
+        "color": "rgba(255, 255, 0, 0.5)"
+      }, {
+        "range": [250, 400],
+        "color": "rgba(0, 0, 255, 0.5)"
+      }],
+      "threshold": {
+        "line": {
+          "color": "rgba(255, 0, 0, 1)",
+          "width": 4
+        },
+        "thickness": 0.75,
+        "value": 490
+      }
+    }
+  }, {
+    "domain": {
+      "x": [0.789, 1],
+      "y": [0.75, 1]
+    },
+    "value": 450,
+    "title": {"text": "Speed"},
+    "type": "indicator",
+    "mode": "gauge+number+delta",
+    "vmax": 500,
+    "delta": {"reference": 400},
+    "gauge": {
+      "axis": {
+        "tickwidth": 1,
+        "tickcolor": "white"
+      },
+      "bgcolor": "rgba(255, 255, 255, 0.25)",
+      "borderwidth": 2,
+      "bordercolor": "rgba(255, 255, 255, 0.5)",
+      "steps": [{
+        "range": [0, 250],
+        "color": "rgba(255, 255, 0, 0.5)"
+      }, {
+        "range": [250, 400],
+        "color": "rgba(0, 0, 255, 0.75)"
+      }],
+      "threshold": {
+        "line": {
+          "color": "rgba(255, 0, 0, 1)",
+          "width": 4
+        },
+        "thickness": 0.75,
+        "value": 490
+      }
+    }
+  },{
+    "domain": {
+      "x": [0.789, 1],
+      "y": [0, 0.75]
+    },
+    "value": 450,
+    "title": {"text": "Speed"},
+    "type": "indicator",
+    "mode": "gauge+number+delta",
+    "vmax": 500,
+    "delta": {"reference": 400, "position": "top"},
+    "gauge": {
+      "axis": {
+        "tickwidth": 1,
+        "tickcolor": "white"
+      },
+      "bgcolor": "rgba(255, 255, 255, 0.25)",
+      "borderwidth": 2,
+      "bordercolor": "rgba(255, 255, 255, 0.5)",
+      "steps": [{
+        "range": [0, 250],
+        "color": "rgba(255, 255, 0, 0.5)"
+      }, {
+        "range": [250, 400],
+        "color": "rgba(0, 0, 255, 0.75)"
+      }],
+      "threshold": {
+        "line": {
+          "color": "rgba(255, 0, 0, 1)",
+          "width": 4
+        },
+        "thickness": 0.75,
+        "value": 490
+      }
+    }
+  }],
+  "layout": {
+    "width": 900,
+    "height": 600,
+    "paper_bgcolor": "black",
+    "margin": {
+      "t": 25,
+      "r": 25,
+      "l": 25,
+      "b": 25
+    },
+    "font": {
+      "color": "white",
+      "family": "Arial"
+    },
+    "shapes": [{
+      "type": "rect",
+      "x0": 0,
+      "x1": 0.4,
+      "y0": 0.5,
+      "y1": 1,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0.474,
+      "x1": 0.789,
+      "y0": 0.5,
+      "y1": 0.8333,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    },{
+      "type": "rect",
+      "x0": 0.789,
+      "x1": 1.0,
+      "y0": 0.75,
+      "y1": 1.0,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    },{
+      "type": "rect",
+      "x0": 0.789,
+      "x1": 1.0,
+      "y0": 0,
+      "y1": 0.75,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    },{
+      "type": "rect",
+      "x0": 0,
+      "x1": 0.789,
+      "y0": 0,
+      "y1": 0.4,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }]
+  },
+  "config": {
+    "responsive": true
+  }
+}

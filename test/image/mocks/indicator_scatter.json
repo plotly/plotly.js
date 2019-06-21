@@ -1,0 +1,52 @@
+{
+  "data": [{
+    "domain": {
+      "y": [0, 1],
+      "x": [0.25, 0.75]
+    },
+    "title": {"text": "Users online"},
+    "type": "indicator",
+    "mode": "number+delta",
+    "delta": {"reference": 512},
+    "ticker": {
+      "showticker": true,
+      "showpercentage": true
+    },
+    "vmax": 500,
+    "value": 492
+  }, {
+    "name": "Users online",
+    "y": [325, 324, 405, 400, 424, 404, 417, 432, 419, 394, 410, 426, 413, 419, 404, 408, 401, 377, 368, 361, 356, 359, 375, 397, 394, 418, 437, 450, 430, 442, 424, 443, 420, 418, 423, 423, 426, 440, 437, 436, 447, 460, 478, 472, 450, 456, 436, 418, 429, 412, 429, 442, 464, 447, 434, 457, 474, 480, 499, 497, 480, 502, 512, 492],
+    "marker": {
+      "color": "rgba(255, 255, 255, 0.5)"
+    }
+  }],
+  "layout": {
+    "width": 400,
+    "height": 300,
+    "xaxis": {
+      "autorange": false,
+      "range": [0, 62],
+      "visible": false
+    },
+    "yaxis": {
+        "visible": false
+    },
+    "font": {
+      "color": "white",
+      "family": "Dosis"
+    },
+    "paper_bgcolor": "black",
+    "plot_bgcolor": "black",
+    "margin": {
+      "t": 25,
+      "r": 25,
+      "l": 25,
+      "b": 25
+    },
+    "autosize": true
+  },
+  "config": {
+    "responsive": true
+  }
+}
