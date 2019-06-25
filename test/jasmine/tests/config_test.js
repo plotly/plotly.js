@@ -771,6 +771,23 @@ describe('config argument', function() {
                 .catch(failTest)
                 .then(done);
             });
+
+            it('should not resize if gd is hidden', function(done) {
+                spyOn(Plotly.Plots, 'resize').and.callThrough();
+
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(function() {
+                    gd.style.display = 'none';
+                    viewport.set(width / 2, height / 2);
+                })
+                .then(delay(RESIZE_DELAY))
+                .then(function() {
+                    expect(Plotly.Plots.resize.calls.count()).toBe(0);
+                })
+                .catch(failTest)
+                .then(done);
+            });
         });
     });
 

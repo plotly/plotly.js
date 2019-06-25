@@ -75,12 +75,7 @@ plots.resize = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
     return new Promise(function(resolve, reject) {
-        function isHidden(gd) {
-            var display = window.getComputedStyle(gd).display;
-            return !display || display === 'none';
-        }
-
-        if(!gd || isHidden(gd)) {
+        if(!gd || Lib.isHidden(gd)) {
             reject(new Error('Resize must be passed a displayed plot div element.'));
         }
 
@@ -88,7 +83,7 @@ plots.resize = function(gd) {
 
         gd._redrawTimer = setTimeout(function() {
             // return if there is nothing to resize or is hidden
-            if(!gd.layout || (gd.layout.width && gd.layout.height) || isHidden(gd)) {
+            if(!gd.layout || (gd.layout.width && gd.layout.height) || Lib.isHidden(gd)) {
                 resolve(gd);
                 return;
             }

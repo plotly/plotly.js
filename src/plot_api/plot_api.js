@@ -182,7 +182,7 @@ function plot(gd, data, layout, config) {
     if(gd._context.responsive) {
         if(!gd._responsiveChartHandler) {
             // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function() { Plots.resize(gd); };
+            gd._responsiveChartHandler = function() { if(!Lib.isHidden(gd)) Plots.resize(gd); };
 
             // Listen to window resize
             window.addEventListener('resize', gd._responsiveChartHandler);

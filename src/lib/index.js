@@ -1171,3 +1171,8 @@ lib.formatPercent = function(ratio, n) {
     }
     return str;
 };
+
+lib.isHidden = function(gd) {
+    var display = window.getComputedStyle(gd).display;
+    return !display || display === 'none';
+};
