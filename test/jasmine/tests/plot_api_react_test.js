@@ -15,6 +15,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var mockLists = require('../assets/mock_lists');
 var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
+var delay = require('../assets/delay');
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 
@@ -944,7 +945,10 @@ describe('Plotly.react and uirevision attributes', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
 
     function checkCloseIfArray(val1, val2, msg) {
         if(Array.isArray(val1) && Array.isArray(val2)) {
@@ -1762,7 +1766,7 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editEditable, checkAttrs(true), checkAttrs).then(done);
     });
 
-    it('@noCI @gl preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
+    it('@gl preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
         function fig(mainRev, traceRev) {
             return {
                 data: [{
@@ -1805,16 +1809,18 @@ describe('Plotly.react and uirevision attributes', function() {
             .then(function() {
                 return drag({node: axisDragNode(0), dpos: [0, 50], noCover: true});
             })
+            .then(delay(100))
             .then(function() {
                 return drag({node: axisDragNode(0), dpos: [0, -50], noCover: true});
             })
+            .then(delay(100))
             .then(function() {
                 return drag({node: axisDragNode(1), dpos: [0, -50], noCover: true});
             });
         }
 
         _run(fig, editTrace, checkState([attrs(true)]), checkState([attrs()])).then(done);
-    });
+    }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
     it('preserves editable: true axis titles using the axis uirevisions', function(done) {
         function fig(mainRev, axRev) {
