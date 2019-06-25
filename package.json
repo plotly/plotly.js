@@ -66,7 +66,7 @@
     "d3-force": "^1.0.6",
     "d3-hierarchy": "^1.1.8",
     "d3-interpolate": "1",
-    "d3-sankey-circular": "git@github.com:antoinerg/d3-sankey-circular.git#8943bbd049c4651dbb230aa0e55ee8aad5d85afd",
+    "@plotly/d3-sankey-circular": "0.33.1",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.2",
