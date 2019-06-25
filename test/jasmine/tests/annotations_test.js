@@ -17,7 +17,6 @@ var drag = require('../assets/drag');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 
-
 describe('Test annotations', function() {
     'use strict';
 
@@ -1344,10 +1343,7 @@ describe('annotation effects', function() {
     function _click(pos, opts) {
         return new Promise(function(resolve) {
             click(pos[0], pos[1], opts);
-
-            setTimeout(function() {
-                resolve();
-            }, DBLCLICKDELAY * 1.1);
+            setTimeout(resolve, DBLCLICKDELAY * 1.1);
         });
     }
 
@@ -1370,7 +1366,7 @@ describe('annotation effects', function() {
         clickData = [];
 
         gd.on('plotly_clickannotation', function(evt) {
-            expect(evt.event).toEqual(jasmine.objectContaining({type: 'click'}));
+            evt.eventType = evt.event.type;
             evt.button = evt.event.button;
             if(evt.event.ctrlKey) evt.ctrlKey = true;
             delete evt.event;
@@ -1448,7 +1444,8 @@ describe('annotation effects', function() {
                 index: 1,
                 annotation: gd.layout.annotations[1],
                 fullAnnotation: gd._fullLayout.annotations[1],
-                button: 0
+                button: 0,
+                eventType: 'click'
             }]);
 
             expect(gd._fullLayout.annotations[0].hoverlabel).toBeUndefined();
@@ -1473,7 +1470,8 @@ describe('annotation effects', function() {
                 index: 0,
                 annotation: gd.layout.annotations[0],
                 fullAnnotation: gd._fullLayout.annotations[0],
-                button: 0
+                button: 0,
+                eventType: 'click'
             }]);
 
             return Plotly.relayout(gd, {
@@ -1528,7 +1526,56 @@ describe('annotation effects', function() {
                 index: 1,
                 annotation: gd.layout.annotations[1],
                 fullAnnotation: gd._fullLayout.annotations[1],
-                button: 0
+                button: 0,
+                eventType: 'click'
+            }]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should register clicks even in editable:true mode', function(done) {
+        function clickForTextEdit(pos) {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_relayout', resolve);
+
+                setTimeout(function() {
+                    reject('Did not trigger plotly_relayout');
+                }, DBLCLICKDELAY * 2);
+
+                click(pos[0], pos[1]);
+
+                setTimeout(function() {
+                    var input = d3.select('.plugin-editable.editable');
+                    input.node().dispatchEvent(new KeyboardEvent('blur'));
+                }, DBLCLICKDELAY * 1.1);
+            });
+        }
+
+        makePlot([
+            {x: 50, y: 50, text: 'hi', width: 50, height: 40, ax: 0, ay: -40, xshift: -50, yshift: 50},
+            {x: 20, y: 20, text: 'bye', height: 40, showarrow: false},
+            {x: 80, y: 80, text: 'why?', ax: 0, ay: -40}
+        ], {editable: true})
+        .then(initClickTests)
+        .then(function() { return clickForTextEdit(pos0); })
+        .then(function() {
+            assertClickData([]);
+        })
+        .then(function() {
+            return Plotly.relayout(gd, {
+                'annotations[1].captureevents': true,
+                'annotations[2].captureevents': true
+            });
+        })
+        .then(function() { return clickForTextEdit(pos1); })
+        .then(function() {
+            assertClickData([{
+                index: 1,
+                annotation: gd.layout.annotations[1],
+                fullAnnotation: gd._fullLayout.annotations[1],
+                button: 0,
+                eventType: 'mousedown'
             }]);
         })
         .catch(failTest)
