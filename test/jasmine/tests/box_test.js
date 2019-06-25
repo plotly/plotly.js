@@ -274,8 +274,8 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'min: 0.2',
-            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'min: 0.1', 'q3: 0.6', 'max: 0.9'
+            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'q1: 0.1',
+            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'q1: 0.2', 'q3: 0.6', 'max: 0.9'
         ],
         name: [
             '', 'kale', '', '', 'radishes', '', '',
@@ -437,6 +437,23 @@ describe('Test box hover:', function() {
         },
         nums: '0.6',
         name: 'pt #0'
+    }, {
+        desc: 'when zoomed in, within q1-q3 making min/q1 and max/q3 overlap',
+        mock: {
+            data: [{
+                type: 'box',
+                y: [1, 2, 2, 3]
+            }],
+            layout: {
+                yaxis: {range: [1.6, 2.4]},
+                width: 400,
+                height: 400
+            }
+        },
+        pos: [200, 200],
+        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1'],
+        name: ['', '', '', '', ''],
+        axis: 'trace 0'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);

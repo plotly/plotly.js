@@ -151,7 +151,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     // box plots: each "point" gets many labels
     var usedVals = {};
-    var attrs = ['med', 'min', 'q1', 'q3', 'max'];
+    var attrs = ['med', 'q1', 'q3', 'min', 'max'];
 
     if(trace.boxmean || (trace.meanline || {}).visible) {
         attrs.push('mean');
@@ -171,6 +171,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         var valPx = vAxis.c2p(val, true);
         var pointData2 = Lib.extendFlat({}, pointData);
 
+        pointData2.attr = attr;
         pointData2[vLetter + '0'] = pointData2[vLetter + '1'] = valPx;
         pointData2[vLetter + 'LabelVal'] = val;
         pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val);
