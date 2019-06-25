@@ -5,7 +5,7 @@
     "mode": "number+delta",
     "number": {
       "align": "middle",
-      "suffix": "km/h"
+      "suffix": " km/h"
     },
     "value": 43,
     "delta": {
@@ -18,7 +18,7 @@
     "mode": "number+delta",
     "number": {
       "align": "middle",
-      "suffix": "km/h"
+      "suffix": " km/h"
     },
     "value": 43,
     "delta": {
@@ -31,7 +31,7 @@
     "mode": "number+delta",
     "number": {
       "align": "middle",
-      "suffix": "km/h"
+      "suffix": " km/h"
     },
     "value": 43,
     "delta": {
@@ -44,7 +44,7 @@
     "mode": "number+delta",
     "number": {
       "align": "middle",
-      "suffix": "km/h"
+      "suffix": " km/h"
     },
     "value": 43,
     "delta": {

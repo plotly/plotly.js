@@ -19,7 +19,6 @@
       "gauge": {
         "bgcolor": "rgba(255, 255, 255, 0.25)"
       },
-      "max": 500,
       "value": 450
     }, {
         "domain": {
@@ -36,7 +35,6 @@
         "gauge": {
           "bgcolor": "rgba(255, 255, 255, 0.25)"
         },
-        "max": 500,
         "value": 350
     }, {
         "domain": {
@@ -53,7 +51,6 @@
         "gauge": {
           "bgcolor": "rgba(255, 255, 255, 0.25)"
         },
-        "max": 500,
         "value": 430
     }, {
       "domain": {
@@ -71,7 +68,6 @@
       "gauge": {
         "bgcolor": "rgba(255, 255, 255, 0.25)"
       },
-      "max": 500,
       "value": 450
     }, {
       "domain": {
@@ -88,7 +84,6 @@
       "gauge": {
         "bgcolor": "rgba(255, 255, 255, 0.25)"
       },
-      "max": 500,
       "value": 350
     }, {
       "domain": {
@@ -105,7 +100,6 @@
       "gauge": {
         "bgcolor": "rgba(255, 255, 255, 0.25)"
       },
-      "max": 500,
       "value": 450
     }
   ],

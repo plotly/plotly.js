@@ -7,17 +7,10 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var delay = require('../assets/delay');
 var failTest = require('../assets/fail_test');
-// var click = require('../assets/click');
-// var getClientPosition = require('../assets/get_client_position');
-// var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
+// var calc = require('@src/traces/indicator/calc').calc;
 var indicatorAttrs = require('@src/traces/indicator/attributes.js');
 var cn = require('@src/traces/indicator/constants.js');
-// var rgb = require('../../../src/components/color').rgb;
-
-// var customAssertions = require('../assets/custom_assertions');
-// var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
-// var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 describe('Indicator defaults', function() {
     function _supply(trace, layout) {
@@ -54,6 +47,11 @@ describe('Indicator defaults', function() {
     it('defaults to displaying relative changes in percentage', function() {
         var out = _supply({type: 'indicator', mode: 'delta', delta: {relative: true}, value: 1});
         expect(out.delta.valueformat).toBe('2%');
+    });
+
+    it('defaults delta.reference to current value', function() {
+        var out = _supply({type: 'indicator', mode: 'delta', value: 1});
+        expect(out.delta.reference).toBe(1);
     });
 
     // text alignment
@@ -175,11 +173,11 @@ describe('Indicator plot', function() {
                 return Plotly.restyle(gd, 'value', [1E6]);
             })
             .then(function() {
-                checkNumbersScale(0.7, 'should scale down');
+                checkNumbersScale(0.8, 'should scale down');
                 return Plotly.restyle(gd, 'value', [1]);
             })
             .then(function() {
-                checkNumbersScale(0.7, 'should not scale up');
+                checkNumbersScale(0.8, 'should not scale up');
             })
             .catch(failTest)
             .then(done);
@@ -243,11 +241,25 @@ describe('Indicator plot', function() {
             Plotly.newPlot(gd, [{
                 type: 'indicator',
                 mode: 'number',
-                number: {suffix: 'potatoes'},
+                number: {suffix: ' potatoes'},
                 value: 220,
             }])
             .then(function() {
                 assertContent('220 potatoes');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('supports prefix', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'indicator',
+                mode: 'number',
+                number: {prefix: 'Speed: '},
+                value: 220,
+            }])
+            .then(function() {
+                assertContent('Speed: 220');
             })
             .catch(failTest)
             .then(done);
@@ -417,22 +429,30 @@ describe('Indicator animations', function() {
     });
     afterEach(destroyGraphDiv);
 
-    it('should be able to transition via `Plotly.react`', function(done) {
-        var mock = {data: [{type: 'indicator', value: 100}], layout: {}};
-        mock.layout.transition = {duration: 200};
+    [['number', ''], ['delta', ''], ['number+delta', ''],
+    ['gauge', 'angular'], ['gauge', 'bullet']].forEach(function(comb) {
+        it('should transition via `Plotly.react` in mode ' + comb[0] + ', ' + comb[1], function(done) {
+            var mock = {data: [{
+                type: 'indicator',
+                mode: comb[0],
+                gauge: {shape: comb[1]},
+                value: 100
+            }], layout: {}};
+            mock.layout.transition = {duration: 200};
 
-        spyOn(Plots, 'transitionFromReact').and.callThrough();
+            spyOn(Plots, 'transitionFromReact').and.callThrough();
 
-        Plotly.plot(gd, mock)
-        .then(function() {
-            gd.data[0].value = '400';
-            return Plotly.react(gd, gd.data, gd.layout);
-        })
-        .then(delay(300))
-        .then(function() {
-            expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
-        })
-        .catch(failTest)
-        .then(done);
+            Plotly.plot(gd, mock)
+            .then(function() {
+                gd.data[0].value = '400';
+                return Plotly.react(gd, gd.data, gd.layout);
+            })
+            .then(delay(300))
+            .then(function() {
+                expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

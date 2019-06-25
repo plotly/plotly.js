@@ -5,7 +5,7 @@
     "mode": "number+delta",
     "align": "left",
     "number": {
-      "suffix": "km/h",
+      "suffix": " km/h",
       "font": {"size": 20}
     },
     "value": 43,
@@ -19,7 +19,8 @@
     "mode": "number+delta",
     "align": "right",
     "number": {
-      "suffix": "km/h",
+      "prefix": "prefix: ",
+      "suffix": " km/h",
       "font": {"size": 20}
     },
     "value": 43,
@@ -33,7 +34,7 @@
     "mode": "number+delta",
     "align": "left",
     "number": {
-      "suffix": "km/h",
+      "suffix": " km/h",
       "font": {"size": 20}
     },
     "value": 43,
@@ -47,7 +48,7 @@
     "mode": "number+delta",
     "align": "right",
     "number": {
-      "suffix": "km/h",
+      "suffix": " km/h",
       "font": {"size": 20}
     },
     "value": 43,

@@ -37,17 +37,18 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('vmax', 1.5 * traceOut.value);
 
     // Number attributes
-    var auto = [];
+    var auto = new Array(2);
     var bignumberFontSize;
     if(traceOut._hasNumber) {
         coerce('number.valueformat');
         coerce('number.font.color', layout.font.color);
         coerce('number.font.family', layout.font.family);
-        coerce('number.font.size', 'auto');
-        if(traceOut.number.font.size === 'auto') {
+        coerce('number.font.size');
+        if(!traceOut.number.font.size) {
             traceOut.number.font.size = cn.defaultNumberFontSize;
             auto[0] = true;
         }
+        coerce('number.prefix');
         coerce('number.suffix');
         bignumberFontSize = traceOut.number.font.size;
     }
@@ -57,8 +58,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(traceOut._hasDelta) {
         coerce('delta.font.color', layout.font.color);
         coerce('delta.font.family', layout.font.family);
-        coerce('delta.font.size', 'auto');
-        if(traceOut.delta.font.size === 'auto') {
+        coerce('delta.font.size');
+        if(!traceOut.delta.font.size) {
             traceOut.delta.font.size = (traceOut._hasNumber ? 0.5 : 1) * (bignumberFontSize || cn.defaultNumberFontSize);
             auto[1] = true;
         }
@@ -133,6 +134,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         axisIn = {};
         if(gaugeIn) axisIn = gaugeIn.axis || {};
         axisOut = Template.newContainer(gaugeOut, 'axis');
+        coerceGaugeAxis('visible');
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
 
         var opts = {outerTicks: false, font: layout.font};

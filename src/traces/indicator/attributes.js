@@ -8,9 +8,6 @@
 
 'use strict';
 
-// var plotAttrs = require('../../plots/attributes');
-// var domainAttrs = require('../../plots/domain').attributes;
-
 var extendFlat = require('../../lib/extend').extendFlat;
 var extendDeep = require('../../lib/extend').extendDeep;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -102,7 +99,13 @@ module.exports = {
         editType: 'calc',
         role: 'info',
         flags: ['number', 'delta', 'gauge'],
-        dflt: 'number'
+        dflt: 'number',
+        description: [
+            'Determines how the value is displayed on the graph.',
+            '`number` displays the value numerically in text.',
+            '`delta` displays the difference to a reference value in text.',
+            'Finally, `gauge` displays the value graphically on an axis.',
+        ].join(' ')
     },
     value: {
         valType: 'number',
@@ -189,6 +192,15 @@ module.exports = {
                 'Set the font used to display main number'
             ].join(' ')
         }),
+        prefix: {
+            valType: 'string',
+            dflt: '',
+            role: 'info',
+            editType: 'plot',
+            description: [
+                'Sets a prefix appearing before the number.'
+            ].join(' ')
+        },
         suffix: {
             valType: 'string',
             dflt: '',
@@ -206,7 +218,8 @@ module.exports = {
             role: 'info',
             editType: 'calc',
             description: [
-                'Sets the reference value to compute the delta.'
+                'Sets the reference value to compute the delta.',
+                'By default, it is set to the current value.'
             ].join(' ')
         },
         position: {
@@ -327,6 +340,9 @@ module.exports = {
             description: 'Sets the width (in px) of the border enclosing the gauge.'
         },
         axis: overrideAll({
+            visible: extendDeep({}, axesAttrs.visible, {
+                dflt: true
+            }),
             // tick and title properties named and function exactly as in axes
             tickmode: axesAttrs.tickmode,
             nticks: axesAttrs.nticks,
