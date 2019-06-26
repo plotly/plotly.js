@@ -41,7 +41,6 @@ describe('ModeBar', function() {
                 _modebardiv: d3.select(getMockModeBarTree()),
                 _has: Plots._hasPlotType,
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
-                _basePlotModules: [],
                 modebar: {
                     orientation: 'h',
                     bgcolor: 'rgba(255,255,255,0.7)',
@@ -349,6 +348,7 @@ describe('ModeBar', function() {
             var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullData = [{type: 'scatter'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -412,6 +412,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
+            gd._fullData = [{type: 'scatter'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -429,6 +430,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'gl3d' }];
+            gd._fullData = [{type: 'scatter3d'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -446,6 +448,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'geo' }];
+            gd._fullData = [{type: 'scattergeo'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -486,6 +489,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'mapbox' }];
+            gd._fullData = [{type: 'scattermapbox'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -527,6 +531,7 @@ describe('ModeBar', function() {
             var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'gl2d' }];
             gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullData = [{type: 'scattergl'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -542,6 +547,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'pie' }];
+            gd._fullData = [{type: 'pie'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -559,6 +565,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'gl3d' }];
+            gd._fullData = [{type: 'scatter'}, {type: 'scatter3d'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -577,6 +584,7 @@ describe('ModeBar', function() {
             var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'geo' }];
             gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullData = [{type: 'scatter'}, {type: 'scattergeo'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -642,6 +650,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'geo' }, { name: 'gl3d' }];
+            gd._fullData = [{type: 'scattergeo'}, {type: 'scatter3d'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -658,6 +667,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'ternary' }];
+            gd._fullData = [{type: 'scatterternary'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -696,6 +706,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'ternary' }, { name: 'cartesian' }];
+            gd._fullData = [{type: 'scatterternary'}, {type: 'scatter'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -713,6 +724,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'ternary' }, { name: 'gl3d' }];
+            gd._fullData = [{ type: 'scatterternary' }, { type: 'scatter3d' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -726,7 +738,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._basePlotModules = [{ name: 'indicator' }];
+            gd._fullData = [{ type: 'indicator' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -741,7 +753,8 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._basePlotModules = [{ name: 'indicator' }, {name: 'pie'}];
+            gd._fullLayout._basePlotModules = [{ name: 'pie' }];
+            gd._fullData = [{ type: 'indicator' }, {type: 'pie'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -794,6 +807,7 @@ describe('ModeBar', function() {
         it('displays/hides cloud link according to showSendToCloud config arg', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'pie' }];
+            gd._fullData = [{type: 'pie'}];
             manageModeBar(gd);
             checkButtons(gd._fullLayout._modeBar, getButtons([
                 ['toImage'],
@@ -823,6 +837,7 @@ describe('ModeBar', function() {
             var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullData = [{type: 'scatter'}];
             return gd;
         }
 
@@ -833,6 +848,7 @@ describe('ModeBar', function() {
             expect(countButtons(gd._fullLayout._modeBar)).toEqual(11);
 
             gd._fullLayout._basePlotModules = [{ name: 'gl3d' }];
+            gd._fullData = [{type: 'scatter3d'}];
             manageModeBar(gd);
 
             expect(countButtons(gd._fullLayout._modeBar)).toEqual(9);
