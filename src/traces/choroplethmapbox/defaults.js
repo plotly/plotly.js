@@ -31,8 +31,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     traceOut._length = Math.min(locations.length, z.length);
 
-    // TODO
-    // coerce('below');
+    coerce('below');
 
     coerce('text');
     coerce('hovertext');

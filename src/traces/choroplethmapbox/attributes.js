@@ -53,18 +53,22 @@ module.exports = extendFlat({
         ].join(' ')
     },
 
-    // TODO agree on name
-    // 'below' is used currently for layout.mapbox.layers, it's not very
-    // plotly-esque though
-    // https://docs.mapbox.com/mapbox-gl-js/example/geojson-layer-in-stack/
+    // TODO agree on name / behaviour
+    //
+    // 'below' is used currently for layout.mapbox.layers,
+    // even though it's not very plotly-esque.
+    //
+    // Note also, that the mapbox-gl style don't all have the same layers,
+    // see https://codepen.io/etpinard/pen/ydVMwM for full list
     below: {
         valType: 'string',
-        dflt: '',
         role: 'info',
+        editType: 'plot',
         description: [
             'Determines if the choropleth polygons will be inserted',
             'before the layer with the specified ID.',
-            'If omitted or set to \'\',',
+            'By default, choroplethmapbox traces are placed above the water layers.',
+            'If set to \'\',',
             'the layer will be inserted above every existing layer.'
         ].join(' ')
     },
@@ -78,7 +82,7 @@ module.exports = extendFlat({
             width: extendFlat({}, choroplethAttrs.marker.line.width, {editType: 'plot'}),
             editType: 'calc'
         },
-        // TODO maybe having a dflt less than 1 would be better?
+        // TODO maybe having a dflt less than 1, together with `below:''` would be better?
         opacity: extendFlat({}, choroplethAttrs.marker.opacity, {editType: 'plot'}),
         editType: 'calc'
     },

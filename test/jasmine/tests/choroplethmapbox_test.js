@@ -3,6 +3,7 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var convertModule = require('@src/traces/choroplethmapbox/convert');
+var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -519,7 +520,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
 
         if(!fig.layout) fig.layout = {};
         if(!fig.layout.mapbox) fig.layout.mapbox = {};
-        fig.layout.mapbox.accesstoken = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
+        fig.layout.mapbox.accesstoken = MAPBOX_ACCESS_TOKEN;
 
         var pos = s.pos || [270, 220];
 
@@ -578,4 +579,134 @@ describe('@noCI Test choroplethmapbox hover:', function() {
             run(s, done);
         });
     });
+});
+
+describe('@noCI Test choroplethmapbox interactions:', function() {
+    var gd;
+
+    var geojson = {
+        type: 'Feature',
+        id: 'AL',
+        geometry: {
+            type: 'Polygon',
+            coordinates: [[
+                [-87.359296, 35.00118 ], [-85.606675, 34.984749 ], [-85.431413, 34.124869 ], [-85.184951, 32.859696 ],
+                [-85.069935, 32.580372 ], [-84.960397, 32.421541 ], [-85.004212, 32.322956 ], [-84.889196, 32.262709 ],
+                [-85.058981, 32.13674 ], [-85.053504, 32.01077 ], [-85.141136, 31.840985 ], [-85.042551, 31.539753 ],
+                [-85.113751, 31.27686 ], [-85.004212, 31.003013 ], [-85.497137, 30.997536 ], [-87.600282, 30.997536 ],
+                [-87.633143, 30.86609 ], [-87.408589, 30.674397 ], [-87.446927, 30.510088 ], [-87.37025, 30.427934 ],
+                [-87.518128, 30.280057 ], [-87.655051, 30.247195 ], [-87.90699, 30.411504 ], [-87.934375, 30.657966 ],
+                [-88.011052, 30.685351 ], [-88.10416, 30.499135 ], [-88.137022, 30.318396 ], [-88.394438, 30.367688 ],
+                [-88.471115, 31.895754 ], [-88.241084, 33.796253 ], [-88.098683, 34.891641 ], [-88.202745, 34.995703 ],
+                [-87.359296, 35.00118 ]
+            ]]
+        }
+    };
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+        setTimeout(done, 200);
+    });
+
+    it('@gl should be able to add and remove traces', function(done) {
+        function _assert(msg, exp) {
+            var map = gd._fullLayout.mapbox._subplot.map;
+            var layers = map.getStyle().layers;
+
+            expect(layers.length).toBe(exp.layerCnt, 'total # of layers |' + msg);
+        }
+
+        var trace0 = {
+            type: 'choroplethmapbox',
+            locations: ['AL'],
+            z: [10],
+            geojson: geojson
+        };
+
+        var trace1 = {
+            type: 'choroplethmapbox',
+            locations: ['AL'],
+            z: [1],
+            geojson: geojson,
+            marker: {opacity: 0.3}
+        };
+
+        Plotly.plot(gd,
+            [trace0, trace1],
+            {mapbox: {style: 'basic'}},
+            {mapboxAccessToken: MAPBOX_ACCESS_TOKEN}
+        )
+        .then(function() {
+            _assert('base', { layerCnt: 24 });
+        })
+        .then(function() { return Plotly.deleteTraces(gd, [0]); })
+        .then(function() {
+            _assert('w/o trace0', { layerCnt: 22 });
+        })
+        .then(function() { return Plotly.addTraces(gd, [trace0]); })
+        .then(function() {
+            _assert('after adding trace0', { layerCnt: 24 });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should be able to restyle *below*', function(done) {
+        function getLayerIds() {
+            var subplot = gd._fullLayout.mapbox._subplot;
+            var layers = subplot.map.getStyle().layers;
+            var layerIds = layers.map(function(l) { return l.id; });
+            return layerIds;
+        }
+
+        Plotly.plot(gd, [{
+            type: 'choroplethmapbox',
+            locations: ['AL'],
+            z: [10],
+            geojson: geojson,
+            uid: 'a'
+        }])
+        .then(function() {
+            expect(getLayerIds()).withContext('default *below*').toEqual([
+                'background', 'landuse_overlay_national_park', 'landuse_park',
+                'waterway', 'water',
+                'a-layer-fill', 'a-layer-line',
+                'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
+                'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
+                'admin_country', 'poi_label', 'road_major_label',
+                'place_label_other', 'place_label_city', 'country_label'
+            ]);
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', ''); })
+        .then(function() {
+            expect(getLayerIds()).withContext('default *below*').toEqual([
+                'background', 'landuse_overlay_national_park', 'landuse_park',
+                'waterway', 'water',
+                'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
+                'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
+                'admin_country', 'poi_label', 'road_major_label',
+                'place_label_other', 'place_label_city', 'country_label',
+                'a-layer-fill', 'a-layer-line'
+            ]);
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', 'place_label_other'); })
+        .then(function() {
+            expect(getLayerIds()).withContext('default *below*').toEqual([
+                'background', 'landuse_overlay_national_park', 'landuse_park',
+                'waterway', 'water',
+                'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
+                'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
+                'admin_country', 'poi_label', 'road_major_label',
+                'a-layer-fill', 'a-layer-line',
+                'place_label_other', 'place_label_city', 'country_label',
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
