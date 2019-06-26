@@ -41,6 +41,7 @@ describe('ModeBar', function() {
                 _modebardiv: d3.select(getMockModeBarTree()),
                 _has: Plots._hasPlotType,
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
+                _basePlotModules: [],
                 modebar: {
                     orientation: 'h',
                     bgcolor: 'rgba(255,255,255,0.7)',
@@ -712,6 +713,35 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'ternary' }, { name: 'gl3d' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar without hover button when all traces are noHover', function() {
+            var buttons = getButtons([
+                ['toImage']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'indicator' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar with hover button even in the presence of one noHover trace', function() {
+            var buttons = getButtons([
+                ['toImage'],
+                ['hoverClosestPie']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'indicator' }, {name: 'pie'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;

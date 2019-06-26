@@ -146,6 +146,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
     if(hasCartesian) {
         hoverGroup = ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian'];
     }
+    if(hasNoHover(fullLayout)) {
+        hoverGroup = [];
+    }
 
     if((hasCartesian || hasGL2D) && !allAxesFixed) {
         zoomGroup = ['zoomIn2d', 'zoomOut2d', 'autoScale2d'];
@@ -214,6 +217,14 @@ function isSelectable(fullData) {
     }
 
     return selectable;
+}
+
+// check whether all plot modules in fullLayout are noHover
+function hasNoHover(fullLayout) {
+    for(var i = 0; i < fullLayout._basePlotModules.length; i++) {
+        if(!Registry.traceIs(fullLayout._basePlotModules[i].name, 'noHover')) return false;
+    }
+    return true;
 }
 
 function appendButtonsToGroups(groups, buttons) {
