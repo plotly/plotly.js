@@ -122,7 +122,7 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
         var gaugeBg, gaugeOutline;
         if(hasGauge) {
             gaugeBg = {
-                range: [trace.vmin, trace.vmax],
+                range: trace.gauge.axis.range,
                 color: trace.gauge.bgcolor,
                 line: {
                     color: trace.gauge.bordercolor,
@@ -132,7 +132,7 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
             };
 
             gaugeOutline = {
-                range: [trace.vmin, trace.vmax],
+                range: trace.gauge.axis.range,
                 color: 'rgba(0, 0, 0, 0)',
                 line: {
                     color: trace.gauge.bordercolor,
@@ -251,11 +251,11 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
 
     // Draw bullet
     var bulletHeight = size.h; // use all vertical domain
-    var innerBulletHeight = trace.gauge.value.thickness * bulletHeight;
+    var innerBulletHeight = trace.gauge.bar.thickness * bulletHeight;
     var bulletLeft = domain.x[0];
     var bulletRight = domain.x[0] + (domain.x[1] - domain.x[0]) * ((trace._hasNumber || trace._hasDelta) ? (1 - cn.bulletNumberDomainSize) : 1);
 
-    ax = mockAxis(gd, opts, [trace.vmin, trace.vmax]);
+    ax = mockAxis(gd, opts, trace.gauge.axis.range);
     ax._id = 'xbulletaxis';
     ax.domain = [bulletLeft, bulletRight];
     ax.setScale();
@@ -299,7 +299,7 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
     targetBullet.exit().remove();
 
     // Draw value bar with transitions
-    var fgBullet = bullet.selectAll('g.fg-bullet').data([trace.gauge.value]);
+    var fgBullet = bullet.selectAll('g.fg-bullet').data([trace.gauge.bar]);
     fgBullet.enter().append('g').classed('fg-bullet', true).append('rect');
     fgBullet.select('rect')
         .attr('height', innerBulletHeight)
@@ -312,10 +312,10 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
             .ease(transitionOpts.easing)
             .each('end', function() { onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); })
-            .attr('width', Math.max(0, ax.c2p(Math.min(trace.vmax, cd[0].y))));
+            .attr('width', Math.max(0, ax.c2p(Math.min(trace.gauge.axis.range[1], cd[0].y))));
     } else {
         fgBullet.select('rect')
-            .attr('width', Math.max(0, ax.c2p(Math.min(trace.vmax, cd[0].y))));
+            .attr('width', Math.max(0, ax.c2p(Math.min(trace.gauge.axis.range[1], cd[0].y))));
     }
     fgBullet.exit().remove();
 
@@ -358,7 +358,9 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
     // circular gauge
     var theta = Math.PI / 2;
     function valueToAngle(v) {
-        var angle = (v - trace.vmin) / (trace.vmax - trace.vmin) * Math.PI - theta;
+        var min = trace.gauge.axis.range[0];
+        var max = trace.gauge.axis.range[1];
+        var angle = (v - min) / (max - min) * Math.PI - theta;
         if(angle < -theta) return -theta;
         if(angle > theta) return theta;
         return angle;
@@ -395,7 +397,7 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
 
     ax = mockAxis(gd, opts);
     ax.type = 'linear';
-    ax.range = [trace.vmin, trace.vmax];
+    ax.range = trace.gauge.axis.range;
     ax._id = 'xangularaxis'; // or 'y', but I don't think this makes a difference here
     ax.setScale();
 
@@ -480,8 +482,8 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
     targetArc.select('path').call(drawArc).call(styleShape);
     targetArc.exit().remove();
     // Draw foreground with transition
-    var valueArcPath = arcPathGenerator(trace.gauge.value.thickness);
-    var fgArc = angularGauge.selectAll('g.fg-arc').data([trace.gauge.value]);
+    var valueArcPath = arcPathGenerator(trace.gauge.bar.thickness);
+    var fgArc = angularGauge.selectAll('g.fg-arc').data([trace.gauge.bar]);
     fgArc.enter().append('g').classed('fgarc', true).append('path');
     var fgArcPath = fgArc.select('path');
     if(hasTransition) {
@@ -540,8 +542,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
     }
     deltaDy -= MID_SHIFT * deltaFontSize;
 
-    var numbers = plotGroup.selectAll('text.numbers').data(cd);
-    numbers.enter().append('text').classed('numbers', true);
+    var numbers = Lib.ensureSingle(plotGroup, 'text', 'numbers');
 
     var data = [];
     if(trace._hasNumber) data.push('number');
@@ -615,7 +616,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         var delta = numbers.select('tspan.delta');
         delta
             .call(Drawing.font, trace.delta.font)
-            .each(function(d) { Color.fill(d3.select(this), deltaFill(d));})
+            .each(function() { Color.fill(d3.select(this), deltaFill(cd[0]));})
             .attr('x', deltaX)
             .attr('dy', deltaDy);
 

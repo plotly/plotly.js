@@ -9,6 +9,7 @@ var delay = require('../assets/delay');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 // var calc = require('@src/traces/indicator/calc').calc;
+var customAssertions = require('../assets/custom_assertions.js');
 var indicatorAttrs = require('@src/traces/indicator/attributes.js');
 var cn = require('@src/traces/indicator/constants.js');
 
@@ -208,6 +209,34 @@ describe('Indicator plot', function() {
                 .then(done);
             });
         });
+
+        it('always positions tspans in the right order', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'indicator',
+                value: 10
+            }])
+            .then(function() {
+                customAssertions.assertMultiNodeOrder(['tspan.number']);
+                return Plotly.restyle(gd, 'mode', 'delta');
+            })
+            .then(function() {
+                customAssertions.assertMultiNodeOrder(['tspan.delta']);
+                return Plotly.restyle(gd, 'mode', 'number+delta');
+            })
+            .then(function() {
+                customAssertions.assertMultiNodeOrder(['tspan.number', 'tspan.delta']);
+                return Plotly.restyle(gd, 'delta.position', 'left');
+            })
+            .then(function() {
+                customAssertions.assertMultiNodeOrder(['tspan.delta', 'tspan.number']);
+                return Plotly.restyle(gd, 'mode', 'gauge');
+            })
+            .then(function() {
+                customAssertions.assertMultiNodeOrder([]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('number', function() {
@@ -374,15 +403,17 @@ describe('Indicator plot', function() {
             expect(el.size()).toBe(cnt, 'selection "' + sel + '" does not have size ' + cnt);
         }
         function assertGauge(shape, cnt) {
-            assertElementCnt('g.' + shape, cnt);
-            assertElementCnt('g.' + shape + 'axis', cnt);
+            assertElementCnt(shape, cnt);
+            assertElementCnt(shape + 'axis', cnt);
         }
         function assert(flags) {
             // flags is an array denoting whether the figure [hasNumber, hasDelta, hasAngular, hasBullet]
-            assertElementCnt('tspan.number', flags[0]);
-            assertElementCnt('tspan.delta', flags[1]);
-            assertGauge('angular', flags[2]);
-            assertGauge('bullet', flags[3]);
+            var selector = ['tspan.number', 'tspan.delta', 'g.angular', 'g.bullet'];
+            [0, 1].forEach(function(i) { assertElementCnt(selector[i], flags[i]);});
+            [2, 3].forEach(function(i) { assertGauge(selector[i], flags[i]);});
+
+            var order = selector.filter(function(sel, i) { return flags[i] !== 0;});
+            customAssertions.assertMultiNodeOrder(order);
         }
 
         Plotly.newPlot(gd, [{

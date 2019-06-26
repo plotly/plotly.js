@@ -10,10 +10,12 @@
     },
     "type": "indicator",
     "mode": "number+gauge+delta",
-    "vmax": 300,
     "delta": {"reference": 200, "position": "right"},
     "gauge": {
       "shape": "bullet",
+      "axis": {
+        "range": [null, 300]
+      },
       "threshold": {
         "line": {
           "color": "black",
@@ -32,7 +34,7 @@
         "range": [150, 250],
         "color": "rgba(0, 0, 0, 0.25)"
       }],
-      "value": {
+      "bar": {
         "color": "rgba(0, 0, 0, 1)"
       }
     },
@@ -45,11 +47,13 @@
     "title": {"text": "<b>Profit</b>", "font": {"size": 14}},
     "type": "indicator",
     "mode": "number+gauge+delta",
-    "vmax": 100,
     "delta": {"reference": 200, "position": "bottom"},
     "target": 75,
     "gauge": {
       "shape": "bullet",
+      "axis": {
+        "range": [null, 100]
+      },
       "threshold": {
         "line": {
           "color": "black",
@@ -68,7 +72,7 @@
         "range": [25, 75],
         "color": "rgba(0, 0, 0, 0.25)"
       }],
-      "value": {
+      "bar": {
         "color": "rgba(0, 0, 0, 1)"
       }
     },
@@ -87,10 +91,12 @@
     },
     "type": "indicator",
     "mode": "number+gauge+delta",
-    "vmax": 300,
     "delta": {"reference": 200, "position": "top"},
     "gauge": {
       "shape": "bullet",
+      "axis": {
+        "range": [null, 300]
+      },
       "threshold": {
         "line": {
           "color": "black",
@@ -109,7 +115,7 @@
         "range": [150, 250],
         "color": "rgba(0, 0, 0, 0.25)"
       }],
-      "value": {
+      "bar": {
         "color": "rgba(0, 0, 0, 1)"
       }
     },

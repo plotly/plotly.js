@@ -68,29 +68,30 @@ var gaugeBarAttrs = {
     editType: 'calc'
 };
 
-var stepsAttrs = templatedArray('threshold', extendDeep({}, gaugeBarAttrs, {
-    range: {
-        valType: 'info_array',
-        role: 'info',
-        items: [
+var rangeAttr = {
+    valType: 'info_array',
+    role: 'info',
+    items: [
             {valType: 'number', editType: 'plot'},
             {valType: 'number', editType: 'plot'}
-        ],
-        editType: 'plot',
-        // impliedEdits: {'autorange': false},
-        description: [
-            'Sets the range of this axis.',
-            'If the axis `type` is *log*, then you must take the log of your',
-            'desired range (e.g. to set the range from 1 to 100,',
-            'set the range from 0 to 2).',
-            'If the axis `type` is *date*, it should be date strings,',
-            'like date data, though Date objects and unix milliseconds',
-            'will be accepted and converted to strings.',
-            'If the axis `type` is *category*, it should be numbers,',
-            'using the scale where each category is assigned a serial',
-            'number from zero in the order it appears.'
-        ].join(' ')
-    }
+    ],
+    editType: 'plot',
+    description: [
+        'Sets the range of this axis.',
+        'If the axis `type` is *log*, then you must take the log of your',
+        'desired range (e.g. to set the range from 1 to 100,',
+        'set the range from 0 to 2).',
+        'If the axis `type` is *date*, it should be date strings,',
+        'like date data, though Date objects and unix milliseconds',
+        'will be accepted and converted to strings.',
+        'If the axis `type` is *category*, it should be numbers,',
+        'using the scale where each category is assigned a serial',
+        'number from zero in the order it appears.'
+    ].join(' ')
+};
+
+var stepsAttrs = templatedArray('steps', extendDeep({}, gaugeBarAttrs, {
+    range: rangeAttr
 }));
 
 module.exports = {
@@ -129,24 +130,6 @@ module.exports = {
     },
     // position
     domain: domainAttrs({name: 'indicator', trace: true, editType: 'calc'}),
-
-    vmin: {
-        valType: 'number',
-        editType: 'calc',
-        role: 'info',
-        dflt: 0,
-        description: [
-            'Sets the minimum value of the gauge.'
-        ].join(' ')
-    },
-    vmax: {
-        valType: 'number',
-        editType: 'calc',
-        role: 'info',
-        description: [
-            'Sets the maximum value of the gauge.'
-        ].join(' ')
-    },
 
     title: {
         text: {
@@ -311,7 +294,7 @@ module.exports = {
                 'Set the shape of the gauge'
             ].join(' ')
         },
-        value: extendDeep({}, gaugeBarAttrs, {
+        bar: extendDeep({}, gaugeBarAttrs, {
             color: {dflt: 'green'},
             description: [
                 'Set the appearance of the gauge\'s value'
@@ -340,7 +323,8 @@ module.exports = {
             description: 'Sets the width (in px) of the border enclosing the gauge.'
         },
         axis: overrideAll({
-            visible: extendDeep({}, axesAttrs.visible, {
+            range: rangeAttr,
+            visible: extendFlat({}, axesAttrs.visible, {
                 dflt: true
             }),
             // tick and title properties named and function exactly as in axes
@@ -374,38 +358,24 @@ module.exports = {
         steps: stepsAttrs,
         threshold: {
             line: {
-                color: {
-                    valType: 'color',
-                    role: 'info',
-                    dflt: colorAttrs.defaultLine,
-                    editType: 'plot',
+                color: extendFlat({}, gaugeBarAttrs.line.color, {
                     description: [
                         'Sets the color of the threshold line.'
                     ].join(' ')
-                },
-                width: {
-                    valType: 'number',
-                    role: 'info',
-                    min: 0,
-                    dflt: 1,
-                    editType: 'plot',
+                }),
+                width: extendFlat({}, gaugeBarAttrs.line.width, {
                     description: [
                         'Sets the width (in px) of the threshold line.'
                     ].join(' ')
-                },
+                }),
                 editType: 'plot'
             },
-            thickness: {
-                valType: 'number',
-                role: 'info',
-                min: 0,
-                max: 1,
+            thickness: extendFlat({}, gaugeBarAttrs.thickness, {
                 dflt: 0.85,
-                editType: 'plot',
                 description: [
                     'Sets the thickness of the threshold line as a fraction of the thickness of the gauge.'
                 ].join(' ')
-            },
+            }),
             value: {
                 valType: 'number',
                 editType: 'calc',

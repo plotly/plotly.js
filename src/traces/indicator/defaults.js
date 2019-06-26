@@ -33,8 +33,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     traceOut._hasGauge = traceOut.mode.indexOf('gauge') !== -1;
 
     coerce('value');
-    coerce('vmin');
-    coerce('vmax', 1.5 * traceOut.value);
 
     // Number attributes
     var auto = new Array(2);
@@ -44,7 +42,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('number.font.color', layout.font.color);
         coerce('number.font.family', layout.font.family);
         coerce('number.font.size');
-        if(!traceOut.number.font.size) {
+        if(traceOut.number.font.size === undefined) {
             traceOut.number.font.size = cn.defaultNumberFontSize;
             auto[0] = true;
         }
@@ -59,7 +57,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('delta.font.color', layout.font.color);
         coerce('delta.font.family', layout.font.family);
         coerce('delta.font.size');
-        if(!traceOut.delta.font.size) {
+        if(traceOut.delta.font.size === undefined) {
             traceOut.delta.font.size = (traceOut._hasNumber ? 0.5 : 1) * (bignumberFontSize || cn.defaultNumberFontSize);
             auto[1] = true;
         }
@@ -107,12 +105,12 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerceGauge('borderwidth');
         coerceGauge('bordercolor');
 
-        // gauge value indicator
-        coerceGauge('value.color');
-        coerceGauge('value.line.color');
-        coerceGauge('value.line.width');
-        var defaultValueThickness = cn.valueThickness * (traceOut.gauge.shape === 'bullet' ? 0.5 : 1);
-        coerceGauge('value.thickness', defaultValueThickness);
+        // gauge bar indicator
+        coerceGauge('bar.color');
+        coerceGauge('bar.line.color');
+        coerceGauge('bar.line.width');
+        var defaultBarThickness = cn.valueThickness * (traceOut.gauge.shape === 'bullet' ? 0.5 : 1);
+        coerceGauge('bar.thickness', defaultBarThickness);
 
         // Gauge steps
         if(gaugeIn && gaugeIn.steps) {
@@ -135,8 +133,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         if(gaugeIn) axisIn = gaugeIn.axis || {};
         axisOut = Template.newContainer(gaugeOut, 'axis');
         coerceGaugeAxis('visible');
-        handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
+        coerceGaugeAxis('range', [0, 1.5 * traceOut.value]);
 
+        handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
         var opts = {outerTicks: false, font: layout.font};
         handleTickLabelDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
         handleTickMarkDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);

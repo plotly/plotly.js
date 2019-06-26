@@ -8,10 +8,10 @@
     "title": {"text": "Speed"},
     "type": "indicator",
     "mode": "gauge+number",
-    "vmax": 500,
     "delta": {"reference": 400},
     "gauge": {
       "axis": {
+        "range": [null, 500],
         "tickwidth": 1,
         "tickcolor": "white"
       },
@@ -43,10 +43,10 @@
     "title": {"text": "Speed<br><span style='font-size:0.8em;color:gray'>Subtitle</span>"},
     "type": "indicator",
     "mode": "gauge+delta",
-    "vmax": 500,
     "delta": {"reference": 400},
     "gauge": {
       "axis": {
+        "range": [null, 500],
         "tickwidth": 1,
         "tickcolor": "white"
       },
@@ -78,10 +78,10 @@
     "title": {"text": "Speed"},
     "type": "indicator",
     "mode": "gauge+number+delta",
-    "vmax": 500,
     "delta": {"reference": 400},
     "gauge": {
       "axis": {
+        "range": [null, 500],
         "tickwidth": 1,
         "tickcolor": "white"
       },
@@ -113,10 +113,10 @@
     "title": {"text": "Speed"},
     "type": "indicator",
     "mode": "gauge+number+delta",
-    "vmax": 500,
     "delta": {"reference": 400},
     "gauge": {
       "axis": {
+        "range": [null, 500],
         "tickwidth": 1,
         "tickcolor": "white"
       },
@@ -148,10 +148,10 @@
     "title": {"text": "Speed"},
     "type": "indicator",
     "mode": "gauge+number+delta",
-    "vmax": 500,
     "delta": {"reference": 400, "position": "top"},
     "gauge": {
       "axis": {
+        "range": [null, 500],
         "tickwidth": 1,
         "tickcolor": "white"
       },
