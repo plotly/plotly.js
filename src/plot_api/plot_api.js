@@ -3780,7 +3780,7 @@ function makePlotFramework(gd) {
     fullLayout._sunburstlayer = fullLayout._paper.append('g').classed('sunburstlayer', true);
 
     // single indicator layer for the whole plot
-    fullLayout._indicatorlayer = fullLayout._paper.append('g').classed('indicatorlayer', true);
+    fullLayout._indicatorlayer = fullLayout._toppaper.append('g').classed('indicatorlayer', true);
 
     // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
