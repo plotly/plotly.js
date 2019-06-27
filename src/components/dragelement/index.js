@@ -83,6 +83,9 @@ dragElement.init = function init(options) {
     var gd = options.gd;
     var numClicks = 1;
     var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
+    if(options.gd.layout.doubleClickDelay) {
+        DBLCLICKDELAY = options.gd.layout.doubleClickDelay;
+    }
     var element = options.element;
 
     var startX,

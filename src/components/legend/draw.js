@@ -37,6 +37,10 @@ module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
     var clipId = 'legend' + fullLayout._uid;
 
+    if(gd.layout.doubleClickDelay) {
+        DBLCLICKDELAY = gd.layout.doubleClickDelay;
+    }
+
     if(!fullLayout._infolayer || !gd.calcdata) return;
 
     if(!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
@@ -358,7 +362,6 @@ module.exports = function draw(gd) {
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     var trace = legendItem.data()[0][0].trace;
-
     var evtData = {
         event: evt,
         node: legendItem.node(),
