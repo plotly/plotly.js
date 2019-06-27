@@ -13,18 +13,16 @@ var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var parcoordsPlot = require('./plot');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
-var PARCOORDS = 'parcoords';
-
-exports.name = PARCOORDS;
+exports.name = 'parcoords';
 
 exports.plot = function(gd) {
-    var calcData = getModuleCalcData(gd.calcdata, PARCOORDS)[0];
+    var calcData = getModuleCalcData(gd.calcdata, 'parcoords')[0];
     if(calcData.length) parcoordsPlot(gd, calcData);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var hadParcoords = (oldFullLayout._has && oldFullLayout._has(PARCOORDS));
-    var hasParcoords = (newFullLayout._has && newFullLayout._has(PARCOORDS));
+    var hadParcoords = (oldFullLayout._has && oldFullLayout._has('parcoords'));
+    var hasParcoords = (newFullLayout._has && newFullLayout._has('parcoords'));
 
     if(hadParcoords && !hasParcoords) {
         oldFullLayout._paperdiv.selectAll('.parcoords').remove();

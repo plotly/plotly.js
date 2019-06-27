@@ -11,7 +11,9 @@
 var d3 = require('d3');
 var rgba = require('color-rgba');
 
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var svgTextUtils = require('../../lib/svg_text_utils');
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
 
@@ -20,11 +22,10 @@ var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
 
+var helpers = require('./helpers');
 var c = require('./constants');
 var brush = require('./axisbrush');
 var lineLayerMaker = require('./lines');
-
-function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
 
 function dimensionExtent(dimension) {
     var lo = dimension.range ? dimension.range[0] : Lib.aggNums(Math.min, null, dimension.values, dimension._length);
@@ -82,7 +83,9 @@ function domainScale(height, padding, dimension, tickvals, ticktext) {
         .range([height - padding, padding]);
 }
 
-function unitToPaddedPx(height, padding) { return d3.scale.linear().range([padding, height - padding]); }
+function unitToPaddedPx(height, padding) {
+    return d3.scale.linear().range([padding, height - padding]);
+}
 
 function domainToPaddedUnitScale(dimension, padFraction) {
     return d3.scale.linear()
@@ -134,13 +137,16 @@ function someFiltersActive(view) {
 function model(layout, d, i) {
     var cd0 = unwrap(d);
     var trace = cd0.trace;
-    var lineColor = cd0.lineColor;
+    var lineColor = helpers.convertTypedArray(cd0.lineColor);
     var line = trace.line;
+    var deselectedLines = {color: rgba(c.deselectedLineColor)};
     var cOpts = Colorscale.extractOpts(line);
     var cscale = cOpts.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
     var domain = trace.domain;
     var dimensions = trace.dimensions;
     var width = layout.width;
+    var labelAngle = trace.labelangle;
+    var labelSide = trace.labelside;
     var labelFont = trace.labelfont;
     var tickFont = trace.tickfont;
     var rangeFont = trace.rangefont;
@@ -164,11 +170,14 @@ function model(layout, d, i) {
 
     return {
         key: i,
-        colCount: dimensions.filter(visible).length,
+        colCount: dimensions.filter(helpers.isVisible).length,
         dimensions: dimensions,
         tickDistance: c.tickDistance,
         unitToColor: unitToColorScale(cscale),
         lines: lines,
+        deselectedLines: deselectedLines,
+        labelAngle: labelAngle,
+        labelSide: labelSide,
         labelFont: labelFont,
         tickFont: tickFont,
         rangeFont: rangeFont,
@@ -206,7 +215,7 @@ function viewModel(state, callbacks, model) {
 
     var uniqueKeys = {};
 
-    viewModel.dimensions = dimensions.filter(visible).map(function(dimension, i) {
+    viewModel.dimensions = dimensions.filter(helpers.isVisible).map(function(dimension, i) {
         var domainToPaddedUnit = domainToPaddedUnitScale(dimension, unitPad);
         var foundKey = uniqueKeys[dimension.label];
         uniqueKeys[dimension.label] = (foundKey || 0) + 1;
@@ -218,7 +227,7 @@ function viewModel(state, callbacks, model) {
         }
         var filterRange = filterRangeSpecified ?
             specifiedConstraint.map(function(d) { return d.map(domainToPaddedUnit); }) :
-            [[0, 1]];
+            [[-Infinity, Infinity]];
         var brushMove = function() {
             var p = viewModel;
             p.focusLayer && p.focusLayer.render(p.panels, true);
@@ -266,13 +275,16 @@ function viewModel(state, callbacks, model) {
             }
         } else tickvals = undefined;
 
+        truncatedValues = helpers.convertTypedArray(truncatedValues);
+        truncatedValues = helpers.convertTypedArray(truncatedValues);
+
         return {
             key: key,
             label: dimension.label,
             tickFormat: dimension.tickformat,
             tickvals: tickvals,
             ticktext: ticktext,
-            ordinal: !!tickvals,
+            ordinal: helpers.isOrdinal(dimension),
             multiselect: dimension.multiselect,
             xIndex: i,
             crossfilterDimensionIndex: i,
@@ -336,19 +348,88 @@ function parcoordsInteractionState() {
     };
 }
 
-module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, callbacks) {
+function calcTilt(angle, position) {
+    var dir = (position === 'top') ? 1 : -1;
+    var radians = angle * Math.PI / 180;
+    var dx = Math.sin(radians);
+    var dy = Math.cos(radians);
+    return {
+        dir: dir,
+        dx: dx,
+        dy: dy,
+        degrees: angle
+    };
+}
+
+function updatePanelLayout(yAxis, vm) {
+    var panels = vm.panels || (vm.panels = []);
+    var data = yAxis.data();
+    for(var i = 0; i < data.length - 1; i++) {
+        var p = panels[i] || (panels[i] = {});
+        var dim0 = data[i];
+        var dim1 = data[i + 1];
+        p.dim0 = dim0;
+        p.dim1 = dim1;
+        p.canvasX = dim0.canvasX;
+        p.panelSizeX = dim1.canvasX - dim0.canvasX;
+        p.panelSizeY = vm.model.canvasHeight;
+        p.y = 0;
+        p.canvasY = 0;
+    }
+}
+
+function calcAllTicks(cd) {
+    for(var i = 0; i < cd.length; i++) {
+        for(var j = 0; j < cd[i].length; j++) {
+            var dimensions = cd[i][j].trace.dimensions;
+            for(var k = 0; k < dimensions.length; k++) {
+                var dim = dimensions[k]._ax;
+
+                if(dim) {
+                    if(!dim.range) dim.range = [0, 1];
+                    if(!dim.dtick) dim.dtick = 0.1;
+                    dim.tickformat = dimensions[k].tickformat;
+
+                    Axes.calcTicks(dim);
+
+                    dim.cleanRange();
+                }
+            }
+        }
+    }
+}
+
+module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var state = parcoordsInteractionState();
 
-    var vm = styledData
+    var fullLayout = gd._fullLayout;
+    var svg = fullLayout._toppaper;
+    var glContainer = fullLayout._glcontainer;
+
+    function linearFormat(dim, v) {
+        return Axes.tickText(dim._ax, v, false).text;
+    }
+
+    function extremeText(d, isTop) {
+        if(d.ordinal) return '';
+        var domain = d.domainScale.domain();
+        var v = (domain[isTop ? domain.length - 1 : 0]);
+
+        return linearFormat(d.model.dimensions[d.visibleIndex], v);
+    }
+
+    calcAllTicks(cdModule);
+
+    var vm = cdModule
         .filter(function(d) { return unwrap(d).trace.visible; })
         .map(model.bind(0, layout))
         .map(viewModel.bind(0, state, callbacks));
 
-    parcoordsLineLayers.each(function(d, i) {
+    glContainer.each(function(d, i) {
         return Lib.extendFlat(d, vm[i]);
     });
 
-    var parcoordsLineLayer = parcoordsLineLayers.selectAll('.gl-canvas')
+    var glLayers = glContainer.selectAll('.gl-canvas')
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
@@ -357,7 +438,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
 
     var lastHovered = null;
 
-    var pickLayer = parcoordsLineLayer.filter(function(d) {return d.pick;});
+    var pickLayer = glLayers.filter(function(d) {return d.pick;});
 
     // emit hover / unhover event
     pickLayer
@@ -397,26 +478,26 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
             }
         });
 
-    parcoordsLineLayer
-        .style('opacity', function(d) {return d.pick ? 0.01 : 1;});
+    glLayers
+        .style('opacity', function(d) {return d.pick ? 0 : 1;});
 
     svg.style('background', 'rgba(255, 255, 255, 0)');
-    var parcoordsControlOverlay = svg.selectAll('.' + c.cn.parcoords)
+    var controlOverlay = svg.selectAll('.' + c.cn.parcoords)
         .data(vm, keyFun);
 
-    parcoordsControlOverlay.exit().remove();
+    controlOverlay.exit().remove();
 
-    parcoordsControlOverlay.enter()
+    controlOverlay.enter()
         .append('g')
         .classed(c.cn.parcoords, true)
         .style('shape-rendering', 'crispEdges')
         .style('pointer-events', 'none');
 
-    parcoordsControlOverlay.attr('transform', function(d) {
+    controlOverlay.attr('transform', function(d) {
         return 'translate(' + d.model.translateX + ',' + d.model.translateY + ')';
     });
 
-    var parcoordsControlView = parcoordsControlOverlay.selectAll('.' + c.cn.parcoordsControlView)
+    var parcoordsControlView = controlOverlay.selectAll('.' + c.cn.parcoordsControlView)
         .data(repeat, keyFun);
 
     parcoordsControlView.enter()
@@ -430,24 +511,6 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     var yAxis = parcoordsControlView.selectAll('.' + c.cn.yAxis)
         .data(function(vm) { return vm.dimensions; }, keyFun);
 
-    function updatePanelLayout(yAxis, vm) {
-        var panels = vm.panels || (vm.panels = []);
-        var dimData = yAxis.data();
-        var panelCount = dimData.length - 1;
-        for(var p = 0; p < panelCount; p++) {
-            var panel = panels[p] || (panels[p] = {});
-            var dim1 = dimData[p];
-            var dim2 = dimData[p + 1];
-            panel.dim1 = dim1;
-            panel.dim2 = dim2;
-            panel.canvasX = dim1.canvasX;
-            panel.panelSizeX = dim2.canvasX - dim1.canvasX;
-            panel.panelSizeY = vm.model.canvasHeight;
-            panel.y = 0;
-            panel.canvasY = 0;
-        }
-    }
-
     yAxis.enter()
         .append('g')
         .classed(c.cn.yAxis, true);
@@ -456,7 +519,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         updatePanelLayout(yAxis, vm);
     });
 
-    parcoordsLineLayer
+    glLayers
         .each(function(d) {
             if(d.viewModel) {
                 if(!d.lineLayer || callbacks) { // recreate in case of having callbacks e.g. restyle. Should we test for callback to be a restyle?
@@ -486,18 +549,18 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
             d.canvasX = d.x * d.model.canvasPixelRatio;
             yAxis
                 .sort(function(a, b) { return a.x - b.x; })
-                .each(function(dd, i) {
-                    dd.xIndex = i;
-                    dd.x = d === dd ? dd.x : dd.xScale(dd.xIndex);
-                    dd.canvasX = dd.x * dd.model.canvasPixelRatio;
+                .each(function(e, i) {
+                    e.xIndex = i;
+                    e.x = d === e ? e.x : e.xScale(e.xIndex);
+                    e.canvasX = e.x * e.model.canvasPixelRatio;
                 });
 
             updatePanelLayout(yAxis, p);
 
-            yAxis.filter(function(dd) { return Math.abs(d.xIndex - dd.xIndex) !== 0; })
+            yAxis.filter(function(e) { return Math.abs(d.xIndex - e.xIndex) !== 0; })
                 .attr('transform', function(d) { return 'translate(' + d.xScale(d.xIndex) + ', 0)'; });
             d3.select(this).attr('transform', 'translate(' + d.x + ', 0)');
-            yAxis.each(function(dd, i, ii) { if(ii === d.parent.key) p.dimensions[i] = dd; });
+            yAxis.each(function(e, i0, i1) { if(i1 === d.parent.key) p.dimensions[i0] = e; });
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
             p.focusLayer.render && p.focusLayer.render(p.panels);
         })
@@ -514,7 +577,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
             state.linePickActive(true);
 
             if(callbacks && callbacks.axesMoved) {
-                callbacks.axesMoved(p.key, p.dimensions.map(function(dd) {return dd.crossfilterDimensionIndex;}));
+                callbacks.axesMoved(p.key, p.dimensions.map(function(e) {return e.crossfilterDimensionIndex;}));
             }
         })
     );
@@ -552,7 +615,9 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
                     .tickValues(d.ordinal ? // and this works for ordinal scales
                         sdom :
                         null)
-                    .tickFormat(d.ordinal ? function(d) { return d; } : null)
+                    .tickFormat(function(v) {
+                        return helpers.isOrdinal(d) ? v : linearFormat(d.model.dimensions[d.visibleIndex], v);
+                    })
                     .scale(scale));
             Drawing.font(axis.selectAll('text'), d.model.tickFont);
         });
@@ -587,9 +652,32 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .style('pointer-events', 'auto');
 
     axisTitle
-        .attr('transform', 'translate(0,' + -c.axisTitleOffset + ')')
         .text(function(d) { return d.label; })
-        .each(function(d) { Drawing.font(d3.select(this), d.model.labelFont); });
+        .each(function(d) {
+            var e = d3.select(this);
+            Drawing.font(e, d.model.labelFont);
+            svgTextUtils.convertToTspans(e, gd);
+        })
+        .attr('transform', function(d) {
+            var tilt = calcTilt(d.model.labelAngle, d.model.labelSide);
+            var r = c.axisTitleOffset;
+            return (
+                (tilt.dir > 0 ? '' : 'translate(0,' + (2 * r + d.model.height) + ')') +
+                'rotate(' + tilt.degrees + ')' +
+                'translate(' + (-r * tilt.dx) + ',' + (-r * tilt.dy) + ')'
+            );
+        })
+        .attr('text-anchor', function(d) {
+            var tilt = calcTilt(d.model.labelAngle, d.model.labelSide);
+            var adx = Math.abs(tilt.dx);
+            var ady = Math.abs(tilt.dy);
+
+            if(2 * adx > ady) {
+                return (tilt.dir * tilt.dx < 0) ? 'start' : 'end';
+            } else {
+                return 'middle';
+            }
+        });
 
     var axisExtent = axisOverlays.selectAll('.' + c.cn.axisExtent)
         .data(repeat, keyFun);
@@ -610,12 +698,6 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
 
     var axisExtentTopText = axisExtentTop.selectAll('.' + c.cn.axisExtentTopText)
         .data(repeat, keyFun);
-
-    function extremeText(d, isTop) {
-        if(d.ordinal) return '';
-        var domain = d.domainScale.domain();
-        return d3.format(d.tickFormat)(domain[isTop ? domain.length - 1 : 0]);
-    }
 
     axisExtentTopText.enter()
         .append('text')
@@ -648,7 +730,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .call(styleExtentTexts);
 
     axisExtentBottomText
-        .text(function(d) { return extremeText(d); })
+        .text(function(d) { return extremeText(d, false); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
     brush.ensureAxisBrush(axisOverlays);
