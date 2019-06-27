@@ -101,7 +101,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         }
 
         // gauge background
-        coerceGauge('bgcolor');
+        coerceGauge('bgcolor', layout.paper_bgcolor);
         coerceGauge('borderwidth');
         coerceGauge('bordercolor');
 

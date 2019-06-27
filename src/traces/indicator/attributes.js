@@ -318,7 +318,7 @@ module.exports = {
         borderwidth: {
             valType: 'number',
             min: 0,
-            dflt: 0,
+            dflt: 1,
             role: 'info',
             editType: 'plot',
             description: 'Sets the width (in px) of the border enclosing the gauge.'
