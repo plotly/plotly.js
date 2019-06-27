@@ -89,6 +89,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
     if(traceOut._hasGauge) {
         gaugeIn = traceIn.gauge;
+        if(!gaugeIn) gaugeIn = {};
         gaugeOut = Template.newContainer(traceOut, 'gauge');
         coerceGauge('shape');
         var isBullet = traceOut._isBullet = traceOut.gauge.shape === 'bullet';
@@ -113,14 +114,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerceGauge('bar.thickness', defaultBarThickness);
 
         // Gauge steps
-        if(gaugeIn && gaugeIn.steps) {
-            handleArrayContainerDefaults(gaugeIn, gaugeOut, {
-                name: 'steps',
-                handleItemDefaults: stepDefaults
-            });
-        } else {
-            gaugeOut.steps = [];
-        }
+        handleArrayContainerDefaults(gaugeIn, gaugeOut, {
+            name: 'steps',
+            handleItemDefaults: stepDefaults
+        });
 
         // Gauge threshold
         coerceGauge('threshold.value');
@@ -135,10 +132,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerceGaugeAxis('visible');
         coerceGaugeAxis('range', [0, 1.5 * traceOut.value]);
 
+        var opts = {outerTicks: true};
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
-        var opts = {outerTicks: false, font: layout.font};
         handleTickLabelDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
-        handleTickMarkDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
+        handleTickMarkDefaults(axisIn, axisOut, coerceGaugeAxis, opts);
     } else {
         coerce('title.align', 'center');
         coerce('align', 'center');
@@ -146,9 +143,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
 }
 
-function stepDefaults(valueIn, valueOut) {
+function stepDefaults(stepIn, stepOut) {
     function coerce(attr, dflt) {
-        return Lib.coerce(valueIn, valueOut, attributes.gauge.steps, attr, dflt);
+        return Lib.coerce(stepIn, stepOut, attributes.gauge.steps, attr, dflt);
     }
 
     coerce('color');

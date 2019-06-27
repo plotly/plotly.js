@@ -8,20 +8,17 @@
   }, {
       "type": "indicator",
       "value": 120,
-      "delta": {"reference": 60},
       "gauge": {"shape": "bullet", "axis": {"visible": false}},
-      "domain": {"row": 1, "y": [0.15, 0.35]}
+      "domain": {"x": [0.05, 0.5], "y": [0.15, 0.35]}
   }, {
       "type": "indicator",
       "mode": "number+delta",
       "value": 120,
-      "delta": {"reference": 60},
       "domain": {"row": 0, "column": 1}
   }, {
       "type": "indicator",
       "mode": "delta",
       "value": 40,
-      "delta": {"reference": 60},
       "domain": {"row": 1, "column": 1}
   }],
   "layout": {
@@ -32,7 +29,9 @@
     "template": {
       "data": {
         "indicator": [{
-          "mode": "number+delta+gauge"
+          "title": {"text": "Title"},
+          "mode": "number+delta+gauge",
+          "delta": {"reference": 60}
         }]
       }
     }

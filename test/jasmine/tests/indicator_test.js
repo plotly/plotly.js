@@ -544,3 +544,84 @@ describe('Indicator animations', function() {
         });
     });
 });
+
+describe('Indicator attributes', function() {
+    var gd;
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+    afterEach(destroyGraphDiv);
+
+    it('are inherited from template', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'indicator',
+            value: 5,
+            mode: 'number+delta+gauge'
+        }], {template: {
+            data: {
+                indicator: [{
+                    delta: {
+                        valueformat: '0.9f',
+                        reference: -100,
+                        increasing: {
+                            symbol: 'a',
+                            color: 'blue'
+                        },
+                        font: {
+                            family: 'ArialDelta',
+                            size: 20
+                        }
+                    },
+                    number: {
+                        valueformat: '0.8f',
+                        suffix: 'km/h',
+                        font: {
+                            family: 'ArialNumber',
+                            color: 'blue'
+                        }
+                    },
+                    gauge: {
+                        axis: {
+                            range: [0, 500],
+                            tickcolor: 'white',
+                            tickangle: 20,
+                            tickwidth: 1
+                        },
+                        steps: [{
+                            range: [0, 250],
+                            color: 'rgba(255, 255, 0, 0.5)'
+                        }, {
+                            range: [250, 400],
+                            color: 'rgba(0, 0, 255, 0.75)'
+                        }]
+                    }
+                }]
+            }
+        }})
+        .then(function() {
+            // Check number
+            expect(gd._fullData[0].number.valueformat).toEqual('0.8f');
+            expect(gd._fullData[0].number.suffix).toEqual('km/h');
+            expect(gd._fullData[0].number.font.color).toEqual('blue');
+            expect(gd._fullData[0].number.font.family).toEqual('ArialNumber');
+
+            // Check delta
+            expect(gd._fullData[0].delta.valueformat).toEqual('0.9f');
+            expect(gd._fullData[0].delta.reference).toEqual(-100);
+            expect(gd._fullData[0].delta.increasing.symbol).toEqual('a');
+            expect(gd._fullData[0].delta.font.family).toEqual('ArialDelta');
+            expect(gd._fullData[0].delta.font.size).toEqual(20);
+
+            // Check gauge axis
+            expect(gd._fullData[0].gauge.axis.range).toEqual([0, 500], 'wrong gauge.axis.range');
+            expect(gd._fullData[0].gauge.axis.tickangle).toEqual(20, 'wrong gauge.axis.tickangle');
+            expect(gd._fullData[0].gauge.axis.tickcolor).toBe('white', 'wrong gauge.axis.tickcolor');
+
+            // TODO: check this works once handleArrayContainerDefaults supports template
+            // expect(gd._fullData[0].gauge.steps[0].range).toEqual([0, 250], 'wrong gauge.steps[0].range');
+            // expect(gd._fullData[0].gauge.steps[0].color).toEqual('rgba(255, 255, 0, 0.5)');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});

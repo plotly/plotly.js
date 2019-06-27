@@ -254,6 +254,7 @@ module.exports = {
                     'Sets the color for increasing value.'
                 ].join(' ')
             },
+            // TODO: add attribute to show sign
             editType: 'plot'
         },
         decreasing: {
@@ -275,6 +276,7 @@ module.exports = {
                     'Sets the color for increasing value.'
                 ].join(' ')
             },
+            // TODO: add attribute to hide sign
             editType: 'plot'
         },
         font: extendFlat({}, textFontAttrs, {
@@ -335,7 +337,7 @@ module.exports = {
             dtick: axesAttrs.dtick,
             tickvals: axesAttrs.tickvals,
             ticktext: axesAttrs.ticktext,
-            ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
+            ticks: extendFlat({}, axesAttrs.ticks, {dflt: 'outside'}),
             ticklen: axesAttrs.ticklen,
             tickwidth: axesAttrs.tickwidth,
             tickcolor: axesAttrs.tickcolor,
