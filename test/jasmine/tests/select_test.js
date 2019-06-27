@@ -670,7 +670,7 @@ describe('Click-to-select', function() {
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ]
           .forEach(function(testCase) {
-              it('@noCI trace type ' + testCase.label, function(done) {
+              it('@noCI @gl trace type ' + testCase.label, function(done) {
                   _run(testCase, done);
               });
           });
@@ -759,7 +759,7 @@ describe('Click-to-select', function() {
             testCase('mapbox', require('@mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ].forEach(function(testCase) {
-            it('@noCI for base plot ' + testCase.label, function(done) {
+            it('@noCI @gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
             });
         });
@@ -1945,7 +1945,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     });
 
-    it('@noCI should work on scattermapbox traces', function(done) {
+    it('@noCI @gl should work on scattermapbox traces', function(done) {
         var assertPoints = makeAssertPoints(['lon', 'lat']);
         var assertRanges = makeAssertRanges('mapbox');
         var assertLassoPoints = makeAssertLassoPoints('mapbox');
@@ -2002,7 +2002,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@noCI should work on choroplethmapbox traces', function(done) {
+    it('@noCI @gl should work on choroplethmapbox traces', function(done) {
         var assertPoints = makeAssertPoints(['location', 'z']);
         var assertRanges = makeAssertRanges('mapbox');
         var assertLassoPoints = makeAssertLassoPoints('mapbox');

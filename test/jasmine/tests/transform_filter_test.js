@@ -1377,7 +1377,7 @@ describe('filter resulting in empty coordinate arrays', function() {
         });
 
         mockList.forEach(function(d) {
-            it('@noCI ' + d[0], function(done) {
+            it('@noCI @gl' + d[0], function(done) {
                 gd = createGraphDiv();
                 var fig = filter2empty(d[1]);
                 Plotly.newPlot(gd, fig).catch(failTest).then(done);
