@@ -10,7 +10,8 @@ var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
     'boolean': [
         'info',
-        'nowatch', 'failFast', 'verbose', 'randomize',
+        'nowatch', 'verbose', 'randomize',
+        'failFast', 'doNotFailOnEmptyTestSuite',
         'Chrome', 'Firefox', 'IE11'
     ],
     alias: {
@@ -19,14 +20,15 @@ var argv = minimist(process.argv.slice(4), {
         'IE11': ['ie11'],
         'bundleTest': ['bundletest', 'bundle_test'],
         'nowatch': 'no-watch',
-        'failFast': 'fail-fast'
+        'failFast': 'fail-fast',
     },
     'default': {
         info: false,
         nowatch: isCI,
-        failFast: false,
         verbose: false,
         randomize: false,
+        failFast: false,
+        doNotFailOnEmptyTestSuite: false,
         width: '1035',
         height: '617'
     }
@@ -64,6 +66,7 @@ if(argv.info) {
         '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
         '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
+        '  - `--doNotFailOnEmptyTestSuite` (dflt: `false`): do not fail run when no spec are ran (either from bundle error OR tag filtering)',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
         '  - `--showSkipped` (dflt: `false`): show tests that are skipped',
         '  - `--randomize` (dflt: `false`): randomize test ordering (useful to detect bad test teardown)',
@@ -266,7 +269,11 @@ func.defaultConfig = {
         suppressPassed: true,
         suppressSkipped: false,
         showSpecTiming: false
-    }
+    },
+
+    // set to `true` e.g. for mapbox suites where:
+    //   --tags=gl --skip-tags=noCI result in empty test run
+    failOnEmptyTestSuite: !argv.doNotFailOnEmptyTestSuite
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
