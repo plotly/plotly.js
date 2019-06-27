@@ -484,7 +484,7 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
     // Draw foreground with transition
     var valueArcPath = arcPathGenerator(trace.gauge.bar.thickness);
     var fgArc = angularGauge.selectAll('g.fg-arc').data([trace.gauge.bar]);
-    fgArc.enter().append('g').classed('fgarc', true).append('path');
+    fgArc.enter().append('g').classed('fg-arc', true).append('path');
     var fgArcPath = fgArc.select('path');
     if(hasTransition) {
         fgArcPath
