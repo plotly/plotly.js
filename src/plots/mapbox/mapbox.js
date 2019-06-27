@@ -142,7 +142,7 @@ proto.fetchMapData = function(calcData) {
                 if(err) {
                     delete PlotlyGeoAssets[url];
                     var msg = err.status === 404 ?
-                        ('GeoJSON at URL ' + url + ' does not exist.') :
+                        ('GeoJSON at URL "' + url + '" does not exist.') :
                         ('Unexpected error while fetching from ' + url);
                     return reject(new Error(msg));
                 }

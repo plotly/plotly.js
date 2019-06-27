@@ -1351,7 +1351,7 @@ describe('@noCI Test mapbox GeoJSON fetching:', function() {
             actual = reason;
         })
         .then(function() {
-            expect(actual).toEqual(new Error('GeoJSON at URL invalidUrl does not exist.'));
+            expect(actual).toEqual(new Error('GeoJSON at URL "invalidUrl" does not exist.'));
             expect(window.PlotlyGeoAssets.invalidUrl).toBe(undefined);
         })
         .then(done);
