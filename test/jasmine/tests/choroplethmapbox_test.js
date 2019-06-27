@@ -670,7 +670,7 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
             z: [10],
             geojson: geojson,
             uid: 'a'
-        }])
+        }], {}, {mapboxAccessToken: MAPBOX_ACCESS_TOKEN})
         .then(function() {
             expect(getLayerIds()).withContext('default *below*').toEqual([
                 'background', 'landuse_overlay_national_park', 'landuse_park',
