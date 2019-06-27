@@ -72,6 +72,23 @@ describe('Test choroplethmapbox defaults:', function() {
         ]);
         expectVisibleFalse();
     });
+
+    it('should not coerce *marker.line.color* when *marker.line.width* is *0*', function() {
+        _supply([{
+            locations: ['CAN', 'USA'],
+            z: [1, 2],
+            geojson: 'url',
+            marker: {
+                line: {
+                    color: 'red',
+                    width: 0
+                }
+            }
+        }]);
+
+        expect(fullData[0].marker.line.width).toBe(0, 'mlw');
+        expect(fullData[0].marker.line.color).toBe(undefined, 'mlc');
+    });
 });
 
 describe('Test choroplethmapbox convert:', function() {

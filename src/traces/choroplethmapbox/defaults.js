@@ -37,8 +37,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hovertemplate');
 
-    coerce('marker.line.color');
-    coerce('marker.line.width');
+    var mlw = coerce('marker.line.width');
+    if(mlw) coerce('marker.line.color');
     coerce('marker.opacity');
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});

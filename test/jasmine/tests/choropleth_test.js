@@ -71,6 +71,23 @@ describe('Test choropleth', function() {
             Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
+
+        it('should not coerce *marker.line.color* when *marker.line.width* is *0*', function() {
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                marker: {
+                    line: {
+                        color: 'red',
+                        width: 0
+                    }
+                }
+            };
+
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.marker.line.width).toBe(0, 'mlw');
+            expect(traceOut.marker.line.color).toBe(undefined, 'mlc');
+        });
     });
 });
 
